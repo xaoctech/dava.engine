@@ -27,41 +27,58 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_VERTEXBUFFER_H__
-#define __DAVAENGINE_VERTEXBUFFER_H__
+#ifndef __DAVAENGINE_RENDERMANAGER_GL20_H__
+#define __DAVAENGINE_RENDERMANAGER_GL20_H__
 
-#include "Base/BaseObject.h"
-#include "Render/RenderResource.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Render/RenderManager.h"
+
+#include <stack>
 
 namespace DAVA
 {
 
-enum eBufferType
+    
+enum
 {
-	EBT_STATIC = 0x00,
-	EBT_DYNAMIC = 0x01,
+    ATTRIBUTE_0 = 1,
+    ATTRIBUTE_1 = 2,    
+    
 };
 
+    
+class Texture;
+class Shader;
 
-
-//! Interface to work with VertexBuffers
-class VertexBuffer : public RenderResource
+class RenderVertexAttributesState
 {
 public:
-	VertexBuffer() {};
-	virtual ~VertexBuffer() {};
+    RenderVertexAttributesState();
+    
+    void EnableVertexAttributes(uint32 attributesToEnable);
 
+private:
+    uint32 activeVertexAttributes;
+};
+    
+/** 
+	\ingroup render
+	\brief Subclass that implements GL 2.0 rendering layer, using shaders 
+*/
+class RenderManagerGL20 : public RenderManager
+{
+public:
+    RenderManagerGL20(Core::eRenderer renderer);
+        
+    void AttachRenderData(Shader * shader);
 
-	virtual void			* Lock(const int32 vertexCount, int32 & startVertex) = 0;
-	virtual void			Unlock() = 0;
-	virtual int32			GetFormat() = 0;
-	virtual eBufferType		GetType() = 0;
-	virtual void			Flush() = 0;
+    RenderVertexAttributesState attributesState;
+    
+    int32 enabledAttribCount;
 };
 
-}
 
-
-
-#endif // __LOGENGINE_VERTEXBUFFER_H__
-
+};
+#endif // __DAVAENGINE_RENDERMANAGER_GL20_H__

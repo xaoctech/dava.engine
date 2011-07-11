@@ -27,41 +27,60 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_VERTEXBUFFER_H__
-#define __DAVAENGINE_VERTEXBUFFER_H__
+#ifndef __DAVAENGINE_RENDERDATAOBJECT_H__
+#define __DAVAENGINE_RENDERDATAOBJECT_H__
 
+#include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Render/RenderResource.h"
+#include "Render/RenderBase.h"
 
 namespace DAVA
 {
-
-enum eBufferType
-{
-	EBT_STATIC = 0x00,
-	EBT_DYNAMIC = 0x01,
-};
-
-
-
-//! Interface to work with VertexBuffers
-class VertexBuffer : public RenderResource
+    
+class RenderDataObject;
+class RenderManager;
+class RenderManagerGL20;
+    
+class RenderDataStream : public BaseObject
 {
 public:
-	VertexBuffer() {};
-	virtual ~VertexBuffer() {};
-
-
-	virtual void			* Lock(const int32 vertexCount, int32 & startVertex) = 0;
-	virtual void			Unlock() = 0;
-	virtual int32			GetFormat() = 0;
-	virtual eBufferType		GetType() = 0;
-	virtual void			Flush() = 0;
+    RenderDataStream();
+    ~RenderDataStream();
+    
+    void Set(eVertexDataType type, int32 size, int32 stride, void * pointer);
+    
+    eVertexFormat formatMark;
+    eVertexDataType type;
+    int32 size;
+    int32 stride;
+    void * pointer;
 };
 
-}
+class RenderDataObject : public BaseObject
+{
+public:
+    RenderDataObject();
+    virtual ~RenderDataObject();
+    
+    RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer);
+    uint32 GetResultFormat();
 
+    uint32 GetStreamCount() { return streamArray.size(); };
+    RenderDataStream * GetStream(uint32 index) { return streamArray[index]; }
+    
+    /*
+        We think that render data object can pack data automatically 
+    */
+private:
+    Map<eVertexFormat, RenderDataStream *> streamMap;
+    Vector<RenderDataStream *> streamArray;
+    uint32 resultVertexFormat;
+    
+    
+    friend class RenderManager;
+    friend class RenderManagerGL20;
+};
+    
+};
 
-
-#endif // __LOGENGINE_VERTEXBUFFER_H__
-
+#endif // __DAVAENGINE_RENDERSTATEBLOCK_H__
