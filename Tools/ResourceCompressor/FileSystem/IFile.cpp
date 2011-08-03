@@ -23,48 +23,42 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
+#include "IFile.h"
 
-#ifndef __SPRITE_NODE_H__
-#define __SPRITE_NODE_H__
-
-#include "Scene3D/SceneNode3d.h"
-
-namespace DAVA 
+namespace Log
 {
-class Sprite;
-class SpriteNode : public SceneNode
+namespace IO
 {
-public:
-    
-    SpriteNode(Scene * _scene, const String &pathToSprite, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    SpriteNode(Scene * _scene, Sprite *spr, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    ~SpriteNode();
-    
-    virtual void	Draw();
-    
-    void SetFrame(int32 newFrame);
-    int32 GetFrame();
 
-    
-protected:
-    
-    void CreateMeshFromSprite();
-    Vector<float32> verts;
-    Vector<float32> colors;
-    
-    Sprite *sprite;
-    Vector2 sprScale;
-    Vector2 sprPivot;
-    int32 frame;
+bool IFile::ReadString(String & result)
+{
+	char8 sym = 0;
+	char8 tmp[2048];
+	int32 counter = 0;
+	while(1)
+	{
+		Read(&sym, 1);
+		if (sym == 0)
+		{
+			tmp[counter] = sym;
+			result = tmp;
+			return true;
+		};
+		if (IsEof())return false;
+		tmp[counter++] = sym;
+	}
+	tmp[counter] = sym;
+	result = tmp;
+	return true;
+}
+
+bool IFile::WriteString(const String & strtowrite)
+{
+	const char * str = strtowrite.c_str();
+	return (Write((void*)str, (uint32)(strtowrite.length() + 1)) == strtowrite.length() + 1);
+}
+
 };
 };
 
-#endif

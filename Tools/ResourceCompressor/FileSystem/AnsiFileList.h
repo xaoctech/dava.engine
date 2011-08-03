@@ -23,48 +23,56 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
+#ifndef __LOGENGINE_ANSIFILELIST_H__
+#define __LOGENGINE_ANSIFILELIST_H__
 
-#ifndef __SPRITE_NODE_H__
-#define __SPRITE_NODE_H__
+#include "IFileList.h"
 
-#include "Scene3D/SceneNode3d.h"
+#include <vector>
 
-namespace DAVA 
+namespace Log
 {
-class Sprite;
-class SpriteNode : public SceneNode
+namespace IO
+{
+
+//! Class used to enumerate files in directories
+//! list of files.
+class	AnsiFileList : public IFileList
 {
 public:
-    
-    SpriteNode(Scene * _scene, const String &pathToSprite, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    SpriteNode(Scene * _scene, Sprite *spr, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    ~SpriteNode();
-    
-    virtual void	Draw();
-    
-    void SetFrame(int32 newFrame);
-    int32 GetFrame();
 
+	//! constructor
+	AnsiFileList();
+	//! destructor
+	~AnsiFileList();
+
+	//! Get file count
+	virtual	int32				GetCount();
+	
+	//! Get file name
+	virtual	const char8 *		GetFilename(int32 Index);
     
-protected:
-    
-    void CreateMeshFromSprite();
-    Vector<float32> verts;
-    Vector<float32> colors;
-    
-    Sprite *sprite;
-    Vector2 sprScale;
-    Vector2 sprPivot;
-    int32 frame;
-};
+	//! Get path name
+	virtual const char8 *		GetPathname(int32 Index);
+
+	//! is [Index] file a directory
+	virtual bool				IsDirectory(int32 Index);
+private:
+	struct FileEntry
+	{
+		std::string Name;
+		std::string PathName;
+		uint32		Size;
+		bool		IsDirectory;
+	};
+	std::string					Path;
+	std::vector< FileEntry >	FileList;
 };
 
-#endif
+
+}; // end of namespace IO
+}; // end of namespace Log
+
+
+#endif // __LOGENGINE_ANSIFILESYSTEM_H__

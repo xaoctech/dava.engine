@@ -23,48 +23,47 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
+#ifndef __LOGENGINE_SINGLETON_H__
+#define __LOGENGINE_SINGLETON_H__
 
-#ifndef __SPRITE_NODE_H__
-#define __SPRITE_NODE_H__
 
-#include "Scene3D/SceneNode3d.h"
-
-namespace DAVA 
+namespace Log
 {
-class Sprite;
-class SpriteNode : public SceneNode
+
+template <typename T>
+class Singleton
 {
 public:
-    
-    SpriteNode(Scene * _scene, const String &pathToSprite, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    SpriteNode(Scene * _scene, Sprite *spr, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    ~SpriteNode();
-    
-    virtual void	Draw();
-    
-    void SetFrame(int32 newFrame);
-    int32 GetFrame();
-
-    
-protected:
-    
-    void CreateMeshFromSprite();
-    Vector<float32> verts;
-    Vector<float32> colors;
-    
-    Sprite *sprite;
-    Vector2 sprScale;
-    Vector2 sprPivot;
-    int32 frame;
+	Singleton()
+	{
+		if (instance == 0)
+		{
+			instance = (T*)this;
+		}
+		else 
+		{
+			// Log Error
+		}
+	}
+	virtual ~Singleton()
+	{
+		instance = 0;
+	}
+	
+	static T * Instance() { return instance; }
+	void Release()
+	{
+		delete this;
+		return;
+	}
+private:
+	static T * instance;
 };
+template <typename T> 
+T * Singleton<T>::instance = 0;
+	
 };
+#endif // __LOGENGINE_SINGLETON_H__
 
-#endif
+

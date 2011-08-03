@@ -23,48 +23,87 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
+#ifndef __LOGENGINE_IBASE_H__
+#define __LOGENGINE_IBASE_H__
 
-#ifndef __SPRITE_NODE_H__
-#define __SPRITE_NODE_H__
+#include "BaseTypes.h"
 
-#include "Scene3D/SceneNode3d.h"
-
-namespace DAVA 
+namespace Log
 {
-class Sprite;
-class SpriteNode : public SceneNode
+
+/** \brief class to implement object reference counting
+ *
+ * This class is parent for some classes in our system 
+ * Our conception is very simple but we have few
+ * exeptions. 
+ * For Example:
+ * If you create texture with CreateTexture or LoadTexture
+ * You must call method Release to release them, or 
+ * just decrease reference counter.
+ * But if you use Global namespace you must only check 
+ * if specified System not NULL. (Never call Release for
+ * Globals subsystems)
+ * These subsystems are managed by Engine itself
+ * Remember: all methods of IEngineSystem return 
+ * Global systems.
+ */
+class	IBase
 {
 public:
-    
-    SpriteNode(Scene * _scene, const String &pathToSprite, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    SpriteNode(Scene * _scene, Sprite *spr, int32 frame = 0
-               , const Vector2 &reqScale = Vector2(1.0, 1.0)
-               , const Vector2 &pivotPoint = Vector2(0, 0));
-    ~SpriteNode();
-    
-    virtual void	Draw();
-    
-    void SetFrame(int32 newFrame);
-    int32 GetFrame();
+	
+	//! Constructor
+	IBase()
+		: referenceCounter(1)
+	{
 
-    
-protected:
-    
-    void CreateMeshFromSprite();
-    Vector<float32> verts;
-    Vector<float32> colors;
-    
-    Sprite *sprite;
-    Vector2 sprScale;
-    Vector2 sprPivot;
-    int32 frame;
-};
+	}
+
+	//! Destructor
+	virtual ~IBase()
+	{
+	}
+
+	//! AddReference
+	void AddReference()
+	{
+		++referenceCounter;
+	}
+	
+	//! Decrease object Reference Count 
+	//! and delete him if ReferenceCount == 0.
+	int32 Release()
+	{
+		--referenceCounter;
+		int32 refCounter = referenceCounter;
+		if (!refCounter)
+		{
+			delete this;
+		}
+		return refCounter;
+	}
+
+	int32 GetRefCount() const
+	{
+		return referenceCounter;
+	}
+
+private:
+	int32 referenceCounter;
 };
 
-#endif
+
+template<class C>
+void SafeRelease(C * &c) 
+{ 
+	if (c) 
+	{
+		c->Release();
+		c = 0;
+	}
+}
+
+}; // end of namespace Log
+
+#endif // __LOGENGINE_IBASE_H__
+
