@@ -102,6 +102,8 @@ void UI3DView::SystemDraw(const UIGeometricData & geometricData)
     RenderManager::Instance()->EnableDepthWrite(true);
     RenderManager::Instance()->EnableDepthTest(true);
     RenderManager::Instance()->EnableBlending(false);
+    
+    RenderManager::Instance()->ClearDepthBuffer();
 //    glEnable(GL_DEPTH_TEST);
     
 //  glMatrixMode(GL_MODELVIEW);
