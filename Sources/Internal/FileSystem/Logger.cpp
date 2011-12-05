@@ -28,6 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "FileSystem/Logger.h"
+#include "Debug/DVAssert.h"
 #include <stdarg.h>
 
 
@@ -49,7 +50,7 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	//NSString * string = [NSString stringWithFormat:@"[%s] %@", GetLogLevelString(ll), [NSString stringWithCString:text]];
 	//NSLogv(string, li);
 	char tmp[4096];
-	vsprintf(tmp, text, li);
+	_vsnprintf(tmp, sizeof(tmp)-1, text, li);
 	strcat(tmp, "\n");
 	OutputDebugStringA(tmp);
 }
@@ -62,7 +63,7 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	//NSLogv(string, li);
 	//vwprintf((wchar_t*)text, li); printf("\n");
 	wchar_t tmp[4096];
-	wvsprintf(tmp, text, li);
+	_vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t)-sizeof(wchar_t), text, li);
 	wcscat(tmp, L"\n");
 	OutputDebugStringW(tmp);
 }
