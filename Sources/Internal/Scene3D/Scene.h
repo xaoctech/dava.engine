@@ -164,6 +164,12 @@ public:
         \returns Serial number of the layer
 	 */
     int32 RegisterLodLayer(float32 nearDistance, float32 farDistance);
+    /**
+        \brief Sets lod layer thet would be forcely used in the whole scene.
+        \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
+	 */
+    void SetForceLodLayer(int32 layer);
+    int32 GetForceLodLayer();
     
     inline int32 GetLodLayersCount();
     inline float32 GetLodLayerNear(int32 layerNum);
@@ -188,6 +194,7 @@ private:
     // Vector<SceneNode*> alphaObjectQueue;
     
     Vector<LodLayer> lodLayers;
+    int32 forceLodLayer;
 
     
     Camera * currentCamera;
