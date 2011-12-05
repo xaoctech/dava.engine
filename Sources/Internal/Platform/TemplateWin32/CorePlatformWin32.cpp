@@ -470,65 +470,48 @@ namespace DAVA
 
 	void CoreWin32Platform::GetAvailableDisplayModes(List<DisplayMode> & availableDisplayModes)
 	{
-#if defined(__DAVAENGINE_DIRECTX9__)
-		if (RenderManager::Instance()->GetD3D() == 0)
-		{
-			// 
-			Logger::Error("[PlatformWin32] can't get available display modes while RenderManager not initialized");
-			return;
-		}
-		LPDIRECT3D9 direct3D = RenderManager::Instance()->GetD3D();
 		availableDisplayModes.clear();
 
-		D3DFORMAT formats[] = {D3DFMT_R5G6B5, D3DFMT_X8R8G8B8}; 
+		DWORD iModeNum = 0;
+		DEVMODE	dmi;
+		ZeroMemory (&dmi, sizeof(dmi)) ;
+		dmi.dmSize = sizeof(dmi) ;
 
-		for (int format = 0; format < sizeof(formats) / sizeof(D3DFORMAT); ++format)
+		while(EnumDisplaySettings(NULL, iModeNum++, &dmi))
 		{
-			for (uint32 mode = 0; mode < direct3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, formats[format]); ++mode)
-			{
-				D3DDISPLAYMODE displayMode;
-				HRESULT hr = direct3D->EnumAdapterModes(D3DADAPTER_DEFAULT, formats[format], mode, &displayMode);	
-				if (!FAILED(hr))
-				{
-					DisplayMode mode;
-					mode.width = displayMode.Width;
-					mode.height = displayMode.Height;
-					if (displayMode.Format == D3DFMT_R5G6B5)mode.bpp = 16;
-					else if (displayMode.Format == D3DFMT_X8R8G8B8) mode.bpp = 32;
-					else if (displayMode.Format == D3DFMT_R8G8B8) mode.bpp = 24;
-					mode.refreshRate = displayMode.RefreshRate;
-					availableDisplayModes.push_back(mode);
+			DisplayMode mode;
+			mode.width = dmi.dmPelsWidth;
+			mode.height = dmi.dmPelsHeight;
+			mode.bpp = dmi.dmBitsPerPel;
+			mode.refreshRate = dmi.dmDisplayFrequency;
+			ZeroMemory (&dmi, sizeof(dmi)) ;
+			availableDisplayModes.push_back(mode);
 
-					Logger::Debug("[RenderManagerDX9::GetAvailableDisplayModes] mode found: %d x %d x %d", 
-						mode.width,
-						mode.height,
-						mode.bpp);
-				}
-			}
+			Logger::Debug(L"[RenderManagerDX9::GetAvailableDisplayModes] mode found: %d x %d x %d",
+				mode.width,
+				mode.height,
+				mode.bpp);
 		}
-#endif 
 	}
 
 	DisplayMode CoreWin32Platform::GetCurrentDisplayMode()
 	{
-#if defined(__DAVAENGINE_DIRECTX9__)
-		LPDIRECT3D9 direct3D = RenderManager::Instance()->GetD3D();
-		D3DDISPLAYMODE displayMode;
-		HRESULT hr = direct3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &displayMode);
-		if (!FAILED(hr))
+		DWORD iModeNum = 0;
+		DEVMODE	dmi;
+		ZeroMemory (&dmi, sizeof(dmi)) ;
+		dmi.dmSize = sizeof(dmi);
+
+		DisplayMode mode;
+		if(EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmi))
 		{
-			DisplayMode mode;
-			mode.width = displayMode.Width;
-			mode.height = displayMode.Height;
-			if (displayMode.Format == D3DFMT_R5G6B5)mode.bpp = 16;
-			else if (displayMode.Format == D3DFMT_X8R8G8B8) mode.bpp = 32;
-			else if (displayMode.Format == D3DFMT_R8G8B8) mode.bpp = 24;
-			mode.refreshRate = displayMode.RefreshRate;
-			return mode;
+			mode.width = dmi.dmPelsWidth;
+			mode.height = dmi.dmPelsHeight;
+			mode.bpp = dmi.dmBitsPerPel;
+			mode.refreshRate = dmi.dmDisplayFrequency;
+			ZeroMemory (&dmi, sizeof(dmi)) ;
 		}
-		return DisplayMode();
-#endif
-		return DisplayMode();
+
+		return mode;
 	}
 
 
