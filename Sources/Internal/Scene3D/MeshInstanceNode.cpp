@@ -185,23 +185,38 @@ void MeshInstanceNode::Update(float32 timeElapsed)
         if (lastLodUpdateFrame > 3)
         {
             lastLodUpdateFrame = 0;
-            float32 dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
-            dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
-            if (dst > scene->GetLodLayerFarSquare(currentLod->layer) || dst < scene->GetLodLayerNearSquare(currentLod->layer))
+            if (scene->GetForceLodLayer() != -1)
             {
                 for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
                 {
-                    if (dst >= scene->GetLodLayerNearSquare(it->layer))
+                    if (scene->GetForceLodLayer() == it->layer)
                     {
                         currentLod = &(*it);
-                    }
-                    else 
-                    {
-//                        Logger::Info("Draw selected LOD %d", currentLod->layer);
                         return;
                     }
                 }
             }
+            else 
+            {
+                float32 dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
+                dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+                if (dst > scene->GetLodLayerFarSquare(currentLod->layer) || dst < scene->GetLodLayerNearSquare(currentLod->layer))
+                {
+                    for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
+                    {
+                        if (dst >= scene->GetLodLayerNearSquare(it->layer))
+                        {
+                            currentLod = &(*it);
+                        }
+                        else 
+                        {
+                                //                        Logger::Info("Draw selected LOD %d", currentLod->layer);
+                            return;
+                        }
+                    }
+                }
+            }
+
         }
 //        Logger::Info("Draw selected LOD %d", currentLod->layer);
     }
@@ -243,6 +258,7 @@ void MeshInstanceNode::Draw()
     //glMatrixMode(GL_MODELVIEW);
     //glPushMatrix();
     //glMultMatrixf(worldTransform.data);
+    
     
     uint32 meshesSize = currentLod->meshes.size();
 	for (uint32 k = 0; k < meshesSize; ++k)

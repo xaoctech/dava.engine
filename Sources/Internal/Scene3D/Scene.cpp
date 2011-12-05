@@ -43,6 +43,7 @@ Scene::Scene()
 	:   SceneNode(0)
     ,   currentCamera(0)
     ,   clipCamera(0)
+    ,   forceLodLayer(-1)
 {
 }
 
@@ -419,7 +420,16 @@ Camera * Scene::GetClipCamera() const
 {
     return clipCamera;
 }
-    
+ 
+void Scene::SetForceLodLayer(int32 layer)
+{
+    forceLodLayer = layer;
+}
+int32 Scene::GetForceLodLayer()
+{
+    return forceLodLayer;
+}
+
 int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
 {
     LodLayer newLevel;
