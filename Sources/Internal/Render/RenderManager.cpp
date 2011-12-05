@@ -609,7 +609,7 @@ void RenderManager::PopMappingMatrix()
 
 void RenderManager::SetCursor(Cursor * _cursor)
 {
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_MACOS__) || (defined(__DAVAENGINE_WIN32__) && defined(__DAVAENGINE_DIRECTX9__))
 	SafeRelease(cursor);
 	cursor = SafeRetain(_cursor);
 	if (cursor)cursor->HardwareSet();
