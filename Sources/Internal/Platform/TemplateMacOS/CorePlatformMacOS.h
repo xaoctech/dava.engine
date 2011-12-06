@@ -44,7 +44,7 @@ public:
 	
 	virtual void GetAvailableDisplayModes(List<DisplayMode> & availableModes);
 	virtual DisplayMode GetCurrentDisplayMode();
-	
+	virtual Vector2 GetMousePosition();
 	
 };	
 };

@@ -109,15 +109,15 @@ namespace DAVA
 static MainWindowController * mainWindowController = nil;
 
 /* This code disabled for now and left for the future
+ */
 namespace DAVA 
 {
-	static Vector2 mouseLocation = Vector2();
-	
-	const Vector2 & Core::GetMouseLocation()
+	Vector2 CoreMacOSPlatform::GetMousePosition()
 	{
 		NSPoint p = [mainWindowController->mainWindow mouseLocationOutsideOfEventStream]; //[NSEvent locationInWindow]; 
 		p = [mainWindowController->openGLView convertPointFromBase: p];
 
+        Vector2 mouseLocation;
 		mouseLocation.x = p.x;
 		mouseLocation.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
 		// mouseLocation.y = 
@@ -125,7 +125,6 @@ namespace DAVA
 	}
 	
 }
-*/
 
 - (id)init
 {
@@ -768,6 +767,12 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
     else 
     {
         Core::Instance()->SetIsActive(true);
+    }    
+    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
+    if (activeCursor)
+    {
+        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
+        [cursor set];
     }
 }
 

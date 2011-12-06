@@ -309,7 +309,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 		int32 multilineOffsetY = baseSize+offsetY*2;
 		if(!realDraw || (bbox.xMax>0 && bbox.yMax>0 && bbox.xMin<bufWidth && bbox.yMin < bufHeight))
 		{
- 			error = FT_Glyph_To_Bitmap(&image, FT_RENDER_MODE_NORMAL, 0, 0);
+ 			error = FT_Glyph_To_Bitmap(&image, FT_RENDER_MODE_NORMAL, 0, 1);
 			if(!error)
 			{
 				FT_BitmapGlyph  bit = (FT_BitmapGlyph)image;
