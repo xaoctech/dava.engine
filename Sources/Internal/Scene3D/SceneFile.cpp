@@ -698,6 +698,11 @@ bool SceneFile::ReadLight()
 
 void SceneFile::ProcessLOD(SceneNode *forRootNode)
 {
+    if (scene->GetLodLayersCount() <= 0) 
+    {
+        return;
+    }
+    
     List<SceneNode*> lodNodes;
     forRootNode->FindNodesByNamePart("_lod0", lodNodes);
     if (debugLogEnabled) 
@@ -706,18 +711,23 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
     }
     for (List<SceneNode*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
     {
-        String lodName = (*it)->GetName();
+        String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
         if (debugLogEnabled) 
         {
-            Logger::Debug("Processing LODs for %s", lodName.c_str());
+            Logger::Debug("Processing LODs for %s", nodeName.c_str());
         }
-        MeshInstanceNode *meshToAdd = (MeshInstanceNode *)(*it)->FindByName("instance_0");
-        for (int i = 1; i < scene->GetLodLayersCount(); i++) 
+        bool isNeedInit = true;
+        SceneNode *newNode = new SceneNode(scene);
+        newNode->SetName(nodeName);
+        MeshInstanceNode *meshToAdd = new MeshInstanceNode(scene);
+        meshToAdd->SetName("instance_0");
+        newNode->AddNode(meshToAdd);
+        (*it)->GetParent()->AddNode(newNode);
+        for (int i = scene->GetLodLayersCount(); i >= 0; i--) 
         {
-            lodName[lodName.size() - 1] = '0' + i;
-            SceneNode *ln = (*it)->GetParent()->FindByName(lodName);
+            SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
             if (ln) 
-            {
+            {//if layer is not a dummy
                 MeshInstanceNode *mn = (MeshInstanceNode *)ln->FindByName("instance_0");
                 if (mn) 
                 {
@@ -725,25 +735,48 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
                     {
                         Logger::Debug("      Add LOD layer %d", i);
                     }
+                    if (isNeedInit)
+                    {//we should init our new node from the first appeared real(not a dummy) node
+                        isNeedInit = false;
+                        newNode->SetLocalTransform(ln->GetLocalTransform());
+                        SceneNode *hnode = mn;
+                        while (true)
+                        {
+                            if (hnode->GetParent() == ln) 
+                            {
+                                break;
+                            }
+                            hnode = hnode->GetParent();
+                        }
+                        meshToAdd->SetLocalTransform(mn->AccamulateLocalTransform(hnode));
+                    }
                     for (int32 n = 0; n < (int32)mn->GetMeshes().size(); n++) 
                     {
                         meshToAdd->AddPolygonGroupForLayer(i, mn->GetMeshes()[n], mn->GetPolygonGroupIndexes()[n], mn->GetMaterials()[n]);
                     }
                 }
-                ln->RemoveNode(ln);
+
+                ln->GetParent()->RemoveNode(ln);
             }
             else 
-            {
-                lodName[lodName.size() - 1] = '0' + i;
-                SceneNode *ln = (*it)->GetParent()->FindByName(lodName + "dummy");
+            {//if layer is dummy
+                SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
                 if (ln) 
                 {
+                    if (debugLogEnabled) 
+                    {
+                        Logger::Debug("      Add Dummy LOD layer %d", i);
+                    }
                     meshToAdd->AddDummyLODLayer(i);
-                    ln->RemoveNode(ln);
+
+                    ln->GetParent()->RemoveNode(ln);
                 }
             }
-
         }
+        
+        SafeRelease(newNode);
+        SafeRelease(meshToAdd);
+        
     }
 }
 

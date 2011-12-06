@@ -41,7 +41,7 @@
 namespace DAVA
 {
 	
-GameObjectManager::GameObjectManager()
+GameObjectManager::GameObjectManager() : cameraScale(1.f,1.f)
 {
 	isInUpdate = false;
 }
@@ -163,10 +163,7 @@ void GameObjectManager::RealAddObject(GameObject * _object)
 	//Logger::Debug("added to pos: %d\n", pos);
 	objects.insert(currentPos, _object);
 	_object->SetManager(this);
-	
-	
-	if (_object->GetParent() == 0)_object->RecalcHierarchy(drawState);
-	else _object->RecalcHierarchy(_object->GetParent()->globalDrawState);
+    RecalcObjectHierarchy(_object);
 }
 
 void GameObjectManager::RemoveObject(GameObject * _object)
@@ -190,6 +187,12 @@ void GameObjectManager::SortObjects()
 	std::sort(objects.begin(), objects.end(), PrioritySortFn);
 }
 */
+
+void GameObjectManager::RecalcObjectHierarchy(GameObject *object) const
+{
+    const GameObject *objParent = object->GetParent();
+    object->RecalcHierarchy(objParent ? objParent->globalDrawState : drawState);
+}
 	
 void GameObjectManager::RecalcObjectsHierarchy()
 {
@@ -209,11 +212,11 @@ void GameObjectManager::Update(float32 timeElapsed)
 	// Than perform usual update
 	for (List<GameObject*>::iterator currentPos = objects.begin(); currentPos != objects.end(); ++currentPos)
 	{
-		GameObject * object = *currentPos;
+		GameObject *object = *currentPos;
 		if (object->dead)continue;
-		if (object->GetParent() == 0)
-			object->Update(timeElapsed);
-	}	
+		if(object->GetParent() == 0)
+            object->Update(timeElapsed);
+    }
 	
 	RecalcObjectsHierarchy();
 	
@@ -239,7 +242,8 @@ void GameObjectManager::ProcessChangesStack()
 		{
 			ChangeObjectPriority(object);
 			object->priorityChanged = false;
-		}else if (object->dead)
+		}
+        else if (object->dead)
 		{
 			// delete objects 
 			for (List<GameObject*>::iterator t = objects.begin(); t != objects.end(); ++t)
@@ -270,7 +274,12 @@ void GameObjectManager::Draw()
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
 	
-	for(List<GameObject*>::iterator currentObj = objects.begin(); currentObj != objects.end(); ++currentObj)
+        RenderManager::Instance()->PushDrawMatrix();
+        RenderManager::Instance()->SetDrawTranslate(cameraPosition);
+        RenderManager::Instance()->SetDrawScale(cameraScale);
+
+    const List<GameObject*>::iterator currentObjEnd = objects.end();
+	for(List<GameObject*>::iterator currentObj = objects.begin(); currentObj != currentObjEnd; ++currentObj)
 	{
 		GameObject *object = *currentObj;
 		if(object->dead)
@@ -279,22 +288,28 @@ void GameObjectManager::Draw()
 		    object->Draw();
 	}
 	
+        RenderManager::Instance()->PopDrawMatrix();
+
 	RenderManager::Instance()->SetBlendMode(srcMode, destMode);
+    RenderManager::Instance()->ResetColor();
 }
 
 void GameObjectManager::SetCameraPosition(float32 _cameraPositionX, float32 _cameraPositionY)
 {
-	drawState.position.x = -_cameraPositionX;
-	drawState.position.y = -_cameraPositionY;
+// 	drawState.position.x = -_cameraPositionX;
+// 	drawState.position.y = -_cameraPositionY;
+    cameraPosition.x = -_cameraPositionX;
+    cameraPosition.y = -_cameraPositionY;
 }
 	
-void GameObjectManager::SetCameraScale(float32 cameraScale)
+void GameObjectManager::SetCameraScale(float32 _cameraScale)
 {
-	drawState.scale.x = drawState.scale.y = cameraScale;
+//	drawState.scale.x = drawState.scale.y = _cameraScale;
+    cameraScale.x = cameraScale.y = _cameraScale;
 }
 
 float32 GameObjectManager::GetCameraScale() const
 {
-    return drawState.scale.x; // > 0 ? drawState.scale.x : 1.f;
+    return cameraScale.x; // > 0 ? drawState.scale.x : 1.f;
 }
 };
