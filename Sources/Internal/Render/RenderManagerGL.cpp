@@ -91,7 +91,8 @@ void RenderManager::Release()
 
 bool RenderManager::ChangeDisplayMode(DisplayMode mode, bool isFullscreen)
 {
-
+	hardwareState.Reset(false);
+	currentState.Reset(true);
 	return true;
 }	
 	
