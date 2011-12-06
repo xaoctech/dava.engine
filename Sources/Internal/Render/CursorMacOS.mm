@@ -30,6 +30,7 @@
 #include "Base/BaseTypes.h"
 #include "Render/Cursor.h"
 #include "FileSystem/FileSystem.h"
+#include "CorePlatformMacOS.h"
 
 #if defined(__DAVAENGINE_MACOS__) 
 
@@ -70,6 +71,7 @@ Cursor * Cursor::Create(const String & cursorPathname, const Vector2 & hotSpot)
 
 Cursor::Cursor()
 {
+    
 }
 
 Cursor::~Cursor()
@@ -78,17 +80,36 @@ Cursor::~Cursor()
 	[macOSXCursorX release];
 	this->macOSXCursor = 0;
 }
-	
+
 void * Cursor::GetMacOSXCursor()
 {
 	return macOSXCursor;
 }
-	
+
 void Cursor::HardwareSet()
 {
 	// Do nothing here in MacOS version. Everything is in OpenGLView 
 }
-	
+    
+DAVA::Vector2 Cursor::GetPosition()
+{
+    return dynamic_cast<CoreMacOSPlatform *>(CoreMacOSPlatform::Instance())->GetMousePosition();
+}
+    
+void Cursor::Show(bool _show)
+{
+    show = _show;
+    if(show)
+        [NSCursor unhide];
+    else
+        [NSCursor hide];
+}
+    
+bool Cursor::IsShow()
+{
+    return show;
+}
+    
 /*void Cursor::MacOSX_Set()
 {
 	NSCursor * macOSXCursorX = (NSCursor *)this->macOSXCursor;

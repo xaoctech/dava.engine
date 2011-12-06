@@ -75,8 +75,6 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 	wglMakeCurrent(hDC, hRC);
 
 	glewInit();
-	const GLubyte * extensions = glGetString(GL_EXTENSIONS);
-	Logger::Debug("[CoreWin32Platform] gl extensions: %s", (const char*)extensions);
 
 	DetectRenderingCapabilities();
 	return true;
@@ -181,7 +179,7 @@ void RenderManager::EndFrame()
 	::SwapBuffers(hDC);
 #endif
 	
-	RENDER_VERIFY();	// verify at the end of the frame
+	RENDER_VERIFY("");	// verify at the end of the frame
 }
     
     
@@ -253,7 +251,7 @@ void RenderManager::SetRenderOrientation(int32 orientation)
     Matrix4 glTranslate;
     Matrix4 glRotate;
 
-    orthoMatrix.glOrtho(0.0f, frameBufferWidth, frameBufferHeight, 0.0f, -1.0f, 1.0f);
+    orthoMatrix.glOrtho(0.0f, (float32)frameBufferWidth, (float32)frameBufferHeight, 0.0f, -1.0f, 1.0f);
 	
     switch (orientation) 
 	{
@@ -302,7 +300,7 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
     IdentityModelMatrix();
     
-	RENDER_VERIFY();
+	RENDER_VERIFY("");
 
 	IdentityMappingMatrix();
 	SetVirtualViewScale();
@@ -331,7 +329,7 @@ eBlendMode RenderManager::GetDestBlend()
 /*
  void RenderManager::EnableBlending(bool isEnabled)
 {
-	if(isEnabled != oldBlendingEnabled)
+	if((int32)isEnabled != oldBlendingEnabled)
 	{
 		if(isEnabled)
 		{
@@ -347,7 +345,7 @@ eBlendMode RenderManager::GetDestBlend()
     
 void RenderManager::EnableDepthTest(bool isEnabled)
 {
-	if(isEnabled != depthTestEnabled)
+	if((int32)isEnabled != depthTestEnabled)
 	{
 		if(isEnabled)
 		{
@@ -363,7 +361,7 @@ void RenderManager::EnableDepthTest(bool isEnabled)
 
 void RenderManager::EnableDepthWrite(bool isEnabled)
 {
-	if(isEnabled != depthWriteEnabled)
+	if((int32)isEnabled != depthWriteEnabled)
 	{
 		if(isEnabled)
 		{
@@ -653,7 +651,7 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 //#endif
 
         Matrix4 orthoMatrix; 
-        orthoMatrix.glOrtho(0.0f, renderTarget->GetTexture()->width, 0.0f, renderTarget->GetTexture()->height, -1.0f, 1.0f);
+        orthoMatrix.glOrtho(0.0f, (float32)renderTarget->GetTexture()->width, 0.0f, (float32)renderTarget->GetTexture()->height, -1.0f, 1.0f);
         SetMatrix(MATRIX_PROJECTION, orthoMatrix);
         
 		//RENDER_VERIFY(glMatrixMode(GL_MODELVIEW));
@@ -736,11 +734,11 @@ void RenderManager::AttachRenderData(Shader * shader)
         
         if (difference & EVF_VERTEX)
         {
-            EnableVertexArray(pointerArraysCurrentState & EVF_VERTEX);
+            EnableVertexArray((pointerArraysCurrentState & EVF_VERTEX) != 0);
         }
         if (difference & EVF_TEXCOORD0)
         {
-            EnableTextureCoordArray(pointerArraysCurrentState & EVF_TEXCOORD0);
+            EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
         }
         pointerArraysRendererState = pointerArraysCurrentState;
         
