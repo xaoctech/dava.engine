@@ -252,7 +252,7 @@ const Color & RenderManager::GetColor() const
 
 void RenderManager::ResetColor()
 {
-	currentState.color.r = currentState.color.g = currentState.color.b = currentState.color.a = 1.0f;
+	currentState.ResetColor();
 }
 	
 	
