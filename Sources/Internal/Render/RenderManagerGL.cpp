@@ -75,8 +75,6 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 	wglMakeCurrent(hDC, hRC);
 
 	glewInit();
-	const GLubyte * extensions = glGetString(GL_EXTENSIONS);
-	Logger::Debug("[CoreWin32Platform] gl extensions: %s", (const char*)extensions);
 
 	DetectRenderingCapabilities();
 	return true;
