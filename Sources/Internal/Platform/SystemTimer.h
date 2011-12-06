@@ -37,6 +37,7 @@ namespace DAVA
 {
 class SystemTimer : public Singleton<SystemTimer> 
 {
+    friend class Core;
 #if defined(__DAVAENGINE_WIN32__)
 	LARGE_INTEGER	liFrequency;
 	LARGE_INTEGER	tLi;
@@ -49,11 +50,11 @@ class SystemTimer : public Singleton<SystemTimer>
 	static float delta;
 	static uint64 stampTime;
 
+	float32 ElapsedSec();
+	void Start();
 public:
 	
 	SystemTimer();
-	void Start();
-	float32 ElapsedSec();
 	uint64 AbsoluteMS();
 
 	static void SetFrameDelta(float32 _delta); //for replay playback only

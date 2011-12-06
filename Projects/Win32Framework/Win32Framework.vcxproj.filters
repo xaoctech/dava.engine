@@ -903,6 +903,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h">
       <Filter>Internal\Scene2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1552,6 +1555,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp">
       <Filter>Internal\Scene2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
