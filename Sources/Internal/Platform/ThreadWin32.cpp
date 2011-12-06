@@ -58,7 +58,7 @@ DWORD WINAPI ThreadFunc(void* param)
 	if(t->needCopyContext)
 	{
 #if defined(__DAVAENGINE_OPENGL__)
-		bool res = wglMakeCurrent(Thread::currentDC, Thread::secondaryContext);
+		int32 res = wglMakeCurrent(Thread::currentDC, Thread::secondaryContext);
 		if(!res)
 		{
 			DWORD error = GetLastError();
@@ -80,7 +80,7 @@ DWORD WINAPI ThreadFunc(void* param)
 	if(t->needCopyContext)
 	{
 #if defined(__DAVAENGINE_OPENGL__)
-		bool res = wglMakeCurrent(Thread::currentDC, NULL);
+		int32 res = wglMakeCurrent(Thread::currentDC, NULL);
 		if(!res)
 		{
 			DWORD error = GetLastError();
