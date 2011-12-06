@@ -1559,5 +1559,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

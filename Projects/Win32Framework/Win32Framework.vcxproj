@@ -535,6 +535,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp" />
