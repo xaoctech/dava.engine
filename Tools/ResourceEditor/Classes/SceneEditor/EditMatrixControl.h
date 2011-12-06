@@ -37,22 +37,33 @@
 
 namespace DAVA 
 {
-class EditMatrixControl : public UIControl
+class EditMatrixControl : public UIControl, public UITextFieldDelegate
 {
 public:
     EditMatrixControl(const Rect & _rect, bool _readOnly = false);
     ~EditMatrixControl();
     
 
-    void SetMatrix(Matrix4 * _matrix);
+    void SetMatrix(const Matrix4 & _matrix);
+    const Matrix4 & GetMatrix() const;
     void OnEditButtonPressed(BaseObject * obj, void *, void *);
     void OnEditClosePressed(BaseObject * obj, void *, void *);
 
+    
+	void TextFieldShouldReturn(UITextField * textField);
+	bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
+
+    
+    Message OnMatrixChanged;
+
 protected:
-    Matrix4 * matrix;
+    Matrix4 matrix;
     UITextField * textField;
     UIControl * textFieldBackground;
     UIButton * matrixButtons[4][4]; 
+    int32 editI, editJ;
+    void GetIndexByButton(BaseObject * button, int32 & i, int32 & j);
+    
     bool readOnly;
 };
 };

@@ -56,7 +56,7 @@ void SceneEditorScreen::LoadResources()
     cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
     cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
     cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    cam->SetTarget(Vector3(1.0f, 0.0f, 0.0f));
+    cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
 
     cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
 
@@ -70,40 +70,49 @@ void SceneEditorScreen::LoadResources()
     cam2->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
     cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
     cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
-    cam2->SetTarget(Vector3(0.0f, 0.0f, 0.0f));
+    cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
     
     cam2->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
     
     scene->AddNode(cam2);
     scene->AddCamera(cam2);
-//    
-//    
-//    
-//    // 483, -2000, 119
-//    LandscapeNode * node = new LandscapeNode(scene);
-//    node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-//    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
-//    
-//    //node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
-//#if 1
-//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
-//
-//    Texture::EnableMipmapGeneration();
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-//    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
-//    Texture::DisableMipmapGeneration();
-//#else  
-//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
-//    
-//    Texture::EnableMipmapGeneration();
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
-//    Texture::DisableMipmapGeneration();
-//#endif
-//    
-//    node->SetName("landscapeNode");
-//    scene->AddNode(node);
+    
+    Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
+    //sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
+    SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.2f, 0.2f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
+    spriteNode->SetName("testSpriteNode");
+    spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 100.0f, 0.0f)));
+    spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+    spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
+    scene->AddNode(spriteNode);
+    
+    
+    
+    // 483, -2000, 119
+    LandscapeNode * node = new LandscapeNode(scene);
+    //node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
+    
+    node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
+#if 1
+    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+
+    Texture::EnableMipmapGeneration();
+    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
+    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+    Texture::DisableMipmapGeneration();
+#else  
+    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
+    
+    Texture::EnableMipmapGeneration();
+    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
+    Texture::DisableMipmapGeneration();
+#endif
+    
+    node->SetName("landscapeNode");
+    scene->AddNode(node);
     
     
     sceneTree = new UIHierarchy(Rect(0, 100, 200, size.y - 120));
@@ -123,7 +132,9 @@ void SceneEditorScreen::LoadResources()
     cameraPanel = 0;
     
     localMatrixControl = new EditMatrixControl(Rect(0, 0, 300, 100));
-    worldMatrixControl = new EditMatrixControl(Rect(0, 0, 300, 100));
+    localMatrixControl->OnMatrixChanged = Message(this, &SceneEditorScreen::OnLocalTransformChanged);
+
+    worldMatrixControl = new EditMatrixControl(Rect(0, 0, 300, 100), true);
 
     Font *f = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     f->SetSize(12);
@@ -434,10 +445,6 @@ void SceneEditorScreen::Update(float32 timeElapsed)
 void SceneEditorScreen::Draw(const UIGeometricData &geometricData)
 {
     UIScreen::Draw(geometricData);
-    
-    RenderManager::Instance()->ClearDepthBuffer();
-    //glClearColor(0.0, 0.0, 0.0, 1.0f);
-    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
 
@@ -480,10 +487,9 @@ UIHierarchyCell *SceneEditorScreen::CellForNode(UIHierarchy *forHierarchy, void 
         c = new UIHierarchyCell(Rect(0, 0, 200, 15), "Node cell");
     }
     
-        //fill cell whith data
+    //fill cell whith data
     Font *fnt;
     fnt = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-//    fnt = GraphicsFont::Create("~res:/Fonts/korinna.def", "~res:/Gfx/Fonts2/korinna");
     fnt->SetSize(12);
     
     SceneNode *n = (SceneNode *)node;
@@ -553,13 +559,18 @@ void SceneEditorScreen::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
 //        turretN->SetDebugFlags();
 
         
-        selectedNodeLocalTransform = selectedNode->GetLocalTransform();
-        selectedNodeWorldTransform = selectedNode->GetWorldTransform();
-        
-        localMatrixControl->SetMatrix(&selectedNodeLocalTransform);
-        worldMatrixControl->SetMatrix(&selectedNodeWorldTransform);
+        localMatrixControl->SetMatrix(selectedNode->GetLocalTransform());
+        worldMatrixControl->SetMatrix(selectedNode->GetWorldTransform());
         
         nodeName->SetText(StringToWString(selectedNode->GetFullName()));
+    }
+}
+
+void SceneEditorScreen::OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData)
+{
+    if (selectedNode)
+    {
+        selectedNode->SetLocalTransform(localMatrixControl->GetMatrix());
     }
 }
 
