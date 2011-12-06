@@ -79,11 +79,7 @@ void GameCore::OnAppStarted()
  	stScreen = new StaticTextScreen();
 // 	collisionTestScreen = new CollisionTestScreen();
 	imageUsageScreen = new ImageUsageScreen();
-#if defined(__DAVAENGINE_WIN32__) //Dizz: cause LandscapeTestScreen doesn't work on Windows, similar #ifdef in LandscapeTestScreen.cpp
-	landscapeTestScreen = 0;
-#else
 	landscapeTestScreen = new LandscapeTestScreen();
-#endif
 	
 	textinputTestScreen1 = new TextinputTestScreen(L"textinputTestScreen 1");
 	textinputTestScreen2 = new TextinputTestScreen(L"textinputTestScreen 2");
@@ -107,7 +103,7 @@ void GameCore::OnAppStarted()
 
 //	UIScreenManager::Instance()->SetFirst(SCREEN_TEXTINPUT_TEST_1);
     
-	UIScreenManager::Instance()->SetFirst(SCREEN_SPRITE_BASICS);
+	UIScreenManager::Instance()->SetFirst(SCREEN_LANDSCAPE_TEST);
 	cursor = 0;
 }
 
