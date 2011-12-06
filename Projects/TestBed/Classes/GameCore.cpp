@@ -90,7 +90,7 @@ void GameCore::OnAppStarted()
     
 //	UIScreenManager::Instance()->RegisterScreen(SCREEN_TEST, testScreen);
 //	UIScreenManager::Instance()->RegisterScreen(SCREEN_ANIM_3D, anim3dScreen);
-// 	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE_BASICS, spriteBasicsScreen);
+ 	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE_BASICS, spriteBasicsScreen);
 // 	UIScreenManager::Instance()->RegisterScreen(SCREEN_CLIP_TEST, clipTestScreen);
 // 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RENDERTARGET_TEST, renderTargetTestScreen);
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_PARTICLE_TEST, particleTestScreen);
@@ -107,7 +107,7 @@ void GameCore::OnAppStarted()
 
 //	UIScreenManager::Instance()->SetFirst(SCREEN_TEXTINPUT_TEST_1);
     
-	UIScreenManager::Instance()->SetFirst(SCREEN_LANDSCAPE_TEST);
+	UIScreenManager::Instance()->SetFirst(SCREEN_SPRITE_BASICS);
 	cursor = 0;
 }
 

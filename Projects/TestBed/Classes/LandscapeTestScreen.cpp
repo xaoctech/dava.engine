@@ -77,6 +77,16 @@ void LandscapeTestScreen::LoadResources()
     scene->AddNode(node);
     SafeRelease(node);
     
+    Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
+    //sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
+    SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.1f, 0.1f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
+    spriteNode->SetName("testSpriteNode");
+    spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 10.0f, 0.0f)));
+    spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+    spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
+    scene->AddNode(spriteNode);
+
+    
 //    SceneFile * file = new SceneFile();
 //    file->SetDebugLog(true);
 //    file->LoadScene("~res:/Scenes/hungar/hungar.sce", scene);
