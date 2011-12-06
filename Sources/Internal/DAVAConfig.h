@@ -44,9 +44,9 @@
 
 //#define SHOW_FRAME_TIME	// shows milliseconds per fame
 
-#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
+//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
 //#define __DAVAENGINE_DIRECTX9__
-//#define __DAVAENGINE_OPENGL__
+#define __DAVAENGINE_OPENGL__
 
 #endif // __DAVAENGINE_CONFIG_H__
 
