@@ -330,23 +330,32 @@ public:
 // Implementation of inline functions
 inline void RenderStateBlock::SetColor(float32 _r, float32 _g, float32 _b, float32 _a)
 {
-    color.r = _r;
-    color.g = _g;
-    color.b = _b;
-    color.a = _a;
-    changeSet |= STATE_CHANGED_COLOR;
+    if ((color.r != _r) || (color.g != _g) || (color.b != _b) || (color.a != _a))
+    {
+        color.r = _r;
+        color.g = _g;
+        color.b = _b;
+        color.a = _a;
+        changeSet |= STATE_CHANGED_COLOR;
+    }
 }
 
 inline void RenderStateBlock::SetColor(const Color & _color)
 {
-	color = _color;
-	changeSet |= STATE_CHANGED_COLOR;
+    if (color != _color)
+    {
+        color = _color;
+        changeSet |= STATE_CHANGED_COLOR;
+    }
 }
 
 inline void RenderStateBlock::ResetColor()
 {
-	color.r = color.g = color.b = color.a = 1.0f;
-	changeSet |= STATE_CHANGED_COLOR;
+    if ((color.r != 1.0f) || (color.g != 1.0f) || (color.b != 1.0f) || (color.a != 1.0f))
+    {
+        color.r = color.g = color.b = color.a = 1.0f;
+        changeSet |= STATE_CHANGED_COLOR;
+    }
 }
 
 
@@ -357,30 +366,43 @@ inline const Color & RenderStateBlock::GetColor() const
 
 inline void RenderStateBlock::SetBlendMode(eBlendMode _sourceFactor, eBlendMode _destFactor)
 {
-    sourceFactor = _sourceFactor;
-    destFactor = _destFactor;
-    changeSet |= STATE_CHANGED_SRC_BLEND | STATE_CHANGED_DEST_BLEND;
+    if ((sourceFactor != _sourceFactor) || (destFactor != _destFactor))
+    {       
+        sourceFactor = _sourceFactor;
+        destFactor = _destFactor;
+        changeSet |= STATE_CHANGED_SRC_BLEND | STATE_CHANGED_DEST_BLEND;
+    }
 }
     
 // SHADER
 inline void RenderStateBlock::SetShader(Shader * _shader)
 {
-    shader = _shader;
-    changeSet |= STATE_CHANGED_SHADER;
+    if (shader != _shader)
+    {
+        shader = _shader;
+        changeSet |= STATE_CHANGED_SHADER;
+    }
 }
 
 // CULL MODE
 inline void RenderStateBlock::SetCullMode(eCull _cullMode)
 {
-    cullMode = _cullMode;
-    changeSet |= STATE_CHANGED_CULLMODE;
+    if (cullMode != _cullMode)
+    {   
+        cullMode = _cullMode;
+        changeSet |= STATE_CHANGED_CULLMODE;
+    }
 }
 
 inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
 {
-    alphaFunc = func;
-    alphaFuncCmpValue = (uint8)(cmpValue * 255.0f);
-    changeSet |= STATE_CHANGED_ALPHA_FUNC;
+    uint8 newCmpValue = (uint8)(cmpValue * 255.0f);
+    if ((alphaFunc != func) || (alphaFuncCmpValue != newCmpValue))
+    {
+        alphaFunc = func;
+        alphaFuncCmpValue = newCmpValue;
+        changeSet |= STATE_CHANGED_ALPHA_FUNC;
+    }
 }
     
 inline eBlendMode RenderStateBlock::GetSrcBlend()
@@ -396,8 +418,11 @@ inline eBlendMode RenderStateBlock::GetDestBlend()
 // STATE_TEXTURE
 inline void RenderStateBlock::SetTexture(Texture *texture, uint32 textureLevel)
 {
-    currentTexture[textureLevel] = texture;
-    changeSet |= (STATE_CHANGED_TEXTURE0 << textureLevel);
+    if (currentTexture[textureLevel] != texture)
+    {
+        currentTexture[textureLevel] = texture;
+        changeSet |= (STATE_CHANGED_TEXTURE0 << textureLevel);
+    }
 }
 
 inline Texture * RenderStateBlock::GetTexture(uint32 textureLevel)
