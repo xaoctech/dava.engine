@@ -269,6 +269,7 @@ public:
     // STATE_COLOR
     inline void SetColor(float32 _r, float32 _g, float32 _b, float32 _a);
     inline void SetColor(const Color & _color);
+	inline void ResetColor();
     inline const Color & GetColor() const;
     
     // STATE_BLEND_ENABLED
@@ -338,10 +339,17 @@ inline void RenderStateBlock::SetColor(float32 _r, float32 _g, float32 _b, float
 
 inline void RenderStateBlock::SetColor(const Color & _color)
 {
-    color = _color;
-    changeSet |= STATE_CHANGED_COLOR;
+	color = _color;
+	changeSet |= STATE_CHANGED_COLOR;
 }
-    
+
+inline void RenderStateBlock::ResetColor()
+{
+	color.r = color.g = color.b = color.a = 1.0f;
+	changeSet |= STATE_CHANGED_COLOR;
+}
+
+
 inline const Color & RenderStateBlock::GetColor() const
 {
     return color;
