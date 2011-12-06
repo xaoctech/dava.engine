@@ -54,6 +54,9 @@ protected:
 	virtual ~GameObjectManager();
 	
 	Sprite::DrawState drawState;
+
+    Vector2 cameraPosition;
+    Vector2 cameraScale;
 public:
 	static GameObjectManager * Create();
 	
@@ -100,10 +103,9 @@ public:
 	
 	
 	void RecalcObjectsHierarchy();
+    void RecalcObjectHierarchy(GameObject *object) const;
 	
 protected:
-	Vector3 cameraPosition;
-	
 	void RealAddObject(GameObject * _object);
 	
 	void ChangeObjectPriority(GameObject * _object);
