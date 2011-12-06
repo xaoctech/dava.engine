@@ -399,6 +399,8 @@ void RenderManager::Release()
 	D3DSafeRelease(direct3D);
 
 	Logger::Debug("[RenderManager::Release] successfull");
+
+	Singleton<RenderManager>::Release();
 }
 
 void RenderManager::OnDeviceLost()
