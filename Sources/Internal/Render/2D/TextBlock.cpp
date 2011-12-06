@@ -257,7 +257,7 @@ void TextBlock::Prepare()
                 {
                     Size2i textSizePoints;
                     
-                    int32 length = text.length();
+                    int32 length = (int32)text.length();
                     for(int32 i = length - 1; i > 0; --i)
                     {
                         pointsStr.clear();

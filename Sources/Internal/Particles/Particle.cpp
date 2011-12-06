@@ -54,7 +54,7 @@ bool Particle::Update(float32 timeElapsed)
 
 	position += velocity * timeElapsed * velocityOverLife;
 	angle += spin * timeElapsed * spinOverLife;
-    int32 n = forces.size();
+    int32 n = (int32)forces.size();
     for(int i = 0; i < n; i++)
         velocity += forces[i] * forcesOverLife[i] * timeElapsed;
 	return true;

@@ -100,7 +100,7 @@ void SpriteBasicsScreen::Input(UIEvent * touch)
 	{
 		//Core::Instance()->ToggleFullscreen();
         
-        UIScreenManager::Instance()->SetScreen(SCREEN_PARTICLE_TEST, holeTransition);
+        //UIScreenManager::Instance()->SetScreen(SCREEN_PARTICLE_TEST, holeTransition);
     }
 }  
 
@@ -218,20 +218,6 @@ void SpriteBasicsScreen::Draw(const UIGeometricData &geometricData)
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 
-    
-	/*
-	spriteFont->SetPosition(50, 50);
-	spriteFont->SetFrame(32);
-	spriteFont->Draw();
-	
-	spriteFont->SetPosition(65, 50);
-	spriteFont->SetFrame(33);
-	spriteFont->Draw();
-
-	spriteFont->SetPosition(85, 50);
-	spriteFont->SetFrame(34 );
-	spriteFont->Draw();
-	 */
 	
 	WideString s = L"Super mega font number #1";
 	Size2i size = graphicsFont->GetStringSize(s);
@@ -239,7 +225,7 @@ void SpriteBasicsScreen::Draw(const UIGeometricData &geometricData)
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	RenderHelper::Instance()->DrawRect(Rect(10.f, 200.f, size.dx, size.dy));
 	
-	RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
+    RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
 	RenderHelper::Instance()->DrawLine(Vector2(10, 200), 
 										Vector2(10 + size.dx, 200));
 	graphicsFont->DrawString(10, 200, L"Super mega font number #1");

@@ -243,8 +243,8 @@ bool File::WriteLine(const String & string)
 	uint32 written = 0;
 	const char * str = string.c_str();
 	const char * endLine = "\r\n";
-	uint32 endLength = strlen(endLine);
-	uint32 strLength = string.length();
+	uint32 endLength = (uint32)strlen(endLine);
+	uint32 strLength = (uint32)string.length();
 
 	written += Write(str, strLength);
 	written += Write(endLine, endLength);

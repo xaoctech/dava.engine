@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/libpng/include;./../../Libs/glew/include;&quot;$(DXSDK_DIR)/include&quot;;&quot;C:\Program Files\OpenAL 1.1 SDK\include&quot;"
+				AdditionalIncludeDirectories="./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/libpng/include;./../../Libs/glew/include;./../../Libs/freetype/include;&quot;$(DXSDK_DIR)/include&quot;;&quot;C:\Program Files\OpenAL 1.1 SDK\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/VERBOSE:LIB  "
-				AdditionalDependencies="freetype2312MT_D.lib libpngd.lib zlibd.lib opengl32.lib glew32.lib d3d9.lib dxerr.lib libogg_static_d.lib libvorbis_static_d.lib libvorbisfile_static_d.lib OpenAL32.lib"
+				AdditionalDependencies="freetype246MT_D.lib libpngd.lib zlibd.lib opengl32.lib glew32.lib d3d9.lib dxerr.lib libogg_static_d.lib libvorbis_static_d.lib libvorbisfile_static_d.lib OpenAL32.lib"
 				OutputFile="$(ProjectDir)\$(ConfigurationName)\$(ProjectName).lib"
 				AdditionalLibraryDirectories="./../../Libs/freetype/lib;./../../Libs/libpng/lib;./../../Libs/glew/lib;&quot;$(DXSDK_DIR)/lib/x86&quot;;./../../Libs/oggvorbis/lib/;&quot;C:\Program Files\OpenAL 1.1 SDK\libs\Win32&quot;"
 			/>
@@ -107,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/libpng/include;./../../Libs/glew/include;&quot;$(DXSDK_DIR)/include&quot;;&quot;C:\Program Files\OpenAL 1.1 SDK\include&quot;"
+				AdditionalIncludeDirectories="./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/libpng/include;./../../Libs/glew/include;./../../Libs/freetype/include;&quot;$(DXSDK_DIR)/include&quot;;&quot;C:\Program Files\OpenAL 1.1 SDK\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -126,7 +126,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="freetype2312MT.lib libpng.lib zlib.lib opengl32.lib glew32.lib d3d9.lib dxerr.lib libogg_static.lib libvorbis_static.lib libvorbisfile_static.lib openal32.lib"
+				AdditionalDependencies="freetype246MT.lib libpng.lib zlib.lib opengl32.lib glew32.lib d3d9.lib dxerr.lib libogg_static.lib libvorbis_static.lib libvorbisfile_static.lib openal32.lib"
 				OutputFile="$(ProjectDir)\$(ConfigurationName)\$(ProjectName).lib"
 				AdditionalLibraryDirectories="./../../Libs/freetype/lib;./../../Libs/libpng/lib;./../../Libs/glew/lib;&quot;$(DXSDK_DIR)/lib/x86&quot;;./../../Libs/oggvorbis/lib/;&quot;C:\Program Files\OpenAL 1.1 SDK\libs\Win32&quot;"
 			/>
@@ -1353,6 +1353,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Sources\Internal\Render\Material.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Sources\Internal\Render\Material.h"
 					>
 				</File>
@@ -1501,6 +1505,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Sources\Internal\Render\UberShader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Render\UberShader.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Sources\Internal\Render\VertexBuffer.h"
 					>
 				</File>
@@ -1608,6 +1620,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp"
 						>
 					</File>
@@ -1689,6 +1709,14 @@
 				Name="Scene3D"
 				>
 				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\BillboardNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\BillboardNode.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Sources\Internal\Scene3D\BoneNode.cpp"
 					>
 				</File>
@@ -1702,6 +1730,22 @@
 				</File>
 				<File
 					RelativePath="..\..\Sources\Internal\Scene3D\Camera.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\Frustum.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\Frustum.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\LandscapeNode.h"
 					>
 				</File>
 				<File
@@ -1733,7 +1777,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\Sources\Internal\Scene3D\Scene.h"
+					RelativePath="..\..\Sources\Internal\Scene3D\scene.h"
 					>
 				</File>
 				<File
@@ -1802,6 +1846,10 @@
 				</File>
 				<File
 					RelativePath="..\..\Sources\Internal\Scene3D\SkeletonNode.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Sources\Internal\Scene3D\SpriteNode.cpp"
 					>
 				</File>
 				<File

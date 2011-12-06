@@ -108,8 +108,6 @@ void ColladaScene::ExportScene(FCDSceneNode * fcdNode /* = 0 */, ColladaSceneNod
 
 void ColladaScene::Render()
 {
-	SystemTimer::Instance()->Start();
-
 	SetupDefaultLights();
 
 	ColladaLightState state;

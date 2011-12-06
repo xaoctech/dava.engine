@@ -30,14 +30,17 @@
 
 #include "EditMatrixControl.h"
 #include "Utils/StringFormat.h"
+#include "Utils/Utils.h"
 
 namespace DAVA 
 {
 
 EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
     :   UIControl(_rect)
-    ,   matrix(0)
     ,   readOnly(_readOnly)
+    ,   editI(-1)
+    ,   editJ(-1)
+
 {
     //UIYamlLoader::Load(this, "~res:/Screens/Panels/camera_panel.yaml");
     //UIText
@@ -66,13 +69,15 @@ EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
             AddControl(matrixButtons[i][j]);
         }
     
-    textFieldBackground = new UIControl(_rect);
-    textFieldBackground->GetBackground()->SetColor(Color(0.0, 0.0, 0.0, 0.5));
+    textFieldBackground = new UIControl(Rect(0, 0, _rect.dx, _rect.dy));
+    textFieldBackground->GetBackground()->SetColor(Color(0.0, 0.0, 0.0, 0.7));
+    textFieldBackground->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     textFieldBackground->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditMatrixControl::OnEditClosePressed));
     //textFieldBackground->SetInputEnabled(false);
     
     textField = new UITextField(Rect(spacing, spacing, buttonWidth * 4.0f, buttonHeight));
     textField->SetFont(f);
+    textField->SetDelegate(this);
 
     SafeRelease(f);
 }
@@ -86,11 +91,31 @@ EditMatrixControl::~EditMatrixControl()
             SafeRelease(matrixButtons[i][j]);
         }
 }
-         
+    
+void EditMatrixControl::GetIndexByButton(BaseObject * button, int32 & io, int32 & jo)
+{
+    io = jo = -1;
+    
+    for (int32 i = 0; i < 4; ++i)
+        for (int32 j = 0; j < 4; ++j)
+            if (button == matrixButtons[i][j])
+            {
+                io = i;
+                jo = j;
+                return;
+            }
+}
+
 void EditMatrixControl::OnEditButtonPressed(BaseObject * obj, void *, void *)
 {
     if (!readOnly)
     {
+        GetIndexByButton(obj, editI, editJ);
+        if ((editI != -1) && (editJ != -1))
+        {
+            textField->SetText(Format(L"%f", matrix._data[editI][editJ]));
+        }
+        
         AddControl(textFieldBackground);
         AddControl(textField);
     }
@@ -105,14 +130,46 @@ void EditMatrixControl::OnEditClosePressed(BaseObject * obj, void *, void *)
     }
 }
 
-void EditMatrixControl::SetMatrix(Matrix4 * _matrix)
+void EditMatrixControl::SetMatrix(const Matrix4 & _matrix)
 {
     matrix = _matrix;
     for (int32 i = 0; i < 4; ++i)
         for (int32 j = 0; j < 4; ++j)
         {
-            matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, Format(L"%f", matrix->_data[i][j]));
+            matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, Format(L"%f", matrix._data[i][j]));
         }
 }
+    
+const Matrix4 & EditMatrixControl::GetMatrix() const
+{
+    return matrix;
+}
+    
+void EditMatrixControl::TextFieldShouldReturn(UITextField * textField)
+{
+    if (textFieldBackground->GetParent())
+    {
+        String value = WStringToString(textField->GetText());
+        if ((editI != -1) && (editJ != -1))
+        {
+            matrix._data[editI][editJ] = (float32)atof(value.c_str());
+            editI = editJ = -1;
+        }
+        
+        RemoveControl(textFieldBackground);
+        RemoveControl(textField);
+        
+        OnMatrixChanged(this, 0);
+        
+        SetMatrix(matrix);
+    }
+}
+    
+bool EditMatrixControl::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
+{
+    
+    return true;
+}
+
     
 };
