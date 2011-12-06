@@ -263,6 +263,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Classes\LandscapeTestScreen.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Classes\LandscapeTestScreen.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Classes\MainMenuScreen.cpp"
 				>
 			</File>

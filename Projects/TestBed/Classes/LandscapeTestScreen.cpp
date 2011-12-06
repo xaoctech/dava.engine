@@ -57,12 +57,20 @@ void LandscapeTestScreen::LoadResources()
     
     //node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
 #if 1
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+	node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_TEXTURE, "~res:/Landscape/hmp2_1.png", box);
     
     Texture::EnableMipmapGeneration();
     node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+    //node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
     Texture::DisableMipmapGeneration();
+
+	
+//     node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+//     
+//     Texture::EnableMipmapGeneration();
+//     node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
+//     node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+//     Texture::DisableMipmapGeneration();
 #else
     node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
     
