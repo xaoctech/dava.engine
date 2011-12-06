@@ -99,6 +99,7 @@ void UIScreenManager::SetScreen(int screenId, UIScreenTransition * transition)
 
 void UIScreenManager::RegisterScreen(int screenId, UIScreen * screen)
 {
+	DVASSERT(screen != 0);
 	screens[screenId] = Screen(Screen::TYPE_SCREEN, SafeRetain(screen));
 }
 	
