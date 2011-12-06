@@ -90,7 +90,7 @@ struct	PngImageRawData
 static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 {
 	PngImageRawData * self = (PngImageRawData*)pngPtr->io_ptr;
-	self->file->Read(data, size);
+	self->file->Read(data, (uint32)size);
 }
 
 int LibPngWrapper::ReadPngFile(const char *file, int32 *pwidth, int32 *pheight, uint8 **image_data_ptr)

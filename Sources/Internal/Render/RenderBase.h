@@ -218,10 +218,12 @@ enum eCull
         GL_FRONT_AND_BACK,
     };
 #elif defined(__DAVAENGINE_DIRECTX9__) 
-//    static const int32 CULL_FACE_MAP[CULL_COUNT] = 
-//    {
-//        CULL
-//    }
+   static const int32 CULL_FACE_MAP[CULL_COUNT] = 
+   {
+       D3DCULL_CCW,
+	   D3DCULL_CW,
+	   D3DCULL_NONE,
+   };
 #endif
     
 enum ePrimitiveType

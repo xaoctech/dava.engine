@@ -32,151 +32,18 @@
 #include "Render/Shader.h"
 #include "Platform/Thread.h"
 
+
 namespace DAVA
 {
 
-/*void RenderStateBlock::RegisterStateUInt32(uint32 state, UpdateVarFunc func)
-{
-    uint32 idx = CountLeadingZeros(state);
-    stateType[idx] = STATE_TYPE_UINT32;
-    varUpdateFuncArray[idx] = func;
-}
-
-void RenderStateBlock::RegisterStateColor(uint32 state, UpdateVarFuncColor func)
-{
-    uint32 idx = CountLeadingZeros(state);
-    stateType[idx] = STATE_TYPE_COLOR;
-    varUpdateFuncArrayColor[idx] = func;
-}
-    
-void RenderStateBlock::Init(Core::eRenderer renderer)
-{
-    isDebug = true;
-    activeStateSet = 0;
-    currentStateSet = 0;
-    
-    switch (renderer) {
-        case Core::RENDERER_OPENGL:
-        case Core::RENDERER_OPENGL_ES_1_0:
-            RegisterStateUInt32(STATE_ENABLE_TEXTURING, &RenderStateBlock::UpdateEnableTexturingGL);
-
-        case Core::RENDERER_OPENGL_ES_2_0:
-            RegisterStateUInt32(STATE_BLEND, &RenderStateBlock::UpdateBlendGL);
-            RegisterStateUInt32(STATE_BLENDFUNC, &RenderStateBlock::UpdateBlendFuncGL);
-            break;
-        case Core::RENDERER_DIRECTX9:
-            RegisterStateUInt32(STATE_BLEND, &RenderStateBlock::UpdateBlendDX);
-            RegisterStateUInt32(STATE_BLENDFUNC, &RenderStateBlock::UpdateBlendFuncDX);
-            RegisterStateUInt32(STATE_ENABLE_TEXTURING, &RenderStateBlock::UpdateEnableTexturingDX);
-            break;
-            
-        default:
-            break;
-    }
-    
-}
-    
-#if defined(__DAVAENGINE_OPENGL__)
-void RenderStateBlock::UpdateBlendGL(uint32 newValue, uint32 oldValue)
-{
-    if (newValue)glEnable(GL_BLEND);
-    else glDisable(GL_BLEND);
-}
-    
-static GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
-{
-    0,	// not a valid blend mode
-    GL_ZERO,
-    GL_ONE,
-    GL_DST_COLOR,
-    GL_ONE_MINUS_DST_COLOR,
-    GL_SRC_ALPHA,
-    GL_ONE_MINUS_SRC_ALPHA,
-    GL_DST_ALPHA,
-    GL_ONE_MINUS_DST_ALPHA,
-    GL_SRC_ALPHA_SATURATE,
-};
-
-
-void RenderStateBlock::UpdateBlendFuncGL(uint32 newValue, uint32 oldValue)
-{
-    uint32 src = newValue & 0xff;
-    uint32 dest = (newValue >> 8) & 0xff;
-    glBlendFunc(BLEND_MODE_MAP[src], BLEND_MODE_MAP[dest]);
-}
-
-#endif 
-
 #if defined(__DAVAENGINE_DIRECTX9__)
-void RenderStateBlock::UpdateBlendDX(uint32 newValue, uint32 oldValue)
-{
-//    direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, newValue)
-}
-    
+IDirect3DDevice9 * RenderStateBlock::direct3DDevice = 0; 
+#endif
 
-static GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
-{
-    0,	// not a valid blend mode
-    D3DBLEND_ZERO,
-    D3DBLEND_ONE,
-    D3DBLEND_DESTCOLOR,
-    D3DBLEND_INVDESTCOLOR,
-    D3DBLEND_SRCALPHA,
-    D3DBLEND_INVSRCALPHA,
-    D3DBLEND_DESTALPHA,
-    D3DBLEND_INVDESTALPHA,
-    D3DBLEND_SRCALPHASAT,
-};
-
-void RenderStateBlock::UpdateBlendFuncDX(uint32 newValue, uint32 oldValue)
-{
-    uint32 newSFactor = newValue & 0xff;
-    uint32 newDFactor = (newValue >> 8) & 0xff;
-
-    uint32 oldSFactor = oldValue & 0xff;
-    uint32 oldDFactor = (oldValue >> 8) & 0xff;
-    
-//     if(newSFactor != oldSFactor )
-//         RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_SRCBLEND, BLEND_MODE_MAP[newSFactor]));
-//     if (newDFactor != oldDFactor)
-//         RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_DESTBLEND, BLEND_MODE_MAP[newDFactor]));
-
-}
-#endif 
-
-void RenderStateBlock::Flush()
-{
-    uint32 changeSet = activeStateSet ^ currentStateSet;
-    if (changeSet != 0)
-    {
-        for (uint32 k = 0; k < STATE_COUNT; ++k)
-        {
-            if (((changeSet >> k) & 1) && (varValue[k] != currentRendererValue[k]))
-            {
-                if (stateType[k] == STATE_TYPE_UINT32)
-                {
-                    if (isDebug)Logger::Debug("Value %d changed on flush");
-                    (this->*varUpdateFuncArray[k])(varValue[k], currentRendererValue[k]);
-                    currentRendererValue[k] = varValue[k];
-                }else if (stateType[k] == STATE_TYPE_COLOR)
-                {
-                    if (isDebug)Logger::Debug("ColorValue %d changed on flush");
-                    (this->*varUpdateFuncArrayColor[k])(varValueColor[k], currentRendererValueColor[k]);
-                    currentRendererValueColor[k] = varValueColor[k];
-                }
-            }
-        }
-    }
-    activeStateSet = currentStateSet;
-}
-    
-
-*/
-    
 RenderStateBlock::RenderStateBlock(Core::eRenderer _renderer)
     : renderer(_renderer)
 {
-    Reset(false);
+	Reset(false);
 }
 
 RenderStateBlock::~RenderStateBlock()
@@ -320,9 +187,10 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
             SetTextureLevelInHW(3);
             previousState->currentTexture[3] = currentTexture[3];
         }
-        
+
+#if defined(__DAVAENGINE_OPENGL__)
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
-        
+#endif
         if (changeSet & STATE_CHANGED_SHADER)
         {
             if (shader != previousState->shader)
@@ -447,6 +315,77 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
     
 #elif defined(__DAVAENGINE_DIRECTX9__)
     
+inline void RenderStateBlock::SetColorInHW()
+{
+	//if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+	//	RENDER_VERIFY(glColor4f(color.r * color.a, color.g * color.a, color.b * color.a, color.a));
+}
+
+inline void RenderStateBlock::SetEnableBlendingInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, (state & STATE_BLEND) != 0));
+}
+
+inline void RenderStateBlock::SetCullInHW()
+{
+	if (!(state & STATE_CULL))
+	{
+		RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
+	}
+}
+
+inline void RenderStateBlock::SetCullModeInHW()
+{
+	if ((state & STATE_CULL))
+	{
+		RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CULLMODE, CULL_FACE_MAP[cullMode]));
+	}
+}
+
+
+inline void RenderStateBlock::SetBlendModeInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_SRCBLEND, BLEND_MODE_MAP[sourceFactor]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_DESTBLEND, BLEND_MODE_MAP[destFactor]));
+}
+
+inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
+{
+	IDirect3DTexture9 * texture = 0;
+	if(currentTexture[textureLevel])
+		texture = currentTexture[textureLevel]->id;
+
+	if (state & (STATE_TEXTURE0 << textureLevel))
+	{
+		RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE ));
+		RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE ));
+	}else 
+	{
+		RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG2 ));
+		RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG2));
+	}
+	RENDER_VERIFY(direct3DDevice->SetTexture(textureLevel, texture));
+}
+inline void RenderStateBlock::SetDepthTestInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ZENABLE, (state & STATE_DEPTH_TEST) != 0));
+}
+
+inline void RenderStateBlock::SetDepthWriteInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ZWRITEENABLE , (state & STATE_DEPTH_WRITE) !=0));
+}
+
+inline void RenderStateBlock::SetAlphaTestInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, (state & STATE_ALPHA_TEST) != 0));
+}
+
+inline void RenderStateBlock::SetAlphaTestFuncInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAFUNC, ALPHA_TEST_MODE_MAP[alphaFunc]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAREF , alphaFuncCmpValue));
+}
     
 #endif 
     
