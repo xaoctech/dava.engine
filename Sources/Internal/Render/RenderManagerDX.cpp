@@ -355,6 +355,13 @@ void RenderManager::SetupDefaultDeviceState()
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
 
 	identity.Identity();
+    
+#if defined(__DAVAENGINE_DIRECTX9__)
+	currentState.direct3DDevice = GetD3DDevice();
+#endif
+    hardwareState.Reset(false);
+	currentState.Reset(true);
+
 
 	if (!vertexBuffer)
 	{
