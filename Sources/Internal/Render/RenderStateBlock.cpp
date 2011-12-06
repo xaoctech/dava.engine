@@ -69,6 +69,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         currentTexture[idx] = 0;
     alphaFunc = CMP_ALWAYS;
     shader = 0;
+    cullMode = CULL_BACK;
     
     if (doHardwareReset)
     {
