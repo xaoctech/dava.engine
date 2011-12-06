@@ -64,7 +64,7 @@ RenderDataObject::RenderDataObject()
 
 RenderDataObject::~RenderDataObject()
 {
-    uint32 size = streamArray.size();
+    uint32 size = (uint32)streamArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
         SafeRelease(streamArray[k]);

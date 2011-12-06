@@ -237,7 +237,7 @@ int32 Scene::GetCameraCount()
     
 int32 Scene::GetLodLayersCount()
 {
-    return lodLayers.size();
+    return (int32)lodLayers.size();
 }
 
 float32 Scene::GetLodLayerNear(int32 layerNum)

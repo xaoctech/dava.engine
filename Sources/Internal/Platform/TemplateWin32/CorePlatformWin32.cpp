@@ -50,6 +50,7 @@ namespace DAVA
 		{
 			core->Run();
 			core->ReleaseSingletons();
+			
 #ifdef ENABLE_MEMORY_MANAGER
 			if (DAVA::MemoryManager::Instance() != 0)
 			{
@@ -308,8 +309,6 @@ namespace DAVA
 
 		Core::Instance()->SystemAppFinished();
 		FrameworkWillTerminate();
-
-		RenderManager::Instance()->Release();
 	}
 
 /*	void CoreWin32Platform::InitOpenGL()

@@ -144,6 +144,7 @@ void Core::ReleaseSingletons()
 	Logger::Debug("[Core::Release] successfull");
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
+	RenderManager::Instance()->Release();
 }
 
 void Core::SetOptions(KeyedArchive * archiveOfOptions)

@@ -355,6 +355,13 @@ void RenderManager::SetupDefaultDeviceState()
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
 
 	identity.Identity();
+    
+#if defined(__DAVAENGINE_DIRECTX9__)
+	currentState.direct3DDevice = GetD3DDevice();
+#endif
+    hardwareState.Reset(false);
+	currentState.Reset(true);
+
 
 	if (!vertexBuffer)
 	{
@@ -392,6 +399,8 @@ void RenderManager::Release()
 	D3DSafeRelease(direct3D);
 
 	Logger::Debug("[RenderManager::Release] successfull");
+
+	Singleton<RenderManager>::Release();
 }
 
 void RenderManager::OnDeviceLost()
@@ -594,37 +603,17 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
 void RenderManager::SetBlendMode(eBlendMode sfactor, eBlendMode dfactor)
 {
-	newSFactor = sfactor;
-	newDFactor = dfactor;
+	currentState.SetBlendMode(sfactor, dfactor);
 }
 	
 eBlendMode RenderManager::GetSrcBlend()
 {
-	return newSFactor;
+	return currentState.GetSrcBlend();
 }
 
 eBlendMode RenderManager::GetDestBlend()
 {
-	return newDFactor;
-}
-
-void RenderManager::EnableBlending(bool isEnabled)
-{
-	if((int32)isEnabled != oldBlendingEnabled)
-	{
-		RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, isEnabled));
-		oldBlendingEnabled = isEnabled;
-	}
-}
-
-void RenderManager::EnableDepthTest(bool isEnabled)
-{
-	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ZENABLE, isEnabled));
-}
-    
-void RenderManager::EnableDepthWrite(bool isEnabled)
-{
-	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ZWRITEENABLE , isEnabled));
+	return currentState.GetDestBlend();
 }
 
 /*
@@ -649,60 +638,10 @@ void RenderManager::EnableDepthWrite(bool isEnabled)
 
 void RenderManager::FlushState()
 {
-	if(newSFactor != oldSFactor || newDFactor != oldDFactor)
-	{
-		if(newSFactor != oldSFactor )
-			RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_SRCBLEND, BLEND_MODE_MAP[newSFactor]));
-		if (newDFactor != oldDFactor)
-			RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_DESTBLEND, BLEND_MODE_MAP[newDFactor]));
-		
-		oldSFactor = newSFactor;
-		oldDFactor = newDFactor;
-	}
-	if(oldColor.r != newColor.r || oldColor.g != newColor.g || oldColor.b != newColor.b || oldColor.a != newColor.a)
-	{
-		// TODO: FIX COLORS & RenderEffects
-		oldColor = newColor;
-	}
-	if(newTextureEnabled != oldTextureEnabled)
-	{
-		if(newTextureEnabled)
-		{
-			//direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+   	PrepareRealMatrix();
+	AttachRenderData(currentState.shader);
 
-
-			RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE ));
-			RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE ));
-
-	
-		}
-		else
-		{
-			RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG2 ));
-			RENDER_VERIFY(direct3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG2));
-			//direct3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-		}
-		oldTextureEnabled = newTextureEnabled;
-	}
-
-    
-    if (alphaTestEnabled != oldAlphaTestEnabled)
-    {
-        DVASSERT("Implement alpha test functionality on DX9" && 0);
-    }
-    
-    
-	PrepareRealMatrix();
-
-    // TODO: when will be added shader support on DX
-    AttachRenderData(0);
-//    if (shader)
-//    {
-//        shader->Bind();
-//    }else
-//    {
-//        Shader::Unbind();
-//    }
+	currentState.Flush(&hardwareState);
 }
 
 void RenderManager::EnableVertexArray(bool isEnabled)
@@ -890,7 +829,8 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 	}
 	for(int k = 0; k < maxIndex; ++k)
 	{
-		dataPtr[k].color = D3DCOLOR_COLORVALUE(oldColor.r * oldColor.a, oldColor.g * oldColor.a, oldColor.b * oldColor.a, oldColor.a);
+		dataPtr[k].color = D3DCOLOR_COLORVALUE(hardwareState.color.r * hardwareState.color.a, hardwareState.color.g * hardwareState.color.a, 
+			hardwareState.color.b * hardwareState.color.a, hardwareState.color.a);
 		dataPtr[k].u = 0;
 		dataPtr[k].v = 0;
 		// Logger::Debug("v:%f %f %f %f c: #%08x", oldR, oldG, oldB, oldA, dataPtr[k].color);
@@ -997,7 +937,7 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentTexture[0]->id);
+		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 	//if (type == PRIMITIVETYPE_TRIANGLESTRIP || type == PRIMITIVETYPE_TRIANGLEFAN || || type == PRIMITIVETYPE_TRIANGLEFAN))
 	{
@@ -1037,7 +977,9 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 				ptr += stride;
 			}
 		}
-        const uint32 oldColorD3D = D3DCOLOR_COLORVALUE(oldColor.r * oldColor.a, oldColor.g * oldColor.a, oldColor.b * oldColor.a, oldColor.a);
+        const uint32 oldColorD3D = D3DCOLOR_COLORVALUE(hardwareState.color.r * hardwareState.color.a, hardwareState.color.g * hardwareState.color.a, 
+			hardwareState.color.b * hardwareState.color.a, hardwareState.color.a);
+
 		for(int k = 0; k < count; ++k)
 		{
 			dataPtr[k].color = oldColorD3D;

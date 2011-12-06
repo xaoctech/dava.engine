@@ -105,7 +105,7 @@ SceneNode * SceneNode::GetChild(int32 index)
 
 int32 SceneNode::GetChildrenCount()
 {
-    return childs.size();
+    return (int32)childs.size();
 }
 
 void SceneNode::RemoveAllChildren()
@@ -383,15 +383,15 @@ String SceneNode::RecursiveBuildFullName(SceneNode * node, SceneNode * endNode)
 bool SceneNode::FindNodesByNamePart(const String &namePart, List<SceneNode *> &outNodeList)
 {
     bool isFind = false;
-    uint32 fp = name.find(namePart);
+    size_t fp = name.find(namePart);
     if (fp != String::npos) 
     {
         outNodeList.push_back(this);
         isFind = true;
     }
     
-    int32 sz = childs.size();
-    for (int i = 0; i < sz; i++) 
+    int32 sz = (int32)childs.size();
+    for (int32 i = 0; i < sz; i++) 
     {
         if (childs[i]->FindNodesByNamePart(namePart, outNodeList)) 
         {

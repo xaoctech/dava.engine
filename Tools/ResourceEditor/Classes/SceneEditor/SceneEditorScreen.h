@@ -92,12 +92,11 @@ public:
     
     // Node preview information
     SceneNode * selectedNode;
-    Matrix4 selectedNodeLocalTransform;
-    Matrix4 selectedNodeWorldTransform;
-
     PropertyPanel * activePropertyPanel;
     EditMatrixControl * localMatrixControl;
     EditMatrixControl * worldMatrixControl;
+    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
+
 
     UIStaticText * nodeName;
     UIStaticText * nodeCenter;

@@ -57,12 +57,20 @@ void LandscapeTestScreen::LoadResources()
     
     //node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
 #if 1
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+	node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_TEXTURE, "~res:/Landscape/hmp2_1.png", box);
     
     Texture::EnableMipmapGeneration();
     node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+    //node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
     Texture::DisableMipmapGeneration();
+
+	
+//     node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+//     
+//     Texture::EnableMipmapGeneration();
+//     node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
+//     node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+//     Texture::DisableMipmapGeneration();
 #else
     node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
     
@@ -76,6 +84,16 @@ void LandscapeTestScreen::LoadResources()
     node->SetName("landscapeNode");
     scene->AddNode(node);
     SafeRelease(node);
+    
+    Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
+    //sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
+    SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.1f, 0.1f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
+    spriteNode->SetName("testSpriteNode");
+    spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 10.0f, 0.0f)));
+    spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+    spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
+    scene->AddNode(spriteNode);
+
     
 //    SceneFile * file = new SceneFile();
 //    file->SetDebugLog(true);

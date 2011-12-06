@@ -91,7 +91,8 @@ void RenderManager::Release()
 
 bool RenderManager::ChangeDisplayMode(DisplayMode mode, bool isFullscreen)
 {
-
+	hardwareState.Reset(false);
+	currentState.Reset(true);
 	return true;
 }	
 	
@@ -312,22 +313,22 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
 void RenderManager::SetBlendMode(eBlendMode sfactor, eBlendMode dfactor)
 {
-	newSFactor = sfactor;
-	newDFactor = dfactor;
+	currentState.SetBlendMode(sfactor, dfactor);
 }
 	
 eBlendMode RenderManager::GetSrcBlend()
 {
-	return newSFactor;
+	return currentState.sourceFactor;
 }
 
 eBlendMode RenderManager::GetDestBlend()
 {
-	return newDFactor;
+	return currentState.destFactor;
 }
 
 
-void RenderManager::EnableBlending(bool isEnabled)
+/*
+ void RenderManager::EnableBlending(bool isEnabled)
 {
 	if((int32)isEnabled != oldBlendingEnabled)
 	{
@@ -340,52 +341,6 @@ void RenderManager::EnableBlending(bool isEnabled)
 			RENDER_VERIFY(glDisable(GL_BLEND));
 		}
 		oldBlendingEnabled = isEnabled;
-	}
-}
-void RenderManager::EnableVertexArray(bool isEnabled)
-{
-	if((int32)isEnabled != oldVertexArrayEnabled)
-	{
-		if(isEnabled)
-		{
-			RENDER_VERIFY(glEnableClientState(GL_VERTEX_ARRAY));
-		}
-		else
-		{
-			RENDER_VERIFY(glDisableClientState(GL_VERTEX_ARRAY));
-		}
-		oldVertexArrayEnabled = isEnabled;
-	}
-}
-void RenderManager::EnableTextureCoordArray(bool isEnabled)
-{
-	if((int32)isEnabled != oldTextureCoordArrayEnabled)
-	{
-		if(isEnabled)
-		{
-			RENDER_VERIFY(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
-		}
-		else
-		{
-			RENDER_VERIFY(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
-		}
-		oldTextureCoordArrayEnabled = isEnabled;
-	}
-}
-
-void RenderManager::EnableColorArray(bool isEnabled)
-{
-	if((int32)isEnabled != oldColorArrayEnabled)
-	{
-		if(isEnabled)
-		{
-			RENDER_VERIFY(glEnableClientState(GL_COLOR_ARRAY));
-		}
-		else
-		{
-			RENDER_VERIFY(glDisableClientState(GL_COLOR_ARRAY));
-		}
-		oldColorArrayEnabled = isEnabled;
 	}
 }
     
@@ -420,86 +375,62 @@ void RenderManager::EnableDepthWrite(bool isEnabled)
 		depthWriteEnabled = isEnabled;
 	}
 }
+*/
 
+void RenderManager::EnableVertexArray(bool isEnabled)
+{
+    if(isEnabled != oldVertexArrayEnabled)
+    {
+        if(isEnabled)
+        {
+            RENDER_VERIFY(glEnableClientState(GL_VERTEX_ARRAY));
+        }
+        else
+        {
+            RENDER_VERIFY(glDisableClientState(GL_VERTEX_ARRAY));
+        }
+        oldVertexArrayEnabled = isEnabled;
+    }
+}
+void RenderManager::EnableTextureCoordArray(bool isEnabled)
+{
+    if(isEnabled != oldTextureCoordArrayEnabled)
+    {
+        if(isEnabled)
+        {
+            RENDER_VERIFY(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
+        }
+        else
+        {
+            RENDER_VERIFY(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
+        }
+        oldTextureCoordArrayEnabled = isEnabled;
+    }
+}
 
+void RenderManager::EnableColorArray(bool isEnabled)
+{
+    if(isEnabled != oldColorArrayEnabled)
+    {
+        if(isEnabled)
+        {
+            RENDER_VERIFY(glEnableClientState(GL_COLOR_ARRAY));
+        }
+        else
+        {
+            RENDER_VERIFY(glDisableClientState(GL_COLOR_ARRAY));
+        }
+        oldColorArrayEnabled = isEnabled;
+    }
+}
+
+    
 void RenderManager::FlushState()
 {
-	if(newSFactor != oldSFactor || newDFactor != oldDFactor)
-	{
-		RENDER_VERIFY(glBlendFunc(BLEND_MODE_MAP[newSFactor], BLEND_MODE_MAP[newDFactor]));
-		oldSFactor = newSFactor;
-		oldDFactor = newDFactor;
-	}
-	if(oldColor != newColor)
-	{
-        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
-            RENDER_VERIFY(glColor4f(newColor.r * newColor.a, newColor.g * newColor.a, newColor.b * newColor.a, newColor.a));
-		oldColor = newColor;
-	}   
-	if(newTextureEnabled != oldTextureEnabled)
-	{
-        if (GetRenderer() != Core::RENDERER_OPENGL_ES_2_0)
-        {
-		if(newTextureEnabled)
-		{
-			RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
-		}
-		else
-		{
-			RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
-		}
-		oldTextureEnabled = newTextureEnabled;
-	}
-	}
-    
-    if (cullingEnabled != oldCullingEnabled)
-    {
-        if (cullingEnabled)
-        {
-            RENDER_VERIFY(glEnable(GL_CULL_FACE));
-            
-            if (cullFace != oldCullFace)
-            {
-                RENDER_VERIFY(glCullFace(CULL_FACE_MAP[cullFace]));
-            }
-            oldCullFace = cullFace;
-        }else
-        {
-            RENDER_VERIFY(glDisable(GL_CULL_FACE));
-        }
-        oldCullingEnabled = cullingEnabled;
-    }
-    
-    if ((renderer == Core::RENDERER_OPENGL) || (renderer == Core::RENDERER_OPENGL_ES_1_0))
-        if (alphaTestEnabled != oldAlphaTestEnabled)
-        {
-            if (alphaTestEnabled)
-            {
-                RENDER_VERIFY(glEnable(GL_ALPHA_TEST));
-            
-                // if alpha test enabled set alpha func values
-                if ((alphaFunc != oldAlphaFunc) || (alphaTestCmpValue != oldAlphaTestCmpValue))
-                {
-                    RENDER_VERIFY(glAlphaFunc(ALPHA_TEST_MODE_MAP[alphaFunc], alphaTestCmpValue) );
-                    oldAlphaFunc = alphaFunc;
-                    oldAlphaTestCmpValue = alphaTestCmpValue;
-                }
-            }else
-                RENDER_VERIFY(glDisable(GL_ALPHA_TEST));
-        
-            oldAlphaTestEnabled = alphaTestEnabled;
-        }
-	
 	PrepareRealMatrix();
+    AttachRenderData(currentState.shader);
     
-    AttachRenderData(shader);
-    if (shader)
-    {
-        shader->Bind();
-    }else
-    {
-        Shader::Unbind();
-    }
+    currentState.Flush(&hardwareState);
 }
 
 void RenderManager::SetTexCoordPointer(int size, eVertexDataType _typeIndex, int stride, const void *pointer)
@@ -542,7 +473,7 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentTexture[0]->id);
+		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 
     RENDER_VERIFY(glDrawArrays(mode, first, count));
@@ -586,7 +517,7 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 	
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentTexture[0]->id);
+		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 #if defined(__DAVAENGINE_IPHONE__)
 #if not defined(GL_UNSIGNED_INT)

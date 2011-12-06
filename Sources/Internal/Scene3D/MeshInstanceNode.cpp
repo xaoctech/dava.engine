@@ -259,8 +259,8 @@ void MeshInstanceNode::Draw()
     //glPushMatrix();
     //glMultMatrixf(worldTransform.data);
     
-    
-    uint32 meshesSize = currentLod->meshes.size();
+    uint32 meshesSize = (uint32)currentLod->meshes.size();
+
 	for (uint32 k = 0; k < meshesSize; ++k)
 	{
 		currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
@@ -268,8 +268,10 @@ void MeshInstanceNode::Draw()
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
-        RenderManager::Instance()->EnableDepthTest(false);
-		RenderManager::Instance()->EnableTexturing(false);
+        //RenderManager::PushState();
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_CULL); 
+//        RenderManager::Instance()->EnableDepthTest(false);
+//		RenderManager::Instance()->EnableTexturing(false);
 		RenderManager::Instance()->FlushState();
 		
 		
@@ -295,8 +297,9 @@ void MeshInstanceNode::Draw()
 			RenderHelper::Instance()->DrawLine(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 50.0f));
 		}
         
-        RenderManager::Instance()->EnableDepthTest(true);
-		RenderManager::Instance()->EnableTexturing(true);
+//      RenderManager::Instance()->EnableDepthTest(true);
+//		RenderManager::Instance()->EnableTexturing(true);
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	//glPopMatrix();

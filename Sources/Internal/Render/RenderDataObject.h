@@ -65,7 +65,7 @@ public:
     RenderDataStream * SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer);
     uint32 GetResultFormat();
 
-    uint32 GetStreamCount() { return streamArray.size(); };
+    uint32 GetStreamCount() { return (uint32)streamArray.size(); };
     RenderDataStream * GetStream(uint32 index) { return streamArray[index]; }
     
     /*
