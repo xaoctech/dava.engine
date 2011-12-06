@@ -251,10 +251,6 @@ public:
 	For Win32 function not implemented yet, and I do not have time to implement it right now, so left that for the future.
      
      */
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-	const Vector2 & GetMouseLocation();
-#endif
-
 	/*
 		\brief Function that return number of frame from the launch of the application
 		

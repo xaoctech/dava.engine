@@ -112,13 +112,12 @@ static MainWindowController * mainWindowController = nil;
  */
 namespace DAVA 
 {
-	static Vector2 mouseLocation = Vector2();
-	
-	const Vector2 & Core::GetMouseLocation()
+	Vector2 CoreMacOSPlatform::GetMousePosition()
 	{
 		NSPoint p = [mainWindowController->mainWindow mouseLocationOutsideOfEventStream]; //[NSEvent locationInWindow]; 
 		p = [mainWindowController->openGLView convertPointFromBase: p];
 
+        Vector2 mouseLocation;
 		mouseLocation.x = p.x;
 		mouseLocation.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
 		// mouseLocation.y = 
