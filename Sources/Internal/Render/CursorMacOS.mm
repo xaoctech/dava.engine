@@ -30,6 +30,7 @@
 #include "Base/BaseTypes.h"
 #include "Render/Cursor.h"
 #include "FileSystem/FileSystem.h"
+#include "CorePlatformMacOS.h"
 
 #if defined(__DAVAENGINE_MACOS__) 
 
@@ -92,14 +93,7 @@ void Cursor::HardwareSet()
     
 DAVA::Vector2 Cursor::GetPosition()
 {
-//    CGEventRef event = CGEventCreate(NULL);
-//    CGPoint pt = CGEventGetLocation(event);
-//    CFRelease(event);
-//    NSPoint pt = [NSEvent mouseLocation];
-
-    NSPoint pt = [NSEvent mouseLocation];
-
-    return Vector2(pt.x, pt.y);
+    return dynamic_cast<CoreMacOSPlatform *>(CoreMacOSPlatform::Instance())->GetMousePosition();
 }
     
 void Cursor::Show(bool _show)
