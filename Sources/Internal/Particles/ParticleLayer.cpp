@@ -457,17 +457,17 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 //		particle->force0 += forcesVariation[0]->GetValue(layerTime) * randCoeff;
 //	}
 	
-    int32 n = forces.size();
+    int32 n = (int32)forces.size();
     for(int i = 0; i < n; i++)
         if(forces[i].Get())
            particle->forces.push_back(forces[i]->GetValue(layerTime));
     
-    n = Min(particle->forces.size(), forcesVariation.size());
+    n = Min((int32)particle->forces.size(), (int32)forcesVariation.size());
     for(int i = 0; i < n; i++)
         if(forcesVariation[i].Get())
             particle->forces[i] += forcesVariation[i]->GetValue(layerTime) * randCoeff;
     
-    n = forcesOverLife.size();
+    n = (int32)forcesOverLife.size();
     for(int i = 0; i < n; i++)
         if(forcesOverLife[i].Get())
             particle->forcesOverLife.push_back(forcesOverLife[i]->GetValue(layerTime));
@@ -511,7 +511,7 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 		particle->frame = frame;
 	}
     
-    int32 n = forcesOverLife.size();
+    int32 n = (int32)forcesOverLife.size();
     for(int i = 0; i < n; i++)
         if(forcesOverLife[i].Get())
             particle->forcesOverLife[i] = forcesOverLife[i]->GetValue(t);

@@ -49,8 +49,8 @@ SpriteNode::SpriteNode(Scene * _scene, const String &pathToSprite, int32 _frame
         CreateMeshFromSprite(i);
     }
     renderData = new RenderDataObject();
-    renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, verts.data());
-    renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, textures.data());
+    renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
+    renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
 
 }
 
@@ -67,8 +67,8 @@ SpriteNode::SpriteNode(Scene * _scene, Sprite *spr, int32 _frame
         CreateMeshFromSprite(i);
     }
     renderData = new RenderDataObject();
-    renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, verts.data());
-    renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, textures.data());
+    renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
+    renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textures.front());
     type = TYPE_OBJECT;
 }
 

@@ -319,6 +319,11 @@ public:
         Compare states
      */
     bool IsEqual(RenderStateBlock * anotherState);
+
+
+#if defined(__DAVAENGINE_DIRECTX9__)
+	static IDirect3DDevice9 * direct3DDevice; 
+#endif
 };
 
 // Implementation of inline functions
@@ -366,7 +371,7 @@ inline void RenderStateBlock::SetCullMode(eCull _cullMode)
 inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
 {
     alphaFunc = func;
-    alphaFuncCmpValue = cmpValue;
+    alphaFuncCmpValue = (uint8)(cmpValue * 255.0f);
     changeSet |= STATE_CHANGED_ALPHA_FUNC;
 }
     

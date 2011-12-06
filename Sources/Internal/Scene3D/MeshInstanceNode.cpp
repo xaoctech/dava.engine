@@ -259,8 +259,8 @@ void MeshInstanceNode::Draw()
     //glPushMatrix();
     //glMultMatrixf(worldTransform.data);
     
-    
-    uint32 meshesSize = currentLod->meshes.size();
+    uint32 meshesSize = (uint32)currentLod->meshes.size();
+
 	for (uint32 k = 0; k < meshesSize; ++k)
 	{
 		currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);

@@ -160,8 +160,11 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
         TEXTURE_MUL_FLAT_COLOR= TextureMulColorEffect::Create(renderer);
     if (!TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST)
         TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = TextureMulColorAlphaTestEffect::Create(renderer);
-    
-    currentState.Reset(true);
+
+#if defined(__DAVAENGINE_DIRECTX9__)
+	currentState.direct3DDevice = GetD3DDevice();
+#endif
+	currentState.Reset(true);
     
 	frameBufferWidth = _frameBufferWidth;
 	frameBufferHeight = _frameBufferHeight;
@@ -279,7 +282,7 @@ void RenderManager::SetTexture(Texture *texture, uint32 textureLevel)
             }
             RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, texture->id));
 #elif defined(__DAVAENGINE_DIRECTX9__)
-            RENDER_VERIFY(GetD3DDevice()->SetTexture(textureLevel, texture->id));
+			RENDER_VERIFY(GetD3DDevice()->SetTexture(textureLevel, texture->id));
 #endif
 		}else
         {
