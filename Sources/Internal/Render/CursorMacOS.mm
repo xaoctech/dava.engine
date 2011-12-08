@@ -30,10 +30,9 @@
 #include "Base/BaseTypes.h"
 #include "Render/Cursor.h"
 #include "FileSystem/FileSystem.h"
-#include "CorePlatformMacOS.h"
 
 #if defined(__DAVAENGINE_MACOS__) 
-
+#include "CorePlatformMacOS.h"
 #include <Cocoa/Cocoa.h>
 
 namespace DAVA
