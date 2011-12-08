@@ -51,7 +51,7 @@ void UIFileTree::SetPath(const String & fullpath, const String & extensionsStrin
 	
 	
 	UIList::SetDelegate(this);
-	RefreshList();
+	Refresh();
 }
 
 	
@@ -137,7 +137,7 @@ void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 	if (delegate)
 		delegate->OnCellSelected(this, dynamic_cast<UIFileTreeCell*>(selectedCell));
 	
-	RefreshList();
+	Refresh();
 };
 	
 

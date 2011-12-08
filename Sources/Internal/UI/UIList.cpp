@@ -247,7 +247,7 @@ void UIList::FullRefresh()
 	scroll->SetElementSize((float32)sz);
 }
 
-void UIList::RefreshList()
+void UIList::Refresh()
 {
 	needRefresh = TRUE;
 }
@@ -608,7 +608,7 @@ void UIList::SetBorderMoveModifer(float newValue)
 void UIList::SystemWillAppear()
 {
 	UIControl::SystemWillAppear();	
-	RefreshList();
+	Refresh();
 }
 
 void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
