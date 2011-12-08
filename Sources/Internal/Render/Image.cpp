@@ -389,10 +389,8 @@ Image * Image::CreateFromFile(const String & pathName)
 Image * Image::CreateFromFile(const String & pathName)
 {
 	Image * davaImage = new Image();
-	davaImage->format = FORMAT_RGBA8888;
-	if (1 != LibPngWrapper::ReadPngFile(FileSystem::Instance()->SystemPathForFrameworkPath(pathName).c_str(), &davaImage->width, &davaImage->height, &davaImage->data))
+	if (1 != LibPngWrapper::ReadPngFile(FileSystem::Instance()->SystemPathForFrameworkPath(pathName).c_str(), davaImage))
 	{
-		//Logger::Error("Failed to open png file: %s", pathName.c_str());
 		SafeRelease(davaImage);
 		return 0;
 	}
