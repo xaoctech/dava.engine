@@ -78,9 +78,13 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         SetBlendModeInHW();
         SetDepthTestInHW();
         SetDepthWriteInHW();
-        SetAlphaTestInHW();
-        SetAlphaTestFuncInHW();
-
+        
+        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+        {
+            SetAlphaTestInHW();
+            SetAlphaTestFuncInHW();
+        }
+        
         for (int32 textureLevel = 0; textureLevel < MAX_TEXTURE_LEVELS; ++textureLevel)
         {
             SetTextureLevelInHW(textureLevel);
