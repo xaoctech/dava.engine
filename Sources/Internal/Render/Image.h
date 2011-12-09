@@ -97,7 +97,7 @@ public:
         static void ConvertFromRGBA8888toA8(const uint8 * sourceData, int32 width, int32 height, uint8 * destData, eAlphaAction action = ALPHA_ACTION_NONE);
         
      */
-private:
+
 	uint8 * data;
 	int32	width;
 	int32	height;
