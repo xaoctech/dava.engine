@@ -12,6 +12,7 @@
 		FE1B7D5113DF052300BA032C /* CameraController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE1B7D5013DF052300BA032C /* CameraController.cpp */; };
 		FE2246EE142F7AB300BC3B92 /* ColladaConvert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE2246EC142F7AB300BC3B92 /* ColladaConvert.cpp */; };
 		FE39246F1490C8FD00766CEC /* PanelSwitcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */; };
+		FE3924721492256000766CEC /* PropertyEditControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE3924701492256000766CEC /* PropertyEditControl.cpp */; };
 		FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */; };
 		FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */; };
 		FE54EBBB13A1190000912810 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE54EBBA13A1190000912810 /* libpng-static.a */; };
@@ -123,6 +124,8 @@
 		FE2246ED142F7AB300BC3B92 /* ColladaConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaConvert.h; path = Classes/Collada/ColladaConvert.h; sourceTree = "<group>"; };
 		FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanelSwitcher.cpp; sourceTree = "<group>"; };
 		FE39246E1490C8FD00766CEC /* PanelSwitcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelSwitcher.h; sourceTree = "<group>"; };
+		FE3924701492256000766CEC /* PropertyEditControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyEditControl.cpp; sourceTree = "<group>"; };
+		FE3924711492256000766CEC /* PropertyEditControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyEditControl.h; sourceTree = "<group>"; };
 		FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		FE54EBBA13A1190000912810 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9-0/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
@@ -331,6 +334,8 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				FE3924701492256000766CEC /* PropertyEditControl.cpp */,
+				FE3924711492256000766CEC /* PropertyEditControl.h */,
 				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
 				FE39246E1490C8FD00766CEC /* PanelSwitcher.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
@@ -590,6 +595,7 @@
 				FE2246EE142F7AB300BC3B92 /* ColladaConvert.cpp in Sources */,
 				FE1AE2E21455B51F00C6F712 /* VertexOctTree.cpp in Sources */,
 				FE39246F1490C8FD00766CEC /* PanelSwitcher.cpp in Sources */,
+				FE3924721492256000766CEC /* PropertyEditControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
