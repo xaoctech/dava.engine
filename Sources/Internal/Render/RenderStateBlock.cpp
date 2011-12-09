@@ -130,8 +130,9 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
         if (diffState & STATE_CULL)
             SetCullInHW();
         
-        if (diffState & STATE_ALPHA_TEST)
-            SetAlphaTestInHW();
+        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+            if (diffState & STATE_ALPHA_TEST)
+                SetAlphaTestInHW();
         
         changeSet |= diffState & (STATE_TEXTURE0 | STATE_TEXTURE1 | STATE_TEXTURE2 | STATE_TEXTURE3);
         
@@ -160,13 +161,15 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
                 SetCullModeInHW();
                 previousState->cullMode = cullMode;
             }
-        if (changeSet & STATE_CHANGED_ALPHA_FUNC)
-            if ((alphaFunc != previousState->alphaFunc) || (alphaFuncCmpValue != previousState->alphaFuncCmpValue))
-            {
-                SetAlphaTestFuncInHW();
-                previousState->alphaFunc = alphaFunc;
-                previousState->alphaFuncCmpValue = alphaFuncCmpValue;
-            }
+        
+        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+            if (changeSet & STATE_CHANGED_ALPHA_FUNC)
+                if ((alphaFunc != previousState->alphaFunc) || (alphaFuncCmpValue != previousState->alphaFuncCmpValue))
+                {
+                    SetAlphaTestFuncInHW();
+                    previousState->alphaFunc = alphaFunc;
+                    previousState->alphaFuncCmpValue = alphaFuncCmpValue;
+                }
         
         if (changeSet & STATE_CHANGED_TEXTURE0)
         {
