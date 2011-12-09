@@ -43,6 +43,7 @@
 #include "Render/RenderManager.h"
 #include "Render/2D/Sprite.h"
 #include "Render/Texture.h"
+#include "Render/Image.h"
 #include "FileSystem/FileSystem.h"
 
 using namespace DAVA;
@@ -93,40 +94,32 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 	self->file->Read(data, (uint32)size);
 }
 
-int LibPngWrapper::ReadPngFile(const char *file, int32 *pwidth, int32 *pheight, uint8 **image_data_ptr)
+int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 {
-	File         *infile;         /* PNG file pointer */
-	png_structp   png_ptr;        /* internally used by libpng */
-	png_infop     info_ptr;       /* user requested transforms */
+	File * infile;
+	png_structp png_ptr;
+	png_infop info_ptr;
 	
-	uint8 *image_data;      /* raw png image data */
-	char         sig[8];           /* PNG signature array */
-	/*char         **row_pointers;   */
+	uint8 *image_data;      
+	char sig[8];     
 	
-	int           bit_depth;
-	int           color_type;
+	int bit_depth;
+	int color_type;
 	
-	png_uint_32 width;            /* PNG image width in pixels */
-	png_uint_32 height;           /* PNG image height in pixels */
-	unsigned int rowbytes;         /* raw bytes at row n in image */
+	png_uint_32 width;
+	png_uint_32 height; 
+	unsigned int rowbytes;
 	
 	image_data = NULL;
 	int i;
 	png_bytepp row_pointers = NULL;
 	
-	/* Open the file. */
 	infile = File::Create(file, File::OPEN | File::READ);
 	if (!infile) 
 	{
 		return 0;
 	}
-	
-	
-	/*
-	 * 		13.3 readpng_init()
-	 */
-	
-	/* Check for the 8-byte signature */
+
 	infile->Read(sig, 8);
 	
 	if (!png_check_sig((unsigned char *) sig, 8)) 
@@ -134,10 +127,7 @@ int LibPngWrapper::ReadPngFile(const char *file, int32 *pwidth, int32 *pheight, 
 		infile->Release();
 		return 0;
 	}
-	
-	/* 
-	 * Set up the PNG structs 
-	 */
+
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr) 
 	{
@@ -153,11 +143,6 @@ int LibPngWrapper::ReadPngFile(const char *file, int32 *pwidth, int32 *pheight, 
 		return 4;    /* out of memory */
 	}
 	
-	
-	/*
-	 * block to handle libpng errors, 
-	 * then check whether the PNG file had a bKGD chunk
-	 */
 	if (setjmp(png_jmpbuf(png_ptr))) 
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
@@ -165,94 +150,59 @@ int LibPngWrapper::ReadPngFile(const char *file, int32 *pwidth, int32 *pheight, 
 		return 0;
 	}
 	
-	/* 
-	 * takes our file stream pointer (infile) and 
-	 * stores it in the png_ptr struct for later use.
-	 */
-	/* png_ptr->io_ptr = (png_voidp)infile;*/
-	//png_init_io(png_ptr, infile);
 	PngImageRawData	raw;
 	raw.file = infile;
 	png_set_read_fn (png_ptr, &raw, PngImageRead);
 	
-	/*
-	 * lets libpng know that we already checked the 8 
-	 * signature bytes, so it should not expect to find 
-	 * them at the current file pointer location
-	 */
 	png_set_sig_bytes(png_ptr, 8);
 	
-	/* Read the image info.*/
-	
-	/*
-	 * reads and processes not only the PNG file's IHDR chunk 
-	 * but also any other chunks up to the first IDAT 
-	 * (i.e., everything before the image data).
-	 */
-	
-	/* read all the info up to the image data  */
 	png_read_info(png_ptr, info_ptr);
 	
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, 
 				 &color_type, NULL, NULL, NULL);
 	
-	*pwidth = width;
-	*pheight = height;
+	image->width = width;
+	image->height = height;
 
-	// adding support of 1bit png images
-	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) 
+	//1 bit images -> 8 bit
+	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) 
 		png_set_gray_1_2_4_to_8(png_ptr);
 
-	if (bit_depth > 8) {
+	if(bit_depth > 8) 
+	{
+		DVASSERT_MSG(0, "bit_depth > 8");
 		png_set_strip_16(png_ptr);
 	}
-	if (color_type == PNG_COLOR_TYPE_GRAY ||
-		color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
-		png_set_gray_to_rgb(png_ptr);
+
+	image->format = Image::FORMAT_RGBA8888;
+	if(color_type == PNG_COLOR_TYPE_GRAY)
+	{
+		image->format = Image::FORMAT_A8;
+	}
+	else if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA) 
+	{
+		image->format = Image::FORMAT_A8;
+		png_set_strip_alpha(png_ptr);
+	}
+	else if(color_type == PNG_COLOR_TYPE_PALETTE) 
+	{
+		png_set_palette_to_rgb(png_ptr);
 		png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
 	}
-	if (color_type == PNG_COLOR_TYPE_PALETTE) {
-		png_set_palette_to_rgb(png_ptr);
+	else if(color_type == PNG_COLOR_TYPE_RGB)
+	{	
 		png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
 	}
 
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 	{
+		DVASSERT_MSG(0, "png_set_tRNS_to_alpha");
 		png_set_tRNS_to_alpha(png_ptr);
-		printf("*** TOCHECK: convert tRNS to alpha\n");
 	}
 
-	if (color_type == PNG_COLOR_TYPE_RGB)
-	{	
-		printf("*** Converting %s from RGB to RGBA\n", file);
-		png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
-	}
-		
-	/* Update the png info struct.*/
 	png_read_update_info(png_ptr, info_ptr);
 	
-	/* Rowsize in bytes. */
 	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-	
-//	char string_format[16];
-//	strcpy(string_format, "undefined");
-//	if (color_type == PNG_COLOR_TYPE_RGBA)
-//	{
-//		//strcpy(string_format, "RGBA");
-//		//int k = 0;
-//
-//	}
-	
-	
-	/*printf("* Reading PNG file: %s format: %s bit_depth:%d bytes_per_pixel:%d\n", 
-		   file,
-		   string_format,
-		   bit_depth,
-		   rowbytes / width);
-	*/
-	
-	/* Allocate the image_data buffer. */
-	// printf("r/w: %d %d\n" , rowbytes / width, bit_depth); 
 	
 	image_data = new uint8 [rowbytes * height];
 	if (image_data == 0) 
@@ -290,7 +240,7 @@ int LibPngWrapper::ReadPngFile(const char *file, int32 *pwidth, int32 *pheight, 
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	infile->Release();
 	
-	*image_data_ptr = image_data;
+	image->data = image_data;
 	
 	return 1;
 }
@@ -391,7 +341,7 @@ PngImage::~PngImage()
 
 bool PngImage::Load(const char * filename)
 {
-	LibPngWrapper::ReadPngFile(filename, &width, &height, &data);
+	//LibPngWrapper::ReadPngFile(filename, &width, &height, &data);
 	return true;
 }
 
