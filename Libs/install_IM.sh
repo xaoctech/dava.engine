@@ -1,25 +1,29 @@
 #!/bin/bash
 
-echo on
-rm -rf ImageMagick-6.6.9-0/
-rm -rf libpng-1.2.46/
+installPath="ImageMagick-6.6.9"
+libpngPath="libpng-1.2.46"
+imPath="ImageMagick-6.6.9-0"
 
-tar -xf ImageMagick-6.6.9-0.tar.gz
-tar -xf libpng-1.2.46.tar.gz
+rm -rf $imPath
+rm -rf $libpngPath
+rm -rf $installPath
+
+tar -xf $imPath.tar.gz
+tar -xf $libpngPath.tar.gz
 
 currPath=`pwd`
-installPath="ImageMagick-6.6.9"
-echo $currPath
-cd libpng-1.2.46
+cd $libpngPath
 ./configure --prefix=$currPath/$installPath/delegates --enable-static --disable-shared
 make
 make install
-cd ../ImageMagick-6.6.9-0
+cp $currPath/$installPath/delegates/lib/libpng.a $currPath/$installPath/delegates/lib/libpng-static.a
+cd ../$imPath
 
 ./configure --prefix=$currPath/$installPath --disable-shared --without-dps --without-djvu --without-fontconfig --without-freetype --without-gslib --without-gvc --without-lcms --without-lcms2 --without-lqr --without-lzma --without-openexr --without-rsvg --without-webp --without-wmf --without-xml --disable-openmp --disable-opencl --with-x=no CPPFLAGS=-I$currPath/$installPath/delegates/include LDFLAGS=-L$currPath/$installPath/delegates/lib
 make
 make install
 cd ..
 
-rm -rf libpng-1.2.46/
-rm -rf ImageMagick-6.6.9-0/
+rm -rf $libpngPath
+rm -rf $imPath
+

@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		D99309931497ABB100BB577D /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D99309921497ABB100BB577D /* libpng.a */; };
+		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
 		D99311F31497B1BB00BB577D /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310521497B1BB00BB577D /* btAxisSweep3.cpp */; };
 		D99311F41497B1BB00BB577D /* btBroadphaseProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310551497B1BB00BB577D /* btBroadphaseProxy.cpp */; };
 		D99311F51497B1BB00BB577D /* btCollisionAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310571497B1BB00BB577D /* btCollisionAlgorithm.cpp */; };
@@ -264,7 +264,7 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D99309921497ABB100BB577D /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng.a"; sourceTree = SOURCE_ROOT; };
+		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
 		D993104F1497B1BB00BB577D /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bullet-C-Api.h"; sourceTree = "<group>"; };
 		D99310521497B1BB00BB577D /* btAxisSweep3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = btAxisSweep3.cpp; sourceTree = "<group>"; };
 		D99310531497B1BB00BB577D /* btAxisSweep3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = btAxisSweep3.h; sourceTree = "<group>"; };
@@ -758,7 +758,7 @@
 				FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */,
 				FE54EBC013A1193400912810 /* libbz2.dylib in Frameworks */,
 				FE54EBC213A1193400912810 /* libz.dylib in Frameworks */,
-				D99309931497ABB100BB577D /* libpng.a in Frameworks */,
+				D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -798,7 +798,7 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
-				D99309921497ABB100BB577D /* libpng.a */,
+				D944B3E11497E265005297A8 /* libpng-static.a */,
 				FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */,
 				FE9420291332597D00515418 /* Framework.xcodeproj */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
