@@ -111,7 +111,7 @@
 #define MAGICKCORE_WMF_DELEGATE
 
 // Define to use the GNOME XML library
-#define MAGICKCORE_XML_DELEGATE
+//#define MAGICKCORE_XML_DELEGATE
 
 // Define to use the zlib ZIP compression library
 #define MAGICKCORE_ZLIB_DELEGATE
