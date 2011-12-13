@@ -93,6 +93,9 @@
     <ClCompile Include="Classes\BeastManager.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\BeastMesh.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -189,6 +192,15 @@
       <Filter>Collada</Filter>
     </ClInclude>
     <ClInclude Include="Classes\BeastManager.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastDebug.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastTypes.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastMesh.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
