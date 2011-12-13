@@ -90,6 +90,9 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp">
       <Filter>Collada</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\BeastManager.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -185,6 +188,9 @@
     <ClInclude Include="Classes\Collada\stdafx.h">
       <Filter>Collada</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\BeastManager.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">
@@ -195,6 +201,9 @@
     </Filter>
     <Filter Include="TexturePacker">
       <UniqueIdentifier>{e3ef1ce1-3998-41d5-9b5e-cb5e2cb43289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneEditor\Beast">
+      <UniqueIdentifier>{4c5bb2df-69ed-4eff-8c7b-a13156942962}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
