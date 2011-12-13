@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32Framework", "..\..\Projects\Win32Framework\Win32Framework.vcxproj", "{A6472D47-5050-406D-89E9-4725192E32F2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResourceEditorVS2010", "ResourceEditorVS2010.vcxproj", "{A31689CE-A339-464E-8D7E-49EF2AF81AA4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A6472D47-5050-406D-89E9-4725192E32F2} = {A6472D47-5050-406D-89E9-4725192E32F2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
