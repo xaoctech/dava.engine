@@ -53,7 +53,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.6.9-0/Magick++/lib;./../../Libs/ImageMagick-6.6.9-0;$(DXSDK_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -65,7 +65,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Win32Framework.lib;CORE_DB_Magick++_.lib;CORE_DB_magick_.lib;CORE_DB_bzlib_.lib;CORE_DB_coders_.lib;CORE_DB_filters_.lib;CORE_DB_jbig_.lib;CORE_DB_jp2_.lib;CORE_DB_jpeg_.lib;CORE_DB_lcms_.lib;CORE_DB_libxml_.lib;CORE_DB_png_.lib;CORE_DB_tiff_.lib;CORE_DB_ttf_.lib;CORE_DB_wand_.lib;CORE_DB_wmf_.lib;CORE_DB_xlib_.lib;CORE_DB_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;user32.lib;gdi32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.6.8/VisualMagick/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -83,7 +83,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Win32Framework.lib;CORE_RL_Magick++_.lib;CORE_RL_magick_.lib;CORE_RL_bzlib_.lib;CORE_RL_coders_.lib;CORE_RL_filters_.lib;CORE_RL_jbig_.lib;CORE_RL_jp2_.lib;CORE_RL_jpeg_.lib;CORE_RL_lcms_.lib;CORE_RL_libxml_.lib;CORE_RL_png_.lib;CORE_RL_tiff_.lib;CORE_RL_ttf_.lib;CORE_RL_wand_.lib;CORE_RL_wmf_.lib;CORE_RL_xlib_.lib;CORE_RL_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;user32.lib;gdi32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.6.8/VisualMagick/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -93,6 +93,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\SceneEditor\CameraController.h" />
+    <ClInclude Include="Classes\SceneEditor\CameraPanel.h" />
+    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
+    <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h" />
+    <ClInclude Include="Classes\SceneEditor\PropertyPanel.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="Classes\TexturePacker\DefinitionFile.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
@@ -108,6 +114,12 @@
     <ClInclude Include="Classes\UISpriteEditor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
+    <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp" />
+    <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />

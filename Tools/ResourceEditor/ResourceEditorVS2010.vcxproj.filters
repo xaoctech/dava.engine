@@ -14,6 +14,24 @@
     <ClCompile Include="Classes\UIScrollView.cpp" />
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
+    <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -30,10 +48,28 @@
     <ClInclude Include="Classes\UIFileTreeCell.h" />
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
+    <ClInclude Include="Classes\SceneEditor\CameraController.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CameraPanel.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PropertyPanel.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Screens">
-      <UniqueIdentifier>{ffd2bfff-46a6-4f27-969e-231e46b130f6}</UniqueIdentifier>
+    <Filter Include="SceneEditor">
+      <UniqueIdentifier>{8b8f0237-e4f1-47ac-a259-47c4fa88033d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
