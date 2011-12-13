@@ -41,7 +41,8 @@ public:
     {
         EMITTER_TYPE = 0,
         EMITTER_EMISSION_ANGLE,
-        EMITTER_EMISSION_RAGE,
+        EMITTER_EMISSION_RANGE,
+        EMITTER_EMISSION_VECTOR,
         EMITTER_RADIUS,
         EMITTER_COLOR_OVER_LIFE,
         EMITTER_SIZE, 
@@ -75,6 +76,9 @@ public:
         LAYER_COLOR_RANDOM,
         LAYER_ALPHA_OVER_LIFE,
         LAYER_COLOR_OVER_LIFE,
+        LAYER_ALIGN_TO_MOTION,
+        LAYER_START_TIME,
+        LAYER_END_TIME,
     };
     class PropListCell : public UIListCell
     {
@@ -245,11 +249,13 @@ protected:
     void PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Vector3> *pv);
     void PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Color> *pv);
     
+    void AddSelectedProp();
+    
     void ExecutePacker(const String &path);
     
     void SafeAddControl(UIControl *control);
     void SafeRemoveControl(UIControl *control);
-      
+    
     Vector<String> emitterProps;
     Vector<String>layerProps;
     Vector<String> emitterTypes;
@@ -257,7 +263,7 @@ protected:
     int32 deltaIndex;
     bool curPropType; //0 - value, 1 - Keyframed
     Font *cellFont, *f;
-    int32 dblClickDelay;
+    uint64 dblClickDelay;
     int32 activePropEdit;
     float32 curPropEditTime;
     float32 buttonW;
