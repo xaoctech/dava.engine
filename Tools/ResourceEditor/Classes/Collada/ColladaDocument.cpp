@@ -193,7 +193,7 @@ void ColladaDocument::GetAnimationTimeInfo(FCDocument * document, float32 & retT
 	
 void ColladaDocument::Close()
 {
-
+	SAFE_RELEASE(document);
 }
 
 void ColladaDocument::Render()
@@ -244,7 +244,12 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 		// HACK for .jpg into .png
         // work for all extensions
 		std::string texname(texture.name);
-		texname.replace(texname.find("."), 4, ".png");
+		int32 pos = texname.find(".");
+		if(-1 != pos)
+		{
+			texname.replace(pos, 4, ".png");
+		}
+		
 		
 		strcpy(texture.name, texname.c_str());
         texture.hasOpacity = colladaScene->colladaTextures[textureIndex]->hasOpacity;
