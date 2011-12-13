@@ -53,7 +53,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.6.8/Magick++/lib;./../../Libs/ImageMagick-6.6.8;$(DXSDK_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS; _CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -93,6 +93,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h" />
+    <ClInclude Include="Classes\Collada\ColladaAnimation.h" />
+    <ClInclude Include="Classes\Collada\ColladaCamera.h" />
+    <ClInclude Include="Classes\Collada\ColladaConvert.h" />
+    <ClInclude Include="Classes\Collada\ColladaDocument.h" />
+    <ClInclude Include="Classes\Collada\ColladaIncludes.h" />
+    <ClInclude Include="Classes\Collada\ColladaLight.h" />
+    <ClInclude Include="Classes\Collada\ColladaMaterial.h" />
+    <ClInclude Include="Classes\Collada\ColladaMesh.h" />
+    <ClInclude Include="Classes\Collada\ColladaMeshInstance.h" />
+    <ClInclude Include="Classes\Collada\ColladaPolygonGroup.h" />
+    <ClInclude Include="Classes\Collada\ColladaPolygonGroupInstance.h" />
+    <ClInclude Include="Classes\Collada\ColladaScene.h" />
+    <ClInclude Include="Classes\Collada\ColladaSceneNode.h" />
+    <ClInclude Include="Classes\Collada\ColladaSceneNodeAnimation.h" />
+    <ClInclude Include="Classes\Collada\ColladaTexture.h" />
+    <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPanel.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
@@ -114,6 +131,22 @@
     <ClInclude Include="Classes\UISpriteEditor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaAnimation.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaCamera.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaConvert.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaConverter.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaDocument.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaLight.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaMaterial.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaMesh.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaMeshInstance.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaPolygonGroup.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaPolygonGroupInstance.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaScene.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaSceneNode.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp" />
+    <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />

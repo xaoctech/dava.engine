@@ -32,6 +32,54 @@
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaAnimation.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaCamera.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaConvert.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaConverter.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaDocument.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaLight.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaMaterial.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaMesh.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaMeshInstance.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaPolygonGroup.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaPolygonGroupInstance.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaScene.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaSceneNode.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Collada\ColladaTexture.cpp">
+      <Filter>Collada</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -66,10 +114,64 @@
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaAnimation.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaCamera.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaConvert.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaDocument.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaIncludes.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaLight.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaMaterial.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaMesh.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaMeshInstance.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaPolygonGroup.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaPolygonGroupInstance.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaScene.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaSceneNode.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaSceneNodeAnimation.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\ColladaTexture.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Collada\stdafx.h">
+      <Filter>Collada</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">
       <UniqueIdentifier>{8b8f0237-e4f1-47ac-a259-47c4fa88033d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collada">
+      <UniqueIdentifier>{4b6568fa-d815-4658-b483-cb52786095b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

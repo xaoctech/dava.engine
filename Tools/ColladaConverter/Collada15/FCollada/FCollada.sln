@@ -1,19 +1,12 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCollada", "FCollada.vcproj", "{FF956BB3-F377-43A8-AB31-633299BDF6C6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{5A441CC6-F281-4A83-8BC4-323D4148C7C0} = {5A441CC6-F281-4A83-8BC4-323D4148C7C0}
-		{D7F466F4-2AEA-4648-BE09-024C887BC157} = {D7F466F4-2AEA-4648-BE09-024C887BC157}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCollada", "FCollada.vcxproj", "{FF956BB3-F377-43A8-AB31-633299BDF6C6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FColladaTest", "FColladaTest\FColladaTest.vcproj", "{93F9B125-C28F-47E3-B087-F14B0E191B8E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FF956BB3-F377-43A8-AB31-633299BDF6C6} = {FF956BB3-F377-43A8-AB31-633299BDF6C6}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FColladaTest", "FColladaTest\FColladaTest.vcxproj", "{93F9B125-C28F-47E3-B087-F14B0E191B8E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibXML", "LibXML\LibXML.vcproj", "{D7F466F4-2AEA-4648-BE09-024C887BC157}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibXML", "LibXML\LibXML.vcxproj", "{D7F466F4-2AEA-4648-BE09-024C887BC157}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FArchiveXML", "..\FColladaPlugins\FArchiveXML\FArchiveXML.vcproj", "{5A441CC6-F281-4A83-8BC4-323D4148C7C0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FArchiveXML", "..\FColladaPlugins\FArchiveXML\FArchiveXML.vcxproj", "{5A441CC6-F281-4A83-8BC4-323D4148C7C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
