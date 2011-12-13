@@ -27,6 +27,21 @@
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp">
+      <Filter>TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp">
+      <Filter>TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TexturePacker\ImagePacker.cpp">
+      <Filter>TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TexturePacker\PngImage.cpp">
+      <Filter>TexturePacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TexturePacker\TexturePacker.cpp">
+      <Filter>TexturePacker</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
       <Filter>Collada</Filter>
     </ClCompile>
@@ -75,21 +90,6 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp">
       <Filter>Collada</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp">
-      <Filter>TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp">
-      <Filter>TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\ImagePacker.cpp">
-      <Filter>TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\PngImage.cpp">
-      <Filter>TexturePacker</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TexturePacker\TexturePacker.cpp">
-      <Filter>TexturePacker</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -118,6 +118,21 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h">
       <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TexturePacker\CommandLineParser.h">
+      <Filter>TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TexturePacker\DefinitionFile.h">
+      <Filter>TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TexturePacker\ImagePacker.h">
+      <Filter>TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TexturePacker\PngImage.h">
+      <Filter>TexturePacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TexturePacker\TexturePacker.h">
+      <Filter>TexturePacker</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
       <Filter>Collada</Filter>
@@ -169,21 +184,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Collada\stdafx.h">
       <Filter>Collada</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\CommandLineParser.h">
-      <Filter>TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\DefinitionFile.h">
-      <Filter>TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\ImagePacker.h">
-      <Filter>TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\PngImage.h">
-      <Filter>TexturePacker</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TexturePacker\TexturePacker.h">
-      <Filter>TexturePacker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
