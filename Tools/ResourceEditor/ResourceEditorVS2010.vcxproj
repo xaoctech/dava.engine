@@ -93,7 +93,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\BeastDebug.h" />
     <ClInclude Include="Classes\BeastManager.h" />
+    <ClInclude Include="Classes\BeastMesh.h" />
+    <ClInclude Include="Classes\BeastTypes.h" />
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h" />
     <ClInclude Include="Classes\Collada\ColladaAnimation.h" />
     <ClInclude Include="Classes\Collada\ColladaCamera.h" />
@@ -133,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\BeastManager.cpp" />
+    <ClCompile Include="Classes\BeastMesh.cpp" />
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp" />
     <ClCompile Include="Classes\Collada\ColladaAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaCamera.cpp" />
