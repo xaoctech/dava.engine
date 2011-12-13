@@ -171,6 +171,8 @@ public:
         \returns flags of this specific scene node
      */
     uint32 GetDebugFlags() const;
+    
+    inline Scene *GetScene() const;
 	
 protected:
 
@@ -266,6 +268,12 @@ inline uint32 SceneNode::GetDebugFlags() const
 {
     return debugFlags;
 }
+    
+inline Scene *SceneNode::GetScene() const
+{
+    return scene;
+}
+
 
 };
 
