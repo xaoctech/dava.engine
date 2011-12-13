@@ -6,7 +6,7 @@
 #pragma comment(lib,"beast32.lib")
 
 #include "DAVAEngine.h"
-#include "beastapi/beastmanager.h"
+#include "BeastTypes.h"
 
 class BeastManager
 {
@@ -14,11 +14,15 @@ public:
 	BeastManager();
 	~BeastManager();
 
+	void BeginScene();
+	void EndScene();
+
 private:
-	static void Init();
+	static void StaticInit();
 	static bool isInited;
 
 	ILBManagerHandle handle;
+	ILBSceneHandle scene;
 };
 
 #endif //__BEAST_MANAGER__
