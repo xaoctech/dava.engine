@@ -4,9 +4,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/StaticSingleton.h"
 
-using namespace DAVA;
 
-class CommandLineParser : public StaticSingleton<CommandLineParser>
+class CommandLineParser : public DAVA::StaticSingleton<CommandLineParser>
 {
 public:
 	CommandLineParser();
@@ -20,23 +19,23 @@ public:
 	
 	void SetArguments(int argc, char * argv[]);
 	void ClearFlags();
-	void SetFlags(const Vector<String> & flags);
-	bool	IsFlagSet(const String & s);
-	uint32	GetFlagCount() { return (uint32)flags.size(); };
-	String	GetParam(int index);
-	uint32	GetParamCount() { return (uint32)params.size(); };
+	void SetFlags(const DAVA::Vector<DAVA::String> & flags);
+	bool	IsFlagSet(const DAVA::String & s);
+	DAVA::uint32	GetFlagCount() { return (DAVA::uint32)flags.size(); };
+	DAVA::String	GetParam(int index);
+	DAVA::uint32	GetParamCount() { return (DAVA::uint32)params.size(); };
 	
 
-	static void		SplitFilePath(const String & filepath, String & path, String & filename);
-	static void		RemoveFromPath(String & path, const String & removePart);	
-	static String	ReplaceExtension(const String & filename, const String & nexExt);
-	static String	GetExtension(const String & filename);
+	static void		SplitFilePath(const DAVA::String & filepath, DAVA::String & path, DAVA::String & filename);
+	static void		RemoveFromPath(DAVA::String & path, const DAVA::String & removePart);	
+	static DAVA::String	ReplaceExtension(const DAVA::String & filename, const DAVA::String & nexExt);
+	static DAVA::String	GetExtension(const DAVA::String & filename);
 	
-	static String RealPath(String path);
+	static DAVA::String RealPath(DAVA::String path);
 
 private:
-	Vector<String>	params;
-	Vector<String>	flags;
+	DAVA::Vector<DAVA::String>	params;
+	DAVA::Vector<DAVA::String>	flags;
 	bool isVerbose;
 	bool isExtendedOutput;
 };
