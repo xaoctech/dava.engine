@@ -44,7 +44,9 @@
 
 #ifdef COLLADA_GLUT_RENDER
 
-	#include <GL/glew.h>
+    #if defined (__DAVAENGINE_WIN32__)
+        #include <GL/glew.h>
+    #endif
 
 	#if defined(_WIN32)
 	#	include <GL/glut.h>

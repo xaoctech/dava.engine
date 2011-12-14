@@ -12,5 +12,3 @@ void main()
 	varTexCoord = inTexCoord;
 	varDetailCoord = inTexCoord * 60.0;
 }
-
-
