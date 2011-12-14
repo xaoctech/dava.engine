@@ -262,7 +262,7 @@ public:
     eCmpFunc alphaFunc;
     uint8    alphaFuncCmpValue;
     
-    static const int32 MAX_TEXTURE_LEVELS = 4;
+    static const uint32 MAX_TEXTURE_LEVELS = 4;
     Texture * currentTexture[MAX_TEXTURE_LEVELS];
     Shader * shader;
     
@@ -377,11 +377,13 @@ inline void RenderStateBlock::SetBlendMode(eBlendMode _sourceFactor, eBlendMode 
 // SHADER
 inline void RenderStateBlock::SetShader(Shader * _shader)
 {
-    if (shader != _shader)
-    {
-        shader = _shader;
-        changeSet |= STATE_CHANGED_SHADER;
-    }
+    shader = _shader;
+// Rethink concept of caching shader / shader data
+//    if (shader != _shader)
+//    {
+//        shader = _shader;
+//        changeSet |= STATE_CHANGED_SHADER;
+//    }
 }
 
 // CULL MODE
