@@ -479,10 +479,10 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 
 	SceneFile::SceneNodeDef def;
 	
-	if (header.version == 102)
+	if (header.version <= 102)
 	{
 		SceneFile::SceneNodeDef_102 def102;
-		 sceneFP->Read(&def102, sizeof(def102));
+		sceneFP->Read(&def102, sizeof(def102));
 		
 		def.parentId = def102.parentId;
 		def.childCount = def102.childCount;
