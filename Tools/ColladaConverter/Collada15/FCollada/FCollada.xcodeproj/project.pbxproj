@@ -1025,10 +1025,8 @@
 		D027C31A0CA803F300BD95DA /* FULogFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2DD0CA803F300BD95DA /* FULogFile.cpp */; };
 		D027C31B0CA803F300BD95DA /* FULogFile.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2DE0CA803F300BD95DA /* FULogFile.h */; };
 		D027C31C0CA803F300BD95DA /* FUObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2DF0CA803F300BD95DA /* FUObject.cpp */; };
-		D027C31D0CA803F300BD95DA /* FUObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E00CA803F300BD95DA /* FUObject.h */; };
 		D027C31E0CA803F300BD95DA /* FUObjectTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E10CA803F300BD95DA /* FUObjectTest.cpp */; };
 		D027C31F0CA803F300BD95DA /* FUObjectType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E20CA803F300BD95DA /* FUObjectType.cpp */; };
-		D027C3200CA803F300BD95DA /* FUObjectType.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E30CA803F300BD95DA /* FUObjectType.h */; };
 		D027C3210CA803F300BD95DA /* FUPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E40CA803F300BD95DA /* FUPlugin.h */; };
 		D027C3220CA803F300BD95DA /* FUPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E50CA803F300BD95DA /* FUPluginManager.cpp */; };
 		D027C3230CA803F300BD95DA /* FUPluginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E60CA803F300BD95DA /* FUPluginManager.h */; };
@@ -1086,10 +1084,8 @@
 		D027C3570CA803F300BD95DA /* FULogFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2DD0CA803F300BD95DA /* FULogFile.cpp */; };
 		D027C3580CA803F300BD95DA /* FULogFile.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2DE0CA803F300BD95DA /* FULogFile.h */; };
 		D027C3590CA803F300BD95DA /* FUObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2DF0CA803F300BD95DA /* FUObject.cpp */; };
-		D027C35A0CA803F300BD95DA /* FUObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E00CA803F300BD95DA /* FUObject.h */; };
 		D027C35B0CA803F300BD95DA /* FUObjectTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E10CA803F300BD95DA /* FUObjectTest.cpp */; };
 		D027C35C0CA803F300BD95DA /* FUObjectType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E20CA803F300BD95DA /* FUObjectType.cpp */; };
-		D027C35D0CA803F300BD95DA /* FUObjectType.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E30CA803F300BD95DA /* FUObjectType.h */; };
 		D027C35E0CA803F300BD95DA /* FUPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E40CA803F300BD95DA /* FUPlugin.h */; };
 		D027C35F0CA803F300BD95DA /* FUPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E50CA803F300BD95DA /* FUPluginManager.cpp */; };
 		D027C3600CA803F300BD95DA /* FUPluginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E60CA803F300BD95DA /* FUPluginManager.h */; };
@@ -1147,10 +1143,8 @@
 		D027C3940CA803F300BD95DA /* FULogFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2DD0CA803F300BD95DA /* FULogFile.cpp */; };
 		D027C3950CA803F300BD95DA /* FULogFile.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2DE0CA803F300BD95DA /* FULogFile.h */; };
 		D027C3960CA803F300BD95DA /* FUObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2DF0CA803F300BD95DA /* FUObject.cpp */; };
-		D027C3970CA803F300BD95DA /* FUObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E00CA803F300BD95DA /* FUObject.h */; };
 		D027C3980CA803F300BD95DA /* FUObjectTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E10CA803F300BD95DA /* FUObjectTest.cpp */; };
 		D027C3990CA803F300BD95DA /* FUObjectType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E20CA803F300BD95DA /* FUObjectType.cpp */; };
-		D027C39A0CA803F300BD95DA /* FUObjectType.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E30CA803F300BD95DA /* FUObjectType.h */; };
 		D027C39B0CA803F300BD95DA /* FUPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E40CA803F300BD95DA /* FUPlugin.h */; };
 		D027C39C0CA803F300BD95DA /* FUPluginManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C2E50CA803F300BD95DA /* FUPluginManager.cpp */; };
 		D027C39D0CA803F300BD95DA /* FUPluginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C2E60CA803F300BD95DA /* FUPluginManager.h */; };
@@ -1236,7 +1230,6 @@
 		D027C4260CA8051100BD95DA /* FCTestXRefAcyclic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C4220CA8051100BD95DA /* FCTestXRefAcyclic.cpp */; };
 		D027C4270CA8051100BD95DA /* FCTestXRefSimple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C4230CA8051100BD95DA /* FCTestXRefSimple.cpp */; };
 		D027C4280CA8051100BD95DA /* FCTestXRefTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C4240CA8051100BD95DA /* FCTestXRefTree.cpp */; };
-		D027C42B0CA8051F00BD95DA /* StdAfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C4290CA8051F00BD95DA /* StdAfx.cpp */; };
 		D027C43B0CA80F2000BD95DA /* DLLEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C43A0CA80F2000BD95DA /* DLLEntry.cpp */; };
 		D027C43C0CA80F2000BD95DA /* DLLEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C43A0CA80F2000BD95DA /* DLLEntry.cpp */; };
 		D027C43D0CA80F2000BD95DA /* DLLEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C43A0CA80F2000BD95DA /* DLLEntry.cpp */; };
@@ -1252,12 +1245,6 @@
 		D027C44B0CA80F3E00BD95DA /* FColladaPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C4470CA80F3D00BD95DA /* FColladaPlugin.h */; };
 		D027C44C0CA80F3E00BD95DA /* FColladaPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C4460CA80F3D00BD95DA /* FColladaPlugin.cpp */; };
 		D027C44D0CA80F3E00BD95DA /* FColladaPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C4470CA80F3D00BD95DA /* FColladaPlugin.h */; };
-		D027C4500CA80F4D00BD95DA /* StdAfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C44E0CA80F4D00BD95DA /* StdAfx.cpp */; };
-		D027C4510CA80F4D00BD95DA /* StdAfx.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C44F0CA80F4D00BD95DA /* StdAfx.h */; };
-		D027C4520CA80F4D00BD95DA /* StdAfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C44E0CA80F4D00BD95DA /* StdAfx.cpp */; };
-		D027C4530CA80F4D00BD95DA /* StdAfx.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C44F0CA80F4D00BD95DA /* StdAfx.h */; };
-		D027C4540CA80F4D00BD95DA /* StdAfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D027C44E0CA80F4D00BD95DA /* StdAfx.cpp */; };
-		D027C4550CA80F4D00BD95DA /* StdAfx.h in Headers */ = {isa = PBXBuildFile; fileRef = D027C44F0CA80F4D00BD95DA /* StdAfx.h */; };
 		D027C6050CA841EC00BD95DA /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D027C6040CA841EC00BD95DA /* CoreServices.framework */; };
 		D027C6060CA841EC00BD95DA /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D027C6040CA841EC00BD95DA /* CoreServices.framework */; };
 		D027C6070CA841EC00BD95DA /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D027C6040CA841EC00BD95DA /* CoreServices.framework */; };
@@ -1341,6 +1328,12 @@
 		D0E7E2C40D16D254000785CD /* FCDParameterAnimatable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E2AC0D16D254000785CD /* FCDParameterAnimatable.cpp */; };
 		D0E7E2C50D16D254000785CD /* FCDParameterAnimatable.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E2AD0D16D254000785CD /* FCDParameterAnimatable.h */; };
 		D0E7E2C60D16D254000785CD /* FCDParameterAnimatable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E2AE0D16D254000785CD /* FCDParameterAnimatable.hpp */; };
+		D99309271497A90A00BB577D /* FUObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D99309251497A90A00BB577D /* FUObject.h */; };
+		D99309281497A90A00BB577D /* FUObjectType.h in Headers */ = {isa = PBXBuildFile; fileRef = D99309261497A90A00BB577D /* FUObjectType.h */; };
+		D99309291497A90A00BB577D /* FUObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D99309251497A90A00BB577D /* FUObject.h */; };
+		D993092A1497A90A00BB577D /* FUObjectType.h in Headers */ = {isa = PBXBuildFile; fileRef = D99309261497A90A00BB577D /* FUObjectType.h */; };
+		D993092B1497A90A00BB577D /* FUObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D99309251497A90A00BB577D /* FUObject.h */; };
+		D993092C1497A90A00BB577D /* FUObjectType.h in Headers */ = {isa = PBXBuildFile; fileRef = D99309261497A90A00BB577D /* FUObjectType.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1719,10 +1712,8 @@
 		D027C2DD0CA803F300BD95DA /* FULogFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FULogFile.cpp; path = FUtils/FULogFile.cpp; sourceTree = SOURCE_ROOT; };
 		D027C2DE0CA803F300BD95DA /* FULogFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FULogFile.h; path = FUtils/FULogFile.h; sourceTree = SOURCE_ROOT; };
 		D027C2DF0CA803F300BD95DA /* FUObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FUObject.cpp; path = FUtils/FUObject.cpp; sourceTree = SOURCE_ROOT; };
-		D027C2E00CA803F300BD95DA /* FUObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FUObject.h; path = FUtils/FUObject.h; sourceTree = SOURCE_ROOT; };
 		D027C2E10CA803F300BD95DA /* FUObjectTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FUObjectTest.cpp; path = FUtils/FUObjectTest.cpp; sourceTree = SOURCE_ROOT; };
 		D027C2E20CA803F300BD95DA /* FUObjectType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FUObjectType.cpp; path = FUtils/FUObjectType.cpp; sourceTree = SOURCE_ROOT; };
-		D027C2E30CA803F300BD95DA /* FUObjectType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FUObjectType.h; path = FUtils/FUObjectType.h; sourceTree = SOURCE_ROOT; };
 		D027C2E40CA803F300BD95DA /* FUPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FUPlugin.h; path = FUtils/FUPlugin.h; sourceTree = SOURCE_ROOT; };
 		D027C2E50CA803F300BD95DA /* FUPluginManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FUPluginManager.cpp; path = FUtils/FUPluginManager.cpp; sourceTree = SOURCE_ROOT; };
 		D027C2E60CA803F300BD95DA /* FUPluginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FUPluginManager.h; path = FUtils/FUPluginManager.h; sourceTree = SOURCE_ROOT; };
@@ -1781,15 +1772,11 @@
 		D027C4220CA8051100BD95DA /* FCTestXRefAcyclic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FCTestXRefAcyclic.cpp; path = FColladaTest/FCTestXRef/FCTestXRefAcyclic.cpp; sourceTree = SOURCE_ROOT; };
 		D027C4230CA8051100BD95DA /* FCTestXRefSimple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FCTestXRefSimple.cpp; path = FColladaTest/FCTestXRef/FCTestXRefSimple.cpp; sourceTree = SOURCE_ROOT; };
 		D027C4240CA8051100BD95DA /* FCTestXRefTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FCTestXRefTree.cpp; path = FColladaTest/FCTestXRef/FCTestXRefTree.cpp; sourceTree = SOURCE_ROOT; };
-		D027C4290CA8051F00BD95DA /* StdAfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StdAfx.cpp; path = FColladaTest/StdAfx.cpp; sourceTree = SOURCE_ROOT; };
-		D027C42A0CA8051F00BD95DA /* StdAfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdAfx.h; path = FColladaTest/StdAfx.h; sourceTree = SOURCE_ROOT; };
 		D027C43A0CA80F2000BD95DA /* DLLEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLLEntry.cpp; sourceTree = SOURCE_ROOT; };
 		D027C43E0CA80F3000BD95DA /* FCollada.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FCollada.cpp; sourceTree = SOURCE_ROOT; };
 		D027C43F0CA80F3000BD95DA /* FCollada.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FCollada.h; sourceTree = SOURCE_ROOT; };
 		D027C4460CA80F3D00BD95DA /* FColladaPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FColladaPlugin.cpp; sourceTree = SOURCE_ROOT; };
 		D027C4470CA80F3D00BD95DA /* FColladaPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FColladaPlugin.h; sourceTree = SOURCE_ROOT; };
-		D027C44E0CA80F4D00BD95DA /* StdAfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StdAfx.cpp; sourceTree = SOURCE_ROOT; };
-		D027C44F0CA80F4D00BD95DA /* StdAfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdAfx.h; sourceTree = SOURCE_ROOT; };
 		D027C6040CA841EC00BD95DA /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = ../../../../../../../System/Library/Frameworks/CoreServices.framework; sourceTree = SOURCE_ROOT; };
 		D027C6240CA8506900BD95DA /* FCTestParameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FCTestParameters.cpp; path = FColladaTest/FCTestParameters.cpp; sourceTree = SOURCE_ROOT; };
 		D0683BF30D6623DB005653CA /* FCDSceneNodeIterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = FCDSceneNodeIterator.hpp; path = FCDocument/FCDSceneNodeIterator.hpp; sourceTree = "<group>"; };
@@ -1820,6 +1807,8 @@
 		D0E7E2AC0D16D254000785CD /* FCDParameterAnimatable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FCDParameterAnimatable.cpp; path = FCDocument/FCDParameterAnimatable.cpp; sourceTree = "<group>"; };
 		D0E7E2AD0D16D254000785CD /* FCDParameterAnimatable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FCDParameterAnimatable.h; path = FCDocument/FCDParameterAnimatable.h; sourceTree = "<group>"; };
 		D0E7E2AE0D16D254000785CD /* FCDParameterAnimatable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = FCDParameterAnimatable.hpp; path = FCDocument/FCDParameterAnimatable.hpp; sourceTree = "<group>"; };
+		D99309251497A90A00BB577D /* FUObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FUObject.h; path = FUtils/FUObject.h; sourceTree = "<group>"; };
+		D99309261497A90A00BB577D /* FUObjectType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FUObjectType.h; path = FUtils/FUObjectType.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1863,8 +1852,6 @@
 			isa = PBXGroup;
 			children = (
 				D027C6030CA841AD00BD95DA /* Libs */,
-				D027C44E0CA80F4D00BD95DA /* StdAfx.cpp */,
-				D027C44F0CA80F4D00BD95DA /* StdAfx.h */,
 				D027C4460CA80F3D00BD95DA /* FColladaPlugin.cpp */,
 				D027C4470CA80F3D00BD95DA /* FColladaPlugin.h */,
 				D027C43E0CA80F3000BD95DA /* FCollada.cpp */,
@@ -1895,8 +1882,6 @@
 			isa = PBXGroup;
 			children = (
 				D027C6240CA8506900BD95DA /* FCTestParameters.cpp */,
-				D027C4290CA8051F00BD95DA /* StdAfx.cpp */,
-				D027C42A0CA8051F00BD95DA /* StdAfx.h */,
 				D027C4210CA8051100BD95DA /* FCTestXRef.cpp */,
 				D027C4220CA8051100BD95DA /* FCTestXRefAcyclic.cpp */,
 				D027C4230CA8051100BD95DA /* FCTestXRefSimple.cpp */,
@@ -1927,6 +1912,8 @@
 		C3D6078B0ADFD11200019D9C /* FUtils */ = {
 			isa = PBXGroup;
 			children = (
+				D99309251497A90A00BB577D /* FUObject.h */,
+				D99309261497A90A00BB577D /* FUObjectType.h */,
 				D0E7E2630D16D225000785CD /* FUErrorLog.cpp */,
 				D0E7E2640D16D225000785CD /* FUErrorLog.h */,
 				D0E7E2650D16D225000785CD /* FUParameter.cpp */,
@@ -1988,10 +1975,8 @@
 				D027C2DD0CA803F300BD95DA /* FULogFile.cpp */,
 				D027C2DE0CA803F300BD95DA /* FULogFile.h */,
 				D027C2DF0CA803F300BD95DA /* FUObject.cpp */,
-				D027C2E00CA803F300BD95DA /* FUObject.h */,
 				D027C2E10CA803F300BD95DA /* FUObjectTest.cpp */,
 				D027C2E20CA803F300BD95DA /* FUObjectType.cpp */,
-				D027C2E30CA803F300BD95DA /* FUObjectType.h */,
 				D027C2E40CA803F300BD95DA /* FUPlugin.h */,
 				D027C2E50CA803F300BD95DA /* FUPluginManager.cpp */,
 				D027C2E60CA803F300BD95DA /* FUPluginManager.h */,
@@ -2600,8 +2585,6 @@
 				D027C3900CA803F300BD95DA /* FUFileManager.h in Headers */,
 				D027C3920CA803F300BD95DA /* FUFunctor.h in Headers */,
 				D027C3950CA803F300BD95DA /* FULogFile.h in Headers */,
-				D027C3970CA803F300BD95DA /* FUObject.h in Headers */,
-				D027C39A0CA803F300BD95DA /* FUObjectType.h in Headers */,
 				D027C39B0CA803F300BD95DA /* FUPlugin.h in Headers */,
 				D027C39D0CA803F300BD95DA /* FUPluginManager.h in Headers */,
 				D027C39F0CA803F300BD95DA /* FUSemaphore.h in Headers */,
@@ -2623,7 +2606,6 @@
 				D027C3E70CA8041100BD95DA /* StdAfx.h in Headers */,
 				D027C4410CA80F3000BD95DA /* FCollada.h in Headers */,
 				D027C4490CA80F3E00BD95DA /* FColladaPlugin.h in Headers */,
-				D027C4510CA80F4D00BD95DA /* StdAfx.h in Headers */,
 				D0E7E26F0D16D225000785CD /* FUErrorLog.h in Headers */,
 				D0E7E2710D16D225000785CD /* FUParameter.h in Headers */,
 				D0E7E2720D16D225000785CD /* FUParameter.hpp in Headers */,
@@ -2639,6 +2621,8 @@
 				D0E7E2B50D16D254000785CD /* FCDParameterAnimatable.h in Headers */,
 				D0E7E2B60D16D254000785CD /* FCDParameterAnimatable.hpp in Headers */,
 				D0683BF60D6623DB005653CA /* FCDSceneNodeIterator.hpp in Headers */,
+				D99309271497A90A00BB577D /* FUObject.h in Headers */,
+				D99309281497A90A00BB577D /* FUObjectType.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2826,8 +2810,6 @@
 				D027C3530CA803F300BD95DA /* FUFileManager.h in Headers */,
 				D027C3550CA803F300BD95DA /* FUFunctor.h in Headers */,
 				D027C3580CA803F300BD95DA /* FULogFile.h in Headers */,
-				D027C35A0CA803F300BD95DA /* FUObject.h in Headers */,
-				D027C35D0CA803F300BD95DA /* FUObjectType.h in Headers */,
 				D027C35E0CA803F300BD95DA /* FUPlugin.h in Headers */,
 				D027C3600CA803F300BD95DA /* FUPluginManager.h in Headers */,
 				D027C3620CA803F300BD95DA /* FUSemaphore.h in Headers */,
@@ -2849,7 +2831,6 @@
 				D027C3D90CA8041100BD95DA /* StdAfx.h in Headers */,
 				D027C4430CA80F3000BD95DA /* FCollada.h in Headers */,
 				D027C44B0CA80F3E00BD95DA /* FColladaPlugin.h in Headers */,
-				D027C4530CA80F4D00BD95DA /* StdAfx.h in Headers */,
 				D0E7E27A0D16D225000785CD /* FUErrorLog.h in Headers */,
 				D0E7E27C0D16D225000785CD /* FUParameter.h in Headers */,
 				D0E7E27D0D16D225000785CD /* FUParameter.hpp in Headers */,
@@ -2865,6 +2846,8 @@
 				D0E7E2BD0D16D254000785CD /* FCDParameterAnimatable.h in Headers */,
 				D0E7E2BE0D16D254000785CD /* FCDParameterAnimatable.hpp in Headers */,
 				D0683BF50D6623DB005653CA /* FCDSceneNodeIterator.hpp in Headers */,
+				D99309291497A90A00BB577D /* FUObject.h in Headers */,
+				D993092A1497A90A00BB577D /* FUObjectType.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3052,8 +3035,6 @@
 				D027C3160CA803F300BD95DA /* FUFileManager.h in Headers */,
 				D027C3180CA803F300BD95DA /* FUFunctor.h in Headers */,
 				D027C31B0CA803F300BD95DA /* FULogFile.h in Headers */,
-				D027C31D0CA803F300BD95DA /* FUObject.h in Headers */,
-				D027C3200CA803F300BD95DA /* FUObjectType.h in Headers */,
 				D027C3210CA803F300BD95DA /* FUPlugin.h in Headers */,
 				D027C3230CA803F300BD95DA /* FUPluginManager.h in Headers */,
 				D027C3250CA803F300BD95DA /* FUSemaphore.h in Headers */,
@@ -3075,7 +3056,6 @@
 				D027C3CB0CA8041100BD95DA /* StdAfx.h in Headers */,
 				D027C4450CA80F3000BD95DA /* FCollada.h in Headers */,
 				D027C44D0CA80F3E00BD95DA /* FColladaPlugin.h in Headers */,
-				D027C4550CA80F4D00BD95DA /* StdAfx.h in Headers */,
 				D0E7E2850D16D225000785CD /* FUErrorLog.h in Headers */,
 				D0E7E2870D16D225000785CD /* FUParameter.h in Headers */,
 				D0E7E2880D16D225000785CD /* FUParameter.hpp in Headers */,
@@ -3091,6 +3071,8 @@
 				D0E7E2C50D16D254000785CD /* FCDParameterAnimatable.h in Headers */,
 				D0E7E2C60D16D254000785CD /* FCDParameterAnimatable.hpp in Headers */,
 				D0683BF40D6623DB005653CA /* FCDSceneNodeIterator.hpp in Headers */,
+				D993092B1497A90A00BB577D /* FUObject.h in Headers */,
+				D993092C1497A90A00BB577D /* FUObjectType.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3405,7 +3387,6 @@
 				D027C43B0CA80F2000BD95DA /* DLLEntry.cpp in Sources */,
 				D027C4400CA80F3000BD95DA /* FCollada.cpp in Sources */,
 				D027C4480CA80F3E00BD95DA /* FColladaPlugin.cpp in Sources */,
-				D027C4500CA80F4D00BD95DA /* StdAfx.cpp in Sources */,
 				D0E7E26E0D16D225000785CD /* FUErrorLog.cpp in Sources */,
 				D0E7E2700D16D225000785CD /* FUParameter.cpp in Sources */,
 				D0E7E2730D16D225000785CD /* FUParameterizable.cpp in Sources */,
@@ -3446,7 +3427,6 @@
 				D027C4260CA8051100BD95DA /* FCTestXRefAcyclic.cpp in Sources */,
 				D027C4270CA8051100BD95DA /* FCTestXRefSimple.cpp in Sources */,
 				D027C4280CA8051100BD95DA /* FCTestXRefTree.cpp in Sources */,
-				D027C42B0CA8051F00BD95DA /* StdAfx.cpp in Sources */,
 				D027C6250CA8506A00BD95DA /* FCTestParameters.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3659,7 +3639,6 @@
 				D027C43C0CA80F2000BD95DA /* DLLEntry.cpp in Sources */,
 				D027C4420CA80F3000BD95DA /* FCollada.cpp in Sources */,
 				D027C44A0CA80F3E00BD95DA /* FColladaPlugin.cpp in Sources */,
-				D027C4520CA80F4D00BD95DA /* StdAfx.cpp in Sources */,
 				D0E7E2790D16D225000785CD /* FUErrorLog.cpp in Sources */,
 				D0E7E27B0D16D225000785CD /* FUParameter.cpp in Sources */,
 				D0E7E27E0D16D225000785CD /* FUParameterizable.cpp in Sources */,
@@ -3882,7 +3861,6 @@
 				D027C43D0CA80F2000BD95DA /* DLLEntry.cpp in Sources */,
 				D027C4440CA80F3000BD95DA /* FCollada.cpp in Sources */,
 				D027C44C0CA80F3E00BD95DA /* FColladaPlugin.cpp in Sources */,
-				D027C4540CA80F4D00BD95DA /* StdAfx.cpp in Sources */,
 				D0E7E2840D16D225000785CD /* FUErrorLog.cpp in Sources */,
 				D0E7E2860D16D225000785CD /* FUParameter.cpp in Sources */,
 				D0E7E2890D16D225000785CD /* FUParameterizable.cpp in Sources */,

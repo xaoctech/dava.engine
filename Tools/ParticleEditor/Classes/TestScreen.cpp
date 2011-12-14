@@ -28,13 +28,13 @@
         * Created by Vitaliy Borodovsky
 =====================================================================================*/
 #include "TestScreen.h"
-#include <sys/time.h>
 
 TestScreen::TestScreen()
 {
     emitterProps.push_back("type");
-    emitterProps.push_back("emissionAngle");  
-    emitterProps.push_back("emissionRage");
+    emitterProps.push_back("emissionAngle");
+    emitterProps.push_back("emissionRange");
+    emitterProps.push_back("emissionVector");
     emitterProps.push_back("radius");
     emitterProps.push_back("colorOverLife");
     emitterProps.push_back("size");
@@ -66,6 +66,9 @@ TestScreen::TestScreen()
     layerProps.push_back("colorRandom");
     layerProps.push_back("alphaOverLife");
     layerProps.push_back("colorOverLife");
+    layerProps.push_back("alignToMotion");
+    layerProps.push_back("startTime");
+    layerProps.push_back("endTime");
     
     emitterTypes.push_back("POINT");
     emitterTypes.push_back("LINE");
@@ -75,7 +78,7 @@ TestScreen::TestScreen()
     deltaIndex = 0;
     curPropType = 0; //0 - value, 1 - Keyframed
     dblClickDelay = 500;
-    activePropEdit = 0;    
+    activePropEdit = 0;
 }
 
 void TestScreen::SafeAddControl(UIControl *control)
@@ -110,6 +113,10 @@ void TestScreen::LoadResources()
     f = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     f->SetSize(18);
     f->SetColor(Color(1,1,1,1));
+
+    preview = new PreviewControl();
+    preview->SetRect(Rect(buttonW*2, 0, GetScreenWidth() - buttonW*2, GetScreenHeight()));
+    AddControl(preview);
     
     chooseProject = new UIButton(Rect(0, 0, buttonW/2, cellH));
     chooseProject->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
@@ -453,18 +460,14 @@ void TestScreen::LoadResources()
     tip->SetAlign(DAVA::ALIGN_LEFT|DAVA::ALIGN_TOP);
     AddControl(tip);
     
-    preview = new PreviewControl();
-    preview->SetRect(Rect(buttonW*2, 0, GetScreenWidth() - buttonW*2, GetScreenHeight()));
-    AddControl(preview);
-    
     emitter = new ParticleEmitter();
     layers.push_back(new Layer(emitterProps, "", cellFont));
     layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
     AddControl(layers[0]->curLayerTime);
     preview->SetEmitter(emitter);
     
-    layers[0]->props[EMITTER_EMISSION_RAGE]->minValue = 0;
-    layers[0]->props[EMITTER_EMISSION_RAGE]->maxValue = 360;
+    layers[0]->props[EMITTER_EMISSION_RANGE]->minValue = 0;
+    layers[0]->props[EMITTER_EMISSION_RANGE]->maxValue = 360;
     
     forcePreview = new ForcePreviewControl();
     forcePreview->SetRect(Rect(buttonW*3/2, GetScreenHeight() - cellH*4, buttonW/2, buttonW*0.625f));
@@ -578,10 +581,6 @@ void TestScreen::TextFieldShouldReturn(UITextField * textField)
     {
         float32 val = 0;
         swscanf(textField->GetText().c_str(), L"%f", &val);
-        if(val > 1.0f)
-            val = 1.0f;
-        if(val < 0.0f)
-            val = 0.0f;
         Vector2 v2;
         propEdit[activeKFEdit]->GetSelectedValue(v2);
         v2.x = val;
@@ -649,8 +648,8 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
         layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
         SafeAddControl(layers[0]->curLayerTime);
         
-        layers[0]->props[EMITTER_EMISSION_RAGE]->minValue = 0;
-        layers[0]->props[EMITTER_EMISSION_RAGE]->maxValue = 360;
+        layers[0]->props[EMITTER_EMISSION_RANGE]->minValue = 0;
+        layers[0]->props[EMITTER_EMISSION_RANGE]->maxValue = 360;
         emitterList->RefreshList();
         propList->RefreshList();    
         
@@ -780,19 +779,7 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
     }
     if(obj == OKBut)
     {
-        layers[selectedEmitterElement]->props.at(selectedAddPropElement)->isDefault = false;
-        
-        if(selectedAddPropElement == LAYER_FORCES)
-            layers[selectedEmitterElement]->props.at(LAYER_FORCES_OVER_LIFE)->isDefault = false;
-        
-        if(selectedAddPropElement == LAYER_FORCES_OVER_LIFE)
-            layers[selectedEmitterElement]->props.at(LAYER_FORCES)->isDefault = false;
-        
-        deltaIndex = 0;
-        propList->RefreshList();
-        HideAddProps();
-        HideAndResetEditFields();
-        HideForcesList();
+        AddSelectedProp();
     }
     if(obj == cancelBut)
     {
@@ -880,6 +867,23 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
         SetDisabled(true);
         fsDlgProject->Show(this);
     }
+}
+
+void TestScreen::AddSelectedProp()
+{
+    layers[selectedEmitterElement]->props.at(selectedAddPropElement)->isDefault = false;
+    
+    if(selectedAddPropElement == LAYER_FORCES)
+        layers[selectedEmitterElement]->props.at(LAYER_FORCES_OVER_LIFE)->isDefault = false;
+    
+    if(selectedAddPropElement == LAYER_FORCES_OVER_LIFE)
+        layers[selectedEmitterElement]->props.at(LAYER_FORCES)->isDefault = false;
+    
+    deltaIndex = 0;
+    propList->RefreshList();
+    HideAddProps();
+    HideAndResetEditFields();
+    HideForcesList();
 }
 
 bool TestScreen::GetProp(PropertyLineValue<float32> *pv, int32 id, bool getLimits)
@@ -1339,8 +1343,8 @@ void TestScreen::GetEmitterPropValue(eProps id, bool getLimits)
     
     PropertyLineValue<float32> *pv;
     PropertyLineKeyframes<float32> *pk;
-    PropertyLineValue<Vector3> *vv;
-    PropertyLineKeyframes<Vector3> *vk;
+    PropertyLineValue<Vector3> *v3v;
+    PropertyLineKeyframes<Vector3> *v3k;
     PropertyLineValue<Color> *cv;
     PropertyLineKeyframes<Color> *ck;
     switch (id) {
@@ -1360,15 +1364,24 @@ void TestScreen::GetEmitterPropValue(eProps id, bool getLimits)
             break;
             
         case EMITTER_EMISSION_ANGLE:
-            vk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(emitter->emissionAngle.Get());
-            vv = dynamic_cast< PropertyLineValue<Vector3> *>(emitter->emissionAngle.Get());
+            pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->emissionAngle.Get());
+            pv = dynamic_cast< PropertyLineValue<float32> *>(emitter->emissionAngle.Get());
             layers[0]->props.at(id)->isDefault = false;
-            if(!GetProp(vk, id, getLimits))
-                if(!GetProp(vv, id, getLimits))
+            if(!GetProp(pk, id, getLimits))
+                if(!GetProp(pv, id, getLimits))
                     layers[0]->props.at(id)->isDefault = true;
             break;
             
-        case EMITTER_EMISSION_RAGE:
+        case EMITTER_EMISSION_VECTOR:
+            v3k = dynamic_cast< PropertyLineKeyframes<Vector3> *>(emitter->emissionVector.Get());
+            v3v = dynamic_cast< PropertyLineValue<Vector3> *>(emitter->emissionVector.Get());
+            layers[0]->props.at(id)->isDefault = false;
+            if(!GetProp(v3k, id, getLimits))
+                if(!GetProp(v3v, id, getLimits))
+                    layers[0]->props.at(id)->isDefault = true;
+            break;
+            
+        case EMITTER_EMISSION_RANGE:
             pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->emissionRange.Get());
             pv = dynamic_cast< PropertyLineValue<float32> *>(emitter->emissionRange.Get());
             layers[0]->props.at(id)->isDefault = false;
@@ -1396,11 +1409,11 @@ void TestScreen::GetEmitterPropValue(eProps id, bool getLimits)
             break;
             
         case EMITTER_SIZE:
-            vk = dynamic_cast< PropertyLineKeyframes<Vector3> *>(emitter->size.Get());
-            vv = dynamic_cast< PropertyLineValue<Vector3> *>(emitter->size.Get());
+            v3k = dynamic_cast< PropertyLineKeyframes<Vector3> *>(emitter->size.Get());
+            v3v = dynamic_cast< PropertyLineValue<Vector3> *>(emitter->size.Get());
             layers[0]->props.at(id)->isDefault = false;
-            if(!GetProp(vk, id, getLimits))
-                if(!GetProp(vv, id, getLimits))
+            if(!GetProp(v3k, id, getLimits))
+                if(!GetProp(v3v, id, getLimits))
                     layers[0]->props.at(id)->isDefault = true;
             break;
             
@@ -1416,6 +1429,7 @@ void TestScreen::GetEmitterPropValue(eProps id, bool getLimits)
             tfValue[0]->SetText(Format(L"%.2f", emitter->GetLifeTime()));
             valueText[0]->SetText(L"X:");            
             break;
+            
         default:
             break;
     }
@@ -1486,10 +1500,14 @@ void TestScreen::SetEmitterPropValue(eProps id, bool def)
             break;
             
         case EMITTER_EMISSION_ANGLE:
-            emitter->emissionAngle = valueDim3;
+            emitter->emissionAngle = valueDim1;
             break;
             
-        case EMITTER_EMISSION_RAGE:
+        case EMITTER_EMISSION_VECTOR:
+            emitter->emissionVector = valueDim3;
+            break;
+            
+        case EMITTER_EMISSION_RANGE:
             emitter->emissionRange = valueDim1;      
             break;
            
@@ -1530,7 +1548,11 @@ void TestScreen::ResetEmitterPropValue(eProps id)
             emitter->emissionAngle = 0;
             break;
             
-        case EMITTER_EMISSION_RAGE:
+        case EMITTER_EMISSION_VECTOR:
+            emitter->emissionVector = 0;
+            break;
+            
+        case EMITTER_EMISSION_RANGE:
             emitter->emissionRange = 0;      
             break;
             
@@ -1659,6 +1681,18 @@ void TestScreen::ResetLayerPropValue(lProps id)
             
         case LAYER_COLOR_OVER_LIFE:
             emitter->GetLayers().at(selectedEmitterElement-1)->colorOverLife = 0;  
+            break;
+            
+        case LAYER_ALIGN_TO_MOTION:
+            emitter->GetLayers().at(selectedEmitterElement-1)->alignToMotion = 0;
+            break;
+            
+        case LAYER_START_TIME:
+            emitter->GetLayers().at(selectedEmitterElement-1)->startTime = 0;
+            break;
+            
+        case LAYER_END_TIME:
+            emitter->GetLayers().at(selectedEmitterElement-1)->endTime = 100000000.0f;
             break;
             
         default:
@@ -1818,7 +1852,6 @@ void TestScreen::GetLayerPropValue(lProps id, bool getLimits)
             break;
             
         case LAYER_SPIN_OVER_LIFE:
-            
             pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->GetLayers().at(selectedEmitterElement-1)->spinOverLife.Get());
             pv = dynamic_cast< PropertyLineValue<float32> *>(emitter->GetLayers().at(selectedEmitterElement-1)->spinOverLife.Get());
             layers[selectedEmitterElement]->props.at(id)->isDefault = false;
@@ -1906,6 +1939,45 @@ void TestScreen::GetLayerPropValue(lProps id, bool getLimits)
             if(!GetProp(ck, id, getLimits))
                 if(!GetProp(cv, id, getLimits))
                     layers[selectedEmitterElement]->props.at(id)->isDefault = true;
+            break;
+            
+        case LAYER_ALIGN_TO_MOTION:
+            if(emitter->GetLayers().at(selectedEmitterElement-1)->alignToMotion == 0)
+                layers[selectedEmitterElement]->props.at(id)->isDefault = true;
+            else
+                layers[selectedEmitterElement]->props.at(id)->isDefault = false;
+            
+            SafeAddControl(valueText[0]);
+            SafeAddControl(tfValue[0]);
+            valueText[0]->SetText(L"A:");
+            vSliders[0]->SetValue(RadToDeg(emitter->GetLayers().at(selectedEmitterElement-1)->alignToMotion));
+            tfValue[0]->SetText(Format(L"%.2f", RadToDeg(emitter->GetLayers().at(selectedEmitterElement-1)->alignToMotion)));
+            break;
+            
+        case LAYER_START_TIME:
+            if(emitter->GetLayers().at(selectedEmitterElement-1)->startTime == 0)
+                layers[selectedEmitterElement]->props.at(id)->isDefault = true;
+            else
+                layers[selectedEmitterElement]->props.at(id)->isDefault = false;
+            
+            SafeAddControl(valueText[0]);
+            SafeAddControl(tfValue[0]);
+            valueText[0]->SetText(L"T:");
+            vSliders[0]->SetValue(emitter->GetLayers().at(selectedEmitterElement-1)->startTime);
+            tfValue[0]->SetText(Format(L"%.2f", emitter->GetLayers().at(selectedEmitterElement-1)->startTime));
+            break;
+            
+        case LAYER_END_TIME:
+            if(emitter->GetLayers().at(selectedEmitterElement-1)->endTime == 100000000.0f)
+                layers[selectedEmitterElement]->props.at(id)->isDefault = true;
+            else
+                layers[selectedEmitterElement]->props.at(id)->isDefault = false;
+            
+            SafeAddControl(valueText[0]);
+            SafeAddControl(tfValue[0]);
+            valueText[0]->SetText(L"T:");
+            vSliders[0]->SetValue(emitter->GetLayers().at(selectedEmitterElement-1)->endTime);
+            tfValue[0]->SetText(Format(L"%.2f", emitter->GetLayers().at(selectedEmitterElement-1)->endTime));
             break;
             
         default:
@@ -2075,6 +2147,18 @@ void TestScreen::SetLayerPropValue(lProps id, bool def)
             
         case LAYER_COLOR_OVER_LIFE:
             emitter->GetLayers().at(selectedEmitterElement-1)->colorOverLife = valueDim4;
+            break;
+            
+        case LAYER_ALIGN_TO_MOTION:
+            emitter->GetLayers().at(selectedEmitterElement-1)->alignToMotion = DegToRad(value[0]);
+            break;
+            
+        case LAYER_START_TIME:
+            emitter->GetLayers().at(selectedEmitterElement-1)->startTime = value[0];
+            break;
+            
+        case LAYER_END_TIME:
+            emitter->GetLayers().at(selectedEmitterElement-1)->endTime = value[0];
             break;
             
         default:
@@ -2487,8 +2571,6 @@ void TestScreen::ShowKeyedEditFields(int32 dim)
         
         tfValueLimits[i]->SetRect(tfPosKFEdit[i]);
     }
-    
-    
 }
 
 void TestScreen::ShowAddProps()
@@ -2691,6 +2773,7 @@ UIListCell *TestScreen::CellAtIndex(UIList *forList, int32 index)
         
         return c;
     }
+    
     if (forList == propList)
     {
         PropListCell *c = (PropListCell *)forList->GetReusableCell("PropList Cell");
@@ -2706,11 +2789,17 @@ UIListCell *TestScreen::CellAtIndex(UIList *forList, int32 index)
         }
         c->SetId(index+deltaIndex);
         
+        if (index == selectedPropElement) 
+            c->SetSelected(true);
+        else
+            c->SetSelected(false);
+        
         if(index+deltaIndex < n)
             c->SetText(StringToWString(*layers[selectedEmitterElement]->props.at(index+deltaIndex)->name));
         
         return c;
     }
+    
     if (forList == addPropList)
     {
         UIListCell *c = forList->GetReusableCell("AddPropList Cell");
@@ -2730,6 +2819,12 @@ UIListCell *TestScreen::CellAtIndex(UIList *forList, int32 index)
         {
             c->SetStateText(UIListCell::STATE_NORMAL, StringToWString(layerProps[index]));       
         }
+        
+        if (index == selectedAddPropElement) 
+            c->SetSelected(true);
+        else
+            c->SetSelected(false);
+        
         return c;
     }
     
@@ -2755,10 +2850,12 @@ UIListCell *TestScreen::CellAtIndex(UIList *forList, int32 index)
         {
             c->SetStateText(UIListCell::STATE_NORMAL, Format(L"ForceOverLife %d", index));
         }
-        if(selectedForceElement == index)
-        {
+        
+        if (index == selectedForceElement) 
             c->SetSelected(true);
-        }
+        else
+            c->SetSelected(false);
+        
         return c;
     }
     
@@ -2855,26 +2952,15 @@ void TestScreen::OnCellSelected(UIList *forList, UIListCell *selectedCell)
         selectedAddPropElement = selectedCell->GetIndex();
         selectedCell->SetSelected(true);
 
-        static timeval lastTime;
-        timeval t;
-        gettimeofday(&t, 0);
-        if( Abs(t.tv_usec/1000 + t.tv_sec*1000 - lastTime.tv_usec/1000 - lastTime.tv_sec*1000) < dblClickDelay)
-        {
-            layers[selectedEmitterElement]->props.at(selectedAddPropElement)->isDefault = false;
-            
-            if(selectedAddPropElement == LAYER_FORCES)
-                layers[selectedEmitterElement]->props.at(LAYER_FORCES_OVER_LIFE)->isDefault = false;
-            
-            if(selectedAddPropElement == LAYER_FORCES_OVER_LIFE)
-                layers[selectedEmitterElement]->props.at(LAYER_FORCES)->isDefault = false;
-            
-            deltaIndex = 0;
-            propList->RefreshList();
-            HideAddProps();
-            HideAndResetEditFields();
-            HideForcesList();
-        }
-        gettimeofday(&lastTime, 0);
+        uint64 dblClickDTime = 0;
+        static uint64 lastTime;
+        uint64 t = SystemTimer::Instance()->AbsoluteMS();
+        dblClickDTime = Abs(t - lastTime);
+        std::cout<<dblClickDTime<<std::endl;
+        lastTime = SystemTimer::Instance()->AbsoluteMS();
+        
+        if(dblClickDTime < dblClickDelay)
+            AddSelectedProp();
     }
     
     if(forList == forcesList)
@@ -2941,7 +3027,7 @@ void TestScreen::Update(float32 timeElapsed)
 
 void TestScreen::Draw(const UIGeometricData &geometricData)
 {
-
+    
 }
 
 void TestScreen::SaveToYaml(const String &pathToFile)
@@ -2973,15 +3059,15 @@ void TestScreen::SaveToYaml(const String &pathToFile)
     if(emitter->type == ParticleEmitter::EMITTER_RECT)
         file->WriteLine("    type: rect");
     if(emitter->type == ParticleEmitter::EMITTER_ONCIRCLE)
-        file->WriteLine("    type: oncirlce");
+        file->WriteLine("    type: oncircle");
     emitPropIndex++;
     
-    v3k = dynamic_cast< PropertyLineKeyframes<Vector3> *>(emitter->emissionAngle.Get());
-    v3v = dynamic_cast< PropertyLineValue<Vector3> *>(emitter->emissionAngle.Get());
-    if(v3k)
-        PrintPropKFValue(file, emitterProps[emitPropIndex], v3k);
-    else if(v3v)
-        PrintPropValue(file, emitterProps[emitPropIndex], v3v);
+    pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->emissionAngle.Get());
+    pv = dynamic_cast< PropertyLineValue<float32> *>(emitter->emissionAngle.Get());
+    if(pk)
+        PrintPropKFValue(file, emitterProps[emitPropIndex], pk);
+    else if(pv)
+        PrintPropValue(file, emitterProps[emitPropIndex], pv);
     emitPropIndex++;
     
     pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->emissionRange.Get());
@@ -2990,6 +3076,14 @@ void TestScreen::SaveToYaml(const String &pathToFile)
         PrintPropKFValue(file, emitterProps[emitPropIndex], pk);
     else if(pv)
         PrintPropValue(file, emitterProps[emitPropIndex], pv);
+    emitPropIndex++;
+    
+    v3k = dynamic_cast< PropertyLineKeyframes<Vector3> *>(emitter->emissionVector.Get());
+    v3v = dynamic_cast< PropertyLineValue<Vector3> *>(emitter->emissionVector.Get());
+    if(v3k)
+        PrintPropKFValue(file, emitterProps[emitPropIndex], v3k);
+    else if(v3v)
+        PrintPropValue(file, emitterProps[emitPropIndex], v3v);
     emitPropIndex++;
     
     pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->radius.Get());
@@ -3246,6 +3340,16 @@ void TestScreen::SaveToYaml(const String &pathToFile)
         else if(cv)
             PrintPropValue(file, layerProps[propIndex], cv);
         propIndex++;
+        
+        file->WriteLine(Format("    %s: %f", layerProps[propIndex].c_str(), RadToDeg(emitter->GetLayers()[i]->alignToMotion)));
+        propIndex++;
+        
+        file->WriteLine(Format("    %s: %f", layerProps[propIndex].c_str(), emitter->GetLayers()[i]->startTime));
+        propIndex++;
+        
+        file->WriteLine(Format("    %s: %f", layerProps[propIndex].c_str(), emitter->GetLayers()[i]->endTime));
+        propIndex++;
+        
         file->WriteLine("");
     }
     SafeRelease(file);
