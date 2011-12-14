@@ -1479,15 +1479,12 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< HEAD
 				5CC1CBC2149908AF0073EC95 /* EditorBodyControl.cpp */,
 				5CC1CBC3149908AF0073EC95 /* EditorBodyControl.h */,
 				5CC1CBC4149908AF0073EC95 /* LibraryControl.cpp */,
 				5CC1CBC5149908AF0073EC95 /* LibraryControl.h */,
 				5CC1CBC6149908AF0073EC95 /* SceneEditorScreenMain.cpp */,
 				5CC1CBC7149908AF0073EC95 /* SceneEditorScreenMain.h */,
-=======
->>>>>>> 29bafe7cbb7fa834f8f7dbcf9b7507c80bc7afa8
 				D92D797B1498BC5D002F58FB /* GameScene.cpp */,
 				D92D797C1498BC5D002F58FB /* GameScene.h */,
 				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
@@ -1899,12 +1896,9 @@
 				D99312861497B1BB00BB577D /* MiniCLTask.cpp in Sources */,
 				D99312871497B1BB00BB577D /* MiniCLTaskScheduler.cpp in Sources */,
 				D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */,
-<<<<<<< HEAD
 				5CC1CBC8149908AF0073EC95 /* EditorBodyControl.cpp in Sources */,
 				5CC1CBC9149908AF0073EC95 /* LibraryControl.cpp in Sources */,
 				5CC1CBCA149908AF0073EC95 /* SceneEditorScreenMain.cpp in Sources */,
-=======
->>>>>>> 29bafe7cbb7fa834f8f7dbcf9b7507c80bc7afa8
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
