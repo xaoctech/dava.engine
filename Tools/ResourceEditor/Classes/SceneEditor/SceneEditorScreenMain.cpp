@@ -198,17 +198,23 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 
 void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 {
-    fileSystemDialog->SetExtensionFilter(".sce");
-    fileSystemDialog->Show(this);
-    fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".sce");
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+    }
 }
 
 
 void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 {
-    fileSystemDialog->SetExtensionFilter(".dae");
-    fileSystemDialog->Show(this);
-    fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".dae");
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
+    }
 }
 
 
@@ -231,9 +237,12 @@ void SceneEditorScreenMain::OnNewPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnOpenProjectPressed(BaseObject * obj, void *, void *)
 {
-    fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_CHOOSE_DIR);
-    fileSystemDialog->Show(this);
-    fileSystemDialogOpMode = DIALOG_OPERATION_MENU_PROJECT;
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_CHOOSE_DIR);
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_PROJECT;
+    }
 }
 
 
