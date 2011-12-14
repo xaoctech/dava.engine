@@ -7,18 +7,24 @@
 
 #include "DAVAEngine.h"
 #include "BeastTypes.h"
+#include "BeastNameGenerator.h"
 
 class BeastManager
 {
 public:
+	DECLARE_BEAST_NAME(BeastManager);
+
 	BeastManager();
-	~BeastManager();
+	virtual ~BeastManager();
 
 	void BeginScene();
 	void EndScene();
 
+	void AddMesh(DAVA::StaticMesh * staticMesh);
+
 private:
 	static void StaticInit();
+
 	static bool isInited;
 
 	ILBManagerHandle handle;

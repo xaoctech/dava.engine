@@ -30,12 +30,16 @@ void BeastManager::StaticInit()
 
 void BeastManager::BeginScene()
 {
-	BEAST_VERIFY(ILBBeginScene(handle, "sceneName", &scene));
+	BEAST_VERIFY(ILBBeginScene(handle, GENERATE_BEAST_NAME(BeastManager), &scene));
 }
 
 void BeastManager::EndScene()
 {
 	BEAST_VERIFY(ILBEndScene(scene));
+}
+
+void BeastManager::AddMesh(DAVA::StaticMesh * staticMesh)
+{
 }
 
 #endif //__DAVAENGINE_BEAST__
