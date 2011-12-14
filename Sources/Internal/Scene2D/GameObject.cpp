@@ -258,6 +258,17 @@ void GameObject::SetManager(GameObjectManager * _manager)
 	manager = _manager;
 }
 
+void GameObject::FastForward(float32 skipTime, float32 updateTime)
+{
+    DVASSERT_MSG(skipTime>0.0f && updateTime>0.0f, "FastForward skipTime and updateTime must be greater than 0");
+    float32 remainingSkipTime = skipTime;
+    while(remainingSkipTime>0.0f) 
+    {
+        Update(updateTime);
+        remainingSkipTime -= updateTime;
+    }
+}
+    
 void GameObject::Update(float32 timeElapsed)
 {
 	if(collision)
