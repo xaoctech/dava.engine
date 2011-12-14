@@ -6,15 +6,7 @@
 #include "DAVAEngine.h"
 #include "BeastTypes.h"
 
-DAVA::String ConvertBeastString(ILBStringHandle h)
-{
-	int32 len;
-	ILBGetLength(h, &len);
-	DAVA::String result(len - 1, 0);
-	ILBCopy(h, &result[0], len);
-	ILBReleaseString(h);
-	return result;
-}
+DAVA::String ConvertBeastString(ILBStringHandle h);
 
 #define BEAST_VERIFY(command) \
 { \
