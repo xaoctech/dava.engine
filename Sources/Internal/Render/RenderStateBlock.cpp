@@ -199,9 +199,9 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 #if defined(__DAVAENGINE_OPENGL__)
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 #endif
-        if (changeSet & STATE_CHANGED_SHADER)
+//        if (changeSet & STATE_CHANGED_SHADER)
         {
-            if (shader != previousState->shader)
+//            if (shader != previousState->shader)
             {
                 if (shader)shader->Bind();
                 else Shader::Unbind();

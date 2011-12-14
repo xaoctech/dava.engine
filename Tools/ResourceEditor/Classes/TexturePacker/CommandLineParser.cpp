@@ -2,7 +2,8 @@
 #include "CommandLineParser.h"
 #include <string>
 #include <cerrno>
-	
+
+using namespace DAVA;
 
 CommandLineParser::CommandLineParser()
 {
