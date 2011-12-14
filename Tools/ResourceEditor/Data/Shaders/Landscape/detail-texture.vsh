@@ -3,7 +3,6 @@ attribute vec2 inTexCoord;
 
 uniform mat4 modelViewProjectionMatrix;
 uniform vec3 cameraPosition;
-varying vec4 varColor;
 varying vec2 varTexCoord;
 varying vec2 varDetailCoord;
 

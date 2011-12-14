@@ -34,6 +34,7 @@
 #include "Utils/Utils.h"
 #include "Core/Core.h"
 #include "Platform/SystemTimer.h"
+#include <algorithm>
 
 namespace DAVA
 {
@@ -53,10 +54,10 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     SetCurrentDir(FileSystem::Instance()->GetCurrentWorkingDirectory());
     
-    cellH = GetScreenHeight()/20;
+    cellH = (int32)GetScreenHeight()/20;
     cellH = Max(cellH, 32);
-    int32 border = GetScreenHeight()/64;
-    fileListView = new UIList(Rect(border, border + cellH, size.x - border*2, size.y - cellH*3 - border*3), UIList::ORIENTATION_VERTICAL);
+    int32 border = (int32)GetScreenHeight()/64;
+    fileListView = new UIList(Rect((float32)border, (float32)(border + cellH), (float32)(size.x - border*2), (float32)(size.y - cellH*3 - border*3)), UIList::ORIENTATION_VERTICAL);
     fileListView->SetDelegate(this);
     fileListView->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     fileListView->GetBackground()->SetColor(Color(0.25, 0.25, 0.25, 0.25));
@@ -65,16 +66,16 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     lastSelectionTime = 0;
     
     Font *f = FTFont::Create(fontPath);
-    f->SetSize(cellH * 2 / 3);
-    f->SetColor(Color(1,1,1,1));
+    f->SetSize((float32)cellH * 2 / 3);
+    f->SetColor(Color(1.f, 1.f, 1.f, 1.f));
     
-    title = new UIStaticText(Rect(border, border/2, size.x - border*2, cellH));
+    title = new UIStaticText(Rect((float32)border, (float32)border/2, (float32)size.x - border*2, (float32)cellH));
     title->SetFont(f);
     title->SetFittingOption(TextBlock::FITTING_REDUCE);
     title->SetText(L"Select file:");
     AddControl(title);
 
-    workingPath = new UIStaticText(Rect(border, border/2 + fileListView->size.y + fileListView->relativePosition.y, size.x - border*2, cellH));
+    workingPath = new UIStaticText(Rect((float32)border, (float32)border/2 + fileListView->size.y + fileListView->relativePosition.y, (float32)size.x - border*2, (float32)cellH));
     workingPath->SetFont(f);
     workingPath->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
     workingPath->SetFittingOption(TextBlock::FITTING_REDUCE);
@@ -83,34 +84,34 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     
     int32 buttonW = cellH * 3;
-    positiveButton = new UIButton(Rect(size.x - border - buttonW, workingPath->relativePosition.y + border/2 + cellH , buttonW, cellH));
+    positiveButton = new UIButton(Rect((float32)size.x - border - buttonW, (float32)workingPath->relativePosition.y + border/2 + cellH, (float32)buttonW, (float32)cellH));
     positiveButton->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    positiveButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.5, 0.6, 0.5, 0.5));
+    positiveButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.5f, 0.6f, 0.5f, 0.5f));
     positiveButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    positiveButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.75, 0.85, 0.75, 0.5));
+    positiveButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.75f, 0.85f, 0.75f, 0.5f));
     positiveButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
-    positiveButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2, 0.2, 0.2, 0.2));
+    positiveButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     positiveButton->SetStateFont(UIControl::STATE_NORMAL, f);
     positiveButton->SetStateText(UIControl::STATE_NORMAL, L"OK");
 	positiveButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIFileSystemDialog::ButtonPressed));
     AddControl(positiveButton);
 
-    negativeButton = new UIButton(Rect(positiveButton->relativePosition.x - buttonW - border, positiveButton->relativePosition.y, buttonW, cellH));
+    negativeButton = new UIButton(Rect((float32)positiveButton->relativePosition.x - buttonW - border, (float32)positiveButton->relativePosition.y, (float32)buttonW, (float32)cellH));
     negativeButton->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    negativeButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.6, 0.5, 0.5, 0.5));
+    negativeButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.6f, 0.5f, 0.5f, 0.5f));
     negativeButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    negativeButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.85, 0.75, 0.75, 0.5));
+    negativeButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.85f, 0.75f, 0.75f, 0.5f));
     negativeButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
-    negativeButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2, 0.2, 0.2, 0.2));
+    negativeButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     negativeButton->SetStateFont(UIControl::STATE_NORMAL, f);
     negativeButton->SetStateText(UIControl::STATE_NORMAL, L"Cancel");
 	negativeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIFileSystemDialog::ButtonPressed));
     AddControl(negativeButton);
     
 
-    textField = new UITextField(Rect(border, positiveButton->relativePosition.y, negativeButton->relativePosition.x - border*2, cellH));
+    textField = new UITextField(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)negativeButton->relativePosition.x - border*2, (float32)cellH));
     textField->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    textField->GetBackground()->SetColor(Color(0.25, 0.25, 0.25, 0.25));
+    textField->GetBackground()->SetColor(Color(0.25f, 0.25f, 0.25f, 0.25f));
     textField->SetFont(f);
     textField->SetDelegate(this);
     
@@ -237,8 +238,9 @@ void UIFileSystemDialog::SetExtensionFilter(const Vector<String> &newExtensionFi
     extensionFilter.clear();
     extensionFilter = newExtensionFilter;
     
-    for (int32 k = 0; k < extensionFilter.size(); ++k)
-        std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), std::tolower);
+	int32 size = extensionFilter.size();
+    for (int32 k = 0; k < size; ++k)
+        std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), ::tolower);
 }
 
 const Vector<String> & UIFileSystemDialog::GetExtensionFilter()
@@ -298,7 +300,7 @@ void UIFileSystemDialog::RefreshList()
     fileUnits.clear();
     int32 cnt = files->GetCount();
     int32 outCnt = 0;
-    int32 p;
+    int32 p = -1;
     
     while (true) 
     {
@@ -346,9 +348,10 @@ void UIFileSystemDialog::RefreshList()
                     continue;
                 }
                 String ext = FileSystem::GetExtension(fu.name);
-                std::transform(ext.begin(), ext.end(), ext.begin(), std::tolower);
+                std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
                 bool isPresent = false;
-                for (int n = 0; n < extensionFilter.size(); n++) 
+				int32 size = extensionFilter.size();
+                for (int32 n = 0; n < size; n++) 
                 {
                     if (extensionFilter[n] == "*" || ext == extensionFilter[n])
                     {
@@ -401,14 +404,14 @@ UIListCell *UIFileSystemDialog::CellAtIndex(UIList *forList, int32 index)
     UIListCell *c = forList->GetReusableCell("File cell"); //try to get cell from the reusable cells store
     if(!c)
     { //if cell of requested type isn't find in the store create new cell
-        c = new UIListCell(Rect(0, 0, forList->size.x, cellH), "File cell");
-        UIStaticText *text = new UIStaticText(Rect(0, 0, forList->size.x, cellH));
+        c = new UIListCell(Rect(0, 0, (float32)forList->size.x, (float32)cellH), "File cell");
+        UIStaticText *text = new UIStaticText(Rect(0, 0, (float32)forList->size.x, (float32)cellH));
         c->AddControl(text);
         text->SetName("CellText");
         text->SetFittingOption(TextBlock::FITTING_REDUCE);
         text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
         Font *f = FTFont::Create(fontPath);
-        f->SetSize(cellH * 2 / 3);
+        f->SetSize((float32)cellH * 2 / 3);
         f->SetColor(Color(1,1,1,1));
         text->SetFont(f);
         SafeRelease(f);

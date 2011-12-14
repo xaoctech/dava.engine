@@ -71,7 +71,6 @@ namespace DAVA
 		
 	}*/
     
-    
 	int Core::RunCmdTool(int argc, char * argv[], AppHandle handle)
 	{
 		CoreWin32Platform * core = new CoreWin32Platform();

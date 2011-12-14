@@ -77,14 +77,14 @@ void SceneEditorScreen::LoadResources()
     scene->AddNode(cam2);
     scene->AddCamera(cam2);
     
-    Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
-    //sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
-    SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.2f, 0.2f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
-    spriteNode->SetName("testSpriteNode");
-    spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 100.0f, 0.0f)));
-    spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-    spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
-    scene->AddNode(spriteNode);
+    //Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
+    ////sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
+    //SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.2f, 0.2f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
+    //spriteNode->SetName("testSpriteNode");
+    //spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 100.0f, 0.0f)));
+    //spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+    //spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
+    //scene->AddNode(spriteNode);
     
     
     

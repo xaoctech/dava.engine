@@ -327,6 +327,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIControlSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIEvent.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIFadeTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyCell.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyNode.h" />
@@ -553,6 +554,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIControlSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIEvent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIFadeTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIFileSystemDialog.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyCell.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyNode.cpp" />
