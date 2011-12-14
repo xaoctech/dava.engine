@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* GameScene.cpp */; };
 		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
 		D99311F31497B1BB00BB577D /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310521497B1BB00BB577D /* btAxisSweep3.cpp */; };
 		D99311F41497B1BB00BB577D /* btBroadphaseProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310551497B1BB00BB577D /* btBroadphaseProxy.cpp */; };
@@ -264,6 +265,8 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D92D797B1498BC5D002F58FB /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameScene.cpp; path = Classes/GameScene.cpp; sourceTree = SOURCE_ROOT; };
+		D92D797C1498BC5D002F58FB /* GameScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameScene.h; path = Classes/GameScene.h; sourceTree = SOURCE_ROOT; };
 		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
 		D993104F1497B1BB00BB577D /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bullet-C-Api.h"; sourceTree = "<group>"; };
 		D99310521497B1BB00BB577D /* btAxisSweep3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = btAxisSweep3.cpp; sourceTree = "<group>"; };
@@ -1467,6 +1470,8 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				D92D797B1498BC5D002F58FB /* GameScene.cpp */,
+				D92D797C1498BC5D002F58FB /* GameScene.h */,
 				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
 				FE39246E1490C8FD00766CEC /* PanelSwitcher.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
@@ -1875,6 +1880,7 @@
 				D99312851497B1BB00BB577D /* MiniCL.cpp in Sources */,
 				D99312861497B1BB00BB577D /* MiniCLTask.cpp in Sources */,
 				D99312871497B1BB00BB577D /* MiniCLTaskScheduler.cpp in Sources */,
+				D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
