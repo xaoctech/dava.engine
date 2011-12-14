@@ -446,7 +446,7 @@ DisplayMode Core::FindBestMode(const DisplayMode & requestedMode)
 			int32 diffHeight = abs(availableMode.height - requestedMode.height);
 
 			float32 availableAspect = (availableMode.height>0?(float32)availableMode.width/(float32)availableMode.height:1.0f);
-			float32 diffAspect = fabs(availableAspect - requestedAspect);
+			float32 diffAspect = fabsf(availableAspect - requestedAspect);
 
 //			if (diffWidth >= 0 && diffHeight >= 0)
 			{
