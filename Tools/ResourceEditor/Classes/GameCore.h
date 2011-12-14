@@ -13,6 +13,7 @@
 
 class ResourcePackerScreen;
 class SceneEditorScreen;
+class SceneEditorScreenMain;
 
 class GameCore : public DAVA::ApplicationCore
 {
@@ -34,6 +35,7 @@ public:
 private:
 	ResourcePackerScreen * resourcePackerScreen;
     SceneEditorScreen * sceneEditorScreen;
+    SceneEditorScreenMain * sceneEditorScreenMain;
 };
 
 
