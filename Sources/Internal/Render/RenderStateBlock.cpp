@@ -65,7 +65,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     color.a = 1.0f;
     sourceFactor = BLEND_ONE;
     destFactor = BLEND_ZERO;
-    for (int32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
+    for (uint32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
         currentTexture[idx] = 0;
     alphaFunc = CMP_ALWAYS;
     shader = 0;
@@ -85,7 +85,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
             SetAlphaTestFuncInHW();
         }
         
-        for (int32 textureLevel = 0; textureLevel < MAX_TEXTURE_LEVELS; ++textureLevel)
+        for (uint32 textureLevel = 0; textureLevel < MAX_TEXTURE_LEVELS; ++textureLevel)
         {
             SetTextureLevelInHW(textureLevel);
         }
@@ -200,17 +200,19 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 #endif
 //        if (changeSet & STATE_CHANGED_SHADER)
-        {
+//        {
 //            if (shader != previousState->shader)
-            {
-                if (shader)shader->Bind();
-                else Shader::Unbind();
-                previousState->shader = shader;
-            }
-        }
+//            {
+//            }
+//        }
+
         changeSet = 0;
         previousState->changeSet = 0;
     }
+    if (shader)shader->Bind();
+    else Shader::Unbind();
+    previousState->shader = shader;
+
 }
     
     

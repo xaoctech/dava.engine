@@ -172,6 +172,13 @@ public:
     
 	Animation *			RemoveFromManagerAnimation(int32 track = 0);
 	
+    /**
+     \brief This function calls n updates immediately, where n = skipTime/updateTime.
+     \param[in] skipTime time you want to skip 
+     \param[in] updateTime time of one update
+	 */
+    virtual void FastForward(float32 skipTime, float32 updateTime = 0.1f);
+    
 	/**
 		\brief This function is called every frame to let you update objects in hierarchy
 		It called every frame and all you get is time elapsed. 

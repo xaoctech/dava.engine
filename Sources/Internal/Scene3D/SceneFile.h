@@ -199,6 +199,28 @@ public:
 		Matrix4 localTransform;			// local transform matrix
 		int32	nodeType;				// type of node
 		int32	customDataSize;			// custom data size
+		bool    isSolid;
+		// void * customNodeData;		
+		// void * childsData;
+	};
+
+	struct SceneNodeDef_102
+	{
+		enum
+		{
+			SCENE_NODE_BASE = 0,		// base node without additional data
+			SCENE_NODE_MESH,			// node with mesh instance
+			SCENE_NODE_ANIMATED_MESH,	// node with animated mesh
+			SCENE_NODE_CAMERA,			// node with camera
+			SCENE_NODE_SKELETON,		// root skeleton node
+			SCENE_NODE_BONE,			// other skeleton bones
+		};
+		
+		int32	parentId;				// id of parent node
+		int32	childCount;				// number of childs
+		Matrix4 localTransform;			// local transform matrix
+		int32	nodeType;				// type of node
+		int32	customDataSize;			// custom data size
 		// void * customNodeData;		
 		// void * childsData;
 	};
