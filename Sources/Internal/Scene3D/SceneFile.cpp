@@ -62,7 +62,7 @@ SceneFile::Header::Header()
 	descriptor[0] = 'D'; descriptor[1] = 'V';
 	descriptor[2] = 'S'; descriptor[3] = 'C';
 	
-	version = 102;
+	version = 103;
 	textureCount = 0;			
 	materialCount = 0;
 	staticMeshCount = 0;
@@ -476,10 +476,26 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 	char8 name[512];
 	sceneFP->Read(&id, sizeof(id));
 	sceneFP->ReadString(name, 512);
-	
+
 	SceneFile::SceneNodeDef def;
-	sceneFP->Read(&def, sizeof(def));	
 	
+	if (header.version == 102)
+	{
+		SceneFile::SceneNodeDef_102 def102;
+		 sceneFP->Read(&def102, sizeof(def102));
+		
+		def.parentId = def102.parentId;
+		def.childCount = def102.childCount;
+		def.localTransform = def102.localTransform;
+		def.nodeType = def102.nodeType;
+		def.customDataSize = def102.customDataSize;
+		def.isSolid = false;
+	}	
+	else
+	{
+		sceneFP->Read(&def, sizeof(def));		
+	}
+
 	char8 nodeType[64];
 	nodeType[0] = 0;
 	
@@ -491,6 +507,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
+		node->isSolidNode = def.isSolid;
         if (parentNode != scene) 
         {
             parentNode->AddNode(node);
@@ -508,6 +525,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		node->SetLocalTransform(def.localTransform);
 		currentSkeletonNode->inverse0Matrix = inverse0;
 		node->SetName(name);
+		node->isSolidNode = def.isSolid;
         if (parentNode != scene) 
         {
             parentNode->AddNode(node);
@@ -523,6 +541,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
+		node->isSolidNode = def.isSolid;
 
 		boneNode->inverse0Matrix = inverse0;    // TODO: make inverse0Matrix protected
         if (parentNode != scene) 
@@ -541,7 +560,8 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
-        
+		node->isSolidNode = def.isSolid;
+
         if (parentNode != scene) 
         {
             parentNode->AddNode(node);
@@ -560,6 +580,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
+		node->isSolidNode = def.isSolid;
         
 		int pgInstancesCount = 0;
 		sceneFP->Read(&pgInstancesCount, sizeof(int));
