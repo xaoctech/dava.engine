@@ -174,6 +174,9 @@ public:
     
     inline Scene *GetScene() const;
 	
+	bool isSolidNode;
+	BaseObject * userData;
+	
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
