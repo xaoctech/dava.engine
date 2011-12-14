@@ -2,14 +2,11 @@
 #include "ColladaDocument.h"
 
 
-using namespace DAVA;
-
-
-void ConvertDaeToSce(const String & pathToFile)
+void ConvertDaeToSce(const DAVA::String & pathToFile)
 {
     FCollada::Initialize();
     
-    ColladaDocument colladaDocument;
+    DAVA::ColladaDocument colladaDocument;
     if (!colladaDocument.Open(pathToFile.c_str()))
     {
         printf("*** ERROR: Failed to read %s\n", pathToFile.c_str());
@@ -23,9 +20,9 @@ void ConvertDaeToSce(const String & pathToFile)
      colladaDocument.ExportAnimations(CommandLineParser::Instance()->GetParam(k).c_str());
      }
      */
-    String fileDirectory, filePath;
-    FileSystem::SplitPath(pathToFile, fileDirectory, filePath);
-    filePath = FileSystem::ReplaceExtension(filePath, ".sce");
+    DAVA::String fileDirectory, filePath;
+    DAVA::FileSystem::SplitPath(pathToFile, fileDirectory, filePath);
+    filePath = DAVA::FileSystem::ReplaceExtension(filePath, ".sce");
     
     colladaDocument.SaveScene(fileDirectory, filePath);
     colladaDocument.Close();
