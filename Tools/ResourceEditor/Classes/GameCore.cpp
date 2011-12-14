@@ -11,6 +11,8 @@
 #include "AppScreens.h"
 #include "ResourcePackerScreen.h"
 #include "SceneEditor/SceneEditorScreen.h"
+#include "SceneEditor/SceneEditorScreenMain.h"
+
 
 using namespace DAVA;
 
@@ -30,11 +32,14 @@ void GameCore::OnAppStarted()
 	
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreen = new SceneEditorScreen();
+    sceneEditorScreenMain = new SceneEditorScreenMain();
 
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR, sceneEditorScreen);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
     
-	UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR);
+//	UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR);
+    UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
 }
 
 void GameCore::OnAppFinished()

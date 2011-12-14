@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5CED00E41498C97A006F0EDD /* EditorBodyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CED00E01498C97A006F0EDD /* EditorBodyControl.cpp */; };
+		5CED00E51498C97A006F0EDD /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CED00E21498C97A006F0EDD /* SceneEditorScreenMain.cpp */; };
+		5CED00EB1498E477006F0EDD /* LibraryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CED00E91498E477006F0EDD /* LibraryControl.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
 		D99311F31497B1BB00BB577D /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310521497B1BB00BB577D /* btAxisSweep3.cpp */; };
@@ -263,6 +266,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		5CED00E01498C97A006F0EDD /* EditorBodyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorBodyControl.cpp; sourceTree = "<group>"; };
+		5CED00E11498C97A006F0EDD /* EditorBodyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorBodyControl.h; sourceTree = "<group>"; };
+		5CED00E21498C97A006F0EDD /* SceneEditorScreenMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditorScreenMain.cpp; sourceTree = "<group>"; };
+		5CED00E31498C97A006F0EDD /* SceneEditorScreenMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditorScreenMain.h; sourceTree = "<group>"; };
+		5CED00E91498E477006F0EDD /* LibraryControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryControl.cpp; sourceTree = "<group>"; };
+		5CED00EA1498E477006F0EDD /* LibraryControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryControl.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
 		D993104F1497B1BB00BB577D /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bullet-C-Api.h"; sourceTree = "<group>"; };
@@ -1467,6 +1476,12 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5CED00E91498E477006F0EDD /* LibraryControl.cpp */,
+				5CED00EA1498E477006F0EDD /* LibraryControl.h */,
+				5CED00E01498C97A006F0EDD /* EditorBodyControl.cpp */,
+				5CED00E11498C97A006F0EDD /* EditorBodyControl.h */,
+				5CED00E21498C97A006F0EDD /* SceneEditorScreenMain.cpp */,
+				5CED00E31498C97A006F0EDD /* SceneEditorScreenMain.h */,
 				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
 				FE39246E1490C8FD00766CEC /* PanelSwitcher.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
@@ -1875,6 +1890,9 @@
 				D99312851497B1BB00BB577D /* MiniCL.cpp in Sources */,
 				D99312861497B1BB00BB577D /* MiniCLTask.cpp in Sources */,
 				D99312871497B1BB00BB577D /* MiniCLTaskScheduler.cpp in Sources */,
+				5CED00E41498C97A006F0EDD /* EditorBodyControl.cpp in Sources */,
+				5CED00E51498C97A006F0EDD /* SceneEditorScreenMain.cpp in Sources */,
+				5CED00EB1498E477006F0EDD /* LibraryControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
