@@ -11,6 +11,7 @@
 		5CED00E51498C97A006F0EDD /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CED00E21498C97A006F0EDD /* SceneEditorScreenMain.cpp */; };
 		5CED00EB1498E477006F0EDD /* LibraryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CED00E91498E477006F0EDD /* LibraryControl.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* GameScene.cpp */; };
 		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
 		D99311F31497B1BB00BB577D /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310521497B1BB00BB577D /* btAxisSweep3.cpp */; };
 		D99311F41497B1BB00BB577D /* btBroadphaseProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310551497B1BB00BB577D /* btBroadphaseProxy.cpp */; };
@@ -273,6 +274,8 @@
 		5CED00E91498E477006F0EDD /* LibraryControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryControl.cpp; sourceTree = "<group>"; };
 		5CED00EA1498E477006F0EDD /* LibraryControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryControl.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D92D797B1498BC5D002F58FB /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameScene.cpp; path = Classes/GameScene.cpp; sourceTree = SOURCE_ROOT; };
+		D92D797C1498BC5D002F58FB /* GameScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameScene.h; path = Classes/GameScene.h; sourceTree = SOURCE_ROOT; };
 		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
 		D993104F1497B1BB00BB577D /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bullet-C-Api.h"; sourceTree = "<group>"; };
 		D99310521497B1BB00BB577D /* btAxisSweep3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = btAxisSweep3.cpp; sourceTree = "<group>"; };
@@ -1482,6 +1485,8 @@
 				5CED00E11498C97A006F0EDD /* EditorBodyControl.h */,
 				5CED00E21498C97A006F0EDD /* SceneEditorScreenMain.cpp */,
 				5CED00E31498C97A006F0EDD /* SceneEditorScreenMain.h */,
+				D92D797B1498BC5D002F58FB /* GameScene.cpp */,
+				D92D797C1498BC5D002F58FB /* GameScene.h */,
 				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
 				FE39246E1490C8FD00766CEC /* PanelSwitcher.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
@@ -1893,6 +1898,7 @@
 				5CED00E41498C97A006F0EDD /* EditorBodyControl.cpp in Sources */,
 				5CED00E51498C97A006F0EDD /* SceneEditorScreenMain.cpp in Sources */,
 				5CED00EB1498E477006F0EDD /* LibraryControl.cpp in Sources */,
+				D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
