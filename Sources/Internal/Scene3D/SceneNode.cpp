@@ -48,11 +48,14 @@ SceneNode::SceneNode(Scene * _scene)
 	//animation = 0;
     debugFlags = DEBUG_DRAW_NONE;
     flags = 0;
+	isSolidNode = false;
+	userData = 0;
 }
 
 SceneNode::~SceneNode()
 {
     RemoveAllChildren();
+	SafeDelete(userData);
 }
 
 void SceneNode::SetParent(SceneNode * node)
@@ -323,6 +326,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
+	dstNode->isSolidNode = isSolidNode;
 
 //    Logger::Debug("Node %s clonned", name.c_str());
     
