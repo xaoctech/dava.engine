@@ -6,8 +6,9 @@
 #include "DAVAEngine.h"
 #include "BeastTypes.h"
 #include "BeastNameGenerator.h"
+#include "BeastResource.h"
 
-class BeastMesh
+class BeastMesh : public BeastResource<BeastMesh>
 {
 public:
 	DECLARE_BEAST_NAME(BeastMesh);
@@ -19,7 +20,6 @@ public:
 
 private:
 	ILBMeshHandle mesh;
-	ILBManagerHandle manager;
 
 	bool CheckVertexFormat(DAVA::PolygonGroup * polygonGroup);
 	void AddVertices(DAVA::PolygonGroup * polygonGroup);

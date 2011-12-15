@@ -2,7 +2,7 @@
 #define __LIBRARY_CONTROL_H__
 
 #include "DAVAEngine.h"
-#include "UIFileTree.h"
+#include "../UIFileTree.h"
 
 
 using namespace DAVA;
