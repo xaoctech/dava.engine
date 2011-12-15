@@ -97,12 +97,12 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h" />
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxy.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h" />
     <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\BeastProxy.h" />
     <ClInclude Include="Classes\BulletObject.h" />
     <ClInclude Include="Classes\bullet\btBulletCollisionCommon.h" />
     <ClInclude Include="Classes\bullet\btBulletDynamicsCommon.h" />
@@ -401,10 +401,10 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp" />
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxy.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp" />
+    <ClCompile Include="Classes\BeastProxy.cpp" />
     <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btBroadphaseProxy.cpp" />
