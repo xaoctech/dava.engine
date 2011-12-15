@@ -42,6 +42,8 @@ using namespace DAVA;
 	DAVA::Cursor * activeCursor;
 }
 
+- (size_t) displayBitsPerPixel:(CGDirectDisplayID) displayId;
+
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;
 

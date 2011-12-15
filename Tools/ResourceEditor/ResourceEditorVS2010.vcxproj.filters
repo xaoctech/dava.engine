@@ -90,7 +90,6 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp">
       <Filter>Collada</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="Classes\BeastManager.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
@@ -106,8 +105,6 @@
     <ClCompile Include="Classes\BeastMaterial.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
-=======
->>>>>>> 510bf8a1ad480be53d6905c171b589ce758bf571
     <ClCompile Include="Classes\GameScene.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp">
@@ -690,7 +687,6 @@
     <ClInclude Include="Classes\Collada\stdafx.h">
       <Filter>Collada</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="Classes\BeastManager.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
@@ -709,8 +705,6 @@
     <ClInclude Include="Classes\BeastMaterial.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
-=======
->>>>>>> 510bf8a1ad480be53d6905c171b589ce758bf571
     <ClInclude Include="Classes\GameScene.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.h">
