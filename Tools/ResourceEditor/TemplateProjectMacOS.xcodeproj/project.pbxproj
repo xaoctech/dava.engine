@@ -13,6 +13,9 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* GameScene.cpp */; };
 		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
+		D979C678149A133200FA98C0 /* SceneNodeUserData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */; };
+		D979C67B149A138300FA98C0 /* BulletObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C67A149A138300FA98C0 /* BulletObject.cpp */; };
+		D979C7AC149A31EC00FA98C0 /* DebugNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */; };
 		D99311F31497B1BB00BB577D /* btAxisSweep3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310521497B1BB00BB577D /* btAxisSweep3.cpp */; };
 		D99311F41497B1BB00BB577D /* btBroadphaseProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310551497B1BB00BB577D /* btBroadphaseProxy.cpp */; };
 		D99311F51497B1BB00BB577D /* btCollisionAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D99310571497B1BB00BB577D /* btCollisionAlgorithm.cpp */; };
@@ -277,6 +280,12 @@
 		D92D797B1498BC5D002F58FB /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameScene.cpp; path = Classes/GameScene.cpp; sourceTree = SOURCE_ROOT; };
 		D92D797C1498BC5D002F58FB /* GameScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameScene.h; path = Classes/GameScene.h; sourceTree = SOURCE_ROOT; };
 		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
+		D979C676149A133200FA98C0 /* SceneNodeUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneNodeUserData.h; path = Classes/SceneNodeUserData.h; sourceTree = SOURCE_ROOT; };
+		D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneNodeUserData.cpp; path = Classes/SceneNodeUserData.cpp; sourceTree = SOURCE_ROOT; };
+		D979C679149A138300FA98C0 /* BulletObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BulletObject.h; path = Classes/BulletObject.h; sourceTree = SOURCE_ROOT; };
+		D979C67A149A138300FA98C0 /* BulletObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BulletObject.cpp; path = Classes/BulletObject.cpp; sourceTree = SOURCE_ROOT; };
+		D979C7AA149A31EC00FA98C0 /* DebugNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugNode.h; path = Classes/DebugNode.h; sourceTree = SOURCE_ROOT; };
+		D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugNode.cpp; path = Classes/DebugNode.cpp; sourceTree = SOURCE_ROOT; };
 		D993104F1497B1BB00BB577D /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bullet-C-Api.h"; sourceTree = "<group>"; };
 		D99310521497B1BB00BB577D /* btAxisSweep3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = btAxisSweep3.cpp; sourceTree = "<group>"; };
 		D99310531497B1BB00BB577D /* btAxisSweep3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = btAxisSweep3.h; sourceTree = "<group>"; };
@@ -1479,6 +1488,12 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				D979C7AA149A31EC00FA98C0 /* DebugNode.h */,
+				D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */,
+				D979C679149A138300FA98C0 /* BulletObject.h */,
+				D979C67A149A138300FA98C0 /* BulletObject.cpp */,
+				D979C676149A133200FA98C0 /* SceneNodeUserData.h */,
+				D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */,
 				5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */,
 				5C03F91A14990CCB002EE5C1 /* EditorBodyControl.h */,
 				5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */,
@@ -1899,6 +1914,9 @@
 				5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */,
 				5C03F92014990CCB002EE5C1 /* LibraryControl.cpp in Sources */,
 				5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */,
+				D979C678149A133200FA98C0 /* SceneNodeUserData.cpp in Sources */,
+				D979C67B149A138300FA98C0 /* BulletObject.cpp in Sources */,
+				D979C7AC149A31EC00FA98C0 /* DebugNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
