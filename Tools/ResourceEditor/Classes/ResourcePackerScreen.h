@@ -47,6 +47,7 @@ public:
 	// Resource Tree
 	UIFileTree * resourceTree;
 	void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell);
+    virtual int32 CellHeight(UIList *forList, int32 index);
 
 	// Sprite Editor Logic
 	void OpenSpriteEditor(const String & spriteName);
