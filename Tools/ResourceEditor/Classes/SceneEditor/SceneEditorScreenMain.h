@@ -20,6 +20,8 @@ class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate,
         BODY_Y_OFFSET = 50,
         
         LIBRARY_WIDTH = 200,
+        
+        TAB_BUTTONS_OFFSET = 110,
     };
     
 public:
@@ -39,7 +41,6 @@ private:
     
     int32 FindCurrentBody();
     
-    
     void AddLineControl(Rect r);
     
     void CustomizeButton(UIButton *btn, const WideString &text);
@@ -48,7 +49,7 @@ private:
     void CreateTopMenu();
     void ReleaseTopMenu();
     UIButton *CustomiseMenuButton(Rect r, const WideString &text);
-    
+
     UIButton * btnOpen;
     UIButton * btnSave;
     UIButton * btnMaterials;
@@ -94,6 +95,10 @@ private:
     void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
     void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
+    //Hierarhy
+    UIButton *hierarhyButton;
+    void OnHierarhyPressed(BaseObject * obj, void *, void *);
+    
     //Library
     UIButton *libraryButton;
     LibraryControl *libraryControl;

@@ -13,9 +13,9 @@ class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
     {
+        SCENE_OFFSET = 10, 
         LEFT_SIDE_WIDTH = 200,
-        RIGHT_SIDE_WIDTH = 300,
-        SCENE_HEIGHT = 400,
+        RIGHT_SIDE_WIDTH = 200,
         CELL_HEIGHT = 20,
         MATRIX_HEIGHT = 100,
         BUTTON_HEIGHT = 20,
@@ -33,6 +33,11 @@ public:
     
     void ShowProperties(bool show);
     bool PropertiesAreShown();
+
+    void ShowHierarhy(bool show);
+    bool HierarhyAreShown();
+
+    void UpdateLibraryState(bool isShown, int32 width);
     
 protected:
 

@@ -26,7 +26,12 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     sceneTree->GetBackground()->SetColor(Color(0.92f, 0.92f, 0.92f, 1.0f));
     AddControl(sceneTree);
 
-    scene3dView = new UI3DView(Rect(LEFT_SIDE_WIDTH + 10, 10, rect.dx - LEFT_SIDE_WIDTH - RIGHT_SIDE_WIDTH - 20, SCENE_HEIGHT));
+    scene3dView = new UI3DView(Rect(
+                            LEFT_SIDE_WIDTH + SCENE_OFFSET, 
+                            SCENE_OFFSET, 
+                            rect.dx - LEFT_SIDE_WIDTH - RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
+                            rect.dy - 2 * SCENE_OFFSET));
+    
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
@@ -543,4 +548,47 @@ void EditorBodyControl::ShowProperties(bool show)
 bool EditorBodyControl::PropertiesAreShown()
 {
     return (activePropertyPanel->GetParent() != NULL);
+}
+
+void EditorBodyControl::ShowHierarhy(bool show)
+{
+    if(show && !sceneTree->GetParent())
+    {
+        AddControl(sceneTree);
+        
+        Rect r = scene3dView->GetRect();
+        r.dx -= LEFT_SIDE_WIDTH;
+        r.x += LEFT_SIDE_WIDTH;
+        scene3dView->SetRect(r);
+    }
+    else if(!show && sceneTree->GetParent())
+    {
+        RemoveControl(sceneTree);
+        
+        Rect r = scene3dView->GetRect();
+        r.dx += LEFT_SIDE_WIDTH;
+        r.x -= LEFT_SIDE_WIDTH;
+        scene3dView->SetRect(r);
+    }
+}
+
+bool EditorBodyControl::HierarhyAreShown()
+{
+    return (sceneTree->GetParent() != NULL);
+}
+
+void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
+{
+    Rect r = scene3dView->GetRect();
+    if(isShown)
+    {
+        ShowProperties(false);
+        
+        r.dx -= width;
+    }
+    else
+    {
+        r.dx += RIGHT_SIDE_WIDTH;
+    }
+    scene3dView->SetRect(r);
 }
