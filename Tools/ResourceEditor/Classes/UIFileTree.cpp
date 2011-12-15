@@ -27,7 +27,6 @@ UIFileTree::UIFileTree(const Rect &rect, bool rectInAbsoluteCoordinates)
 	delegate = 0;
 	isFolderNavigationEnabled = false;
     isRootFolderChangeEnabled = true;
-    
     isRootFolderExpandingDisabled = false;
 }
 

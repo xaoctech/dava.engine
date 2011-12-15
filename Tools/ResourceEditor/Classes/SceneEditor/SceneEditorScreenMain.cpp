@@ -55,7 +55,7 @@ void SceneEditorScreenMain::LoadResources()
     hierarhyButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnHierarhyPressed));
     AddControl(hierarhyButton);
     
-    
+
     InitializeBodyList();
 }
 
@@ -278,10 +278,6 @@ void SceneEditorScreenMain::OnOpenProjectPressed(BaseObject * obj, void *, void 
 void SceneEditorScreenMain::InitializeBodyList()
 {
     AddBodyItem(L"Level", false);
-
-    AddBodyItem(L"Test1", true);
-    AddBodyItem(L"Test2", true);
-    AddBodyItem(L"Test3", true);
 }
 
 void SceneEditorScreenMain::ReleaseBodyList()
