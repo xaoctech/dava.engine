@@ -650,8 +650,8 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
         
         layers[0]->props[EMITTER_EMISSION_RANGE]->minValue = 0;
         layers[0]->props[EMITTER_EMISSION_RANGE]->maxValue = 360;
-        emitterList->RefreshList();
-        propList->RefreshList();    
+        emitterList->Refresh();
+        propList->Refresh();    
         
         if(emitter->GetIs3D())
             emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
@@ -694,8 +694,8 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
         layers.push_back(l);
         SafeAddControl(l->curLayerTime);        
         
-        emitterList->RefreshList();
-        propList->RefreshList();
+        emitterList->Refresh();
+        propList->Refresh();
     }
     if(obj == delLayer)
     {
@@ -707,8 +707,8 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
             emitter->GetLayers().erase(emitter->GetLayers().begin()+selectedEmitterElement-1);
             selectedEmitterElement = -1;
         }
-        emitterList->RefreshList();
-        propList->RefreshList();
+        emitterList->Refresh();
+        propList->Refresh();
     }
     if(obj == cloneLayer)
     {
@@ -724,8 +724,8 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
             SafeAddControl(l->curLayerTime);
         }
         selectedEmitterElement = -1;
-        emitterList->RefreshList();
-        propList->RefreshList();
+        emitterList->Refresh();
+        propList->Refresh();
     }
     if(obj == disableLayer)
     {
@@ -736,15 +736,15 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
             emitter->GetLayers()[selectedEmitterElement-1]->isDisabled = !disabled;
         }
         selectedEmitterElement = -1;
-        emitterList->RefreshList();
-        propList->RefreshList();
+        emitterList->Refresh();
+        propList->Refresh();
     }
     if(obj == addProp)
     {
         if(selectedEmitterElement >= 0)
         {
             ShowAddProps();
-            addPropList->RefreshList();
+            addPropList->Refresh();
             
             HideAndResetEditFields();
             HideForcesList();
@@ -773,7 +773,7 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
             ResetLayerPropValue((lProps)selectedPropElement);
         }
         deltaIndex = 0;
-        propList->RefreshList();
+        propList->Refresh();
         HideAndResetEditFields();
         HideForcesList();
     }
@@ -839,7 +839,7 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
         HideAndResetEditFields();
         selectedForceElement = -1;
         forcePreview->SetValue(Vector3(0, 0, 0));
-        forcesList->RefreshList();
+        forcesList->Refresh();
     }
     if(obj == delForce)
     {
@@ -856,7 +856,7 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
             }
             
             HideAndResetEditFields();
-            forcesList->RefreshList();
+            forcesList->Refresh();
             selectedForceElement = -1;
             forcePreview->SetValue(Vector3(0, 0, 0));
         }
@@ -880,7 +880,7 @@ void TestScreen::AddSelectedProp()
         layers[selectedEmitterElement]->props.at(LAYER_FORCES)->isDefault = false;
     
     deltaIndex = 0;
-    propList->RefreshList();
+    propList->Refresh();
     HideAddProps();
     HideAndResetEditFields();
     HideForcesList();
@@ -2436,8 +2436,8 @@ void TestScreen::OnFileSelected(UIFileSystemDialog *forDialog, const String &pat
             selectedPropElement = -1;
             HideAndResetEditFields();
             HideForcesList();
-            emitterList->RefreshList();
-            propList->RefreshList();
+            emitterList->Refresh();
+            propList->Refresh();
             
             if(emitter->GetIs3D())
                 emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
@@ -2888,7 +2888,7 @@ void TestScreen::OnCellSelected(UIList *forList, UIListCell *selectedCell)
     {
         selectedEmitterElement = selectedCell->GetIndex();
         selectedCell->SetSelected(true);
-        propList->RefreshList();
+        propList->Refresh();
         deltaIndex = 0;
         tip->SetText(L"");
         selectedPropElement = -1;
@@ -2910,7 +2910,7 @@ void TestScreen::OnCellSelected(UIList *forList, UIListCell *selectedCell)
             }
         }
         
-        propList->RefreshList();
+        propList->Refresh();
         
         HideAndResetEditFields();
         HideForcesList();
@@ -2928,7 +2928,7 @@ void TestScreen::OnCellSelected(UIList *forList, UIListCell *selectedCell)
         {
             GetEmitterPropValue((eProps)selectedPropElement);
             if(selectedPropElement == 0)
-                emitterTypeList->RefreshList();
+                emitterTypeList->Refresh();
             tip->SetText(LocalizedString("emitter." + emitterProps[selectedPropElement]));
         }
         if(selectedEmitterElement > 0)

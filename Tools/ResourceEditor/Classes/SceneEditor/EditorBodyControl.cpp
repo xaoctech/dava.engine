@@ -18,10 +18,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
     
-    AddLine(Rect(LEFT_SIDE_WIDTH, 0, 1, rect.dy));
-    AddLine(Rect(rect.dx - RIGHT_SIDE_WIDTH, 0, 1, rect.dy));
-    
-    
     sceneTree = new UIHierarchy(Rect(0, 0, LEFT_SIDE_WIDTH, rect.dy));
     sceneTree->SetCellHeight(CELL_HEIGHT);
     sceneTree->SetDelegate(this);
@@ -54,7 +50,7 @@ EditorBodyControl::~EditorBodyControl()
 
 void EditorBodyControl::CreateScene()
 {
-    scene = new Scene();
+    scene = new GameScene();
     // Camera setup
     cameraController = new WASDCameraController(40);
     Camera * cam = new Camera(scene);
@@ -194,15 +190,6 @@ UIButton * EditorBodyControl::CreateButton(Rect r, const WideString &text)
     return btn;
 }
 
-
-void EditorBodyControl::AddLine(DAVA::Rect r)
-{
-    UIControl *lineControl = new UIControl(r); 
-    lineControl->GetBackground()->color = Color(0.8f, 0.8f, 0.8f, 1.0f);
-    lineControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    AddControl(lineControl);
-    SafeRelease(lineControl);
-}
 
 bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
 {
@@ -413,8 +400,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-    Camera * cam = scene->GetCurrentCamera();
-    Camera * frustumCam = scene->GetClipCamera();
+//    Camera * cam = scene->GetCurrentCamera();
+//    Camera * frustumCam = scene->GetClipCamera();
     
 //    if (!cam)
 //    {
@@ -531,4 +518,29 @@ void EditorBodyControl::OpenScene(const String &pathToFile)
 void EditorBodyControl::WillAppear()
 {
     sceneTree->Refresh();
+}
+
+void EditorBodyControl::ShowProperties(bool show)
+{
+    if(show && !activePropertyPanel->GetParent())
+    {
+        AddControl(activePropertyPanel);
+        
+        Rect r = scene3dView->GetRect();
+        r.dx -= RIGHT_SIDE_WIDTH;
+        scene3dView->SetRect(r);
+    }
+    else if(!show && activePropertyPanel->GetParent())
+    {
+        RemoveControl(activePropertyPanel);
+
+        Rect r = scene3dView->GetRect();
+        r.dx += RIGHT_SIDE_WIDTH;
+        scene3dView->SetRect(r);
+    }
+}
+
+bool EditorBodyControl::PropertiesAreShown()
+{
+    return (activePropertyPanel->GetParent() != NULL);
 }
