@@ -21,12 +21,13 @@ LibraryControl::LibraryControl(const Rect & rect)
 
     
     GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
+    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 0.85f));
     
     fileTreeControl = new UIFileTree(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dy - BUTTON_HEIGHT - rect.dx));
 	fileTreeControl->SetDelegate(this);
-	fileTreeControl->SetFolderNavigation(true);
-	fileTreeControl->SetPath(folderPath, ".dae;.sce;.DAE;.SCE");
+	fileTreeControl->SetFolderNavigation(false);
+    fileTreeControl->EnableRootFolderChange(false);
+	fileTreeControl->SetPath(folderPath, ".dae;.sce;");
     AddControl(fileTreeControl);
 
     
@@ -106,7 +107,8 @@ void LibraryControl::WillAppear()
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path + "/DataSource/3d";
-    
+    fileTreeControl->SetPath(folderPath, ".dae;.sce");
+
     if(GetParent())
     {
         RefreshTree();
@@ -180,7 +182,8 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 {
     UITreeItemInfo * itemInfo = selectedCell->GetItemInfo();
 	String extension = FileSystem::GetExtension(itemInfo->GetName());
-	if (extension == ".dae" || extension == ".DAE")
+//	if (extension == ".dae" || extension == ".DAE")
+	if (0 == UIFileTree::CompareExtensions(extension, ".dae"))
 	{
         selectedFileName = itemInfo->GetPathname();
         if(panelSCE->GetParent())
@@ -192,7 +195,8 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             AddControl(panelDAE);
         }
 	}
-    else if(extension == ".sce" || extension == ".SCE")
+    else if (0 == UIFileTree::CompareExtensions(extension, ".sce"))
+//    else if(extension == ".sce" || extension == ".SCE")
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
@@ -231,7 +235,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             cam->SetName("editor-camera");
             cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
             cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-            cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+            cam->SetPosition(Vector3(10.0f, 0.0f, 0.0f));
             cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
             cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
             
@@ -256,11 +260,17 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 
 void LibraryControl::RefreshTree()
 {
-    fileTreeControl->SetPath(folderPath, ".dae;.sce;.DAE;.SCE");
+//    fileTreeControl->SetPath(folderPath, ".dae;.sce;.DAE;.SCE");
+//    fileTreeControl->SetPath(folderPath, ".dae;.sce");
     fileTreeControl->Refresh();
 }
 
 void LibraryControl::SetDelegate(LibraryControlDelegate *delegate)
 {
     controlDelegate = delegate;
+}
+
+int32 LibraryControl::CellHeight(UIList *forList, int32 index)
+{
+    return CELL_HEIGHT;
 }

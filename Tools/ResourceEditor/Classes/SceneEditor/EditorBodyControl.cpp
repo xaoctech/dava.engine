@@ -56,7 +56,7 @@ EditorBodyControl::~EditorBodyControl()
 
 void EditorBodyControl::CreateScene()
 {
-    scene = new Scene();
+    scene = new GameScene();
     // Camera setup
     cameraController = new WASDCameraController(40);
     Camera * cam = new Camera(scene);

@@ -570,3 +570,9 @@ void ResourcePackerScreen::Draw(const UIGeometricData &geometricData)
 {
 
 }
+
+int32 ResourcePackerScreen::CellHeight(UIList *forList, int32 index)
+{
+    return 16;
+}
+
