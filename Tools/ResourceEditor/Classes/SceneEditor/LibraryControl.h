@@ -2,10 +2,20 @@
 #define __LIBRARY_CONTROL_H__
 
 #include "DAVAEngine.h"
+#include "UIFileTree.h"
+
 
 using namespace DAVA;
 
-class LibraryControl : public UIControl, public UIHierarchyDelegate
+class LibraryControlDelegate
+{
+public:
+	virtual void OnEditSCE(const String &pathName, const String &name) = 0;
+	virtual void OnAddSCE(const String &pathName) = 0;
+};
+
+
+class LibraryControl : public UIControl, public UIFileTreeDelegate
 {
     enum eConst
     {
@@ -22,23 +32,43 @@ public:
 
     void SetPath(const String &path);
     
+    void SetDelegate(LibraryControlDelegate *delegate);
+    
 protected:
 
-    virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
-    virtual int32 ChildrenCount(UIHierarchy *forHierarchy, void *forParent);
-    virtual void *ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index);
-    virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node);
-    virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
+    void RefreshTree();
     
-    UIHierarchy * filesTree;
+    UIButton *CreateButton(Rect r, const WideString &text);
+    UIControl *CreatePanel(Rect r);
+
+    UIFileTree *fileTreeControl;
+    virtual void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell);
+
+    
+    UIControl *panelDAE;
+    UIButton *btnConvert;
+    void OnConvertPressed(BaseObject * object, void * userData, void * callerData);
+    
+    UIControl *panelSCE;
+    UIButton *btnEdit;
+    UIButton *btnAdd;
+    UI3DView *preview;
+    Scene *scene;
+    void OnAddPressed(BaseObject * object, void * userData, void * callerData);
+    void OnEditPressed(BaseObject * object, void * userData, void * callerData);
     
     // general
     Font *fontLight;
     Font *fontDark;
     
     UIButton *refreshButton;
+    void OnRefreshPressed(BaseObject * object, void * userData, void * callerData);
     
     String folderPath;
+    String selectedFileName;
+    String selectedFileNameShort;
+    
+    LibraryControlDelegate *controlDelegate;
 };
 
 
