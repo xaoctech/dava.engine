@@ -1,5 +1,5 @@
 #include "EditorBodyControl.h"
-#include "BeastProxy.h"
+#include "../BeastProxy.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect),

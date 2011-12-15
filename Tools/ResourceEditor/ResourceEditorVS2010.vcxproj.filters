@@ -566,9 +566,6 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxy.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
@@ -576,6 +573,9 @@
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BeastProxy.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1445,9 +1445,6 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxy.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
@@ -1458,6 +1455,9 @@
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastProxy.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
