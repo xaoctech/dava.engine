@@ -334,7 +334,7 @@ File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint3
 
 const String & FileSystem::SystemPathForFrameworkPath(const String & frameworkPath)
 {
-	DVASSERT(frameworkPath.size() > 0);
+	//DVASSERT(frameworkPath.size() > 0);
 	if(frameworkPath[0] != '~')
 	{
 		return frameworkPath;
