@@ -27,6 +27,8 @@ UIFileTree::UIFileTree(const Rect &rect, bool rectInAbsoluteCoordinates)
 	delegate = 0;
 	isFolderNavigationEnabled = false;
     isRootFolderChangeEnabled = true;
+    
+    isRootFolderExpandingDisabled = false;
 }
 
 UIFileTree::~UIFileTree()
@@ -137,8 +139,14 @@ int32 UIFileTree::CellHeight(UIList *forList, int32 index)
     
 void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
-	UITreeItemInfo * entry = treeHead->EntryByIndex(selectedCell->GetIndex());
-	entry->ToggleExpanded();
+    int32 index = selectedCell->GetIndex();
+    
+	UITreeItemInfo * entry = treeHead->EntryByIndex(index);
+    
+    if(!(isRootFolderExpandingDisabled && 0 == index))
+    {
+        entry->ToggleExpanded();
+    }
 	
 	if (delegate)
 		delegate->OnCellSelected(this, dynamic_cast<UIFileTreeCell*>(selectedCell));
@@ -278,10 +286,31 @@ int32 UIFileTree::CompareExtensions(const String &ext1, const String &ext2)
     return 1;
 }
 
+void UIFileTree::Refresh()
+{
+    UIList::Refresh();
+    
+    if(isRootFolderExpandingDisabled)
+    {
+        UITreeItemInfo * entry = treeHead->EntryByIndex(0);
+        if(!entry->IsExpanded())
+        {
+            entry->ToggleExpanded();
+            UIList::Refresh();
+        }
+    }
+}
+    
 void UIFileTree::EnableRootFolderChange(bool isEnabled)
 {
     isRootFolderChangeEnabled = isEnabled;
 }
+    
+void UIFileTree::DisableRootFolderExpanding(bool isDisabled)
+{
+    isRootFolderExpandingDisabled = isDisabled;
+}
+    
     
 };
 

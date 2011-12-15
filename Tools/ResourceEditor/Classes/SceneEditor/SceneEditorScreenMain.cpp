@@ -49,6 +49,13 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(propertiesButton);
     
     
+    hierarhyButton = CustomiseMenuButton(
+                         Rect(0, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
+                         L"Hierarhy");
+    hierarhyButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnHierarhyPressed));
+    AddControl(hierarhyButton);
+    
+    
     InitializeBodyList();
 }
 
@@ -271,6 +278,10 @@ void SceneEditorScreenMain::OnOpenProjectPressed(BaseObject * obj, void *, void 
 void SceneEditorScreenMain::InitializeBodyList()
 {
     AddBodyItem(L"Level", false);
+
+    AddBodyItem(L"Test1", true);
+    AddBodyItem(L"Test2", true);
+    AddBodyItem(L"Test3", true);
 }
 
 void SceneEditorScreenMain::ReleaseBodyList()
@@ -292,7 +303,7 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     BodyItem c;
     
     int32 count = bodies.size();
-    c.headerButton = new UIButton(Rect(count * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
+    c.headerButton = new UIButton(Rect(TAB_BUTTONS_OFFSET + count * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
     CustomizeButton(c.headerButton, text);
     c.headerButton->SetTag(count);
     c.headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
@@ -339,6 +350,12 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
                 return;
             }
             
+            if(libraryControl->GetParent())
+            {
+                RemoveControl(libraryControl);
+                bodies[i].bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
+            }
+            
             RemoveControl(bodies[i].bodyControl);
             bodies[i].headerButton->SetSelected(false, false);
         }
@@ -364,6 +381,8 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
         {
             if(bodies[i].bodyControl->GetParent())
             {
+                RemoveControl(libraryControl);
+                
                 RemoveControl(bodies[i].bodyControl);
                 needToSwitchBody = true;
             }
@@ -380,8 +399,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
 
     for(int32 i = 0; i < bodies.size(); ++i, ++it)
     {
-        bodies[i].headerButton->SetRect(Rect(i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
-
+        bodies[i].headerButton->SetRect(Rect(TAB_BUTTONS_OFFSET + i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
         
         bodies[i].headerButton->SetTag(i);
         if(bodies[i].closeButton)
@@ -414,6 +432,13 @@ void SceneEditorScreenMain::OnLibraryPressed(DAVA::BaseObject *obj, void *, void
     {
         AddControl(libraryControl);
     }
+
+    int32 iBody = FindCurrentBody();
+    if(-1 != iBody)
+    {
+        bodies[iBody].bodyControl->ShowProperties(false);
+        bodies[iBody].bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
+    }
 }
 
 int32 SceneEditorScreenMain::FindCurrentBody()
@@ -436,6 +461,15 @@ void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *obj, void *, v
     {
         bool areShown = bodies[iBody].bodyControl->PropertiesAreShown();
         bodies[iBody].bodyControl->ShowProperties(!areShown);
+        
+        if(!areShown)
+        {
+            if(libraryControl->GetParent())
+            {
+                RemoveControl(libraryControl);
+                bodies[iBody].bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
+            }
+        }
     }
 }
 
@@ -455,3 +489,12 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
     }
 }
 
+void SceneEditorScreenMain::OnHierarhyPressed(BaseObject * obj, void *, void *)
+{
+    int32 iBody = FindCurrentBody();
+    if(-1 != iBody)
+    {
+        bool areShown = bodies[iBody].bodyControl->HierarhyAreShown();
+        bodies[iBody].bodyControl->ShowHierarhy(!areShown);
+    }
+}
