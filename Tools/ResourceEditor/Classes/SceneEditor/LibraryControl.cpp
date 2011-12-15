@@ -21,7 +21,7 @@ LibraryControl::LibraryControl(const Rect & rect)
 
     
     GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
+    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 0.85f));
     
     fileTreeControl = new UIFileTree(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dy - BUTTON_HEIGHT - rect.dx));
 	fileTreeControl->SetDelegate(this);
