@@ -15,6 +15,8 @@
 
 #ifdef __DAVAENGINE_BEAST__
 #include "BeastProxyImpl.h"
+#else
+#include "BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
 
@@ -36,6 +38,8 @@ void GameCore::OnAppStarted()
 
 #ifdef __DAVAENGINE_BEAST__
 	new BeastProxyImpl();
+#else 
+    new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 	
 	resourcePackerScreen = new ResourcePackerScreen();
