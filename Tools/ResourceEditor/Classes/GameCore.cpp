@@ -13,6 +13,10 @@
 #include "SceneEditor/SceneEditorScreen.h"
 #include "SceneEditor/SceneEditorScreenMain.h"
 
+#ifdef __DAVAENGINE_BEAST__
+#include "BeastProxyImpl.h"
+#endif //__DAVAENGINE_BEAST__
+
 
 using namespace DAVA;
 
@@ -29,6 +33,10 @@ GameCore::~GameCore()
 void GameCore::OnAppStarted()
 {
 	RenderManager::Instance()->SetFPS(30);
+
+#ifdef __DAVAENGINE_BEAST__
+	new BeastProxyImpl();
+#endif //__DAVAENGINE_BEAST__
 	
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreen = new SceneEditorScreen();

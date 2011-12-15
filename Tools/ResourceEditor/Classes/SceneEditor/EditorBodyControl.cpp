@@ -1,8 +1,9 @@
 #include "EditorBodyControl.h"
-
+#include "../BeastProxy.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
-    :   UIControl(rect)
+    :   UIControl(rect),
+	beastManager(0)
 {
     selectedNode = NULL;
     
@@ -34,6 +35,9 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreateScene();
     
     CreatePropertyPanel();
+
+	beastManager = BeastProxy::Instance()->CreateManager();
+	BeastProxy::Instance()->ParseScene(beastManager, scene);
 }
     
 EditorBodyControl::~EditorBodyControl()
@@ -46,6 +50,8 @@ EditorBodyControl::~EditorBodyControl()
     
     SafeRelease(fontLight);
     SafeRelease(fontDark);
+
+	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 }
 
 void EditorBodyControl::CreateScene()

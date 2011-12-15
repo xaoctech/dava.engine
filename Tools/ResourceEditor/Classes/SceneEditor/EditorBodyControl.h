@@ -8,6 +8,8 @@
 
 using namespace DAVA;
 
+class BeastManager;
+
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
@@ -92,6 +94,9 @@ protected:
     // general
     Font *fontLight;
     Font *fontDark;
+
+	//beast
+	BeastManager * beastManager;
 };
 
 

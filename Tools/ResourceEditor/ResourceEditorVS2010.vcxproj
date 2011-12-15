@@ -98,6 +98,10 @@
     <ClInclude Include="Classes\BeastMaterial.h" />
     <ClInclude Include="Classes\BeastMesh.h" />
     <ClInclude Include="Classes\BeastNameGenerator.h" />
+    <ClInclude Include="Classes\BeastProxy.h" />
+    <ClInclude Include="Classes\BeastProxyImpl.h" />
+    <ClInclude Include="Classes\BeastResource.h" />
+    <ClInclude Include="Classes\BeastTexture.h" />
     <ClInclude Include="Classes\BeastTypes.h" />
     <ClInclude Include="Classes\bullet\btBulletCollisionCommon.h" />
     <ClInclude Include="Classes\bullet\btBulletDynamicsCommon.h" />
@@ -394,6 +398,10 @@
     <ClCompile Include="Classes\BeastMaterial.cpp" />
     <ClCompile Include="Classes\BeastMesh.cpp" />
     <ClCompile Include="Classes\BeastNameGenerator.cpp" />
+    <ClCompile Include="Classes\BeastProxy.cpp" />
+    <ClCompile Include="Classes\BeastProxyImpl.cpp" />
+    <ClCompile Include="Classes\BeastResource.cpp" />
+    <ClCompile Include="Classes\BeastTexture.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btBroadphaseProxy.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btCollisionAlgorithm.cpp" />

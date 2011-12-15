@@ -17,10 +17,7 @@ public:
 	BeastManager();
 	virtual ~BeastManager();
 
-	void BeginScene();
-	void EndScene();
-
-	void AddMesh(DAVA::StaticMesh * staticMesh);
+	void ParseScene(DAVA::Scene * davaScene);
 
 private:
 	static void StaticInit();
@@ -29,6 +26,15 @@ private:
 
 	ILBManagerHandle handle;
 	ILBSceneHandle scene;
+
+	void BeginScene();
+	void EndScene();
+
+	void AddMesh(DAVA::StaticMesh * staticMesh);
+
+	DAVA::Scene * davaScene;
+	void ParseTextures(DAVA::SceneNode * root);
+	
 };
 
 #endif //__BEAST_MANAGER__

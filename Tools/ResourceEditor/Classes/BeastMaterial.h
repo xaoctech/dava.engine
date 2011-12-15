@@ -7,6 +7,7 @@
 #include "BeastTypes.h"
 #include "BeastNameGenerator.h"
 
+
 class BeastMaterial
 {
 public:

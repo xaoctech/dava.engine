@@ -3,8 +3,8 @@
 #include "BeastMesh.h"
 #include "BeastDebug.h"
 
-BeastMesh::BeastMesh(ILBManagerHandle _manager)
-:	manager(_manager)
+BeastMesh::BeastMesh(ILBManagerHandle manager)
+:	BeastResource(manager)
 {
 }
 

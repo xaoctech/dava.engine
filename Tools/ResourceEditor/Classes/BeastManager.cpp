@@ -42,4 +42,14 @@ void BeastManager::AddMesh(DAVA::StaticMesh * staticMesh)
 {
 }
 
+void BeastManager::ParseScene(DAVA::Scene * _davaScene)
+{
+	davaScene = _davaScene;
+	ParseTextures(davaScene);
+}
+
+void BeastManager::ParseTextures(DAVA::SceneNode * root)
+{
+}
+
 #endif //__DAVAENGINE_BEAST__
