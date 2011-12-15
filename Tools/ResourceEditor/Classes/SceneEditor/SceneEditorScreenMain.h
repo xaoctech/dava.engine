@@ -2,12 +2,12 @@
 #define __SCENE_EDITOR_SCREEN_MAIN_H__
 
 #include "DAVAEngine.h"
+#include "LibraryControl.h"
 
 using namespace DAVA;
 
 class EditorBodyControl;
-class LibraryControl;
-class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate
+class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate
 {
     enum eConst
     {
@@ -32,6 +32,9 @@ public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw(const UIGeometricData &geometricData);
 
+	virtual void OnEditSCE(const String &pathName, const String &name);
+	virtual void OnAddSCE(const String &pathName);
+    
 private:
     
     int32 FindCurrentBody();
@@ -96,10 +99,14 @@ private:
     LibraryControl *libraryControl;
     void OnLibraryPressed(BaseObject * obj, void *, void *);
 
+    UIButton *propertiesButton;
+    void OnPropertiesPressed(BaseObject * obj, void *, void *);
     
     
     // general
     Font *font;
+    KeyedArchive *keyedArchieve;
+
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__
