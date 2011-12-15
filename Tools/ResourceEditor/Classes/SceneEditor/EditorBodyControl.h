@@ -30,6 +30,9 @@ public:
 
     void OpenScene(const String &pathToFile);
     
+    void ShowProperties(bool show);
+    bool PropertiesAreShown();
+    
 protected:
 
     void CreateScene();
@@ -37,8 +40,6 @@ protected:
     
     void CreatePropertyPanel();
     void ReleasePropertyPanel();
-    
-    void AddLine(Rect r);
     
     UIButton *CreateButton(Rect r, const WideString &text);
     

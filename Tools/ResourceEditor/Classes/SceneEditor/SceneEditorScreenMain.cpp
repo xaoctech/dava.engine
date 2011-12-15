@@ -16,7 +16,12 @@ void SceneEditorScreenMain::LoadResources()
     //init file system dialog
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
-    fileSystemDialog->SetCurrentDir("/");
+    
+    keyedArchieve = new KeyedArchive();
+    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
+    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    if(path.length())
+    fileSystemDialog->SetCurrentDir(path);
     
     // add line after menu
     Rect fullRect = GetRect();
@@ -33,12 +38,26 @@ void SceneEditorScreenMain::LoadResources()
     libraryButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLibraryPressed));
     AddControl(libraryButton);
     libraryControl = new LibraryControl(Rect(fullRect.dx - LIBRARY_WIDTH, BODY_Y_OFFSET, LIBRARY_WIDTH, fullRect.dy - BODY_Y_OFFSET)); 
+    libraryControl->SetDelegate(this);
+    libraryControl->SetPath(path);
 
+    //properties
+    propertiesButton = CustomiseMenuButton(
+                        Rect(fullRect.dx - (BUTTON_WIDTH*2 - 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
+                        L"Properties");
+    propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
+    AddControl(propertiesButton);
+    
+    
     InitializeBodyList();
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(keyedArchieve);
+    
+    SafeRelease(propertiesButton);
+    
     SafeRelease(libraryControl);
     SafeRelease(libraryButton);
     
@@ -179,7 +198,10 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             
         case DIALOG_OPERATION_MENU_PROJECT:
         {
-            libraryControl->SetPath(pathToFile);
+            keyedArchieve->SetString("LastSavedPath", pathToFile);
+            keyedArchieve->Save("~doc:/ResourceEditorOptions.archive");
+            
+            libraryControl->SetPath(pathToFile+"/DataSource");
             break;
         }
 
@@ -249,9 +271,6 @@ void SceneEditorScreenMain::OnOpenProjectPressed(BaseObject * obj, void *, void 
 void SceneEditorScreenMain::InitializeBodyList()
 {
     AddBodyItem(L"Level", false);
-
-    AddBodyItem(L"Test1", true);
-    AddBodyItem(L"Test2", true);
 }
 
 void SceneEditorScreenMain::ReleaseBodyList()
@@ -409,3 +428,30 @@ int32 SceneEditorScreenMain::FindCurrentBody()
     
     return -1;
 }
+
+void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *obj, void *, void *)
+{
+    int32 iBody = FindCurrentBody();
+    if(-1 != iBody)
+    {
+        bool areShown = bodies[iBody].bodyControl->PropertiesAreShown();
+        bodies[iBody].bodyControl->ShowProperties(!areShown);
+    }
+}
+
+void SceneEditorScreenMain::OnEditSCE(const String &pathName, const String &name)
+{
+    AddBodyItem(StringToWString(name), true);
+    int32 iBody = bodies.size() - 1;
+    bodies[iBody].bodyControl->OpenScene(pathName);
+}
+
+void SceneEditorScreenMain::OnAddSCE(const String &pathName)
+{
+    int32 iBody = FindCurrentBody();
+    if(-1 != iBody)
+    {
+        bodies[iBody].bodyControl->OpenScene(pathName);
+    }
+}
+
