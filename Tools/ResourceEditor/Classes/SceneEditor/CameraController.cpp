@@ -143,7 +143,7 @@ void WASDCameraController::Input(UIEvent * event)
     else if(event->phase == UIEvent::PHASE_DRAG || event->phase == UIEvent::PHASE_ENDED)
     {
         Vector2 dp = oldTouchPoint - event->point;
-		dp *= 5.f;
+		dp *= 8.f;
         viewXAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
         viewYAngle -= dp.y * SystemTimer::Instance()->FrameDelta();
         oldTouchPoint = event->point;

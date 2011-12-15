@@ -11,7 +11,7 @@
 #define __GAME_SCENE_H__
 
 #include "DAVAEngine.h"
-#include "btBulletDynamicsCommon.h"
+#include "bullet/btBulletDynamicsCommon.h"
 
 using namespace DAVA;
 
@@ -29,20 +29,15 @@ public:
 //    void AddBuilding(RealBuilding *building);
 	
 
-    btDiscreteDynamicsWorld *dynamicsWorld;
-    
+    btCollisionWorld *collisionWorld;
+	void CheckNodes(SceneNode * curr);
+	
 protected:
-
-    btDefaultCollisionConfiguration *dynCollisionConfiguration;
-	btCollisionDispatcher *dynDispatcher;
-	btAxisSweep3 *dynOverlappingPairCache;
-	btSequentialImpulseConstraintSolver* dynSolver;
 
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
-    
-
+    int depth;
 //    Vector<RealBuilding*> buildingObjects;
 };
 
