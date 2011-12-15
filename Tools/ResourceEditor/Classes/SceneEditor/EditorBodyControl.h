@@ -103,8 +103,8 @@ protected:
     Font *fontLight;
     Font *fontDark;
 
-#ifdef __DAVAENGINE_BEAST__    
 	//beast
+#ifdef __DAVAENGINE_BEAST__
 	BeastManager * beastManager;
 #endif //#ifdef __DAVAENGINE_BEAST__
 };

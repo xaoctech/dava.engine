@@ -1,9 +1,5 @@
 #include "EditorBodyControl.h"
 
-#ifdef __DAVAENGINE_BEAST__
-#include "../BeastProxy.h"
-#endif //#ifdef __DAVAENGINE_BEAST__
-
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 #ifdef __DAVAENGINE_BEAST__
