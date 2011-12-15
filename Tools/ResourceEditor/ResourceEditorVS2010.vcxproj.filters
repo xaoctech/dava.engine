@@ -563,6 +563,18 @@
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\BeastResource.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BeastTexture.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BeastProxy.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BeastProxyImpl.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1429,6 +1441,18 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
       <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastResource.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastTexture.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastProxy.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastProxyImpl.h">
+      <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
