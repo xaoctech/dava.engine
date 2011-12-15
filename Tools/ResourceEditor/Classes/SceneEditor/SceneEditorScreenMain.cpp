@@ -208,7 +208,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             keyedArchieve->SetString("LastSavedPath", pathToFile);
             keyedArchieve->Save("~doc:/ResourceEditorOptions.archive");
             
-            libraryControl->SetPath(pathToFile+"/DataSource");
+            libraryControl->SetPath(pathToFile);
             break;
         }
 
