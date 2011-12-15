@@ -651,9 +651,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
@@ -908,6 +905,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h">
       <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h">
+      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
