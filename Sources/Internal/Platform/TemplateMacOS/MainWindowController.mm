@@ -360,7 +360,9 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
         NSOpenGLPFAScreenMask, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay),
 		
         // Attributes Common to FullScreen and non-FullScreen
-        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay), //24,
+
+//        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay), //24,
+        NSOpenGLPFAColorSize, [openGLView displayBitsPerPixel:kCGDirectMainDisplay], //24,
         NSOpenGLPFADepthSize, 16,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,

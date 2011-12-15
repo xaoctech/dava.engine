@@ -40,7 +40,8 @@ extern void FrameworkMain(int argc, char *argv[]);
 	NSLog(@"[CoreMacOSPlatform] OpenGLView Init");
 	
 	
-	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
+//	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
+	NSLog(@"Display bpp: %d", [self displayBitsPerPixel:kCGDirectMainDisplay]);
 
     // Pixel Format Attributes for the View-based (non-FullScreen) NSOpenGLContext
     NSOpenGLPixelFormatAttribute attrs[] = 
@@ -50,7 +51,8 @@ extern void FrameworkMain(int argc, char *argv[]);
         NSOpenGLPFANoRecovery,
 		
         // Attributes Common to FullScreen and non-FullScreen
-        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay),//24,
+//        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay),//24,
+        NSOpenGLPFAColorSize, [self displayBitsPerPixel:kCGDirectMainDisplay],//24,
         NSOpenGLPFADepthSize, 16,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
@@ -83,6 +85,23 @@ extern void FrameworkMain(int argc, char *argv[]);
     //RenderManager::Create(Core::RENDERER_OPENGL);
 	
 	return self;	
+}
+
+- (size_t) displayBitsPerPixel:(CGDirectDisplayID) displayId 
+{
+    
+	CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayId);
+	size_t depth = 0;
+    
+	CFStringRef pixEnc = CGDisplayModeCopyPixelEncoding(mode);
+	if(CFStringCompare(pixEnc, CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+		depth = 32;
+	else if(CFStringCompare(pixEnc, CFSTR(IO16BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+		depth = 16;
+	else if(CFStringCompare(pixEnc, CFSTR(IO8BitIndexedPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+		depth = 8;
+    
+	return depth;
 }
 
 - (void) enableTrackingArea
