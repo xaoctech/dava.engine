@@ -575,6 +575,9 @@
     <ClCompile Include="Classes\BeastProxyImpl.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\BulletObject.cpp" />
+    <ClCompile Include="Classes\DebugNode.cpp" />
+    <ClCompile Include="Classes\SceneNodeUserData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1454,6 +1457,9 @@
     <ClInclude Include="Classes\BeastProxyImpl.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\BulletObject.h" />
+    <ClInclude Include="Classes\DebugNode.h" />
+    <ClInclude Include="Classes\SceneNodeUserData.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">
