@@ -5,7 +5,7 @@
 #include "CameraController.h"
 #include "PropertyPanel.h"
 #include "EditMatrixControl.h"
-#include "GameScene.h"
+#include "../GameScene.h"
 
 using namespace DAVA;
 
