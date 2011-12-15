@@ -47,10 +47,9 @@ void UIFileTree::SetPath(const String & fullpath, const String & extensionsStrin
 
 	treeHead = new UITreeItemInfo(this);
 	treeHead->Set(0, dirname, fullpath, true);
-	
-	
+	treeHead->isExpanded = true;
+    
 	RecursiveTreeWalk(fullpath, treeHead);
-	
 	
 	UIList::SetDelegate(this);
 	Refresh();
@@ -289,15 +288,15 @@ void UIFileTree::Refresh()
 {
     UIList::Refresh();
     
-    if(isRootFolderExpandingDisabled)
-    {
-        UITreeItemInfo * entry = treeHead->EntryByIndex(0);
-        if(!entry->IsExpanded())
-        {
-            entry->ToggleExpanded();
-            UIList::Refresh();
-        }
-    }
+//    if(isRootFolderExpandingDisabled)
+//    {
+//        UITreeItemInfo * entry = treeHead->EntryByIndex(0);
+//        if(!entry->IsExpanded())
+//        {
+//            entry->ToggleExpanded();
+//            UIList::Refresh();
+//        }
+//    }
 }
     
 void UIFileTree::EnableRootFolderChange(bool isEnabled)

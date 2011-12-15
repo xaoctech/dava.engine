@@ -32,6 +32,7 @@ public:
 class UIFileTree;
 class UITreeItemInfo : public BaseObject
 {
+    friend class UIFileTree;
 public:
 	UITreeItemInfo(UIFileTree * _ownerTree)
 	{
