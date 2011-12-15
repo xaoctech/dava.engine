@@ -36,7 +36,7 @@
 #include "PropertyPanel.h"
 #include "CameraPanel.h"
 #include "EditMatrixControl.h"
-#include "GameScene.h"
+#include "../GameScene.h"
 
 using namespace DAVA;
 

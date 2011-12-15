@@ -11,7 +11,7 @@
 #define __GAME_SCENE_H__
 
 #include "DAVAEngine.h"
-#include "btBulletDynamicsCommon.h"
+#include "bullet/btBulletDynamicsCommon.h"
 
 using namespace DAVA;
 
