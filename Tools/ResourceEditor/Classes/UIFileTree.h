@@ -109,12 +109,15 @@ public:
     void EnableRootFolderChange(bool isEnabled);
     
 	/**
+<<<<<<< HEAD
      \brief Function to disable root folder expanding. 
      \param[in] isDisabled true if you want to root folder be always expanded. 
 	 */
     void DisableRootFolderExpanding(bool isDisabled);    
 
 	/**
+=======
+>>>>>>> 510bf8a1ad480be53d6905c171b589ce758bf571
      \brief Function to compare file extensions without letter case
      \param[in] ext1 - first file extension. 
      \param[in] ext2 - second file extension 
