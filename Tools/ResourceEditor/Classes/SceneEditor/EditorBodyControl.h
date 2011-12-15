@@ -5,6 +5,7 @@
 #include "CameraController.h"
 #include "PropertyPanel.h"
 #include "EditMatrixControl.h"
+#include "GameScene.h"
 
 using namespace DAVA;
 
@@ -53,7 +54,7 @@ protected:
     UIHierarchy * sceneTree;
     
     //scene controls
-    Scene * scene;
+    GameScene * scene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
     WASDCameraController * cameraController;
