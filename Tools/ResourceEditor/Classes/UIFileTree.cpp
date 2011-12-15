@@ -26,6 +26,7 @@ UIFileTree::UIFileTree(const Rect &rect, bool rectInAbsoluteCoordinates)
 	treeHead = 0;
 	delegate = 0;
 	isFolderNavigationEnabled = false;
+    isRootFolderChangeEnabled = true;
 }
 
 UIFileTree::~UIFileTree()
@@ -107,7 +108,7 @@ void UIFileTree::OnDirectoryChange(BaseObject * obj, void * userData, void * cal
 	if (cell && event)
 	{
 		Logger::Debug("Click count: %d", event->tapCount);
-		if (event->tapCount == 2)
+		if (isRootFolderChangeEnabled && (event->tapCount == 2))
 		{
 			UITreeItemInfo * info = cell->GetItemInfo();
 			String pathname = info->GetPathname();
@@ -123,12 +124,17 @@ int32 UIFileTree::CellWidth(UIList *forList, int32 index)
 {
 	return 20; //rect.dx;
 }
-
+	
 int32 UIFileTree::CellHeight(UIList *forList, int32 index)
 {
-	return 16;
-};
-	
+    if(delegate)
+    {
+        return delegate->CellHeight(forList, index);
+    }
+    return 16;
+}
+
+    
 void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
 	UITreeItemInfo * entry = treeHead->EntryByIndex(selectedCell->GetIndex());
@@ -139,7 +145,6 @@ void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 	
 	Refresh();
 };
-	
 
 	
 void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current)
@@ -158,11 +163,14 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 				addElement = false;
 				String ext = FileSystem::GetExtension(fileList->GetFilename(fi));
 				for (size_t ei = 0; ei < extsSize; ++ei)
-					if (extensions[ei] == ext)
+                {
+                    if(0 == CompareExtensions(extensions[ei], ext))
+//					if (extensions[ei] == ext)
 					{
 						addElement = true;
 						break;
 					}
+                }
 			}
 		}
 		if (!isFolderNavigationEnabled)
@@ -197,7 +205,6 @@ void UITreeItemInfo::ToggleExpanded()
 	isExpanded = !isExpanded;
 	if (isExpanded)
 	{
-		
 		RemoveChildren();
 		ownerTree->RecursiveTreeWalk(this->GetPathname(), this);
 	}
@@ -248,6 +255,33 @@ void UIFileTree::SetFolderNavigation(bool isEnabled)
 {
 	isFolderNavigationEnabled = isEnabled;
 }
-					  
+				
+int32 UIFileTree::CompareExtensions(const String &ext1, const String &ext2)
+{
+    String newExt1 = "";
+    newExt1.resize(ext1.length());
+    std::transform(ext1.begin(), ext1.end(), newExt1.begin(), ::tolower);
+
+    String newExt2 = "";
+    newExt2.resize(ext2.length());
+    std::transform(ext2.begin(), ext2.end(), newExt2.begin(), ::tolower);
+
+    if(newExt1 == newExt2)
+    {
+        return 0;   
+    }
+    else if(newExt1 < newExt2)
+    {
+        return -1;
+    }
+    
+    return 1;
+}
+
+void UIFileTree::EnableRootFolderChange(bool isEnabled)
+{
+    isRootFolderChangeEnabled = isEnabled;
+}
+    
 };
 

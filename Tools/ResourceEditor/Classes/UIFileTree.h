@@ -25,6 +25,7 @@ public:
 	//virtual UIFileTreeCell *CellAtIndex(UIFileTree * tree, int32 index) = 0;
 	//virtual int32 CellHeight(UIFileTree * tree, int32 index) = 0;
 	
+    virtual int32 CellHeight(UIList *forList, int32 index) = 0;
 	virtual void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell) = 0;
 };
 	
@@ -100,13 +101,26 @@ public:
 	 */
 	void SetFolderNavigation(bool isEnabled);
 	
+	/**
+     \brief Function to enable folder change by double click
+     \param[in] isEnabled true if you want to enable it, false if you want to disable it. 
+	 */
+    void EnableRootFolderChange(bool isEnabled);
+    
+	/**
+     \brief Function to compare file extensions without letter case
+     \param[in] ext1 - first file extension. 
+     \param[in] ext2 - second file extension 
+     \param[out] result of comparision 
+	 */
+    static int32 CompareExtensions(const String &ext1, const String &ext2);
 
 private:
 	// Delegate functions
 	virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
+    virtual int32 CellHeight(UIList *forList, int32 index);
 	virtual int32 CellWidth(UIList *forList, int32 index);
-	virtual int32 CellHeight(UIList *forList, int32 index);
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 	
 	void OnDirectoryChange(BaseObject * obj, void * userData, void * callerData);
@@ -121,6 +135,8 @@ private:
 	Vector<String> extensions;
 	bool isFolderNavigationEnabled;
 	
+    bool isRootFolderChangeEnabled;
+    
 	friend class UITreeItemInfo;
 };
 	
