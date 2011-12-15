@@ -5,9 +5,11 @@
 #include "CameraController.h"
 #include "PropertyPanel.h"
 #include "EditMatrixControl.h"
-#include "GameScene.h"
+#include "../GameScene.h"
 
 using namespace DAVA;
+
+class BeastManager;
 
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
@@ -93,6 +95,9 @@ protected:
     // general
     Font *fontLight;
     Font *fontDark;
+
+	//beast
+	BeastManager * beastManager;
 };
 
 
