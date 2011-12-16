@@ -54,7 +54,33 @@ bool KeyedArchive::Load(const String & pathName)
 	
 bool KeyedArchive::Load(File *archive)
 {
-	while(!archive->IsEof())
+    char header[2];
+    archive->Read(header, 2);
+    if ((header[0] != 'K') || (header[1] != 'A'))
+    {
+        while(!archive->IsEof())
+        {
+            VariantType key;
+            key.Read(archive);
+            if (archive->IsEof())break;
+            VariantType value;
+            value.Read(archive);
+            objectMap[key.AsString()] = value;
+        }
+        return true;
+    }
+    
+    uint16 version = 0;
+    archive->Read(&version, 2);
+    if (version != 1)
+    {
+        Logger::Error("[KeyedArchive] error loading keyed archive, because version is incorrect");
+        return false;
+    }
+    uint32 numberOfItems = 0;
+    archive->Read(&numberOfItems, 4);
+    
+    for (int item = 0; item < numberOfItems; ++item)
 	{
 		VariantType key;
 		key.Read(archive);
@@ -76,9 +102,18 @@ bool KeyedArchive::Save(const String & pathName)
 	SafeRelease(archive);
 	return true;
 }
-	
+
 bool KeyedArchive::Save(File *archive)
 {
+    char header[2];
+    uint16 version = 1;
+    header[0] = 'K'; header[1] = 'A';
+    
+    archive->Write(header, 2);
+    archive->Write(&version, 2);
+    uint32 size = objectMap.size();
+    archive->Write(&size, 4);
+    
 	for (Map<String, VariantType>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
 	{
 		VariantType key;
@@ -88,7 +123,6 @@ bool KeyedArchive::Save(File *archive)
 	}
 	return true;
 }
-
 
 void KeyedArchive::SetBool(const String & key, bool value)
 {
@@ -131,8 +165,6 @@ void KeyedArchive::SetByteArray(const String & key, const uint8 * value, int32 a
 	variantValue.SetByteArray(value, arraySize);
 	objectMap[key] = variantValue;
 }
-
-
 
 void KeyedArchive::SetVariant(const String & key, const VariantType & value)
 {
