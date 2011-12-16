@@ -27,6 +27,7 @@ UIFileTree::UIFileTree(const Rect &rect, bool rectInAbsoluteCoordinates)
 	delegate = 0;
 	isFolderNavigationEnabled = false;
     isRootFolderChangeEnabled = true;
+    isRootFolderExpandingDisabled = false;
 }
 
 UIFileTree::~UIFileTree()
@@ -46,10 +47,9 @@ void UIFileTree::SetPath(const String & fullpath, const String & extensionsStrin
 
 	treeHead = new UITreeItemInfo(this);
 	treeHead->Set(0, dirname, fullpath, true);
-	
-	
+	treeHead->isExpanded = true;
+    
 	RecursiveTreeWalk(fullpath, treeHead);
-	
 	
 	UIList::SetDelegate(this);
 	Refresh();
@@ -63,10 +63,13 @@ int32 UIFileTree::ElementsCount(UIList *forList)
 
 UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 {
+    int32 width = forList->GetRect().dx;
+    
 	UIFileTreeCell *c = (UIFileTreeCell *)forList->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
 	if(!c)
 	{ //if cell of requested type isn't find in the store create new cell
-		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+//		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
 	}
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
@@ -80,9 +83,14 @@ UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 //		empty += ' ';
 //	}
 	float32 shiftX = entry->GetLevel() * 10.0f;
-	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+//	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+	c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
 	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
-	c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
+	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+
+    
 	c->SetItemInfo(entry);
 	
 	/*
@@ -137,8 +145,14 @@ int32 UIFileTree::CellHeight(UIList *forList, int32 index)
     
 void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
-	UITreeItemInfo * entry = treeHead->EntryByIndex(selectedCell->GetIndex());
-	entry->ToggleExpanded();
+    int32 index = selectedCell->GetIndex();
+    
+	UITreeItemInfo * entry = treeHead->EntryByIndex(index);
+    
+    if(!(isRootFolderExpandingDisabled && 0 == index))
+    {
+        entry->ToggleExpanded();
+    }
 	
 	if (delegate)
 		delegate->OnCellSelected(this, dynamic_cast<UIFileTreeCell*>(selectedCell));
@@ -278,10 +292,31 @@ int32 UIFileTree::CompareExtensions(const String &ext1, const String &ext2)
     return 1;
 }
 
+void UIFileTree::Refresh()
+{
+    UIList::Refresh();
+    
+//    if(isRootFolderExpandingDisabled)
+//    {
+//        UITreeItemInfo * entry = treeHead->EntryByIndex(0);
+//        if(!entry->IsExpanded())
+//        {
+//            entry->ToggleExpanded();
+//            UIList::Refresh();
+//        }
+//    }
+}
+    
 void UIFileTree::EnableRootFolderChange(bool isEnabled)
 {
     isRootFolderChangeEnabled = isEnabled;
 }
+    
+void UIFileTree::DisableRootFolderExpanding(bool isDisabled)
+{
+    isRootFolderExpandingDisabled = isDisabled;
+}
+    
     
 };
 
