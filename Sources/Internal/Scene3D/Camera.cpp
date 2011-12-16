@@ -461,11 +461,9 @@ void Camera::Draw()
     }
 }
 
-Vector3 Camera::UnProject(float32 winx, float32 winy)
+Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport)
 {
 //	const int32 viewport[4];
-	const Rect & viewport = RenderManager::Instance()->GetViewPort();
-
 	//		float32 finalMatrix[16];
 	//		float32 in[4];
 	//		float32 out[4];
@@ -473,10 +471,10 @@ Vector3 Camera::UnProject(float32 winx, float32 winy)
 	//		__gluMultMatricesd(modelMatrix, projMatrix, finalMatrix);
 	//		if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return(GL_FALSE);
 
-	Matrix4 finalMatrix = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
+	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
 	finalMatrix.Inverse();		
 
-	Vector4 in(winx, winy, 0, 1.0f);
+	Vector4 in(winx, winy, winz, 1.0f);
 
 	//		in[0]=winx;
 	//		in[1]=winy;

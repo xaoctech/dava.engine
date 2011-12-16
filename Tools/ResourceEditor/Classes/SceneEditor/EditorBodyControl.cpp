@@ -333,9 +333,12 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 		else
 		{
 			Camera * cam = scene->GetCurrentCamera();
-			
-			Vector3 to = cam->UnProject(event->point.x, event->point.y);
+			const Rect & rect = scene3dView->GetLastViewportRect();
 			Vector3 from = cam->GetPosition();
+			Vector3 to = cam->UnProject(event->point.x, rect.dy - event->point.y, 0, rect);
+			to -= from;
+			to *= 1000.f;
+			to += from;
 			scene->TrySelection(from, to);
 		}
 	}	

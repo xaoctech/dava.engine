@@ -109,7 +109,7 @@ void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end)
 
     
     vertexStream->Set(TYPE_FLOAT, 3, 0, vertices);
-    
+	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 2);
