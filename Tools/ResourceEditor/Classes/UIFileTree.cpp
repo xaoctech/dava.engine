@@ -26,6 +26,8 @@ UIFileTree::UIFileTree(const Rect &rect, bool rectInAbsoluteCoordinates)
 	treeHead = 0;
 	delegate = 0;
 	isFolderNavigationEnabled = false;
+    isRootFolderChangeEnabled = true;
+    isRootFolderExpandingDisabled = false;
 }
 
 UIFileTree::~UIFileTree()
@@ -45,10 +47,9 @@ void UIFileTree::SetPath(const String & fullpath, const String & extensionsStrin
 
 	treeHead = new UITreeItemInfo(this);
 	treeHead->Set(0, dirname, fullpath, true);
-	
-	
+	treeHead->isExpanded = true;
+    
 	RecursiveTreeWalk(fullpath, treeHead);
-	
 	
 	UIList::SetDelegate(this);
 	Refresh();
@@ -62,10 +63,13 @@ int32 UIFileTree::ElementsCount(UIList *forList)
 
 UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 {
+    int32 width = forList->GetRect().dx;
+    
 	UIFileTreeCell *c = (UIFileTreeCell *)forList->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
 	if(!c)
 	{ //if cell of requested type isn't find in the store create new cell
-		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+//		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
 	}
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
@@ -79,9 +83,14 @@ UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 //		empty += ' ';
 //	}
 	float32 shiftX = entry->GetLevel() * 10.0f;
-	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+//	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+	c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
 	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
-	c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
+	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+
+    
 	c->SetItemInfo(entry);
 	
 	/*
@@ -107,7 +116,7 @@ void UIFileTree::OnDirectoryChange(BaseObject * obj, void * userData, void * cal
 	if (cell && event)
 	{
 		Logger::Debug("Click count: %d", event->tapCount);
-		if (event->tapCount == 2)
+		if (isRootFolderChangeEnabled && (event->tapCount == 2))
 		{
 			UITreeItemInfo * info = cell->GetItemInfo();
 			String pathname = info->GetPathname();
@@ -123,23 +132,33 @@ int32 UIFileTree::CellWidth(UIList *forList, int32 index)
 {
 	return 20; //rect.dx;
 }
-
+	
 int32 UIFileTree::CellHeight(UIList *forList, int32 index)
 {
-	return 16;
-};
-	
+    if(delegate)
+    {
+        return delegate->CellHeight(forList, index);
+    }
+    return 16;
+}
+
+    
 void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
-	UITreeItemInfo * entry = treeHead->EntryByIndex(selectedCell->GetIndex());
-	entry->ToggleExpanded();
+    int32 index = selectedCell->GetIndex();
+    
+	UITreeItemInfo * entry = treeHead->EntryByIndex(index);
+    
+    if(!(isRootFolderExpandingDisabled && 0 == index))
+    {
+        entry->ToggleExpanded();
+    }
 	
 	if (delegate)
 		delegate->OnCellSelected(this, dynamic_cast<UIFileTreeCell*>(selectedCell));
 	
 	Refresh();
 };
-	
 
 	
 void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current)
@@ -158,11 +177,14 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 				addElement = false;
 				String ext = FileSystem::GetExtension(fileList->GetFilename(fi));
 				for (size_t ei = 0; ei < extsSize; ++ei)
-					if (extensions[ei] == ext)
+                {
+                    if(0 == CompareExtensions(extensions[ei], ext))
+//					if (extensions[ei] == ext)
 					{
 						addElement = true;
 						break;
 					}
+                }
 			}
 		}
 		if (!isFolderNavigationEnabled)
@@ -197,7 +219,6 @@ void UITreeItemInfo::ToggleExpanded()
 	isExpanded = !isExpanded;
 	if (isExpanded)
 	{
-		
 		RemoveChildren();
 		ownerTree->RecursiveTreeWalk(this->GetPathname(), this);
 	}
@@ -248,6 +269,54 @@ void UIFileTree::SetFolderNavigation(bool isEnabled)
 {
 	isFolderNavigationEnabled = isEnabled;
 }
-					  
+				
+int32 UIFileTree::CompareExtensions(const String &ext1, const String &ext2)
+{
+    String newExt1 = "";
+    newExt1.resize(ext1.length());
+    std::transform(ext1.begin(), ext1.end(), newExt1.begin(), ::tolower);
+
+    String newExt2 = "";
+    newExt2.resize(ext2.length());
+    std::transform(ext2.begin(), ext2.end(), newExt2.begin(), ::tolower);
+
+    if(newExt1 == newExt2)
+    {
+        return 0;   
+    }
+    else if(newExt1 < newExt2)
+    {
+        return -1;
+    }
+    
+    return 1;
+}
+
+void UIFileTree::Refresh()
+{
+    UIList::Refresh();
+    
+//    if(isRootFolderExpandingDisabled)
+//    {
+//        UITreeItemInfo * entry = treeHead->EntryByIndex(0);
+//        if(!entry->IsExpanded())
+//        {
+//            entry->ToggleExpanded();
+//            UIList::Refresh();
+//        }
+//    }
+}
+    
+void UIFileTree::EnableRootFolderChange(bool isEnabled)
+{
+    isRootFolderChangeEnabled = isEnabled;
+}
+    
+void UIFileTree::DisableRootFolderExpanding(bool isDisabled)
+{
+    isRootFolderExpandingDisabled = isDisabled;
+}
+    
+    
 };
 

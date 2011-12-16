@@ -56,6 +56,10 @@
 #elif defined(__DAVAENGINE_MACOS__)
 	#define __DAVAENGINE_OPENGL__
 	//	#include <GL/glew.h>
+    #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+        #include "OpenGL/gl.h"
+    #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+
 	#include <OpenGL/OpenGL.h>
 	//	#include <GLUT/glut.h>
 #elif defined(__DAVAENGINE_WIN32__)

@@ -25,12 +25,14 @@ public:
 	//virtual UIFileTreeCell *CellAtIndex(UIFileTree * tree, int32 index) = 0;
 	//virtual int32 CellHeight(UIFileTree * tree, int32 index) = 0;
 	
+    virtual int32 CellHeight(UIList *forList, int32 index) = 0;
 	virtual void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell) = 0;
 };
 	
 class UIFileTree;
 class UITreeItemInfo : public BaseObject
 {
+    friend class UIFileTree;
 public:
 	UITreeItemInfo(UIFileTree * _ownerTree)
 	{
@@ -58,6 +60,7 @@ public:
 	const String & GetName() {return name; };
 	const String & GetPathname() { return pathname; };
 	bool IsDirectory() { return isDirectory; };
+	bool IsExpanded() { return isExpanded; };
 	void ToggleExpanded();// { isExpanded = !isExpanded; };
 	Vector<UITreeItemInfo*> & GetChildren() { return children; };
 	void AddChild(UITreeItemInfo * t) { children.push_back(t); };
@@ -100,13 +103,38 @@ public:
 	 */
 	void SetFolderNavigation(bool isEnabled);
 	
+	/**
+     \brief Function to enable folder change by double click
+     \param[in] isEnabled true if you want to enable it, false if you want to disable it. 
+	 */
+    void EnableRootFolderChange(bool isEnabled);
+    
+	/**
+<<<<<<< HEAD
+     \brief Function to disable root folder expanding. 
+     \param[in] isDisabled true if you want to root folder be always expanded. 
+	 */
+    void DisableRootFolderExpanding(bool isDisabled);    
 
+	/**
+=======
+>>>>>>> 510bf8a1ad480be53d6905c171b589ce758bf571
+     \brief Function to compare file extensions without letter case
+     \param[in] ext1 - first file extension. 
+     \param[in] ext2 - second file extension 
+     \param[out] result of comparision 
+	 */
+    static int32 CompareExtensions(const String &ext1, const String &ext2);
+
+    
+    virtual void Refresh();
+    
 private:
 	// Delegate functions
 	virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
+    virtual int32 CellHeight(UIList *forList, int32 index);
 	virtual int32 CellWidth(UIList *forList, int32 index);
-	virtual int32 CellHeight(UIList *forList, int32 index);
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 	
 	void OnDirectoryChange(BaseObject * obj, void * userData, void * callerData);
@@ -121,6 +149,9 @@ private:
 	Vector<String> extensions;
 	bool isFolderNavigationEnabled;
 	
+    bool isRootFolderChangeEnabled;
+    bool isRootFolderExpandingDisabled;
+    
 	friend class UITreeItemInfo;
 };
 	

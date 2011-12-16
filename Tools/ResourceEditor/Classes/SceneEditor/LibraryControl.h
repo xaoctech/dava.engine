@@ -2,7 +2,7 @@
 #define __LIBRARY_CONTROL_H__
 
 #include "DAVAEngine.h"
-#include "UIFileTree.h"
+#include "../UIFileTree.h"
 
 
 using namespace DAVA;
@@ -34,15 +34,15 @@ public:
     
     void SetDelegate(LibraryControlDelegate *delegate);
     
+    
+    virtual int32 CellHeight(UIList *forList, int32 index);
+    virtual void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell);
+
 protected:
 
     void RefreshTree();
     
-    UIButton *CreateButton(Rect r, const WideString &text);
-    UIControl *CreatePanel(Rect r);
-
     UIFileTree *fileTreeControl;
-    virtual void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell);
 
     
     UIControl *panelDAE;

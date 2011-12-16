@@ -1,6 +1,7 @@
 #include "LibraryControl.h"
 #include "./../Collada/ColladaConvert.h"
 
+#include "ControlsFactory.h"
 
 LibraryControl::LibraryControl(const Rect & rect)
     :   UIControl(rect)
@@ -11,40 +12,36 @@ LibraryControl::LibraryControl(const Rect & rect)
     selectedFileName = "";
     selectedFileNameShort = "";
     
-    fontLight = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-    fontLight->SetSize(12);
-    fontLight->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    fontLight = ControlsFactory::CreateFontLight();
+    fontDark = ControlsFactory::CreateFontDark();
 
-    fontDark = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-    fontDark->SetSize(12);
-    fontDark->SetColor(Color(0.1f, 0.1f, 0.1f, 1.0f));
-
-    
-    GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
+    ControlsFactory::CustomizePanelControl(this);
     
     fileTreeControl = new UIFileTree(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dy - BUTTON_HEIGHT - rect.dx));
+    ControlsFactory::CusomizeListControl(fileTreeControl);
 	fileTreeControl->SetDelegate(this);
-	fileTreeControl->SetFolderNavigation(true);
-	fileTreeControl->SetPath(folderPath, ".dae;.sce;.DAE;.SCE");
+	fileTreeControl->SetFolderNavigation(false);
+    fileTreeControl->EnableRootFolderChange(false);
+    fileTreeControl->DisableRootFolderExpanding(true);
+	fileTreeControl->SetPath(folderPath, ".dae;.sce;");
     AddControl(fileTreeControl);
 
     
     //button
-    refreshButton = CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), L"Refresh Library");
+    refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), L"Refresh Library");
     refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnRefreshPressed));
     AddControl(refreshButton);
     
-    panelDAE = CreatePanel(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
-    btnConvert = CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), L"Convert");
+    panelDAE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
+    btnConvert = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), L"Convert");
     btnConvert->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnConvertPressed));
     panelDAE->AddControl(btnConvert);
     
     int32 btnwidth = (rect.dx - 2) / 2;
-    panelSCE = CreatePanel(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
-    btnAdd = CreateButton(Rect(0, 0, btnwidth, BUTTON_HEIGHT), L"Add");
+    panelSCE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
+    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, BUTTON_HEIGHT), L"Add");
     btnAdd->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnAddPressed));
-    btnEdit = CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, BUTTON_HEIGHT), L"Edit");
+    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, BUTTON_HEIGHT), L"Edit");
     btnEdit->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnEditPressed));
     preview = new UI3DView(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dx - BUTTON_HEIGHT));
     preview->SetDebugDraw(true);
@@ -106,48 +103,14 @@ void LibraryControl::WillAppear()
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path + "/DataSource/3d";
-    
+    fileTreeControl->SetPath(folderPath, ".dae;.sce");
+
     if(GetParent())
     {
         RefreshTree();
     }
 }
 
-UIButton * LibraryControl::CreateButton(Rect r, const WideString &text)
-{
-    UIButton *btn = new UIButton(r);
-    
-    btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-    
-    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    btn->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
-    btn->GetStateBackground(UIControl::STATE_SELECTED)->SetColor(Color(0.0f, 0.0f, 1.0f, 0.2f));
-    
-    
-    btn->SetStateFont(UIControl::STATE_PRESSED_INSIDE, fontLight);
-    btn->SetStateFont(UIControl::STATE_DISABLED, fontLight);
-    btn->SetStateFont(UIControl::STATE_NORMAL, fontLight);
-    btn->SetStateFont(UIControl::STATE_SELECTED, fontLight);
-    
-    btn->SetStateText(UIControl::STATE_PRESSED_INSIDE, text);
-    btn->SetStateText(UIControl::STATE_DISABLED, text);
-    btn->SetStateText(UIControl::STATE_NORMAL, text);
-    btn->SetStateText(UIControl::STATE_SELECTED, text);
-    return btn;
-}
-
-UIControl * LibraryControl::CreatePanel(Rect r)
-{
-    UIControl *ctrl = new UIControl(r);
-    ctrl->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 1.0f);
-    ctrl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    
-    return ctrl;
-}
 
 void LibraryControl::OnAddPressed(DAVA::BaseObject *object, void *userData, void *callerData)
 {
@@ -180,7 +143,8 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 {
     UITreeItemInfo * itemInfo = selectedCell->GetItemInfo();
 	String extension = FileSystem::GetExtension(itemInfo->GetName());
-	if (extension == ".dae" || extension == ".DAE")
+//	if (extension == ".dae" || extension == ".DAE")
+	if (0 == UIFileTree::CompareExtensions(extension, ".dae"))
 	{
         selectedFileName = itemInfo->GetPathname();
         if(panelSCE->GetParent())
@@ -192,7 +156,8 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             AddControl(panelDAE);
         }
 	}
-    else if(extension == ".sce" || extension == ".SCE")
+    else if (0 == UIFileTree::CompareExtensions(extension, ".sce"))
+//    else if(extension == ".sce" || extension == ".SCE")
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
@@ -231,7 +196,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             cam->SetName("editor-camera");
             cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
             cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-            cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+            cam->SetPosition(Vector3(10.0f, 0.0f, 0.0f));
             cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
             cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
             
@@ -252,15 +217,29 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             RemoveControl(panelSCE);
         }
     }
+    
+    List<UIControl*> children = tree->GetVisibleCells();
+    for(List<UIControl*>::iterator it = children.begin(); it != children.end(); ++it)
+    {
+        UIControl *ctrl = (*it);
+        ctrl->SetSelected(false, false);
+    }
+    
+    selectedCell->SetSelected(true, false);
+
 }
 
 void LibraryControl::RefreshTree()
 {
-    fileTreeControl->SetPath(folderPath, ".dae;.sce;.DAE;.SCE");
     fileTreeControl->Refresh();
 }
 
 void LibraryControl::SetDelegate(LibraryControlDelegate *delegate)
 {
     controlDelegate = delegate;
+}
+
+int32 LibraryControl::CellHeight(UIList *forList, int32 index)
+{
+    return CELL_HEIGHT;
 }
