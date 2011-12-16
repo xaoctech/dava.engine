@@ -718,7 +718,6 @@ void TestScreen::ButtonPressed(BaseObject *obj, void *data, void *callerData)
             emitter->AddLayer(layer);
             
             Layer *l = layers[selectedEmitterElement]->Clone();
-            l->spritePath = "";
             l->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, cellH*(layers.size()), buttonW, cellH));
             layers.push_back(l);
             SafeAddControl(l->curLayerTime);
