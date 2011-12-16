@@ -158,6 +158,7 @@ protected:
     int32 statsFrameCountToShowDebug;
     int32 frameToShowDebugStats;
     Core::eRenderer renderer;
+	Rect viewPort;
     
 public:
     
@@ -205,7 +206,8 @@ public:
         
      */
     void SetViewport(const Rect & rect); 
-       
+
+    const Rect & GetViewPort(void); 
     
     
     /**

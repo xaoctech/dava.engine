@@ -373,28 +373,43 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
     
 	if (event->phase == UIEvent::PHASE_BEGAN)
 	{
-		inTouch = true;	
-		touchStart = event->point;
-		touchTankAngle = currentTankAngle;
-	}
-	
+		if (event->tid == UIEvent::BUTTON_1)
+		{
+			inTouch = true;	
+			touchStart = event->point;
+			touchTankAngle = currentTankAngle;
+		}
+		else
+		{
+			Camera * cam = scene->GetCurrentCamera();
+			
+			Vector3 to = cam->UnProject(event->point.x, event->point.y);
+			Vector3 from = cam->GetPosition();
+			scene->TrySelection(from, to);
+		}
+	}	
 	if (event->phase == UIEvent::PHASE_DRAG)
 	{
-		touchCurrent = event->point;
+		if (event->tid == UIEvent::BUTTON_1)
+		{
+			touchCurrent = event->point;
 		
-		float32 dist = (touchCurrent.x - touchStart.x);
-		//Logger::Debug("%f, %f", currentTankAngle, dist);
-		currentTankAngle = touchTankAngle + dist;
+			float32 dist = (touchCurrent.x - touchStart.x);
+			//Logger::Debug("%f, %f", currentTankAngle, dist);
+			currentTankAngle = touchTankAngle + dist;
+		}
 	}
 	
 	if (event->phase == UIEvent::PHASE_ENDED)
 	{
-		touchCurrent = event->point;
-		rotationSpeed = (touchCurrent.x - touchStart.x);
-		inTouch = false;
-		startRotationInSec = 0.0f;
-	}
-    
+		if (event->tid == UIEvent::BUTTON_1)
+		{
+			touchCurrent = event->point;
+			rotationSpeed = (touchCurrent.x - touchStart.x);
+			inTouch = false;
+			startRotationInSec = 0.0f;
+		}
+	}    
     UIControl::Input(event);
 }
 

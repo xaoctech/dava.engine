@@ -24,9 +24,19 @@ public:
     BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *meshNode, const Matrix4 &pWorldTransform);
     ~BulletObject();
 	
-	void UpdateCollisionObject();
+	void UpdateCollisionObject(void);
 
-	DebugNode * GetDebugNode();
+
+	inline DebugNode * GetDebugNode()
+	{
+		return debugNode;
+	}
+	
+	inline btCollisionObject * GetCollisionObject(void)
+	{
+		return collisionObject;
+	}
+	
 protected:
 
 	void CreateShape(MeshInstanceNode *meshNode);
