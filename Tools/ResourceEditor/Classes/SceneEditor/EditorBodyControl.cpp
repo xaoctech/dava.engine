@@ -2,11 +2,13 @@
 
 #include "ControlsFactory.h"
 
+#include "../BeastProxy.h"
+
+
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
-#ifdef __DAVAENGINE_BEAST__
 	, beastManager(0)
-#endif //#ifdef __DAVAENGINE_BEAST__
 {
     selectedNode = NULL;
     
@@ -33,10 +35,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     CreatePropertyPanel();
 
-#ifdef __DAVAENGINE_BEAST__    
 	beastManager = BeastProxy::Instance()->CreateManager();
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
-#endif //#ifdef __DAVAENGINE_BEAST__
 }
     
 EditorBodyControl::~EditorBodyControl()
@@ -47,9 +47,7 @@ EditorBodyControl::~EditorBodyControl()
     
     SafeRelease(sceneTree);
     
-#ifdef __DAVAENGINE_BEAST__
 	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
-#endif //#ifdef __DAVAENGINE_BEAST__
 }
 
 void EditorBodyControl::CreateScene()

@@ -9,10 +9,7 @@
 
 using namespace DAVA;
 
-#ifdef __DAVAENGINE_BEAST__
 class BeastManager;
-#endif // __DAVAENGINE_BEAST__
-
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
@@ -98,9 +95,7 @@ protected:
 	float32 startRotationInSec;
 
 	//beast
-#ifdef __DAVAENGINE_BEAST__
 	BeastManager * beastManager;
-#endif //#ifdef __DAVAENGINE_BEAST__
 };
 
 
