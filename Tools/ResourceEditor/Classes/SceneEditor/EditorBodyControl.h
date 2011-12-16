@@ -51,8 +51,6 @@ protected:
     void CreatePropertyPanel();
     void ReleasePropertyPanel();
     
-    UIButton *CreateButton(Rect r, const WideString &text);
-    
     
     virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
     virtual int32 ChildrenCount(UIHierarchy *forHierarchy, void *forParent);
@@ -98,10 +96,6 @@ protected:
 	float32 rotationSpeed;
 	
 	float32 startRotationInSec;
-
-    // general
-    Font *fontLight;
-    Font *fontDark;
 
 	//beast
 #ifdef __DAVAENGINE_BEAST__

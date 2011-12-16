@@ -1,5 +1,7 @@
 #include "EditorBodyControl.h"
 
+#include "ControlsFactory.h"
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 #ifdef __DAVAENGINE_BEAST__
@@ -8,24 +10,13 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 {
     selectedNode = NULL;
     
-    fontLight = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-    fontLight->SetSize(12);
-    fontLight->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    ControlsFactory::CusomizeBottomLevelControl(this);
 
-    fontDark = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-    fontDark->SetSize(12);
-    fontDark->SetColor(Color(0.1f, 0.1f, 0.1f, 1.0f));
-
-    
-    GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
-    
     sceneTree = new UIHierarchy(Rect(0, 0, LEFT_SIDE_WIDTH, rect.dy));
+    ControlsFactory::CusomizeListControl(sceneTree);
     sceneTree->SetCellHeight(CELL_HEIGHT);
     sceneTree->SetDelegate(this);
     sceneTree->SetClipContents(true);
-    sceneTree->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    sceneTree->GetBackground()->SetColor(Color(0.92f, 0.92f, 0.92f, 1.0f));
     AddControl(sceneTree);
 
     scene3dView = new UI3DView(Rect(
@@ -56,9 +47,6 @@ EditorBodyControl::~EditorBodyControl()
     
     SafeRelease(sceneTree);
     
-    SafeRelease(fontLight);
-    SafeRelease(fontDark);
-
 #ifdef __DAVAENGINE_BEAST__
 	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 #endif //#ifdef __DAVAENGINE_BEAST__
@@ -142,9 +130,9 @@ void EditorBodyControl::CreatePropertyPanel()
     
     worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
 
-    lookAtButton = CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Look At Object");
-    removeNodeButton = CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Remove Object");
-    enableDebugFlagsButton = CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Debug Flags");
+    lookAtButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Look At Object");
+    removeNodeButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Remove Object");
+    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Debug Flags");
     
     lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
     removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
@@ -178,34 +166,6 @@ void EditorBodyControl::ReleasePropertyPanel()
     SafeRelease(enableDebugFlagsButton);
     SafeRelease(activePropertyPanel);
 }
-
-UIButton * EditorBodyControl::CreateButton(Rect r, const WideString &text)
-{
-    UIButton *btn = new UIButton(r);
-
-    btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-    
-    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    btn->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
-    btn->GetStateBackground(UIControl::STATE_SELECTED)->SetColor(Color(0.0f, 0.0f, 1.0f, 0.2f));
-    
-    
-    btn->SetStateFont(UIControl::STATE_PRESSED_INSIDE, fontLight);
-    btn->SetStateFont(UIControl::STATE_DISABLED, fontLight);
-    btn->SetStateFont(UIControl::STATE_NORMAL, fontLight);
-    btn->SetStateFont(UIControl::STATE_SELECTED, fontLight);
-    
-    btn->SetStateText(UIControl::STATE_PRESSED_INSIDE, text);
-    btn->SetStateText(UIControl::STATE_DISABLED, text);
-    btn->SetStateText(UIControl::STATE_NORMAL, text);
-    btn->SetStateText(UIControl::STATE_SELECTED, text);
-    return btn;
-}
-
 
 bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
 {
@@ -268,32 +228,9 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         
         c->text->SetText(StringToWString(n->GetName()));
     }
-//    else
-//    {
-//        c = forHierarchy->GetReusableCell("Library cell"); //try to get cell from the reusable cells store
-//        if(!c)
-//        { //if cell of requested type isn't find in the store create new cell
-//            c = new UIHierarchyCell(Rect(0, 0, RIGHT_SIDE_WIDTH, CELL_HEIGHT), "Library cell");
-//        }
-//        
-//        c->text->SetText(L"Cell");
-//    }
-    
-    c->text->SetFont(fontDark);
-    c->text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
 
-    Color color(0.1f, 0.5f, 0.05f, 1.0f);
-    c->openButton->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    c->openButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    c->openButton->SetStateDrawType(UIControl::STATE_HOVER, UIControlBackground::DRAW_FILL);
-    c->openButton->GetStateBackground(UIControl::STATE_NORMAL)->color = color;
-    c->openButton->GetStateBackground(UIControl::STATE_HOVER)->color = color + 0.1f;
-    c->openButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->color = color + 0.3f;
-
-    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
-    c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
+    ControlsFactory::CustomizeExpandButton(c->openButton);
+    ControlsFactory::CustomizeHierarhyCell(c);
     
     return c;//returns cell
 }

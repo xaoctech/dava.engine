@@ -43,12 +43,9 @@ private:
     
     void AddLineControl(Rect r);
     
-    void CustomizeButton(UIButton *btn, const WideString &text);
-    
     //menu
     void CreateTopMenu();
     void ReleaseTopMenu();
-    UIButton *CustomiseMenuButton(Rect r, const WideString &text);
 
     UIButton * btnOpen;
     UIButton * btnSave;

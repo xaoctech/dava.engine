@@ -63,10 +63,13 @@ int32 UIFileTree::ElementsCount(UIList *forList)
 
 UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 {
+    int32 width = forList->GetRect().dx;
+    
 	UIFileTreeCell *c = (UIFileTreeCell *)forList->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
 	if(!c)
 	{ //if cell of requested type isn't find in the store create new cell
-		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+//		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
 	}
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
@@ -80,9 +83,14 @@ UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 //		empty += ' ';
 //	}
 	float32 shiftX = entry->GetLevel() * 10.0f;
-	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+//	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+	c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
 	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
-	c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
+	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+
+    
 	c->SetItemInfo(entry);
 	
 	/*

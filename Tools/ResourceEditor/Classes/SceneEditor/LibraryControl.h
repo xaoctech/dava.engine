@@ -42,9 +42,6 @@ protected:
 
     void RefreshTree();
     
-    UIButton *CreateButton(Rect r, const WideString &text);
-    UIControl *CreatePanel(Rect r);
-
     UIFileTree *fileTreeControl;
 
     
