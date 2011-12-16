@@ -82,7 +82,7 @@ void UI3DView::SystemDraw(const UIGeometricData & geometricData)
     drawData.AddToGeometricData(geometricData);
 
     const Rect & viewportRect = drawData.GetUnrotatedRect();
-    
+    viewportRc = viewportRect;
     
     if (debugDrawEnabled)
     {//TODO: Add debug draw for rotated controls
