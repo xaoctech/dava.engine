@@ -245,7 +245,26 @@ void Polygon2::CalculateCenterPoint(Vector2 & center)
 	}
 	center /= (float32)pointCount;
 }
-	
+
+void Polygon2::CalculateSizeRect( Vector2 &size )
+{
+    Vector2 min(points[0]);
+    size = min;
+    for(int p = 1; p < pointCount; ++p)
+    {
+        const Vector2 &current = points[p];
+        if(current.x > size.x)
+            size.x = current.x;
+        if(current.y > size.y)
+            size.y = current.y;
+        if(current.x < min.x)
+            min.x = current.x;
+        if(current.y < min.y)
+            min.y = current.y;
+    }
+    size -= min;
+}
+
 float32 Polygon2::CalculateSquareRadius(const Vector2 & center)
 {
 	float32 radius = 0.0f;
