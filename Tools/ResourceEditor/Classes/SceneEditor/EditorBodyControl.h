@@ -39,6 +39,8 @@ public:
     bool HierarhyAreShown();
 
     void UpdateLibraryState(bool isShown, int32 width);
+
+	void BeastProcessScene();
     
 protected:
 

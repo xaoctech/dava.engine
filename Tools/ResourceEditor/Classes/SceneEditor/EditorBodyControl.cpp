@@ -36,7 +36,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreatePropertyPanel();
 
 	beastManager = BeastProxy::Instance()->CreateManager();
-	BeastProxy::Instance()->ParseScene(beastManager, scene);
 }
     
 EditorBodyControl::~EditorBodyControl()
@@ -537,4 +536,9 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
         r.dx += RIGHT_SIDE_WIDTH;
     }
     scene3dView->SetRect(r);
+}
+
+void EditorBodyControl::BeastProcessScene()
+{
+	BeastProxy::Instance()->ParseScene(beastManager, scene);
 }
