@@ -53,6 +53,7 @@ private:
     UIButton * btnCreate;
     UIButton * btnNew;
     UIButton * btnProject;
+	UIButton * btnBeast;
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
     void OnSavePressed(BaseObject * obj, void *, void *);
@@ -60,6 +61,7 @@ private:
     void OnCreatePressed(BaseObject * obj, void *, void *);
     void OnNewPressed(BaseObject * obj, void *, void *);
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
+	void OnBeastPressed(BaseObject * obj, void *, void *);
         
     //Body list
     struct BodyItem

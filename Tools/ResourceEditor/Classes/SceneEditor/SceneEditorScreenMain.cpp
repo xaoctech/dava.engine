@@ -114,6 +114,8 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
     x += dx + 1;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open Project");
+	x += dx + 1;
+	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Beast");
     
     
 
@@ -123,6 +125,9 @@ void SceneEditorScreenMain::CreateTopMenu()
     AddControl(btnCreate);
     AddControl(btnNew);
     AddControl(btnProject);
+#ifdef __DAVAENGINE_BEAST__
+	AddControl(btnBeast);
+#endif
 
     btnOpen->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenPressed));
     btnSave->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSavePressed));
@@ -130,6 +135,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnCreate->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCreatePressed));
     btnNew->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnNewPressed));
     btnProject->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenProjectPressed));
+	btnBeast->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
 }
 
 void SceneEditorScreenMain::ReleaseTopMenu()
@@ -140,6 +146,7 @@ void SceneEditorScreenMain::ReleaseTopMenu()
     SafeRelease(btnCreate);
     SafeRelease(btnNew);
     SafeRelease(btnProject);
+	SafeRelease(btnBeast);
 }
 
 void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
@@ -460,4 +467,9 @@ void SceneEditorScreenMain::OnHierarhyPressed(BaseObject * obj, void *, void *)
         bool areShown = bodies[iBody].bodyControl->HierarhyAreShown();
         bodies[iBody].bodyControl->ShowHierarhy(!areShown);
     }
+}
+
+void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
+{
+	bodies[0].bodyControl->BeastProcessScene();
 }
