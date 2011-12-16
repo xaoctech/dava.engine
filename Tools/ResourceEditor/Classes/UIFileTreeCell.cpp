@@ -9,17 +9,21 @@
 
 #include "UIFileTreeCell.h"
 
+#include "SceneEditor/ControlsFactory.h"
+
 namespace DAVA 
 {
 UIFileTreeCell::UIFileTreeCell(const Rect &rect, const String &cellIdentifier)
 :	UIListCell(rect, cellIdentifier)
 {
-	FTFont * fnt = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-	fnt->SetColor(0, 0, 0, 1);
-	fnt->SetSize(14);
-	SetStateFont(STATE_NORMAL, fnt);
-	SafeRelease(fnt);
-	
+//	FTFont * fnt = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+//	fnt->SetColor(0, 0, 0, 1);
+//	fnt->SetSize(14);
+//	SetStateFont(STATE_NORMAL, fnt);
+//	SafeRelease(fnt);
+
+    ControlsFactory::CustomizeListCell(this);
+    
 	
 	//Rect iconSize = Rect(0, 0, rect.dy, rect.dy);
 	//icon = new UIControl(rect);

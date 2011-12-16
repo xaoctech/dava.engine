@@ -3,15 +3,14 @@
 #include "EditorBodyControl.h"
 #include "LibraryControl.h"
 
+#include "ControlsFactory.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
     RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
-    GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    GetBackground()->SetColor(Color(0.7f, 0.7f, 0.7f, 1.0f));
+    ControlsFactory::CustomizeScreenBack(this);
 
-    font = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-    font->SetSize(12);
-    font->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+    font = ControlsFactory::CreateFontLight();
     
     //init file system dialog
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -32,24 +31,26 @@ void SceneEditorScreenMain::LoadResources()
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
     
     //Library
-    libraryButton = CustomiseMenuButton(
+    libraryButton = ControlsFactory::CreateButton(
                         Rect(fullRect.dx - BUTTON_WIDTH, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
                         L"Library");
     libraryButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLibraryPressed));
     AddControl(libraryButton);
-    libraryControl = new LibraryControl(Rect(fullRect.dx - LIBRARY_WIDTH, BODY_Y_OFFSET, LIBRARY_WIDTH, fullRect.dy - BODY_Y_OFFSET)); 
+    
+    libraryControl = new LibraryControl(
+                            Rect(fullRect.dx - LIBRARY_WIDTH, BODY_Y_OFFSET + 1, LIBRARY_WIDTH, fullRect.dy - BODY_Y_OFFSET - 1)); 
     libraryControl->SetDelegate(this);
     libraryControl->SetPath(path);
 
     //properties
-    propertiesButton = CustomiseMenuButton(
-                        Rect(fullRect.dx - (BUTTON_WIDTH*2 - 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
+    propertiesButton = ControlsFactory::CreateButton(
+                        Rect(fullRect.dx - (BUTTON_WIDTH*2 + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
                         L"Properties");
     propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
     AddControl(propertiesButton);
     
     
-    hierarhyButton = CustomiseMenuButton(
+    hierarhyButton = ControlsFactory::CreateButton(
                          Rect(0, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
                          L"Hierarhy");
     hierarhyButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnHierarhyPressed));
@@ -102,17 +103,17 @@ void SceneEditorScreenMain::CreateTopMenu()
     int32 y = 0;
     int32 dx = BUTTON_WIDTH;
     int32 dy = BUTTON_HEIGHT;
-    btnOpen = CustomiseMenuButton(Rect(x, y, dx, dy), L"Open");
+    btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open");
     x += dx + 1;
-    btnSave = CustomiseMenuButton(Rect(x, y, dx, dy), L"Save");
+    btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save");
     x += dx + 1;
-    btnMaterials = CustomiseMenuButton(Rect(x, y, dx, dy), L"Materials");
+    btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
     x += dx + 1;
-    btnCreate = CustomiseMenuButton(Rect(x, y, dx, dy), L"Create");
+    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create");
     x += dx + 1;
-    btnNew = CustomiseMenuButton(Rect(x, y, dx, dy), L"New");
+    btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
     x += dx + 1;
-    btnProject = CustomiseMenuButton(Rect(x, y, dx, dy), L"Open Project");
+    btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open Project");
     
     
 
@@ -141,44 +142,9 @@ void SceneEditorScreenMain::ReleaseTopMenu()
     SafeRelease(btnProject);
 }
 
-UIButton * SceneEditorScreenMain::CustomiseMenuButton(Rect r, const WideString &text)
-{
-    UIButton *btn = new UIButton(r);
-    CustomizeButton(btn, text);
-
-    return btn;
-}
-
-void SceneEditorScreenMain::CustomizeButton(UIButton *btn, const WideString &text)
-{
-    btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
-    btn->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-    
-    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    btn->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
-    btn->GetStateBackground(UIControl::STATE_SELECTED)->SetColor(Color(0.0f, 0.0f, 1.0f, 0.2f));
-    
-    
-    btn->SetStateFont(UIControl::STATE_PRESSED_INSIDE, font);
-    btn->SetStateFont(UIControl::STATE_DISABLED, font);
-    btn->SetStateFont(UIControl::STATE_NORMAL, font);
-    btn->SetStateFont(UIControl::STATE_SELECTED, font);
-    
-    btn->SetStateText(UIControl::STATE_PRESSED_INSIDE, text);
-    btn->SetStateText(UIControl::STATE_DISABLED, text);
-    btn->SetStateText(UIControl::STATE_NORMAL, text);
-    btn->SetStateText(UIControl::STATE_SELECTED, text);
-}
-
-
 void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
 {
-    UIControl *lineControl = new UIControl(r); 
-    lineControl->GetBackground()->color = Color(0.8f, 0.8f, 0.8f, 1.0f);
-    lineControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    UIControl *lineControl = ControlsFactory::CreateLine(r);
     AddControl(lineControl);
     SafeRelease(lineControl);
 }
@@ -299,18 +265,19 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     BodyItem c;
     
     int32 count = bodies.size();
-    c.headerButton = new UIButton(Rect(TAB_BUTTONS_OFFSET + count * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
-    CustomizeButton(c.headerButton, text);
+    c.headerButton = ControlsFactory::CreateButton(
+                        Rect(TAB_BUTTONS_OFFSET + count * (BUTTON_WIDTH + 1), 
+                             BODY_Y_OFFSET - BUTTON_HEIGHT, 
+                             BUTTON_WIDTH, 
+                             BUTTON_HEIGHT), 
+                        text);
+
     c.headerButton->SetTag(count);
     c.headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
     if(isCloseable)
     {
-        c.closeButton = new UIButton(Rect(BUTTON_WIDTH - BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT));
+        c.closeButton = ControlsFactory::CreateCloseWindowButton(Rect(BUTTON_WIDTH - BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT));
         c.closeButton->SetTag(count);
-        
-        c.closeButton->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-        c.closeButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.5f, 0.0, 0.0, 1.f));
-        
         c.closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCloseBody));
         c.headerButton->AddControl(c.closeButton);
     }
@@ -321,7 +288,7 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
 
 
     Rect fullRect = GetRect();
-    c.bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, fullRect.dy - BODY_Y_OFFSET));
+    c.bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET + 1, fullRect.dx, fullRect.dy - BODY_Y_OFFSET - 1));
     c.bodyControl->SetTag(count);    
     
     AddControl(c.headerButton);    
