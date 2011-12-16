@@ -543,6 +543,7 @@ void RenderManager::EndFrame()
 
 void RenderManager::SetViewport(const Rect & rect)
 {
+	viewPort = rect;
     PrepareRealMatrix();
     
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
