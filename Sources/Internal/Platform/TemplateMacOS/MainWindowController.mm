@@ -361,8 +361,11 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 		
         // Attributes Common to FullScreen and non-FullScreen
 
-//        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay), //24,
+#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFAColorSize, [openGLView displayBitsPerPixel:kCGDirectMainDisplay], //24,
+#else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay), //24,
+#endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFADepthSize, 16,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
