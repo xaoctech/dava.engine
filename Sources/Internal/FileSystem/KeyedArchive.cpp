@@ -58,6 +58,7 @@ bool KeyedArchive::Load(File *archive)
     archive->Read(header, 2);
     if ((header[0] != 'K') || (header[1] != 'A'))
     {
+        archive->Seek(0,File::SEEK_FROM_START);
         while(!archive->IsEof())
         {
             VariantType key;
