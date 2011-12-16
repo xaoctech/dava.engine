@@ -79,11 +79,11 @@ void GameScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
-	to = pos + to * 10000.0f;
+//	to = pos + to * 10000.0f;
 	
 	ShootTrace tr;
 	tr.from = from;	
-	tr.to = from + direction * 10000.0f;
+//	tr.to = from + direction * 10000.0f;
 	tr.to = direction;
 	traces.push_back(tr);
 	

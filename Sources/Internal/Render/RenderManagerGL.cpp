@@ -186,9 +186,7 @@ void RenderManager::EndFrame()
     
     
 void RenderManager::SetViewport(const Rect & rect)
-{
-	viewPort = rect;
-    
+{    
 	PrepareRealMatrix();
     
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
@@ -199,9 +197,6 @@ void RenderManager::SetViewport(const Rect & rect)
     
     if ((rect.dx < 0.0f) && (rect.dy < 0.0f))
     {
-		viewPort.dx = frameBufferWidth;
-		viewPort.dy = frameBufferHeight;
-		
         glViewport(0, 0, frameBufferWidth, frameBufferHeight);
         return;
     }

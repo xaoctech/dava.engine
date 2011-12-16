@@ -615,11 +615,6 @@ Cursor * RenderManager::GetCursor()
 	return cursor;
 }
 	
-const Rect & RenderManager::GetViewPort(void)
-{
-	return viewPort;
-}
-	
 const RenderManager::Caps & RenderManager::GetCaps()
 {
 	return caps;
