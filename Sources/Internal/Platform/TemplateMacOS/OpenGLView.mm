@@ -39,9 +39,12 @@ extern void FrameworkMain(int argc, char *argv[]);
 {
 	NSLog(@"[CoreMacOSPlatform] OpenGLView Init");
 	
-	
-//	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
+#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 	NSLog(@"Display bpp: %d", [self displayBitsPerPixel:kCGDirectMainDisplay]);
+#else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
+#endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+	
 
     // Pixel Format Attributes for the View-based (non-FullScreen) NSOpenGLContext
     NSOpenGLPixelFormatAttribute attrs[] = 
@@ -51,8 +54,11 @@ extern void FrameworkMain(int argc, char *argv[]);
         NSOpenGLPFANoRecovery,
 		
         // Attributes Common to FullScreen and non-FullScreen
-//        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay),//24,
+#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFAColorSize, [self displayBitsPerPixel:kCGDirectMainDisplay],//24,
+#else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+        NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay),//24,
+#endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFADepthSize, 16,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
@@ -87,6 +93,7 @@ extern void FrameworkMain(int argc, char *argv[]);
 	return self;	
 }
 
+#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 - (size_t) displayBitsPerPixel:(CGDirectDisplayID) displayId 
 {
     
@@ -103,6 +110,8 @@ extern void FrameworkMain(int argc, char *argv[]);
     
 	return depth;
 }
+#endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+
 
 - (void) enableTrackingArea
 {

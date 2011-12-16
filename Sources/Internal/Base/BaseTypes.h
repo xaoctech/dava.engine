@@ -58,6 +58,11 @@
 //#elif defined(__APPLE__) || defined(MACOSX)
 #elif defined(__GNUC__) && ( defined(__APPLE_CPP__) || defined(__APPLE_CC__) || defined(__MACOS_CLASSIC__) )
 #define __DAVAENGINE_MACOS__
+
+#if MAC_OS_X_VERSION_10_6 <= MAC_OS_X_VERSION_MAX_ALLOWED
+#define __DAVAENGINE_MACOS_VERSION_10_6__
+#endif //#if MAC_OS_X_VERSION_10_6 <= MAC_OS_X_VERSION_MAX_ALLOWED
+
 #endif
 #endif
 

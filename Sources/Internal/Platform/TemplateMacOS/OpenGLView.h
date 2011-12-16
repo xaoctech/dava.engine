@@ -42,7 +42,9 @@ using namespace DAVA;
 	DAVA::Cursor * activeCursor;
 }
 
+#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 - (size_t) displayBitsPerPixel:(CGDirectDisplayID) displayId;
+#endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;
