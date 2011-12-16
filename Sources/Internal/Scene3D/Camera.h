@@ -225,6 +225,8 @@ public:
      */
     void Draw();
 
+	Vector3 UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport);	
+
 protected:
     enum
     {

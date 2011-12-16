@@ -40,7 +40,7 @@ namespace DAVA
 ParticleLayer::ParticleLayer()
 	: head(0)
 	, count(0)
-	, limit(500)
+	, limit(1000)
 	, emitter(0)
 	, sprite(0)
 {

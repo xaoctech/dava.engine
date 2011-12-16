@@ -56,8 +56,14 @@ public:
     virtual void Draw(const UIGeometricData &geometricData);
     virtual void SystemDraw(const UIGeometricData &geometricData);
 
+	inline Rect & GetLastViewportRect()
+	{
+		return viewportRc;
+	}
+
 protected:
     Scene * scene;
+	Rect viewportRc;
 };
 	
 };
