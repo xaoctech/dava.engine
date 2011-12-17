@@ -581,6 +581,9 @@
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1465,6 +1468,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h">
       <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
+      <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
