@@ -143,7 +143,6 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 {
     UITreeItemInfo * itemInfo = selectedCell->GetItemInfo();
 	String extension = FileSystem::GetExtension(itemInfo->GetName());
-//	if (extension == ".dae" || extension == ".DAE")
 	if (0 == UIFileTree::CompareExtensions(extension, ".dae"))
 	{
         selectedFileName = itemInfo->GetPathname();
@@ -157,7 +156,6 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
         }
 	}
     else if (0 == UIFileTree::CompareExtensions(extension, ".sce"))
-//    else if(extension == ".sce" || extension == ".SCE")
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
