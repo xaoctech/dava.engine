@@ -78,6 +78,9 @@ public:
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 //    virtual SceneNode* Clone();
     
+    //Returns maximum Bounding Box as WorlTransformedBox
+    virtual AABBox3 GetWTMaximumBoundingBox();
+
 	
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
