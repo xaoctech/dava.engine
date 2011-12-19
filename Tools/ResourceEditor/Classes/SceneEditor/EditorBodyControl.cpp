@@ -5,11 +5,12 @@
 #include "../BeastProxy.h"
 
 
-
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
 {
+    scene = NULL;
+    
     selectedNode = NULL;
     
     ControlsFactory::CusomizeBottomLevelControl(this);
@@ -26,7 +27,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
                             SCENE_OFFSET, 
                             rect.dx - LEFT_SIDE_WIDTH - RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
                             rect.dy - 2 * SCENE_OFFSET));
-    
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
@@ -368,39 +368,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-//    Camera * cam = scene->GetCurrentCamera();
-//    Camera * frustumCam = scene->GetClipCamera();
-    
-//    if (!cam)
-//    {
-//        cameraInfo->SetText(L"no active camera");
-//    }else
-//    {
-//        WideString cameraInfoString = Format(L"cam: %s pos(%f, %f, %f) dir(%f, %f, %f) up(%f, %f, %f)", 
-//                                             cam->GetName().c_str(), 
-//                                             cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z, 
-//                                             cam->GetDirection().x, cam->GetDirection().y, cam->GetDirection().z, 
-//                                             cam->GetUp().x, cam->GetUp().y, cam->GetUp().z);
-//        cameraInfo->SetText(cameraInfoString);
-//    }
-    
-//    if (!frustumCam)
-//    {
-//        clipCameraInfo->SetText(L"no clip camera");
-//    }else if (frustumCam == cam)
-//    {
-//        clipCameraInfo->SetText(L"same camera");
-//    }else
-//    {
-//        WideString cameraInfoString = Format(L"cam: %s pos(%f, %f, %f) dir(%f, %f, %f) up(%f, %f, %f)", 
-//                                             frustumCam->GetName().c_str(), 
-//                                             frustumCam->GetPosition().x, frustumCam->GetPosition().y, frustumCam->GetPosition().z, 
-//                                             frustumCam->GetDirection().x, frustumCam->GetDirection().y, frustumCam->GetDirection().z, 
-//                                             frustumCam->GetUp().x, frustumCam->GetUp().y, frustumCam->GetUp().z);
-//        clipCameraInfo->SetText(cameraInfoString);
-//    }
-    
-    
 	startRotationInSec -= timeElapsed;
 	if (startRotationInSec < 0.0f)
 		startRotationInSec = 0.0f;

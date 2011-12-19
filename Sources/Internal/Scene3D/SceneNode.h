@@ -176,6 +176,14 @@ public:
 	
 	bool isSolidNode;
 	BaseObject * userData;
+    
+    //Returns maximum Bounding Box as WorlTransformedBox
+
+    /**
+     \brief function returns maximal Bounding Box as WorlTransformedBox
+     \returns flags of this specific scene node
+     */
+    virtual AABBox3 GetWTMaximumBoundingBox();
 	
 protected:
 
