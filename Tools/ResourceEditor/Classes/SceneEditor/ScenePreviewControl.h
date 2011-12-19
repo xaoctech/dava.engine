@@ -14,6 +14,7 @@ public:
     PreviewCameraController();
     
     virtual void Input(UIEvent * event);
+    virtual void SetCamera(Camera * camera);
     
     void SetRadius(float32 _radius);
     void UpdateCamera();

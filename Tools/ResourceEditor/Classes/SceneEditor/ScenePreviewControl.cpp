@@ -19,6 +19,23 @@ PreviewCameraController::PreviewCameraController()
     zoomLevel = 1.f;
 }
 
+void PreviewCameraController::SetCamera(DAVA::Camera *camera)
+{
+    CameraController::SetCamera(camera);
+
+    angleVertical = 0.f;
+    angleHorizontal = 0.f;
+    
+    moveStartPt = Vector2(0, 0);
+    moveStopPt = Vector2(0, 0);
+    
+    zoomStartPt = Vector2(0, 0);
+    zoomStopPt = Vector2(0, 0);
+    
+    radius = 10.f;
+    zoomLevel = 1.f;
+}
+
 void PreviewCameraController::SetRadius(float32 _radius)
 {
     radius = _radius;
