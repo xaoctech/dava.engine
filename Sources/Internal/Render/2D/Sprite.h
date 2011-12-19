@@ -114,10 +114,10 @@ public:
 	 app to work stable and gave testers ability to find such errors fast.
 	 
 	 \param spriteName path to sprite name relative to application bundle
-	 \param usedForScale is sprite will be used for scale
+	 \param usedForTiles is sprite will be used as a tile
 	 \return sprite pointer in any case will be returned
 	 */	
-	static Sprite* Create(const String &spriteName, bool usedForScale = false);// Creating sprite by name
+	static Sprite* Create(const String &spriteName, bool usedForTiles = false);// Creating sprite by name
 
 	/**
 	 \brief Function to create sprite as render target. 
@@ -138,7 +138,7 @@ public:
 		\param forPointer you can create sprite in the allready allocated space or send NULL and memory will be allocated.
 		\return 0 if sprite is unavailable and ptr to sprite if sprite is available
 	 */	
-	static Sprite* PureCreate(const String & spriteName, Sprite* forPointer = NULL); 
+	static Sprite* PureCreate(const String & spriteName, Sprite* forPointer = NULL, bool usedForTiles = false); 
 
 	
 	/**
@@ -276,7 +276,7 @@ protected:
 	 */
 	void Clear();
 	
-private:
+//private:
     inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
     
 	enum eSpriteTransform 
