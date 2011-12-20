@@ -94,9 +94,9 @@ private:
     void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
     void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
-    //Hierarhy
-    UIButton *hierarhyButton;
-    void OnHierarhyPressed(BaseObject * obj, void *, void *);
+    //SceneGraph
+    UIButton *sceneGraphButton;
+    void OnSceneGraphPressed(BaseObject * obj, void *, void *);
     
     //Library
     UIButton *libraryButton;

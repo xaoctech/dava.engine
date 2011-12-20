@@ -85,30 +85,30 @@ void EditorBodyControl::CreateScene()
     SafeRelease(cam2);
     
     
-    LandscapeNode * node = new LandscapeNode(scene);
-    //node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
-    
-    node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
-#if 1
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
-    
-    Texture::EnableMipmapGeneration();
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
-    Texture::DisableMipmapGeneration();
-#else  
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
-    
-    Texture::EnableMipmapGeneration();
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
-    Texture::DisableMipmapGeneration();
-#endif
-    
-    node->SetName("landscapeNode");
-    scene->AddNode(node);
+//    LandscapeNode * node = new LandscapeNode(scene);
+//    //node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+//    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
+//    
+//    node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
+//#if 1
+//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+//    
+//    Texture::EnableMipmapGeneration();
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
+//    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+//    Texture::DisableMipmapGeneration();
+//#else  
+//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
+//    
+//    Texture::EnableMipmapGeneration();
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
+//    Texture::DisableMipmapGeneration();
+//#endif
+//    
+//    node->SetName("landscapeNode");
+//    scene->AddNode(node);
     
     scene3dView->SetScene(scene);
 }
@@ -214,10 +214,10 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
     UIHierarchyCell *c = NULL;
     if(forHierarchy == sceneTree)
     {
-        c = forHierarchy->GetReusableCell("SceneNode cell"); //try to get cell from the reusable cells store
+        c = forHierarchy->GetReusableCell("SceneGraph cell"); //try to get cell from the reusable cells store
         if(!c)
         { //if cell of requested type isn't find in the store create new cell
-            c = new UIHierarchyCell(Rect(0, 0, LEFT_SIDE_WIDTH, CELL_HEIGHT), "SceneNode cell");
+            c = new UIHierarchyCell(Rect(0, 0, LEFT_SIDE_WIDTH, CELL_HEIGHT), "SceneGraph cell");
         }
         
         //fill cell whith data
@@ -227,7 +227,7 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
     }
 
     ControlsFactory::CustomizeExpandButton(c->openButton);
-    ControlsFactory::CustomizeHierarhyCell(c);
+    ControlsFactory::CustomizeSceneGraphCell(c);
     
     return c;//returns cell
 }
@@ -480,7 +480,7 @@ bool EditorBodyControl::PropertiesAreShown()
     return (activePropertyPanel->GetParent() != NULL);
 }
 
-void EditorBodyControl::ShowHierarhy(bool show)
+void EditorBodyControl::ShowSceneGraph(bool show)
 {
     if(show && !sceneTree->GetParent())
     {
@@ -490,6 +490,8 @@ void EditorBodyControl::ShowHierarhy(bool show)
         r.dx -= LEFT_SIDE_WIDTH;
         r.x += LEFT_SIDE_WIDTH;
         scene3dView->SetRect(r);
+        
+        sceneTree->Refresh();
     }
     else if(!show && sceneTree->GetParent())
     {
@@ -502,7 +504,7 @@ void EditorBodyControl::ShowHierarhy(bool show)
     }
 }
 
-bool EditorBodyControl::HierarhyAreShown()
+bool EditorBodyControl::SceneGraphAreShown()
 {
     return (sceneTree->GetParent() != NULL);
 }

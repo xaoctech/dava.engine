@@ -50,11 +50,11 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(propertiesButton);
     
     
-    hierarhyButton = ControlsFactory::CreateButton(
+    sceneGraphButton = ControlsFactory::CreateButton(
                          Rect(0, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
-                         L"Hierarhy");
-    hierarhyButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnHierarhyPressed));
-    AddControl(hierarhyButton);
+                         L"Scene Graph");
+    sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
+    AddControl(sceneGraphButton);
     
 
     InitializeBodyList();
@@ -459,13 +459,13 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
     }
 }
 
-void SceneEditorScreenMain::OnHierarhyPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
 {
     int32 iBody = FindCurrentBody();
     if(-1 != iBody)
     {
-        bool areShown = bodies[iBody].bodyControl->HierarhyAreShown();
-        bodies[iBody].bodyControl->ShowHierarhy(!areShown);
+        bool areShown = bodies[iBody].bodyControl->SceneGraphAreShown();
+        bodies[iBody].bodyControl->ShowSceneGraph(!areShown);
     }
 }
 
