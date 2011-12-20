@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4780990E14A10A2500BAA259 /* PropertyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780990814A10A2500BAA259 /* PropertyCell.cpp */; };
+		4780990F14A10A2500BAA259 /* PropertyCellData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780990A14A10A2500BAA259 /* PropertyCellData.cpp */; };
+		4780991014A10A2500BAA259 /* PropertyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780990C14A10A2500BAA259 /* PropertyList.cpp */; };
 		5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */; };
 		5C03F92014990CCB002EE5C1 /* LibraryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */; };
 		5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */; };
@@ -273,6 +276,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		4780990814A10A2500BAA259 /* PropertyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyCell.cpp; sourceTree = "<group>"; };
+		4780990914A10A2500BAA259 /* PropertyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyCell.h; sourceTree = "<group>"; };
+		4780990A14A10A2500BAA259 /* PropertyCellData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyCellData.cpp; sourceTree = "<group>"; };
+		4780990B14A10A2500BAA259 /* PropertyCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyCellData.h; sourceTree = "<group>"; };
+		4780990C14A10A2500BAA259 /* PropertyList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyList.cpp; sourceTree = "<group>"; };
+		4780990D14A10A2500BAA259 /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyList.h; sourceTree = "<group>"; };
 		5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorBodyControl.cpp; sourceTree = "<group>"; };
 		5C03F91A14990CCB002EE5C1 /* EditorBodyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorBodyControl.h; sourceTree = "<group>"; };
 		5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryControl.cpp; sourceTree = "<group>"; };
@@ -1499,6 +1508,12 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				4780990814A10A2500BAA259 /* PropertyCell.cpp */,
+				4780990914A10A2500BAA259 /* PropertyCell.h */,
+				4780990A14A10A2500BAA259 /* PropertyCellData.cpp */,
+				4780990B14A10A2500BAA259 /* PropertyCellData.h */,
+				4780990C14A10A2500BAA259 /* PropertyList.cpp */,
+				4780990D14A10A2500BAA259 /* PropertyList.h */,
 				5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */,
 				5C25BB82149D384B00776F0C /* ScenePreviewControl.h */,
 				5C439EB5149ABEA900326566 /* ControlsFactory.cpp */,
@@ -1935,6 +1950,9 @@
 				EA9D6B5A149A86080012E1FB /* BeastProxy.cpp in Sources */,
 				5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */,
 				5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */,
+				4780990E14A10A2500BAA259 /* PropertyCell.cpp in Sources */,
+				4780990F14A10A2500BAA259 /* PropertyCellData.cpp in Sources */,
+				4780991014A10A2500BAA259 /* PropertyList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
