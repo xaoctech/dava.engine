@@ -3,7 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "CameraController.h"
-#include "GameScene.h"
+#include "../GameScene.h"
 
 using namespace DAVA;
 
