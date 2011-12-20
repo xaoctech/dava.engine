@@ -3,11 +3,13 @@
 
 #include "DAVAEngine.h"
 #include "LibraryControl.h"
+#include "MenuPopupControl.h"
 
 using namespace DAVA;
 
 class EditorBodyControl;
-class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate
+class SceneEditorScreenMain: 
+    public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, public MenuPopupDelegate
 {
     enum eConst
     {
@@ -23,7 +25,32 @@ class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate,
         
         TAB_BUTTONS_OFFSET = 110,
     };
+
+    enum DIALOG_OPERATION
+    {
+        DIALOG_OPERATION_NONE = 0,
+        DIALOG_OPERATION_MENU_OPEN,
+        DIALOG_OPERATION_MENU_SAVE,
+        DIALOG_OPERATION_MENU_PROJECT,
+    };
     
+    enum eMenuIDS
+    {
+        MENUID_CREATENODE = 100,
+        MENUID_NEW = 200,
+    };
+    
+    enum eCreateNodeIds
+    {
+        ECNID_LANDSCAPE = 0, 
+        ECNID_LIGHT, 
+        ECNID_SERVICENODE, 
+        ECNID_BOX, 
+        ECNID_SPHERE, 
+        
+        ECNID_COUNT
+    };
+
 public:
 
 	virtual void LoadResources();
@@ -36,6 +63,12 @@ public:
 
 	virtual void OnEditSCE(const String &pathName, const String &name);
 	virtual void OnAddSCE(const String &pathName);
+
+    //menu
+    virtual void MenuCanceled();
+	virtual void MenuSelected(int32 menuID, int32 itemID);
+    virtual WideString MenuItemText(int32 menuID, int32 itemID);
+    virtual int32 MenuItemsCount(int32 menuID);
     
 private:
     
@@ -82,21 +115,14 @@ private:
     
     //FileDialog
     UIFileSystemDialog * fileSystemDialog;
-    enum DIALOG_OPERATION
-    {
-        DIALOG_OPERATION_NONE = 0,
-        DIALOG_OPERATION_MENU_OPEN,
-        DIALOG_OPERATION_MENU_SAVE,
-        DIALOG_OPERATION_MENU_PROJECT,
-    };
     uint32 fileSystemDialogOpMode;
     
     void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
     void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
-    //Hierarhy
-    UIButton *hierarhyButton;
-    void OnHierarhyPressed(BaseObject * obj, void *, void *);
+    //SceneGraph
+    UIButton *sceneGraphButton;
+    void OnSceneGraphPressed(BaseObject * obj, void *, void *);
     
     //Library
     UIButton *libraryButton;
@@ -105,6 +131,11 @@ private:
 
     UIButton *propertiesButton;
     void OnPropertiesPressed(BaseObject * obj, void *, void *);
+    
+
+    // menu
+    MenuPopupControl *menuPopup;
+
     
     
     // general

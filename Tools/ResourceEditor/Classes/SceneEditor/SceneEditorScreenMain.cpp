@@ -27,6 +27,9 @@ void SceneEditorScreenMain::LoadResources()
     AddLineControl(Rect(0, MENU_HEIGHT, fullRect.dx, LINE_HEIGHT));
     CreateTopMenu();
     
+    menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
+    menuPopup->SetDelegate(this);
+    
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
     
@@ -50,11 +53,11 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(propertiesButton);
     
     
-    hierarhyButton = ControlsFactory::CreateButton(
+    sceneGraphButton = ControlsFactory::CreateButton(
                          Rect(0, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
-                         L"Hierarhy");
-    hierarhyButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnHierarhyPressed));
-    AddControl(hierarhyButton);
+                         L"Scene Graph");
+    sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
+    AddControl(sceneGraphButton);
     
 
     InitializeBodyList();
@@ -62,6 +65,8 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(menuPopup);
+    
     SafeRelease(keyedArchieve);
     
     SafeRelease(propertiesButton);
@@ -109,7 +114,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     x += dx + 1;
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
     x += dx + 1;
-    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create");
+    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create Node");
     x += dx + 1;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
     x += dx + 1;
@@ -228,7 +233,8 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 {
-    
+    menuPopup->InitControl(MENUID_CREATENODE, btnCreate->GetRect());
+    AddControl(menuPopup);
 }
 
 
@@ -459,13 +465,13 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
     }
 }
 
-void SceneEditorScreenMain::OnHierarhyPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
 {
     int32 iBody = FindCurrentBody();
     if(-1 != iBody)
     {
-        bool areShown = bodies[iBody].bodyControl->HierarhyAreShown();
-        bodies[iBody].bodyControl->ShowHierarhy(!areShown);
+        bool areShown = bodies[iBody].bodyControl->SceneGraphAreShown();
+        bodies[iBody].bodyControl->ShowSceneGraph(!areShown);
     }
 }
 
@@ -473,3 +479,135 @@ void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
 {
 	bodies[0].bodyControl->BeastProcessScene();
 }
+
+void SceneEditorScreenMain::MenuCanceled()
+{
+    RemoveControl(menuPopup);
+}
+
+void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
+{
+    RemoveControl(menuPopup);
+    
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            switch (itemID) 
+            {
+                case ECNID_LANDSCAPE:
+                {
+                    
+                    break;
+                }
+
+                case ECNID_LIGHT:
+                {
+                    
+                    break;
+                }
+
+                case ECNID_SERVICENODE:
+                {
+                    
+                    break;
+                }
+
+                case ECNID_BOX:
+                {
+                    
+                    break;
+                }
+                    
+                case ECNID_SPHERE:
+                {
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
+{
+    WideString text = L"";
+    
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            switch (itemID) 
+            {
+                case ECNID_LANDSCAPE:
+                {
+                    text = L"Landscape";
+                    break;
+                }
+                    
+                case ECNID_LIGHT:
+                {
+                    text = L"Light";
+                    break;
+                }
+                    
+                case ECNID_SERVICENODE:
+                {
+                    text = L"Service Node";
+                    break;
+                }
+                    
+                case ECNID_BOX:
+                {
+                    text = L"Box";
+                    break;
+                }
+                    
+                case ECNID_SPHERE:
+                {
+                    text = L"Sphere";
+                    break;
+                }
+                    
+                default:
+                    break;
+            }
+            
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    return text;
+}
+
+int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
+{
+    int32 retCount = 0;
+
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            retCount = ECNID_COUNT;
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    return retCount;
+}
+
