@@ -37,7 +37,7 @@ public:
     static void CustomizeExpandButton(UIButton *btn);
 
     static void CustomizeListCell(UIListCell *c);
-    static void CustomizeHierarhyCell(UIHierarchyCell *c);
+    static void CustomizeSceneGraphCell(UIHierarchyCell *c);
 };
 
 
