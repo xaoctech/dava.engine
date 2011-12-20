@@ -41,7 +41,7 @@ public:
     CameraController();
     ~CameraController();
     
-    void SetCamera(Camera * camera);
+    virtual void SetCamera(Camera * camera);
     virtual void Input(UIEvent * event);
 protected:
     Camera * camera;

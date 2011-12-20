@@ -116,10 +116,5 @@ void BulletObject::UpdateCollisionObject()
     collisionObject->setWorldTransform(btt);
 }
 
-DebugNode * BulletObject::GetDebugNode()
-{
-	return debugNode;
-}
-
 
 

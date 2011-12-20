@@ -12,13 +12,28 @@
 
 #include "DAVAEngine.h"
 #include "bullet/btBulletDynamicsCommon.h"
+#include "BulletObject.h"
 
 using namespace DAVA;
+
+struct BulletLink
+{
+	BulletObject * bulletObj;
+	SceneNode * sceneNode;
+};
 
 class GameScene : public Scene
 {
 public:
     
+	class ShootTrace
+    {
+    public:
+        Vector3 from;
+        Vector3 to;
+    };
+	
+	
     GameScene();
     ~GameScene();
     
@@ -32,13 +47,18 @@ public:
     btCollisionWorld *collisionWorld;
 	void CheckNodes(SceneNode * curr);
 	
+	void TrySelection(Vector3 from, Vector3 direction);
+	SceneNode * GetSelection();
+	
 protected:
 
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
     int depth;
-//    Vector<RealBuilding*> buildingObjects;
+	
+    Vector<BulletLink> links;
+    List<ShootTrace> traces;
 };
 
 #endif

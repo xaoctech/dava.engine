@@ -204,9 +204,7 @@ public:
         \brief 
         
      */
-    void SetViewport(const Rect & rect); 
-       
-    
+    void SetViewport(const Rect & rect);     
     
     /**
      *** State Management

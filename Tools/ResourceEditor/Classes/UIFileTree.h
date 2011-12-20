@@ -32,6 +32,7 @@ public:
 class UIFileTree;
 class UITreeItemInfo : public BaseObject
 {
+    friend class UIFileTree;
 public:
 	UITreeItemInfo(UIFileTree * _ownerTree)
 	{
@@ -59,6 +60,7 @@ public:
 	const String & GetName() {return name; };
 	const String & GetPathname() { return pathname; };
 	bool IsDirectory() { return isDirectory; };
+	bool IsExpanded() { return isExpanded; };
 	void ToggleExpanded();// { isExpanded = !isExpanded; };
 	Vector<UITreeItemInfo*> & GetChildren() { return children; };
 	void AddChild(UITreeItemInfo * t) { children.push_back(t); };
@@ -108,6 +110,15 @@ public:
     void EnableRootFolderChange(bool isEnabled);
     
 	/**
+<<<<<<< HEAD
+     \brief Function to disable root folder expanding. 
+     \param[in] isDisabled true if you want to root folder be always expanded. 
+	 */
+    void DisableRootFolderExpanding(bool isDisabled);    
+
+	/**
+=======
+>>>>>>> 510bf8a1ad480be53d6905c171b589ce758bf571
      \brief Function to compare file extensions without letter case
      \param[in] ext1 - first file extension. 
      \param[in] ext2 - second file extension 
@@ -115,6 +126,9 @@ public:
 	 */
     static int32 CompareExtensions(const String &ext1, const String &ext2);
 
+    
+    virtual void Refresh();
+    
 private:
 	// Delegate functions
 	virtual int32 ElementsCount(UIList *forList);
@@ -136,6 +150,7 @@ private:
 	bool isFolderNavigationEnabled;
 	
     bool isRootFolderChangeEnabled;
+    bool isRootFolderExpandingDisabled;
     
 	friend class UITreeItemInfo;
 };

@@ -5,17 +5,18 @@
 #include "CameraController.h"
 #include "PropertyPanel.h"
 #include "EditMatrixControl.h"
-#include "GameScene.h"
+#include "../GameScene.h"
 
 using namespace DAVA;
 
+class BeastManager;
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
     {
+        SCENE_OFFSET = 10, 
         LEFT_SIDE_WIDTH = 200,
-        RIGHT_SIDE_WIDTH = 300,
-        SCENE_HEIGHT = 400,
+        RIGHT_SIDE_WIDTH = 200,
         CELL_HEIGHT = 20,
         MATRIX_HEIGHT = 100,
         BUTTON_HEIGHT = 20,
@@ -33,6 +34,13 @@ public:
     
     void ShowProperties(bool show);
     bool PropertiesAreShown();
+
+    void ShowSceneGraph(bool show);
+    bool SceneGraphAreShown();
+
+    void UpdateLibraryState(bool isShown, int32 width);
+
+	void BeastProcessScene();
     
 protected:
 
@@ -41,8 +49,6 @@ protected:
     
     void CreatePropertyPanel();
     void ReleasePropertyPanel();
-    
-    UIButton *CreateButton(Rect r, const WideString &text);
     
     
     virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
@@ -90,9 +96,8 @@ protected:
 	
 	float32 startRotationInSec;
 
-    // general
-    Font *fontLight;
-    Font *fontDark;
+	//beast
+	BeastManager * beastManager;
 };
 
 

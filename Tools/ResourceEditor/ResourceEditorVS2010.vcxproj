@@ -53,7 +53,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../Libs/beast/include;./Classes/bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -65,7 +65,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Win32Framework.lib;CORE_DB_Magick++_.lib;CORE_DB_magick_.lib;CORE_DB_bzlib_.lib;CORE_DB_coders_.lib;CORE_DB_filters_.lib;CORE_DB_jbig_.lib;CORE_DB_jp2_.lib;CORE_DB_jpeg_.lib;CORE_DB_lcms_.lib;CORE_DB_libxml_.lib;CORE_DB_png_.lib;CORE_DB_tiff_.lib;CORE_DB_ttf_.lib;CORE_DB_wand_.lib;CORE_DB_wmf_.lib;CORE_DB_xlib_.lib;CORE_DB_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;user32.lib;gdi32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;FColladaVS2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Debug Win32;./../../Libs/beast/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Debug Win32;../../../dava.resourceeditor.beast/beast/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../Libs/beast/include;./Classes/bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -83,7 +83,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Win32Framework.lib;CORE_RL_Magick++_.lib;CORE_RL_magick_.lib;CORE_RL_bzlib_.lib;CORE_RL_coders_.lib;CORE_RL_filters_.lib;CORE_RL_jbig_.lib;CORE_RL_jp2_.lib;CORE_RL_jpeg_.lib;CORE_RL_lcms_.lib;CORE_RL_libxml_.lib;CORE_RL_png_.lib;CORE_RL_tiff_.lib;CORE_RL_ttf_.lib;CORE_RL_wand_.lib;CORE_RL_wmf_.lib;CORE_RL_xlib_.lib;CORE_RL_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;user32.lib;gdi32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;FColladaVS2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Release Win32;./../../Libs/beast/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Release Win32;../../../dava.resourceeditor.beast/beast/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -92,13 +92,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h" />
     <ClInclude Include="Classes\AppScreens.h" />
-    <ClInclude Include="Classes\BeastDebug.h" />
-    <ClInclude Include="Classes\BeastManager.h" />
-    <ClInclude Include="Classes\BeastMaterial.h" />
-    <ClInclude Include="Classes\BeastMesh.h" />
-    <ClInclude Include="Classes\BeastNameGenerator.h" />
-    <ClInclude Include="Classes\BeastTypes.h" />
+    <ClInclude Include="Classes\BeastProxy.h" />
+    <ClInclude Include="Classes\BulletObject.h" />
     <ClInclude Include="Classes\bullet\btBulletCollisionCommon.h" />
     <ClInclude Include="Classes\bullet\btBulletDynamicsCommon.h" />
     <ClInclude Include="Classes\bullet\Bullet-C-Api.h" />
@@ -364,9 +370,11 @@
     <ClInclude Include="Classes\Collada\ColladaSceneNodeAnimation.h" />
     <ClInclude Include="Classes\Collada\ColladaTexture.h" />
     <ClInclude Include="Classes\Collada\stdafx.h" />
+    <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\GameScene.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPanel.h" />
+    <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
@@ -374,6 +382,8 @@
     <ClInclude Include="Classes\SceneEditor\PropertyPanel.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
+    <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
+    <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="Classes\TexturePacker\DefinitionFile.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
@@ -389,11 +399,17 @@
     <ClInclude Include="Classes\VertexOctTree.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\BeastDebug.cpp" />
-    <ClCompile Include="Classes\BeastManager.cpp" />
-    <ClCompile Include="Classes\BeastMaterial.cpp" />
-    <ClCompile Include="Classes\BeastMesh.cpp" />
-    <ClCompile Include="Classes\BeastNameGenerator.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp" />
+    <ClCompile Include="Classes\BeastProxy.cpp" />
+    <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btBroadphaseProxy.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btCollisionAlgorithm.cpp" />
@@ -559,9 +575,11 @@
     <ClCompile Include="Classes\Collada\ColladaSceneNode.cpp" />
     <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
+    <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\GameScene.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
@@ -569,6 +587,8 @@
     <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
+    <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
