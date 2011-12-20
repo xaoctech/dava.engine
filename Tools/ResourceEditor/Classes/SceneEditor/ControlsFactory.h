@@ -10,20 +10,20 @@ class ControlsFactory
 
 public:
     
-    static UIButton *CreateButton(Rect r, const WideString &buttonText);
+    static UIButton *CreateButton(const Rect & rect, const WideString &buttonText);
     static void CustomizeButton(UIButton *btn, const WideString &buttonText);
 
-    static UIButton *CreateCloseWindowButton(Rect r);
+    static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);
     
     static Font* CreateFontLight();
     static void CustomizeFontLight(Font *font);
     static Font* CreateFontDark();
-    static void CustomizeFontDark(Font *fontf);
+    static void CustomizeFontDark(Font *font);
 
     static void CustomizeScreenBack(UIControl *screen);
     
-    static UIControl * CreateLine(Rect r);
+    static UIControl * CreateLine(const Rect & rect);
     
     static void CusomizeBottomLevelControl(UIControl *c);
 
@@ -31,13 +31,15 @@ public:
 
     static void CusomizeListControl(UIControl *c);
     
-    static UIControl *CreatePanelControl(Rect r);
+    static UIControl *CreatePanelControl(const Rect & rect);
     static void CustomizePanelControl(UIControl *c);
     
     static void CustomizeExpandButton(UIButton *btn);
 
     static void CustomizeListCell(UIListCell *c);
     static void CustomizeSceneGraphCell(UIHierarchyCell *c);
+    
+    static void CustomizeMenuPopupCell(UIListCell *c, const WideString &text);
 };
 
 
