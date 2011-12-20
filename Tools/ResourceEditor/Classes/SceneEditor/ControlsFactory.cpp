@@ -149,7 +149,7 @@ void ControlsFactory::CustomizeListCell(UIListCell *c)
     SafeRelease(font);
 }
 
-void ControlsFactory::CustomizeHierarhyCell(UIHierarchyCell *c)
+void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 {
     Font *font = CreateFontDark();
     

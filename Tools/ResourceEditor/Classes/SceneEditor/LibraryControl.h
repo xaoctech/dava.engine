@@ -3,7 +3,8 @@
 
 #include "DAVAEngine.h"
 #include "../UIFileTree.h"
-
+#include "CameraController.h"
+#include "../GameScene.h"
 
 using namespace DAVA;
 
@@ -14,7 +15,7 @@ public:
 	virtual void OnAddSCE(const String &pathName) = 0;
 };
 
-
+class ScenePreviewControl;
 class LibraryControl : public UIControl, public UIFileTreeDelegate
 {
     enum eConst
@@ -52,8 +53,7 @@ protected:
     UIControl *panelSCE;
     UIButton *btnEdit;
     UIButton *btnAdd;
-    UI3DView *preview;
-    Scene *scene;
+    ScenePreviewControl *preview;
     void OnAddPressed(BaseObject * object, void * userData, void * callerData);
     void OnEditPressed(BaseObject * object, void * userData, void * callerData);
     

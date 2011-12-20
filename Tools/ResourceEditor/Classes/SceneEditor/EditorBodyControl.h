@@ -35,10 +35,12 @@ public:
     void ShowProperties(bool show);
     bool PropertiesAreShown();
 
-    void ShowHierarhy(bool show);
-    bool HierarhyAreShown();
+    void ShowSceneGraph(bool show);
+    bool SceneGraphAreShown();
 
     void UpdateLibraryState(bool isShown, int32 width);
+
+	void BeastProcessScene();
     
 protected:
 

@@ -179,7 +179,6 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 				for (size_t ei = 0; ei < extsSize; ++ei)
                 {
                     if(0 == CompareExtensions(extensions[ei], ext))
-//					if (extensions[ei] == ext)
 					{
 						addElement = true;
 						break;
@@ -236,6 +235,65 @@ int32 UITreeItemInfo::GetTotalCount()
 	int32 cnt = 0;
 	if (isExpanded)
 	{
+        if(ownerTree)
+        {
+            UITreeItemInfo *inf = new UITreeItemInfo(ownerTree);
+            inf->level = level;
+            inf->name = GetName();
+            inf->pathname = GetPathname();
+            inf->isDirectory = isDirectory;
+            inf->isExpanded = isExpanded;
+            
+            ownerTree->RecursiveTreeWalk(this->GetPathname(), inf);
+            
+            //remove unused
+            for (Vector<UITreeItemInfo *>::iterator it = children.begin(); 
+                 it < children.end(); )
+            {
+                UITreeItemInfo *item = (UITreeItemInfo *)(*it);
+                bool wasFound = false;
+                for (int32 iNew = 0; iNew < (int32)inf->children.size(); ++iNew)
+                {
+                    if(item->name == inf->children[iNew]->name)
+                    {
+                        wasFound = true;
+                        break;
+                    }
+                }
+                
+                if(!wasFound)
+                {
+                    SafeRelease(item);
+                    children.erase(it);
+                    it = children.begin();
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+            //add new
+            for (int32 iNew = 0; iNew < (int32)inf->children.size(); ++iNew)
+            {
+                bool wasFound = false;
+                for (int32 iOld = 0; iOld < (int32)children.size(); ++iOld)
+                {
+                    if(children[iOld]->name == inf->children[iNew]->name)
+                    {
+                        wasFound = true;
+                        break;
+                    }
+                }
+                
+                if(!wasFound)
+                {
+                    children.push_back(SafeRetain(inf->children[iNew]));
+                }
+            }
+            
+            SafeRelease(inf);
+        }        
+        
 		for (int32 c = 0; c < (int32)children.size(); ++c)
 			cnt += children[c]->GetTotalCount();
 	}
@@ -295,16 +353,6 @@ int32 UIFileTree::CompareExtensions(const String &ext1, const String &ext2)
 void UIFileTree::Refresh()
 {
     UIList::Refresh();
-    
-//    if(isRootFolderExpandingDisabled)
-//    {
-//        UITreeItemInfo * entry = treeHead->EntryByIndex(0);
-//        if(!entry->IsExpanded())
-//        {
-//            entry->ToggleExpanded();
-//            UIList::Refresh();
-//        }
-//    }
 }
     
 void UIFileTree::EnableRootFolderChange(bool isEnabled)
