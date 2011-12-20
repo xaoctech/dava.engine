@@ -378,6 +378,7 @@
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
+    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyPanel.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h" />
@@ -583,6 +584,7 @@
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp" />

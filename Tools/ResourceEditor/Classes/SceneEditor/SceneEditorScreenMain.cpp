@@ -7,7 +7,7 @@
 
 void SceneEditorScreenMain::LoadResources()
 {
-    RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
+    //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     ControlsFactory::CustomizeScreenBack(this);
 
     font = ControlsFactory::CreateFontLight();
