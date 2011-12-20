@@ -30,7 +30,7 @@
 
 void SceneEditorScreen::LoadResources()
 {
-    RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
+    //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     GetBackground()->SetColor(Color(0.7f, 0.7f, 0.7f, 1.0f));
 
