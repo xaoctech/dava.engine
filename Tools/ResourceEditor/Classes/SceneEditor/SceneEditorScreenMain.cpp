@@ -30,6 +30,9 @@ void SceneEditorScreenMain::LoadResources()
     menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
+    nodeDialog = new CreateNodeDialog(fullRect);
+    nodeDialog->SetDelegate(this);
+    
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
     
@@ -65,6 +68,7 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(nodeDialog);
     SafeRelease(menuPopup);
     
     SafeRelease(keyedArchieve);
@@ -497,7 +501,6 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             {
                 case ECNID_LANDSCAPE:
                 {
-                    
                     break;
                 }
 
@@ -528,6 +531,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
                     break;
             }
 
+            AddControl(nodeDialog);
             
             break;
         }
@@ -611,3 +615,7 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
     return retCount;
 }
 
+void SceneEditorScreenMain::DialogClosed(int32 retCode)
+{
+    RemoveControl(nodeDialog);
+}
