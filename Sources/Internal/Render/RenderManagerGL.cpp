@@ -186,8 +186,8 @@ void RenderManager::EndFrame()
     
     
 void RenderManager::SetViewport(const Rect & rect)
-{
-    PrepareRealMatrix();
+{    
+	PrepareRealMatrix();
     
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
 	int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);

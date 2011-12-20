@@ -20,6 +20,8 @@ class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate,
         BODY_Y_OFFSET = 50,
         
         LIBRARY_WIDTH = 200,
+        
+        TAB_BUTTONS_OFFSET = 110,
     };
     
 public:
@@ -39,22 +41,19 @@ private:
     
     int32 FindCurrentBody();
     
-    
     void AddLineControl(Rect r);
-    
-    void CustomizeButton(UIButton *btn, const WideString &text);
     
     //menu
     void CreateTopMenu();
     void ReleaseTopMenu();
-    UIButton *CustomiseMenuButton(Rect r, const WideString &text);
-    
+
     UIButton * btnOpen;
     UIButton * btnSave;
     UIButton * btnMaterials;
     UIButton * btnCreate;
     UIButton * btnNew;
     UIButton * btnProject;
+	UIButton * btnBeast;
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
     void OnSavePressed(BaseObject * obj, void *, void *);
@@ -62,6 +61,7 @@ private:
     void OnCreatePressed(BaseObject * obj, void *, void *);
     void OnNewPressed(BaseObject * obj, void *, void *);
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
+	void OnBeastPressed(BaseObject * obj, void *, void *);
         
     //Body list
     struct BodyItem
@@ -94,6 +94,10 @@ private:
     void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
     void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
+    //SceneGraph
+    UIButton *sceneGraphButton;
+    void OnSceneGraphPressed(BaseObject * obj, void *, void *);
+    
     //Library
     UIButton *libraryButton;
     LibraryControl *libraryControl;
