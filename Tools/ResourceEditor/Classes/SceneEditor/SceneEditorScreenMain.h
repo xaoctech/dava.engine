@@ -4,12 +4,14 @@
 #include "DAVAEngine.h"
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
+#include "CreateNodeDialog.h"
 
 using namespace DAVA;
 
 class EditorBodyControl;
 class SceneEditorScreenMain: 
-    public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, public MenuPopupDelegate
+    public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
+    public MenuPopupDelegate, public CreateNodeDialogDelegeate
 {
     enum eConst
     {
@@ -69,7 +71,10 @@ public:
 	virtual void MenuSelected(int32 menuID, int32 itemID);
     virtual WideString MenuItemText(int32 menuID, int32 itemID);
     virtual int32 MenuItemsCount(int32 menuID);
-    
+
+    // create node dialog
+    virtual void DialogClosed(int32 retCode);
+
 private:
     
     int32 FindCurrentBody();
@@ -136,6 +141,8 @@ private:
     // menu
     MenuPopupControl *menuPopup;
 
+    //create node dialog
+    CreateNodeDialog *nodeDialog;
     
     
     // general
