@@ -5,11 +5,12 @@
 #include "../BeastProxy.h"
 
 
-
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
 {
+    scene = NULL;
+    
     selectedNode = NULL;
     
     ControlsFactory::CusomizeBottomLevelControl(this);
@@ -26,7 +27,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
                             SCENE_OFFSET, 
                             rect.dx - LEFT_SIDE_WIDTH - RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
                             rect.dy - 2 * SCENE_OFFSET));
-    
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
@@ -36,7 +36,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreatePropertyPanel();
 
 	beastManager = BeastProxy::Instance()->CreateManager();
-	BeastProxy::Instance()->ParseScene(beastManager, scene);
 }
     
 EditorBodyControl::~EditorBodyControl()
@@ -86,30 +85,30 @@ void EditorBodyControl::CreateScene()
     SafeRelease(cam2);
     
     
-    LandscapeNode * node = new LandscapeNode(scene);
-    //node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
-    
-    node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
-#if 1
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
-    
-    Texture::EnableMipmapGeneration();
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
-    Texture::DisableMipmapGeneration();
-#else  
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
-    
-    Texture::EnableMipmapGeneration();
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
-    Texture::DisableMipmapGeneration();
-#endif
-    
-    node->SetName("landscapeNode");
-    scene->AddNode(node);
+//    LandscapeNode * node = new LandscapeNode(scene);
+//    //node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+//    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
+//    
+//    node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
+//#if 1
+//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
+//    
+//    Texture::EnableMipmapGeneration();
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
+//    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+//    Texture::DisableMipmapGeneration();
+//#else  
+//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
+//    
+//    Texture::EnableMipmapGeneration();
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
+//    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
+//    Texture::DisableMipmapGeneration();
+//#endif
+//    
+//    node->SetName("landscapeNode");
+//    scene->AddNode(node);
     
     scene3dView->SetScene(scene);
 }
@@ -215,10 +214,10 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
     UIHierarchyCell *c = NULL;
     if(forHierarchy == sceneTree)
     {
-        c = forHierarchy->GetReusableCell("SceneNode cell"); //try to get cell from the reusable cells store
+        c = forHierarchy->GetReusableCell("SceneGraph cell"); //try to get cell from the reusable cells store
         if(!c)
         { //if cell of requested type isn't find in the store create new cell
-            c = new UIHierarchyCell(Rect(0, 0, LEFT_SIDE_WIDTH, CELL_HEIGHT), "SceneNode cell");
+            c = new UIHierarchyCell(Rect(0, 0, LEFT_SIDE_WIDTH, CELL_HEIGHT), "SceneGraph cell");
         }
         
         //fill cell whith data
@@ -228,7 +227,7 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
     }
 
     ControlsFactory::CustomizeExpandButton(c->openButton);
-    ControlsFactory::CustomizeHierarhyCell(c);
+    ControlsFactory::CustomizeSceneGraphCell(c);
     
     return c;//returns cell
 }
@@ -369,39 +368,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-//    Camera * cam = scene->GetCurrentCamera();
-//    Camera * frustumCam = scene->GetClipCamera();
-    
-//    if (!cam)
-//    {
-//        cameraInfo->SetText(L"no active camera");
-//    }else
-//    {
-//        WideString cameraInfoString = Format(L"cam: %s pos(%f, %f, %f) dir(%f, %f, %f) up(%f, %f, %f)", 
-//                                             cam->GetName().c_str(), 
-//                                             cam->GetPosition().x, cam->GetPosition().y, cam->GetPosition().z, 
-//                                             cam->GetDirection().x, cam->GetDirection().y, cam->GetDirection().z, 
-//                                             cam->GetUp().x, cam->GetUp().y, cam->GetUp().z);
-//        cameraInfo->SetText(cameraInfoString);
-//    }
-    
-//    if (!frustumCam)
-//    {
-//        clipCameraInfo->SetText(L"no clip camera");
-//    }else if (frustumCam == cam)
-//    {
-//        clipCameraInfo->SetText(L"same camera");
-//    }else
-//    {
-//        WideString cameraInfoString = Format(L"cam: %s pos(%f, %f, %f) dir(%f, %f, %f) up(%f, %f, %f)", 
-//                                             frustumCam->GetName().c_str(), 
-//                                             frustumCam->GetPosition().x, frustumCam->GetPosition().y, frustumCam->GetPosition().z, 
-//                                             frustumCam->GetDirection().x, frustumCam->GetDirection().y, frustumCam->GetDirection().z, 
-//                                             frustumCam->GetUp().x, frustumCam->GetUp().y, frustumCam->GetUp().z);
-//        clipCameraInfo->SetText(cameraInfoString);
-//    }
-    
-    
 	startRotationInSec -= timeElapsed;
 	if (startRotationInSec < 0.0f)
 		startRotationInSec = 0.0f;
@@ -514,7 +480,7 @@ bool EditorBodyControl::PropertiesAreShown()
     return (activePropertyPanel->GetParent() != NULL);
 }
 
-void EditorBodyControl::ShowHierarhy(bool show)
+void EditorBodyControl::ShowSceneGraph(bool show)
 {
     if(show && !sceneTree->GetParent())
     {
@@ -524,6 +490,8 @@ void EditorBodyControl::ShowHierarhy(bool show)
         r.dx -= LEFT_SIDE_WIDTH;
         r.x += LEFT_SIDE_WIDTH;
         scene3dView->SetRect(r);
+        
+        sceneTree->Refresh();
     }
     else if(!show && sceneTree->GetParent())
     {
@@ -536,7 +504,7 @@ void EditorBodyControl::ShowHierarhy(bool show)
     }
 }
 
-bool EditorBodyControl::HierarhyAreShown()
+bool EditorBodyControl::SceneGraphAreShown()
 {
     return (sceneTree->GetParent() != NULL);
 }
@@ -555,4 +523,9 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
         r.dx += RIGHT_SIDE_WIDTH;
     }
     scene3dView->SetRect(r);
+}
+
+void EditorBodyControl::BeastProcessScene()
+{
+	BeastProxy::Instance()->ParseScene(beastManager, scene);
 }

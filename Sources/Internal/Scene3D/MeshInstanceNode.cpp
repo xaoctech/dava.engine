@@ -337,5 +337,24 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
     return dstNode;
 }
 
+AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
+{
+    AABBox3 retBBox = bbox;
+    bbox.GetTransformedBox(GetWorldTransform(), retBBox);
+    
+    Vector<SceneNode*>::iterator itEnd = childs.end();
+	for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    {
+        AABBox3 box = (*it)->GetWTMaximumBoundingBox();
+        if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)
+           &&(-AABBOX_INFINITY != box.max.x && -AABBOX_INFINITY != box.max.y && -AABBOX_INFINITY != box.max.z))
+        {
+            retBBox.AddAABBox(box);
+        }
+    }
+    
+    return retBBox;
+}
+
     
 };
