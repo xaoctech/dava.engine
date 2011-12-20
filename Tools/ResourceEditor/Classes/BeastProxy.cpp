@@ -13,3 +13,18 @@ void BeastProxy::ParseScene(BeastManager * manager, DAVA::Scene * scene)
 {
 
 }
+
+void BeastProxy::CreateSkyLight(BeastManager * manager)
+{
+
+}
+
+void BeastProxy::SetCamera(BeastManager * manager, DAVA::Camera * davaCamera)
+{
+
+}
+
+void BeastProxy::WindowedRender(BeastManager * manager)
+{
+
+}

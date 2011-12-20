@@ -526,4 +526,7 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
 void EditorBodyControl::BeastProcessScene()
 {
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
+	BeastProxy::Instance()->CreateSkyLight(beastManager);
+	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());
+	BeastProxy::Instance()->WindowedRender(beastManager);
 }
