@@ -884,6 +884,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4780999714A2463900BAA259 /* MaterialEditor */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = MaterialEditor;
+			sourceTree = "<group>";
+		};
 		D993104E1497B1BB00BB577D /* bullet */ = {
 			isa = PBXGroup;
 			children = (
@@ -1514,12 +1521,13 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
-				4780990814A10A2500BAA259 /* PropertyCell.cpp */,
+				4780999714A2463900BAA259 /* MaterialEditor */,
 				4780990914A10A2500BAA259 /* PropertyCell.h */,
-				4780990A14A10A2500BAA259 /* PropertyCellData.cpp */,
+				4780990814A10A2500BAA259 /* PropertyCell.cpp */,
 				4780990B14A10A2500BAA259 /* PropertyCellData.h */,
-				4780990C14A10A2500BAA259 /* PropertyList.cpp */,
+				4780990A14A10A2500BAA259 /* PropertyCellData.cpp */,
 				4780990D14A10A2500BAA259 /* PropertyList.h */,
+				4780990C14A10A2500BAA259 /* PropertyList.cpp */,
 				5C006F7514A10765005035C1 /* CreateNodeDialog.cpp */,
 				5C006F7614A10766005035C1 /* CreateNodeDialog.h */,
 				5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */,

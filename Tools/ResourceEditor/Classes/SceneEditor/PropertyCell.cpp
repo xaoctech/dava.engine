@@ -9,8 +9,9 @@
 
 #include "PropertyCell.h"
 #include "PropertyCellData.h"
+#include "ControlsFactory.h"
 
-PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, Font *font, PropertyCellData *prop)
+PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
 {
     background->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -20,7 +21,7 @@ PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect,
 
     property = prop;
     keyName = new UIStaticText(Rect(0, 0, size.x, size.y));
-    keyName->SetFont(font);
+    keyName->SetFont(ControlsFactory::CreateFontLight());
     AddControl(keyName);
 }
 
@@ -38,22 +39,22 @@ String PropertyCell::GetTypeName(int cellType)
 }
 
 
-PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, Font *font, PropertyCellData *prop, float32 width)
-: PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), font, prop)
+PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+: PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     keyName->size.x = width/2;
   
     editableText = new UITextField(Rect(width/2 + 5, 0, width/2 - 10, size.y));
     editableText->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     editableText->GetBackground()->SetColor(Color(0.2, 0.2, 0.2, 0.6));
-    editableText->SetFont(font);
+    editableText->SetFont(ControlsFactory::CreateFontLight());
     editableText->SetDelegate(this);
     
     uneditableTextContainer = new UIControl(Rect(width/2 + 5, 0, width/2 - 10, size.y));
     uneditableTextContainer->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     uneditableTextContainer->GetBackground()->SetColor(Color(0.4, 0.4, 0.4, 0.5));
     uneditableText = new UIStaticText(Rect(0, 0, uneditableTextContainer->size.x, uneditableTextContainer->size.y));
-    uneditableText->SetFont(font);
+    uneditableText->SetFont(ControlsFactory::CreateFontLight());
     uneditableTextContainer->AddControl(uneditableText);
     
     SetData(prop);

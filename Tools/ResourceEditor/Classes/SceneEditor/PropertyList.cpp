@@ -12,13 +12,12 @@
 #include "PropertyCell.h"
 
 
-PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate, Font *font)
+PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate)
 :UIControl(rect)
 {
     delegate = propertiesDelegate;
     background->SetDrawType(UIControlBackground::DRAW_FILL);
     background->SetColor(Color(0.5, 0.5, 0.5, 0.5));
-    currentFont = SafeRetain(font);
 
     propsList = new UIList(Rect(0,0, size.x, size.y), UIList::ORIENTATION_VERTICAL);
     propsList->SetDelegate(this);
@@ -29,7 +28,6 @@ PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDel
 PropertyList::~PropertyList()
 {
     SafeRelease(propsList);
-    SafeRelease(currentFont);
 }
 
 void PropertyList::AddTextProperty(const String &propertyName, const String &currentText, editableType propEditType)
@@ -144,7 +142,7 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
         switch (props[index]->cellType) 
         {
             case PropertyCell::PROP_CELL_TEXT:
-                c = new PropertyTextCell(this, currentFont, props[index], size.x);
+                c = new PropertyTextCell(this, props[index], size.x);
                 break;
         }
     }

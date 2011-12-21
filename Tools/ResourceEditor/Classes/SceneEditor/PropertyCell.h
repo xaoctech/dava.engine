@@ -36,7 +36,7 @@ public:
         PROP_CELL_COUNT
     };
     
-    PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, Font *font, PropertyCellData *prop);
+    PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop);
 
     virtual void SetData(PropertyCellData *prop);
 
@@ -50,7 +50,7 @@ public:
 class PropertyTextCell : public PropertyCell, public UITextFieldDelegate
 {
 public:
-    PropertyTextCell(PropertyCellDelegate *propDelegate, Font *font, PropertyCellData *prop, float32 width);
+    PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
     
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
