@@ -37,7 +37,7 @@ public:
         PROPERTY_IS_READ_ONLY
     };
     
-    PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate, Font *font);
+    PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate);
     ~PropertyList();
     
     void AddTextProperty(const String &propertyName, const String &currentText, editableType propEditType = PROPERTY_IS_EDITABLE);
@@ -69,7 +69,6 @@ protected:
     UIList *propsList;
     Vector<PropertyCellData*> props;
     Map<String, PropertyCellData*> propsMap;
-    Font *currentFont;
 };
 
 #endif
