@@ -868,10 +868,42 @@ void LandscapeNode::Draw()
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
     //Logger::Debug("landscape draw time: %lld", drawTime);
 }
-    
-    
+
+
+void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vector<int32> & indices)
+{
+	QuadTreeNode<LandscapeQuad> * currentNode = &quadTreeHead;
+	LandscapeQuad * quad = &currentNode->data;
+	
+	landscapeVertices.resize((quad->size + 1) * (quad->size + 1));
+
+	int32 index = 0;
+	for (int32 y = quad->y; y < quad->y + quad->size + 1; ++y)
+	{
+		for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
+		{
+			landscapeVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
+			landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+			index++;
+		}
+	}
+
+	indices.resize(heightmap->GetWidth()*heightmap->GetHeight()*6);
+	int32 step = 1;
+	int32 indexIndex = 0;
+	for (uint16 y = (currentNode->data.y & RENDER_QUAD_AND); y < (currentNode->data.y & RENDER_QUAD_AND) + currentNode->data.size; y += step)
+	{
+		for (uint16 x = (currentNode->data.x & RENDER_QUAD_AND); x < (currentNode->data.x & RENDER_QUAD_AND) + currentNode->data.size; x += step)
+		{
+			indices[indexIndex++] = x + y * RENDER_QUAD_WIDTH;
+			indices[indexIndex++] = (x + step) + y * RENDER_QUAD_WIDTH;
+			indices[indexIndex++] = x + (y + step) * RENDER_QUAD_WIDTH;
+
+			indices[indexIndex++] = (x + step) + y * RENDER_QUAD_WIDTH;
+			indices[indexIndex++] = (x + step) + (y + step) * RENDER_QUAD_WIDTH;
+			indices[indexIndex++] = x + (y + step) * RENDER_QUAD_WIDTH;     
+		}
+	}
+}
+
 };
-
-
-
-

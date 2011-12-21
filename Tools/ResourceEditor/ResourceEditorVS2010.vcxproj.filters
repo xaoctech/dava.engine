@@ -593,6 +593,9 @@
     <ClCompile Include="Classes\SceneEditor\CreateNodeDialog.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLandscape.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1489,6 +1492,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CreateNodeDialog.h">
       <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLandscape.h">
+      <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
