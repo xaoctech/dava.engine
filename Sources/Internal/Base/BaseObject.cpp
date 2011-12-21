@@ -27,35 +27,20 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Base/ObjectFactory.h"
+#include "BaseObject.h"
+#include "ObjectFactory.h"
 
-namespace DAVA 
-{	
-ObjectFactory::ObjectFactory()
-    : unregisteredClassName("<Unknown class>")
+namespace DAVA
 {
+REGISTER_CLASS(BaseObject);    
     
-}
 
-ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info)
+const String & BaseObject::GetClassName()
 {
-		ObjectFactory::Instance()->RegisterObjectCreator(name, func, info);	
+    return ObjectFactory::Instance()->GetName(this);
 }
-
-void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info)
-{
-	creatorMap[name] = func;
-    nameMap[info.name()] = name;
-}
-	
-BaseObject * ObjectFactory::New(const String & name)
-{
-	Map<String, CreateObjectFunc>::iterator it = creatorMap.find(name);
-	if (it != creatorMap.end())
-	{
-		CreateObjectFunc newFunc = it->second;
-		return (newFunc)();
-	}
-	return 0;
-}
-}
+    
+    
+    
+    
+};

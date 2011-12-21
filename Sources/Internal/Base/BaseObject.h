@@ -50,8 +50,9 @@ namespace DAVA
 	\ingroup baseobjects
 	\brief class to implement object reference counting
  
-	This class is parent for most of classes in our SDK. 
-	When you create it reference counter equal to 1. 
+	This class if base object for most of hierarchies in our SDK. It's main purpose to help you avoid issues with memory, and provide you 
+    with many high-level mechanisms like serialization, messaging and so on. In most cases if you create own class it will be good idea 
+    to derive it from BaseObject. 
   */
 
 	
@@ -114,6 +115,15 @@ public:
 	{
 		return referenceCount;
 	}
+    
+    /**
+        \brief return class name if it's registered with REGISTER_CLASS macro of our ObjectFactory class.
+        This function is mostly intended for serialization, but can be used for other purposes as well.
+        \returns name of the class you've passed to REGISTER_CLASS function. For example if you register class UIButton with the following line:
+        REGISTER_CLASS(UIButton); you'll get "UIButton" as result.
+     */
+    const String & GetClassName();
+    
 protected:
 	
 	BaseObject(const BaseObject & b)
