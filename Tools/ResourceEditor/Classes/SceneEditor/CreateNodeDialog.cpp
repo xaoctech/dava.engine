@@ -5,7 +5,8 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     :   UIControl(rect)
 {
     dialogDelegate = NULL;
-
+    currentDescription = NULL;
+    
     Rect r;
     r.dx = rect.dx / 2;
     r.dy = rect.dy / 2;
@@ -30,10 +31,15 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     SafeRelease(btnCancel);
     SafeRelease(btnOk);
     SafeRelease(panel);
+
+    Rect propertyRect(r.x, r.y, r.dx, buttonY);
+    properties = new PropertyList(propertyRect, this);
+    AddControl(properties);
 }
     
 CreateNodeDialog::~CreateNodeDialog()
 {
+    SafeRelease(properties);
     dialogDelegate = NULL;
 }
 
@@ -56,4 +62,32 @@ void CreateNodeDialog::OnOk(BaseObject * object, void * userData, void * callerD
     {
         dialogDelegate->DialogClosed(RCODE_OK);
     }
+}
+
+void CreateNodeDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+{
+    
+}
+
+void CreateNodeDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
+{
+    
+}
+
+void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+{
+    
+}
+
+void CreateNodeDialog::SetProperties(NodeDescription *description)
+{
+    currentDescription = description;
+    
+    properties->ReleaseProperties();
+    
+    for (int32 i = 0; i < currentDescription->properties.size(); ++i)
+    {
+        properties->AddPropertyByData(currentDescription->properties[i]);
+    }
+    
 }

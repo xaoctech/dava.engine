@@ -42,6 +42,10 @@ public:
 
 	void BeastProcessScene();
     
+    GameScene * GetScene();
+    void AddNode(SceneNode *node);
+    
+    
 protected:
 
     void CreateScene();
