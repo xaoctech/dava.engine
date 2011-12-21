@@ -137,6 +137,13 @@ public:
         TEXTURE_TEXTUREMASK, 
         TEXTURE_COUNT,
     };
+
+	class LandscapeVertex
+	{
+	public:
+		Vector3 position;
+		Vector2 texCoord;
+	};
     
     /**
         \brief Set texture for the specific texture level
@@ -164,6 +171,8 @@ public:
         \brief Overloaded draw function to draw landscape
      */
 	virtual void Draw();
+
+	void GetGeometry(Vector<LandscapeVertex> & vertices, Vector<int32> & indices);
     
 protected:	
     
@@ -178,15 +187,7 @@ protected:
         AABBox3 bbox;
         uint32  frame;
     };
-    
-    class LandscapeVertex
-    {
-    public:
-        Vector3 position;
-        Vector2 texCoord;
-    };
-    
-    
+   
     static const int32 RENDER_QUAD_WIDTH = 129;
     static const int32 RENDER_QUAD_AND = RENDER_QUAD_WIDTH - 2;
     static const int32 INDEX_ARRAY_COUNT = RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6;
