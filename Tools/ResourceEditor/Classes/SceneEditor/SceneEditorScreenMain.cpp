@@ -7,7 +7,7 @@
 
 void SceneEditorScreenMain::LoadResources()
 {
-    RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
+    //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     ControlsFactory::CustomizeScreenBack(this);
 
     font = ControlsFactory::CreateFontLight();
@@ -26,6 +26,12 @@ void SceneEditorScreenMain::LoadResources()
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, MENU_HEIGHT, fullRect.dx, LINE_HEIGHT));
     CreateTopMenu();
+    
+    menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
+    menuPopup->SetDelegate(this);
+    
+    nodeDialog = new CreateNodeDialog(fullRect);
+    nodeDialog->SetDelegate(this);
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
@@ -62,6 +68,9 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(nodeDialog);
+    SafeRelease(menuPopup);
+    
     SafeRelease(keyedArchieve);
     
     SafeRelease(propertiesButton);
@@ -109,7 +118,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     x += dx + 1;
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
     x += dx + 1;
-    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create");
+    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create Node");
     x += dx + 1;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
     x += dx + 1;
@@ -228,7 +237,8 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 {
-    
+    menuPopup->InitControl(MENUID_CREATENODE, btnCreate->GetRect());
+    AddControl(menuPopup);
 }
 
 
@@ -472,4 +482,140 @@ void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *
 void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
 {
 	bodies[0].bodyControl->BeastProcessScene();
+}
+
+void SceneEditorScreenMain::MenuCanceled()
+{
+    RemoveControl(menuPopup);
+}
+
+void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
+{
+    RemoveControl(menuPopup);
+    
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            switch (itemID) 
+            {
+                case ECNID_LANDSCAPE:
+                {
+                    break;
+                }
+
+                case ECNID_LIGHT:
+                {
+                    
+                    break;
+                }
+
+                case ECNID_SERVICENODE:
+                {
+                    
+                    break;
+                }
+
+                case ECNID_BOX:
+                {
+                    
+                    break;
+                }
+                    
+                case ECNID_SPHERE:
+                {
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            AddControl(nodeDialog);
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
+{
+    WideString text = L"";
+    
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            switch (itemID) 
+            {
+                case ECNID_LANDSCAPE:
+                {
+                    text = L"Landscape";
+                    break;
+                }
+                    
+                case ECNID_LIGHT:
+                {
+                    text = L"Light";
+                    break;
+                }
+                    
+                case ECNID_SERVICENODE:
+                {
+                    text = L"Service Node";
+                    break;
+                }
+                    
+                case ECNID_BOX:
+                {
+                    text = L"Box";
+                    break;
+                }
+                    
+                case ECNID_SPHERE:
+                {
+                    text = L"Sphere";
+                    break;
+                }
+                    
+                default:
+                    break;
+            }
+            
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    return text;
+}
+
+int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
+{
+    int32 retCount = 0;
+
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            retCount = ECNID_COUNT;
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    return retCount;
+}
+
+void SceneEditorScreenMain::DialogClosed(int32 retCode)
+{
+    RemoveControl(nodeDialog);
 }
