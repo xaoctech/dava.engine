@@ -382,6 +382,9 @@
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h" />
+    <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
+    <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
+    <ClInclude Include="Classes\SceneEditor\PropertyList.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyPanel.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
@@ -590,6 +593,9 @@
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
