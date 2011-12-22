@@ -4,7 +4,7 @@
 #include "LibraryControl.h"
 
 #include "ControlsFactory.h"
-#include "GameScene.h"
+#include "../GameScene.h"
 
 void SceneEditorScreenMain::LoadResources()
 {
