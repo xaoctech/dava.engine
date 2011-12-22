@@ -484,7 +484,7 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 	/* Map x and y from window coordinates */
 
 	in.x = (in.x - viewport.x) / viewport.dx;
-	in.y = (in.y - viewport.y) / viewport.dy;
+	in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
 
 	/* Map to range -1 to 1 */
 	in.x = in.x * 2 - 1;

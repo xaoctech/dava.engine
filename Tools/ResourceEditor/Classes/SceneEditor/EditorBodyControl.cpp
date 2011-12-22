@@ -319,7 +319,24 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             scene->SetCurrentCamera(newCamera);
             scene->SetClipCamera(scene->GetCamera(0));
         }
-    }   
+
+    
+	
+	
+		if (event->keyChar == 'r')
+		{
+			SceneNode * selected = scene->GetSelection();
+			if (selected)
+			{
+				Matrix4 & tr = selected->ModifyLocalTransform();
+				Matrix4 rotate;
+				rotate.Identity();
+				rotate.CreateRotation(Vector3(0,0,1), M_PI / 2.0);
+				tr *= rotate;
+			}
+		}
+
+	}   
     
 	if (event->phase == UIEvent::PHASE_BEGAN)
 	{
@@ -334,7 +351,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			Camera * cam = scene->GetCurrentCamera();
 			const Rect & rect = scene3dView->GetLastViewportRect();
 			Vector3 from = cam->GetPosition();
-			Vector3 to = cam->UnProject(event->point.x, rect.dy - event->point.y, 0, rect);
+			Vector3 to = cam->UnProject(event->point.x, event->point.y, 0, rect);
 			to -= from;
 			to *= 1000.f;
 			to += from;

@@ -50,6 +50,7 @@ public:
 	void TrySelection(Vector3 from, Vector3 direction);
 	SceneNode * GetSelection();
 	
+	
 protected:
 
     btDefaultCollisionConfiguration* collisionConfiguration;
@@ -58,6 +59,7 @@ protected:
     int depth;
 	
     Vector<BulletLink> links;
+	SceneNode * selection;
     List<ShootTrace> traces;
 };
 

@@ -79,7 +79,6 @@ void GameScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
-//	to = pos + to * 10000.0f;
 	
 	ShootTrace tr;
 	tr.from = from;	
@@ -89,21 +88,28 @@ void GameScene::TrySelection(Vector3 from, Vector3 direction)
 	
     btCollisionWorld::ClosestRayResultCallback cb(pos, to);
     collisionWorld->rayTest(pos, to, cb);
-    if (cb.hasHit()) 
+	btCollisionObject * coll = 0;
+	if (cb.hasHit()) 
     {
+		coll = cb.m_collisionObject;
 		Logger::Debug("Has Hit");
-		
-		for (Vector<BulletLink>::iterator it = links.begin(); it != links.end(); it++) 
+	}
+	
+	for (Vector<BulletLink>::iterator it = links.begin(); it != links.end(); it++) 
+	{
+		BulletLink & link = *it;
+		bool isDraw = (coll == link.bulletObj->GetCollisionObject());
+		link.bulletObj->GetDebugNode()->isDraw = isDraw;
+		if (isDraw)
 		{
-			BulletLink & link = *it;
-			link.bulletObj->GetDebugNode()->isDraw = (cb.m_collisionObject == link.bulletObj->GetCollisionObject());
-		}		
-    }
+			selection = link.sceneNode;
+		}
+	}
 }
 
 SceneNode * GameScene::GetSelection()
 {
-	return 0;
+	return selection;
 }
 
 
@@ -117,12 +123,17 @@ void GameScene::Draw()
         
         RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
         Color cr(1.0, 1.0, 1.0, 1.0);
-        for (List<ShootTrace>::iterator it = traces.begin(); it != traces.end(); it++) 
+
+		int num = 0;
+        for (List<ShootTrace>::iterator it = traces.end(); it != traces.begin(); it--) 
         {
+			num++;
             cr.a = 1.0;
             RenderManager::Instance()->SetColor(cr);
             RenderHelper::Instance()->DrawLine(it->from, it->to);
-        }
+			if (num == 3)
+				break;
+		}
         RenderManager::Instance()->ResetColor();
         RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     }
