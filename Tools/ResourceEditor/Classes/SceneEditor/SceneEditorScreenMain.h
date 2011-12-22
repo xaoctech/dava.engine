@@ -5,8 +5,8 @@
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
 #include "CreateNodeDialog.h"
-
 using namespace DAVA;
+
 
 class EditorBodyControl;
 class SceneEditorScreenMain: 
@@ -49,6 +49,8 @@ class SceneEditorScreenMain:
         ECNID_SERVICENODE, 
         ECNID_BOX, 
         ECNID_SPHERE, 
+        ECNID_CAMERA, 
+        
         
         ECNID_COUNT
     };
@@ -143,6 +145,11 @@ private:
 
     //create node dialog
     CreateNodeDialog *nodeDialog;
+    NodeDescription nodes[ECNID_COUNT];
+    void InitNodeDescriptions();
+    void SetNodeDefaultValues(int32 nodeType);
+    void ReleaseNodeDescriptions();
+    int32 currentNodeType;
     
     
     // general
