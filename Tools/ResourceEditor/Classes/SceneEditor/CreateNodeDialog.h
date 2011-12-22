@@ -16,7 +16,7 @@ public:
 
 struct NodeDescription
 {
-    int32 type;
+    WideString name;
     Vector<PropertyCellData *> properties;
 };
 
@@ -57,7 +57,8 @@ protected:
     CreateNodeDialogDelegeate *dialogDelegate;
     
     PropertyList *properties;
-    
+  
+    UIStaticText *header;
     NodeDescription *currentDescription;
 };
 
