@@ -16,7 +16,14 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     UIControl *panel = ControlsFactory::CreatePanelControl(r);
     AddControl(panel);
     
-    int32 buttonY = r.dy - BUTTON_HEIGHT - 10;
+    header = new UIStaticText(Rect(0, 0, r.dx, BUTTON_HEIGHT));
+    Font *font = ControlsFactory::CreateFontLight();
+    header->SetFont(font);
+    header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+    SafeRelease(font);
+    panel->AddControl(header);
+    
+    int32 buttonY = r.dy - BUTTON_HEIGHT - 2;
     int32 buttonX = (r.dx - BUTTON_WIDTH * 2 - 2) / 2;
     
     UIButton *btnCancel = ControlsFactory::CreateButton(Rect(buttonX, buttonY, BUTTON_WIDTH, BUTTON_HEIGHT), L"Cancel");
@@ -28,17 +35,19 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     btnOk->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodeDialog::OnOk));
     panel->AddControl(btnOk);
     
+    Rect propertyRect(0, BUTTON_HEIGHT, r.dx, buttonY - BUTTON_HEIGHT);
+    properties = new PropertyList(propertyRect, this);
+    panel->AddControl(properties);
+
+    
     SafeRelease(btnCancel);
     SafeRelease(btnOk);
     SafeRelease(panel);
-
-    Rect propertyRect(r.x, r.y, r.dx, buttonY);
-    properties = new PropertyList(propertyRect, this);
-    AddControl(properties);
 }
     
 CreateNodeDialog::~CreateNodeDialog()
 {
+    SafeRelease(header);
     SafeRelease(properties);
     dialogDelegate = NULL;
 }
@@ -82,6 +91,8 @@ void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String 
 void CreateNodeDialog::SetProperties(NodeDescription *description)
 {
     currentDescription = description;
+    
+    header->SetText(currentDescription->name);
     
     properties->ReleaseProperties();
     

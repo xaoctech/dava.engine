@@ -651,23 +651,14 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
             node->SetName(nodes[currentNodeType].properties[0]->GetString());
             bodies[iBody].bodyControl->AddNode(node);
         }
-        
-//        currentNodeType = itemID;
-//        SetNodeDefaultValues(itemID);
-//        nodeDialog->SetProperties(&nodes[itemID]);
-
     }
 }
 
 
 void SceneEditorScreenMain::InitNodeDescriptions()
-{
-    for(int32 prop = 0; prop < ECNID_COUNT; ++prop)
-    {
-        nodes[prop].type = prop;
-    }
-    
+{    
     //landcsape
+    nodes[ECNID_LANDSCAPE].name = L"Create Landscape";
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
     p->isEditable = true;
@@ -676,6 +667,7 @@ void SceneEditorScreenMain::InitNodeDescriptions()
     nodes[ECNID_LANDSCAPE].properties.push_back(p);
 
     //light
+    nodes[ECNID_LIGHT].name = L"Create Light";
     p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
     p->isEditable = true;
@@ -685,6 +677,7 @@ void SceneEditorScreenMain::InitNodeDescriptions()
 
 
     //servicenode
+    nodes[ECNID_SERVICENODE].name = L"Create ServiseNode";
     p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
     p->isEditable = true;
@@ -694,6 +687,7 @@ void SceneEditorScreenMain::InitNodeDescriptions()
     
 
     //box
+    nodes[ECNID_BOX].name = L"Create Box";
     p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
     p->isEditable = true;
@@ -703,6 +697,7 @@ void SceneEditorScreenMain::InitNodeDescriptions()
 
 
     //sphere
+    nodes[ECNID_SPHERE].name = L"Create Sphere";
     p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
     p->isEditable = true;
@@ -712,6 +707,7 @@ void SceneEditorScreenMain::InitNodeDescriptions()
 
 
     //camera
+    nodes[ECNID_CAMERA].name = L"Create Camera";
     p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
     p->isEditable = true;
