@@ -1274,7 +1274,10 @@ namespace DAVA
 		isUpdated = true;
 		//if(currentInput->touchLocker != this)
 		{
-			if(clipContents && (currentInput->phase != UIEvent::PHASE_DRAG && currentInput->phase != UIEvent::PHASE_ENDED))
+			if(clipContents 
+               && (currentInput->phase != UIEvent::PHASE_DRAG 
+                   && currentInput->phase != UIEvent::PHASE_ENDED
+                   && currentInput->phase != UIEvent::PHASE_KEYCHAR))
 			{
 				if(!IsPointInside(currentInput->point))
 				{

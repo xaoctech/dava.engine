@@ -4,10 +4,11 @@
 #include "LibraryControl.h"
 
 #include "ControlsFactory.h"
+#include "GameScene.h"
 
 void SceneEditorScreenMain::LoadResources()
 {
-    RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
+    //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     ControlsFactory::CustomizeScreenBack(this);
 
     font = ControlsFactory::CreateFontLight();
@@ -26,6 +27,12 @@ void SceneEditorScreenMain::LoadResources()
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, MENU_HEIGHT, fullRect.dx, LINE_HEIGHT));
     CreateTopMenu();
+    
+    menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
+    menuPopup->SetDelegate(this);
+    
+    nodeDialog = new CreateNodeDialog(fullRect);
+    nodeDialog->SetDelegate(this);
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
@@ -56,12 +63,18 @@ void SceneEditorScreenMain::LoadResources()
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
-
     InitializeBodyList();
+    
+    InitNodeDescriptions();
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    ReleaseNodeDescriptions();
+    
+    SafeRelease(nodeDialog);
+    SafeRelease(menuPopup);
+    
     SafeRelease(keyedArchieve);
     
     SafeRelease(propertiesButton);
@@ -109,7 +122,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     x += dx + 1;
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
     x += dx + 1;
-    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create");
+    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create Node");
     x += dx + 1;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
     x += dx + 1;
@@ -228,7 +241,8 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 {
-    
+    menuPopup->InitControl(MENUID_CREATENODE, btnCreate->GetRect());
+    AddControl(menuPopup);
 }
 
 
@@ -472,4 +486,291 @@ void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *
 void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
 {
 	bodies[0].bodyControl->BeastProcessScene();
+}
+
+void SceneEditorScreenMain::MenuCanceled()
+{
+    RemoveControl(menuPopup);
+}
+
+void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
+{
+    RemoveControl(menuPopup);
+    
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            currentNodeType = itemID;
+            SetNodeDefaultValues(itemID);
+            nodeDialog->SetProperties(&nodes[itemID]);
+            
+            AddControl(nodeDialog);
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
+{
+    WideString text = L"";
+    
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            switch (itemID) 
+            {
+                case ECNID_LANDSCAPE:
+                {
+                    text = L"Landscape";
+                    break;
+                }
+                    
+                case ECNID_LIGHT:
+                {
+                    text = L"Light";
+                    break;
+                }
+                    
+                case ECNID_SERVICENODE:
+                {
+                    text = L"Service Node";
+                    break;
+                }
+                    
+                case ECNID_BOX:
+                {
+                    text = L"Box";
+                    break;
+                }
+                    
+                case ECNID_SPHERE:
+                {
+                    text = L"Sphere";
+                    break;
+                }
+                    
+                case ECNID_CAMERA:
+                {
+                    text = L"Camera";
+                    break;
+                }
+                    
+                default:
+                    break;
+            }
+            
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    return text;
+}
+
+int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
+{
+    int32 retCount = 0;
+
+    switch (menuID) 
+    {
+        case MENUID_CREATENODE:
+        {
+            retCount = ECNID_COUNT;
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    return retCount;
+}
+
+void SceneEditorScreenMain::DialogClosed(int32 retCode)
+{
+    RemoveControl(nodeDialog);
+    
+    if(CreateNodeDialog::RCODE_OK == retCode)
+    {
+        int32 iBody = FindCurrentBody();
+        if(-1 != iBody)
+        {
+            GameScene *scene = bodies[iBody].bodyControl->GetScene();
+            SceneNode *node = NULL;
+            switch (currentNodeType)
+            {
+                case ECNID_LANDSCAPE:
+                {
+                    node = new LandscapeNode(scene);
+                    break;
+                }
+                    
+                case ECNID_LIGHT:
+                {
+                    node = new SceneNode(scene);
+                    break;
+                }
+                    
+                case ECNID_SERVICENODE:
+                {
+                    node = new SceneNode(scene);
+                    break;
+                }
+                    
+                case ECNID_BOX:
+                {
+                    node = new SceneNode(scene);
+                    break;
+                }
+                    
+                case ECNID_SPHERE:
+                {
+                    node = new SceneNode(scene);
+                    break;
+                }
+                    
+                case ECNID_CAMERA:
+                {
+                    node = new Camera(scene);
+                    break;
+                }
+                    
+                default:
+                    break;
+            }
+            
+            node->SetName(nodes[currentNodeType].properties[0]->GetString());
+            bodies[iBody].bodyControl->AddNode(node);
+        }
+    }
+}
+
+
+void SceneEditorScreenMain::InitNodeDescriptions()
+{    
+    //landcsape
+    nodes[ECNID_LANDSCAPE].name = L"Create Landscape";
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->isEditable = true;
+    p->key = "name";
+    p->SetString("Landscape");
+    nodes[ECNID_LANDSCAPE].properties.push_back(p);
+
+    //light
+    nodes[ECNID_LIGHT].name = L"Create Light";
+    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->isEditable = true;
+    p->key = "name";
+    p->SetString("Light");
+    nodes[ECNID_LIGHT].properties.push_back(p);
+
+
+    //servicenode
+    nodes[ECNID_SERVICENODE].name = L"Create ServiseNode";
+    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->isEditable = true;
+    p->key = "name";
+    p->SetString("ServiceNode");
+    nodes[ECNID_SERVICENODE].properties.push_back(p);
+    
+
+    //box
+    nodes[ECNID_BOX].name = L"Create Box";
+    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->isEditable = true;
+    p->key = "name";
+    p->SetString("Box");
+    nodes[ECNID_BOX].properties.push_back(p);
+
+
+    //sphere
+    nodes[ECNID_SPHERE].name = L"Create Sphere";
+    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->isEditable = true;
+    p->key = "name";
+    p->SetString("Sphere");
+    nodes[ECNID_SPHERE].properties.push_back(p);
+
+
+    //camera
+    nodes[ECNID_CAMERA].name = L"Create Camera";
+    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->isEditable = true;
+    p->key = "name";
+    p->SetString("Camera");
+    nodes[ECNID_CAMERA].properties.push_back(p);
+
+}
+
+void SceneEditorScreenMain::ReleaseNodeDescriptions()
+{
+    for(int32 i = 0; i < ECNID_COUNT; ++i)
+    {
+        for(int32 prop = 0; prop < nodes[i].properties.size(); ++prop)
+        {
+            SafeRelease(nodes[i].properties[prop]);
+        }
+        
+        nodes[i].properties.clear();
+    }
+}
+
+void SceneEditorScreenMain::SetNodeDefaultValues(int32 nodeType)
+{
+    switch (nodeType) 
+    {
+        case ECNID_LANDSCAPE:
+        {
+            nodes[nodeType].properties[0]->SetString("Landscape");
+            break;
+        }
+            
+        case ECNID_LIGHT:
+        {
+            nodes[nodeType].properties[0]->SetString("Light");
+            break;
+        }
+            
+        case ECNID_SERVICENODE:
+        {
+            nodes[nodeType].properties[0]->SetString("ServiceNode");
+            break;
+        }
+            
+        case ECNID_BOX:
+        {
+            nodes[nodeType].properties[0]->SetString("Box");
+            break;
+        }
+            
+        case ECNID_SPHERE:
+        {
+            nodes[nodeType].properties[0]->SetString("Sphere");
+            break;
+        }
+            
+        case ECNID_CAMERA:
+        {
+            nodes[nodeType].properties[0]->SetString("Camera");
+            break;
+        }
+            
+        default:
+            break;
+    }
 }
