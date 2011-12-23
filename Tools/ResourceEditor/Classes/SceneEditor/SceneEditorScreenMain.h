@@ -3,11 +3,15 @@
 
 #include "DAVAEngine.h"
 #include "LibraryControl.h"
-
+#include "MenuPopupControl.h"
+#include "CreateNodeDialog.h"
 using namespace DAVA;
 
+
 class EditorBodyControl;
-class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate
+class SceneEditorScreenMain: 
+    public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
+    public MenuPopupDelegate, public CreateNodeDialogDelegeate
 {
     enum eConst
     {
@@ -23,7 +27,34 @@ class SceneEditorScreenMain: public UIScreen, public UIFileSystemDialogDelegate,
         
         TAB_BUTTONS_OFFSET = 110,
     };
+
+    enum DIALOG_OPERATION
+    {
+        DIALOG_OPERATION_NONE = 0,
+        DIALOG_OPERATION_MENU_OPEN,
+        DIALOG_OPERATION_MENU_SAVE,
+        DIALOG_OPERATION_MENU_PROJECT,
+    };
     
+    enum eMenuIDS
+    {
+        MENUID_CREATENODE = 100,
+        MENUID_NEW = 200,
+    };
+    
+    enum eCreateNodeIds
+    {
+        ECNID_LANDSCAPE = 0, 
+        ECNID_LIGHT, 
+        ECNID_SERVICENODE, 
+        ECNID_BOX, 
+        ECNID_SPHERE, 
+        ECNID_CAMERA, 
+        
+        
+        ECNID_COUNT
+    };
+
 public:
 
 	virtual void LoadResources();
@@ -36,7 +67,16 @@ public:
 
 	virtual void OnEditSCE(const String &pathName, const String &name);
 	virtual void OnAddSCE(const String &pathName);
-    
+
+    //menu
+    virtual void MenuCanceled();
+	virtual void MenuSelected(int32 menuID, int32 itemID);
+    virtual WideString MenuItemText(int32 menuID, int32 itemID);
+    virtual int32 MenuItemsCount(int32 menuID);
+
+    // create node dialog
+    virtual void DialogClosed(int32 retCode);
+
 private:
     
     int32 FindCurrentBody();
@@ -82,13 +122,6 @@ private:
     
     //FileDialog
     UIFileSystemDialog * fileSystemDialog;
-    enum DIALOG_OPERATION
-    {
-        DIALOG_OPERATION_NONE = 0,
-        DIALOG_OPERATION_MENU_OPEN,
-        DIALOG_OPERATION_MENU_SAVE,
-        DIALOG_OPERATION_MENU_PROJECT,
-    };
     uint32 fileSystemDialogOpMode;
     
     void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
@@ -105,6 +138,18 @@ private:
 
     UIButton *propertiesButton;
     void OnPropertiesPressed(BaseObject * obj, void *, void *);
+    
+
+    // menu
+    MenuPopupControl *menuPopup;
+
+    //create node dialog
+    CreateNodeDialog *nodeDialog;
+    NodeDescription nodes[ECNID_COUNT];
+    void InitNodeDescriptions();
+    void SetNodeDefaultValues(int32 nodeType);
+    void ReleaseNodeDescriptions();
+    int32 currentNodeType;
     
     
     // general

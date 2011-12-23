@@ -1,8 +1,8 @@
 #include "ControlsFactory.h"
 
-UIButton * ControlsFactory::CreateButton(Rect r, const WideString &buttonText)
+UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &buttonText)
 {
-    UIButton *btn = new UIButton(r);
+    UIButton *btn = new UIButton(rect);
     CustomizeButton(btn, buttonText);
     return btn;
 }
@@ -34,9 +34,9 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     SafeRelease(font);
 }
 
-UIButton * ControlsFactory::CreateCloseWindowButton(Rect r)
+UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
 {
-    UIButton *btn = new UIButton(r);
+    UIButton *btn = new UIButton(rect);
     CustomizeCloseWindowButton(btn);
     return btn;
 }
@@ -83,9 +83,9 @@ void ControlsFactory::CustomizeScreenBack(UIControl *screen)
     screen->GetBackground()->SetColor(Color(0.7f, 0.7f, 0.7f, 1.0f));
 }
 
-UIControl * ControlsFactory::CreateLine(Rect r)
+UIControl * ControlsFactory::CreateLine(const Rect & rect)
 {
-    UIControl * lineControl = new UIControl(r); 
+    UIControl * lineControl = new UIControl(rect); 
     lineControl->GetBackground()->color = Color(0.8f, 0.8f, 0.8f, 1.0f);
     lineControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     return lineControl;
@@ -109,9 +109,9 @@ void ControlsFactory::CusomizeListControl(UIControl *c)
     c->GetBackground()->SetColor(Color(0.92f, 0.92f, 0.92f, 1.0f));
 }
 
-UIControl * ControlsFactory::CreatePanelControl(Rect r)
+UIControl * ControlsFactory::CreatePanelControl(const Rect & rect)
 {
-    UIControl *ctrl = new UIControl(r);
+    UIControl *ctrl = new UIControl(rect);
     CustomizePanelControl(ctrl);
     return ctrl;
 }
@@ -163,5 +163,33 @@ void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
     
     SafeRelease(font);
 }
+
+void ControlsFactory::CustomizeMenuPopupCell(UIListCell *c, const WideString &text)
+{
+    Font *font = CreateFontLight();
+    
+    c->SetStateFont(UIControl::STATE_NORMAL, font);
+    c->SetStateFont(UIControl::STATE_SELECTED, font);
+
+    c->SetStateText(UIControl::STATE_NORMAL, text);
+    c->SetStateText(UIControl::STATE_SELECTED, text);
+    
+    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
+    
+    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(0.1f, 0.1f, 0.1f, 0.6f);
+    c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(0.6f, 0.6f, 0.6f, 0.6f);
+    
+    SafeRelease(font);
+    
+    Rect rect = c->GetRect();
+    rect.y = rect.dy - 1;
+    rect.dy = 1;
+    UIControl *line = CreateLine(rect);
+    c->AddControl(line);
+    SafeRelease(line);
+}
+
+
 
 
