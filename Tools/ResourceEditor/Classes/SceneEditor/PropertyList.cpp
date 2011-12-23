@@ -17,7 +17,7 @@ PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDel
 {
     delegate = propertiesDelegate;
     background->SetDrawType(UIControlBackground::DRAW_FILL);
-    background->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+    background->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
 
     propsList = new UIList(Rect(0,0, size.x, size.y), UIList::ORIENTATION_VERTICAL);
     propsList->SetDelegate(this);
@@ -27,6 +27,8 @@ PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDel
 
 PropertyList::~PropertyList()
 {
+    ReleaseProperties();
+    
     SafeRelease(propsList);
 }
 
@@ -179,4 +181,25 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
 
 void PropertyList::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
+}
+
+void PropertyList::AddPropertyByData(PropertyCellData *newProp)
+{
+    newProp->index = props.size();
+    props.push_back(SafeRetain(newProp));
+    propsMap[newProp->key] = newProp;
+    propsList->Refresh();
+}
+
+void PropertyList::ReleaseProperties()
+{
+	propsMap.clear();
+    
+    for (int32 i = 0; i < props.size(); ++i)
+    {
+        SafeRelease(props[i]);
+    }
+    props.clear();
+    
+    propsList->Refresh();
 }
