@@ -36,8 +36,11 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreatePropertyPanel();
 
 	beastManager = BeastProxy::Instance()->CreateManager();
+	
+	CreateModificationPanel();
 }
-    
+
+
 EditorBodyControl::~EditorBodyControl()
 {
     ReleasePropertyPanel();
@@ -51,7 +54,7 @@ EditorBodyControl::~EditorBodyControl()
 
 void EditorBodyControl::CreateScene()
 {
-    scene = new GameScene();
+    scene = new EditorScene();
     // Camera setup
     cameraController = new WASDCameraController(40);
     Camera * cam = new Camera(scene);
@@ -119,6 +122,60 @@ void EditorBodyControl::ReleaseScene()
     SafeRelease(scene);
     SafeRelease(cameraController);
 }
+
+
+static const wchar_t * mods[3] = { L"M", L"R", L"S"};
+static const wchar_t * axises[3] = { L"X", L"Y", L"Z"};
+
+#define BUTTON_W 20 
+#define BUTTON_B 5 
+
+void EditorBodyControl::CreateModificationPanel(void)
+{
+	modState = MOD_MOVE;
+	modAxis = AXIS_X;
+	
+	modificationPanel = ControlsFactory::CreatePanelControl(Rect(scene3dView->GetRect(true).x, 5, 70, 45));
+	for (int i = 0; i < 3; i++)
+	{
+		btnMod[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, 0, BUTTON_W, BUTTON_W), mods[i]);
+		btnMod[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
+		modificationPanel->AddControl(btnMod[i]);
+
+		btnAxis[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, BUTTON_W + BUTTON_B, BUTTON_W, BUTTON_W), axises[i]);
+		btnAxis[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
+		modificationPanel->AddControl(btnAxis[i]);
+	}
+	UpdateModState();
+}
+
+void EditorBodyControl::OnModificationPressed(BaseObject * object, void * userData, void * callerData)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (object == btnMod[i])
+		{
+			modState = (eModState)i;
+		}
+		if (object == btnAxis[i])
+		{
+			modAxis = (eModAxis)i;
+		}
+	}
+	UpdateModState();
+}
+
+void EditorBodyControl::UpdateModState(void)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		btnMod[i]->SetState(UIControl::STATE_NORMAL);
+		btnAxis[i]->SetState(UIControl::STATE_NORMAL);
+	}
+	btnMod[modState]->SetState(UIControl::STATE_SELECTED);
+	btnAxis[modAxis]->SetState(UIControl::STATE_SELECTED);
+}
+
 
 void EditorBodyControl::CreatePropertyPanel()
 {
@@ -294,9 +351,7 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
 }
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
-{
-    cameraController->Input(event);
-    
+{    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {
         if (event->keyChar == '1')
@@ -319,86 +374,136 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             scene->SetCurrentCamera(newCamera);
             scene->SetClipCamera(scene->GetCamera(0));
         }
-
-    
+		
+        if (event->keyChar == 'e') modState = MOD_MOVE;
+		if (event->keyChar == 'r') modState = MOD_ROTATE;
+		if (event->keyChar == 't') modState = MOD_SCALE;
+        if (event->keyChar == 'd') modAxis = AXIS_X;
+		if (event->keyChar == 'f') modAxis = AXIS_Y;
+		if (event->keyChar == 'g') modAxis = AXIS_Z;
+		
+		UpdateModState();
+	}   
 	
+	//selection with second mouse button 
+	if (event->phase == UIEvent::PHASE_BEGAN && event->tid == UIEvent::BUTTON_2)
+	{
+		Camera * cam = scene->GetCurrentCamera();
+		const Rect & rect = scene3dView->GetLastViewportRect();
+		Vector3 from = cam->GetPosition();
+		Vector3 to = cam->UnProject(event->point.x, event->point.y, 0, rect);
+		to -= from;
+		to *= 1000.f;
+		to += from;
+		scene->TrySelection(from, to);
+	}	
 	
-		if (event->keyChar == 'r')
+    SceneNode * selection = scene->GetSelection();
+	if (selection != 0)
+	{
+		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
-			SceneNode * selected = scene->GetSelection();
-			if (selected)
+			if (event->tid == UIEvent::BUTTON_1)
 			{
-				Matrix4 & tr = selected->ModifyLocalTransform();
-				Matrix4 rotate;
-				rotate.Identity();
-				rotate.CreateRotation(Vector3(0,0,1), M_PI / 2.0);
-				tr *= rotate;
+				inTouch = true;	
+				touchStart = event->point;
+				
+				startTransform = selection->GetLocalTransform();
+			}
+		}	
+		if (event->phase == UIEvent::PHASE_DRAG)
+		{
+			if (event->tid == UIEvent::BUTTON_1)
+			{
+				PrepareModMatrix(event->point.x - touchStart.x);
+				selection->SetLocalTransform(currTransform);
 			}
 		}
-
-	}   
-    
-	if (event->phase == UIEvent::PHASE_BEGAN)
-	{
-		if (event->tid == UIEvent::BUTTON_1)
+		if (event->phase == UIEvent::PHASE_ENDED)
 		{
-			inTouch = true;	
-			touchStart = event->point;
-			touchTankAngle = currentTankAngle;
-		}
-		else
-		{
-			Camera * cam = scene->GetCurrentCamera();
-			const Rect & rect = scene3dView->GetLastViewportRect();
-			Vector3 from = cam->GetPosition();
-			Vector3 to = cam->UnProject(event->point.x, event->point.y, 0, rect);
-			to -= from;
-			to *= 1000.f;
-			to += from;
-			scene->TrySelection(from, to);
-		}
-	}	
-	if (event->phase == UIEvent::PHASE_DRAG)
-	{
-		if (event->tid == UIEvent::BUTTON_1)
-		{
-			touchCurrent = event->point;
-		
-			float32 dist = (touchCurrent.x - touchStart.x);
-			//Logger::Debug("%f, %f", currentTankAngle, dist);
-			currentTankAngle = touchTankAngle + dist;
+			if (event->tid == UIEvent::BUTTON_1)
+			{
+				inTouch = false;
+			}
 		}
 	}
-	
-	if (event->phase == UIEvent::PHASE_ENDED)
+	else
 	{
-		if (event->tid == UIEvent::BUTTON_1)
+		cameraController->Input(event);
+	}
+	UIControl::Input(event);
+}
+
+static Vector3 vect[3] = {Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)};
+
+void EditorBodyControl::PrepareModMatrix(float32 dist)
+{	
+	Matrix4 modification;
+	modification.Identity();
+	
+	if (modState == MOD_MOVE)
+	{
+		modification.CreateTranslation(vect[modAxis] * dist);		
+	}
+	else if (modState == MOD_ROTATE)
+	{
+		modification.CreateRotation(vect[modAxis], dist / 100.0f);
+	}
+	else if (modState == MOD_SCALE)
+	{
+		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
+	}
+	currTransform = startTransform * modification;	
+}
+
+
+void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
+{
+	UIControl::DrawAfterChilds(geometricData);
+	SceneNode * selection = scene->GetSelection();
+	if (selection)
+	{
+//		RenderHelper::SetClip();
+		
+		const Rect & rect = scene3dView->GetLastViewportRect();
+		Matrix4 wt = selection->GetWorldTransform();
+		Vector3 offs = wt.GetTranslationVector();
+		Camera * cam = scene->GetCurrentCamera();
+		Vector2 start = cam->GetOnScreenPosition(offs, rect);
+		Vector2 end;
+		
+		for(int i = 0; i < 3; i++)
 		{
-			touchCurrent = event->point;
-			rotationSpeed = (touchCurrent.x - touchStart.x);
-			inTouch = false;
-			startRotationInSec = 0.0f;
+			if (modAxis == i)
+			{
+				RenderManager::Instance()->SetColor(0, 1.0f, 0, 1.0f);					
+			}
+			else 
+			{
+				RenderManager::Instance()->SetColor(1.0f, 0, 0, 1.0f);	
+			}
+
+			Vector3 v = offs + vect[i] * 5.0;
+			end = cam->GetOnScreenPosition(v, rect);
+			RenderHelper::Instance()->DrawLine(start, end);
+//			RenderHelper::Dra
 		}
-	}    
-    UIControl::Input(event);
+		RenderManager::Instance()->ResetColor();
+	}
 }
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-	startRotationInSec -= timeElapsed;
-	if (startRotationInSec < 0.0f)
-		startRotationInSec = 0.0f;
-    
-	if (startRotationInSec == 0.0f)
+	SceneNode * selection = scene->GetSelection();
+	if (selection && modificationPanel->GetParent() == 0)
 	{
-		if (Abs(rotationSpeed) > 8.0)
-		{
-			rotationSpeed = rotationSpeed * 0.8f;
-		}
-		
-		currentTankAngle += timeElapsed * rotationSpeed;
+		AddControl(modificationPanel);
 	}
-
+	else if (selection == 0 && modificationPanel->GetParent() != 0)
+	{
+		RemoveControl(modificationPanel);
+	}
+	
     UIControl::Update(timeElapsed);
 }
 

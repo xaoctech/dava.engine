@@ -202,7 +202,7 @@ public:
         \brief Function to return 2D position of 3D point that is transformed to screen. 
         \returns 2D point on screen.
      */
-    Vector2 GetOnScreenPosition(const Vector3 & forPoint);
+    Vector2 GetOnScreenPosition(const Vector3 & forPoint, const Rect & viewport);
 
     /**
         \brief Get frustum object for this camera.

@@ -128,12 +128,19 @@ void Camera::Recalc()
     CalculateZoomFactor();
 }
 
-Vector2 Camera::GetOnScreenPosition(const Vector3 &forPoint)
+Vector2 Camera::GetOnScreenPosition(const Vector3 &forPoint, const Rect & viewport)
 {
     Vector4 pv(forPoint);
     pv = pv * GetUniformProjModelMatrix();
-    return Vector2((GetScreenWidth() * 0.5f) * (1.f + pv.y/pv.w)
-                   , (GetScreenHeight() * 0.5f) * (1.f + pv.x/pv.w));
+//    return Vector2((viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x
+//                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
+
+
+
+	Vector2 v (((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
+			   (1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y);
+
+	return v;
 }
 
 const Matrix4 &Camera::GetUniformProjModelMatrix()
@@ -463,23 +470,10 @@ void Camera::Draw()
 
 Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport)
 {
-//	const int32 viewport[4];
-	//		float32 finalMatrix[16];
-	//		float32 in[4];
-	//		float32 out[4];
-	
-	//		__gluMultMatricesd(modelMatrix, projMatrix, finalMatrix);
-	//		if (!__gluInvertMatrixd(finalMatrix, finalMatrix)) return(GL_FALSE);
-
 	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
 	finalMatrix.Inverse();		
 
 	Vector4 in(winx, winy, winz, 1.0f);
-
-	//		in[0]=winx;
-	//		in[1]=winy;
-	//		in[2]=winz;
-	//		in[3]=1.0;
 
 	/* Map x and y from window coordinates */
 
@@ -493,7 +487,6 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 
 	Vector4 out = in * finalMatrix;
 	
-	//		__gluMultMatrixVecd(finalMatrix, in, out);
 	Vector3 result(0,0,0);
 	if (out.w == 0.0) return result;
 	

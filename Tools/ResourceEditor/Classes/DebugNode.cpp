@@ -29,7 +29,7 @@ DebugNode::DebugNode(Scene * scene, std::vector<float32> &data)
 
 DebugNode::~DebugNode()
 {
-	SafeRelease(renderData);
+	SafeRelease(renderData); 
 }
 
 void DebugNode::Draw()

@@ -1,5 +1,5 @@
 /*
- *  GameScene.h
+ *  EditorScene.h
  *  SceneEditor
  *
  *  Created by Yury Danilov on 14.12.11
@@ -22,7 +22,7 @@ struct BulletLink
 	SceneNode * sceneNode;
 };
 
-class GameScene : public Scene
+class EditorScene : public Scene
 {
 public:
     
@@ -34,8 +34,8 @@ public:
     };
 	
 	
-    GameScene();
-    ~GameScene();
+    EditorScene();
+    ~EditorScene();
     
     virtual void Update(float32 timeElapsed);
     virtual void Draw();
