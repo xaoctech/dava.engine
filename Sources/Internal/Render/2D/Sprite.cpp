@@ -66,6 +66,8 @@ Sprite::Sprite()
 //	originalSize = size;
 	frameCount = 0;
 	frame = 0;
+    
+    isPreparedForTiling = false;
 	
 	modification = 0;
 	flags = 0;
@@ -81,7 +83,7 @@ Sprite::Sprite()
     texCoordStream  = spriteRenderObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);    
 }
 
-Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer, bool usedForTiles)
+Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 {
 //	Logger::Debug("pure create: %s", spriteName.c_str());
 	bool usedForScale = false;//Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
@@ -265,20 +267,6 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer, bool u
 		spr->texCoords[i][5] = ((GLfloat)dy - yof) / spr->textures[spr->frameTextureIndex[i]]->height;
 		spr->texCoords[i][6] = ((GLfloat)dx - xof) / spr->textures[spr->frameTextureIndex[i]]->width;
 		spr->texCoords[i][7] = ((GLfloat)dy - yof) / spr->textures[spr->frameTextureIndex[i]]->height;
-        
-        if(usedForTiles)
-        {
-            Logger::Debug("Sprite::PureCreate spr->texCoords0[%d]=[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f]",i,spr->texCoords[i][0],spr->texCoords[i][1],spr->texCoords[i][2],spr->texCoords[i][3],spr->texCoords[i][4],spr->texCoords[i][5],spr->texCoords[i][6],spr->texCoords[i][7]);
-            spr->texCoords[i][0] += (1.0f/spr->textures[spr->frameTextureIndex[i]]->width); // x
-            spr->texCoords[i][1] += (1.0f/spr->textures[spr->frameTextureIndex[i]]->height); // y
-            spr->texCoords[i][2] -= (2.0f/spr->textures[spr->frameTextureIndex[i]]->width); // x+dx
-            spr->texCoords[i][3] += (1.0f/spr->textures[spr->frameTextureIndex[i]]->height); // y
-            spr->texCoords[i][4] += (1.0f/spr->textures[spr->frameTextureIndex[i]]->width); // x
-            spr->texCoords[i][5] -= (2.0f/spr->textures[spr->frameTextureIndex[i]]->height); // y+dy
-            spr->texCoords[i][6] -= (2.0f/spr->textures[spr->frameTextureIndex[i]]->width); // x+dx
-            spr->texCoords[i][7] -= (2.0f/spr->textures[spr->frameTextureIndex[i]]->height); // y+dy
-            Logger::Debug("Sprite::PureCreate spr->texCoords1[%d]=[%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f]",i,spr->texCoords[i][0],spr->texCoords[i][1],spr->texCoords[i][2],spr->texCoords[i][3],spr->texCoords[i][4],spr->texCoords[i][5],spr->texCoords[i][6],spr->texCoords[i][7]);
-        }
 		
 		spr->frameVertices[i][0] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
 		spr->frameVertices[i][1] *= Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
@@ -351,10 +339,10 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer, bool u
 	return spr;
 }
 	
-Sprite* Sprite::Create(const String &spriteName, bool usedForTiles)
+Sprite* Sprite::Create(const String &spriteName)
 {
 	
-	Sprite * spr = PureCreate(spriteName,NULL,usedForTiles);
+	Sprite * spr = PureCreate(spriteName,NULL);
 	if (!spr)
 	{
 		spr = new Sprite();
@@ -502,6 +490,25 @@ void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset,
 	spriteMap[this->relativePathname] = this;
 	fboCounter++;
 	this->Reset();
+}
+    
+void Sprite::PrepareForTiling()
+{
+    if(!isPreparedForTiling)
+    {
+        for (int i = 0;	i < this->frameCount; i++) 
+        {
+            this->texCoords[i][0] += (1.0f/this->textures[this->frameTextureIndex[i]]->width); // x
+            this->texCoords[i][1] += (1.0f/this->textures[this->frameTextureIndex[i]]->height); // y
+            this->texCoords[i][2] -= (2.0f/this->textures[this->frameTextureIndex[i]]->width); // x+dx
+            this->texCoords[i][3] += (1.0f/this->textures[this->frameTextureIndex[i]]->height); // y
+            this->texCoords[i][4] += (1.0f/this->textures[this->frameTextureIndex[i]]->width); // x
+            this->texCoords[i][5] -= (2.0f/this->textures[this->frameTextureIndex[i]]->height); // y+dy
+            this->texCoords[i][6] -= (2.0f/this->textures[this->frameTextureIndex[i]]->width); // x+dx
+            this->texCoords[i][7] -= (2.0f/this->textures[this->frameTextureIndex[i]]->height); // y+dy
+        }
+        isPreparedForTiling = true;
+    }
 }
 
 void Sprite::SetOffsetsForFrame(int frame, float32 xOff, float32 yOff)

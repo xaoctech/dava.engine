@@ -114,10 +114,9 @@ public:
 	 app to work stable and gave testers ability to find such errors fast.
 	 
 	 \param spriteName path to sprite name relative to application bundle
-	 \param usedForTiles is sprite will be used as a tile
 	 \return sprite pointer in any case will be returned
 	 */	
-	static Sprite* Create(const String &spriteName, bool usedForTiles = false);// Creating sprite by name
+	static Sprite* Create(const String &spriteName);// Creating sprite by name
 
 	/**
 	 \brief Function to create sprite as render target. 
@@ -138,8 +137,7 @@ public:
 		\param forPointer you can create sprite in the allready allocated space or send NULL and memory will be allocated.
 		\return 0 if sprite is unavailable and ptr to sprite if sprite is available
 	 */	
-	static Sprite* PureCreate(const String & spriteName, Sprite* forPointer = NULL, bool usedForTiles = false); 
-
+	static Sprite* PureCreate(const String & spriteName, Sprite* forPointer = NULL); 
 	
 	/**
 	 \brief Function to create sprite from the already created texture.
@@ -157,6 +155,11 @@ public:
 	void InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded = false);
 
 
+    /*
+     \brief Function to prepare sprite tiling. Shifts texture coordinates by approximately 1 pixel to the center. Tiled sprites can be drawn using scale and there will be no empty pixels between them.
+     */
+    void PrepareForTiling();
+    
 	void SetOffsetsForFrame(int frame, float32 xOff, float32 yOff);
 
 	
@@ -325,6 +328,8 @@ protected:
 	
 	Vector2	scale;
 	
+    bool isPreparedForTiling;
+    
 	int32 modification;
 	
 	int32 flags;
