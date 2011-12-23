@@ -6,6 +6,14 @@
 #include "ControlsFactory.h"
 #include "EditorScene.h"
 
+#include "CreateLandscapeDialog.h"
+#include "CreateLightDialog.h"
+#include "CreateServiceNodeDialog.h"
+#include "CreateBoxDialog.h"
+#include "CreateSphereDialog.h"
+#include "CreateCameraDialog.h"
+
+
 void SceneEditorScreenMain::LoadResources()
 {
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
@@ -31,8 +39,7 @@ void SceneEditorScreenMain::LoadResources()
     menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
-    nodeDialog = new CreateNodeDialog(fullRect);
-    nodeDialog->SetDelegate(this);
+    InitializeNodeDialogs();    
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
@@ -64,15 +71,12 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(sceneGraphButton);
     
     InitializeBodyList();
-    
-    InitNodeDescriptions();
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
-    ReleaseNodeDescriptions();
+    ReleaseNodeDialogs();
     
-    SafeRelease(nodeDialog);
     SafeRelease(menuPopup);
     
     SafeRelease(keyedArchieve);
@@ -501,12 +505,16 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
     {
         case MENUID_CREATENODE:
         {
-            currentNodeType = itemID;
-            SetNodeDefaultValues(itemID);
-            nodeDialog->SetProperties(&nodes[itemID]);
+            currentNodeDialog = itemID;
             
-            AddControl(nodeDialog);
-            
+            int32 iBody = FindCurrentBody();
+            if(-1 != iBody)
+            {
+                EditorScene *scene = bodies[iBody].bodyControl->GetScene();
+                nodeDialogs[currentNodeDialog]->SetScene(scene);
+            }
+
+            AddControl(nodeDialogs[currentNodeDialog]);
             break;
         }
             
@@ -597,180 +605,43 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
-    RemoveControl(nodeDialog);
+    RemoveControl(nodeDialogs[currentNodeDialog]);
     
     if(CreateNodeDialog::RCODE_OK == retCode)
     {
         int32 iBody = FindCurrentBody();
         if(-1 != iBody)
         {
-            EditorScene *scene = bodies[iBody].bodyControl->GetScene();
-            SceneNode *node = NULL;
-            switch (currentNodeType)
-            {
-                case ECNID_LANDSCAPE:
-                {
-                    node = new LandscapeNode(scene);
-                    break;
-                }
-                    
-                case ECNID_LIGHT:
-                {
-                    node = new SceneNode(scene);
-                    break;
-                }
-                    
-                case ECNID_SERVICENODE:
-                {
-                    node = new SceneNode(scene);
-                    break;
-                }
-                    
-                case ECNID_BOX:
-                {
-                    node = new SceneNode(scene);
-                    break;
-                }
-                    
-                case ECNID_SPHERE:
-                {
-                    node = new SceneNode(scene);
-                    break;
-                }
-                    
-                case ECNID_CAMERA:
-                {
-                    node = new Camera(scene);
-                    break;
-                }
-                    
-                default:
-                    break;
-            }
-            
-            node->SetName(nodes[currentNodeType].properties[0]->GetString());
-            bodies[iBody].bodyControl->AddNode(node);
+            bodies[iBody].bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
         }
     }
 }
 
 
-void SceneEditorScreenMain::InitNodeDescriptions()
-{    
-    //landcsape
-    nodes[ECNID_LANDSCAPE].name = L"Create Landscape";
-    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->isEditable = true;
-    p->key = "name";
-    p->SetString("Landscape");
-    nodes[ECNID_LANDSCAPE].properties.push_back(p);
 
-    //light
-    nodes[ECNID_LIGHT].name = L"Create Light";
-    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->isEditable = true;
-    p->key = "name";
-    p->SetString("Light");
-    nodes[ECNID_LIGHT].properties.push_back(p);
-
-
-    //servicenode
-    nodes[ECNID_SERVICENODE].name = L"Create ServiseNode";
-    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->isEditable = true;
-    p->key = "name";
-    p->SetString("ServiceNode");
-    nodes[ECNID_SERVICENODE].properties.push_back(p);
+void SceneEditorScreenMain::InitializeNodeDialogs()
+{
+    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    Rect fullRect = GetRect();
     
-
-    //box
-    nodes[ECNID_BOX].name = L"Create Box";
-    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->isEditable = true;
-    p->key = "name";
-    p->SetString("Box");
-    nodes[ECNID_BOX].properties.push_back(p);
-
-
-    //sphere
-    nodes[ECNID_SPHERE].name = L"Create Sphere";
-    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->isEditable = true;
-    p->key = "name";
-    p->SetString("Sphere");
-    nodes[ECNID_SPHERE].properties.push_back(p);
-
-
-    //camera
-    nodes[ECNID_CAMERA].name = L"Create Camera";
-    p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->isEditable = true;
-    p->key = "name";
-    p->SetString("Camera");
-    nodes[ECNID_CAMERA].properties.push_back(p);
-
-}
-
-void SceneEditorScreenMain::ReleaseNodeDescriptions()
-{
-    for(int32 i = 0; i < ECNID_COUNT; ++i)
+    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(fullRect);    
+    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(fullRect);    
+    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(fullRect);    
+    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(fullRect);    
+    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(fullRect);    
+    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(fullRect);    
+    
+    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
     {
-        for(int32 prop = 0; prop < nodes[i].properties.size(); ++prop)
-        {
-            SafeRelease(nodes[i].properties[prop]);
-        }
-        
-        nodes[i].properties.clear();
+        nodeDialogs[iDlg]->SetDelegate(this);
+        nodeDialogs[iDlg]->SetProjectPath(path);
     }
 }
 
-void SceneEditorScreenMain::SetNodeDefaultValues(int32 nodeType)
+void SceneEditorScreenMain::ReleaseNodeDialogs()
 {
-    switch (nodeType) 
+    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
     {
-        case ECNID_LANDSCAPE:
-        {
-            nodes[nodeType].properties[0]->SetString("Landscape");
-            break;
-        }
-            
-        case ECNID_LIGHT:
-        {
-            nodes[nodeType].properties[0]->SetString("Light");
-            break;
-        }
-            
-        case ECNID_SERVICENODE:
-        {
-            nodes[nodeType].properties[0]->SetString("ServiceNode");
-            break;
-        }
-            
-        case ECNID_BOX:
-        {
-            nodes[nodeType].properties[0]->SetString("Box");
-            break;
-        }
-            
-        case ECNID_SPHERE:
-        {
-            nodes[nodeType].properties[0]->SetString("Sphere");
-            break;
-        }
-            
-        case ECNID_CAMERA:
-        {
-            nodes[nodeType].properties[0]->SetString("Camera");
-            break;
-        }
-            
-        default:
-            break;
+        SafeRelease(nodeDialogs[iDlg]);
     }
 }

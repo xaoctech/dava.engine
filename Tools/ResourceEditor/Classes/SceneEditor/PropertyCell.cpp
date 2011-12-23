@@ -155,6 +155,7 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
                     return false;
                 }
             }
+            return true;
         }
             break;
         case PropertyCellData::PROP_VALUE_FLOAT:
@@ -183,6 +184,8 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
                     return false;
                 }
             }
+            
+            return true;
         }
             break;
     }
