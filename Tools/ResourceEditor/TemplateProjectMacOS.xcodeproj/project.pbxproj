@@ -17,6 +17,12 @@
 		5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
+		5CFC47F514A35A68009A0C9F /* CreateLandscapeDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47F314A35A68009A0C9F /* CreateLandscapeDialog.cpp */; };
+		5CFC480014A35B75009A0C9F /* CreateBoxDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47F614A35B74009A0C9F /* CreateBoxDialog.cpp */; };
+		5CFC480114A35B75009A0C9F /* CreateCameraDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47F814A35B74009A0C9F /* CreateCameraDialog.cpp */; };
+		5CFC480214A35B75009A0C9F /* CreateLightDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47FA14A35B74009A0C9F /* CreateLightDialog.cpp */; };
+		5CFC480314A35B75009A0C9F /* CreateServiceNodeDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47FC14A35B75009A0C9F /* CreateServiceNodeDialog.cpp */; };
+		5CFC480414A35B75009A0C9F /* CreateSphereDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47FE14A35B75009A0C9F /* CreateSphereDialog.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D92D797D1498BC5D002F58FB /* EditorScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* EditorScene.cpp */; };
 		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
@@ -298,6 +304,18 @@
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
+		5CFC47F314A35A68009A0C9F /* CreateLandscapeDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateLandscapeDialog.cpp; sourceTree = "<group>"; };
+		5CFC47F414A35A68009A0C9F /* CreateLandscapeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateLandscapeDialog.h; sourceTree = "<group>"; };
+		5CFC47F614A35B74009A0C9F /* CreateBoxDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateBoxDialog.cpp; sourceTree = "<group>"; };
+		5CFC47F714A35B74009A0C9F /* CreateBoxDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateBoxDialog.h; sourceTree = "<group>"; };
+		5CFC47F814A35B74009A0C9F /* CreateCameraDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateCameraDialog.cpp; sourceTree = "<group>"; };
+		5CFC47F914A35B74009A0C9F /* CreateCameraDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateCameraDialog.h; sourceTree = "<group>"; };
+		5CFC47FA14A35B74009A0C9F /* CreateLightDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateLightDialog.cpp; sourceTree = "<group>"; };
+		5CFC47FB14A35B75009A0C9F /* CreateLightDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateLightDialog.h; sourceTree = "<group>"; };
+		5CFC47FC14A35B75009A0C9F /* CreateServiceNodeDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateServiceNodeDialog.cpp; sourceTree = "<group>"; };
+		5CFC47FD14A35B75009A0C9F /* CreateServiceNodeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateServiceNodeDialog.h; sourceTree = "<group>"; };
+		5CFC47FE14A35B75009A0C9F /* CreateSphereDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateSphereDialog.cpp; sourceTree = "<group>"; };
+		5CFC47FF14A35B75009A0C9F /* CreateSphereDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateSphereDialog.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D92D797B1498BC5D002F58FB /* EditorScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorScene.cpp; path = Classes/EditorScene.cpp; sourceTree = SOURCE_ROOT; };
 		D92D797C1498BC5D002F58FB /* EditorScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorScene.h; path = Classes/EditorScene.h; sourceTree = SOURCE_ROOT; };
@@ -889,6 +907,27 @@
 			children = (
 			);
 			name = MaterialEditor;
+			sourceTree = "<group>";
+		};
+		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
+			isa = PBXGroup;
+			children = (
+				5C006F7514A10765005035C1 /* CreateNodeDialog.cpp */,
+				5C006F7614A10766005035C1 /* CreateNodeDialog.h */,
+				5CFC47F614A35B74009A0C9F /* CreateBoxDialog.cpp */,
+				5CFC47F714A35B74009A0C9F /* CreateBoxDialog.h */,
+				5CFC47F814A35B74009A0C9F /* CreateCameraDialog.cpp */,
+				5CFC47F914A35B74009A0C9F /* CreateCameraDialog.h */,
+				5CFC47FA14A35B74009A0C9F /* CreateLightDialog.cpp */,
+				5CFC47FB14A35B75009A0C9F /* CreateLightDialog.h */,
+				5CFC47FC14A35B75009A0C9F /* CreateServiceNodeDialog.cpp */,
+				5CFC47FD14A35B75009A0C9F /* CreateServiceNodeDialog.h */,
+				5CFC47FE14A35B75009A0C9F /* CreateSphereDialog.cpp */,
+				5CFC47FF14A35B75009A0C9F /* CreateSphereDialog.h */,
+				5CFC47F314A35A68009A0C9F /* CreateLandscapeDialog.cpp */,
+				5CFC47F414A35A68009A0C9F /* CreateLandscapeDialog.h */,
+			);
+			name = CreateNode;
 			sourceTree = "<group>";
 		};
 		D993104E1497B1BB00BB577D /* bullet */ = {
@@ -1521,6 +1560,7 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5CFC480514A35DF2009A0C9F /* CreateNode */,
 				4780999714A2463900BAA259 /* MaterialEditor */,
 				4780990914A10A2500BAA259 /* PropertyCell.h */,
 				4780990814A10A2500BAA259 /* PropertyCell.cpp */,
@@ -1528,8 +1568,6 @@
 				4780990A14A10A2500BAA259 /* PropertyCellData.cpp */,
 				4780990D14A10A2500BAA259 /* PropertyList.h */,
 				4780990C14A10A2500BAA259 /* PropertyList.cpp */,
-				5C006F7514A10765005035C1 /* CreateNodeDialog.cpp */,
-				5C006F7614A10766005035C1 /* CreateNodeDialog.h */,
 				5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */,
 				5C006F7314A0DBA8005035C1 /* MenuPopupControl.h */,
 				5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */,
@@ -1973,6 +2011,12 @@
 				4780991014A10A2500BAA259 /* PropertyList.cpp in Sources */,
 				5C006F7414A0DBA9005035C1 /* MenuPopupControl.cpp in Sources */,
 				5C006F7714A10766005035C1 /* CreateNodeDialog.cpp in Sources */,
+				5CFC47F514A35A68009A0C9F /* CreateLandscapeDialog.cpp in Sources */,
+				5CFC480014A35B75009A0C9F /* CreateBoxDialog.cpp in Sources */,
+				5CFC480114A35B75009A0C9F /* CreateCameraDialog.cpp in Sources */,
+				5CFC480214A35B75009A0C9F /* CreateLightDialog.cpp in Sources */,
+				5CFC480314A35B75009A0C9F /* CreateServiceNodeDialog.cpp in Sources */,
+				5CFC480414A35B75009A0C9F /* CreateSphereDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

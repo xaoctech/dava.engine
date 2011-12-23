@@ -61,6 +61,14 @@ void PropertyList::AddFilepathProperty(const String &propertyName, const String 
 {
 }
 
+void PropertyList::AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_BOOL);
+    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->SetBool(currentBoolValue);
+    AddProperty(p, propertyName, propEditType);
+}
+
 
 
 void PropertyList::AddProperty(PropertyCellData *newProp, const String &propertyName, editableType propEditType)
@@ -102,6 +110,54 @@ void PropertyList::SetFloatPropertyValue(const String &propertyName, float32 new
         p->currentCell->SetData(p);
     }
 }
+
+void PropertyList::SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath)
+{
+    
+}
+
+void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBoolValue)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetBool(newBoolValue);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+
+String PropertyList::GetTextPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetString();   
+}
+
+int32 PropertyList::GetIntPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetInt();   
+}
+
+float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetFloat();   
+}
+
+String PropertyList::GetFilepathProperty(const String &propertyName)
+{
+//    PropertyCellData *p = PropertyByName(propertyName);
+//    return p->GetString();   
+    return "";
+}
+
+bool PropertyList::GetBoolPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetBool();   
+}
+
 
 PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 {
@@ -183,13 +239,13 @@ void PropertyList::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
 }
 
-void PropertyList::AddPropertyByData(PropertyCellData *newProp)
-{
-    newProp->index = props.size();
-    props.push_back(SafeRetain(newProp));
-    propsMap[newProp->key] = newProp;
-    propsList->Refresh();
-}
+//void PropertyList::AddPropertyByData(PropertyCellData *newProp)
+//{
+//    newProp->index = props.size();
+//    props.push_back(SafeRetain(newProp));
+//    propsMap[newProp->key] = newProp;
+//    propsList->Refresh();
+//}
 
 void PropertyList::ReleaseProperties()
 {

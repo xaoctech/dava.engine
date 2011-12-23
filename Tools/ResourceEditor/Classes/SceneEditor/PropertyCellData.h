@@ -22,6 +22,7 @@ public:
         PROP_VALUE_STRING = 0,
         PROP_VALUE_INTEGER,
         PROP_VALUE_FLOAT,
+        PROP_VALUE_BOOL,
         
         PROP_VALUE_COUNT
     };
@@ -34,10 +35,12 @@ public:
     int32 GetInt();
     float32 GetFloat();
     String GetString();
+    bool GetBool();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
     void SetString(const String& newString);
+    void SetBool(bool newBool);
     
     int32 cellType;
     String key;
@@ -51,6 +54,7 @@ protected:
     int32 intValue;
     float32 floatValue;
     String stringValue;
+    bool boolValue;
 };
 
 #endif
