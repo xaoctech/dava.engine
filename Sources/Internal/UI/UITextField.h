@@ -117,6 +117,9 @@ public:
     
 	const WideString & GetText();
 	void SetText(const WideString & text);
+    
+    virtual WideString GetAppliedChanges(int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
+
 
 	void SetReturnKey(int32 returnType);
 
@@ -125,6 +128,13 @@ public:
     virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
 
     Font *GetFont();
+
+    void SetFocused()
+    {
+        focus = this;
+    }
+    
+    void ReleaseFocus();
     
     void SetFont(Font * font)
     {
