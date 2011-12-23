@@ -31,9 +31,14 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneNodeAnimation.h"
 #include "Scene3D/SceneNodeAnimationList.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA
 {
+    
+    
+//REGISTER_CLASS(SceneNode);
 	
 SceneNode::SceneNode(Scene * _scene)
 	: scene(_scene)
@@ -421,6 +426,22 @@ AABBox3 SceneNode::GetWTMaximumBoundingBox()
     }
     
     return retBBox;
+}
+    
+void SceneNode::Save(KeyedArchive * archive)
+{
+    // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
+    archive->SetByteArray("localTransform", (uint8*)&localTransform, sizeof(Matrix4));
+    archive->SetUInt32("flags", flags);
+}
+
+void SceneNode::Load(KeyedArchive * archive)
+{
+    
+
+
+
+
 }
 
 };

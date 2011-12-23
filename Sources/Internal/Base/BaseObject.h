@@ -55,6 +55,7 @@ namespace DAVA
     to derive it from BaseObject. 
   */
 
+class   KeyedArchive;
 	
 class	BaseObject
 {
@@ -123,6 +124,18 @@ public:
         REGISTER_CLASS(UIButton); you'll get "UIButton" as result.
      */
     const String & GetClassName();
+    
+    /**
+        \brief virtual function to save node to KeyedArchive
+     */
+    virtual void Save(KeyedArchive * archive);
+    
+    /**
+        \brief virtual function to load node to KeyedArchive
+     */
+	virtual void Load(KeyedArchive * archive);
+    
+    static BaseObject * LoadFromArchive(KeyedArchive * archive);
     
 protected:
 	
