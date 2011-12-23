@@ -15,7 +15,7 @@
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* GameScene.cpp */; };
+		D92D797D1498BC5D002F58FB /* EditorScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* EditorScene.cpp */; };
 		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
 		D979C678149A133200FA98C0 /* SceneNodeUserData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */; };
 		D979C67B149A138300FA98C0 /* BulletObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C67A149A138300FA98C0 /* BulletObject.cpp */; };
@@ -290,8 +290,8 @@
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D92D797B1498BC5D002F58FB /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameScene.cpp; path = Classes/GameScene.cpp; sourceTree = SOURCE_ROOT; };
-		D92D797C1498BC5D002F58FB /* GameScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameScene.h; path = Classes/GameScene.h; sourceTree = SOURCE_ROOT; };
+		D92D797B1498BC5D002F58FB /* EditorScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorScene.cpp; path = Classes/EditorScene.cpp; sourceTree = SOURCE_ROOT; };
+		D92D797C1498BC5D002F58FB /* EditorScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorScene.h; path = Classes/EditorScene.h; sourceTree = SOURCE_ROOT; };
 		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
 		D979C676149A133200FA98C0 /* SceneNodeUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneNodeUserData.h; path = Classes/SceneNodeUserData.h; sourceTree = SOURCE_ROOT; };
 		D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneNodeUserData.cpp; path = Classes/SceneNodeUserData.cpp; sourceTree = SOURCE_ROOT; };
@@ -1525,8 +1525,8 @@
 				5C03F91C14990CCB002EE5C1 /* LibraryControl.h */,
 				5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */,
 				5C03F91E14990CCB002EE5C1 /* SceneEditorScreenMain.h */,
-				D92D797B1498BC5D002F58FB /* GameScene.cpp */,
-				D92D797C1498BC5D002F58FB /* GameScene.h */,
+				D92D797B1498BC5D002F58FB /* EditorScene.cpp */,
+				D92D797C1498BC5D002F58FB /* EditorScene.h */,
 				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
 				FE39246E1490C8FD00766CEC /* PanelSwitcher.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
@@ -1935,7 +1935,7 @@
 				D99312851497B1BB00BB577D /* MiniCL.cpp in Sources */,
 				D99312861497B1BB00BB577D /* MiniCLTask.cpp in Sources */,
 				D99312871497B1BB00BB577D /* MiniCLTaskScheduler.cpp in Sources */,
-				D92D797D1498BC5D002F58FB /* GameScene.cpp in Sources */,
+				D92D797D1498BC5D002F58FB /* EditorScene.cpp in Sources */,
 				5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */,
 				5C03F92014990CCB002EE5C1 /* LibraryControl.cpp in Sources */,
 				5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */,
