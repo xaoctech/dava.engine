@@ -654,3 +654,14 @@ void EditorBodyControl::BeastProcessScene()
 	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());
 	BeastProxy::Instance()->WindowedRender(beastManager);
 }
+
+EditorScene * EditorBodyControl::GetScene()
+{
+    return scene;
+}
+
+void EditorBodyControl::AddNode(SceneNode *node)
+{
+    scene->AddNode(node);
+    sceneTree->Refresh();
+}

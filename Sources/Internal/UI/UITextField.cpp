@@ -198,6 +198,15 @@ void UITextField::WillDisappear()
 		focus = 0;
 	}
 }
+    
+void UITextField::ReleaseFocus()
+{
+    if (focus == this) 
+    {
+        focus = NULL;
+    }
+}
+    
 
 void UITextField::SetDelegate(UITextFieldDelegate * _delegate)
 {
@@ -291,12 +300,7 @@ void UITextField::Input(UIEvent *currentInput)
             WideString str = L"";
             if(delegate->TextFieldKeyPressed(this, (int32)GetText().length(), -1, str))
 			{
-                WideString txt = GetText();
-                if (txt.size() > 0)
-                {
-                    txt.erase(txt.end()-1);
-                }
-                SetText(txt);
+                SetText(GetAppliedChanges((int32)GetText().length(),  -1, str));
 			}
         }
 		else if (currentInput->keyChar == enterKeyCode)
@@ -309,14 +313,31 @@ void UITextField::Input(UIEvent *currentInput)
 			str += currentInput->keyChar;
 			if(delegate->TextFieldKeyPressed(this, (int32)GetText().length(), 1, str))
 			{
-				SetText(GetText() + currentInput->keyChar);
+                SetText(GetAppliedChanges((int32)GetText().length(),  1, str));
 			}
         }
     }
 
 #endif
 }
-
+    
+WideString UITextField::GetAppliedChanges(int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
+{//TODO: fix this for copy/paste
+    WideString txt = GetText();
+    if (replacementLength < 0) 
+    {
+        if (txt.size() > 0)
+        {
+            txt.erase(txt.end() + replacementLength);
+        }
+    }
+    else 
+    {
+        txt = GetText() + replacementString;
+    }
+    return txt;
+}
+    
 
 void UITextField::RenderText()
 {

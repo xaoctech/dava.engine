@@ -57,7 +57,11 @@ public:
 
 	void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
-	
+	    
+    EditorScene * GetScene();
+    void AddNode(SceneNode *node);
+    
+    
 protected:
 
     void CreateScene();
