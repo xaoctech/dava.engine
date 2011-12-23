@@ -27,8 +27,10 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "BaseObject.h"
-#include "ObjectFactory.h"
+#include "Base/BaseObject.h"
+#include "Base/ObjectFactory.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA
 {
@@ -40,7 +42,28 @@ const String & BaseObject::GetClassName()
     return ObjectFactory::Instance()->GetName(this);
 }
     
+/**
+    \brief virtual function to save node to KeyedArchive
+ */
+void BaseObject::Save(KeyedArchive * archive)
+{
+    archive->SetString("##name", GetClassName());
+}
     
+BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
+{
+    String name = archive->GetString("##name");
+    BaseObject * object = ObjectFactory::Instance()->New(name);
+    object->Load(archive);
+    return object;
+}
+
+/**
+    \brief virtual function to load node to KeyedArchive
+ */
+void BaseObject::Load(KeyedArchive * archive)
+{
+}
     
     
 };

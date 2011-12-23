@@ -121,6 +121,11 @@ public:
 	 */
 	BaseObject * New(const String & name); 
     
+    //    /**
+    //        \brief 
+    //     */
+    //    template <class T> 
+    //    T * New(const String & name);
 
     template<class T>
     const String & GetName(T * t);

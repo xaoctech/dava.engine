@@ -34,7 +34,7 @@ namespace DAVA
 
 VariantType::VariantType()
 :	type(TYPE_NONE)
-,	intValue(0)
+,	int32Value(0)
 {
 }
 
@@ -49,10 +49,17 @@ void VariantType::SetBool(bool value)
 	type = TYPE_BOOLEAN;
 	boolValue = value;
 }
-void VariantType::SetInt(int32 value)
+
+void VariantType::SetInt32(int32 value)
 {
-	type = TYPE_INT;
-	intValue = value;
+	type = TYPE_INT32;
+	int32Value = value;
+}
+
+void VariantType::SetUInt32(uint32 value)
+{
+    type = TYPE_UINT32;
+    uint32Value = value;
 }
 
 void VariantType::SetFloat(float32 value)
@@ -88,10 +95,16 @@ bool VariantType::AsBool()
 	return boolValue;
 }
 
-int32  VariantType::AsInt()
+int32  VariantType::AsInt32()
 {
-	DVASSERT(type == TYPE_INT);
-	return intValue;
+	DVASSERT(type == TYPE_INT32);
+	return int32Value;
+}
+    
+uint32  VariantType::AsUInt32()
+{
+    DVASSERT(type == TYPE_UINT32);
+    return uint32Value;
 }
 
 float32  VariantType::AsFloat()
@@ -141,12 +154,18 @@ bool VariantType::Write(File * fp) const
 			if (written != 1)return false;
 		}
 		break;
-	case TYPE_INT:
+	case TYPE_INT32:
 		{
-			written = fp->Write(&intValue, 4);
+			written = fp->Write(&int32Value, 4);
 			if (written != 4)return false;
 		}
 		break;	
+    case TYPE_UINT32:
+    {
+        written = fp->Write(&uint32Value, 4);
+        if (written != 4)return false;
+    }
+    break;	
 	case TYPE_FLOAT:
 		{
 			written = fp->Write(&floatValue, 4);
@@ -200,18 +219,24 @@ bool VariantType::Read(File * fp)
 			if (read != 1)return false;
 		}
 		break;
-		case TYPE_INT:
+		case TYPE_INT32:
 		{
-			read = fp->Read(&intValue, 4);
+			read = fp->Read(&int32Value, 4);
 			if (read != 4)return false;
 		}
-			break;	
+        break;	
+		case TYPE_UINT32:
+		{
+			read = fp->Read(&uint32Value, 4);
+			if (read != 4)return false;
+		}
+        break;	
 		case TYPE_FLOAT:
 		{
 			read = fp->Read(&floatValue, 4);
 			if (read != 4)return false;
 		}
-			break;	
+        break;	
 		case TYPE_STRING:
 		{
 			int32 len;
@@ -226,7 +251,7 @@ bool VariantType::Read(File * fp)
 			if (read != len)return false;
 			
 		}
-			break;	
+        break;	
 		case TYPE_WIDE_STRING:
 		{ 
 			int32 len;
@@ -242,7 +267,7 @@ bool VariantType::Read(File * fp)
 				wideStringValue[k] = c;
 			}
 		}
-			break;
+        break;
 		case TYPE_BYTE_ARRAY:
 		{
 			int32 len;
@@ -253,7 +278,7 @@ bool VariantType::Read(File * fp)
 			read = fp->Read(&arrayValue[0], len);
 			if (read != len)return false;
 		}
-			break;	
+        break;	
 		default:
 		{
 			//DVASSERT(0 && "Something went wrong with VariantType");
