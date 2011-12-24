@@ -25,6 +25,8 @@
 		5C79702814A3F94900883EDF /* CubeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C79702614A3F94800883EDF /* CubeNode.h */; };
 		5CDC763514A48350003BF1FE /* SphereNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC763314A4834F003BF1FE /* SphereNode.cpp */; };
 		5CDC763614A48350003BF1FE /* SphereNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CDC763414A4834F003BF1FE /* SphereNode.h */; };
+		5CFAF30B14A6258700355DCF /* LightNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30914A6258700355DCF /* LightNode.cpp */; };
+		5CFAF30C14A6258700355DCF /* LightNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFAF30A14A6258700355DCF /* LightNode.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
 		C7AB37101473F31E00D52251 /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -488,6 +490,8 @@
 		5C79702614A3F94800883EDF /* CubeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeNode.h; sourceTree = "<group>"; };
 		5CDC763314A4834F003BF1FE /* SphereNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SphereNode.cpp; sourceTree = "<group>"; };
 		5CDC763414A4834F003BF1FE /* SphereNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphereNode.h; sourceTree = "<group>"; };
+		5CFAF30914A6258700355DCF /* LightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightNode.cpp; sourceTree = "<group>"; };
+		5CFAF30A14A6258700355DCF /* LightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightNode.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
 		C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSFullScreenWindow.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1455,6 +1459,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CFAF30914A6258700355DCF /* LightNode.cpp */,
+				5CFAF30A14A6258700355DCF /* LightNode.h */,
 				5CDC763314A4834F003BF1FE /* SphereNode.cpp */,
 				5CDC763414A4834F003BF1FE /* SphereNode.h */,
 				5C79702514A3F94800883EDF /* CubeNode.cpp */,
@@ -1867,6 +1873,7 @@
 				FE707B1E147588B60082008F /* BillboardNode.h in Headers */,
 				5C79702814A3F94900883EDF /* CubeNode.h in Headers */,
 				5CDC763614A48350003BF1FE /* SphereNode.h in Headers */,
+				5CFAF30C14A6258700355DCF /* LightNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2143,6 +2150,7 @@
 				FE707B1D147588B60082008F /* BillboardNode.cpp in Sources */,
 				5C79702714A3F94900883EDF /* CubeNode.cpp in Sources */,
 				5CDC763514A48350003BF1FE /* SphereNode.cpp in Sources */,
+				5CFAF30B14A6258700355DCF /* LightNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

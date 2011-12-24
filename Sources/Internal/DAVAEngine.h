@@ -190,6 +190,7 @@
 #include "Scene3D/LandscapeNode.h"
 #include "Scene3D/CubeNode.h"
 #include "Scene3D/SphereNode.h"
+#include "Scene3D/LightNode.h"
 
 
 // Application core 
