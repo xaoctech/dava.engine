@@ -13,46 +13,40 @@ CreateLightDialog::~CreateLightDialog()
 
 void CreateLightDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Camera", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Fov", 70.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("zNear", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("zFar", 5000.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddBoolProperty("isOrtho", false, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("x", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("y", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("z", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddTextProperty("Name", "Light", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFloatProperty("Type", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("r", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("g", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("b", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("a", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
  
 }
 
 void CreateLightDialog::CreateNode()
 {
     SafeRelease(sceneNode);
-    sceneNode = new Camera(scene);
+    sceneNode = new LightNode(scene);
     
     sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
     
-    ((Camera *)sceneNode)->Setup(
-                                 propertyList->GetFloatPropertyValue("Fov"),
-                                 320.0f / 480.0f,
-                                 propertyList->GetFloatPropertyValue("zNear"),
-                                 propertyList->GetFloatPropertyValue("zFar"),
-                                 propertyList->GetBoolPropertyValue("isOrtho"));
-    ((Camera *)sceneNode)->SetPosition(Vector3(
-                                               propertyList->GetFloatPropertyValue("x"),
-                                               propertyList->GetFloatPropertyValue("y"),
-                                               propertyList->GetFloatPropertyValue("z")));
-   
+    Color color(
+                propertyList->GetFloatPropertyValue("r"),
+                propertyList->GetFloatPropertyValue("g"),
+                propertyList->GetFloatPropertyValue("b"),
+                propertyList->GetFloatPropertyValue("a"));
+    
+    int32 type = LightNode::ELT_DIRECTIONAL; //propertyList->GetFloatPropertyValue("Type");
+
+    ((LightNode *)sceneNode)->SetColor(color);
+    ((LightNode *)sceneNode)->SetLightType((LightNode::eLightType)type);
 }
 
 void CreateLightDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Camera");
-    propertyList->SetFloatPropertyValue("Fov", 70.f);
-    propertyList->SetFloatPropertyValue("zNear", 1.f);
-    propertyList->SetFloatPropertyValue("zFar", 5000.f);
-    propertyList->SetBoolPropertyValue("isOrtho", false);
-    propertyList->SetFloatPropertyValue("x", 0.f);
-    propertyList->SetFloatPropertyValue("y", 0.f);
-    propertyList->SetFloatPropertyValue("z", 0.f);
-  
+    propertyList->SetTextPropertyValue("Name", "Light");
+//    propertyList->SetFloatPropertyValue("Type", 1.f);
+    propertyList->SetFloatPropertyValue("r", 1.f);
+    propertyList->SetFloatPropertyValue("g", 1.f);
+    propertyList->SetFloatPropertyValue("b", 1.f); 
+    propertyList->SetFloatPropertyValue("a", 1.f); 
 }
