@@ -23,6 +23,7 @@ public:
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue){};
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue){};
     virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue){};
+    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue){};
 };
 
 
