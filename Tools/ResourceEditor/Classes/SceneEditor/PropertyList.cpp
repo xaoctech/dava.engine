@@ -64,7 +64,7 @@ void PropertyList::AddFilepathProperty(const String &propertyName, const String 
 void PropertyList::AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_BOOL);
-    p->cellType = PropertyCell::PROP_CELL_TEXT;
+    p->cellType = PropertyCell::PROP_CELL_BOOL;
     p->SetBool(currentBoolValue);
     AddProperty(p, propertyName, propEditType);
 }
@@ -182,6 +182,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_FLOAT:
             delegate->OnFloatPropertyChanged(this, changedProperty->key, changedProperty->GetFloat());
             break;
+        case PropertyCellData::PROP_VALUE_BOOL:
+            delegate->OnBoolPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
+            break;
     }
 }
 
@@ -201,6 +204,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
         {
             case PropertyCell::PROP_CELL_TEXT:
                 c = new PropertyTextCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_BOOL:
+                c = new PropertyBoolCell(this, props[index], size.x);
                 break;
         }
     }
@@ -230,6 +236,9 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
     {
         case PropertyCell::PROP_CELL_TEXT:
             return PropertyTextCell::GetHeightForWidth(size.x);
+            break;
+        case PropertyCell::PROP_CELL_BOOL:
+            return PropertyBoolCell::GetHeightForWidth(size.x);
             break;
     }
     return 50;//todo: rework

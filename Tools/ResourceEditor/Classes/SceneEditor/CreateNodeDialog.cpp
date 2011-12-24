@@ -80,20 +80,26 @@ void CreateNodeDialog::OnOk(BaseObject * object, void * userData, void * callerD
     }
 }
 
-void CreateNodeDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
-{
-    
-}
+//void CreateNodeDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+//{
+//    
+//}
+//
+//void CreateNodeDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
+//{
+//    
+//}
+//
+//void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+//{
+//    
+//}
+//
+//void CreateNodeDialog::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+//{
+//    
+//}
 
-void CreateNodeDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
-{
-    
-}
-
-void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
-{
-    
-}
 
 SceneNode * CreateNodeDialog::GetSceneNode()
 {

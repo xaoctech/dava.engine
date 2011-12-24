@@ -40,6 +40,10 @@ public:
     static void CustomizeSceneGraphCell(UIHierarchyCell *c);
     
     static void CustomizeMenuPopupCell(UIListCell *c, const WideString &text);
+    
+    static void CustomizePropertyCell(UIControl *c, bool isActivePart);
+    static void CustomizeEditablePropertyCell(UIControl *c);
+    static void CustomizeUneditablePropertyCell(UIControl *c);
 };
 
 

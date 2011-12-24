@@ -17,6 +17,7 @@
 		5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
+		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
 		5CFC47F514A35A68009A0C9F /* CreateLandscapeDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47F314A35A68009A0C9F /* CreateLandscapeDialog.cpp */; };
 		5CFC480014A35B75009A0C9F /* CreateBoxDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47F614A35B74009A0C9F /* CreateBoxDialog.cpp */; };
 		5CFC480114A35B75009A0C9F /* CreateCameraDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFC47F814A35B74009A0C9F /* CreateCameraDialog.cpp */; };
@@ -304,6 +305,8 @@
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
+		5CFAF30E14A6334100355DCF /* UICheckBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UICheckBox.cpp; sourceTree = "<group>"; };
+		5CFAF30F14A6334100355DCF /* UICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBox.h; sourceTree = "<group>"; };
 		5CFC47F314A35A68009A0C9F /* CreateLandscapeDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateLandscapeDialog.cpp; sourceTree = "<group>"; };
 		5CFC47F414A35A68009A0C9F /* CreateLandscapeDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateLandscapeDialog.h; sourceTree = "<group>"; };
 		5CFC47F614A35B74009A0C9F /* CreateBoxDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateBoxDialog.cpp; sourceTree = "<group>"; };
@@ -1560,6 +1563,8 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5CFAF30E14A6334100355DCF /* UICheckBox.cpp */,
+				5CFAF30F14A6334100355DCF /* UICheckBox.h */,
 				5CFC480514A35DF2009A0C9F /* CreateNode */,
 				4780999714A2463900BAA259 /* MaterialEditor */,
 				4780990914A10A2500BAA259 /* PropertyCell.h */,
@@ -2017,6 +2022,7 @@
 				5CFC480214A35B75009A0C9F /* CreateLightDialog.cpp in Sources */,
 				5CFC480314A35B75009A0C9F /* CreateServiceNodeDialog.cpp in Sources */,
 				5CFC480414A35B75009A0C9F /* CreateSphereDialog.cpp in Sources */,
+				5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
