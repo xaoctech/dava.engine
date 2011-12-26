@@ -190,6 +190,30 @@ void ControlsFactory::CustomizeMenuPopupCell(UIListCell *c, const WideString &te
     SafeRelease(line);
 }
 
+void ControlsFactory::CustomizePropertyCell(DAVA::UIControl *c, bool isActivePart)
+{
+    if(isActivePart)
+    {
+        c->GetBackground()->color = Color(0.5f, 0.5f, 0.5f, 0.5f);
+    }
+    else
+    {
+        c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 1.0f);
+    }
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
+
+void ControlsFactory::CustomizeEditablePropertyCell(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.2f, 0.2f, 0.2f, 0.6f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
+void ControlsFactory::CustomizeUneditablePropertyCell(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 0.5f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
+
 
 
 

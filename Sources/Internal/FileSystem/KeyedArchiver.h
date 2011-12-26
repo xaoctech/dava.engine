@@ -50,7 +50,7 @@ public:
 	bool StartEncodingToFile(File *file);
 
 	void EncodeBool(const String & key, bool value);
-	void EncodeInt(const String & key, int32 value);
+	void EncodeInt32(const String & key, int32 value);
 	void EncodeFloat(const String & key, float32 value);
 	void EncodeString(const String & key, const String & value);
 	void EncodeWideString(const String & key, const WideString & value);

@@ -122,7 +122,7 @@ void Core::CreateSingletons()
 void Core::CreateRenderManager()
 {
     KeyedArchive * options = GetOptions();
-    eRenderer renderer = (eRenderer)options->GetInt("renderer");
+    eRenderer renderer = (eRenderer)options->GetInt32("renderer");
     
     RenderManager::Create(renderer);
 }
@@ -158,7 +158,7 @@ void Core::SetOptions(KeyedArchive * archiveOfOptions)
 #endif 
 	}
 	
-	Instance()->screenOrientation = options->GetInt("orientation", SCREEN_ORIENTATION_PORTRAIT);
+	Instance()->screenOrientation = options->GetInt32("orientation", SCREEN_ORIENTATION_PORTRAIT);
 	
 }
     

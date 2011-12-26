@@ -90,7 +90,6 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp">
       <Filter>Collada</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\GameScene.cpp" />
     <ClCompile Include="Classes\VertexOctTree.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp">
       <Filter>Bullet</Filter>
@@ -702,7 +701,6 @@
     <ClInclude Include="Classes\Collada\stdafx.h">
       <Filter>Collada</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\GameScene.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.h">
       <Filter>Bullet</Filter>

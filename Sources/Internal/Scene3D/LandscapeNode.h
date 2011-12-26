@@ -103,7 +103,7 @@ public:
         BOTTOM = 3,
     };
     
-	LandscapeNode(Scene * scene);
+	LandscapeNode(Scene * scene = 0);
 	virtual ~LandscapeNode();
     
     /**

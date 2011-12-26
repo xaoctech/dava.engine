@@ -39,6 +39,8 @@
 
 namespace DAVA
 {
+REGISTER_CLASS(LandscapeNode);
+
 	
 LandscapeNode::LandscapeNode(Scene * _scene)
 	: SceneNode(_scene)

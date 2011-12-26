@@ -43,6 +43,7 @@ namespace DAVA
 class Scene;
 class SceneNodeAnimation;
 class SceneNodeAnimationKey;
+class KeyedArchive;
 /**
     \brief Root class of 3D scene hierarchy. 
  
@@ -180,11 +181,22 @@ public:
     //Returns maximum Bounding Box as WorlTransformedBox
 
     /**
-     \brief function returns maximal Bounding Box as WorlTransformedBox
-     \returns flags of this specific scene node
+        \brief function returns maximum bounding box of scene in world coordinates.
+        \returns bounding box
      */
     virtual AABBox3 GetWTMaximumBoundingBox();
-	
+    
+    
+    /**
+        \brief virtual function to save node to KeyedArchive
+     */
+    virtual void Save(KeyedArchive * archive);
+    
+    /**
+        \brief virtual function to load node to KeyedArchive
+     */
+	virtual void Load(KeyedArchive * archive);
+    
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);

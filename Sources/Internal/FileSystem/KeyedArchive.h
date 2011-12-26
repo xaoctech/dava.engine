@@ -72,7 +72,14 @@ public:
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
-	int32 GetInt(const String & key, int32 defaultValue = 0);
+	int32 GetInt32(const String & key, int32 defaultValue = 0);
+	/**
+     \brief functions to get variable from archive
+     \param[in] key string key
+     \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+     \returns value of variable or defaultValue if key isn't available
+	 */
+	uint32 GetUInt32(const String & key, uint32 defaultValue = 0);
 	/**
 		\brief functions to get variable from archive
 		\param[in] key string key
@@ -95,17 +102,17 @@ public:
 	 */
 	const WideString & GetWideString(const String & key, const WideString & defaultValue = L"");
 	/**
-	 \brief functions to get variable from archive
-	 \param[in] key string key
-	 \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
-	 \returns value of variable or defaultValue if key isn't available
+        \brief functions to get variable from archive
+        \param[in] key string key
+        \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+        \returns value of variable or defaultValue if key isn't available
 	 */
 	const uint8 *GetByteArray(const String & key, const uint8 *defaultValue = NULL);
 	/**
-	 \brief functions to get variable from archive
-	 \param[in] key string key
-	 \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
-	 \returns value of variable or defaultValue if key isn't available
+        \brief functions to get variable from archive
+        \param[in] key string key
+        \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+        \returns value of variable or defaultValue if key isn't available
 	 */
 	int32 GetByteArraySize(const String & key, int32 defaultValue = 0);
 	
@@ -128,7 +135,14 @@ public:
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
-	void SetInt(const String & key, int32 value);
+	void SetInt32(const String & key, int32 value);
+	/**
+     \brief function to set variable in archive
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetUInt32(const String & key, uint32 value);
+    
 	/**
 		\brief function to set variable in archive
 		\param[in] key string key
@@ -148,10 +162,10 @@ public:
 	 */
 	void SetWideString(const String & key, const WideString & value);
 	/**
-	 \brief function to set variable in archive
-	 \param[in] key string key
-	 \param[in] value we want to set for this key
-	 \param[in] arraySize size fo the array we want tot save
+        \brief function to set variable in archive
+        \param[in] key string key
+        \param[in] value we want to set for this key
+        \param[in] arraySize size fo the array we want tot save
 	 */
 	void SetByteArray(const String & key, const uint8 * value, int32 arraySize);
 	/**
@@ -173,13 +187,13 @@ public:
 	bool Save(const String & pathName);
 
 	/**
-	 \brief this function loads data from given file
-	 \param[in] file to load from
+        \brief this function loads data from given file
+        \param[in] file to load from
 	 */
 	bool Load(File *file);
 	/**
-	 \brief this function saves data to given file
-	 \param[in] file to save
+        \brief this function saves data to given file
+        \param[in] file to save
 	 */
 	bool Save(File *file);
 

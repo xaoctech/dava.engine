@@ -33,6 +33,8 @@
 namespace DAVA 
 {
 
+REGISTER_CLASS(BillboardNode);
+
 BillboardNode::BillboardNode(Scene * _scene)
     : SceneNode(_scene)
 {
