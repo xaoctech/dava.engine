@@ -10,6 +10,9 @@
 		4780990E14A10A2500BAA259 /* PropertyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780990814A10A2500BAA259 /* PropertyCell.cpp */; };
 		4780990F14A10A2500BAA259 /* PropertyCellData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780990A14A10A2500BAA259 /* PropertyCellData.cpp */; };
 		4780991014A10A2500BAA259 /* PropertyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780990C14A10A2500BAA259 /* PropertyList.cpp */; };
+		478099BD14A370BA00BAA259 /* ComboBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 478099BC14A370BA00BAA259 /* ComboBox.cpp */; };
+		47809C4B14A3FE5700BAA259 /* MaterialEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47809C4A14A3FE5700BAA259 /* MaterialEditor.cpp */; };
+		47809C7114A4037E00BAA259 /* DraggableDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47809C7014A4037E00BAA259 /* DraggableDialog.cpp */; };
 		5C006F7414A0DBA9005035C1 /* MenuPopupControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */; };
 		5C006F7714A10766005035C1 /* CreateNodeDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C006F7514A10765005035C1 /* CreateNodeDialog.cpp */; };
 		5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */; };
@@ -291,6 +294,12 @@
 		4780990B14A10A2500BAA259 /* PropertyCellData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyCellData.h; sourceTree = "<group>"; };
 		4780990C14A10A2500BAA259 /* PropertyList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyList.cpp; sourceTree = "<group>"; };
 		4780990D14A10A2500BAA259 /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyList.h; sourceTree = "<group>"; };
+		478099BB14A370BA00BAA259 /* ComboBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComboBox.h; sourceTree = "<group>"; };
+		478099BC14A370BA00BAA259 /* ComboBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComboBox.cpp; sourceTree = "<group>"; };
+		47809C4914A3FE5700BAA259 /* MaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialEditor.h; sourceTree = "<group>"; };
+		47809C4A14A3FE5700BAA259 /* MaterialEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialEditor.cpp; sourceTree = "<group>"; };
+		47809C6F14A4037E00BAA259 /* DraggableDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DraggableDialog.h; sourceTree = "<group>"; };
+		47809C7014A4037E00BAA259 /* DraggableDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DraggableDialog.cpp; sourceTree = "<group>"; };
 		5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MenuPopupControl.cpp; sourceTree = "<group>"; };
 		5C006F7314A0DBA8005035C1 /* MenuPopupControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuPopupControl.h; sourceTree = "<group>"; };
 		5C006F7514A10765005035C1 /* CreateNodeDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateNodeDialog.cpp; sourceTree = "<group>"; };
@@ -908,6 +917,8 @@
 		4780999714A2463900BAA259 /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
+				47809C4914A3FE5700BAA259 /* MaterialEditor.h */,
+				47809C4A14A3FE5700BAA259 /* MaterialEditor.cpp */,
 			);
 			name = MaterialEditor;
 			sourceTree = "<group>";
@@ -1567,6 +1578,8 @@
 				5CFAF30F14A6334100355DCF /* UICheckBox.h */,
 				5CFC480514A35DF2009A0C9F /* CreateNode */,
 				4780999714A2463900BAA259 /* MaterialEditor */,
+				478099BB14A370BA00BAA259 /* ComboBox.h */,
+				478099BC14A370BA00BAA259 /* ComboBox.cpp */,
 				4780990914A10A2500BAA259 /* PropertyCell.h */,
 				4780990814A10A2500BAA259 /* PropertyCell.cpp */,
 				4780990B14A10A2500BAA259 /* PropertyCellData.h */,
@@ -1605,6 +1618,8 @@
 				FEDDC9501428E59E0004BF1A /* CameraPanel.h */,
 				FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */,
 				FEDDC9521428E59E0004BF1A /* EditMatrixControl.h */,
+				47809C6F14A4037E00BAA259 /* DraggableDialog.h */,
+				47809C7014A4037E00BAA259 /* DraggableDialog.cpp */,
 			);
 			name = SceneEditor;
 			path = Classes/SceneEditor;
@@ -2016,6 +2031,9 @@
 				4780991014A10A2500BAA259 /* PropertyList.cpp in Sources */,
 				5C006F7414A0DBA9005035C1 /* MenuPopupControl.cpp in Sources */,
 				5C006F7714A10766005035C1 /* CreateNodeDialog.cpp in Sources */,
+				478099BD14A370BA00BAA259 /* ComboBox.cpp in Sources */,
+				47809C4B14A3FE5700BAA259 /* MaterialEditor.cpp in Sources */,
+				47809C7114A4037E00BAA259 /* DraggableDialog.cpp in Sources */,
 				5CFC47F514A35A68009A0C9F /* CreateLandscapeDialog.cpp in Sources */,
 				5CFC480014A35B75009A0C9F /* CreateBoxDialog.cpp in Sources */,
 				5CFC480114A35B75009A0C9F /* CreateCameraDialog.cpp in Sources */,

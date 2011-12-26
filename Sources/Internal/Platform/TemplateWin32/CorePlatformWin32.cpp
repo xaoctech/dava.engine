@@ -220,18 +220,18 @@ namespace DAVA
 		fullscreenMode = GetCurrentDisplayMode();//FindBestMode(fullscreenMode);
 		if (options)
 		{
-			windowedMode.width = options->GetInt("width");
-			windowedMode.height = options->GetInt("height");
-			windowedMode.bpp = options->GetInt("bpp");
+			windowedMode.width = options->GetInt32("width");
+			windowedMode.height = options->GetInt32("height");
+			windowedMode.bpp = options->GetInt32("bpp");
 			
 			// get values from config in case if they are available
-			fullscreenMode.width = options->GetInt("fullscreen.width", fullscreenMode.width);
-			fullscreenMode.height = options->GetInt("fullscreen.height", fullscreenMode.height);
+			fullscreenMode.width = options->GetInt32("fullscreen.width", fullscreenMode.width);
+			fullscreenMode.height = options->GetInt32("fullscreen.height", fullscreenMode.height);
 			fullscreenMode.bpp = windowedMode.bpp;
 
 			fullscreenMode = FindBestMode(fullscreenMode);
 
-			isFullscreen = (0 != options->GetInt("fullscreen"));	
+			isFullscreen = (0 != options->GetInt32("fullscreen"));	
 			String title = options->GetString("title", "[set application title using core options property 'title']");
 			WideString titleW = StringToWString(title);
 			SetWindowText(hWindow, titleW.c_str());

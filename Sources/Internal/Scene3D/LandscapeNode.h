@@ -137,6 +137,13 @@ public:
         TEXTURE_TEXTUREMASK, 
         TEXTURE_COUNT,
     };
+
+	class LandscapeVertex
+	{
+	public:
+		Vector3 position;
+		Vector2 texCoord;
+	};
     
     /**
         \brief Set texture for the specific texture level
@@ -159,11 +166,26 @@ public:
         \param[in] textureName name of texture you want to open and set to specific level
      */
     void SetTexture(eTextureLevel level, const String & textureName);
+
+	/**
+	 \brief Get texture that was previously set in SetTexture.
+	 \param[in] level 
+	 \returns current texture
+	 */
+	Texture * GetTexture(eTextureLevel level);
     
     /**
         \brief Overloaded draw function to draw landscape
      */
 	virtual void Draw();
+
+	/**
+	 \brief Get landscape mesh geometry.
+	 Unoptimized lod0 mesh is returned.
+	 \param[out] vertices landscape vertices
+	 \param[out] indices landscape indices
+	 */
+	void GetGeometry(Vector<LandscapeVertex> & vertices, Vector<int32> & indices);
     
 protected:	
     
@@ -178,15 +200,7 @@ protected:
         AABBox3 bbox;
         uint32  frame;
     };
-    
-    class LandscapeVertex
-    {
-    public:
-        Vector3 position;
-        Vector2 texCoord;
-    };
-    
-    
+   
     static const int32 RENDER_QUAD_WIDTH = 129;
     static const int32 RENDER_QUAD_AND = RENDER_QUAD_WIDTH - 2;
     static const int32 INDEX_ARRAY_COUNT = RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6;

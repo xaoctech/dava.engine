@@ -262,6 +262,16 @@ public:
 	 \brief Returns control hovered by the mnouse for now
 	 */
     UIControl *GetHoveredControl(UIControl *newHovered);
+
+    /**
+	 \brief Called by the control to set himself as the focused control
+	 */
+    void SetFocusedControl(UIControl *newFocused, bool forceSet);
+    
+	/**
+	 \brief Returns currently focused control
+	 */
+    UIControl *GetFocusedControl();
     
 private:
 	
@@ -279,6 +289,8 @@ private:
 	
 	UIControl *exclusiveInputLocker;
     UIControl *hovered;
+    
+    UIControl *focusedControl;
 
 	UIControl * popupContainer;
 	Vector<UIPopup*> popupsToRemove;

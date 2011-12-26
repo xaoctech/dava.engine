@@ -9,6 +9,7 @@ using namespace DAVA;
 
 
 class EditorBodyControl;
+class MaterialEditor;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodeDialogDelegeate
@@ -144,6 +145,9 @@ private:
     MenuPopupControl *menuPopup;
 
     //create node dialog
+    CreateNodeDialog *nodeDialog;
+    
+    MaterialEditor *materialEditor;
     CreateNodeDialog *nodeDialogs[ECNID_COUNT];
     int32 currentNodeDialog;
     void InitializeNodeDialogs();

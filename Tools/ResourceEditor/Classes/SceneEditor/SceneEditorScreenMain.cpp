@@ -4,7 +4,8 @@
 #include "LibraryControl.h"
 
 #include "ControlsFactory.h"
-#include "EditorScene.h"
+#include "../EditorScene.h"
+#include "MaterialEditor.h"
 
 #include "CreateLandscapeDialog.h"
 #include "CreateLightDialog.h"
@@ -40,6 +41,8 @@ void SceneEditorScreenMain::LoadResources()
     menuPopup->SetDelegate(this);
     
     InitializeNodeDialogs();    
+    
+    materialEditor = new MaterialEditor();
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
@@ -254,7 +257,25 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 {
-    
+    if (!materialEditor->GetParent())
+    {
+        int32 iBody = FindCurrentBody();
+        if(-1 != iBody)
+        {
+            materialEditor->SetWorkingScene(bodies[iBody].bodyControl->GetScene());
+        }
+        else 
+        {
+            materialEditor->SetWorkingScene(NULL);
+        }
+
+        AddControl(materialEditor);
+    }
+    else 
+    {
+        RemoveControl(materialEditor);
+    }
+
 }
 
 

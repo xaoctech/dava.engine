@@ -34,8 +34,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreateScene();
     
     CreatePropertyPanel();
-
-	beastManager = BeastProxy::Instance()->CreateManager();
 	
 	CreateModificationPanel();
 }
@@ -48,8 +46,6 @@ EditorBodyControl::~EditorBodyControl()
     ReleaseScene();
     
     SafeRelease(sceneTree);
-    
-	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 }
 
 void EditorBodyControl::CreateScene()
@@ -135,7 +131,9 @@ void EditorBodyControl::CreateModificationPanel(void)
 	modState = MOD_MOVE;
 	modAxis = AXIS_X;
 	
-	modificationPanel = ControlsFactory::CreatePanelControl(Rect(scene3dView->GetRect(true).x, 5, 70, 45));
+	modificationPanel = ControlsFactory::CreatePanelControl(Rect(scene3dView->GetRect(true).x, 5, 120, 45));
+    modificationPanel->GetBackground()->SetColor(Color(1.0, 1.0, 1.0, 0.2));
+
 	for (int i = 0; i < 3; i++)
 	{
 		btnMod[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, 0, BUTTON_W, BUTTON_W), mods[i]);
@@ -146,6 +144,17 @@ void EditorBodyControl::CreateModificationPanel(void)
 		btnAxis[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
 		modificationPanel->AddControl(btnAxis[i]);
 	}
+	UIStaticText * st = new UIStaticText(Rect(55, 0, 80, BUTTON_W));
+    st->SetFont(ControlsFactory::CreateFontLight());
+	st->SetText(L"w, e, r");
+    modificationPanel->AddControl(st);
+
+	st = new UIStaticText(Rect(55, BUTTON_W + BUTTON_B, 80, BUTTON_W));
+    st->SetFont(ControlsFactory::CreateFontLight());
+	st->SetText(L"5, 6, 7, 8");
+    modificationPanel->AddControl(st);
+	
+	
 	UpdateModState();
 }
 
@@ -173,7 +182,29 @@ void EditorBodyControl::UpdateModState(void)
 		btnAxis[i]->SetState(UIControl::STATE_NORMAL);
 	}
 	btnMod[modState]->SetState(UIControl::STATE_SELECTED);
-	btnAxis[modAxis]->SetState(UIControl::STATE_SELECTED);
+
+	switch (modAxis) 
+	{
+	case AXIS_X:
+	case AXIS_Y:
+	case AXIS_Z:
+		btnAxis[modAxis]->SetState(UIControl::STATE_SELECTED);
+		break;
+	case AXIS_XY:
+		btnAxis[AXIS_X]->SetState(UIControl::STATE_SELECTED);
+		btnAxis[AXIS_Y]->SetState(UIControl::STATE_SELECTED);
+		break;
+	case AXIS_YZ:
+		btnAxis[AXIS_Y]->SetState(UIControl::STATE_SELECTED);
+		btnAxis[AXIS_Z]->SetState(UIControl::STATE_SELECTED);
+		break;
+	case AXIS_XZ:
+		btnAxis[AXIS_X]->SetState(UIControl::STATE_SELECTED);
+		btnAxis[AXIS_Z]->SetState(UIControl::STATE_SELECTED);
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -375,13 +406,19 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             scene->SetClipCamera(scene->GetCamera(0));
         }
 		
-        if (event->keyChar == 'e') modState = MOD_MOVE;
-		if (event->keyChar == 'r') modState = MOD_ROTATE;
-		if (event->keyChar == 't') modState = MOD_SCALE;
-        if (event->keyChar == 'd') modAxis = AXIS_X;
-		if (event->keyChar == 'f') modAxis = AXIS_Y;
-		if (event->keyChar == 'g') modAxis = AXIS_Z;
-		
+        if (event->keyChar == 'w') modState = MOD_MOVE;
+		if (event->keyChar == 'e') modState = MOD_ROTATE;
+		if (event->keyChar == 'r') modState = MOD_SCALE;
+        if (event->keyChar == '5') modAxis = AXIS_X;
+		if (event->keyChar == '6') modAxis = AXIS_Y;
+		if (event->keyChar == '7') modAxis = AXIS_Z;
+		if (event->keyChar == '8') 
+		{
+			if (modAxis < AXIS_XY)
+				modAxis = AXIS_XY;
+			else
+				modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+		}
 		UpdateModState();
 	}   
 	
@@ -415,7 +452,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 		{
 			if (event->tid == UIEvent::BUTTON_1)
 			{
-				PrepareModMatrix(event->point.x - touchStart.x);
+				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 				selection->SetLocalTransform(currTransform);
 			}
 		}
@@ -436,24 +473,78 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 
 static Vector3 vect[3] = {Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)};
 
-void EditorBodyControl::PrepareModMatrix(float32 dist)
+void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 {	
 	Matrix4 modification;
 	modification.Identity();
 	
 	if (modState == MOD_MOVE)
 	{
-		modification.CreateTranslation(vect[modAxis] * dist);		
+		switch (modAxis) 
+		{
+			case AXIS_X:
+			case AXIS_Y:
+				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis]);
+				break;
+			case AXIS_Z:
+				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z]);
+				break;
+			case AXIS_XY:
+				modification.CreateTranslation(vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]);
+				break;
+			case AXIS_YZ:
+				modification.CreateTranslation(vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]);
+				break;
+			case AXIS_XZ:
+				modification.CreateTranslation(vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]);
+				break;
+			default:
+				break;
+		}
 	}
 	else if (modState == MOD_ROTATE)
 	{
-		modification.CreateRotation(vect[modAxis], dist / 100.0f);
+		Matrix4 d;
+		Matrix4 translate1, translate2;
+		
+		translate1.CreateTranslation(-startTransform.GetTranslationVector());
+		translate2.CreateTranslation(startTransform.GetTranslationVector());
+		
+		switch (modAxis) 
+		{
+			case AXIS_X:
+			case AXIS_Y:
+				modification.CreateRotation(vect[modAxis], winy / 100.0f);
+				break;
+			case AXIS_Z:
+				modification.CreateRotation(vect[modAxis], winx / 100.0f);
+				break;
+			case AXIS_XY:
+				modification.CreateRotation(vect[AXIS_X], winx / 100.0f);
+				d.CreateRotation(vect[AXIS_Y], winy / 100.0f);
+				modification *= d;
+				break;
+			case AXIS_YZ:
+				modification.CreateRotation(vect[AXIS_Y], winx / 100.0f);
+				d.CreateRotation(vect[AXIS_Z], winy / 100.0f);
+				modification *= d;
+				break;
+			case AXIS_XZ:
+				modification.CreateRotation(vect[AXIS_X], winx / 100.0f);
+				d.CreateRotation(vect[AXIS_Z], winy / 100.0f);
+				modification *= d;
+				break;
+			default:
+				break;
+		}
+		modification = (translate1 * modification) * translate2;
 	}
 	else if (modState == MOD_SCALE)
 	{
-		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
+//		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
+		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * (winx/100.0f));
 	}
-	currTransform = startTransform * modification;	
+	currTransform = startTransform * modification;
 }
 
 
@@ -468,13 +559,17 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 		const Rect & rect = scene3dView->GetLastViewportRect();
 		Matrix4 wt = selection->GetWorldTransform();
 		Vector3 offs = wt.GetTranslationVector();
-		Camera * cam = scene->GetCurrentCamera();
+		Camera * cam = scene->GetCurrentCamera(); 
 		Vector2 start = cam->GetOnScreenPosition(offs, rect);
 		Vector2 end;
+	
 		
 		for(int i = 0; i < 3; i++)
 		{
-			if (modAxis == i)
+			if (modAxis == i
+				|| (i == AXIS_X && (modAxis == AXIS_XY || modAxis == AXIS_XZ)) 
+				|| (i == AXIS_Y && (modAxis == AXIS_XY || modAxis == AXIS_YZ)) 
+				|| (i == AXIS_Z && (modAxis == AXIS_XZ || modAxis == AXIS_YZ)))
 			{
 				RenderManager::Instance()->SetColor(0, 1.0f, 0, 1.0f);					
 			}
@@ -486,7 +581,23 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 			Vector3 v = offs + vect[i] * 5.0;
 			end = cam->GetOnScreenPosition(v, rect);
 			RenderHelper::Instance()->DrawLine(start, end);
-//			RenderHelper::Dra
+
+		
+			if (i == AXIS_X 
+				|| (i == AXIS_Y && modAxis == AXIS_Y)
+				|| (i == AXIS_Y && modAxis == AXIS_YZ)
+				)
+			{
+				axisSign[i] = (start.x > end.x) ? -1.0f: 1.0f;
+			}
+			else if (i == AXIS_Y && modAxis == AXIS_XY)
+			{
+				axisSign[i] = (start.y > end.y) ? -1.0f: 1.0f;				
+			}
+			else if (i == AXIS_Z)
+			{
+				axisSign[i] = (start.y > end.y) ? -1.0f: 1.0f;
+			}
 		}
 		RenderManager::Instance()->ResetColor();
 	}
@@ -649,6 +760,8 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
 
 void EditorBodyControl::BeastProcessScene()
 {
+	beastManager = BeastProxy::Instance()->CreateManager();
+
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
 	BeastProxy::Instance()->CreateSkyLight(beastManager);
 	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());

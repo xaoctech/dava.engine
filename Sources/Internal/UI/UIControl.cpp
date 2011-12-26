@@ -867,6 +867,10 @@ namespace DAVA
         {
             UIControlSystem::Instance()->SetHoveredControl(NULL);
         }
+        if (UIControlSystem::Instance()->GetFocusedControl() == this) 
+        {
+            UIControlSystem::Instance()->SetFocusedControl(NULL, true);
+        }
 
 		List<UIControl*>::iterator it = childs.begin();
 		while(it != childs.end())
@@ -1121,8 +1125,10 @@ namespace DAVA
 					__touchStart = currentInput->point;
 					__oldRect = relativeRect;
 #endif
+                    
 					if(multiInput || !currentInputID)
 					{
+
 						controlState |= STATE_PRESSED_INSIDE;
 						controlState &= ~STATE_NORMAL;
 						++touchesInside;
@@ -1239,6 +1245,10 @@ namespace DAVA
 								if (IsPointInside(currentInput->point, true))
 								{
 									PerformEventWithData(EVENT_TOUCH_UP_INSIDE, currentInput);
+                                    if (UIControlSystem::Instance()->GetFocusedControl() != this) 
+                                    {
+                                        UIControlSystem::Instance()->SetFocusedControl(this, false);
+                                    }
 								}
 								controlState &= ~STATE_PRESSED_INSIDE;
 								controlState &= ~STATE_PRESSED_OUTSIDE;
@@ -1669,4 +1679,31 @@ namespace DAVA
 			}
 		}
 	}
+    
+    bool UIControl::IsLostFocusAllowed(UIControl *newFocus)
+    {
+        return true;
+    }
+    
+    void UIControl::SystemOnFocusLost(UIControl *newFocus)
+    {
+        PerformEvent(EVENT_FOCUS_LOST);
+        OnFocusLost(newFocus);
+    }
+    
+    void UIControl::SystemOnFocused()
+    {
+        PerformEvent(EVENT_FOCUS_SET);
+        OnFocused();
+    }
+    
+    void UIControl::OnFocusLost(UIControl *newFocus)
+    {
+    }
+    
+    void UIControl::OnFocused()
+    {
+    }
+    
+    
 }

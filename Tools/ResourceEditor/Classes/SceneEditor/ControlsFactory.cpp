@@ -133,12 +133,14 @@ void ControlsFactory::CustomizeExpandButton(UIButton *btn)
     btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->color = color + 0.3f;
 }
 
-void ControlsFactory::CustomizeListCell(UIListCell *c)
+void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
 {
     Font *font = CreateFontDark();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
-    c->SetStateFont(UIControl::STATE_SELECTED, font);
+//    c->SetStateFont(UIControl::STATE_SELECTED, font);
+
+    c->SetStateText(UIControl::STATE_NORMAL, text);
 
     
 //    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
