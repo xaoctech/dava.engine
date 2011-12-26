@@ -19,6 +19,8 @@
 #include "BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
+#include "SceneEditor/OutputManager.h"
+
 
 using namespace DAVA;
 
@@ -44,6 +46,9 @@ void GameCore::OnAppStarted()
     new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 	
+    new OutputManager();
+    
+    
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreen = new SceneEditorScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();

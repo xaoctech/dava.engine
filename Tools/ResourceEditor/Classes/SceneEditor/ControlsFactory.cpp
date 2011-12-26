@@ -1,5 +1,13 @@
 #include "ControlsFactory.h"
 
+UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText)
+{
+    UIButton *btn = new UIButton(Rect(pos.x, pos.y, BUTTON_WIDTH, BUTTON_HEIGHT));
+    CustomizeButton(btn, buttonText);
+    return btn;
+}
+
+
 UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &buttonText)
 {
     UIButton *btn = new UIButton(rect);
@@ -85,11 +93,17 @@ void ControlsFactory::CustomizeScreenBack(UIControl *screen)
 
 UIControl * ControlsFactory::CreateLine(const Rect & rect)
 {
+    return CreateLine(rect, Color(0.8f, 0.8f, 0.8f, 1.0f));
+}
+
+UIControl * ControlsFactory::CreateLine(const Rect & rect, Color color)
+{
     UIControl * lineControl = new UIControl(rect); 
-    lineControl->GetBackground()->color = Color(0.8f, 0.8f, 0.8f, 1.0f);
+    lineControl->GetBackground()->color = color;
     lineControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     return lineControl;
 }
+
 
 void ControlsFactory::CusomizeBottomLevelControl(UIControl *c)
 {
@@ -215,7 +229,5 @@ void ControlsFactory::CustomizeUneditablePropertyCell(UIControl *c)
     c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 0.5f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
-
-
 
 
