@@ -34,6 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
 #include "UI/UIStaticText.h"
+#include "UI/UIControlSystem.h"
 
 #ifdef __DAVAENGINE_IPHONE__
 #include "UI/UITextFieldiPhone.h"
@@ -62,6 +63,11 @@ public:
 	virtual void TextFieldShouldReturn(UITextField * textField)
     {
     };
+    
+    virtual void TextFieldLostFocus(UITextField * textField)
+    {
+    };
+    
 
 	/**
         \brief Asks the delegate if the specified text should be changed.
@@ -75,6 +81,17 @@ public:
     {
         return true;
     };
+    
+    virtual bool IsTextFieldShouldSetFocusedOnAppear(UITextField * textField)
+    {
+        return false;
+    };
+
+    virtual bool IsTextFieldCanLostFocus(UITextField * textField)
+    {
+        return true;
+    };
+    
 };
     
 /**
@@ -102,6 +119,8 @@ public:
 	virtual void DidAppear();
 	virtual void WillDisappear();
 	
+    virtual void OnFocusLost(UIControl *newFocus);
+
 	void SetDelegate(UITextFieldDelegate * delegate);
 	UITextFieldDelegate * GetDelegate();
 
@@ -131,10 +150,13 @@ public:
 
     void SetFocused()
     {
-        focus = this;
+        UIControlSystem::Instance()->SetFocusedControl(this, true);
     }
     
     void ReleaseFocus();
+    
+    virtual bool IsLostFocusAllowed(UIControl *newFocus);
+
     
     void SetFont(Font * font)
     {
@@ -164,7 +186,6 @@ private:
     float32 cursorTime;
     bool showCursor;
 
-	static UITextField * focus;
 };
 
 };
