@@ -9,6 +9,7 @@
 using namespace DAVA;
 
 class EditorBodyControl;
+class MaterialEditor;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodeDialogDelegeate
@@ -144,6 +145,7 @@ private:
     //create node dialog
     CreateNodeDialog *nodeDialog;
     
+    MaterialEditor *materialEditor;
     
     // general
     Font *font;
