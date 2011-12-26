@@ -179,6 +179,15 @@ void KeyedArchive::SetVariant(const String & key, const VariantType & value)
 {
 	objectMap[key] = value;
 }
+    
+void KeyedArchive::SetByteArrayFromArchive(const String & key, KeyedArchive * archive)
+{
+    DynamicMemoryFile * file = DynamicMemoryFile::Create(File::CREATE | File::WRITE);
+    archive->Save(file);
+    SetByteArray(key, (uint8*)file->GetData(), file->GetSize());
+    SafeRelease(file);
+}
+
 	
 bool KeyedArchive::IsKeyExists(const String & key)
 {
