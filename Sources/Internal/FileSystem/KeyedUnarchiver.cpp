@@ -82,7 +82,7 @@ bool KeyedUnarchiver::DecodeBool(const String & key)
 
 int32 KeyedUnarchiver::DecodeInt(const String & key)
 {
-	return objectMap[key].AsInt();
+	return objectMap[key].AsInt32();
 }
 
 float32 KeyedUnarchiver::DecodeFloat(const String & key)
