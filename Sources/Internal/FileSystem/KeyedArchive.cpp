@@ -30,6 +30,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/File.h"
 #include "Utils/Utils.h"
+#include "FileSystem/DynamicMemoryFile.h"
 
 namespace DAVA 
 {
@@ -242,7 +243,17 @@ int32 KeyedArchive::GetByteArraySize(const String & key, int32 defaultValue)
 		return objectMap[key].AsByteArraySize();
 	return defaultValue;
 }
-	
+    
+KeyedArchive * KeyedArchive::GetArchiveFromByteArray(const String & key)
+{
+    KeyedArchive * archive = new KeyedArchive;
+    int32 size = GetByteArraySize(key);
+    const uint8 * array = GetByteArray(key);
+    DynamicMemoryFile * file = DynamicMemoryFile::Create(array, size, File::OPEN | File::READ);
+    archive->Load(file);
+    SafeRelease(file);
+    return archive;
+}	
 
 const VariantType & KeyedArchive::GetVariant(const String & key)
 {

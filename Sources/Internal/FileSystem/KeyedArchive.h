@@ -115,6 +115,15 @@ public:
         \returns value of variable or defaultValue if key isn't available
 	 */
 	int32 GetByteArraySize(const String & key, int32 defaultValue = 0);
+    
+    /**
+        \brief function to load data from byte array as keyed archive
+        Call to this function is equivalent to creation of KeyedArchive class. Object returned from this function should be released. 
+        \param[in] key string key
+        \param[in] value we want to set for this key
+	 */
+	KeyedArchive * GetArchiveFromByteArray(const String & key);
+
 	
 	
 	/**
@@ -174,6 +183,12 @@ public:
 		\param[in] value we want to set for this key
 	 */
 	void SetVariant(const String & key, const VariantType & value);
+	/**
+        \brief function to set another keyed archive as kye for this archive
+        \param[in] key string key
+        \param[in] value we want to set for this key
+	 */
+	void SetByteArrayFromArchive(const String & key, const KeyedArchive & value);
 	
 	/**
 		\brief this function loads data from given file
