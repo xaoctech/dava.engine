@@ -188,7 +188,7 @@ public:
         \param[in] key string key
         \param[in] value we want to set for this key
 	 */
-	void SetByteArrayFromArchive(const String & key, const KeyedArchive & value);
+	void SetByteArrayFromArchive(const String & key, KeyedArchive * archive);
 	
 	/**
 		\brief this function loads data from given file
