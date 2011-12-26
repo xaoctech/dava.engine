@@ -322,9 +322,6 @@
 		FECFC30512E87E3000C71562 /* SceneFile.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFC1B012E87E3000C71562 /* SceneFile.h */; };
 		FECFC30612E87E3000C71562 /* SceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFC1B112E87E3000C71562 /* SceneNode.cpp */; };
 		FECFC30712E87E3000C71562 /* SceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFC1B212E87E3000C71562 /* SceneNode.h */; };
-		FECFC30812E87E3000C71562 /* SceneNode2d.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFC1B312E87E3000C71562 /* SceneNode2d.h */; };
-		FECFC30912E87E3000C71562 /* SceneNode3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFC1B412E87E3000C71562 /* SceneNode3d.cpp */; };
-		FECFC30A12E87E3000C71562 /* SceneNode3d.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFC1B512E87E3000C71562 /* SceneNode3d.h */; };
 		FECFC30B12E87E3000C71562 /* SceneNodeAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFC1B612E87E3000C71562 /* SceneNodeAnimation.cpp */; };
 		FECFC30C12E87E3000C71562 /* SceneNodeAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFC1B712E87E3000C71562 /* SceneNodeAnimation.h */; };
 		FECFC30D12E87E3000C71562 /* SceneNodeAnimationKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFC1B812E87E3000C71562 /* SceneNodeAnimationKey.cpp */; };
@@ -783,9 +780,6 @@
 		FECFC1B012E87E3000C71562 /* SceneFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFile.h; sourceTree = "<group>"; };
 		FECFC1B112E87E3000C71562 /* SceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNode.cpp; sourceTree = "<group>"; };
 		FECFC1B212E87E3000C71562 /* SceneNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNode.h; sourceTree = "<group>"; };
-		FECFC1B312E87E3000C71562 /* SceneNode2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNode2d.h; sourceTree = "<group>"; };
-		FECFC1B412E87E3000C71562 /* SceneNode3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNode3d.cpp; sourceTree = "<group>"; };
-		FECFC1B512E87E3000C71562 /* SceneNode3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNode3d.h; sourceTree = "<group>"; };
 		FECFC1B612E87E3000C71562 /* SceneNodeAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNodeAnimation.cpp; sourceTree = "<group>"; };
 		FECFC1B712E87E3000C71562 /* SceneNodeAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeAnimation.h; sourceTree = "<group>"; };
 		FECFC1B812E87E3000C71562 /* SceneNodeAnimationKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNodeAnimationKey.cpp; sourceTree = "<group>"; };
@@ -1464,9 +1458,6 @@
 				FEC711AE149F839C00939323 /* SceneFile2.h */,
 				FECFC1B112E87E3000C71562 /* SceneNode.cpp */,
 				FECFC1B212E87E3000C71562 /* SceneNode.h */,
-				FECFC1B312E87E3000C71562 /* SceneNode2d.h */,
-				FECFC1B412E87E3000C71562 /* SceneNode3d.cpp */,
-				FECFC1B512E87E3000C71562 /* SceneNode3d.h */,
 				FECFC1B612E87E3000C71562 /* SceneNodeAnimation.cpp */,
 				FECFC1B712E87E3000C71562 /* SceneNodeAnimation.h */,
 				FECFC1B812E87E3000C71562 /* SceneNodeAnimationKey.cpp */,
@@ -1744,8 +1735,6 @@
 				FECFC30312E87E3000C71562 /* SceneAnimationMixer.h in Headers */,
 				FECFC30512E87E3000C71562 /* SceneFile.h in Headers */,
 				FECFC30712E87E3000C71562 /* SceneNode.h in Headers */,
-				FECFC30812E87E3000C71562 /* SceneNode2d.h in Headers */,
-				FECFC30A12E87E3000C71562 /* SceneNode3d.h in Headers */,
 				FECFC30C12E87E3000C71562 /* SceneNodeAnimation.h in Headers */,
 				FECFC30E12E87E3000C71562 /* SceneNodeAnimationKey.h in Headers */,
 				FECFC31012E87E3000C71562 /* SceneNodeAnimationList.h in Headers */,
@@ -2031,7 +2020,6 @@
 				FECFC30212E87E3000C71562 /* SceneAnimationMixer.cpp in Sources */,
 				FECFC30412E87E3000C71562 /* SceneFile.cpp in Sources */,
 				FECFC30612E87E3000C71562 /* SceneNode.cpp in Sources */,
-				FECFC30912E87E3000C71562 /* SceneNode3d.cpp in Sources */,
 				FECFC30B12E87E3000C71562 /* SceneNodeAnimation.cpp in Sources */,
 				FECFC30D12E87E3000C71562 /* SceneNodeAnimationKey.cpp in Sources */,
 				FECFC30F12E87E3000C71562 /* SceneNodeAnimationList.cpp in Sources */,

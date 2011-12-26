@@ -39,6 +39,9 @@
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(Scene);
+    
 Scene::Scene()
 	:   SceneNode(0)
     ,   currentCamera(0)

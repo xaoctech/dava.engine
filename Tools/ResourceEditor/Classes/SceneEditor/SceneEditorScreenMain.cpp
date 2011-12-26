@@ -213,23 +213,38 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 
 void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 {
-    if(!fileSystemDialog->GetParent())
-    {
-        fileSystemDialog->SetExtensionFilter(".sce");
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
-    }
+//    if(!fileSystemDialog->GetParent())
+//    {
+//        fileSystemDialog->SetExtensionFilter(".sce");
+//        fileSystemDialog->Show(this);
+//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+//    }
+
+    
+    Scene * scene = bodies[0].bodyControl->GetScene();
+    
+    SceneFile2 * file = new SceneFile2();
+    file->EnableDebugLog(true);
+    file->LoadScene("scene.sc2", scene);
+    SafeRelease(file);
 }
 
 
 void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 {
-    if(!fileSystemDialog->GetParent())
-    {
-        fileSystemDialog->SetExtensionFilter(".dae");
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
-    }
+    Scene * scene = bodies[0].bodyControl->GetScene();
+    
+    SceneFile2 * file = new SceneFile2();
+    file->EnableDebugLog(true);
+    file->SaveScene("scene.sc2", scene);
+    SafeRelease(file);
+    
+//    if(!fileSystemDialog->GetParent())
+//    {
+//        fileSystemDialog->SetExtensionFilter(".sc2");
+//        fileSystemDialog->Show(this);
+//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
+//    }
 }
 
 

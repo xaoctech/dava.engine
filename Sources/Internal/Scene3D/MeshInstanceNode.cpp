@@ -35,8 +35,13 @@
 
 namespace DAVA 
 {
+    
+    
+REGISTER_CLASS(MeshInstanceNode);
+    
+
 MeshInstanceNode::MeshInstanceNode(Scene * _scene)
-:	SceneNode3d(_scene)
+:	SceneNode(_scene)
 ,   lodPresents(false)
 ,   currentLod(NULL)
 ,   lastLodUpdateFrame(0)
@@ -323,7 +328,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
         dstNode = new MeshInstanceNode(scene);
     }
 
-    SceneNode3d::Clone(dstNode);
+    SceneNode::Clone(dstNode);
     MeshInstanceNode *nd = (MeshInstanceNode *)dstNode;
     nd->lodLayers = lodLayers;
     nd->lodPresents = lodPresents;

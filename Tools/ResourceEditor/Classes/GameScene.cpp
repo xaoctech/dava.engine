@@ -10,6 +10,12 @@
 #include "GameScene.h"
 #include "SceneNodeUserData.h"
 
+/*
+    This means that if we'll call GameScene->GetClassName() it'll return "Scene"
+    This is for correct serialization of framework subclasses.
+ */
+REGISTER_CLASS_WITH_ALIAS(GameScene, "Scene");
+
 GameScene::GameScene()
 { 
 //	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
