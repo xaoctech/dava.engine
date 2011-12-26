@@ -37,9 +37,7 @@ namespace DAVA
 {
 class LightNode : public SceneNode
 {
-
 public:
-
     enum eLightType
     {
         ELT_DIRECTIONAL = 0,
