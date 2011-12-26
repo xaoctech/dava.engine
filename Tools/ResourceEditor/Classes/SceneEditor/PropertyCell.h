@@ -27,6 +27,13 @@ public:
 
 class PropertyCell : public UIListCell
 {
+protected:
+    
+    enum eConst
+    {
+        CELL_HEIGHT = 15,
+    };
+    
 public:
     
     enum CellType 

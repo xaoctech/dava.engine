@@ -209,7 +209,7 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
 
 float32 PropertyTextCell::GetHeightForWidth(float32 currentWidth)
 {
-    return 30.f;
+    return CELL_HEIGHT;
 }
 
 //********************* PropertyBoolCell *********************
