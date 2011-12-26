@@ -2,6 +2,8 @@
 
 #include "ControlsFactory.h"
 
+#include "OutputPanelControl.h"
+
 #include "../BeastProxy.h"
 
 
@@ -15,6 +17,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     ControlsFactory::CusomizeBottomLevelControl(this);
 
+
+    
     sceneTree = new UIHierarchy(Rect(0, 0, LEFT_SIDE_WIDTH, rect.dy));
     ControlsFactory::CusomizeListControl(sceneTree);
     sceneTree->SetCellHeight(CELL_HEIGHT);
@@ -26,12 +30,24 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
                             LEFT_SIDE_WIDTH + SCENE_OFFSET, 
                             SCENE_OFFSET, 
                             rect.dx - LEFT_SIDE_WIDTH - RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
-                            rect.dy - 2 * SCENE_OFFSET));
+                            rect.dy - 2 * SCENE_OFFSET - OUTPUT_PANEL_HEIGHT));
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
     
+    
+    
     CreateScene();
+
+    outputPanel = new OutputPanelControl(scene, Rect(
+                                              LEFT_SIDE_WIDTH, 
+                                              rect.dy - OUTPUT_PANEL_HEIGHT, 
+                                              rect.dx - LEFT_SIDE_WIDTH - RIGHT_SIDE_WIDTH, 
+                                              OUTPUT_PANEL_HEIGHT));
+    ControlsFactory::CustomizePanelControl(outputPanel);
+    AddControl(outputPanel);
+
+    
     
     CreatePropertyPanel();
 	
@@ -41,7 +57,11 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 
 EditorBodyControl::~EditorBodyControl()
 {
+    ReleaseModificationPanel();
+    
     ReleasePropertyPanel();
+
+    SafeRelease(outputPanel);
     
     ReleaseScene();
     
@@ -158,6 +178,16 @@ void EditorBodyControl::CreateModificationPanel(void)
 	UpdateModState();
 }
 
+void EditorBodyControl::ReleaseModificationPanel()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		SafeRelease(btnMod[i]);
+		SafeRelease(btnAxis[i]);
+	}
+	SafeRelease(modificationPanel);
+}
+
 void EditorBodyControl::OnModificationPressed(BaseObject * object, void * userData, void * callerData)
 {
 	for (int i = 0; i < 3; i++)
@@ -173,6 +203,7 @@ void EditorBodyControl::OnModificationPressed(BaseObject * object, void * userDa
 	}
 	UpdateModState();
 }
+
 
 void EditorBodyControl::UpdateModState(void)
 {
@@ -362,6 +393,8 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
                 
                 nodeBoundingBoxMin->SetText(Format(L"fov: %f, aspect: %f", camera->GetFOV(), camera->GetAspect()));
                 nodeBoundingBoxMax->SetText(Format(L"znear: %f, zfar: %f", camera->GetZNear(), camera->GetZFar()));
+                
+                outputPanel->UpdateCamera();
             }
             
             localMatrixControl->SetMatrix(selectedNode->GetLocalTransform());
@@ -694,17 +727,15 @@ void EditorBodyControl::ShowProperties(bool show)
     {
         AddControl(activePropertyPanel);
         
-        Rect r = scene3dView->GetRect();
-        r.dx -= RIGHT_SIDE_WIDTH;
-        scene3dView->SetRect(r);
+        ChangeControlWidthRight(scene3dView, -RIGHT_SIDE_WIDTH);
+        ChangeControlWidthRight(outputPanel, -RIGHT_SIDE_WIDTH);
     }
     else if(!show && activePropertyPanel->GetParent())
     {
         RemoveControl(activePropertyPanel);
 
-        Rect r = scene3dView->GetRect();
-        r.dx += RIGHT_SIDE_WIDTH;
-        scene3dView->SetRect(r);
+        ChangeControlWidthRight(scene3dView, RIGHT_SIDE_WIDTH);
+        ChangeControlWidthRight(outputPanel, RIGHT_SIDE_WIDTH);
     }
 }
 
@@ -718,11 +749,9 @@ void EditorBodyControl::ShowSceneGraph(bool show)
     if(show && !sceneTree->GetParent())
     {
         AddControl(sceneTree);
-        
-        Rect r = scene3dView->GetRect();
-        r.dx -= LEFT_SIDE_WIDTH;
-        r.x += LEFT_SIDE_WIDTH;
-        scene3dView->SetRect(r);
+
+        ChangeControlWidthLeft(scene3dView, LEFT_SIDE_WIDTH);
+        ChangeControlWidthLeft(outputPanel, LEFT_SIDE_WIDTH);
         
         sceneTree->Refresh();
     }
@@ -730,10 +759,8 @@ void EditorBodyControl::ShowSceneGraph(bool show)
     {
         RemoveControl(sceneTree);
         
-        Rect r = scene3dView->GetRect();
-        r.dx += LEFT_SIDE_WIDTH;
-        r.x -= LEFT_SIDE_WIDTH;
-        scene3dView->SetRect(r);
+        ChangeControlWidthLeft(scene3dView, -LEFT_SIDE_WIDTH);
+        ChangeControlWidthLeft(outputPanel, -LEFT_SIDE_WIDTH);
     }
 }
 
@@ -744,18 +771,18 @@ bool EditorBodyControl::SceneGraphAreShown()
 
 void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
 {
-    Rect r = scene3dView->GetRect();
     if(isShown)
     {
         ShowProperties(false);
         
-        r.dx -= width;
+        ChangeControlWidthRight(scene3dView, -width);
+        ChangeControlWidthRight(outputPanel, -width);
     }
     else
     {
-        r.dx += RIGHT_SIDE_WIDTH;
+        ChangeControlWidthRight(scene3dView, RIGHT_SIDE_WIDTH);
+        ChangeControlWidthRight(outputPanel, RIGHT_SIDE_WIDTH);
     }
-    scene3dView->SetRect(r);
 }
 
 void EditorBodyControl::BeastProcessScene()
@@ -778,3 +805,19 @@ void EditorBodyControl::AddNode(SceneNode *node)
     scene->AddNode(node);
     sceneTree->Refresh();
 }
+
+void EditorBodyControl::ChangeControlWidthRight(UIControl *c, float32 width)
+{
+    Rect r = c->GetRect();
+    r.dx += width;
+    c->SetRect(r);
+}
+
+void EditorBodyControl::ChangeControlWidthLeft(UIControl *c, float32 width)
+{
+    Rect r = c->GetRect();
+    r.dx -= width;
+    r.x += width;
+    c->SetRect(r);
+}
+

@@ -10,6 +10,7 @@
 using namespace DAVA;
 
 class BeastManager;
+class OutputPanelControl;
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
@@ -20,6 +21,7 @@ class EditorBodyControl : public UIControl, public UIHierarchyDelegate
         CELL_HEIGHT = 20,
         MATRIX_HEIGHT = 100,
         BUTTON_HEIGHT = 20,
+        OUTPUT_PANEL_HEIGHT = 200,
     };
 
 	enum eModState
@@ -75,6 +77,7 @@ protected:
     void ReleasePropertyPanel();
     
 	void CreateModificationPanel(void);
+    void ReleaseModificationPanel();
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
 	void UpdateModState(void);
 	void PrepareModMatrix(float32 a, float32 b);
@@ -133,8 +136,14 @@ protected:
 	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
+
 	float32 axisSign[3];
 	
+    //OutputPanelControl
+    OutputPanelControl *outputPanel;
+    
+    void ChangeControlWidthRight(UIControl *c, float32 width);
+    void ChangeControlWidthLeft(UIControl *c, float32 width);
 };
 
 

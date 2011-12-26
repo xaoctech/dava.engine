@@ -93,11 +93,11 @@ void PreviewCameraController::UpdateCamera()
         float32 delta = zoom.y;
         if(0 < delta)
         {
-            zoomLevel /= 2;   
+            zoomLevel *= 2;   
         }
         else
         {
-            zoomLevel *= 2;   
+            zoomLevel /= 2;   
         }
     }
 
