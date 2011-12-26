@@ -203,6 +203,13 @@ int32 KeyedArchive::GetInt32(const String & key, int32 defaultValue)
 	return defaultValue;
 }
 
+uint32 KeyedArchive::GetUInt32(const String & key, uint32 defaultValue)
+{
+    if (IsKeyExists(key))
+        return objectMap[key].AsUInt32();
+    return defaultValue;
+}
+
 float32 KeyedArchive::GetFloat(const String & key, float32 defaultValue)
 {
 	if (IsKeyExists(key))

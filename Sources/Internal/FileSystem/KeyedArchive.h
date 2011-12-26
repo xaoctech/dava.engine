@@ -79,7 +79,7 @@ public:
      \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
      \returns value of variable or defaultValue if key isn't available
 	 */
-	int32 GetUInt32(const String & key, uint32 defaultValue = 0);
+	uint32 GetUInt32(const String & key, uint32 defaultValue = 0);
 	/**
 		\brief functions to get variable from archive
 		\param[in] key string key

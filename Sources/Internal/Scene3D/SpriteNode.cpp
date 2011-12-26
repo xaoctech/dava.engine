@@ -35,6 +35,7 @@
 #include "Render/2D/Sprite.h"
 namespace DAVA 
 {
+    
 
 SpriteNode::SpriteNode(Scene * _scene, const String &pathToSprite, int32 _frame
                        , const Vector2 &reqScale, const Vector2 &pivotPoint)

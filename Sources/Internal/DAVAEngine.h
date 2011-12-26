@@ -175,6 +175,7 @@
 
 // 3D core classes
 #include "Scene3D/SceneFile.h"
+#include "Scene3D/SceneFile2.h"
 
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/PolygonGroup.h"
@@ -182,8 +183,6 @@
 // 3D scene management
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneNode.h"
-#include "Scene3D/SceneNode2d.h"
-#include "Scene3D/SceneNode3d.h"
 #include "Scene3D/SpriteNode.h"
 #include "Scene3D/StateNode.h"
 #include "Scene3D/MeshInstanceNode.h"

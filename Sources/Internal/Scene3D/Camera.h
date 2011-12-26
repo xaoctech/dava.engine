@@ -33,8 +33,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
-#include "Scene3D/SceneNode3d.h"
 #include "Scene3D/Frustum.h"
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA
 {
@@ -47,7 +47,7 @@ namespace DAVA
 class Camera : public SceneNode
 {
 public:
-	Camera(Scene * scene);
+	Camera(Scene * scene = 0);
 	virtual ~Camera();
 	
     /**

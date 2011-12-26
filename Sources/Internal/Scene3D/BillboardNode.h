@@ -31,7 +31,7 @@
 #ifndef __DAVAENGINE_BILLBOARD_NODE_H__
 #define __DAVAENGINE_BILLBOARD_NODE_H__
 
-#include "Scene3D/SceneNode3d.h"
+#include "Scene3D/SceneNode.h"
 #include "Render/RenderDataObject.h"
 
 namespace DAVA 
@@ -39,7 +39,7 @@ namespace DAVA
 class BillboardNode : public SceneNode
 {
 public:
-    BillboardNode(Scene * _scene);
+    BillboardNode(Scene * _scene = 0);
     virtual ~BillboardNode();
     
     virtual void Draw();
