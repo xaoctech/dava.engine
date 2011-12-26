@@ -34,6 +34,8 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
+    
+    
 	RenderManager::Instance()->SetFPS(30);
 
 #ifdef __DAVAENGINE_BEAST__

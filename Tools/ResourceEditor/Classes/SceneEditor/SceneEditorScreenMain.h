@@ -5,8 +5,8 @@
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
 #include "CreateNodeDialog.h"
-
 using namespace DAVA;
+
 
 class EditorBodyControl;
 class MaterialEditor;
@@ -50,6 +50,8 @@ class SceneEditorScreenMain:
         ECNID_SERVICENODE, 
         ECNID_BOX, 
         ECNID_SPHERE, 
+        ECNID_CAMERA, 
+        
         
         ECNID_COUNT
     };
@@ -146,6 +148,10 @@ private:
     CreateNodeDialog *nodeDialog;
     
     MaterialEditor *materialEditor;
+    CreateNodeDialog *nodeDialogs[ECNID_COUNT];
+    int32 currentNodeDialog;
+    void InitializeNodeDialogs();
+    void ReleaseNodeDialogs();
     
     // general
     Font *font;

@@ -11,10 +11,12 @@
 #define PROPERTY_CELL
 
 #include "DAVAEngine.h"
+#include "UICheckBox.h"
 
 using namespace DAVA;
 
 class PropertyValue;
+class UICheckBox;
 
 class PropertyCellData;
 class PropertyCellDelegate
@@ -32,11 +34,13 @@ public:
         PROP_CELL_TEXT = 0,
         PROP_CELL_DIGITS,
         PROP_CELL_FILEPATH,
+        PROP_CELL_BOOL,
         
         PROP_CELL_COUNT
     };
     
     PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop);
+    virtual ~PropertyCell();
 
     virtual void SetData(PropertyCellData *prop);
 
@@ -51,6 +55,7 @@ class PropertyTextCell : public PropertyCell, public UITextFieldDelegate
 {
 public:
     PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyTextCell();
     
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
@@ -65,5 +70,23 @@ public:
     UIStaticText *uneditableText;
     UIControl *uneditableTextContainer;
 };
+
+class PropertyBoolCell : public PropertyCell, public UICheckBoxDelegate
+{
+public:
+    PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyBoolCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+    
+    virtual void ValueChanged(bool newValue);
+    
+    UICheckBox *checkBox;
+    UIStaticText *falseText;
+    UIStaticText *trueText;
+    UIControl *textContainer;
+};
+
 
 #endif

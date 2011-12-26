@@ -25,34 +25,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Vitaliy Borodovsky
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE_2D_NODE_H__
-#define __DAVAENGINE_SCENE_2D_NODE_H__
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
+#ifndef __DAVAENGINE_LIGHT_NODE_H__
+#define __DAVAENGINE_LIGHT_NODE_H__
 
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA 
 {
-
-class SceneNode2d : public BaseObject
+class LightNode : public SceneNode
 {
+
 public:
-	SceneNode2d(Scene * _scene);
-	virtual ~SceneNode2d();
-	
-	Vector3 position;
-	float32 angle;
-	Vector2 scale;
-	Vector2 pivot;
-	
-	
-	virtual void Update(float32 elapsedTime);
-	virtual void Draw();
-};
+
+    enum eType
+    {
+        ET_DIRECTIONAL = 0,
+        ET_SPOT,
+        ET_POINT,
+    };
+    
+    
+public:
+    LightNode(Scene * _scene);
+    virtual ~LightNode();
+    
+    virtual void Draw();
+    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+
+    void SetType(eType _type);
+    void SetColor(Color _color);
+    
+protected:
+    
+    eType type;
+    Color color;
+    
 };
 
+};
 
-#endif // __DAVAENGINE_SCENE_2D_NODE_H__
+#endif //__DAVAENGINE_LIGHT_NODE_H__

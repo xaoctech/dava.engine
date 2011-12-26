@@ -53,15 +53,15 @@ void LandscapeTestScreen::LoadResources()
     scene->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
  
     LandscapeNode * node = new LandscapeNode(scene);
-    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 22.7f));
+    AABBox3 box(Vector3(445.0f / 2.0f, 445.0f / 2.0f, 0), Vector3(-445.0f / 2.0f, -445.0f / 2.0f, 50.0f));
     
     //node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
 #if 1
-	node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_TEXTURE, "~res:/Landscape/hmp2_1.png", box);
+	node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape2/t_heit_l2_work.png", box);
     
     Texture::EnableMipmapGeneration();
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-    //node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape2/diffuse_l2.png");
+    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
     Texture::DisableMipmapGeneration();
 
 	
@@ -85,21 +85,21 @@ void LandscapeTestScreen::LoadResources()
     scene->AddNode(node);
     SafeRelease(node);
     
-    Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
-    //sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
-    SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.1f, 0.1f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
-    spriteNode->SetName("testSpriteNode");
-    spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 10.0f, 0.0f)));
-    spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-    spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
-    scene->AddNode(spriteNode);
+//    Sprite * sprite = Sprite::Create("~res:/Gfx/Billboards/billboards");
+//    //sprite->SetPivotPoint(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f);
+//    SpriteNode * spriteNode = new SpriteNode(scene, sprite, 0, Vector2(0.1f, 0.1f), Vector2(sprite->GetWidth() / 2.0f, sprite->GetHeight() / 2.0f));
+//    spriteNode->SetName("testSpriteNode");
+//    spriteNode->SetLocalTransform(Matrix4::MakeTranslation(Vector3(0.f, 10.0f, 0.0f)));
+//    spriteNode->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+//    spriteNode->SetType(SpriteNode::TYPE_BILLBOARD);
+//    scene->AddNode(spriteNode);
 
     
-//    SceneFile * file = new SceneFile();
-//    file->SetDebugLog(true);
-//    file->LoadScene("~res:/Scenes/hungar/hungar.sce", scene);
-//    scene->AddNode(scene->GetRootNode("~res:/Scenes/hungar/hungar.sce"));
-//    SafeRelease(file);
+    SceneFile * file = new SceneFile();
+    file->SetDebugLog(true);
+    file->LoadScene("~res:/Scenes/level2/level2_445.sce", scene);
+    scene->AddNode(scene->GetRootNode("~res:/Scenes/level2/level2_445.sce"));
+    SafeRelease(file);
 
 	inTouch = false;
     

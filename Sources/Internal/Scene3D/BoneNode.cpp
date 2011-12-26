@@ -33,9 +33,10 @@
 
 namespace DAVA 
 {
+    
 
 BoneNode::BoneNode(Scene * _scene, SkeletonNode * owner)
-	: SceneNode3d(_scene)
+	: SceneNode(_scene)
 {
 	
 	
@@ -49,7 +50,7 @@ BoneNode::~BoneNode()
 	
 void BoneNode::Draw()
 {
-	SceneNode3d::Draw();
+	SceneNode::Draw();
 
 //	glPushMatrix();
 //	glMultMatrixf(worldTransform.data);

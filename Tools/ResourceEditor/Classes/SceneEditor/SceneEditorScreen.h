@@ -36,7 +36,7 @@
 #include "PropertyPanel.h"
 #include "CameraPanel.h"
 #include "EditMatrixControl.h"
-#include "../GameScene.h"
+#include "../EditorScene.h"
 
 using namespace DAVA;
 
@@ -74,7 +74,7 @@ public:
     UIHierarchy * sceneTree;
     
 	// 3d engine scene
-	GameScene * scene;
+	EditorScene * scene;
 	Camera * activeCamera;
     
 	float32 currentTankAngle;

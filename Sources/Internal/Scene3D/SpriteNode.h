@@ -31,7 +31,7 @@
 #ifndef __SPRITE_NODE_H__
 #define __SPRITE_NODE_H__
 
-#include "Scene3D/SceneNode3d.h"
+#include "Scene3D/SceneNode.h"
 #include "Render/RenderDataObject.h"
 
 namespace DAVA 

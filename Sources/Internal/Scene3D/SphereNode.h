@@ -27,17 +27,37 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/SceneNode3d.h"
+#ifndef __DAVAENGINE_SPHERE_NODE_H__
+#define __DAVAENGINE_SPHERE_NODE_H__
+
+#include "Scene3D/MeshInstanceNode.h"
 
 namespace DAVA 
 {
-SceneNode3d::SceneNode3d(Scene * _scene)
-	: SceneNode(_scene)
+class Scene;
+class PolygonGroup;
+class SphereNode : public MeshInstanceNode
 {
-}
-SceneNode3d::~SceneNode3d()
-{
+public:	
+	SphereNode(Scene * _scene);
+	virtual ~SphereNode();
 	
-}
+    virtual void Update(float32 timeElapsed);
+	virtual void Draw();
+	
+    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+    
+    void CreateSphere(float32 radius, Color c);
+    
+    void SetQuality(int32 newQuality);
+    
+protected:
+
+    StaticMesh *sphereMesh;
+    
+    int32 quality;
+};
 	
 };
+
+#endif // __DAVAENGINE_SPHERE_NODE_H__
