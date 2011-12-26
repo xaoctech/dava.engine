@@ -257,8 +257,18 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 {
-    if (!materialEditor->GetParent()) 
+    if (!materialEditor->GetParent())
     {
+        int32 iBody = FindCurrentBody();
+        if(-1 != iBody)
+        {
+            materialEditor->SetWorkingScene(bodies[iBody].bodyControl->GetScene());
+        }
+        else 
+        {
+            materialEditor->SetWorkingScene(NULL);
+        }
+
         AddControl(materialEditor);
     }
     else 
