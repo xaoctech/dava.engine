@@ -33,7 +33,11 @@ class EditorBodyControl : public UIControl, public UIHierarchyDelegate
     {
         AXIS_X = 0, 
         AXIS_Y,
-        AXIS_Z
+        AXIS_Z,
+        AXIS_XY,
+        AXIS_YZ,
+        AXIS_XZ,
+		AXIS_COUNT
 	};
 	
 	
@@ -73,7 +77,7 @@ protected:
 	void CreateModificationPanel(void);
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
 	void UpdateModState(void);
-	void PrepareModMatrix(float32 value);
+	void PrepareModMatrix(float32 a, float32 b);
 
 	
     virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
@@ -129,6 +133,8 @@ protected:
 	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
+	float32 axisSign[3];
+	
 };
 
 
