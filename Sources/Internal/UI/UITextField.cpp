@@ -44,8 +44,8 @@ namespace DAVA
 
 REGISTER_CLASS(UITextField);
 
-UITextField * UITextField::focus = 0;
 
+    
 UITextField::UITextField(const Rect &rect, bool rectInAbsoluteCoordinates/*= false*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
 ,	text()
@@ -148,7 +148,7 @@ void UITextField::Update(float32 timeElapsed)
         needRedraw = true;
     }
 
-	if(this == focus)
+	if(this == UIControlSystem::Instance()->GetFocusedControl())
 	{
 		if(needRedraw)
 		{
@@ -174,10 +174,10 @@ void UITextField::Update(float32 timeElapsed)
 
 void UITextField::WillAppear()
 {
-	if(0 == focus)
-	{
-		focus = this;
-	}
+    if (delegate && delegate->IsTextFieldShouldSetFocusedOnAppear(this)) 
+    {
+        UIControlSystem::Instance()->SetFocusedControl(this, false);
+    }
 }
 
 void UITextField::DidAppear()
@@ -193,18 +193,31 @@ void UITextField::WillDisappear()
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->HideField();
 #endif
-	if(this == focus)
-	{
-		focus = 0;
-	}
 }
     
+void UITextField::OnFocusLost(UIControl *newFocus)
+{
+    if (delegate) 
+    {
+        delegate->TextFieldLostFocus(this);
+    }
+}
+
+bool UITextField::IsLostFocusAllowed(UIControl *newFocus)
+{
+    if (delegate)
+    {
+        return delegate->IsTextFieldCanLostFocus(this);
+    }
+    return true;
+}
+
 void UITextField::ReleaseFocus()
 {
-    if (focus == this) 
-    {
-        focus = NULL;
-    }
+	if(this == UIControlSystem::Instance()->GetFocusedControl())
+	{
+		UIControlSystem::Instance()->SetFocusedControl(NULL, true);
+	}
 }
     
 
@@ -274,12 +287,12 @@ void UITextField::Input(UIEvent *currentInput)
     // nothing to do
 #else
 
-	if(currentInput->phase == UIEvent::PHASE_BEGAN)
-	{
-		focus = this;
-	}
+//	if(currentInput->phase == UIEvent::PHASE_BEGAN)
+//	{
+//        UIControlSystem::Instance()->SetFocusedControl(this, true);
+//	}
 
-	if(this != focus)
+	if(this != UIControlSystem::Instance()->GetFocusedControl())
 		return;
 
 
