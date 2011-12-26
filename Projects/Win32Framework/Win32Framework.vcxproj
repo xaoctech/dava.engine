@@ -301,8 +301,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode2d.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode3d.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
@@ -531,7 +529,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode3d.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />

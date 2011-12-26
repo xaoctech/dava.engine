@@ -30,17 +30,17 @@
 #ifndef __DAVAENGINE_MESH_INSTANCE_H__
 #define __DAVAENGINE_MESH_INSTANCE_H__
 
-#include "Scene3D/SceneNode3d.h"
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA 
 {
 class Scene;
 class StaticMesh;
 class Material;
-class MeshInstanceNode : public SceneNode3d
+class MeshInstanceNode : public SceneNode
 {
 public:	
-	MeshInstanceNode(Scene * _scene);
+	MeshInstanceNode(Scene * _scene = 0);
 	~MeshInstanceNode();
 	
 	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);

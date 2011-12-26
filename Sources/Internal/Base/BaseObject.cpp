@@ -27,23 +27,43 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE_NODE_3D_H__
-#define __DAVAENGINE_SCENE_NODE_3D_H__
+#include "Base/BaseObject.h"
+#include "Base/ObjectFactory.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Base/ObjectFactory.h"
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
-
-namespace DAVA 
+namespace DAVA
 {
-	
-class SceneNode3d : public SceneNode
+REGISTER_CLASS(BaseObject);    
+    
+
+const String & BaseObject::GetClassName()
 {
-public:
-	SceneNode3d(Scene * _scene);
-	virtual ~SceneNode3d();
-};
-};
+    return ObjectFactory::Instance()->GetName(this);
+}
+    
+/**
+    \brief virtual function to save node to KeyedArchive
+ */
+void BaseObject::Save(KeyedArchive * archive)
+{
+    archive->SetString("##name", GetClassName());
+}
+    
+BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
+{
+    String name = archive->GetString("##name");
+    BaseObject * object = ObjectFactory::Instance()->New(name);
+    object->Load(archive);
+    return object;
+}
 
-
-#endif // __DAVAENGINE_SCENE_NODE_3D_H__
+/**
+    \brief virtual function to load node to KeyedArchive
+ */
+void BaseObject::Load(KeyedArchive * archive)
+{
+}
+    
+    
+};

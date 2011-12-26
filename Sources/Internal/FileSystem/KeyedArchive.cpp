@@ -132,11 +132,18 @@ void KeyedArchive::SetBool(const String & key, bool value)
 	objectMap[key] = variantValue;
 }
 
-void KeyedArchive::SetInt(const String & key, int32 value)
+void KeyedArchive::SetInt32(const String & key, int32 value)
 {
 	VariantType variantValue;
-	variantValue.SetInt(value);
+	variantValue.SetInt32(value);
 	objectMap[key] = variantValue;
+}
+    
+void KeyedArchive::SetUInt32(const String & key, uint32 value)
+{
+    VariantType variantValue;
+    variantValue.SetUInt32(value);
+    objectMap[key] = variantValue;
 }
 
 void KeyedArchive::SetFloat(const String & key, float32 value)
@@ -189,11 +196,18 @@ bool KeyedArchive::GetBool(const String & key, bool defaultValue)
 	return defaultValue;
 }
 
-int32 KeyedArchive::GetInt(const String & key, int32 defaultValue)
+int32 KeyedArchive::GetInt32(const String & key, int32 defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsInt();
+		return objectMap[key].AsInt32();
 	return defaultValue;
+}
+
+uint32 KeyedArchive::GetUInt32(const String & key, uint32 defaultValue)
+{
+    if (IsKeyExists(key))
+        return objectMap[key].AsUInt32();
+    return defaultValue;
 }
 
 float32 KeyedArchive::GetFloat(const String & key, float32 defaultValue)
@@ -267,9 +281,14 @@ void KeyedArchive::Dump()
 
 			}
 				break;
-			case VariantType::TYPE_INT:
+			case VariantType::TYPE_INT32:
 			{
-				Logger::Debug("%s : %d", it->first.c_str(), it->second.intValue);
+				Logger::Debug("%s : %d", it->first.c_str(), it->second.int32Value);
+			}
+				break;	
+			case VariantType::TYPE_UINT32:
+			{
+				Logger::Debug("%s : %d", it->first.c_str(), it->second.uint32Value);
 			}
 				break;	
 			case VariantType::TYPE_FLOAT:

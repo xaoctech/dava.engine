@@ -168,8 +168,8 @@ namespace DAVA
     
 		// do all ground work & setup window itself according to value specified by user
 	KeyedArchive * options = DAVA::Core::GetOptions();
-	int32 width = options->GetInt("width", 800);
-	int32 height = options->GetInt("height", 600);
+	int32 width = options->GetInt32("width", 800);
+	int32 height = options->GetInt32("height", 600);
 	
 	String title = options->GetString("title", "[set application title using core options property 'title']");
 	

@@ -373,7 +373,6 @@
     <ClInclude Include="Classes\Collada\ColladaTexture.h" />
     <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\DebugNode.h" />
-    <ClInclude Include="Classes\GameScene.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPanel.h" />
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
@@ -585,7 +584,6 @@
     <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
-    <ClCompile Include="Classes\GameScene.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
