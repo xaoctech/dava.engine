@@ -18,6 +18,7 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
 { 
+	selection = 0;
 //	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
 //	dynDispatcher = new	btCollisionDispatcher(dynCollisionConfiguration);
     btVector3 worldMin(-1000,-1000,-1000);

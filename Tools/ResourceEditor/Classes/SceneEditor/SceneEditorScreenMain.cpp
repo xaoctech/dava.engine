@@ -4,8 +4,8 @@
 #include "LibraryControl.h"
 
 #include "ControlsFactory.h"
+#include "../EditorScene.h"
 #include "MaterialEditor.h"
-#include "EditorScene.h"
 
 #include "CreateLandscapeDialog.h"
 #include "CreateLightDialog.h"

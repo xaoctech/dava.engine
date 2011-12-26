@@ -415,6 +415,11 @@ void LandscapeNode::SetTexture(eTextureLevel level, Texture * texture)
     SafeRelease(textures[level]);
     textures[level] = SafeRetain(texture);
 }
+
+Texture * LandscapeNode::GetTexture(eTextureLevel level)
+{
+	return textures[level];
+}
     
 void LandscapeNode::FlushQueue()
 {
@@ -870,10 +875,43 @@ void LandscapeNode::Draw()
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
     //Logger::Debug("landscape draw time: %lld", drawTime);
 }
-    
-    
+
+
+void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vector<int32> & indices)
+{
+	QuadTreeNode<LandscapeQuad> * currentNode = &quadTreeHead;
+	LandscapeQuad * quad = &currentNode->data;
+	
+	landscapeVertices.resize((quad->size + 1) * (quad->size + 1));
+
+	int32 index = 0;
+	for (int32 y = quad->y; y < quad->y + quad->size + 1; ++y)
+	{
+		for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
+		{
+			landscapeVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
+			landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+			index++;
+		}
+	}
+
+	indices.resize(heightmap->GetWidth()*heightmap->GetHeight()*6);
+	int32 step = 1;
+	int32 indexIndex = 0;
+	int32 quadWidth = heightmap->GetWidth();
+	for(int32 y = 0; y < currentNode->data.size-1; y += step)
+	{
+		for(int32 x = 0; x < currentNode->data.size-1; x += step)
+		{
+			indices[indexIndex++] = x + y * quadWidth;
+			indices[indexIndex++] = (x + step) + y * quadWidth;
+			indices[indexIndex++] = x + (y + step) * quadWidth;
+
+			indices[indexIndex++] = (x + step) + y * quadWidth;
+			indices[indexIndex++] = (x + step) + (y + step) * quadWidth;
+			indices[indexIndex++] = x + (y + step) * quadWidth;     
+		}
+	}
+}
+
 };
-
-
-
-
