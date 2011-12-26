@@ -25,6 +25,8 @@ public:
     MaterialEditor();
     ~MaterialEditor();
     
+    void SetWorkingScene(Scene *newWorkingScene);
+    
     void OnButton(BaseObject * object, void * userData, void * callerData);
     
     virtual int32 ElementsCount(UIList *forList);
@@ -36,8 +38,10 @@ public:
     
     
 protected:
+    UIList *materialsList;
     ComboBox *materialsTypes;
     PropertyList *materialProps;
+    Scene *workingScene;
 };
 
 #endif
