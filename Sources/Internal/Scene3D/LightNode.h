@@ -31,7 +31,7 @@
 #ifndef __DAVAENGINE_LIGHT_NODE_H__
 #define __DAVAENGINE_LIGHT_NODE_H__
 
-#include "Scene3D/SceneNode3d.h"
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA 
 {

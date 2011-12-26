@@ -25,6 +25,12 @@
 		C7AB37101473F31E00D52251 /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
+		FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9BC14A8591A008675BD /* CubeNode.cpp */; };
+		FE01C9BF14A8591A008675BD /* CubeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE01C9BD14A8591A008675BD /* CubeNode.h */; };
+		FE01C9C214A85924008675BD /* SphereNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9C014A85924008675BD /* SphereNode.cpp */; };
+		FE01C9C314A85924008675BD /* SphereNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE01C9C114A85924008675BD /* SphereNode.h */; };
+		FE01C9C614A8593A008675BD /* LightNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9C414A8593A008675BD /* LightNode.cpp */; };
+		FE01C9C714A8593A008675BD /* LightNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE01C9C514A8593A008675BD /* LightNode.h */; };
 		FE044F2C140EE9FC002A6D27 /* ResourceArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE044F2A140EE9FC002A6D27 /* ResourceArchive.cpp */; };
 		FE044F2D140EE9FC002A6D27 /* ResourceArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = FE044F2B140EE9FC002A6D27 /* ResourceArchive.h */; };
 		FE044F34140EEA24002A6D27 /* ColorOnlyEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE044F2E140EEA24002A6D27 /* ColorOnlyEffect.cpp */; };
@@ -481,6 +487,12 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
+		FE01C9BC14A8591A008675BD /* CubeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeNode.cpp; sourceTree = "<group>"; };
+		FE01C9BD14A8591A008675BD /* CubeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeNode.h; sourceTree = "<group>"; };
+		FE01C9C014A85924008675BD /* SphereNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SphereNode.cpp; sourceTree = "<group>"; };
+		FE01C9C114A85924008675BD /* SphereNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphereNode.h; sourceTree = "<group>"; };
+		FE01C9C414A8593A008675BD /* LightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightNode.cpp; sourceTree = "<group>"; };
+		FE01C9C514A8593A008675BD /* LightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightNode.h; sourceTree = "<group>"; };
 		FE044F2A140EE9FC002A6D27 /* ResourceArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResourceArchive.cpp; sourceTree = "<group>"; };
 		FE044F2B140EE9FC002A6D27 /* ResourceArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResourceArchive.h; sourceTree = "<group>"; };
 		FE044F2E140EEA24002A6D27 /* ColorOnlyEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorOnlyEffect.cpp; sourceTree = "<group>"; };
@@ -1436,6 +1448,12 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				FE01C9BC14A8591A008675BD /* CubeNode.cpp */,
+				FE01C9BD14A8591A008675BD /* CubeNode.h */,
+				FE01C9C014A85924008675BD /* SphereNode.cpp */,
+				FE01C9C114A85924008675BD /* SphereNode.h */,
+				FE01C9C414A8593A008675BD /* LightNode.cpp */,
+				FE01C9C514A8593A008675BD /* LightNode.h */,
 				FECFC1A112E87E3000C71562 /* BoneNode.cpp */,
 				FECFC1A212E87E3000C71562 /* BoneNode.h */,
 				FE4E01B713AA733A0013464E /* Camera.cpp */,
@@ -1838,6 +1856,9 @@
 				C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */,
 				FE707B1E147588B60082008F /* BillboardNode.h in Headers */,
 				FEC711B0149F839C00939323 /* SceneFile2.h in Headers */,
+				FE01C9BF14A8591A008675BD /* CubeNode.h in Headers */,
+				FE01C9C314A85924008675BD /* SphereNode.h in Headers */,
+				FE01C9C714A8593A008675BD /* LightNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2111,6 +2132,9 @@
 				FE707B1D147588B60082008F /* BillboardNode.cpp in Sources */,
 				FEC711AF149F839C00939323 /* SceneFile2.cpp in Sources */,
 				FE652C9714A2723B006663FB /* BaseObject.cpp in Sources */,
+				FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */,
+				FE01C9C214A85924008675BD /* SphereNode.cpp in Sources */,
+				FE01C9C614A8593A008675BD /* LightNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
