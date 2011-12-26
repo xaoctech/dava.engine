@@ -35,10 +35,10 @@ void CreateLightDialog::CreateNode()
                 propertyList->GetFloatPropertyValue("b"),
                 propertyList->GetFloatPropertyValue("a"));
     
-    int32 type = LightNode::ELT_DIRECTIONAL; //propertyList->GetFloatPropertyValue("Type");
+    int32 type = LightNode::ET_DIRECTIONAL; //propertyList->GetFloatPropertyValue("Type");
 
     ((LightNode *)sceneNode)->SetColor(color);
-    ((LightNode *)sceneNode)->SetLightType((LightNode::eLightType)type);
+    ((LightNode *)sceneNode)->SetType((LightNode::eType)type);
 }
 
 void CreateLightDialog::ClearPropertyValues()

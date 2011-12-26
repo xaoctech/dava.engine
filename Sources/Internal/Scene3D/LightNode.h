@@ -40,11 +40,11 @@ class LightNode : public SceneNode
 
 public:
 
-    enum eLightType
+    enum eType
     {
-        ELT_DIRECTIONAL = 0,
-        ELT_SPOT,
-        ELT_POINT,
+        ET_DIRECTIONAL = 0,
+        ET_SPOT,
+        ET_POINT,
     };
     
     
@@ -55,13 +55,13 @@ public:
     virtual void Draw();
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
-    void SetLightType(eLightType type);
-    void SetColor(Color color);
+    void SetType(eType _type);
+    void SetColor(Color _color);
     
 protected:
     
-    eLightType lightType;
-    Color lightColor;
+    eType type;
+    Color color;
     
 };
 
