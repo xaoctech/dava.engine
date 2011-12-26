@@ -36,6 +36,7 @@
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
 #include "Render/RenderBase.h"
+#include <typeinfo>
 
 namespace DAVA
 {
@@ -50,10 +51,12 @@ namespace DAVA
 	\ingroup baseobjects
 	\brief class to implement object reference counting
  
-	This class is parent for most of classes in our SDK. 
-	When you create it reference counter equal to 1. 
+	This class if base object for most of hierarchies in our SDK. It's main purpose to help you avoid issues with memory, and provide you 
+    with many high-level mechanisms like serialization, messaging and so on. In most cases if you create own class it will be good idea 
+    to derive it from BaseObject. 
   */
 
+class   KeyedArchive;
 	
 class	BaseObject
 {
@@ -114,6 +117,27 @@ public:
 	{
 		return referenceCount;
 	}
+    
+    /**
+        \brief return class name if it's registered with REGISTER_CLASS macro of our ObjectFactory class.
+        This function is mostly intended for serialization, but can be used for other purposes as well.
+        \returns name of the class you've passed to REGISTER_CLASS function. For example if you register class UIButton with the following line:
+        REGISTER_CLASS(UIButton); you'll get "UIButton" as result.
+     */
+    const String & GetClassName();
+    
+    /**
+        \brief virtual function to save node to KeyedArchive
+     */
+    virtual void Save(KeyedArchive * archive);
+    
+    /**
+        \brief virtual function to load node to KeyedArchive
+     */
+	virtual void Load(KeyedArchive * archive);
+    
+    static BaseObject * LoadFromArchive(KeyedArchive * archive);
+    
 protected:
 	
 	BaseObject(const BaseObject & b)
@@ -185,6 +209,32 @@ C * SafeRetain(C * c)
 	}
 	return c;
 }
+    
+    
+    
+typedef BaseObject* (*CreateObjectFunc)();
+
+class ObjectRegistrator
+{
+public:
+    ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo);
+    ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, const String & alias);
+};
+	
+#define REGISTER_CLASS(class_name) \
+static BaseObject * Create##class_name()\
+{\
+return new class_name();\
+};\
+static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name));
+
+#define REGISTER_CLASS_WITH_ALIAS(class_name, alias) \
+static BaseObject * Create##class_name()\
+{\
+return new class_name();\
+};\
+static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), alias);
+
 	
 /*template<class C>
 C * SafeClone(C * object)

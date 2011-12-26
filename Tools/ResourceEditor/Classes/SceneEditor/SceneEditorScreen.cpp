@@ -34,7 +34,7 @@ void SceneEditorScreen::LoadResources()
     GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     GetBackground()->SetColor(Color(0.7f, 0.7f, 0.7f, 1.0f));
 
-    scene = new GameScene();
+    scene = new EditorScene();
 
     
 //    SceneFile * file = new SceneFile();

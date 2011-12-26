@@ -33,8 +33,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
-#include "Scene3D/SceneNode3d.h"
 #include "Scene3D/Frustum.h"
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA
 {
@@ -47,7 +47,7 @@ namespace DAVA
 class Camera : public SceneNode
 {
 public:
-	Camera(Scene * scene);
+	Camera(Scene * scene = 0);
 	virtual ~Camera();
 	
     /**
@@ -202,7 +202,7 @@ public:
         \brief Function to return 2D position of 3D point that is transformed to screen. 
         \returns 2D point on screen.
      */
-    Vector2 GetOnScreenPosition(const Vector3 & forPoint);
+    Vector2 GetOnScreenPosition(const Vector3 & forPoint, const Rect & viewport);
 
     /**
         \brief Get frustum object for this camera.

@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Scene3D/SceneFile.h"
-#include "Scene3D/SceneNode3d.h"
+#include "Scene3D/SceneNode.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Texture.h"
 #include "Render/Material.h"
@@ -503,7 +503,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 	SceneNode * node = 0;
 	if (def.nodeType == SceneNodeDef::SCENE_NODE_BASE)
 	{
-		node = new SceneNode3d(scene);
+		node = new SceneNode(scene);
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);

@@ -71,14 +71,14 @@ void KeyedArchiver::EncodeBool(const String & key, bool value)
 	valueMT.Write(archive);
 }
 
-void KeyedArchiver::EncodeInt(const String & key, int32 value)
+void KeyedArchiver::EncodeInt32(const String & key, int32 value)
 {
 	VariantType keyMT;
 	keyMT.SetString(key);
 	keyMT.Write(archive);
 	
 	VariantType valueMT;
-	valueMT.SetInt(value);
+	valueMT.SetInt32(value);
 	valueMT.Write(archive);
 }
 

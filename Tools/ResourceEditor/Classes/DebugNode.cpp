@@ -24,12 +24,12 @@ DebugNode::DebugNode(Scene * scene, std::vector<float32> &data)
 	renderData = new RenderDataObject();
 	renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, verts.data());
 	renderData->SetStream(EVF_COLOR, TYPE_FLOAT, 4, 0, colors.data());
-	isDraw = false;
+	isDraw = true;
 }
 
 DebugNode::~DebugNode()
 {
-	SafeRelease(renderData);
+	SafeRelease(renderData); 
 }
 
 void DebugNode::Draw()

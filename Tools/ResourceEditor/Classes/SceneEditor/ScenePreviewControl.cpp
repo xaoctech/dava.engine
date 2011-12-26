@@ -124,8 +124,8 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
     currentScenePath = "";
     rootNode = NULL;
     
-    gameScene = new GameScene();
-    SetScene(gameScene);
+    scene = new EditorScene();
+    SetScene(scene);
 
     // Camera setup
     cameraController = new PreviewCameraController();
@@ -135,12 +135,12 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
 ScenePreviewControl::~ScenePreviewControl()
 {
     SafeRelease(cameraController);
-    if (rootNode && gameScene)
+    if (rootNode && scene)
     {
-        gameScene->RemoveNode(rootNode);
+        scene->RemoveNode(rootNode);
         rootNode = NULL;
     }
-    SafeRelease(gameScene);
+    SafeRelease(scene);
 }
 
 
@@ -155,24 +155,24 @@ void ScenePreviewControl::OpenScene(const String &pathToFile)
 {
     if(currentScenePath.length())
     {
-        gameScene->ReleaseRootNode(currentScenePath);
-        gameScene->RemoveNode(rootNode);
+        scene->ReleaseRootNode(currentScenePath);
+        scene->RemoveNode(rootNode);
         rootNode = NULL;
     }
     currentScenePath = pathToFile;
     
     SceneFile * file = new SceneFile();
     file->SetDebugLog(true);
-    file->LoadScene(pathToFile.c_str(), gameScene);
-    rootNode = gameScene->GetRootNode(pathToFile);
-    gameScene->AddNode(rootNode);
+    file->LoadScene(pathToFile.c_str(), scene);
+    rootNode = scene->GetRootNode(pathToFile);
+    scene->AddNode(rootNode);
     SafeRelease(file);
     
     needSetCamera = true;
-    Camera *cam = gameScene->GetCamera(0);
+    Camera *cam = scene->GetCamera(0);
     if(!cam)
     {
-        Camera * cam = new Camera(gameScene);
+        Camera * cam = new Camera(scene);
         cam->SetName("preview-camera");
         cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
@@ -181,9 +181,9 @@ void ScenePreviewControl::OpenScene(const String &pathToFile)
         
         cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
         
-        gameScene->AddNode(cam);
-        gameScene->AddCamera(cam);
-        gameScene->SetCurrentCamera(cam);
+        scene->AddNode(cam);
+        scene->AddCamera(cam);
+        scene->SetCurrentCamera(cam);
         cameraController->SetCamera(cam);
         
         SafeRelease(cam);
@@ -209,7 +209,7 @@ void ScenePreviewControl::Update(float32 timeElapsed)
 
 void ScenePreviewControl::SetupCamera()
 {
-    Camera *camera = gameScene->GetCamera(0);
+    Camera *camera = scene->GetCamera(0);
     if (camera)
     {
         AABBox3 sceneBox = rootNode->GetWTMaximumBoundingBox();
@@ -223,8 +223,8 @@ void ScenePreviewControl::SetupCamera()
         }
         
         camera->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-        gameScene->SetCurrentCamera(camera);
-        gameScene->SetClipCamera(camera);
+        scene->SetCurrentCamera(camera);
+        scene->SetClipCamera(camera);
         
         cameraController->SetCamera(camera);
         cameraController->SetRadius(radius);

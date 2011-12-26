@@ -49,17 +49,20 @@ public:
 	{
 		TYPE_NONE = 0,
 		TYPE_BOOLEAN,
-		TYPE_INT,
+		TYPE_INT32,
 		TYPE_FLOAT,
 		TYPE_STRING,
 		TYPE_WIDE_STRING,
-		TYPE_BYTE_ARRAY
+		TYPE_BYTE_ARRAY,
+        
+		TYPE_UINT32    // every new type should be always added to the end for compatibility with old archives
 	};
 	uint8 type;
 	union  
 	{
 		bool boolValue;
-		int32 intValue;
+		int32 int32Value;
+        uint32 uint32Value;
 		float32 floatValue;
 	};
 	String stringValue;	
@@ -76,9 +79,15 @@ public:
 
 	/**
 		\brief Function to set int value to variant type variable
-		\param[in] value	value to set
+		\param[in] value value to set
 	 */
-	void SetInt(int32 value);
+	void SetInt32(int32 value);
+    
+	/**
+        \brief Function to set int value to variant type variable
+        \param[in] value value to set
+	 */
+    void SetUInt32(uint32 value);
 
 	/**
 		\brief Function to set float value to variant type variable
@@ -115,7 +124,13 @@ public:
 		\brief Function to return int value from variable
 		\returns value of variable, or generate assert if variable type is different
 	 */
-	int32 AsInt();
+	int32 AsInt32();
+
+	/**
+        \brief Function to return int value from variable
+        \returns value of variable, or generate assert if variable type is different
+	 */
+	uint32 AsUInt32();
 
 	/**
 		\brief Function to return float value from variable

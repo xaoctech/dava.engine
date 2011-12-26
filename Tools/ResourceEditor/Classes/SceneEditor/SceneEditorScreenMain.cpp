@@ -5,6 +5,15 @@
 
 #include "ControlsFactory.h"
 #include "MaterialEditor.h"
+#include "EditorScene.h"
+
+#include "CreateLandscapeDialog.h"
+#include "CreateLightDialog.h"
+#include "CreateServiceNodeDialog.h"
+#include "CreateBoxDialog.h"
+#include "CreateSphereDialog.h"
+#include "CreateCameraDialog.h"
+
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -31,8 +40,7 @@ void SceneEditorScreenMain::LoadResources()
     menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
-    nodeDialog = new CreateNodeDialog(fullRect);
-    nodeDialog->SetDelegate(this);
+    InitializeNodeDialogs();    
     
     materialEditor = new MaterialEditor();
     
@@ -65,13 +73,13 @@ void SceneEditorScreenMain::LoadResources()
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
-
     InitializeBodyList();
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
-    SafeRelease(nodeDialog);
+    ReleaseNodeDialogs();
+    
     SafeRelease(menuPopup);
     
     SafeRelease(keyedArchieve);
@@ -212,23 +220,38 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 
 void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 {
-    if(!fileSystemDialog->GetParent())
-    {
-        fileSystemDialog->SetExtensionFilter(".sce");
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
-    }
+//    if(!fileSystemDialog->GetParent())
+//    {
+//        fileSystemDialog->SetExtensionFilter(".sce");
+//        fileSystemDialog->Show(this);
+//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+//    }
+
+    
+    Scene * scene = bodies[0].bodyControl->GetScene();
+    
+    SceneFile2 * file = new SceneFile2();
+    file->EnableDebugLog(true);
+    file->LoadScene("scene.sc2", scene);
+    SafeRelease(file);
 }
 
 
 void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 {
-    if(!fileSystemDialog->GetParent())
-    {
-        fileSystemDialog->SetExtensionFilter(".dae");
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
-    }
+    Scene * scene = bodies[0].bodyControl->GetScene();
+    
+    SceneFile2 * file = new SceneFile2();
+    file->EnableDebugLog(true);
+    file->SaveScene("scene.sc2", scene);
+    SafeRelease(file);
+    
+//    if(!fileSystemDialog->GetParent())
+//    {
+//        fileSystemDialog->SetExtensionFilter(".sc2");
+//        fileSystemDialog->Show(this);
+//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
+//    }
 }
 
 
@@ -508,42 +531,16 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
     {
         case MENUID_CREATENODE:
         {
-            switch (itemID) 
+            currentNodeDialog = itemID;
+            
+            int32 iBody = FindCurrentBody();
+            if(-1 != iBody)
             {
-                case ECNID_LANDSCAPE:
-                {
-                    break;
-                }
-
-                case ECNID_LIGHT:
-                {
-                    
-                    break;
-                }
-
-                case ECNID_SERVICENODE:
-                {
-                    
-                    break;
-                }
-
-                case ECNID_BOX:
-                {
-                    
-                    break;
-                }
-                    
-                case ECNID_SPHERE:
-                {
-                    break;
-                }
-
-                default:
-                    break;
+                EditorScene *scene = bodies[iBody].bodyControl->GetScene();
+                nodeDialogs[currentNodeDialog]->SetScene(scene);
             }
 
-            AddControl(nodeDialog);
-            
+            AddControl(nodeDialogs[currentNodeDialog]);
             break;
         }
             
@@ -592,6 +589,12 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                     break;
                 }
                     
+                case ECNID_CAMERA:
+                {
+                    text = L"Camera";
+                    break;
+                }
+                    
                 default:
                     break;
             }
@@ -628,5 +631,43 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
-    RemoveControl(nodeDialog);
+    RemoveControl(nodeDialogs[currentNodeDialog]);
+    
+    if(CreateNodeDialog::RCODE_OK == retCode)
+    {
+        int32 iBody = FindCurrentBody();
+        if(-1 != iBody)
+        {
+            bodies[iBody].bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
+        }
+    }
+}
+
+
+
+void SceneEditorScreenMain::InitializeNodeDialogs()
+{
+    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    Rect fullRect = GetRect();
+    
+    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(fullRect);    
+    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(fullRect);    
+    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(fullRect);    
+    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(fullRect);    
+    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(fullRect);    
+    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(fullRect);    
+    
+    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
+    {
+        nodeDialogs[iDlg]->SetDelegate(this);
+        nodeDialogs[iDlg]->SetProjectPath(path);
+    }
+}
+
+void SceneEditorScreenMain::ReleaseNodeDialogs()
+{
+    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
+    {
+        SafeRelease(nodeDialogs[iDlg]);
+    }
 }
