@@ -1,11 +1,16 @@
 #include "CreateNodeDialog.h"
 #include "ControlsFactory.h"
 
+
 CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     :   UIControl(rect)
 {
+    projectPath = "/";
+    
+    sceneNode = NULL;
+    scene = NULL;
+    
     dialogDelegate = NULL;
-    currentDescription = NULL;
     
     Rect r;
     r.dx = rect.dx / 2;
@@ -36,8 +41,8 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     panel->AddControl(btnOk);
     
     Rect propertyRect(0, BUTTON_HEIGHT, r.dx, buttonY - BUTTON_HEIGHT);
-    properties = new PropertyList(propertyRect, this);
-    panel->AddControl(properties);
+    propertyList = new PropertyList(propertyRect, this);
+    panel->AddControl(propertyList);
 
     
     SafeRelease(btnCancel);
@@ -48,7 +53,7 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
 CreateNodeDialog::~CreateNodeDialog()
 {
     SafeRelease(header);
-    SafeRelease(properties);
+    SafeRelease(propertyList);
     dialogDelegate = NULL;
 }
 
@@ -67,38 +72,66 @@ void CreateNodeDialog::OnCancel(BaseObject * object, void * userData, void * cal
 
 void CreateNodeDialog::OnOk(BaseObject * object, void * userData, void * callerData)
 {
+    CreateNode();
+    
     if(dialogDelegate)
     {
         dialogDelegate->DialogClosed(RCODE_OK);
     }
 }
 
-void CreateNodeDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+//void CreateNodeDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+//{
+//    
+//}
+//
+//void CreateNodeDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
+//{
+//    
+//}
+//
+//void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+//{
+//    
+//}
+//
+//void CreateNodeDialog::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+//{
+//    
+//}
+
+
+SceneNode * CreateNodeDialog::GetSceneNode()
 {
-    
+    return sceneNode;
 }
 
-void CreateNodeDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
-{
-    
-}
 
-void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+void CreateNodeDialog::WillAppear()
 {
-    
-}
-
-void CreateNodeDialog::SetProperties(NodeDescription *description)
-{
-    currentDescription = description;
-    
-    header->SetText(currentDescription->name);
-    
-    properties->ReleaseProperties();
-    
-    for (int32 i = 0; i < currentDescription->properties.size(); ++i)
+    if(0 == propertyList->ElementsCount(NULL))
     {
-        properties->AddPropertyByData(currentDescription->properties[i]);
+        InitializeProperties();
     }
     
+    ClearPropertyValues();
+    
+    UIControl::WillAppear();
 }
+
+void CreateNodeDialog::SetScene(Scene *_scene)
+{
+    scene = _scene;
+}
+
+void CreateNodeDialog::SetHeader(const WideString &headerText)
+{
+    header->SetText(headerText);
+}
+
+void CreateNodeDialog::SetProjectPath(const String &path)
+{
+    projectPath = path;
+}
+
+

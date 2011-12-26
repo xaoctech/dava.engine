@@ -61,6 +61,14 @@ void PropertyList::AddFilepathProperty(const String &propertyName, const String 
 {
 }
 
+void PropertyList::AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_BOOL);
+    p->cellType = PropertyCell::PROP_CELL_BOOL;
+    p->SetBool(currentBoolValue);
+    AddProperty(p, propertyName, propEditType);
+}
+
 
 
 void PropertyList::AddProperty(PropertyCellData *newProp, const String &propertyName, editableType propEditType)
@@ -103,6 +111,54 @@ void PropertyList::SetFloatPropertyValue(const String &propertyName, float32 new
     }
 }
 
+void PropertyList::SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath)
+{
+    
+}
+
+void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBoolValue)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetBool(newBoolValue);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+
+String PropertyList::GetTextPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetString();   
+}
+
+int32 PropertyList::GetIntPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetInt();   
+}
+
+float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetFloat();   
+}
+
+String PropertyList::GetFilepathProperty(const String &propertyName)
+{
+//    PropertyCellData *p = PropertyByName(propertyName);
+//    return p->GetString();   
+    return "";
+}
+
+bool PropertyList::GetBoolPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetBool();   
+}
+
+
 PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 {
 	Map<String, PropertyCellData*>::const_iterator it;
@@ -126,6 +182,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_FLOAT:
             delegate->OnFloatPropertyChanged(this, changedProperty->key, changedProperty->GetFloat());
             break;
+        case PropertyCellData::PROP_VALUE_BOOL:
+            delegate->OnBoolPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
+            break;
     }
 }
 
@@ -145,6 +204,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
         {
             case PropertyCell::PROP_CELL_TEXT:
                 c = new PropertyTextCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_BOOL:
+                c = new PropertyBoolCell(this, props[index], size.x);
                 break;
         }
     }
@@ -175,6 +237,9 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
         case PropertyCell::PROP_CELL_TEXT:
             return PropertyTextCell::GetHeightForWidth(size.x);
             break;
+        case PropertyCell::PROP_CELL_BOOL:
+            return PropertyBoolCell::GetHeightForWidth(size.x);
+            break;
     }
     return 50;//todo: rework
 }
@@ -183,13 +248,13 @@ void PropertyList::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
 }
 
-void PropertyList::AddPropertyByData(PropertyCellData *newProp)
-{
-    newProp->index = props.size();
-    props.push_back(SafeRetain(newProp));
-    propsMap[newProp->key] = newProp;
-    propsList->Refresh();
-}
+//void PropertyList::AddPropertyByData(PropertyCellData *newProp)
+//{
+//    newProp->index = props.size();
+//    props.push_back(SafeRetain(newProp));
+//    propsMap[newProp->key] = newProp;
+//    propsList->Refresh();
+//}
 
 void PropertyList::ReleaseProperties()
 {
