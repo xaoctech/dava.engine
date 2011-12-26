@@ -36,6 +36,7 @@
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
 #include "Render/RenderBase.h"
+#include <typeinfo>
 
 namespace DAVA
 {
@@ -208,6 +209,32 @@ C * SafeRetain(C * c)
 	}
 	return c;
 }
+    
+    
+    
+typedef BaseObject* (*CreateObjectFunc)();
+
+class ObjectRegistrator
+{
+public:
+    ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo);
+    ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, const String & alias);
+};
+	
+#define REGISTER_CLASS(class_name) \
+static BaseObject * Create##class_name()\
+{\
+return new class_name();\
+};\
+static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name));
+
+#define REGISTER_CLASS_WITH_ALIAS(class_name, alias) \
+static BaseObject * Create##class_name()\
+{\
+return new class_name();\
+};\
+static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), alias);
+
 	
 /*template<class C>
 C * SafeClone(C * object)

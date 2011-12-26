@@ -39,13 +39,24 @@ ObjectFactory::ObjectFactory()
 
 ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info)
 {
-		ObjectFactory::Instance()->RegisterObjectCreator(name, func, info);	
+    ObjectFactory::Instance()->RegisterObjectCreator(name, func, info);	
+}
+    
+ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info, const String & alias)
+{
+    ObjectFactory::Instance()->RegisterObjectCreator(name, func, info, alias);	
 }
 
 void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info)
 {
 	creatorMap[name] = func;
     nameMap[info.name()] = name;
+}
+
+void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info, const String & alias)
+{
+    creatorMap[name] = func;
+    nameMap[info.name()] = alias;
 }
 	
 BaseObject * ObjectFactory::New(const String & name)
