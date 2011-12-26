@@ -56,6 +56,7 @@ public:
     virtual void SetData(PropertyCellData *prop);
 
     virtual void TextFieldShouldReturn(UITextField * textField);
+    virtual void TextFieldLostFocus(UITextField * textField);
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
     
     virtual void DidAppear();
