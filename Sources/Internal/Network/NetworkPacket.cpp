@@ -46,7 +46,7 @@ NetworkPacket::NetworkPacket(File *file)
 	
 NetworkPacket::NetworkPacket(const void * data, int32 dataSize)
 {
-	DynamicMemoryFile *fl = DynamicMemoryFile::Create((int8*)data, dataSize, File::READ);
+	DynamicMemoryFile *fl = DynamicMemoryFile::Create((uint8*)data, dataSize, File::READ);
 	archive = new KeyedArchive();
 	archive->Load((File*)fl);
 	SafeRelease(fl);

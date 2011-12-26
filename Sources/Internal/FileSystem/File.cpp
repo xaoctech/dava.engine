@@ -76,7 +76,7 @@ File * File::CreateFromSystemPath(const String &filename, uint32 attributes)
 				return 0;
 			}
 
-			int8 * buffer = new int8[size];
+			uint8 * buffer = new uint8[size];
 			item.archive->LoadResource(relfilename, buffer);
 			DynamicMemoryFile * file =  DynamicMemoryFile::Create(buffer, size, attributes);
 			return file;

@@ -33,7 +33,7 @@
 namespace DAVA 
 {
 
-DynamicMemoryFile * DynamicMemoryFile::Create(const int8 * data, int32 dataSize, uint32 attributes)
+DynamicMemoryFile * DynamicMemoryFile::Create(const uint8 * data, int32 dataSize, uint32 attributes)
 {
 	DynamicMemoryFile *fl = new DynamicMemoryFile();
 	fl->filename = Format("memoryfile_%p", fl);
