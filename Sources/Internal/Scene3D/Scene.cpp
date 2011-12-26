@@ -458,6 +458,25 @@ int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
     lodLayers.push_back(newLevel);
     return i;
 }
+    
+    
+void Scene::Save(KeyedArchive * archive)
+{
+    // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
+    SceneNode::Save(archive);
+    
+    
+    
+    
+    
+}
+
+void Scene::Load(KeyedArchive * archive)
+{
+    SceneNode::Load(archive);
+}
+    
+
 
 
 };

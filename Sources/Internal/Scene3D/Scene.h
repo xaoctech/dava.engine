@@ -177,6 +177,9 @@ public:
     inline float32 GetLodLayerNearSquare(int32 layerNum);
     inline float32 GetLodLayerFarSquare(int32 layerNum);
 
+    void Save(KeyedArchive * archive);
+    void Load(KeyedArchive * archive);
+
     
 private:	
     uint64 updateTime;
