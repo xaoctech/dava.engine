@@ -109,7 +109,10 @@ public:
 	
 	//! Calculate center point for the polygon
 	void CalculateCenterPoint(Vector2 & center); 
-	
+
+    //! Calculate size rect for the polygon
+    void CalculateSizeRect(Vector2 &size); 
+
 	//! Calculate center point and radius for polygon
 	float32 CalculateSquareRadius(const Vector2 & center);
 	

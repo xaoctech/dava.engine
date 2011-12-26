@@ -22,7 +22,7 @@ UIFileTreeCell::UIFileTreeCell(const Rect &rect, const String &cellIdentifier)
 //	SetStateFont(STATE_NORMAL, fnt);
 //	SafeRelease(fnt);
 
-    ControlsFactory::CustomizeListCell(this);
+    ControlsFactory::CustomizeListCell(this, L"");
     
 	
 	//Rect iconSize = Rect(0, 0, rect.dy, rect.dy);

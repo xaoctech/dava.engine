@@ -35,8 +35,8 @@ namespace DAVA
 
 LightNode::LightNode(Scene * _scene)
     :   SceneNode(_scene)
-    ,   lightType(ELT_DIRECTIONAL)
-    ,   lightColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   type(ET_DIRECTIONAL)
+    ,   color(1.0f, 1.0f, 1.0f, 1.0f)
 {
 
 }
@@ -51,14 +51,14 @@ void LightNode::Draw()
     SceneNode::Draw();
 }
     
-void LightNode::SetLightType(DAVA::LightNode::eLightType type)
+void LightNode::SetType(DAVA::LightNode::eType _type)
 {
-    lightType = type;
+    type = _type;
 }
 
-void LightNode::SetColor(DAVA::Color color)
+void LightNode::SetColor(DAVA::Color _color)
 {
-    lightColor = color;
+    color = color;
 }
 
 SceneNode* LightNode::Clone(SceneNode *dstNode)
@@ -71,8 +71,8 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     SceneNode::Clone(dstNode);
     
     LightNode *lightNode = (LightNode *)dstNode;
-    lightNode->lightType = lightType;
-    lightNode->lightColor = lightColor;
+    lightNode->type = type;
+    lightNode->color = color;
     
     return dstNode;
 }

@@ -121,6 +121,10 @@ void PropertyTextCell::SetData(PropertyCellData *prop)
 void PropertyTextCell::TextFieldShouldReturn(UITextField * textField)
 {
     editableText->ReleaseFocus();
+}
+
+void PropertyTextCell::TextFieldLostFocus(UITextField * textField)
+{
     switch (property->GetValueType())
     {
         case PropertyCellData::PROP_VALUE_STRING:
@@ -134,7 +138,7 @@ void PropertyTextCell::TextFieldShouldReturn(UITextField * textField)
             break;
     }
     propertyDelegate->OnPropertyChanged(property);
-};
+}
 
 bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
 {
@@ -196,7 +200,6 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
                     return false;
                 }
             }
-            
             return true;
         }
             break;
