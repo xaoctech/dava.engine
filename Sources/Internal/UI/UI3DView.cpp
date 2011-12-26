@@ -98,11 +98,7 @@ void UI3DView::SystemDraw(const UIGeometricData & geometricData)
     Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
 
     RenderManager::Instance()->SetViewport(viewportRect);
-    
-    RenderManager::Instance()->EnableDepthWrite(true);
-    RenderManager::Instance()->EnableDepthTest(true);
-    RenderManager::Instance()->EnableBlending(false);
-    
+        
     RenderManager::Instance()->ClearDepthBuffer();
 //    glEnable(GL_DEPTH_TEST);
     
@@ -110,7 +106,7 @@ void UI3DView::SystemDraw(const UIGeometricData & geometricData)
 //	glPushMatrix();
 //	glMatrixMode(GL_PROJECTION);
 //	glPushMatrix();
-
+
 //  Not required because Scene should setup it state before draw
 //    RenderManager::Instance()->EnableDepthWrite(true);
 //    RenderManager::Instance()->EnableDepthTest(true);
