@@ -198,6 +198,8 @@ public:
 		EVENT_VALUE_CHANGED			= 3,//!<Used only with sliders for now. Trigger when value of the slider is changed.
 		EVENT_HOVERED_SET           = 4,//!<
 		EVENT_HOVERED_REMOVED       = 5,//!<
+		EVENT_FOCUS_SET             = 6,//!<Trigger when control becomes focused
+		EVENT_FOCUS_LOST            = 7,//!<Trigger when control losts focus
         EVENTS_COUNT
 	};	
 	
@@ -952,6 +954,17 @@ public:
 	virtual bool IsPointInside(const Vector2 &point, bool expandWithFocus = false);
 
 
+    
+    virtual bool IsLostFocusAllowed(UIControl *newFocus);
+
+    virtual void SystemOnFocusLost(UIControl *newFocus);
+
+    virtual void SystemOnFocused();
+
+    virtual void OnFocusLost(UIControl *newFocus);
+    
+    virtual void OnFocused();
+    
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.

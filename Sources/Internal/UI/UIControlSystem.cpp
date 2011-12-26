@@ -54,6 +54,7 @@ UIControlSystem::UIControlSystem()
 	prevScreen = NULL;
 	removeCurrentScreen = false;
     hovered = NULL;
+    focusedControl = NULL;
 	//mainControl = 0;
 
 	popupContainer = new UIControl(Rect(0, 0, 1, 1));
@@ -580,6 +581,38 @@ UIControl *UIControlSystem::GetHoveredControl(UIControl *newHovered)
 {
     return hovered;
 }
+    
+void UIControlSystem::SetFocusedControl(UIControl *newFocused, bool forceSet)
+{
+    if (focusedControl)
+    {
+        if (forceSet || focusedControl->IsLostFocusAllowed(newFocused)) 
+        {
+            focusedControl->SystemOnFocusLost(newFocused);
+            SafeRelease(focusedControl);
+            focusedControl = SafeRetain(newFocused);
+            if (focusedControl) 
+            {
+                focusedControl->SystemOnFocused();
+            }
+        }
+    }
+    else 
+    {
+        focusedControl = SafeRetain(newFocused);
+        if (focusedControl) 
+        {
+            focusedControl->SystemOnFocused();
+        }
+    }
+
+}
+    
+UIControl *UIControlSystem::GetFocusedControl()
+{
+    return focusedControl;
+}
+    
 
 	
 const UIGeometricData &UIControlSystem::GetBaseGeometricData()
