@@ -34,8 +34,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreateScene();
     
     CreatePropertyPanel();
-
-	beastManager = BeastProxy::Instance()->CreateManager();
 }
     
 EditorBodyControl::~EditorBodyControl()
@@ -45,8 +43,6 @@ EditorBodyControl::~EditorBodyControl()
     ReleaseScene();
     
     SafeRelease(sceneTree);
-    
-	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 }
 
 void EditorBodyControl::CreateScene()
@@ -527,6 +523,8 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
 
 void EditorBodyControl::BeastProcessScene()
 {
+	beastManager = BeastProxy::Instance()->CreateManager();
+
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
 	BeastProxy::Instance()->CreateSkyLight(beastManager);
 	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());
