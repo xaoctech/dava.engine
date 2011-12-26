@@ -14,8 +14,7 @@
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
 {
-    background->SetDrawType(UIControlBackground::DRAW_FILL);
-    background->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+    ControlsFactory::CustomizePropertyCell(this, false);
     
     propertyDelegate = propDelegate;
 
@@ -23,6 +22,11 @@ PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect,
     keyName = new UIStaticText(Rect(0, 0, size.x, size.y));
     keyName->SetFont(ControlsFactory::CreateFontLight());
     AddControl(keyName);
+}
+
+PropertyCell::~PropertyCell()
+{
+    SafeRelease(keyName);
 }
 
 
@@ -44,21 +48,29 @@ PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyC
 {
     keyName->size.x = width/2;
   
-    editableText = new UITextField(Rect(width/2 + 5, 0, width/2 - 10, size.y));
-    editableText->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    editableText->GetBackground()->SetColor(Color(0.2, 0.2, 0.2, 0.6));
-    editableText->SetFont(ControlsFactory::CreateFontLight());
+    Font * font = ControlsFactory::CreateFontLight();
+    editableText = new UITextField(Rect(width/2, 0, width/2, size.y));
+    ControlsFactory::CustomizeEditablePropertyCell(editableText);
+    editableText->SetFont(font);
     editableText->SetDelegate(this);
     
-    uneditableTextContainer = new UIControl(Rect(width/2 + 5, 0, width/2 - 10, size.y));
-    uneditableTextContainer->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    uneditableTextContainer->GetBackground()->SetColor(Color(0.4, 0.4, 0.4, 0.5));
+    uneditableTextContainer = new UIControl(Rect(width/2, 0, width/2, size.y));
+    ControlsFactory::CustomizeUneditablePropertyCell(uneditableTextContainer);
     uneditableText = new UIStaticText(Rect(0, 0, uneditableTextContainer->size.x, uneditableTextContainer->size.y));
-    uneditableText->SetFont(ControlsFactory::CreateFontLight());
+    uneditableText->SetFont(font);
+    SafeRelease(font);
     uneditableTextContainer->AddControl(uneditableText);
     
     SetData(prop);
 }
+
+PropertyTextCell::~PropertyTextCell()
+{
+    SafeRelease(editableText);
+    SafeRelease(uneditableTextContainer);
+    SafeRelease(uneditableText);
+}
+
 
 void PropertyTextCell::DidAppear()
 {
@@ -155,6 +167,7 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
                     return false;
                 }
             }
+            return true;
         }
             break;
         case PropertyCellData::PROP_VALUE_FLOAT:
@@ -183,6 +196,8 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
                     return false;
                 }
             }
+            
+            return true;
         }
             break;
     }
@@ -192,4 +207,92 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
 float32 PropertyTextCell::GetHeightForWidth(float32 currentWidth)
 {
     return 30.f;
+}
+
+//********************* PropertyBoolCell *********************
+PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+: PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width/2;
+    
+    float32 usedWidth = keyName->size.x;
+    float32 checkBoxWidth = GetHeightForWidth(usedWidth);
+    
+    textContainer = new UIControl(Rect(usedWidth + checkBoxWidth, 0, usedWidth - checkBoxWidth, checkBoxWidth));
+    ControlsFactory::CustomizeUneditablePropertyCell(textContainer);
+    AddControl(textContainer);
+    
+    Font * font = ControlsFactory::CreateFontLight();
+    falseText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
+    falseText->SetText(L"False");
+    falseText->SetFont(font);
+    
+    trueText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
+    trueText->SetText(L"True");
+    trueText->SetFont(font);
+    SafeRelease(font);
+    
+    checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(usedWidth, 0, checkBoxWidth, checkBoxWidth));
+    checkBox->SetDelegate(this);
+    AddControl(checkBox);
+    
+    SetData(prop);
+}
+
+PropertyBoolCell::~PropertyBoolCell()
+{
+    SafeRelease(textContainer);
+    SafeRelease(checkBox);
+    SafeRelease(falseText);
+    SafeRelease(trueText);
+}
+
+void PropertyBoolCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_BOOL:
+            checkBox->SetChecked(prop->GetBool());
+            break;
+            
+        default:
+            break;
+    }
+}
+
+float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
+{
+    return 30.f;
+}
+
+void PropertyBoolCell::ValueChanged(bool newValue)
+{
+    property->SetBool(newValue);
+    
+    if(newValue)
+    {
+        if(falseText->GetParent())
+        {
+            textContainer->RemoveControl(falseText);
+        }
+        
+        if(!trueText->GetParent())
+        {
+            textContainer->AddControl(trueText);
+        }
+    }
+    else
+    {
+        if(trueText->GetParent())
+        {
+            textContainer->RemoveControl(trueText);
+        }
+        
+        if(!falseText->GetParent())
+        {
+            textContainer->AddControl(falseText);
+        }
+    }
 }

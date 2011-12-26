@@ -14,13 +14,6 @@ public:
     virtual void DialogClosed(int32 retCode) = 0;
 };
 
-struct NodeDescription
-{
-    WideString name;
-    Vector<PropertyCellData *> properties;
-};
-
-
 class CreateNodeDialog: public UIControl, public PropertyListDelegate
 {
     enum eConst
@@ -40,26 +33,42 @@ public:
     CreateNodeDialog(const Rect & rect);
     virtual ~CreateNodeDialog();
     
+    virtual void WillAppear();
+    
     void SetDelegate(CreateNodeDialogDelegeate *delegate);
     
-    virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
-    virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
-    virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
+//    virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+//    virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
+//    virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
+//    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     
     
-    void SetProperties(NodeDescription *description);
+    void SetScene(Scene *_scene);
+    SceneNode *GetSceneNode();
+    
+    void SetProjectPath(const String &path);
     
 protected:
 
+    virtual void InitializeProperties() = 0;
+    virtual void CreateNode() = 0;
+    virtual void ClearPropertyValues() = 0;
+
+    
+    void SetHeader(const WideString &headerText);
+    
     void OnCancel(BaseObject * object, void * userData, void * callerData);
     void OnOk(BaseObject * object, void * userData, void * callerData);
 
     CreateNodeDialogDelegeate *dialogDelegate;
     
-    PropertyList *properties;
+    PropertyList *propertyList;
   
     UIStaticText *header;
-    NodeDescription *currentDescription;
+    SceneNode *sceneNode;
+    Scene *scene;
+    
+    String projectPath;
 };
 
 

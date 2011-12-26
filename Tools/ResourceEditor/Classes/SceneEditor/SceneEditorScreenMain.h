@@ -144,13 +144,10 @@ private:
     MenuPopupControl *menuPopup;
 
     //create node dialog
-    CreateNodeDialog *nodeDialog;
-    NodeDescription nodes[ECNID_COUNT];
-    void InitNodeDescriptions();
-    void SetNodeDefaultValues(int32 nodeType);
-    void ReleaseNodeDescriptions();
-    int32 currentNodeType;
-    
+    CreateNodeDialog *nodeDialogs[ECNID_COUNT];
+    int32 currentNodeDialog;
+    void InitializeNodeDialogs();
+    void ReleaseNodeDialogs();
     
     // general
     Font *font;
