@@ -39,22 +39,6 @@
 
 namespace DAVA 
 {
-
-typedef BaseObject* (*CreateObjectFunc)();
-
-class ObjectRegistrator
-{
-public:
-	ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo);
-};
-	
-#define REGISTER_CLASS(class_name) \
-static BaseObject * Create##class_name()\
-{\
-	return new class_name();\
-};\
-static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name));
-
 	
 /*#define REGISTER_CLASS_WITH_STRING_NAME(class_name, symbol_name) \
 static BaseObject * Create##class_name()\
@@ -133,11 +117,15 @@ public:
 	/**
 		\brief This function is supposed to RegisterObjectCreator
 		
-		It used internally by REGISTER_CLASS define
+		It used internally by REGISTER_CLASS define and REGISTER_CLASS_WITH_ALIAS define.
+        Both defines are in BaseObject.h
+     
 		\param[in] name this is name of class we want to register
 		\param[in] func this is pointer to function that can create such class
+        \param[in] alias this name can be used if you want to save object as his parent
 	*/
 	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo);
+	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, const String & alias);
 private:
 	Map<String, CreateObjectFunc> creatorMap;
     Map<String, String> nameMap;
