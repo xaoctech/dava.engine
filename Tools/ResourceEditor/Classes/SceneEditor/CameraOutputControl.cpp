@@ -1,6 +1,6 @@
 #include "CameraOutputControl.h"
 
-#include "EditorScene.h"
+#include "../EditorScene.h"
 #include "ControlsFactory.h"
 
 CameraOutputControl::CameraOutputControl(EditorScene *_scene, const Rect & rect)

@@ -4,7 +4,7 @@
 
 #include "OutputControl.h"
 #include "CameraOutputControl.h"
-#include "EditorScene.h"
+#include "../EditorScene.h"
 
 #include "OutputManager.h"
 
