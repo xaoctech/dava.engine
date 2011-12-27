@@ -178,4 +178,26 @@ bool FileList::IsNavigationDirectory(int32 index)
 	return false;
 }
 
+
+//bool FileList::FileEntry::operator< (const FileList::FileEntry &other)
+//{
+//    if (!isDirectory && other.isDirectory) 
+//    {
+//        return true;
+//    }
+//    
+//    if (name < other.name)
+//    {
+//        return true;
+//    }
+//    
+//    return false;
+//}
+
+void FileList::Sort()
+{
+    sort(fileList.begin(), fileList.end());
+}
+    
+    
 }; // end of namespace DAVA

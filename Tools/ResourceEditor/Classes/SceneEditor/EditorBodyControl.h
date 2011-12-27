@@ -10,6 +10,7 @@
 using namespace DAVA;
 
 class BeastManager;
+class OutputPanelControl;
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
@@ -19,7 +20,7 @@ class EditorBodyControl : public UIControl, public UIHierarchyDelegate
         RIGHT_SIDE_WIDTH = 200,
         CELL_HEIGHT = 20,
         MATRIX_HEIGHT = 100,
-        BUTTON_HEIGHT = 20,
+        OUTPUT_PANEL_HEIGHT = 200,
     };
 
 	enum eModState
@@ -75,6 +76,7 @@ protected:
     void ReleasePropertyPanel();
     
 	void CreateModificationPanel(void);
+    void ReleaseModificationPanel();
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
 	void UpdateModState(void);
 	void PrepareModMatrix(float32 a, float32 b);
@@ -86,8 +88,20 @@ protected:
     virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node);
     virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
     
+    //left Panel
+    void CreateLeftPanel();
+    void ReleaseLeftPanel();
     
+    UIControl *leftPanel;
     UIHierarchy * sceneTree;
+    UIButton * lookAtButton;
+    UIButton * removeNodeButton;
+    UIButton * enableDebugFlagsButton;
+    
+    void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
+    void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
+    void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
+    
     
     //scene controls
     EditorScene * scene;
@@ -107,13 +121,6 @@ protected:
     UIStaticText * nodeCenter;
     UIStaticText * nodeBoundingBoxMin;
     UIStaticText * nodeBoundingBoxMax;
-    UIButton * lookAtButton;
-    UIButton * removeNodeButton;
-    UIButton * enableDebugFlagsButton;
-    
-    void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
-    void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
-    void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
     
     // touch
     float32 currentTankAngle;
@@ -133,8 +140,14 @@ protected:
 	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
+
 	float32 axisSign[3];
 	
+    //OutputPanelControl
+    OutputPanelControl *outputPanel;
+    
+    void ChangeControlWidthRight(UIControl *c, float32 width);
+    void ChangeControlWidthLeft(UIControl *c, float32 width);
 };
 
 

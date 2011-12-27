@@ -18,6 +18,10 @@
 		5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */; };
 		5C03F92014990CCB002EE5C1 /* LibraryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */; };
 		5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */; };
+		5C07AA5E14A8C91200802097 /* OutputPanelControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AA5C14A8C91200802097 /* OutputPanelControl.cpp */; };
+		5C07AA6214A8DF5400802097 /* OutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AA6014A8DF5400802097 /* OutputControl.cpp */; };
+		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
+		5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8914A926CA005DDB16 /* OutputManager.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
@@ -310,6 +314,14 @@
 		5C03F91C14990CCB002EE5C1 /* LibraryControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryControl.h; sourceTree = "<group>"; };
 		5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditorScreenMain.cpp; sourceTree = "<group>"; };
 		5C03F91E14990CCB002EE5C1 /* SceneEditorScreenMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditorScreenMain.h; sourceTree = "<group>"; };
+		5C07AA5C14A8C91200802097 /* OutputPanelControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputPanelControl.cpp; sourceTree = "<group>"; };
+		5C07AA5D14A8C91200802097 /* OutputPanelControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputPanelControl.h; sourceTree = "<group>"; };
+		5C07AA6014A8DF5400802097 /* OutputControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputControl.cpp; sourceTree = "<group>"; };
+		5C07AA6114A8DF5400802097 /* OutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputControl.h; sourceTree = "<group>"; };
+		5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraOutputControl.cpp; sourceTree = "<group>"; };
+		5C170B8714A916B0005DDB16 /* CameraOutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOutputControl.h; sourceTree = "<group>"; };
+		5C170B8914A926CA005DDB16 /* OutputManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputManager.cpp; sourceTree = "<group>"; };
+		5C170B8A14A926CA005DDB16 /* OutputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputManager.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
@@ -921,6 +933,21 @@
 				47809C4A14A3FE5700BAA259 /* MaterialEditor.cpp */,
 			);
 			name = MaterialEditor;
+			sourceTree = "<group>";
+		};
+		5C07AA5F14A8DDA600802097 /* OutputPanel */ = {
+			isa = PBXGroup;
+			children = (
+				5C170B8914A926CA005DDB16 /* OutputManager.cpp */,
+				5C170B8A14A926CA005DDB16 /* OutputManager.h */,
+				5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */,
+				5C170B8714A916B0005DDB16 /* CameraOutputControl.h */,
+				5C07AA6014A8DF5400802097 /* OutputControl.cpp */,
+				5C07AA6114A8DF5400802097 /* OutputControl.h */,
+				5C07AA5C14A8C91200802097 /* OutputPanelControl.cpp */,
+				5C07AA5D14A8C91200802097 /* OutputPanelControl.h */,
+			);
+			name = OutputPanel;
 			sourceTree = "<group>";
 		};
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
@@ -1574,10 +1601,11 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
-				5CFAF30E14A6334100355DCF /* UICheckBox.cpp */,
-				5CFAF30F14A6334100355DCF /* UICheckBox.h */,
+				5C07AA5F14A8DDA600802097 /* OutputPanel */,
 				5CFC480514A35DF2009A0C9F /* CreateNode */,
 				4780999714A2463900BAA259 /* MaterialEditor */,
+				5CFAF30F14A6334100355DCF /* UICheckBox.h */,
+				5CFAF30E14A6334100355DCF /* UICheckBox.cpp */,
 				478099BB14A370BA00BAA259 /* ComboBox.h */,
 				478099BC14A370BA00BAA259 /* ComboBox.cpp */,
 				4780990914A10A2500BAA259 /* PropertyCell.h */,
@@ -2041,6 +2069,10 @@
 				5CFC480314A35B75009A0C9F /* CreateServiceNodeDialog.cpp in Sources */,
 				5CFC480414A35B75009A0C9F /* CreateSphereDialog.cpp in Sources */,
 				5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */,
+				5C07AA5E14A8C91200802097 /* OutputPanelControl.cpp in Sources */,
+				5C07AA6214A8DF5400802097 /* OutputControl.cpp in Sources */,
+				5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */,
+				5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

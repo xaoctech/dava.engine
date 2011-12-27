@@ -3,6 +3,14 @@
 Font* ControlsFactory::fontLight = NULL;
 Font* ControlsFactory::fontDark = NULL;
 
+UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText)
+{
+    UIButton *btn = new UIButton(Rect(pos.x, pos.y, BUTTON_WIDTH, BUTTON_HEIGHT));
+    CustomizeButton(btn, buttonText);
+    return btn;
+}
+
+
 UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &buttonText)
 {
     UIButton *btn = new UIButton(rect);
@@ -93,11 +101,17 @@ void ControlsFactory::CustomizeScreenBack(UIControl *screen)
 
 UIControl * ControlsFactory::CreateLine(const Rect & rect)
 {
+    return CreateLine(rect, Color(0.8f, 0.8f, 0.8f, 1.0f));
+}
+
+UIControl * ControlsFactory::CreateLine(const Rect & rect, Color color)
+{
     UIControl * lineControl = new UIControl(rect); 
-    lineControl->GetBackground()->color = Color(0.8f, 0.8f, 0.8f, 1.0f);
+    lineControl->GetBackground()->color = color;
     lineControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     return lineControl;
 }
+
 
 void ControlsFactory::CusomizeBottomLevelControl(UIControl *c)
 {
@@ -146,9 +160,10 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
     Font *font = GetFontDark();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
-//    c->SetStateFont(UIControl::STATE_SELECTED, font);
+    c->SetStateFont(UIControl::STATE_SELECTED, font);
 
     c->SetStateText(UIControl::STATE_NORMAL, text);
+    c->SetStateText(UIControl::STATE_SELECTED, text);
 
     
 //    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
@@ -215,12 +230,59 @@ void ControlsFactory::CustomizeEditablePropertyCell(UIControl *c)
     c->GetBackground()->color = Color(0.2f, 0.2f, 0.2f, 0.6f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
+
 void ControlsFactory::CustomizeUneditablePropertyCell(UIControl *c)
 {
     c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 0.5f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
 
+void ControlsFactory::CustomizeDialogFreeSpace(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.0f, 0.0f, 0.0f, 0.3f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
 
 
+void ControlsFactory::SetScrollbar(DAVA::UIList *l)
+{
+    Rect fr = l->GetRect();
+    
+    Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
+    
+    UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
+                                             UIScrollBar::ORIENTATION_VERTICAL);
+    
+    scrollBar->GetSlider()->SetSprite(scrollSpr, 0);
+    scrollBar->GetSlider()->GetBackground()->SetDrawType(UIControlBackground::DRAW_STRETCH_VERTICAL);
+    scrollBar->GetSlider()->GetBackground()->SetTopBottomStretchCap(10);
+    
+    scrollBar->SetDelegate(l);
+    scrollBar->SetInputEnabled(false);
+    l->AddControl(scrollBar);
+    
+    SafeRelease(scrollSpr);
+    SafeRelease(scrollBar);
+}
+
+void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
+{
+    Rect fr = h->GetRect();
+    
+    Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
+    
+    UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
+                                             UIScrollBar::ORIENTATION_VERTICAL);
+    
+    scrollBar->GetSlider()->SetSprite(scrollSpr, 0);
+    scrollBar->GetSlider()->GetBackground()->SetDrawType(UIControlBackground::DRAW_STRETCH_VERTICAL);
+    scrollBar->GetSlider()->GetBackground()->SetTopBottomStretchCap(10);
+    
+    scrollBar->SetDelegate(h);
+    scrollBar->SetInputEnabled(false);
+    h->AddControl(scrollBar);
+    
+    SafeRelease(scrollSpr);
+    SafeRelease(scrollBar);
+}
 

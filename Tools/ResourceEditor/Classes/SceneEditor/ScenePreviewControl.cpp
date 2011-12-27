@@ -17,6 +17,8 @@ PreviewCameraController::PreviewCameraController()
 
     radius = 10.f;
     zoomLevel = 1.f;
+
+    controlHeight = 100;
 }
 
 void PreviewCameraController::SetCamera(DAVA::Camera *camera)
@@ -74,6 +76,9 @@ void PreviewCameraController::Input(DAVA::UIEvent *event)
         }
         else if(UIEvent::PHASE_DRAG == event->phase)
         {
+            zoomStartPt = zoomStopPt;
+            zoomStopPt = event->point;
+            UpdateCamera();
         }
         else if(UIEvent::PHASE_ENDED == event->phase)
         {
@@ -82,6 +87,11 @@ void PreviewCameraController::Input(DAVA::UIEvent *event)
             UpdateCamera();
         }
     }
+}
+
+void PreviewCameraController::SetControlHeight(int32 height)
+{
+    controlHeight = height;
 }
 
 void PreviewCameraController::UpdateCamera()
@@ -93,11 +103,11 @@ void PreviewCameraController::UpdateCamera()
         float32 delta = zoom.y;
         if(0 < delta)
         {
-            zoomLevel /= 2;   
+            zoomLevel *= (1 + zoom.y/controlHeight);   
         }
         else
         {
-            zoomLevel *= 2;   
+            zoomLevel /= (1 - zoom.y/controlHeight);   
         }
     }
 
@@ -130,6 +140,7 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
     // Camera setup
     cameraController = new PreviewCameraController();
     cameraController->SetRadius(10.f);
+    cameraController->SetControlHeight(rect.dy);
 }
     
 ScenePreviewControl::~ScenePreviewControl()
