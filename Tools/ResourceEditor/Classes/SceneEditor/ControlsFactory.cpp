@@ -152,9 +152,10 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
     Font *font = CreateFontDark();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
-//    c->SetStateFont(UIControl::STATE_SELECTED, font);
+    c->SetStateFont(UIControl::STATE_SELECTED, font);
 
     c->SetStateText(UIControl::STATE_NORMAL, text);
+    c->SetStateText(UIControl::STATE_SELECTED, text);
 
     
 //    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
