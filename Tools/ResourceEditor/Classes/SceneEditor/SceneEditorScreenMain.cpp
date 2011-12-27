@@ -182,11 +182,8 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
     {
         case DIALOG_OPERATION_MENU_OPEN:
         {
-            int32 iBody = FindCurrentBody();
-            if(-1 != iBody)
-            {
-                bodies[iBody].bodyControl->OpenScene(pathToFile);
-            }
+            BodyItem *iBody = FindCurrentBody();
+            iBody->bodyControl->OpenScene(pathToFile);
             
             break;
         }
@@ -228,7 +225,7 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 //    }
 
     
-    Scene * scene = bodies[0].bodyControl->GetScene();
+    Scene * scene = bodies[0]->bodyControl->GetScene();
     
     SceneFile2 * file = new SceneFile2();
     file->EnableDebugLog(true);
@@ -239,7 +236,7 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 {
-    Scene * scene = bodies[0].bodyControl->GetScene();
+    Scene * scene = bodies[0]->bodyControl->GetScene();
     
     SceneFile2 * file = new SceneFile2();
     file->EnableDebugLog(true);
@@ -259,15 +256,8 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 {
     if (!materialEditor->GetParent())
     {
-        int32 iBody = FindCurrentBody();
-        if(-1 != iBody)
-        {
-            materialEditor->SetWorkingScene(bodies[iBody].bodyControl->GetScene());
-        }
-        else 
-        {
-            materialEditor->SetWorkingScene(NULL);
-        }
+        BodyItem *iBody = FindCurrentBody();
+        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene());
 
         AddControl(materialEditor);
     }
@@ -309,54 +299,58 @@ void SceneEditorScreenMain::InitializeBodyList()
 
 void SceneEditorScreenMain::ReleaseBodyList()
 {
-    for(int32 i = 0; i < bodies.size(); ++i)
+    for(Vector<BodyItem*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
     {
-        RemoveControl(bodies[i].headerButton);
-        RemoveControl(bodies[i].bodyControl);
+        BodyItem *iBody = *it;
+
+        RemoveControl(iBody->headerButton);
+        RemoveControl(iBody->bodyControl);
         
-        SafeRelease(bodies[i].headerButton);
-        SafeRelease(bodies[i].closeButton);
-        SafeRelease(bodies[i].bodyControl);
+        SafeRelease(iBody->headerButton);
+        SafeRelease(iBody->closeButton);
+        SafeRelease(iBody->bodyControl);
+
+        SafeDelete(iBody);
     }
     bodies.clear();
 }
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
-    BodyItem c;
+    BodyItem *c = new BodyItem();
     
     int32 count = bodies.size();
-    c.headerButton = ControlsFactory::CreateButton(
+    c->headerButton = ControlsFactory::CreateButton(
                         Rect(TAB_BUTTONS_OFFSET + count * (BUTTON_WIDTH + 1), 
                              BODY_Y_OFFSET - BUTTON_HEIGHT, 
                              BUTTON_WIDTH, 
                              BUTTON_HEIGHT), 
                         text);
 
-    c.headerButton->SetTag(count);
-    c.headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
+    c->headerButton->SetTag(count);
+    c->headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
     if(isCloseable)
     {
-        c.closeButton = ControlsFactory::CreateCloseWindowButton(Rect(BUTTON_WIDTH - BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT));
-        c.closeButton->SetTag(count);
-        c.closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCloseBody));
-        c.headerButton->AddControl(c.closeButton);
+        c->closeButton = ControlsFactory::CreateCloseWindowButton(Rect(BUTTON_WIDTH - BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT));
+        c->closeButton->SetTag(count);
+        c->closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCloseBody));
+        c->headerButton->AddControl(c->closeButton);
     }
     else 
     {
-        c.closeButton = NULL;
+        c->closeButton = NULL;
     }
 
 
     Rect fullRect = GetRect();
-    c.bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET + 1, fullRect.dx, fullRect.dy - BODY_Y_OFFSET - 1));
-    c.bodyControl->SetTag(count);    
+    c->bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET + 1, fullRect.dx, fullRect.dy - BODY_Y_OFFSET - 1));
+    c->bodyControl->SetTag(count);    
     
-    AddControl(c.headerButton);    
+    AddControl(c->headerButton);    
     bodies.push_back(c);
     
     //set as current
-    c.headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+    c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
 }
 
 
@@ -366,9 +360,9 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
     
     for(int32 i = 0; i < bodies.size(); ++i)
     {
-        if(bodies[i].bodyControl->GetParent())
+        if(bodies[i]->bodyControl->GetParent())
         {
-            if(btn == bodies[i].headerButton)
+            if(btn == bodies[i]->headerButton)
             {
                 // click on selected body - nothing to do
                 return;
@@ -377,15 +371,15 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
             if(libraryControl->GetParent())
             {
                 RemoveControl(libraryControl);
-                bodies[i].bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
+                bodies[i]->bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
             }
             
-            RemoveControl(bodies[i].bodyControl);
-            bodies[i].headerButton->SetSelected(false, false);
+            RemoveControl(bodies[i]->bodyControl);
+            bodies[i]->headerButton->SetSelected(false, false);
         }
     }
-    AddControl(bodies[btn->GetTag()].bodyControl);
-    bodies[btn->GetTag()].headerButton->SetSelected(true, false);    
+    AddControl(bodies[btn->GetTag()]->bodyControl);
+    bodies[btn->GetTag()]->headerButton->SetSelected(true, false);    
     
     if(libraryControl->GetParent())
     {
@@ -398,23 +392,24 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
     int32 tag = btn->GetTag();
     
     bool needToSwitchBody = false;
-    Vector<BodyItem>::iterator it = bodies.begin();
+    Vector<BodyItem*>::iterator it = bodies.begin();
     for(int32 i = 0; i < bodies.size(); ++i, ++it)
     {
-        if(btn == bodies[i].closeButton)
+        if(btn == bodies[i]->closeButton)
         {
-            if(bodies[i].bodyControl->GetParent())
+            if(bodies[i]->bodyControl->GetParent())
             {
                 RemoveControl(libraryControl);
                 
-                RemoveControl(bodies[i].bodyControl);
+                RemoveControl(bodies[i]->bodyControl);
                 needToSwitchBody = true;
             }
-            RemoveControl(bodies[i].headerButton);
+            RemoveControl(bodies[i]->headerButton);
             
-            SafeRelease(bodies[i].headerButton);
-            SafeRelease(bodies[i].closeButton);
-            SafeRelease(bodies[i].bodyControl);            
+            SafeRelease(bodies[i]->headerButton);
+            SafeRelease(bodies[i]->closeButton);
+            SafeRelease(bodies[i]->bodyControl);            
+            SafeDelete(*it);
 
             bodies.erase(it);
             break;
@@ -423,14 +418,14 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
 
     for(int32 i = 0; i < bodies.size(); ++i, ++it)
     {
-        bodies[i].headerButton->SetRect(Rect(TAB_BUTTONS_OFFSET + i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
+        bodies[i]->headerButton->SetRect(Rect(TAB_BUTTONS_OFFSET + i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
         
-        bodies[i].headerButton->SetTag(i);
-        if(bodies[i].closeButton)
+        bodies[i]->headerButton->SetTag(i);
+        if(bodies[i]->closeButton)
         {
-            bodies[i].closeButton->SetTag(i);
+            bodies[i]->closeButton->SetTag(i);
         }
-        bodies[i].bodyControl->SetTag(i);
+        bodies[i]->bodyControl->SetTag(i);
     }
     
     if(bodies.size())
@@ -441,7 +436,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
         }
 
         //set as current
-        bodies[tag].headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+        bodies[tag]->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
     }
 }
 
@@ -457,42 +452,36 @@ void SceneEditorScreenMain::OnLibraryPressed(DAVA::BaseObject *obj, void *, void
         AddControl(libraryControl);
     }
 
-    int32 iBody = FindCurrentBody();
-    if(-1 != iBody)
-    {
-        bodies[iBody].bodyControl->ShowProperties(false);
-        bodies[iBody].bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
-    }
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ShowProperties(false);
+    iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
 }
 
-int32 SceneEditorScreenMain::FindCurrentBody()
+SceneEditorScreenMain::BodyItem * SceneEditorScreenMain::FindCurrentBody()
 {
     for(int32 i = 0; i < bodies.size(); ++i)
     {
-        if(bodies[i].bodyControl->GetParent())
+        if(bodies[i]->bodyControl->GetParent())
         {
-            return i;
+            return bodies[i];
         }
     }
     
-    return -1;
+    return NULL;
 }
 
 void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *obj, void *, void *)
 {
-    int32 iBody = FindCurrentBody();
-    if(-1 != iBody)
+    BodyItem *iBody = FindCurrentBody();
+    bool areShown = iBody->bodyControl->PropertiesAreShown();
+    iBody->bodyControl->ShowProperties(!areShown);
+    
+    if(!areShown)
     {
-        bool areShown = bodies[iBody].bodyControl->PropertiesAreShown();
-        bodies[iBody].bodyControl->ShowProperties(!areShown);
-        
-        if(!areShown)
+        if(libraryControl->GetParent())
         {
-            if(libraryControl->GetParent())
-            {
-                RemoveControl(libraryControl);
-                bodies[iBody].bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
-            }
+            RemoveControl(libraryControl);
+            iBody->bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
         }
     }
 }
@@ -500,32 +489,26 @@ void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *obj, void *, v
 void SceneEditorScreenMain::OnEditSCE(const String &pathName, const String &name)
 {
     AddBodyItem(StringToWString(name), true);
-    int32 iBody = bodies.size() - 1;
-    bodies[iBody].bodyControl->OpenScene(pathName);
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->OpenScene(pathName);
 }
 
 void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 {
-    int32 iBody = FindCurrentBody();
-    if(-1 != iBody)
-    {
-        bodies[iBody].bodyControl->OpenScene(pathName);
-    }
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->OpenScene(pathName);
 }
 
 void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
 {
-    int32 iBody = FindCurrentBody();
-    if(-1 != iBody)
-    {
-        bool areShown = bodies[iBody].bodyControl->SceneGraphAreShown();
-        bodies[iBody].bodyControl->ShowSceneGraph(!areShown);
-    }
+    BodyItem *iBody = FindCurrentBody();
+    bool areShown = iBody->bodyControl->SceneGraphAreShown();
+    iBody->bodyControl->ShowSceneGraph(!areShown);
 }
 
 void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
 {
-	bodies[0].bodyControl->BeastProcessScene();
+	bodies[0]->bodyControl->BeastProcessScene();
 }
 
 void SceneEditorScreenMain::MenuCanceled()
@@ -543,12 +526,9 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
         {
             currentNodeDialog = itemID;
             
-            int32 iBody = FindCurrentBody();
-            if(-1 != iBody)
-            {
-                EditorScene *scene = bodies[iBody].bodyControl->GetScene();
-                nodeDialogs[currentNodeDialog]->SetScene(scene);
-            }
+            BodyItem *iBody = FindCurrentBody();
+            EditorScene *scene = iBody->bodyControl->GetScene();
+            nodeDialogs[currentNodeDialog]->SetScene(scene);
 
             AddControl(nodeDialogs[currentNodeDialog]);
             break;
@@ -645,11 +625,8 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
     
     if(CreateNodeDialog::RCODE_OK == retCode)
     {
-        int32 iBody = FindCurrentBody();
-        if(-1 != iBody)
-        {
-            bodies[iBody].bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
-        }
+        BodyItem *iBody = FindCurrentBody();
+        iBody->bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
     }
 }
 
