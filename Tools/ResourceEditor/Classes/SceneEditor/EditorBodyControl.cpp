@@ -18,14 +18,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     ControlsFactory::CusomizeBottomLevelControl(this);
 
 
+    CreateLeftPanel();
     
-    sceneTree = new UIHierarchy(Rect(0, 0, LEFT_SIDE_WIDTH, rect.dy));
-    ControlsFactory::CusomizeListControl(sceneTree);
-    ControlsFactory::SetScrollbar(sceneTree);
-    sceneTree->SetCellHeight(CELL_HEIGHT);
-    sceneTree->SetDelegate(this);
-    sceneTree->SetClipContents(true);
-    AddControl(sceneTree);
 
     scene3dView = new UI3DView(Rect(
                             LEFT_SIDE_WIDTH + SCENE_OFFSET, 
@@ -65,9 +59,55 @@ EditorBodyControl::~EditorBodyControl()
     SafeRelease(outputPanel);
     
     ReleaseScene();
-    
-    SafeRelease(sceneTree);
+  
+    ReleaseLeftPanel();
 }
+
+void EditorBodyControl::CreateLeftPanel()
+{
+    Rect fullRect = GetRect();
+    
+    Rect leftRect = Rect(0, 0, LEFT_SIDE_WIDTH, fullRect.dy);
+    leftPanel = ControlsFactory::CreatePanelControl(leftRect);
+    AddControl(leftPanel);
+
+    Rect treeRect = leftRect;
+    leftRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 3);
+    sceneTree = new UIHierarchy(treeRect);
+    ControlsFactory::CusomizeListControl(sceneTree);
+    ControlsFactory::SetScrollbar(sceneTree);
+    sceneTree->SetCellHeight(CELL_HEIGHT);
+    sceneTree->SetDelegate(this);
+    sceneTree->SetClipContents(true);
+    leftPanel->AddControl(sceneTree);
+    
+    int32 y = leftRect.dy;
+    lookAtButton = ControlsFactory::CreateButton(Rect(0, y, LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), L"Look At Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    removeNodeButton = ControlsFactory::CreateButton(Rect(0, y, LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), L"Remove Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(0, y, LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), L"Debug Flags");
+    
+    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
+    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
+    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
+
+    
+    leftPanel->AddControl(lookAtButton);
+    leftPanel->AddControl(removeNodeButton);
+    leftPanel->AddControl(enableDebugFlagsButton);
+}
+
+void EditorBodyControl::ReleaseLeftPanel()
+{
+    SafeRelease(sceneTree);
+    SafeRelease(leftPanel);
+    
+    SafeRelease(lookAtButton);
+    SafeRelease(removeNodeButton);
+    SafeRelease(enableDebugFlagsButton);
+}
+
 
 void EditorBodyControl::CreateScene()
 {
@@ -247,13 +287,6 @@ void EditorBodyControl::CreatePropertyPanel()
     
     worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
 
-    lookAtButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Look At Object");
-    removeNodeButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Remove Object");
-    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Debug Flags");
-    
-    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
-    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
-    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
     
     Rect fullRect = GetRect();
     activePropertyPanel = new PropertyPanel(Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y));
@@ -266,9 +299,6 @@ void EditorBodyControl::CreatePropertyPanel()
     activePropertyPanel->AddPropertyControl(worldMatrixControl);
     nodeBoundingBoxMin = SafeRetain(activePropertyPanel->AddHeader(L"-"));
     nodeBoundingBoxMax = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-    activePropertyPanel->AddPropertyControl(lookAtButton);
-    activePropertyPanel->AddPropertyControl(removeNodeButton);
-    activePropertyPanel->AddPropertyControl(enableDebugFlagsButton);
     
     AddControl(activePropertyPanel);
 }
@@ -278,9 +308,6 @@ void EditorBodyControl::ReleasePropertyPanel()
     SafeRelease(nodeName);
     SafeRelease(nodeBoundingBoxMin);
     SafeRelease(nodeBoundingBoxMax);
-    SafeRelease(lookAtButton);
-    SafeRelease(removeNodeButton);
-    SafeRelease(enableDebugFlagsButton);
     SafeRelease(activePropertyPanel);
 }
 
@@ -747,18 +774,18 @@ bool EditorBodyControl::PropertiesAreShown()
 
 void EditorBodyControl::ShowSceneGraph(bool show)
 {
-    if(show && !sceneTree->GetParent())
+    if(show && !leftPanel->GetParent())
     {
-        AddControl(sceneTree);
+        AddControl(leftPanel);
 
         ChangeControlWidthLeft(scene3dView, LEFT_SIDE_WIDTH);
         ChangeControlWidthLeft(outputPanel, LEFT_SIDE_WIDTH);
         
         sceneTree->Refresh();
     }
-    else if(!show && sceneTree->GetParent())
+    else if(!show && leftPanel->GetParent())
     {
-        RemoveControl(sceneTree);
+        RemoveControl(leftPanel);
         
         ChangeControlWidthLeft(scene3dView, -LEFT_SIDE_WIDTH);
         ChangeControlWidthLeft(outputPanel, -LEFT_SIDE_WIDTH);
@@ -767,7 +794,7 @@ void EditorBodyControl::ShowSceneGraph(bool show)
 
 bool EditorBodyControl::SceneGraphAreShown()
 {
-    return (sceneTree->GetParent() != NULL);
+    return (leftPanel->GetParent() != NULL);
 }
 
 void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
