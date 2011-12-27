@@ -15,6 +15,7 @@
 		475D595B1300236500A18EC7 /* Box2DTileCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D59551300236500A18EC7 /* Box2DTileCollider.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		D974192114AA23250038B770 /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D974192014AA23250038B770 /* BaseObject.cpp */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		EA7DEDDD1448550100D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */; };
 		EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA6D63114753FF0000898F8 /* TextGameObject.cpp */; };
@@ -321,9 +322,6 @@
 		FECFB69912E5904500C71562 /* SceneFile.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB42812E5904400C71562 /* SceneFile.h */; };
 		FECFB69A12E5904500C71562 /* SceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB42912E5904400C71562 /* SceneNode.cpp */; };
 		FECFB69B12E5904500C71562 /* SceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB42A12E5904400C71562 /* SceneNode.h */; };
-		FECFB69C12E5904500C71562 /* SceneNode2d.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB42B12E5904500C71562 /* SceneNode2d.h */; };
-		FECFB69D12E5904500C71562 /* SceneNode3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB42C12E5904500C71562 /* SceneNode3d.cpp */; };
-		FECFB69E12E5904500C71562 /* SceneNode3d.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB42D12E5904500C71562 /* SceneNode3d.h */; };
 		FECFB69F12E5904500C71562 /* SceneNodeAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB42E12E5904500C71562 /* SceneNodeAnimation.cpp */; };
 		FECFB6A012E5904500C71562 /* SceneNodeAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB42F12E5904500C71562 /* SceneNodeAnimation.h */; };
 		FECFB6A112E5904500C71562 /* SceneNodeAnimationKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB43012E5904500C71562 /* SceneNodeAnimationKey.cpp */; };
@@ -452,6 +450,7 @@
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D974192014AA23250038B770 /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EDA6D63114753FF0000898F8 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
@@ -758,9 +757,6 @@
 		FECFB42812E5904400C71562 /* SceneFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFile.h; sourceTree = "<group>"; };
 		FECFB42912E5904400C71562 /* SceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNode.cpp; sourceTree = "<group>"; };
 		FECFB42A12E5904400C71562 /* SceneNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNode.h; sourceTree = "<group>"; };
-		FECFB42B12E5904500C71562 /* SceneNode2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNode2d.h; sourceTree = "<group>"; };
-		FECFB42C12E5904500C71562 /* SceneNode3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNode3d.cpp; sourceTree = "<group>"; };
-		FECFB42D12E5904500C71562 /* SceneNode3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNode3d.h; sourceTree = "<group>"; };
 		FECFB42E12E5904500C71562 /* SceneNodeAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNodeAnimation.cpp; sourceTree = "<group>"; };
 		FECFB42F12E5904500C71562 /* SceneNodeAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeAnimation.h; sourceTree = "<group>"; };
 		FECFB43012E5904500C71562 /* SceneNodeAnimationKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneNodeAnimationKey.cpp; sourceTree = "<group>"; };
@@ -998,7 +994,6 @@
 				FECFB40D12E5904400C71562 /* Scene2D */,
 				FECFB41812E5904400C71562 /* Scene3D */,
 				FE578B3013278D720081BDE9 /* Sound */,
-				FECFB44712E5904500C71562 /* Thread */,
 				FECFB44812E5904500C71562 /* UI */,
 				FECFB47C12E5904500C71562 /* Utils */,
 			);
@@ -1031,6 +1026,7 @@
 		FECFB33E12E5904400C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				D974192014AA23250038B770 /* BaseObject.cpp */,
 				FECFB33F12E5904400C71562 /* BaseMath.cpp */,
 				FECFB34012E5904400C71562 /* BaseMath.h */,
 				FECFB34112E5904400C71562 /* BaseObject.h */,
@@ -1392,9 +1388,6 @@
 				FECFB42A12E5904400C71562 /* SceneNode.h */,
 				FECFB41D12E5904400C71562 /* MeshInstanceNode.cpp */,
 				FECFB41E12E5904400C71562 /* MeshInstanceNode.h */,
-				FECFB42B12E5904500C71562 /* SceneNode2d.h */,
-				FECFB42C12E5904500C71562 /* SceneNode3d.cpp */,
-				FECFB42D12E5904500C71562 /* SceneNode3d.h */,
 				FECFB42E12E5904500C71562 /* SceneNodeAnimation.cpp */,
 				FECFB42F12E5904500C71562 /* SceneNodeAnimation.h */,
 				FECFB43012E5904500C71562 /* SceneNodeAnimationKey.cpp */,
@@ -1408,13 +1401,6 @@
 				FECFB43712E5904500C71562 /* StateNode.h */,
 			);
 			path = Scene3D;
-			sourceTree = "<group>";
-		};
-		FECFB44712E5904500C71562 /* Thread */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Thread;
 			sourceTree = "<group>";
 		};
 		FECFB44812E5904500C71562 /* UI */ = {
@@ -1682,8 +1668,6 @@
 				FECFB69712E5904500C71562 /* SceneAnimationMixer.h in Headers */,
 				FECFB69912E5904500C71562 /* SceneFile.h in Headers */,
 				FECFB69B12E5904500C71562 /* SceneNode.h in Headers */,
-				FECFB69C12E5904500C71562 /* SceneNode2d.h in Headers */,
-				FECFB69E12E5904500C71562 /* SceneNode3d.h in Headers */,
 				FECFB6A012E5904500C71562 /* SceneNodeAnimation.h in Headers */,
 				FECFB6A212E5904500C71562 /* SceneNodeAnimationKey.h in Headers */,
 				FECFB6A412E5904500C71562 /* SceneNodeAnimationList.h in Headers */,
@@ -1946,7 +1930,6 @@
 				FECFB69612E5904500C71562 /* SceneAnimationMixer.cpp in Sources */,
 				FECFB69812E5904500C71562 /* SceneFile.cpp in Sources */,
 				FECFB69A12E5904500C71562 /* SceneNode.cpp in Sources */,
-				FECFB69D12E5904500C71562 /* SceneNode3d.cpp in Sources */,
 				FECFB69F12E5904500C71562 /* SceneNodeAnimation.cpp in Sources */,
 				FECFB6A112E5904500C71562 /* SceneNodeAnimationKey.cpp in Sources */,
 				FECFB6A312E5904500C71562 /* SceneNodeAnimationList.cpp in Sources */,
@@ -2032,6 +2015,7 @@
 				FEE98EFF146948C900EEAEFC /* UberShader.cpp in Sources */,
 				FEE98F03146948EB00EEAEFC /* Data.cpp in Sources */,
 				EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */,
+				D974192114AA23250038B770 /* BaseObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
