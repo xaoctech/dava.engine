@@ -152,6 +152,8 @@ private:
     void InitializeNodeDialogs();
     void ReleaseNodeDialogs();
     
+    UIControl *dialogBack;
+    
     // general
     Font *font;
     KeyedArchive *keyedArchieve;

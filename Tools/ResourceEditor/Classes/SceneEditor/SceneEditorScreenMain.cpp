@@ -110,6 +110,7 @@ void SceneEditorScreenMain::WillDisappear()
 
 void SceneEditorScreenMain::Update(float32 timeElapsed)
 {
+    UIScreen::Update(timeElapsed);
 }
 
 void SceneEditorScreenMain::Draw(const UIGeometricData &geometricData)
@@ -530,6 +531,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             EditorScene *scene = iBody->bodyControl->GetScene();
             nodeDialogs[currentNodeDialog]->SetScene(scene);
 
+            AddControl(dialogBack);
             AddControl(nodeDialogs[currentNodeDialog]);
             break;
         }
@@ -622,6 +624,7 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
     RemoveControl(nodeDialogs[currentNodeDialog]);
+    RemoveControl(dialogBack);
     
     if(CreateNodeDialog::RCODE_OK == retCode)
     {
@@ -634,15 +637,25 @@ void SceneEditorScreenMain::DialogClosed(int32 retCode)
 
 void SceneEditorScreenMain::InitializeNodeDialogs()
 {
-    String path = keyedArchieve->GetString("LastSavedPath", "/");
-    Rect fullRect = GetRect();
+    Rect rect = GetRect();
+    dialogBack = ControlsFactory::CreatePanelControl(rect);
+    ControlsFactory::CustomizeDialogFreeSpace(dialogBack);
     
-    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(fullRect);    
-    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(fullRect);    
-    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(fullRect);    
-    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(fullRect);    
-    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(fullRect);    
-    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(fullRect);    
+    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    
+    Rect r;
+    r.dx = rect.dx / 2;
+    r.dy = rect.dy / 2;
+    
+    r.x = rect.x + r.dx / 2;
+    r.y = rect.y + r.dy / 2;
+
+    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(r);    
+    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(r);    
+    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(r);    
+    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(r);    
+    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(r);    
+    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(r);    
     
     for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
     {
@@ -657,4 +670,6 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
     {
         SafeRelease(nodeDialogs[iDlg]);
     }
+    
+    SafeRelease(dialogBack);
 }
