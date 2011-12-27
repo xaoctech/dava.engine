@@ -13,7 +13,7 @@ CreateServiceNodeDialog::~CreateServiceNodeDialog()
 
 void CreateServiceNodeDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Service Node", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Service Node", PropertyList::PROPERTY_IS_EDITABLE);
 }
 
 void CreateServiceNodeDialog::CreateNode()
@@ -21,10 +21,10 @@ void CreateServiceNodeDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new SceneNode(scene);
     
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
 }
 
 void CreateServiceNodeDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Service Node");
+    propertyList->SetStringPropertyValue("Name", "Service Node");
 }

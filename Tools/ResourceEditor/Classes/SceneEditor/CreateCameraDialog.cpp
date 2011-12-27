@@ -13,7 +13,7 @@ CreateCameraDialog::~CreateCameraDialog()
 
 void CreateCameraDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Camera", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Camera", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Fov", 70.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("zNear", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("zFar", 5000.f, PropertyList::PROPERTY_IS_EDITABLE);
@@ -28,7 +28,7 @@ void CreateCameraDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new Camera(scene);
     
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
 
     ((Camera *)sceneNode)->Setup(
                                  propertyList->GetFloatPropertyValue("Fov"),
@@ -44,7 +44,7 @@ void CreateCameraDialog::CreateNode()
 
 void CreateCameraDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Camera");
+    propertyList->SetStringPropertyValue("Name", "Camera");
     propertyList->SetFloatPropertyValue("Fov", 70.f);
     propertyList->SetFloatPropertyValue("zNear", 1.f);
     propertyList->SetFloatPropertyValue("zFar", 5000.f);

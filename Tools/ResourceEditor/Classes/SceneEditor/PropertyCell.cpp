@@ -20,7 +20,7 @@ PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect,
 
     property = prop;
     keyName = new UIStaticText(Rect(0, 0, size.x, size.y));
-    keyName->SetFont(ControlsFactory::CreateFontLight());
+    keyName->SetFont(ControlsFactory::GetFontLight());
     AddControl(keyName);
 }
 
@@ -47,8 +47,9 @@ PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyC
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     keyName->size.x = width/2;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
   
-    Font * font = ControlsFactory::CreateFontLight();
+    Font * font = ControlsFactory::GetFontLight();
     editableText = new UITextField(Rect(width/2, 0, width/2, size.y));
     ControlsFactory::CustomizeEditablePropertyCell(editableText);
     editableText->SetFont(font);
@@ -58,7 +59,6 @@ PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyC
     ControlsFactory::CustomizeUneditablePropertyCell(uneditableTextContainer);
     uneditableText = new UIStaticText(Rect(0, 0, uneditableTextContainer->size.x, uneditableTextContainer->size.y));
     uneditableText->SetFont(font);
-    SafeRelease(font);
     uneditableTextContainer->AddControl(uneditableText);
     
     SetData(prop);
@@ -225,7 +225,7 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     ControlsFactory::CustomizeUneditablePropertyCell(textContainer);
     AddControl(textContainer);
     
-    Font * font = ControlsFactory::CreateFontLight();
+    Font * font = ControlsFactory::GetFontLight();
     falseText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
     falseText->SetText(L"False");
     falseText->SetFont(font);
@@ -233,7 +233,6 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     trueText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
     trueText->SetText(L"True");
     trueText->SetFont(font);
-    SafeRelease(font);
     
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(usedWidth, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);

@@ -14,7 +14,7 @@ CreateLandscapeDialog::~CreateLandscapeDialog()
 
 void CreateLandscapeDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Landscape", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Landscape", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("HeightMap", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
@@ -27,7 +27,7 @@ void CreateLandscapeDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new LandscapeNode(scene);
 
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
     //    propertyList->GetFilepathProperty("HeightMap");
     //    propertyList->GetFilepathProperty("TEXTURE_TEXTURE0");
     //    propertyList->GetFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL");
@@ -37,7 +37,7 @@ void CreateLandscapeDialog::CreateNode()
 
 void CreateLandscapeDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Landscape");
+    propertyList->SetStringPropertyValue("Name", "Landscape");
     propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
