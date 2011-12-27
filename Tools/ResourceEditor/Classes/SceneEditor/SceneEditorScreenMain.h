@@ -80,8 +80,6 @@ public:
 
 private:
     
-    int32 FindCurrentBody();
-    
     void AddLineControl(Rect r);
     
     //menu
@@ -112,7 +110,8 @@ private:
         EditorBodyControl *bodyControl;
     };
     
-    Vector<BodyItem> bodies;
+    BodyItem * FindCurrentBody();
+    Vector<BodyItem *> bodies;
     
     void InitializeBodyList();
     void ReleaseBodyList();
