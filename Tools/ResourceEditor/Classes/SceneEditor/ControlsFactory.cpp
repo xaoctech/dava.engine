@@ -238,3 +238,45 @@ void ControlsFactory::CustomizeDialogFreeSpace(UIControl *c)
 }
 
 
+void ControlsFactory::SetScrollbar(DAVA::UIList *l)
+{
+    Rect fr = l->GetRect();
+    
+    Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
+    
+    UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
+                                             UIScrollBar::ORIENTATION_VERTICAL);
+    
+    scrollBar->GetSlider()->SetSprite(scrollSpr, 0);
+    scrollBar->GetSlider()->GetBackground()->SetDrawType(UIControlBackground::DRAW_STRETCH_VERTICAL);
+    scrollBar->GetSlider()->GetBackground()->SetTopBottomStretchCap(10);
+    
+    scrollBar->SetDelegate(l);
+    scrollBar->SetInputEnabled(false);
+    l->AddControl(scrollBar);
+    
+    SafeRelease(scrollSpr);
+    SafeRelease(scrollBar);
+}
+
+void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
+{
+    Rect fr = h->GetRect();
+    
+    Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
+    
+    UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
+                                             UIScrollBar::ORIENTATION_VERTICAL);
+    
+    scrollBar->GetSlider()->SetSprite(scrollSpr, 0);
+    scrollBar->GetSlider()->GetBackground()->SetDrawType(UIControlBackground::DRAW_STRETCH_VERTICAL);
+    scrollBar->GetSlider()->GetBackground()->SetTopBottomStretchCap(10);
+    
+    scrollBar->SetDelegate(h);
+    scrollBar->SetInputEnabled(false);
+    h->AddControl(scrollBar);
+    
+    SafeRelease(scrollSpr);
+    SafeRelease(scrollBar);
+}
+
