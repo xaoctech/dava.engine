@@ -61,7 +61,6 @@ LibraryControl::~LibraryControl()
     SafeRelease(panelDAE);
     SafeRelease(panelSCE);
     
-    
     SafeRelease(refreshButton);
     
     SafeRelease(fileTreeControl);

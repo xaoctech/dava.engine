@@ -20,7 +20,6 @@ class EditorBodyControl : public UIControl, public UIHierarchyDelegate
         RIGHT_SIDE_WIDTH = 200,
         CELL_HEIGHT = 20,
         MATRIX_HEIGHT = 100,
-        BUTTON_HEIGHT = 20,
         OUTPUT_PANEL_HEIGHT = 200,
     };
 
@@ -89,8 +88,20 @@ protected:
     virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node);
     virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
     
+    //left Panel
+    void CreateLeftPanel();
+    void ReleaseLeftPanel();
     
+    UIControl *leftPanel;
     UIHierarchy * sceneTree;
+    UIButton * lookAtButton;
+    UIButton * removeNodeButton;
+    UIButton * enableDebugFlagsButton;
+    
+    void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
+    void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
+    void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
+    
     
     //scene controls
     EditorScene * scene;
@@ -110,13 +121,6 @@ protected:
     UIStaticText * nodeCenter;
     UIStaticText * nodeBoundingBoxMin;
     UIStaticText * nodeBoundingBoxMax;
-    UIButton * lookAtButton;
-    UIButton * removeNodeButton;
-    UIButton * enableDebugFlagsButton;
-    
-    void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
-    void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
-    void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
     
     // touch
     float32 currentTankAngle;
