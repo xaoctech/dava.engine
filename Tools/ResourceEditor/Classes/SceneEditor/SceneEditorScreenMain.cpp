@@ -417,7 +417,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
         }
     }
 
-    for(int32 i = 0; i < bodies.size(); ++i, ++it)
+    for(int32 i = 0; i < bodies.size(); ++i)
     {
         bodies[i]->headerButton->SetRect(Rect(TAB_BUTTONS_OFFSET + i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
         
