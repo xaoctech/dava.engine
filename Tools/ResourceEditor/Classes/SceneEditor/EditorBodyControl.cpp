@@ -21,6 +21,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     sceneTree = new UIHierarchy(Rect(0, 0, LEFT_SIDE_WIDTH, rect.dy));
     ControlsFactory::CusomizeListControl(sceneTree);
+    ControlsFactory::SetScrollbar(sceneTree);
     sceneTree->SetCellHeight(CELL_HEIGHT);
     sceneTree->SetDelegate(this);
     sceneTree->SetClipContents(true);

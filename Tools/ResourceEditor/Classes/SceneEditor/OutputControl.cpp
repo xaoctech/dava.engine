@@ -7,6 +7,7 @@ OutputControl::OutputControl(const Rect & rect)
 {
     messageList = new UIList(Rect(5, 0, rect.dx - 10, rect.dy), UIList::ORIENTATION_VERTICAL);
     messageList->SetDelegate(this);
+    ControlsFactory::SetScrollbar(messageList);
     AddControl(messageList);
 }
 
