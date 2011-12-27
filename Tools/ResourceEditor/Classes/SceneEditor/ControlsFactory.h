@@ -25,9 +25,9 @@ public:
     static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);
     
-    static Font* CreateFontLight();
+    static Font* GetFontLight();
     static void CustomizeFontLight(Font *font);
-    static Font* CreateFontDark();
+    static Font* GetFontDark();
     static void CustomizeFontDark(Font *font);
 
     static void CustomizeScreenBack(UIControl *screen);
@@ -59,6 +59,9 @@ public:
     
     static void SetScrollbar(UIList *l);
     static void SetScrollbar(UIHierarchy *l);
+    
+    static Font* fontLight;
+    static Font* fontDark;
 };
 
 

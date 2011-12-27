@@ -13,7 +13,7 @@ CreateSphereDialog::~CreateSphereDialog()
 
 void CreateSphereDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Sphere", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Sphere", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Radius", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("r", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("g", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
@@ -26,7 +26,7 @@ void CreateSphereDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new SphereNode(scene);
     
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
     
     Color color(
                 propertyList->GetFloatPropertyValue("r"),
@@ -41,7 +41,7 @@ void CreateSphereDialog::CreateNode()
 
 void CreateSphereDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Sphere");
+    propertyList->SetStringPropertyValue("Name", "Sphere");
     propertyList->SetFloatPropertyValue("Radius", 1.f);
     propertyList->SetFloatPropertyValue("r", 0.f);
     propertyList->SetFloatPropertyValue("g", 0.f);

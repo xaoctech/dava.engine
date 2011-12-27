@@ -63,6 +63,7 @@ public:
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
         // MATERIAL_VERTEX_LIGHTING,       // flag
         // MATERIAL_NORMAL_MAPPED,         // flag
+        MATERIAL_TYPES_COUNT
     };
 
     Material(Scene * sc);
