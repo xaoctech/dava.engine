@@ -3,8 +3,10 @@
 
 
 CreateNodeDialog::CreateNodeDialog(const Rect & rect)
-    :   UIControl(rect)
+    :   DraggableDialog(rect)
 {
+    ControlsFactory::CustomizeDialogFreeSpace(this);
+
     projectPath = "/";
     
     sceneNode = NULL;
@@ -12,41 +14,30 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     
     dialogDelegate = NULL;
     
-    Rect r;
-    r.dx = rect.dx / 2;
-    r.dy = rect.dy / 2;
-    
-    r.x = rect.x + r.dx / 2;
-    r.y = rect.y + r.dy / 2;
-    UIControl *panel = ControlsFactory::CreatePanelControl(r);
-    AddControl(panel);
-    
-    header = new UIStaticText(Rect(0, 0, r.dx, BUTTON_HEIGHT));
+    header = new UIStaticText(Rect(0, 0, rect.dx, BUTTON_HEIGHT));
     Font *font = ControlsFactory::GetFontLight();
     header->SetFont(font);
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-    panel->AddControl(header);
+    AddControl(header);
     
-    int32 buttonY = r.dy - BUTTON_HEIGHT - 2;
-    int32 buttonX = (r.dx - BUTTON_WIDTH * 2 - 2) / 2;
+    int32 buttonY = rect.dy - BUTTON_HEIGHT - 2;
+    int32 buttonX = (rect.dx - BUTTON_WIDTH * 2 - 2) / 2;
     
     UIButton *btnCancel = ControlsFactory::CreateButton(Rect(buttonX, buttonY, BUTTON_WIDTH, BUTTON_HEIGHT), L"Cancel");
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodeDialog::OnCancel));
-    panel->AddControl(btnCancel);
+    AddControl(btnCancel);
     
     buttonX += BUTTON_WIDTH + 1;
     UIButton *btnOk = ControlsFactory::CreateButton(Rect(buttonX, buttonY, BUTTON_WIDTH, BUTTON_HEIGHT), L"Ok");
     btnOk->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodeDialog::OnOk));
-    panel->AddControl(btnOk);
+    AddControl(btnOk);
     
-    Rect propertyRect(0, BUTTON_HEIGHT, r.dx, buttonY - BUTTON_HEIGHT);
+    Rect propertyRect(0, BUTTON_HEIGHT, rect.dx, buttonY - BUTTON_HEIGHT);
     propertyList = new PropertyList(propertyRect, this);
-    panel->AddControl(propertyList);
-
+    AddControl(propertyList);
     
     SafeRelease(btnCancel);
     SafeRelease(btnOk);
-    SafeRelease(panel);
 }
     
 CreateNodeDialog::~CreateNodeDialog()
@@ -79,27 +70,6 @@ void CreateNodeDialog::OnOk(BaseObject * object, void * userData, void * callerD
     }
 }
 
-//void CreateNodeDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
-//{
-//    
-//}
-//
-//void CreateNodeDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
-//{
-//    
-//}
-//
-//void CreateNodeDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
-//{
-//    
-//}
-//
-//void CreateNodeDialog::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
-//{
-//    
-//}
-
-
 SceneNode * CreateNodeDialog::GetSceneNode()
 {
     return sceneNode;
@@ -115,7 +85,7 @@ void CreateNodeDialog::WillAppear()
     
     ClearPropertyValues();
     
-    UIControl::WillAppear();
+    DraggableDialog::WillAppear();
 }
 
 void CreateNodeDialog::SetScene(Scene *_scene)

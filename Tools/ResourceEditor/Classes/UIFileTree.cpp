@@ -164,6 +164,7 @@ void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current)
 {
 	FileList * fileList = new FileList(path);
+    fileList->Sort();
 	
 	// Find flags and setup them
 	for (int fi = 0; fi < fileList->GetCount(); ++fi)
@@ -273,7 +274,8 @@ int32 UITreeItemInfo::GetTotalCount()
                 }
             }
             //add new
-            for (int32 iNew = 0; iNew < (int32)inf->children.size(); ++iNew)
+            Vector<UITreeItemInfo *>::iterator it = children.begin();
+            for (int32 iNew = 0; iNew < (int32)inf->children.size(); ++iNew, ++it)
             {
                 bool wasFound = false;
                 for (int32 iOld = 0; iOld < (int32)children.size(); ++iOld)
@@ -287,7 +289,16 @@ int32 UITreeItemInfo::GetTotalCount()
                 
                 if(!wasFound)
                 {
-                    children.push_back(SafeRetain(inf->children[iNew]));
+                    children.insert(it, SafeRetain(inf->children[iNew]));
+                    for (it = children.begin(); it < children.end(); ++it)
+                    {
+                        if((*it)->name == inf->children[iNew]->name)
+                        {
+                            break;
+                        }
+                    }
+                    
+//                    children.push_back(SafeRetain(inf->children[iNew]));
                 }
             }
             

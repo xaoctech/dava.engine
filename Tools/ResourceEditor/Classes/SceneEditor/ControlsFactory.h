@@ -7,9 +7,18 @@ using namespace DAVA;
 
 class ControlsFactory 
 {
-
 public:
     
+    enum eControlSize
+    {
+        BUTTON_HEIGHT = 20,
+        BUTTON_WIDTH = 100,
+    };
+    
+    
+public:
+    
+    static UIButton *CreateButton(Vector2 pos, const WideString &buttonText);
     static UIButton *CreateButton(const Rect & rect, const WideString &buttonText);
     static void CustomizeButton(UIButton *btn, const WideString &buttonText);
 
@@ -24,6 +33,7 @@ public:
     static void CustomizeScreenBack(UIControl *screen);
     
     static UIControl * CreateLine(const Rect & rect);
+    static UIControl * CreateLine(const Rect & rect, Color color);
     
     static void CusomizeBottomLevelControl(UIControl *c);
 
@@ -44,6 +54,11 @@ public:
     static void CustomizePropertyCell(UIControl *c, bool isActivePart);
     static void CustomizeEditablePropertyCell(UIControl *c);
     static void CustomizeUneditablePropertyCell(UIControl *c);
+    
+    static void CustomizeDialogFreeSpace(UIControl *c);
+    
+    static void SetScrollbar(UIList *l);
+    static void SetScrollbar(UIHierarchy *l);
     
     static Font* fontLight;
     static Font* fontDark;

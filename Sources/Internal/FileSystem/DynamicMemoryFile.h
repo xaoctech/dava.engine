@@ -51,7 +51,7 @@ namespace DAVA
 		 \param[in] attributes combinations of eFileAttributes
 		 \returns file instance
 		 */
-		static DynamicMemoryFile * Create(const int8 * data, int32 dataSize, uint32 attributes);
+		static DynamicMemoryFile * Create(const uint8 * data, int32 dataSize, uint32 attributes);
 
 		/** 
 		 \brief funciton to create a file instance with give attributes
@@ -120,7 +120,7 @@ namespace DAVA
 		
 	private:
 		int32 currentPtr;
-		Vector<int8> data;
+		Vector<uint8> data;
 		uint32 fileAttributes;
 	};
 };

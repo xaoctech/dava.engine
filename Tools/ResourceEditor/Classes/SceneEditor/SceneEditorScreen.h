@@ -126,7 +126,6 @@ public:
     WASDCameraController * cameraController;
     UIStaticText * cameraInfo;
     UIStaticText * clipCameraInfo;
-        
 };
 
 #endif // __SCENE_EDITOR_SCREEN_H__

@@ -34,7 +34,7 @@ void PropertyCell::SetData(PropertyCellData *prop)
 {
     property = prop;
     property->currentCell = this;
-    keyName->SetText(StringToWString(prop->key) + L" :");
+    keyName->SetText(StringToWString(prop->key) + L" : ");
 }
 
 String PropertyCell::GetTypeName(int cellType)
@@ -209,7 +209,7 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
 
 float32 PropertyTextCell::GetHeightForWidth(float32 currentWidth)
 {
-    return 30.f;
+    return CELL_HEIGHT;
 }
 
 //********************* PropertyBoolCell *********************

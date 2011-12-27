@@ -90,6 +90,8 @@ public:
 	 */
 	bool IsNavigationDirectory(int32 index);
 	
+    void Sort();
+    
 private:
 	struct FileEntry
 	{
@@ -97,6 +99,33 @@ private:
 		String pathName;
 		uint32		size;
 		bool		isDirectory;
+        
+        bool operator< (const FileEntry &other) const
+        {
+            if (!isDirectory && other.isDirectory) 
+            {
+                return false;
+            }
+            else if(isDirectory && !other.isDirectory)
+            {
+                return true;
+            }
+            
+            String n1 = "";
+            n1.resize(name.length());
+            std::transform(name.begin(), name.end(), n1.begin(), ::tolower);
+            
+            String n2 = "";
+            n2.resize(other.name.length());
+            std::transform(other.name.begin(), other.name.end(), n2.begin(), ::tolower);
+            
+            if(n1 < n2)
+            {
+                return true;
+            }
+            
+            return false;
+        }
 	};
 	String					path;
 	Vector< FileEntry >	fileList;

@@ -19,6 +19,7 @@ LibraryControl::LibraryControl(const Rect & rect)
     
     fileTreeControl = new UIFileTree(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dy - BUTTON_HEIGHT - rect.dx));
     ControlsFactory::CusomizeListControl(fileTreeControl);
+    ControlsFactory::SetScrollbar(fileTreeControl);
 	fileTreeControl->SetDelegate(this);
 	fileTreeControl->SetFolderNavigation(false);
     fileTreeControl->EnableRootFolderChange(false);
@@ -59,7 +60,6 @@ LibraryControl::~LibraryControl()
     
     SafeRelease(panelDAE);
     SafeRelease(panelSCE);
-    
     
     SafeRelease(refreshButton);
     
