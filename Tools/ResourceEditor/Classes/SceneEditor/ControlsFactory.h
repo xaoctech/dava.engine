@@ -54,6 +54,8 @@ public:
     static void CustomizePropertyCell(UIControl *c, bool isActivePart);
     static void CustomizeEditablePropertyCell(UIControl *c);
     static void CustomizeUneditablePropertyCell(UIControl *c);
+    
+    static void CustomizeDialogFreeSpace(UIControl *c);
 };
 
 

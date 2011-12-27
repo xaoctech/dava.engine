@@ -3,7 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "PropertyList.h"
-
+#include "DraggableDialog.h"
 
 using namespace DAVA;
 
@@ -14,7 +14,7 @@ public:
     virtual void DialogClosed(int32 retCode) = 0;
 };
 
-class CreateNodeDialog: public UIControl, public PropertyListDelegate
+class CreateNodeDialog: public DraggableDialog, public PropertyListDelegate
 {
     enum eConst
     {

@@ -19,6 +19,8 @@ public:
     void SetRadius(float32 _radius);
     void UpdateCamera();
     
+    void SetControlHeight(int32 height);
+    
 private:
 
     
@@ -34,6 +36,8 @@ private:
     Vector2 zoomStopPt;
     
     float32 zoomLevel;
+    
+    int32 controlHeight;
 };
 
 class ScenePreviewControl: public UI3DView
