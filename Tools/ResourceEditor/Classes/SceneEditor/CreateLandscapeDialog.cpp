@@ -15,9 +15,8 @@ CreateLandscapeDialog::~CreateLandscapeDialog()
 void CreateLandscapeDialog::InitializeProperties()
 {
     propertyList->AddTextProperty("Name", "Landscape", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Length", 100.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Width", 100.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("Depth", 10.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("Size", 100.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("Height", 10.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("HeightMap", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
@@ -33,19 +32,19 @@ void CreateLandscapeDialog::CreateNode()
     sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
     
     
-    Vector3 size(
-                 propertyList->GetFloatPropertyValue("Length"),
-                 propertyList->GetFloatPropertyValue("Width"),
-                 propertyList->GetFloatPropertyValue("Depth"));
-    AABBox3 bbox;
-    bbox.AddPoint(-size / 2);
-    bbox.AddPoint(size / 2);
-    
-    
-    ((LandscapeNode *)sceneNode)->BuildLandscapeFromHeightmapImage(
-                                LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", bbox);
-    
-    Texture::EnableMipmapGeneration();
+	Vector3 size(
+		propertyList->GetFloatPropertyValue("Size"),
+		propertyList->GetFloatPropertyValue("Size"),
+		propertyList->GetFloatPropertyValue("Height"));
+	AABBox3 bbox;
+	bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
+	bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
+
+
+	((LandscapeNode *)sceneNode)->BuildLandscapeFromHeightmapImage(
+		LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", bbox);
+
+	Texture::EnableMipmapGeneration();
     ((LandscapeNode *)sceneNode)->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
     ((LandscapeNode *)sceneNode)->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
     Texture::DisableMipmapGeneration();
@@ -62,10 +61,8 @@ void CreateLandscapeDialog::ClearPropertyValues()
 {
     propertyList->SetTextPropertyValue("Name", "Landscape");
     
-    propertyList->SetFloatPropertyValue("Length", 100.f);
-    propertyList->SetFloatPropertyValue("Width", 100.f); 
-    propertyList->SetFloatPropertyValue("Depth", 10.f);
-
+    propertyList->SetFloatPropertyValue("Size", 100.f);
+    propertyList->SetFloatPropertyValue("Height", 10.f); 
     
     propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
