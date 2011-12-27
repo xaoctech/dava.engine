@@ -224,9 +224,16 @@ void ControlsFactory::CustomizeEditablePropertyCell(UIControl *c)
     c->GetBackground()->color = Color(0.2f, 0.2f, 0.2f, 0.6f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
+
 void ControlsFactory::CustomizeUneditablePropertyCell(UIControl *c)
 {
     c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 0.5f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
+
+void ControlsFactory::CustomizeDialogFreeSpace(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.0f, 0.0f, 0.0f, 0.5f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
 

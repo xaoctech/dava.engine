@@ -3,8 +3,10 @@
 
 
 CreateNodeDialog::CreateNodeDialog(const Rect & rect)
-    :   UIControl(rect)
+    :   DraggableDialog(rect)
 {
+    ControlsFactory::CustomizeDialogFreeSpace(this);
+
     projectPath = "/";
     
     sceneNode = NULL;
@@ -116,7 +118,7 @@ void CreateNodeDialog::WillAppear()
     
     ClearPropertyValues();
     
-    UIControl::WillAppear();
+    DraggableDialog::WillAppear();
 }
 
 void CreateNodeDialog::SetScene(Scene *_scene)
