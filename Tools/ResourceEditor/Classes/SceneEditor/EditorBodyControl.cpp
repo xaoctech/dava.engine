@@ -145,12 +145,12 @@ void EditorBodyControl::CreateModificationPanel(void)
 		modificationPanel->AddControl(btnAxis[i]);
 	}
 	UIStaticText * st = new UIStaticText(Rect(55, 0, 80, BUTTON_W));
-    st->SetFont(ControlsFactory::CreateFontLight());
+    st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"w, e, r");
     modificationPanel->AddControl(st);
 
 	st = new UIStaticText(Rect(55, BUTTON_W + BUTTON_B, 80, BUTTON_W));
-    st->SetFont(ControlsFactory::CreateFontLight());
+    st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"5, 6, 7, 8");
     modificationPanel->AddControl(st);
 	

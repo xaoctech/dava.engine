@@ -20,7 +20,7 @@ void SceneEditorScreenMain::LoadResources()
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     ControlsFactory::CustomizeScreenBack(this);
 
-    font = ControlsFactory::CreateFontLight();
+    font = ControlsFactory::GetFontLight();
     
     //init file system dialog
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -94,8 +94,6 @@ void SceneEditorScreenMain::UnloadResources()
     ReleaseBodyList();
     
     ReleaseTopMenu();
-    
-    SafeRelease(font);
 }
 
 

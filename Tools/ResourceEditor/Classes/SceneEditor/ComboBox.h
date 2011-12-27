@@ -18,7 +18,7 @@ class ComboBox;
 class ComboBoxDelegate
 {
 public:
-    void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int &itemIndex){};
+    virtual void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex){};
 };
 
 

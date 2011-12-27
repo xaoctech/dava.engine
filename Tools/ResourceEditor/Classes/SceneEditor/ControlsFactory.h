@@ -16,9 +16,9 @@ public:
     static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);
     
-    static Font* CreateFontLight();
+    static Font* GetFontLight();
     static void CustomizeFontLight(Font *font);
-    static Font* CreateFontDark();
+    static Font* GetFontDark();
     static void CustomizeFontDark(Font *font);
 
     static void CustomizeScreenBack(UIControl *screen);
@@ -44,6 +44,9 @@ public:
     static void CustomizePropertyCell(UIControl *c, bool isActivePart);
     static void CustomizeEditablePropertyCell(UIControl *c);
     static void CustomizeUneditablePropertyCell(UIControl *c);
+    
+    static Font* fontLight;
+    static Font* fontDark;
 };
 
 

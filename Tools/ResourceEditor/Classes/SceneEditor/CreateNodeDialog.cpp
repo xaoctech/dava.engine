@@ -22,10 +22,9 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     AddControl(panel);
     
     header = new UIStaticText(Rect(0, 0, r.dx, BUTTON_HEIGHT));
-    Font *font = ControlsFactory::CreateFontLight();
+    Font *font = ControlsFactory::GetFontLight();
     header->SetFont(font);
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-    SafeRelease(font);
     panel->AddControl(header);
     
     int32 buttonY = r.dy - BUTTON_HEIGHT - 2;

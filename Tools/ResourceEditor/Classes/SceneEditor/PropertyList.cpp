@@ -32,7 +32,7 @@ PropertyList::~PropertyList()
     SafeRelease(propsList);
 }
 
-void PropertyList::AddTextProperty(const String &propertyName, const String &currentText, editableType propEditType)
+void PropertyList::AddStringProperty(const String &propertyName, const String &currentText, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
@@ -81,7 +81,7 @@ void PropertyList::AddProperty(PropertyCellData *newProp, const String &property
     propsList->Refresh();
 }
 
-void PropertyList::SetTextPropertyValue(const String &propertyName, const String &newText)
+void PropertyList::SetStringPropertyValue(const String &propertyName, const String &newText)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     p->SetString(newText);
@@ -127,7 +127,7 @@ void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBool
 }
 
 
-String PropertyList::GetTextPropertyValue(const String &propertyName)
+String PropertyList::GetStringPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetString();   
