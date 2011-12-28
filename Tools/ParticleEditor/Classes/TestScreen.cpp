@@ -3232,7 +3232,7 @@ void TestScreen::SaveToYaml(const String &pathToFile)
             pk = dynamic_cast< PropertyLineKeyframes<float32> *>(emitter->GetLayers()[i]->forcesOverLife[j].Get());
             pv = dynamic_cast< PropertyLineValue<float32> *>(emitter->GetLayers()[i]->forcesOverLife[j].Get());
             if(pk)
-                PrintPropKFValue(file, Format("force%d", j), pk);
+                PrintPropKFValue(file, Format("forceOverLife%d", j), pk);
             else if(pv)
                 PrintPropValue(file, Format("forceOverLife%d", j), pv);
             

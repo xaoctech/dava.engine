@@ -89,7 +89,7 @@
                                         [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
             
         DAVA::KeyedArchive * options = DAVA::Core::Instance()->GetOptions();
-        DAVA::Core::eRenderer rendererRequested = (DAVA::Core::eRenderer)options->GetInt("renderer", DAVA::Core::RENDERER_OPENGL_ES_1_0);
+        DAVA::Core::eRenderer rendererRequested = (DAVA::Core::eRenderer)options->GetInt32("renderer", DAVA::Core::RENDERER_OPENGL_ES_1_0);
         
         DAVA::Core::eRenderer rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_1_0;
         
