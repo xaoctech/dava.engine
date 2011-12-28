@@ -992,7 +992,6 @@
 				FECFB40D12E5904400C71562 /* Scene2D */,
 				FECFB41812E5904400C71562 /* Scene3D */,
 				FE578B3013278D720081BDE9 /* Sound */,
-				FECFB44712E5904500C71562 /* Thread */,
 				FECFB44812E5904500C71562 /* UI */,
 				FECFB47C12E5904500C71562 /* Utils */,
 			);
@@ -1400,13 +1399,6 @@
 				FECFB43712E5904500C71562 /* StateNode.h */,
 			);
 			path = Scene3D;
-			sourceTree = "<group>";
-		};
-		FECFB44712E5904500C71562 /* Thread */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Thread;
 			sourceTree = "<group>";
 		};
 		FECFB44812E5904500C71562 /* UI */ = {

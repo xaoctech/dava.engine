@@ -43,7 +43,7 @@ UIListCell *OutputControl::CellAtIndex(UIList *list, int32 index)
 	c->SetStateText(UIControl::STATE_NORMAL, lm->text);
 	c->SetStateText(UIControl::STATE_SELECTED, lm->text);
 
-    Font *font = ControlsFactory::CreateFontLight();
+    Font *font = ControlsFactory::GetFontLight()->Clone();
     switch (lm->type) 
     {
         case EMT_LOG:
