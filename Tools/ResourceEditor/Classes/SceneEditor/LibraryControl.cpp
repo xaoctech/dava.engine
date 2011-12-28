@@ -12,8 +12,8 @@ LibraryControl::LibraryControl(const Rect & rect)
     selectedFileName = "";
     selectedFileNameShort = "";
     
-    fontLight = ControlsFactory::CreateFontLight();
-    fontDark = ControlsFactory::CreateFontDark();
+    fontLight = ControlsFactory::GetFontLight();
+    fontDark = ControlsFactory::GetFontDark();
 
     ControlsFactory::CustomizePanelControl(this);
     
@@ -61,13 +61,10 @@ LibraryControl::~LibraryControl()
     SafeRelease(panelDAE);
     SafeRelease(panelSCE);
     
-    
     SafeRelease(refreshButton);
     
     SafeRelease(fileTreeControl);
     
-    SafeRelease(fontLight);
-    SafeRelease(fontDark);
 }
 
 

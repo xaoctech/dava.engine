@@ -13,7 +13,7 @@ CreateBoxDialog::~CreateBoxDialog()
 
 void CreateBoxDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Camera", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Camera", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Length", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Width", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
     propertyList->AddFloatProperty("Depth", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
@@ -28,7 +28,7 @@ void CreateBoxDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new CubeNode(scene);
     
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
     
     Color color(
                 propertyList->GetFloatPropertyValue("r"),
@@ -46,7 +46,7 @@ void CreateBoxDialog::CreateNode()
 
 void CreateBoxDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Box");
+    propertyList->SetStringPropertyValue("Name", "Box");
     propertyList->SetFloatPropertyValue("Length", 1.f);
     propertyList->SetFloatPropertyValue("Width", 1.f); 
     propertyList->SetFloatPropertyValue("Depth", 1.f);
