@@ -65,14 +65,20 @@ SceneNode* CubeNode::Clone(SceneNode *dstNode)
 
     MeshInstanceNode::Clone(dstNode);
     
-    ((CubeNode*)dstNode)->cubeMesh = (StaticMesh *)cubeMesh->Clone();
-
-
+    CubeNode *cube = (CubeNode *)dstNode;
+    
+    cube->cubeMesh = (StaticMesh *)cubeMesh->Clone();
+    cube->color = color;
+    cube->size = size;
+  
     return dstNode;
 }
 
-void CubeNode::CreateCube(Vector3 size, Color c)
+void CubeNode::CreateCube(Vector3 _size, Color c)
 {
+    size = _size;
+    color = c;
+
     RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
     
     Vector3 halfSize = size / 2;
@@ -98,6 +104,11 @@ void CubeNode::CreateCube(Vector3 size, Color c)
 		3, 0, 1,    3, 1, 2
 	};
 	
+    if(cubeMesh)
+    {
+        //Remove mesh
+    }
+    
 	SafeRelease(cubeMesh);
     cubeMesh = new StaticMesh(GetScene());
     cubeMesh->Create(1);
@@ -117,6 +128,16 @@ void CubeNode::CreateCube(Vector3 size, Color c)
 	}
 
     AddPolygonGroup(cubeMesh, 0, NULL);
+}
+    
+const Vector3 & CubeNode::GetSize() const
+{
+    return size;
+}
+
+const Color & CubeNode::GetColor() const
+{
+    return color;
 }
 
 };

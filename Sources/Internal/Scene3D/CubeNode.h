@@ -49,9 +49,15 @@ public:
     
     void CreateCube(Vector3 size, Color c);
     
+    const Color & GetColor() const;    
+	const Vector3 & GetSize() const;
+
 protected:
 
     StaticMesh *cubeMesh;
+    
+    Vector3 size;
+    Color color;
 };
 	
 };
