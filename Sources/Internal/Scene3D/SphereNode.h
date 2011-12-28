@@ -50,12 +50,19 @@ public:
     void CreateSphere(float32 radius, Color c);
     
     void SetQuality(int32 newQuality);
+    int32 GetQuality() const;
+    
+    const Color & GetColor() const;    
+    float32 GetRadius() const;
     
 protected:
 
     StaticMesh *sphereMesh;
     
     int32 quality;
+    
+    float32 radius;
+    Color color;
 };
 	
 };

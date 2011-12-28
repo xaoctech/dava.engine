@@ -66,13 +66,21 @@ SceneNode* SphereNode::Clone(SceneNode *dstNode)
 
     MeshInstanceNode::Clone(dstNode);
     
-    ((SphereNode*)dstNode)->sphereMesh = (StaticMesh *)sphereMesh->Clone();
+    SphereNode *sphere = (SphereNode *)dstNode;
+    
+    sphere->sphereMesh = (StaticMesh *)sphereMesh->Clone();
+    sphere->color = color;
+    sphere->radius = radius;
+    sphere->quality = quality;
 
     return dstNode;
 }
 
-void SphereNode::CreateSphere(float32 radius, Color c)
+void SphereNode::CreateSphere(float32 _radius, Color c)
 {
+    color = c;
+    radius = _radius;
+    
     RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
     
 	SafeRelease(sphereMesh);
@@ -181,6 +189,21 @@ void SphereNode::CreateSphere(float32 radius, Color c)
 void SphereNode::SetQuality(int32 newQuality)
 {
     quality = newQuality;
+}
+    
+const Color & SphereNode::GetColor() const
+{
+    return color;
+}
+
+int32 SphereNode::GetQuality() const
+{
+    return quality;
+}
+
+float32 SphereNode::GetRadius() const
+{
+    return radius;
 }
 
 };
