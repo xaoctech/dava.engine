@@ -56,6 +56,7 @@ public:
     static void CustomizeUneditablePropertyCell(UIControl *c);
     
     static void CustomizeDialogFreeSpace(UIControl *c);
+    static void CustomizeDialog(UIControl *c);
     
     static void SetScrollbar(UIList *l);
     static void SetScrollbar(UIHierarchy *l);

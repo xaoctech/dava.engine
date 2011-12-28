@@ -12,13 +12,10 @@ class CreateLightDialog: public CreateNodeDialog
     
 public:
     CreateLightDialog(const Rect & rect);
-    virtual ~CreateLightDialog();
     
 protected:
 
-    virtual void InitializeProperties();
     virtual void CreateNode();
-    virtual void ClearPropertyValues();
 
 };
 

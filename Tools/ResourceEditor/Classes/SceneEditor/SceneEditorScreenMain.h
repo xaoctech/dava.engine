@@ -5,6 +5,9 @@
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
 #include "CreateNodeDialog.h"
+
+#include "SceneNodeIDs.h"
+
 using namespace DAVA;
 
 
@@ -43,18 +46,6 @@ class SceneEditorScreenMain:
         MENUID_NEW = 200,
     };
     
-    enum eCreateNodeIds
-    {
-        ECNID_LANDSCAPE = 0, 
-        ECNID_LIGHT, 
-        ECNID_SERVICENODE, 
-        ECNID_BOX, 
-        ECNID_SPHERE, 
-        ECNID_CAMERA, 
-        
-        
-        ECNID_COUNT
-    };
 
 public:
 

@@ -6,6 +6,14 @@
 
 #include "../BeastProxy.h"
 
+#include "NodePropertyControl.h"
+#include "LandscapePropertyControl.h"
+#include "LightPropertyControl.h"
+#include "CameraPropertyControl.h"
+#include "SpherePropertyControl.h"
+#include "BoxPropertyControl.h"
+#include "ServicenodePropertyControl.h"
+
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -282,33 +290,61 @@ void EditorBodyControl::UpdateModState(void)
 
 void EditorBodyControl::CreatePropertyPanel()
 {
-    localMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT));
-    localMatrixControl->OnMatrixChanged = Message(this, &EditorBodyControl::OnLocalTransformChanged);
-    
-    worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
-
-    
     Rect fullRect = GetRect();
-    activePropertyPanel = new PropertyPanel(Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y));
+    Rect propertyPanelRect = Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y);
+    rightPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
+    AddControl(rightPanel);
+    propertyPanelRect.x = propertyPanelRect.y = 0;
+    nodePropertyPanel[ECNID_LANDSCAPE] = new LandscapePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_LIGHT] = new LightPropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_SERVICENODE] = new ServicenodePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_BOX] = new BoxPropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_SPHERE] = new SpherePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_CAMERA] = new CameraPropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_COUNT] = new NodePropertyControl(propertyPanelRect);
+
+    for(int32 i = 0; i <= ECNID_COUNT; ++i)
+    {
+        nodePropertyPanel[i]->InitProperties();
+    }
+    currentPropertyPanel = NULL;
     
-    nodeName = SafeRetain(activePropertyPanel->AddHeader(L"Node name:"));
     
-    activePropertyPanel->AddHeader(L"Local Matrix:");
-    activePropertyPanel->AddPropertyControl(localMatrixControl);
-    activePropertyPanel->AddHeader(L"World Matrix:");
-    activePropertyPanel->AddPropertyControl(worldMatrixControl);
-    nodeBoundingBoxMin = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-    nodeBoundingBoxMax = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-    
-    AddControl(activePropertyPanel);
+//    localMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT));
+//    localMatrixControl->OnMatrixChanged = Message(this, &EditorBodyControl::OnLocalTransformChanged);
+//    
+//    worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
+//
+//    
+//    Rect fullRect = GetRect();
+//    activePropertyPanel = new PropertyPanel(Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y));
+//    
+//    nodeName = SafeRetain(activePropertyPanel->AddHeader(L"Node name:"));
+//    
+//    activePropertyPanel->AddHeader(L"Local Matrix:");
+//    activePropertyPanel->AddPropertyControl(localMatrixControl);
+//    activePropertyPanel->AddHeader(L"World Matrix:");
+//    activePropertyPanel->AddPropertyControl(worldMatrixControl);
+//    nodeBoundingBoxMin = SafeRetain(activePropertyPanel->AddHeader(L"-"));
+//    nodeBoundingBoxMax = SafeRetain(activePropertyPanel->AddHeader(L"-"));
+//    
+//    AddControl(activePropertyPanel);
 }
 
 void EditorBodyControl::ReleasePropertyPanel()
 {
-    SafeRelease(nodeName);
-    SafeRelease(nodeBoundingBoxMin);
-    SafeRelease(nodeBoundingBoxMax);
-    SafeRelease(activePropertyPanel);
+    currentPropertyPanel = NULL;
+    for(int32 i = 0; i <= ECNID_COUNT; ++i)
+    {
+        SafeRelease(nodePropertyPanel[i]);
+    }
+    SafeRelease(rightPanel);
+    
+//    SafeRelease(nodeName);
+//    SafeRelease(nodeBoundingBoxMin);
+//    SafeRelease(nodeBoundingBoxMax);
+    
+//    SafeRelease(activePropertyPanel);
 }
 
 bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
@@ -373,6 +409,8 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         c->text->SetText(StringToWString(n->GetName()));
     }
 
+    c->SetSelected(false, false);
+    
     ControlsFactory::CustomizeExpandButton(c->openButton);
     ControlsFactory::CustomizeSceneGraphCell(c);
     
@@ -387,48 +425,18 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         SceneNode * node = dynamic_cast<SceneNode*>((BaseObject*)hNode->GetUserNode());
         if (node)
         {
-            MeshInstanceNode * prevSelMesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
-            if (prevSelMesh)
+            if(selectedNode)
             {
-                prevSelMesh->SetDebugFlags(0);
-            }   
+                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
+            }
             selectedNode = node;
-            MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(node);
-            if (mesh)
+            
+            if(selectedNode)
             {
-                AABBox3 bbox = mesh->GetBoundingBox();
-                AABBox3 transformedBox;
-                bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
-                
-                mesh->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
-                nodeBoundingBoxMin->SetText(Format(L"Min: (%0.2f, %0.2f, %0.2f)", 
-                                                   transformedBox.min.x, transformedBox.min.y, transformedBox.min.z));
-                nodeBoundingBoxMax->SetText(Format(L"Max: (%0.2f, %0.2f, %0.2f)", 
-                                                   transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
-            }else
-            {
-                nodeBoundingBoxMin->SetText(L"Bounding Box:");
-                nodeBoundingBoxMax->SetText(L"Not available for this node");
+                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
             }
             
-            Camera * camera = dynamic_cast<Camera*> (node);
-            if (camera)
-            {
-                scene->SetCurrentCamera(camera);
-                Camera * cam2 = scene->GetCamera(0);
-                scene->SetClipCamera(cam2);
-                //cameraController->SetCamera(camera);
-                
-                nodeBoundingBoxMin->SetText(Format(L"fov: %f, aspect: %f", camera->GetFOV(), camera->GetAspect()));
-                nodeBoundingBoxMax->SetText(Format(L"znear: %f, zfar: %f", camera->GetZNear(), camera->GetZFar()));
-                
-                outputPanel->UpdateCamera();
-            }
-            
-            localMatrixControl->SetMatrix(selectedNode->GetLocalTransform());
-            worldMatrixControl->SetMatrix(selectedNode->GetWorldTransform());
-            
-            nodeName->SetText(StringToWString(selectedNode->GetFullName()));
+            UpdatePropertyPanel();
         }
         
         List<UIControl*> children = sceneTree->GetVisibleCells();
@@ -440,6 +448,74 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         
         selectedCell->SetSelected(true, false);
     }
+}
+
+void EditorBodyControl::UpdatePropertyPanel()
+{
+    if(currentPropertyPanel)
+    {
+        rightPanel->RemoveControl(currentPropertyPanel);   
+    }
+
+    if(!selectedNode)
+    {
+        currentPropertyPanel = NULL;
+        return;
+    }
+    
+    
+    currentPropertyPanel = nodePropertyPanel[ECNID_COUNT]; // for not categorized nodes
+    
+    Camera * camera = dynamic_cast<Camera*> (selectedNode);
+    if (camera)
+    {
+        scene->SetCurrentCamera(camera);
+        Camera * cam2 = scene->GetCamera(0);
+        scene->SetClipCamera(cam2);
+        //cameraController->SetCamera(camera);
+        
+        outputPanel->UpdateCamera();
+        currentPropertyPanel = nodePropertyPanel[ECNID_CAMERA];
+    }
+    
+    LightNode * light = dynamic_cast<LightNode*> (selectedNode);
+    if (light)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_LIGHT];
+    }
+    
+//    ServiceNode * serviceNode = dynamic_cast<ServiceNode*> (node);
+//    if (serviceNode)
+//    {
+//        currentPropertyPanel = nodePropertyPanel[ECNID_SERVICENODE];
+//    }
+    
+    CubeNode * box = dynamic_cast<CubeNode*> (selectedNode);
+    if (box)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_BOX];
+    }
+    
+    SphereNode * sphere = dynamic_cast<SphereNode*> (selectedNode);
+    if (sphere)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_SPHERE];
+    }
+    
+    LandscapeNode * landscape = dynamic_cast<LandscapeNode*> (selectedNode);
+    if (landscape)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_LANDSCAPE];
+    }
+    
+//    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
+//    if(mesh)
+//    {
+//        currentPropertyPanel = nodePropertyPanel[ECNID_COUNT];
+//    }
+
+    currentPropertyPanel->ReadFromNode(selectedNode);
+    rightPanel->AddControl(currentPropertyPanel);
 }
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
@@ -679,13 +755,13 @@ void EditorBodyControl::Update(float32 timeElapsed)
     UIControl::Update(timeElapsed);
 }
 
-void EditorBodyControl::OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData)
-{
-    if (selectedNode)
-    {
-        selectedNode->SetLocalTransform(localMatrixControl->GetMatrix());
-    }
-}
+//void EditorBodyControl::OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData)
+//{
+//    if (selectedNode)
+//    {
+//        selectedNode->SetLocalTransform(localMatrixControl->GetMatrix());
+//    }
+//}
 
 void EditorBodyControl::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
 {
@@ -708,8 +784,12 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
         if (parentNode)
         {
             parentNode->RemoveNode(selectedNode);
-            selectedNode = 0;
+            
+            selectedNode = NULL;
+            UpdatePropertyPanel();
+
             sceneTree->Refresh();
+            
         }
     }
 }
@@ -751,17 +831,17 @@ void EditorBodyControl::WillAppear()
 
 void EditorBodyControl::ShowProperties(bool show)
 {
-    if(show && !activePropertyPanel->GetParent())
+    if(show && !rightPanel->GetParent())
     {
-        AddControl(activePropertyPanel);
+        AddControl(rightPanel);
         
         ChangeControlWidthRight(scene3dView, -RIGHT_SIDE_WIDTH);
         ChangeControlWidthRight(outputPanel, -RIGHT_SIDE_WIDTH);
     }
-    else if(!show && activePropertyPanel->GetParent())
+    else if(!show && rightPanel->GetParent())
     {
-        RemoveControl(activePropertyPanel);
-
+        RemoveControl(rightPanel);
+        
         ChangeControlWidthRight(scene3dView, RIGHT_SIDE_WIDTH);
         ChangeControlWidthRight(outputPanel, RIGHT_SIDE_WIDTH);
     }
@@ -769,7 +849,7 @@ void EditorBodyControl::ShowProperties(bool show)
 
 bool EditorBodyControl::PropertiesAreShown()
 {
-    return (activePropertyPanel->GetParent() != NULL);
+    return (rightPanel->GetParent() != NULL);
 }
 
 void EditorBodyControl::ShowSceneGraph(bool show)
