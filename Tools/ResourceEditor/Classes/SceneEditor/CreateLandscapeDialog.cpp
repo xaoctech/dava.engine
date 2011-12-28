@@ -14,7 +14,7 @@ CreateLandscapeDialog::~CreateLandscapeDialog()
 
 void CreateLandscapeDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Landscape", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Landscape", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Length", 100.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Width", 100.f, PropertyList::PROPERTY_IS_EDITABLE); 
     propertyList->AddFloatProperty("Depth", 10.f, PropertyList::PROPERTY_IS_EDITABLE);
@@ -30,7 +30,7 @@ void CreateLandscapeDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new LandscapeNode(scene);
 
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
     
     
     Vector3 size(
@@ -60,13 +60,12 @@ void CreateLandscapeDialog::CreateNode()
 
 void CreateLandscapeDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Landscape");
+    propertyList->SetStringPropertyValue("Name", "Landscape");
     
     propertyList->SetFloatPropertyValue("Length", 100.f);
     propertyList->SetFloatPropertyValue("Width", 100.f); 
     propertyList->SetFloatPropertyValue("Depth", 10.f);
 
-    
     propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);

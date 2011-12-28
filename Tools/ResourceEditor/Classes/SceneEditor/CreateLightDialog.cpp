@@ -13,7 +13,7 @@ CreateLightDialog::~CreateLightDialog()
 
 void CreateLightDialog::InitializeProperties()
 {
-    propertyList->AddTextProperty("Name", "Light", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Name", "Light", PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->AddFloatProperty("Type", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("r", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("g", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
@@ -27,7 +27,7 @@ void CreateLightDialog::CreateNode()
     SafeRelease(sceneNode);
     sceneNode = new LightNode(scene);
     
-    sceneNode->SetName(propertyList->GetTextPropertyValue("Name"));
+    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
     
     Color color(
                 propertyList->GetFloatPropertyValue("r"),
@@ -43,7 +43,7 @@ void CreateLightDialog::CreateNode()
 
 void CreateLightDialog::ClearPropertyValues()
 {
-    propertyList->SetTextPropertyValue("Name", "Light");
+    propertyList->SetStringPropertyValue("Name", "Light");
 //    propertyList->SetFloatPropertyValue("Type", 1.f);
     propertyList->SetFloatPropertyValue("r", 1.f);
     propertyList->SetFloatPropertyValue("g", 1.f);
