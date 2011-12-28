@@ -90,6 +90,7 @@ UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
     c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
 	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
 
+    c->SetSelected(false, false);
     
 	c->SetItemInfo(entry);
 	

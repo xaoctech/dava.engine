@@ -12,13 +12,10 @@ class CreateBoxDialog: public CreateNodeDialog
     
 public:
     CreateBoxDialog(const Rect & rect);
-    virtual ~CreateBoxDialog();
     
 protected:
 
-    virtual void InitializeProperties();
     virtual void CreateNode();
-    virtual void ClearPropertyValues();
 
 };
 

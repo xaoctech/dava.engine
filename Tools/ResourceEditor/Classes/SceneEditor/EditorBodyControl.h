@@ -7,10 +7,13 @@
 #include "EditMatrixControl.h"
 #include "../EditorScene.h"
 
+#include "SceneNodeIDs.h"
+
 using namespace DAVA;
 
 class BeastManager;
 class OutputPanelControl;
+class NodePropertyControl;
 class EditorBodyControl : public UIControl, public UIHierarchyDelegate
 {
     enum eConst
@@ -72,9 +75,6 @@ protected:
     void CreateScene();
     void ReleaseScene();
     
-    void CreatePropertyPanel();
-    void ReleasePropertyPanel();
-    
 	void CreateModificationPanel(void);
     void ReleaseModificationPanel();
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
@@ -110,17 +110,25 @@ protected:
     WASDCameraController * cameraController;
     
     // Node preview information
+    void CreatePropertyPanel();
+    void ReleasePropertyPanel();
+    void UpdatePropertyPanel();
+    UIControl *rightPanel;
     SceneNode * selectedNode;
-    PropertyPanel * activePropertyPanel;
-    EditMatrixControl * localMatrixControl;
-    EditMatrixControl * worldMatrixControl;
-    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
+//    PropertyPanel * activePropertyPanel;
+//    EditMatrixControl * localMatrixControl;
+//    EditMatrixControl * worldMatrixControl;
+//    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
+    
+    NodePropertyControl *nodePropertyPanel[ECNID_COUNT + 1];
+    NodePropertyControl *currentPropertyPanel;
+    ///
     
     
-    UIStaticText * nodeName;
-    UIStaticText * nodeCenter;
-    UIStaticText * nodeBoundingBoxMin;
-    UIStaticText * nodeBoundingBoxMax;
+//    UIStaticText * nodeName;
+//    UIStaticText * nodeCenter;
+//    UIStaticText * nodeBoundingBoxMin;
+//    UIStaticText * nodeBoundingBoxMax;
     
     // touch
     float32 currentTankAngle;
