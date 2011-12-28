@@ -57,8 +57,13 @@ void PropertyList::AddFloatProperty(const String &propertyName, float32 currentF
 }
 
 
-void PropertyList::AddFilepathProperty(const String &propertyName, const String &currentFilepath, editableType propEditType)
+void PropertyList::AddFilepathProperty(const String &propertyName, const String &currentFilepath, const String &extensionFilter, editableType propEditType)
 {
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_FILEPATH;
+    p->SetString(currentFilepath);
+    p->SetExtensionFilter(extensionFilter);
+    AddProperty(p, propertyName, propEditType);
 }
 
 void PropertyList::AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType)
@@ -113,7 +118,12 @@ void PropertyList::SetFloatPropertyValue(const String &propertyName, float32 new
 
 void PropertyList::SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath)
 {
-    
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetString(currentFilepath);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
 }
 
 void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBoolValue)
@@ -147,9 +157,8 @@ float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
 
 String PropertyList::GetFilepathProperty(const String &propertyName)
 {
-//    PropertyCellData *p = PropertyByName(propertyName);
-//    return p->GetString();   
-    return "";
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetString();   
 }
 
 bool PropertyList::GetBoolPropertyValue(const String &propertyName)
@@ -174,7 +183,17 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
     switch (changedProperty->GetValueType())
     {
         case PropertyCellData::PROP_VALUE_STRING:
-            delegate->OnStringPropertyChanged(this, changedProperty->key, changedProperty->GetString());
+        {
+            switch (changedProperty->cellType)
+            {
+                case PropertyCell::PROP_CELL_TEXT:
+                    delegate->OnStringPropertyChanged(this, changedProperty->key, changedProperty->GetString());
+                    break;
+                case PropertyCell::PROP_CELL_FILEPATH:
+                    delegate->OnFilepathPropertyChanged(this, changedProperty->key, changedProperty->GetString());
+                    break;
+            }
+        }
             break;
         case PropertyCellData::PROP_VALUE_INTEGER:
             delegate->OnIntPropertyChanged(this, changedProperty->key, changedProperty->GetInt());
@@ -204,6 +223,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
         {
             case PropertyCell::PROP_CELL_TEXT:
                 c = new PropertyTextCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_FILEPATH:
+                c = new PropertyFilepathCell(this, props[index], size.x);
                 break;
             case PropertyCell::PROP_CELL_BOOL:
                 c = new PropertyBoolCell(this, props[index], size.x);
@@ -236,6 +258,9 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
     {
         case PropertyCell::PROP_CELL_TEXT:
             return PropertyTextCell::GetHeightForWidth(size.x);
+            break;
+        case PropertyCell::PROP_CELL_FILEPATH:
+            return PropertyFilepathCell::GetHeightForWidth(size.x);
             break;
         case PropertyCell::PROP_CELL_BOOL:
             return PropertyBoolCell::GetHeightForWidth(size.x);

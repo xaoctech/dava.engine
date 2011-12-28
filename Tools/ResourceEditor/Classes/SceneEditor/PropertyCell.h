@@ -95,5 +95,28 @@ public:
     UIControl *textContainer;
 };
 
+class PropertyFilepathCell : public PropertyCell, public UIFileSystemDialogDelegate
+{
+public:
+    PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyFilepathCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+    
+    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
+    virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
+
+    void OnButton(BaseObject * object, void * userData, void * callerData);
+
+//    virtual void DidAppear();
+    
+    UIStaticText *pathText;
+    UIControl *pathTextContainer;
+    UIButton *browseButton;
+    UIFileSystemDialog *dialog;
+};
+
+
 
 #endif

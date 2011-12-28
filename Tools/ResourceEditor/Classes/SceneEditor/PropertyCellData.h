@@ -34,13 +34,15 @@ public:
     
     int32 GetInt();
     float32 GetFloat();
-    String GetString();
+    const String& GetString();
     bool GetBool();
+    const String& GetExtensionFilter();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
     void SetString(const String& newString);
     void SetBool(bool newBool);
+    void SetExtensionFilter(const String& newString);
     
     int32 cellType;
     String key;
@@ -55,6 +57,8 @@ protected:
     float32 floatValue;
     String stringValue;
     bool boolValue;
+
+    String extensionFilter;
 };
 
 #endif

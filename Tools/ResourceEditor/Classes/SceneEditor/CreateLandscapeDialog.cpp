@@ -18,11 +18,11 @@ void CreateLandscapeDialog::InitializeProperties()
     propertyList->AddFloatProperty("Length", 100.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Width", 100.f, PropertyList::PROPERTY_IS_EDITABLE); 
     propertyList->AddFloatProperty("Depth", 10.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("HeightMap", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_BUMP", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("HeightMap", projectPath);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+    propertyList->AddFilepathProperty("TEXTURE_BUMP", projectPath);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", projectPath);
 }
 
 void CreateLandscapeDialog::CreateNode()
