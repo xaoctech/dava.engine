@@ -6,7 +6,6 @@
 
 #include "../BeastProxy.h"
 
-#include "NodePropertyControl.h"
 #include "LandscapePropertyControl.h"
 #include "LightPropertyControl.h"
 #include "CameraPropertyControl.h"
@@ -22,6 +21,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     scene = NULL;
     
     selectedNode = NULL;
+    savedTreeCell = 0;
     
     ControlsFactory::CusomizeBottomLevelControl(this);
 
@@ -306,6 +306,7 @@ void EditorBodyControl::CreatePropertyPanel()
     for(int32 i = 0; i <= ECNID_COUNT; ++i)
     {
         nodePropertyPanel[i]->InitProperties();
+        nodePropertyPanel[i]->SetDelegate(this);
     }
     currentPropertyPanel = NULL;
     
@@ -421,20 +422,22 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
 {
     if(forHierarchy == sceneTree)
     {
+        savedTreeCell = selectedCell;
+        
         UIHierarchyNode * hNode = selectedCell->GetNode();
         SceneNode * node = dynamic_cast<SceneNode*>((BaseObject*)hNode->GetUserNode());
         if (node)
         {
-            if(selectedNode)
-            {
-                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
-            }
+//            if(selectedNode)
+//            {
+//                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
+//            }
             selectedNode = node;
             
-            if(selectedNode)
-            {
-                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
-            }
+//            if(selectedNode)
+//            {
+//                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
+//            }
             
             UpdatePropertyPanel();
         }
@@ -786,10 +789,10 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
             parentNode->RemoveNode(selectedNode);
             
             selectedNode = NULL;
+            savedTreeCell = NULL;
             UpdatePropertyPanel();
 
             sceneTree->Refresh();
-            
         }
     }
 }
@@ -826,6 +829,9 @@ void EditorBodyControl::OpenScene(const String &pathToFile)
 
 void EditorBodyControl::WillAppear()
 {
+    selectedNode = NULL;
+    savedTreeCell = NULL;
+    
     sceneTree->Refresh();
 }
 
@@ -929,3 +935,11 @@ void EditorBodyControl::ChangeControlWidthLeft(UIControl *c, float32 width)
     c->SetRect(r);
 }
 
+void EditorBodyControl::NodePropertyChanged()
+{
+    if(selectedNode && currentPropertyPanel)
+    {
+        currentPropertyPanel->ReadToNode(selectedNode);
+        savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
+    }
+}

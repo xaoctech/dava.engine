@@ -8,13 +8,14 @@
 #include "../EditorScene.h"
 
 #include "SceneNodeIDs.h"
+#include "NodePropertyControl.h"
 
 using namespace DAVA;
 
 class BeastManager;
 class OutputPanelControl;
 class NodePropertyControl;
-class EditorBodyControl : public UIControl, public UIHierarchyDelegate
+class EditorBodyControl : public UIControl, public UIHierarchyDelegate, public NodePropertyDelegate
 {
     enum eConst
     {
@@ -69,6 +70,7 @@ public:
     EditorScene * GetScene();
     void AddNode(SceneNode *node);
     
+    virtual void NodePropertyChanged();
     
 protected:
 
@@ -115,6 +117,7 @@ protected:
     void UpdatePropertyPanel();
     UIControl *rightPanel;
     SceneNode * selectedNode;
+    UIHierarchyCell *savedTreeCell;
 //    PropertyPanel * activePropertyPanel;
 //    EditMatrixControl * localMatrixControl;
 //    EditMatrixControl * worldMatrixControl;

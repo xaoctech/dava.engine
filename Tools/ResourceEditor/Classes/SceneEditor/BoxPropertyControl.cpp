@@ -64,7 +64,10 @@ void BoxPropertyControl::ReadToNode(SceneNode *sceneNode)
                  propertyList->GetFloatPropertyValue("Width"),
                  propertyList->GetFloatPropertyValue("Depth"));
 
-    cube->CreateCube(size, color);
+    cube->SetSize(size);
+    cube->SetColor(color);
+    
+//    cube->CreateCube(size, color);
 }
 
 
