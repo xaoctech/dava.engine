@@ -12,10 +12,9 @@ void LandscapePropertyControl::InitProperties()
     NodePropertyControl::InitProperties();
     
     String projectPath = "/";
-    propertyList->AddFloatProperty("Length", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Width", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("Depth", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-//    propertyList->AddFilepathProperty("HeightMap", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("Size", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("Height", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFilepathProperty("HeightMap", projectPath);
 //    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->AddFilepathProperty("TEXTURE_BUMP", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
@@ -25,9 +24,8 @@ void LandscapePropertyControl::InitProperties()
 void LandscapePropertyControl::SetDefaultValues()
 {
     propertyList->SetStringPropertyValue("Name", "Landscape");
-    propertyList->SetFloatPropertyValue("Length", 1.f);
-    propertyList->SetFloatPropertyValue("Width", 1.f); 
-    propertyList->SetFloatPropertyValue("Depth", 1.f);
+    propertyList->SetFloatPropertyValue("Size", 1.f);
+    propertyList->SetFloatPropertyValue("Height", 1.f); 
 
     String projectPath = "/";
 //    propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
@@ -60,16 +58,15 @@ void LandscapePropertyControl::ReadToNode(SceneNode *sceneNode)
     LandscapeNode *landscape = (LandscapeNode *)sceneNode;
     
     Vector3 size(
-                 propertyList->GetFloatPropertyValue("Length"),
-                 propertyList->GetFloatPropertyValue("Width"),
-                 propertyList->GetFloatPropertyValue("Depth"));
+                 propertyList->GetFloatPropertyValue("Size"),
+				 propertyList->GetFloatPropertyValue("Size"),
+                 propertyList->GetFloatPropertyValue("Height"));
     AABBox3 bbox;
-    bbox.AddPoint(-size / 2);
-    bbox.AddPoint(size / 2);
+    bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
+    bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
     
     
-    landscape->BuildLandscapeFromHeightmapImage(
-                                                                   LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", bbox);
+    landscape->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", bbox);
     
     Texture::EnableMipmapGeneration();
     landscape->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
