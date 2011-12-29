@@ -55,7 +55,9 @@ void SpherePropertyControl::ReadToNode(SceneNode *sceneNode)
     
     float32 radius = propertyList->GetFloatPropertyValue("Radius");
     
-    sphere->CreateSphere(radius, color);
+    sphere->SetColor(color);
+    sphere->SetRadius(radius);
+//    sphere->CreateSphere(radius, color);
 }
 
 
