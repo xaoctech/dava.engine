@@ -418,7 +418,7 @@ SceneNode* Camera::Clone(SceneNode *dstNode)
     cnd->target = target;
     cnd->up = up;
     cnd->left = left;
-    cnd->rotation = rotation;
+    //cnd->rotation = rotation;
     cnd->cameraTransform = cameraTransform;
     cnd->flags = flags;
     
@@ -499,6 +499,83 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 	result.z = out.z / out.w;
 	return result;
 }
+    
+/*
+     float32 xmin, xmax, ymin, ymax, znear, zfar, aspect, fovy;
+     bool ortho;
+     
+     
+     Vector3 position;		//
+     Vector3 target;		//	
+     Vector3 up;
+     Vector3 left;
+     
+     Vector3 direction;  // right now this variable updated only when you call GetDirection.
+     
+     //Quaternion rotation;	// 
+     Matrix4 cameraTransform;
+     
+     Matrix4 modelMatrix;
+     Matrix4 projMatrix;
+     Matrix4 uniformProjModelMatrix;
+     
+     uint32 flags;
+*/
+    
+void Camera::Save(KeyedArchive * archive)
+{
+    SceneNode::Save(archive);
+    
+    archive->SetFloat("cam.xmin", xmin);
+    archive->SetFloat("cam.xmax", xmax);
+    archive->SetFloat("cam.ymin", ymin);
+    archive->SetFloat("cam.ymax", ymax);
+    archive->SetFloat("cam.znear", znear);
+    archive->SetFloat("cam.zfar", zfar);
+    archive->SetFloat("cam.aspect", aspect);
+    archive->SetFloat("cam.fov", fovy);
+    archive->SetBool("cam.isOrtho", ortho);
+    archive->SetInt32("cam.flags", flags);
+    
+    archive->SetByteArrayAsType("cam.position", position);
+    archive->SetByteArrayAsType("cam.target", target);
+    archive->SetByteArrayAsType("cam.up", up);
+    archive->SetByteArrayAsType("cam.left", left);
+    archive->SetByteArrayAsType("cam.direction", direction);
+
+    archive->SetByteArrayAsType("cam.cameraTransform", cameraTransform);
+
+    archive->SetByteArrayAsType("cam.modelMatrix", modelMatrix);
+    archive->SetByteArrayAsType("cam.projMatrix", projMatrix);
+}
+
+void Camera::Load(KeyedArchive * archive)
+{
+    SceneNode::Load(archive);
+    
+    // todo add default values
+    xmin = archive->GetFloat("cam.xmin");
+    xmax = archive->GetFloat("cam.xmax");
+    ymin = archive->GetFloat("cam.ymin");
+    ymax = archive->GetFloat("cam.ymax");
+    znear = archive->GetFloat("cam.znear");
+    zfar = archive->GetFloat("cam.zfar");
+    aspect = archive->GetFloat("cam.aspect");
+    fovy = archive->GetFloat("cam.fov");
+    ortho = archive->GetBool("cam.isOrtho");
+    flags = archive->GetInt32("cam.flags");
+    
+    archive->GetByteArrayAsType("cam.position", position);
+    archive->GetByteArrayAsType("cam.target", target);
+    archive->GetByteArrayAsType("cam.up", up);
+    archive->GetByteArrayAsType("cam.left", left);
+    archive->GetByteArrayAsType("cam.direction", direction);
+
+    archive->GetByteArrayAsType("cam.cameraTransform", cameraTransform);
+    archive->GetByteArrayAsType("cam.modelMatrix", modelMatrix);
+    archive->GetByteArrayAsType("cam.projMatrix", projMatrix);
+}
+
 	
 //SceneNode* Camera::Clone()
 //{
