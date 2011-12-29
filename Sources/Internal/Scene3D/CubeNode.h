@@ -47,12 +47,16 @@ public:
 	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
     
-    void CreateCube(Vector3 size, Color c);
-    
+    void SetColor(Color c);
     const Color & GetColor() const;    
+
+    void SetSize(Vector3 size);
 	const Vector3 & GetSize() const;
+    
 
 protected:
+
+    void CreateCube(Vector3 size, Color c);
 
     StaticMesh *cubeMesh;
     

@@ -40,6 +40,8 @@ SphereNode::SphereNode(Scene * _scene)
 {
     sphereMesh = NULL;
     SetQuality(80);
+    
+    CreateSphere(1.f, Color(0.f, 0.f, 0.f, 1.f));
 }
 	
 SphereNode::~SphereNode()
@@ -206,4 +208,72 @@ float32 SphereNode::GetRadius() const
     return radius;
 }
 
+void SphereNode::SetRadius(float32 _radius)
+{
+    radius = _radius;
+    
+    //====== Общее количество треугольников 
+    //====== Общее количество вершин 
+    const int32 gnVert = (quality+1) * quality + 2; 
+    
+    PolygonGroup *sphere = sphereMesh->GetPolygonGroup(0);
+    sphere->GetBoundingBox().Empty();
+    //====== Формирование массива вершин 
+    //====== Северный полюс 
+    sphere->SetCoord(0, Vector3(0, radius, 0));
+    
+    //====== Индекс последней вершины (на южном полюсе) 
+    int32 last = gnVert - 1; //====== Южный полюс 
+    
+    sphere->SetCoord(last, Vector3(0, -radius, 0));
+    
+    //====== Подготовка констант 
+    float32 da = PI / (quality +2.f); 
+    float32 db = 2.f * PI / quality;
+    float32 af = PI - da/2.f; 
+    float32 bf = 2.f * PI - db/2.f; 
+    
+    //=== Индекс вершины, следующей за северным полюсом 
+    int32 n = 1; 
+    
+    //=== Цикл по широтам 
+    for ( float32 a = da; a < af; a += da) 
+    { 
+        //=== Координата у постоянна для всего кольца
+        float32 y = radius * cosf(a);
+        
+        //====== Вспомогательная точка 
+        float32 xz = radius * sinf(a); 
+        
+        //====== Цикл по секциям (долгота) 
+        for ( float32 b = 0.f; b < bf; n++, b += db)
+        {
+            // Координаты проекции в экваториальной плоскости
+            float32 x = xz * sin(b);
+            float32 z = xz * cos(b); 
+            
+            //====== Вершина, нормаль и цвет 
+            sphere->SetCoord(n, Vector3(x, y, z));
+        }
+    } 
+    
+    bbox.Empty();
+	bbox.AddAABBox(sphere->GetBoundingBox());
+}
+
+void SphereNode::SetColor(Color c)
+{
+    color = c;
+    RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
+    
+    //====== Общее количество вершин 
+    PolygonGroup *sphere = sphereMesh->GetPolygonGroup(0);
+    const int32 gnVert = (quality+1) * quality + 2; 
+    for(int32 i = 0; i < gnVert; ++i)
+    {
+        sphere->SetColor(i, color);
+    }
+}
+    
+    
 };

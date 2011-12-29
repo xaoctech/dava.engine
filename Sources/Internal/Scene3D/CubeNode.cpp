@@ -39,6 +39,8 @@ CubeNode::CubeNode(Scene * _scene)
 :	MeshInstanceNode(_scene)
 {
     cubeMesh = NULL;
+    
+    CreateCube(Vector3(1.f, 1.f, 1.f), Color(0.f, 0.f, 0.f, 1.f));
 }
 	
 CubeNode::~CubeNode()
@@ -82,7 +84,7 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
     RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
     
     Vector3 halfSize = size / 2;
-    float vertices[] = 
+    float32 vertices[] = 
     {
 		-halfSize.x,    -halfSize.y,   -halfSize.z,
 		halfSize.x,     -halfSize.y,   -halfSize.z,
@@ -104,11 +106,6 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
 		3, 0, 1,    3, 1, 2
 	};
 	
-    if(cubeMesh)
-    {
-        //Remove mesh
-    }
-    
 	SafeRelease(cubeMesh);
     cubeMesh = new StaticMesh(GetScene());
     cubeMesh->Create(1);
@@ -140,4 +137,44 @@ const Color & CubeNode::GetColor() const
     return color;
 }
 
+void CubeNode::SetSize(Vector3 _size)
+{
+    size = _size;
+
+    Vector3 halfSize = size / 2;
+    float32 vertices[] = 
+    {
+		-halfSize.x,    -halfSize.y,   -halfSize.z,
+		halfSize.x,     -halfSize.y,   -halfSize.z,
+		halfSize.x,     halfSize.y,    -halfSize.z,
+		-halfSize.x,    halfSize.y,    -halfSize.z,
+		-halfSize.x,    -halfSize.y,   halfSize.z,
+		halfSize.x,     -halfSize.y,   halfSize.z,
+		halfSize.x,     halfSize.y,    halfSize.z,
+		-halfSize.x,    halfSize.y,    halfSize.z,
+	};
+    
+    PolygonGroup * cube = cubeMesh->GetPolygonGroup(0);
+    cube->GetBoundingBox().Empty();
+	for (int32 i = 0; i < 8 ; ++i)
+	{
+		cube->SetCoord(i, Vector3(vertices[i * 3 + 0], vertices[i * 3 + 1], vertices[i * 3 + 2]));
+	}
+    
+    bbox.Empty();
+	bbox.AddAABBox(cube->GetBoundingBox());
+}
+
+void CubeNode::SetColor(Color c)
+{
+    color = c;
+    RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
+    
+    PolygonGroup * cube = cubeMesh->GetPolygonGroup(0);
+	for (int32 i = 0; i < 8 ; ++i)
+	{
+		cube->SetColor(i, color);
+	}
+}
+    
 };
