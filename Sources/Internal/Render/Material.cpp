@@ -30,6 +30,8 @@
 #include "Render/Material.h"
 #include "Render/UberShader.h"
 #include "Render/Texture.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
@@ -77,6 +79,29 @@ void Material::SetType(eType _type)
     };
     shader = uberShader->GetShader(shaderCombileCombo);
 }
+    
+void Material::Save(KeyedArchive * keyedArchive)
+{
+    BaseObject::Save(keyedArchive);
+    
+    keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
+    for (int k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        keyedArchive->SetString(Format("mat.tex%d", k), names[k].c_str());
+    }
+}
+    
+void Material::Load(KeyedArchive * keyedArchive)
+{
+    BaseObject::Load(keyedArchive);
+
+    int texCount = keyedArchive->GetInt32("mat.texCount");
+    for (int k = 0; k < texCount; ++k)
+    {
+        names[k] = keyedArchive->GetString(Format("mat.tex%d", k));
+    }
+}
+
 
 
 };

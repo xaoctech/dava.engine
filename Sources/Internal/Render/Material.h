@@ -41,8 +41,11 @@ namespace DAVA
 class UberShader;
 class Shader;
 class Texture;    
+    
+    
+    
 // TODO: move Material to Scene3D
-class Material : public SceneNode
+class Material : public SceneNode /* Need to rethink hierarchy here */
 {
 public:
     enum eType
@@ -96,10 +99,12 @@ public:
         
         TEXTURE_COUNT, 
     };
-    Texture * textures[TEXTURE_COUNT];    
+    Texture * textures[TEXTURE_COUNT];  
+    String names[TEXTURE_COUNT];
     
 
-    
+    void Save(KeyedArchive * keyedArchive);
+    void Load(KeyedArchive * keyedArchive);
 //    union
 //    {
 //        Texture * detailTexture;
