@@ -47,16 +47,20 @@ public:
 	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
     
-    void CreateSphere(float32 radius, Color c);
-    
     void SetQuality(int32 newQuality);
     int32 GetQuality() const;
     
+    void SetColor(Color c);
     const Color & GetColor() const;    
+    
+    void SetRadius(float32 radius);
     float32 GetRadius() const;
+
     
 protected:
 
+    void CreateSphere(float32 radius, Color c);
+    
     StaticMesh *sphereMesh;
     
     int32 quality;
