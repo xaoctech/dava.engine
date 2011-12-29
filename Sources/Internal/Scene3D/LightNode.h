@@ -56,6 +56,9 @@ public:
     void SetType(eType _type);
     void SetColor(Color _color);
     
+    eType GetType() const;
+    const Color & GetColor() const;    
+    
 protected:
     
     eType type;

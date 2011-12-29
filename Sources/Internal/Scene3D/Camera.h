@@ -111,6 +111,12 @@ public:
     float32 GetZFar() const;
     
     /**
+     \brief return ortho value for this camera
+     \returns current ortho value
+     */
+    bool GetIsOrtho() const;
+    
+    /**
         \brief Function change camera position.
         \param[in] position new camera position
      */
@@ -237,7 +243,7 @@ public:
     void Save(KeyedArchive * archive);
     void Load(KeyedArchive * archive);
 
-protected:
+public:
     enum
     {
         REQUIRE_REBUILD = 1,

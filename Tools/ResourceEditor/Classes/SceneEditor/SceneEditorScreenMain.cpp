@@ -20,7 +20,7 @@ void SceneEditorScreenMain::LoadResources()
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     ControlsFactory::CustomizeScreenBack(this);
 
-    font = ControlsFactory::CreateFontLight();
+    font = ControlsFactory::GetFontLight();
     
     //init file system dialog
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -94,8 +94,6 @@ void SceneEditorScreenMain::UnloadResources()
     ReleaseBodyList();
     
     ReleaseTopMenu();
-    
-    SafeRelease(font);
 }
 
 
@@ -417,7 +415,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
         }
     }
 
-    for(int32 i = 0; i < bodies.size(); ++i, ++it)
+    for(int32 i = 0; i < bodies.size(); ++i)
     {
         bodies[i]->headerButton->SetRect(Rect(TAB_BUTTONS_OFFSET + i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
         

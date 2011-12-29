@@ -36,6 +36,7 @@
 
 #import "Platform/TemplateiOS/ESRenderer.h"
 
+#import "UI/UIEvent.h"
 
 //using namespace DAVA;
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.

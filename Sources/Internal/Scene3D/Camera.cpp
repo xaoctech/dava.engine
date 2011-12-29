@@ -98,6 +98,12 @@ float32 Camera::GetZFar() const
 {
     return zfar;
 }
+    
+bool Camera::GetIsOrtho() const
+{
+    return ortho;
+}
+
 
 void Camera::Setup(float32 fovyInDegrees, float32 aspectYdivX, float32 zNear, float32 zFar, bool isOrtho)
 {
