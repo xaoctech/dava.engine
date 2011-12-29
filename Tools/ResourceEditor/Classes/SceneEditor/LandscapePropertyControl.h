@@ -19,6 +19,4 @@ public:
     virtual void InitProperties();
 };
 
-
-
 #endif // __LANDSCAPE_PROPERTY_CONTROL_H__
