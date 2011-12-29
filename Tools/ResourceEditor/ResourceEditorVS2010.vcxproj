@@ -55,7 +55,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/libpng/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -376,8 +376,11 @@
     <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
+    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
+    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPanel.h" />
+    <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ComboBox.h" />
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
     <ClInclude Include="Classes\SceneEditor\CreateBoxDialog.h" />
@@ -390,9 +393,15 @@
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
+    <ClInclude Include="Classes\SceneEditor\NodePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
+    <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
+    <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
     <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
@@ -400,7 +409,10 @@
     <ClInclude Include="Classes\SceneEditor\PropertyPanel.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
+    <ClInclude Include="Classes\SceneEditor\ServicenodePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
@@ -598,8 +610,11 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
+    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
+    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp" />
+    <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ComboBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateBoxDialog.cpp" />
@@ -612,9 +627,15 @@
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\NodePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
+    <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
@@ -623,6 +644,8 @@
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ServicenodePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />

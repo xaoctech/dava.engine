@@ -20,7 +20,7 @@ PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect,
 
     property = prop;
     keyName = new UIStaticText(Rect(0, 0, size.x, size.y));
-    keyName->SetFont(ControlsFactory::CreateFontLight());
+    keyName->SetFont(ControlsFactory::GetFontLight());
     AddControl(keyName);
 }
 
@@ -34,7 +34,7 @@ void PropertyCell::SetData(PropertyCellData *prop)
 {
     property = prop;
     property->currentCell = this;
-    keyName->SetText(StringToWString(prop->key) + L" :");
+    keyName->SetText(StringToWString(prop->key) + L" : ");
 }
 
 String PropertyCell::GetTypeName(int cellType)
@@ -43,12 +43,14 @@ String PropertyCell::GetTypeName(int cellType)
 }
 
 
+//********************* PropertyTextCell *********************
 PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     keyName->size.x = width/2;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
   
-    Font * font = ControlsFactory::CreateFontLight();
+    Font * font = ControlsFactory::GetFontLight();
     editableText = new UITextField(Rect(width/2, 0, width/2, size.y));
     ControlsFactory::CustomizeEditablePropertyCell(editableText);
     editableText->SetFont(font);
@@ -58,7 +60,6 @@ PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyC
     ControlsFactory::CustomizeUneditablePropertyCell(uneditableTextContainer);
     uneditableText = new UIStaticText(Rect(0, 0, uneditableTextContainer->size.x, uneditableTextContainer->size.y));
     uneditableText->SetFont(font);
-    SafeRelease(font);
     uneditableTextContainer->AddControl(uneditableText);
     
     SetData(prop);
@@ -225,7 +226,7 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     ControlsFactory::CustomizeUneditablePropertyCell(textContainer);
     AddControl(textContainer);
     
-    Font * font = ControlsFactory::CreateFontLight();
+    Font * font = ControlsFactory::GetFontLight();
     falseText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
     falseText->SetText(L"False");
     falseText->SetFont(font);
@@ -233,7 +234,6 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     trueText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
     trueText->SetText(L"True");
     trueText->SetFont(font);
-    SafeRelease(font);
     
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(usedWidth, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
@@ -267,7 +267,7 @@ void PropertyBoolCell::SetData(PropertyCellData *prop)
 
 float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
 {
-    return 30.f;
+    return CELL_HEIGHT;
 }
 
 void PropertyBoolCell::ValueChanged(bool newValue)
@@ -299,3 +299,86 @@ void PropertyBoolCell::ValueChanged(bool newValue)
         }
     }
 }
+
+
+//********************* PropertyFilepathCell *********************
+PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+: PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+	dialog = 0;
+
+    keyName->size.x = size.x;
+    keyName->size.y = size.y/2;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+    
+    Font * font = ControlsFactory::GetFontLight();
+    
+    pathTextContainer = new UIControl(Rect(2, size.y/2, size.x - size.y/2 - 4, size.y/2));
+    ControlsFactory::CustomizeEditablePropertyCell(pathTextContainer);
+    pathText = new UIStaticText(Rect(0, 0, pathTextContainer->size.x, pathTextContainer->size.y));
+    pathText->SetFont(font);
+    pathTextContainer->AddControl(pathText);
+    AddControl(pathTextContainer);
+    
+    browseButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2, size.y/2, size.y/2, size.y/2), L"...");
+	browseButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnButton));
+    AddControl(browseButton);
+    
+    SetData(prop);
+}
+
+PropertyFilepathCell::~PropertyFilepathCell()
+{
+    SafeRelease(browseButton);
+    SafeRelease(pathText);
+    SafeRelease(pathTextContainer);
+}
+
+float32 PropertyFilepathCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT * 2;
+}
+
+void PropertyFilepathCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    pathText->SetText(StringToWString(prop->GetString()));
+}
+
+void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void * callerData)
+{
+    if(dialog) 
+    {
+        return;
+    }
+    dialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    dialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
+    dialog->SetDelegate(this);
+    dialog->SetTitle(keyName->GetText());
+    dialog->SetExtensionFilter(property->GetExtensionFilter());
+    String p, f;
+    FileSystem::SplitPath(property->GetString(), p, f);
+    dialog->SetCurrentDir(p);
+    
+    dialog->Show(UIScreenManager::Instance()->GetScreen());
+}
+
+void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
+{
+    property->SetString(pathToFile);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+    SafeRelease(dialog);
+}
+
+void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
+{
+    SafeRelease(dialog);
+}
+
+
+
+//void PropertyFilepathCell::DidAppear()
+//{
+//}
+

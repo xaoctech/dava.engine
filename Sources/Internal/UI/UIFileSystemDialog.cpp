@@ -50,7 +50,7 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     operationType = OPERATION_LOAD;
     delegate = NULL;
-    extensionFilter.push_back("*");
+    extensionFilter.push_back(".*");
     
     SetCurrentDir(FileSystem::Instance()->GetCurrentWorkingDirectory());
     
@@ -353,7 +353,7 @@ void UIFileSystemDialog::RefreshList()
 				int32 size = extensionFilter.size();
                 for (int32 n = 0; n < size; n++) 
                 {
-                    if (extensionFilter[n] == "*" || ext == extensionFilter[n])
+                    if (extensionFilter[n] == ".*" || ext == extensionFilter[n])
                     {
                         isPresent = true;
                         break;

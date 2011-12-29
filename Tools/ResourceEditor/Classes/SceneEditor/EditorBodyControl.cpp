@@ -6,6 +6,13 @@
 
 #include "../BeastProxy.h"
 
+#include "LandscapePropertyControl.h"
+#include "LightPropertyControl.h"
+#include "CameraPropertyControl.h"
+#include "SpherePropertyControl.h"
+#include "BoxPropertyControl.h"
+#include "ServicenodePropertyControl.h"
+
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -14,18 +21,13 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     scene = NULL;
     
     selectedNode = NULL;
+    savedTreeCell = 0;
     
     ControlsFactory::CusomizeBottomLevelControl(this);
 
 
+    CreateLeftPanel();
     
-    sceneTree = new UIHierarchy(Rect(0, 0, LEFT_SIDE_WIDTH, rect.dy));
-    ControlsFactory::CusomizeListControl(sceneTree);
-    ControlsFactory::SetScrollbar(sceneTree);
-    sceneTree->SetCellHeight(CELL_HEIGHT);
-    sceneTree->SetDelegate(this);
-    sceneTree->SetClipContents(true);
-    AddControl(sceneTree);
 
     scene3dView = new UI3DView(Rect(
                             LEFT_SIDE_WIDTH + SCENE_OFFSET, 
@@ -65,9 +67,55 @@ EditorBodyControl::~EditorBodyControl()
     SafeRelease(outputPanel);
     
     ReleaseScene();
-    
-    SafeRelease(sceneTree);
+  
+    ReleaseLeftPanel();
 }
+
+void EditorBodyControl::CreateLeftPanel()
+{
+    Rect fullRect = GetRect();
+    
+    Rect leftRect = Rect(0, 0, LEFT_SIDE_WIDTH, fullRect.dy);
+    leftPanel = ControlsFactory::CreatePanelControl(leftRect);
+    AddControl(leftPanel);
+
+    Rect treeRect = leftRect;
+    leftRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 3);
+    sceneTree = new UIHierarchy(treeRect);
+    ControlsFactory::CusomizeListControl(sceneTree);
+    ControlsFactory::SetScrollbar(sceneTree);
+    sceneTree->SetCellHeight(CELL_HEIGHT);
+    sceneTree->SetDelegate(this);
+    sceneTree->SetClipContents(true);
+    leftPanel->AddControl(sceneTree);
+    
+    int32 y = leftRect.dy;
+    lookAtButton = ControlsFactory::CreateButton(Rect(0, y, LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), L"Look At Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    removeNodeButton = ControlsFactory::CreateButton(Rect(0, y, LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), L"Remove Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(0, y, LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), L"Debug Flags");
+    
+    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
+    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
+    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
+
+    
+    leftPanel->AddControl(lookAtButton);
+    leftPanel->AddControl(removeNodeButton);
+    leftPanel->AddControl(enableDebugFlagsButton);
+}
+
+void EditorBodyControl::ReleaseLeftPanel()
+{
+    SafeRelease(sceneTree);
+    SafeRelease(leftPanel);
+    
+    SafeRelease(lookAtButton);
+    SafeRelease(removeNodeButton);
+    SafeRelease(enableDebugFlagsButton);
+}
+
 
 void EditorBodyControl::CreateScene()
 {
@@ -166,12 +214,12 @@ void EditorBodyControl::CreateModificationPanel(void)
 		modificationPanel->AddControl(btnAxis[i]);
 	}
 	UIStaticText * st = new UIStaticText(Rect(55, 0, 80, BUTTON_W));
-    st->SetFont(ControlsFactory::CreateFontLight());
+    st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"w, e, r");
     modificationPanel->AddControl(st);
 
 	st = new UIStaticText(Rect(55, BUTTON_W + BUTTON_B, 80, BUTTON_W));
-    st->SetFont(ControlsFactory::CreateFontLight());
+    st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"5, 6, 7, 8");
     modificationPanel->AddControl(st);
 	
@@ -242,46 +290,62 @@ void EditorBodyControl::UpdateModState(void)
 
 void EditorBodyControl::CreatePropertyPanel()
 {
-    localMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT));
-    localMatrixControl->OnMatrixChanged = Message(this, &EditorBodyControl::OnLocalTransformChanged);
-    
-    worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
-
-    lookAtButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Look At Object");
-    removeNodeButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Remove Object");
-    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(0, 0, RIGHT_SIDE_WIDTH,BUTTON_HEIGHT), L"Debug Flags");
-    
-    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
-    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
-    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
-    
     Rect fullRect = GetRect();
-    activePropertyPanel = new PropertyPanel(Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y));
+    Rect propertyPanelRect = Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y);
+    rightPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
+    AddControl(rightPanel);
+    propertyPanelRect.x = propertyPanelRect.y = 0;
+    nodePropertyPanel[ECNID_LANDSCAPE] = new LandscapePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_LIGHT] = new LightPropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_SERVICENODE] = new ServicenodePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_BOX] = new BoxPropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_SPHERE] = new SpherePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_CAMERA] = new CameraPropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_COUNT] = new NodePropertyControl(propertyPanelRect);
+
+    for(int32 i = 0; i <= ECNID_COUNT; ++i)
+    {
+        nodePropertyPanel[i]->InitProperties();
+        nodePropertyPanel[i]->SetDelegate(this);
+    }
+    currentPropertyPanel = NULL;
     
-    nodeName = SafeRetain(activePropertyPanel->AddHeader(L"Node name:"));
     
-    activePropertyPanel->AddHeader(L"Local Matrix:");
-    activePropertyPanel->AddPropertyControl(localMatrixControl);
-    activePropertyPanel->AddHeader(L"World Matrix:");
-    activePropertyPanel->AddPropertyControl(worldMatrixControl);
-    nodeBoundingBoxMin = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-    nodeBoundingBoxMax = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-    activePropertyPanel->AddPropertyControl(lookAtButton);
-    activePropertyPanel->AddPropertyControl(removeNodeButton);
-    activePropertyPanel->AddPropertyControl(enableDebugFlagsButton);
-    
-    AddControl(activePropertyPanel);
+//    localMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT));
+//    localMatrixControl->OnMatrixChanged = Message(this, &EditorBodyControl::OnLocalTransformChanged);
+//    
+//    worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
+//
+//    
+//    Rect fullRect = GetRect();
+//    activePropertyPanel = new PropertyPanel(Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y));
+//    
+//    nodeName = SafeRetain(activePropertyPanel->AddHeader(L"Node name:"));
+//    
+//    activePropertyPanel->AddHeader(L"Local Matrix:");
+//    activePropertyPanel->AddPropertyControl(localMatrixControl);
+//    activePropertyPanel->AddHeader(L"World Matrix:");
+//    activePropertyPanel->AddPropertyControl(worldMatrixControl);
+//    nodeBoundingBoxMin = SafeRetain(activePropertyPanel->AddHeader(L"-"));
+//    nodeBoundingBoxMax = SafeRetain(activePropertyPanel->AddHeader(L"-"));
+//    
+//    AddControl(activePropertyPanel);
 }
 
 void EditorBodyControl::ReleasePropertyPanel()
 {
-    SafeRelease(nodeName);
-    SafeRelease(nodeBoundingBoxMin);
-    SafeRelease(nodeBoundingBoxMax);
-    SafeRelease(lookAtButton);
-    SafeRelease(removeNodeButton);
-    SafeRelease(enableDebugFlagsButton);
-    SafeRelease(activePropertyPanel);
+    currentPropertyPanel = NULL;
+    for(int32 i = 0; i <= ECNID_COUNT; ++i)
+    {
+        SafeRelease(nodePropertyPanel[i]);
+    }
+    SafeRelease(rightPanel);
+    
+//    SafeRelease(nodeName);
+//    SafeRelease(nodeBoundingBoxMin);
+//    SafeRelease(nodeBoundingBoxMax);
+    
+//    SafeRelease(activePropertyPanel);
 }
 
 bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
@@ -346,6 +410,8 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         c->text->SetText(StringToWString(n->GetName()));
     }
 
+    c->SetSelected(false, false);
+    
     ControlsFactory::CustomizeExpandButton(c->openButton);
     ControlsFactory::CustomizeSceneGraphCell(c);
     
@@ -356,52 +422,24 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
 {
     if(forHierarchy == sceneTree)
     {
+        savedTreeCell = selectedCell;
+        
         UIHierarchyNode * hNode = selectedCell->GetNode();
         SceneNode * node = dynamic_cast<SceneNode*>((BaseObject*)hNode->GetUserNode());
         if (node)
         {
-            MeshInstanceNode * prevSelMesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
-            if (prevSelMesh)
-            {
-                prevSelMesh->SetDebugFlags(0);
-            }   
+//            if(selectedNode)
+//            {
+//                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
+//            }
             selectedNode = node;
-            MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(node);
-            if (mesh)
-            {
-                AABBox3 bbox = mesh->GetBoundingBox();
-                AABBox3 transformedBox;
-                bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
-                
-                mesh->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
-                nodeBoundingBoxMin->SetText(Format(L"Min: (%0.2f, %0.2f, %0.2f)", 
-                                                   transformedBox.min.x, transformedBox.min.y, transformedBox.min.z));
-                nodeBoundingBoxMax->SetText(Format(L"Max: (%0.2f, %0.2f, %0.2f)", 
-                                                   transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
-            }else
-            {
-                nodeBoundingBoxMin->SetText(L"Bounding Box:");
-                nodeBoundingBoxMax->SetText(L"Not available for this node");
-            }
             
-            Camera * camera = dynamic_cast<Camera*> (node);
-            if (camera)
-            {
-                scene->SetCurrentCamera(camera);
-                Camera * cam2 = scene->GetCamera(0);
-                scene->SetClipCamera(cam2);
-                //cameraController->SetCamera(camera);
-                
-                nodeBoundingBoxMin->SetText(Format(L"fov: %f, aspect: %f", camera->GetFOV(), camera->GetAspect()));
-                nodeBoundingBoxMax->SetText(Format(L"znear: %f, zfar: %f", camera->GetZNear(), camera->GetZFar()));
-                
-                outputPanel->UpdateCamera();
-            }
+//            if(selectedNode)
+//            {
+//                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
+//            }
             
-            localMatrixControl->SetMatrix(selectedNode->GetLocalTransform());
-            worldMatrixControl->SetMatrix(selectedNode->GetWorldTransform());
-            
-            nodeName->SetText(StringToWString(selectedNode->GetFullName()));
+            UpdatePropertyPanel();
         }
         
         List<UIControl*> children = sceneTree->GetVisibleCells();
@@ -413,6 +451,74 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         
         selectedCell->SetSelected(true, false);
     }
+}
+
+void EditorBodyControl::UpdatePropertyPanel()
+{
+    if(currentPropertyPanel)
+    {
+        rightPanel->RemoveControl(currentPropertyPanel);   
+    }
+
+    if(!selectedNode)
+    {
+        currentPropertyPanel = NULL;
+        return;
+    }
+    
+    
+    currentPropertyPanel = nodePropertyPanel[ECNID_COUNT]; // for not categorized nodes
+    
+    Camera * camera = dynamic_cast<Camera*> (selectedNode);
+    if (camera)
+    {
+        scene->SetCurrentCamera(camera);
+        Camera * cam2 = scene->GetCamera(0);
+        scene->SetClipCamera(cam2);
+        //cameraController->SetCamera(camera);
+        
+        outputPanel->UpdateCamera();
+        currentPropertyPanel = nodePropertyPanel[ECNID_CAMERA];
+    }
+    
+    LightNode * light = dynamic_cast<LightNode*> (selectedNode);
+    if (light)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_LIGHT];
+    }
+    
+//    ServiceNode * serviceNode = dynamic_cast<ServiceNode*> (node);
+//    if (serviceNode)
+//    {
+//        currentPropertyPanel = nodePropertyPanel[ECNID_SERVICENODE];
+//    }
+    
+    CubeNode * box = dynamic_cast<CubeNode*> (selectedNode);
+    if (box)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_BOX];
+    }
+    
+    SphereNode * sphere = dynamic_cast<SphereNode*> (selectedNode);
+    if (sphere)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_SPHERE];
+    }
+    
+    LandscapeNode * landscape = dynamic_cast<LandscapeNode*> (selectedNode);
+    if (landscape)
+    {
+        currentPropertyPanel = nodePropertyPanel[ECNID_LANDSCAPE];
+    }
+    
+//    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
+//    if(mesh)
+//    {
+//        currentPropertyPanel = nodePropertyPanel[ECNID_COUNT];
+//    }
+
+    currentPropertyPanel->ReadFromNode(selectedNode);
+    rightPanel->AddControl(currentPropertyPanel);
 }
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
@@ -652,13 +758,13 @@ void EditorBodyControl::Update(float32 timeElapsed)
     UIControl::Update(timeElapsed);
 }
 
-void EditorBodyControl::OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData)
-{
-    if (selectedNode)
-    {
-        selectedNode->SetLocalTransform(localMatrixControl->GetMatrix());
-    }
-}
+//void EditorBodyControl::OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData)
+//{
+//    if (selectedNode)
+//    {
+//        selectedNode->SetLocalTransform(localMatrixControl->GetMatrix());
+//    }
+//}
 
 void EditorBodyControl::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
 {
@@ -681,7 +787,11 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
         if (parentNode)
         {
             parentNode->RemoveNode(selectedNode);
-            selectedNode = 0;
+            
+            selectedNode = NULL;
+            savedTreeCell = NULL;
+            UpdatePropertyPanel();
+
             sceneTree->Refresh();
         }
     }
@@ -719,22 +829,25 @@ void EditorBodyControl::OpenScene(const String &pathToFile)
 
 void EditorBodyControl::WillAppear()
 {
+    selectedNode = NULL;
+    savedTreeCell = NULL;
+    
     sceneTree->Refresh();
 }
 
 void EditorBodyControl::ShowProperties(bool show)
 {
-    if(show && !activePropertyPanel->GetParent())
+    if(show && !rightPanel->GetParent())
     {
-        AddControl(activePropertyPanel);
+        AddControl(rightPanel);
         
         ChangeControlWidthRight(scene3dView, -RIGHT_SIDE_WIDTH);
         ChangeControlWidthRight(outputPanel, -RIGHT_SIDE_WIDTH);
     }
-    else if(!show && activePropertyPanel->GetParent())
+    else if(!show && rightPanel->GetParent())
     {
-        RemoveControl(activePropertyPanel);
-
+        RemoveControl(rightPanel);
+        
         ChangeControlWidthRight(scene3dView, RIGHT_SIDE_WIDTH);
         ChangeControlWidthRight(outputPanel, RIGHT_SIDE_WIDTH);
     }
@@ -742,23 +855,23 @@ void EditorBodyControl::ShowProperties(bool show)
 
 bool EditorBodyControl::PropertiesAreShown()
 {
-    return (activePropertyPanel->GetParent() != NULL);
+    return (rightPanel->GetParent() != NULL);
 }
 
 void EditorBodyControl::ShowSceneGraph(bool show)
 {
-    if(show && !sceneTree->GetParent())
+    if(show && !leftPanel->GetParent())
     {
-        AddControl(sceneTree);
+        AddControl(leftPanel);
 
         ChangeControlWidthLeft(scene3dView, LEFT_SIDE_WIDTH);
         ChangeControlWidthLeft(outputPanel, LEFT_SIDE_WIDTH);
         
         sceneTree->Refresh();
     }
-    else if(!show && sceneTree->GetParent())
+    else if(!show && leftPanel->GetParent())
     {
-        RemoveControl(sceneTree);
+        RemoveControl(leftPanel);
         
         ChangeControlWidthLeft(scene3dView, -LEFT_SIDE_WIDTH);
         ChangeControlWidthLeft(outputPanel, -LEFT_SIDE_WIDTH);
@@ -767,7 +880,7 @@ void EditorBodyControl::ShowSceneGraph(bool show)
 
 bool EditorBodyControl::SceneGraphAreShown()
 {
-    return (sceneTree->GetParent() != NULL);
+    return (leftPanel->GetParent() != NULL);
 }
 
 void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
@@ -822,3 +935,11 @@ void EditorBodyControl::ChangeControlWidthLeft(UIControl *c, float32 width)
     c->SetRect(r);
 }
 
+void EditorBodyControl::NodePropertyChanged()
+{
+    if(selectedNode && currentPropertyPanel)
+    {
+        currentPropertyPanel->ReadToNode(selectedNode);
+        savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
+    }
+}
