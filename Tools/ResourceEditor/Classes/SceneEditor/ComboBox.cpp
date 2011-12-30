@@ -95,7 +95,12 @@ void ComboBox::OnButton(BaseObject * object, void * userData, void * callerData)
         {
             parent->BringChildFront(this);
         }
-        AddControl(list);
+
+        Rect r = GetRect(true);
+        list->SetPosition(Vector2(r.x, r.y));
+        UIScreenManager::Instance()->GetScreen()->AddControl(list);
+        
+//        AddControl(list);
         comboButton->SetSelected(true);
         list->Refresh();
     }
@@ -106,14 +111,17 @@ void ComboBox::Cancel()
 {
     if (list->GetParent()) 
     {
-        RemoveControl(list);
+        list->GetParent()->RemoveControl(list);
+//        RemoveControl(list);
         comboButton->SetSelected(false);
     }
 }
 
 void ComboBox::Update(float32 timeElapsed)
 {
-    if (list->GetParent() == this) 
+//    if (list->GetParent() == this) 
+    UIScreen *scr =  UIScreenManager::Instance()->GetScreen();
+    if (list->GetParent() == scr) 
     {
         UIControl *f = UIControlSystem::Instance()->GetFocusedControl();
         bool isFocused = false;
@@ -158,8 +166,6 @@ UIListCell *ComboBox::CellAtIndex(UIList *forList, int32 index)
         c->SetSelected(false);
     }
 
-    
-    
     return c;
 }
 
@@ -172,5 +178,6 @@ void ComboBox::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
     SetSelectedIndex(selectedCell->GetIndex(), true);
     comboButton->SetSelected(false);
-    RemoveControl(list);
+    list->GetParent()->RemoveControl(list);
+//    RemoveControl(list);
 }
