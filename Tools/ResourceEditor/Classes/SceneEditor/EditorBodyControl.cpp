@@ -296,6 +296,13 @@ void EditorBodyControl::CreatePropertyPanel()
     AddControl(rightPanel);
     propertyPanelRect.x = propertyPanelRect.y = 0;
     nodePropertyPanel[ECNID_LANDSCAPE] = new LandscapePropertyControl(propertyPanelRect);
+    KeyedArchive *keyedArchieve = new KeyedArchive();
+    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
+    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    ((LandscapePropertyControl *)nodePropertyPanel[ECNID_LANDSCAPE])->SetProjectPath(path);
+    SafeRelease(keyedArchieve);
+    
+    
     nodePropertyPanel[ECNID_LIGHT] = new LightPropertyControl(propertyPanelRect);
     nodePropertyPanel[ECNID_SERVICENODE] = new ServicenodePropertyControl(propertyPanelRect);
     nodePropertyPanel[ECNID_BOX] = new BoxPropertyControl(propertyPanelRect);

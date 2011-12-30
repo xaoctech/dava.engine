@@ -155,7 +155,7 @@ float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
     return p->GetFloat();   
 }
 
-String PropertyList::GetFilepathProperty(const String &propertyName)
+String PropertyList::GetFilepathPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetString();   

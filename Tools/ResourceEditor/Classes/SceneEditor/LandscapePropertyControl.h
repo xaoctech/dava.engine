@@ -17,6 +17,15 @@ public:
     virtual void ReadToNode(SceneNode *sceneNode);
     virtual void SetDefaultValues();
     virtual void InitProperties();
+    
+    void SetProjectPath(const String &path);
+    
+private:
+        
+    bool IsValidPath(const String &path);
+    
+    String projectPath;
+    
 };
 
 #endif // __LANDSCAPE_PROPERTY_CONTROL_H__
