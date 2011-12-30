@@ -60,7 +60,7 @@ public:
     String GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
     float32 GetFloatPropertyValue(const String &propertyName);
-    String GetFilepathProperty(const String &propertyName);
+    String GetFilepathPropertyValue(const String &propertyName);
     bool GetBoolPropertyValue(const String &propertyName);
 
     virtual int32 ElementsCount(UIList *forList);
