@@ -5,6 +5,10 @@ LandscapePropertyControl::LandscapePropertyControl(const Rect & rect)
     :   NodePropertyControl(rect)
 {
     projectPath = "/";
+    
+    renderingModes.push_back("TEXTURE");
+    renderingModes.push_back("SHADER");
+    renderingModes.push_back("BLENDED_SHADER");
 }
 
 void LandscapePropertyControl::InitProperties()
@@ -15,10 +19,8 @@ void LandscapePropertyControl::InitProperties()
     propertyList->AddFloatProperty("Size", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Height", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
 
-//    propertyList->AddFloatProperty("Length", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-//    propertyList->AddFloatProperty("Width", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-//    propertyList->AddFloatProperty("Depth", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-
+    propertyList->AddComboProperty("renderingMode", renderingModes, 1);
+    
     propertyList->AddFilepathProperty("HeightMap", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
@@ -32,6 +34,8 @@ void LandscapePropertyControl::SetDefaultValues()
     propertyList->SetFloatPropertyValue("Size", 1.f);
     propertyList->SetFloatPropertyValue("Height", 1.f); 
 
+    propertyList->SetComboPropertyValue("renderingMode", 1);
+    
     propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
@@ -48,11 +52,12 @@ void LandscapePropertyControl::ReadFromNode(SceneNode *sceneNode)
     AABBox3 bbox = landscape->GetBoundingBox();
     AABBox3 transformedBox;
     bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
-
     
     Vector3 size = transformedBox.max - transformedBox.min;
     propertyList->SetFloatPropertyValue("Size", size.x);
     propertyList->SetFloatPropertyValue("Height", size.z);
+
+    propertyList->SetComboPropertyValue("renderingMode", landscape->GetRenderingMode());
 
     String heightMap = landscape->GetHeightMapPathname();
     if(heightMap.length())
@@ -119,6 +124,17 @@ void LandscapePropertyControl::ReadToNode(SceneNode *sceneNode)
     bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
     bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
     
+    String renderingModeName = propertyList->GetComboPropertyValue("renderingMode");
+    int32 renderingMode = LandscapeNode::RENDERING_MODE_TEXTURE;
+    for(int32 i = 0; i < renderingModes.size(); ++i)
+    {
+        if(renderingModeName == renderingModes[i])
+        {
+            renderingMode = i;
+            break;
+        }
+    }
+    
     String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
     String texture0 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0");
     String texture1 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL");
@@ -127,7 +143,7 @@ void LandscapePropertyControl::ReadToNode(SceneNode *sceneNode)
    
     if(IsValidPath(heightMap))
     {
-        landscape->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, heightMap, bbox);
+        landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
     }
     
     Texture::EnableMipmapGeneration();

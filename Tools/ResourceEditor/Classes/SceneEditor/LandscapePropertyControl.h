@@ -25,6 +25,7 @@ private:
     bool IsValidPath(const String &path);
     
     String projectPath;
+    Vector<String> renderingModes;
     
 };
 
