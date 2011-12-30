@@ -48,68 +48,68 @@ public:
 	virtual ~KeyedArchive();
 	
 	/**
-	 \brief Dumps archive consistent to console
+        \brief Dumps archive to console
 	 */
 	void Dump();
 
 	/**
-		\brief function to check if key is available in this archive
+		\brief Function to check if key is available in this archive.
 		\param[in] key string key
 		\returns true if key available
 	 */
 	bool IsKeyExists(const String & key);
 	
 	/**
-		\brief functions to get variable from archive
+		\brief Function to get variable from archive.
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
 	bool GetBool(const String & key, bool defaultValue = false);
 	/**
-		\brief functions to get variable from archive
+		\brief Function to get variable from archive.
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
 	int32 GetInt32(const String & key, int32 defaultValue = 0);
 	/**
-     \brief functions to get variable from archive
+     \brief Function to get variable from archive.
      \param[in] key string key
      \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
      \returns value of variable or defaultValue if key isn't available
 	 */
 	uint32 GetUInt32(const String & key, uint32 defaultValue = 0);
 	/**
-		\brief functions to get variable from archive
+		\brief Function to get variable from archive.
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
 	float32 GetFloat(const String & key, float32 defaultValue = 0.0f);
 	/**
-		\brief functions to get variable from archive
+		\brief Functions to get variable from archive.
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
 	const String & GetString(const String & key, const String & defaultValue = "");
 	/**
-		\brief functions to get variable from archive
+		\brief Function to get variable from archive.
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
 	const WideString & GetWideString(const String & key, const WideString & defaultValue = L"");
 	/**
-        \brief functions to get variable from archive
+        \brief Function to get variable from archive.
         \param[in] key string key
         \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
         \returns value of variable or defaultValue if key isn't available
 	 */
 	const uint8 *GetByteArray(const String & key, const uint8 *defaultValue = NULL);
 	/**
-        \brief functions to get variable from archive
+        \brief Function to get variable from archive.
         \param[in] key string key
         \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
         \returns value of variable or defaultValue if key isn't available
@@ -117,43 +117,50 @@ public:
 	int32 GetByteArraySize(const String & key, int32 defaultValue = 0);
     
     /**
-        \brief function to load data from byte array as keyed archive
+        \brief Function to load data from byte array as keyed archive.
         Call to this function is equivalent to creation of KeyedArchive class. Object returned from this function should be released. 
         \param[in] key string key
         \param[in] value we want to set for this key
 	 */
 	KeyedArchive * GetArchiveFromByteArray(const String & key);
-
+    
+    /*
+        \brief Function to get object from byte array.
+        \param[in] key string key
+        \returns object
+     */
+    template <class T>
+    void GetByteArrayAsType(const String & key, T & value);
 	
 	
 	/**
-		\brief functions to get variable from archive
+		\brief Function to get variable from archive.
 		\param[in] key string key
 		\returns value of variable or default VariantType class if value isn't available
 	 */
 	const VariantType & GetVariant(const String & key);
 	
 	/**
-		\brief function to set variable in archive
+		\brief Function to set variable in archive.
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
 	void SetBool(const String & key, bool value);
 	/**
-		\brief function to set variable in archive
+		\brief Function to set variable in archive.
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
 	void SetInt32(const String & key, int32 value);
 	/**
-     \brief function to set variable in archive
+     \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
 	void SetUInt32(const String & key, uint32 value);
     
 	/**
-		\brief function to set variable in archive
+		\brief Function to set variable in archive.
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
@@ -165,49 +172,58 @@ public:
 	 */
 	void SetString(const String & key, const String & value);
 	/**
-		\brief function to set variable in archive
+		\brief Function to set variable in archive.
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
 	void SetWideString(const String & key, const WideString & value);
 	/**
-        \brief function to set variable in archive
+        \brief Function to set variable in archive.
         \param[in] key string key
         \param[in] value we want to set for this key
         \param[in] arraySize size fo the array we want tot save
 	 */
 	void SetByteArray(const String & key, const uint8 * value, int32 arraySize);
 	/**
-		\brief function to set variable in archive
+		\brief Function to set variable in archive.
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
 	void SetVariant(const String & key, const VariantType & value);
 	/**
-        \brief function to set another keyed archive as kye for this archive
+        \brief Function to set another keyed archive as kye for this archive.
         \param[in] key string key
         \param[in] value we want to set for this key
 	 */
 	void SetByteArrayFromArchive(const String & key, KeyedArchive * archive);
+    
+    /**
+        \brief Function to set value from template type to byte array.  
+        This functionality is added to perform simple storage of complex types, like Vector3, Vector4, Matrix4 and others to byte arrays
+        \param[in] key string key
+        \param[in] value value we want to set for given key
+     */
+    template<class T>
+    void SetByteArrayAsType(const String & key, const T & value);
 	
 	/**
-		\brief this function loads data from given file
+		\brief Function loads data from given file.
 		\param[in] pathName relative pathname in application documents folder
 	 */
 	bool Load(const String & pathName);
 	/**
-		\brief this function saves data to given file
+		\brief Function saves data to given file.
 		\param[in] pathName relative pathname in application documents folder
 	 */
 	bool Save(const String & pathName);
 
 	/**
-        \brief this function loads data from given file
+        \brief Function loads data from given file.
         \param[in] file to load from
 	 */
 	bool Load(File *file);
 	/**
-        \brief this function saves data to given file
+        \brief Function saves data to given file.
         \param[in] file to save
 	 */
 	bool Save(File *file);
@@ -240,6 +256,24 @@ public:
 private:
 	Map<String, VariantType> objectMap;
 };
+    
+// Implementation 
+template <class T>
+void KeyedArchive::GetByteArrayAsType(const String & key, T & value)
+{
+    int size = GetByteArraySize(key);
+    DVASSERT(size == sizeof(T));
+    
+    const uint8 * arrayData = GetByteArray(key);
+    memcpy(&value, arrayData, sizeof(T));
+}
+    
+template<class T>
+void KeyedArchive::SetByteArrayAsType(const String & key, const T & value)
+{
+    SetByteArray(key, (uint8 * )&value, sizeof(T));
+}
+
 	
 	
 };
