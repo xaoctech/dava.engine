@@ -198,6 +198,8 @@ public:
      */
     inline const String & GetHeightMapPathname();
 
+    inline const eRenderingMode GetRenderingMode();
+    
     
 protected:	
     
@@ -291,7 +293,13 @@ inline const String & LandscapeNode::GetHeightMapPathname()
 {
     return heightMapPath;
 }
-	
+
+inline const LandscapeNode::eRenderingMode LandscapeNode::GetRenderingMode()
+{
+    return renderingMode;
+}
+
+    
 };
 
 #endif // __DAVAENGINE_LANDSCAPE_NODE_H__
