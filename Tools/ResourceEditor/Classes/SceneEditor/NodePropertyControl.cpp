@@ -81,5 +81,13 @@ void NodePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const
         nodeDelegate->NodePropertyChanged();
     }
 }
+void NodePropertyControl::OnItemIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex)
+{
+    if(nodeDelegate)
+    {
+        nodeDelegate->NodePropertyChanged();
+    }
+}
+
 
 

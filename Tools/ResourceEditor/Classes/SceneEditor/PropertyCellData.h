@@ -23,6 +23,7 @@ public:
         PROP_VALUE_INTEGER,
         PROP_VALUE_FLOAT,
         PROP_VALUE_BOOL,
+        PROP_VALUE_STRINGS,
         
         PROP_VALUE_COUNT
     };
@@ -37,12 +38,16 @@ public:
     const String& GetString();
     bool GetBool();
     const String& GetExtensionFilter();
+    const Vector<String> & GetStrings();
+    int32 GetItemIndex(); 
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
     void SetString(const String& newString);
     void SetBool(bool newBool);
     void SetExtensionFilter(const String& newString);
+    void SetStrings(const Vector<String> &newStrings);
+    void SetItemIndex(int32 newItemIndex);
     
     int32 cellType;
     String key;
@@ -59,6 +64,9 @@ protected:
     bool boolValue;
 
     String extensionFilter;
+    
+    Vector<String> strings;
+    int32 itemIndex;
 };
 
 #endif

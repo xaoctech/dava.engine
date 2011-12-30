@@ -12,11 +12,11 @@
 
 #include "DAVAEngine.h"
 #include "UICheckBox.h"
+#include "ComboBox.h"
 
 using namespace DAVA;
 
 class PropertyValue;
-class UICheckBox;
 
 class PropertyCellData;
 class PropertyCellDelegate
@@ -42,6 +42,7 @@ public:
         PROP_CELL_DIGITS,
         PROP_CELL_FILEPATH,
         PROP_CELL_BOOL,
+        PROP_CELL_COMBO,
         
         PROP_CELL_COUNT
     };
@@ -115,6 +116,23 @@ public:
     UIControl *pathTextContainer;
     UIButton *browseButton;
     UIFileSystemDialog *dialog;
+};
+
+class PropertyComboboxCell: public PropertyCell, public ComboBoxDelegate
+{
+public:
+    
+    PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyComboboxCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+
+    virtual void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex);
+    
+private:
+    
+    ComboBox *combo;
 };
 
 
