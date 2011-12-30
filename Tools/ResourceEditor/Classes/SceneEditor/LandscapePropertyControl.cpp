@@ -4,7 +4,7 @@
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect)
     :   NodePropertyControl(rect)
 {
-    
+    projectPath = "/";
 }
 
 void LandscapePropertyControl::InitProperties()
@@ -14,11 +14,16 @@ void LandscapePropertyControl::InitProperties()
     String projectPath = "/";
     propertyList->AddFloatProperty("Size", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Height", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFilepathProperty("HeightMap", projectPath);
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-//    propertyList->AddFilepathProperty("TEXTURE_BUMP", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", projectPath, PropertyList::PROPERTY_IS_EDITABLE);
+
+//    propertyList->AddFloatProperty("Length", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFloatProperty("Width", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
+//    propertyList->AddFloatProperty("Depth", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
+
+    propertyList->AddFilepathProperty("HeightMap", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_BUMP", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
 }
 
 void LandscapePropertyControl::SetDefaultValues()
@@ -27,28 +32,77 @@ void LandscapePropertyControl::SetDefaultValues()
     propertyList->SetFloatPropertyValue("Size", 1.f);
     propertyList->SetFloatPropertyValue("Height", 1.f); 
 
-    String projectPath = "/";
-//    propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
-//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
-//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
-//    propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", projectPath);
-//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
+    propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
 }
 
 void LandscapePropertyControl::ReadFromNode(SceneNode *sceneNode)
 {
     NodePropertyControl::ReadFromNode(sceneNode);
     
-//    LandscapeNode *landscape = (LandscapeNode *)sceneNode;
+    LandscapeNode *landscape = (LandscapeNode *)sceneNode;
     
-//    Vector3 size = landscape->GetSize();
-//    propertyList->SetFloatPropertyValue("Length", size.x);
-//    propertyList->SetFloatPropertyValue("Width", size.y); 
-//    propertyList->SetFloatPropertyValue("Depth", size.z);
-//    propertyList->SetFloatPropertyValue("r", cube->GetColor().r);
-//    propertyList->SetFloatPropertyValue("g", cube->GetColor().g);
-//    propertyList->SetFloatPropertyValue("b", cube->GetColor().b);
-//    propertyList->SetFloatPropertyValue("a", cube->GetColor().a);
+    AABBox3 bbox = landscape->GetBoundingBox();
+    AABBox3 transformedBox;
+    bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+
+    
+    Vector3 size = transformedBox.max - transformedBox.min;
+    propertyList->SetFloatPropertyValue("Size", size.x);
+    propertyList->SetFloatPropertyValue("Height", size.z);
+
+    String heightMap = landscape->GetHeightMapPathname();
+    if(heightMap.length())
+    {
+        propertyList->SetFilepathPropertyValue("HeightMap", heightMap);
+    }
+    else
+    {
+        propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
+    }
+    
+    Texture *t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE0);
+    if(t)
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", t->GetPathname());
+    }
+    else
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
+    }
+
+    t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE1);
+    if(t)
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", t->GetPathname());
+    }
+    else
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+    }
+
+    t = landscape->GetTexture(LandscapeNode::TEXTURE_BUMP);
+    if(t)
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", t->GetPathname());
+    }
+    else
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", projectPath);
+    }
+
+    t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTUREMASK);
+    if(t)
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK",t->GetPathname());
+    }
+    else
+    {
+        propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
+    }
 }
 
 void LandscapePropertyControl::ReadToNode(SceneNode *sceneNode)
@@ -65,13 +119,53 @@ void LandscapePropertyControl::ReadToNode(SceneNode *sceneNode)
     bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
     bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
     
-    
-    landscape->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", bbox);
+    String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
+    String texture0 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0");
+    String texture1 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL");
+    String textureBump = propertyList->GetFilepathPropertyValue("TEXTURE_BUMP");
+    String textureUnmask = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTUREMASK");
+   
+    if(IsValidPath(heightMap))
+    {
+        landscape->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, heightMap, bbox);
+    }
     
     Texture::EnableMipmapGeneration();
-    landscape->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-    landscape->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
+    if(IsValidPath(texture0))
+    {
+        landscape->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, texture0);
+    }
+
+    if(IsValidPath(texture1))
+    {
+        landscape->SetTexture(LandscapeNode::TEXTURE_DETAIL, texture1);
+    }
+
+    if(IsValidPath(textureBump))
+    {
+        landscape->SetTexture(LandscapeNode::TEXTURE_BUMP, textureBump);
+    }
+
+    if(IsValidPath(textureUnmask))
+    {
+        landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, textureUnmask);
+    }
     Texture::DisableMipmapGeneration();
+}
+
+void LandscapePropertyControl::SetProjectPath(const String &path)
+{
+    projectPath = path;
+    if('/' != projectPath[projectPath.length() - 1])
+    {
+        projectPath += '/';
+    }
+}
+
+bool LandscapePropertyControl::IsValidPath(const String &path)
+{
+    size_t pos = path.find(".png");
+    return (String::npos != pos);
 }
 
 

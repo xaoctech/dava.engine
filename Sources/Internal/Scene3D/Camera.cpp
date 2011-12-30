@@ -543,16 +543,16 @@ void Camera::Save(KeyedArchive * archive)
     archive->SetBool("cam.isOrtho", ortho);
     archive->SetInt32("cam.flags", flags);
     
-    archive->SetByteArrayAsType("cam.position", position);
-    archive->SetByteArrayAsType("cam.target", target);
-    archive->SetByteArrayAsType("cam.up", up);
-    archive->SetByteArrayAsType("cam.left", left);
-    archive->SetByteArrayAsType("cam.direction", direction);
-
-    archive->SetByteArrayAsType("cam.cameraTransform", cameraTransform);
-
-    archive->SetByteArrayAsType("cam.modelMatrix", modelMatrix);
-    archive->SetByteArrayAsType("cam.projMatrix", projMatrix);
+//    archive->SetByteArrayAsType("cam.position", position);
+//    archive->SetByteArrayAsType("cam.target", target);
+//    archive->SetByteArrayAsType("cam.up", up);
+//    archive->SetByteArrayAsType("cam.left", left);
+//    archive->SetByteArrayAsType("cam.direction", direction);
+//
+//    archive->SetByteArrayAsType("cam.cameraTransform", cameraTransform);
+//
+//    archive->SetByteArrayAsType("cam.modelMatrix", modelMatrix);
+//    archive->SetByteArrayAsType("cam.projMatrix", projMatrix);
 }
 
 void Camera::Load(KeyedArchive * archive)
@@ -571,15 +571,15 @@ void Camera::Load(KeyedArchive * archive)
     ortho = archive->GetBool("cam.isOrtho");
     flags = archive->GetInt32("cam.flags");
     
-    archive->GetByteArrayAsType("cam.position", position);
-    archive->GetByteArrayAsType("cam.target", target);
-    archive->GetByteArrayAsType("cam.up", up);
-    archive->GetByteArrayAsType("cam.left", left);
-    archive->GetByteArrayAsType("cam.direction", direction);
-
-    archive->GetByteArrayAsType("cam.cameraTransform", cameraTransform);
-    archive->GetByteArrayAsType("cam.modelMatrix", modelMatrix);
-    archive->GetByteArrayAsType("cam.projMatrix", projMatrix);
+//    archive->GetByteArrayAsType("cam.position", position);
+//    archive->GetByteArrayAsType("cam.target", target);
+//    archive->GetByteArrayAsType("cam.up", up);
+//    archive->GetByteArrayAsType("cam.left", left);
+//    archive->GetByteArrayAsType("cam.direction", direction);
+//
+//    archive->GetByteArrayAsType("cam.cameraTransform", cameraTransform);
+//    archive->GetByteArrayAsType("cam.modelMatrix", modelMatrix);
+//    archive->GetByteArrayAsType("cam.projMatrix", projMatrix);
 }
 
 	

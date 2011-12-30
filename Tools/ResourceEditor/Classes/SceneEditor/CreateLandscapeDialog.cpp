@@ -10,6 +10,14 @@ CreateLandscapeDialog::CreateLandscapeDialog(const Rect & rect)
     propertyList->InitProperties();
     AddControl(propertyList);
 
+    
+    KeyedArchive *keyedArchieve = new KeyedArchive();
+    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
+    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    ((LandscapePropertyControl *)propertyList)->SetProjectPath(path);
+    SafeRelease(keyedArchieve);
+
+    
     SetHeader(L"Create Landscape");
 }
     
