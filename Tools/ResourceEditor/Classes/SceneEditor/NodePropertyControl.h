@@ -34,6 +34,7 @@ public:
     virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+    virtual void OnItemIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex);
 
     void SetDelegate(NodePropertyDelegate *delegate);
 

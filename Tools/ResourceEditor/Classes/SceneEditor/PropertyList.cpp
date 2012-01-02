@@ -180,6 +180,7 @@ PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 
 void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
 {
+    //ADD Combobox
     switch (changedProperty->GetValueType())
     {
         case PropertyCellData::PROP_VALUE_STRING:
@@ -203,6 +204,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
             break;
         case PropertyCellData::PROP_VALUE_BOOL:
             delegate->OnBoolPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
+            break;
+        case PropertyCellData::PROP_VALUE_STRINGS:
+            delegate->OnItemIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex());
             break;
     }
 }
@@ -229,6 +233,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
                 break;
             case PropertyCell::PROP_CELL_BOOL:
                 c = new PropertyBoolCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_COMBO:
+                c = new PropertyComboboxCell(this, props[index], size.x);
                 break;
         }
     }
@@ -265,6 +272,9 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
         case PropertyCell::PROP_CELL_BOOL:
             return PropertyBoolCell::GetHeightForWidth(size.x);
             break;
+        case PropertyCell::PROP_CELL_COMBO:
+            return PropertyComboboxCell::GetHeightForWidth(size.x);
+            break;
     }
     return 50;//todo: rework
 }
@@ -293,3 +303,32 @@ void PropertyList::ReleaseProperties()
     
     propsList->Refresh();
 }
+
+
+void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings, int32 currentStringIndex)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRINGS);
+    p->cellType = PropertyCell::PROP_CELL_COMBO;
+    p->SetStrings(strings);
+    p->SetItemIndex(currentStringIndex);
+    AddProperty(p, propertyName, PROPERTY_IS_READ_ONLY);
+}
+
+void PropertyList::SetComboPropertyValue(const String &propertyName, int32 currentStringIndex)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetItemIndex(currentStringIndex);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+String PropertyList::GetComboPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    Vector<String> strings = p->GetStrings();
+    int32 currentStringIndex = p->GetItemIndex();
+    return strings[currentStringIndex];   
+}
+
