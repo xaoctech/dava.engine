@@ -23,16 +23,19 @@ void NodePropertyControl::WillAppear()
 void NodePropertyControl::InitProperties()
 {
     propertyList->AddStringProperty("Name", "SceneNode", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Retain Count", "1", PropertyList::PROPERTY_IS_READ_ONLY);
 }
 
 void NodePropertyControl::SetDefaultValues()
 {
     propertyList->SetStringPropertyValue("Name", "SceneNode");
+    propertyList->SetStringPropertyValue("Retain Count", "1");
 }
 
 void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
 {
     propertyList->SetStringPropertyValue("Name", sceneNode->GetName());
+    propertyList->SetStringPropertyValue("Retain Count", Format("%d", sceneNode->GetRetainCount()));
 }
 
 void NodePropertyControl::ReadToNode(SceneNode *sceneNode)
