@@ -17,6 +17,10 @@ public:
     virtual void ReadToNode(SceneNode *sceneNode);
     virtual void SetDefaultValues();
     virtual void InitProperties();
+    
+protected:
+    
+    Vector<String> types;
 };
 
 

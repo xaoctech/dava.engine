@@ -382,3 +382,51 @@ void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDial
 //{
 //}
 
+
+//*************** PropertyComboboxCell **************
+PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+    :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width/2;
+    
+    float32 usedWidth = keyName->size.x;
+//    Vector<String> empty;
+//    empty.push_back("Empty combo");
+//    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, empty);
+    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, prop->GetStrings());
+    AddControl(combo);
+    SetData(prop);
+}
+
+PropertyComboboxCell::~PropertyComboboxCell()
+{
+    SafeRelease(combo);
+}
+
+float32 PropertyComboboxCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT;
+}
+
+void PropertyComboboxCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_STRINGS:
+            combo->SetNewItemsSet(prop->GetStrings());
+            combo->SetSelectedIndex(prop->GetItemIndex(), false);
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
+{
+    property->SetItemIndex(itemIndex);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}
