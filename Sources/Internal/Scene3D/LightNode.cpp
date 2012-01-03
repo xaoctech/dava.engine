@@ -32,6 +32,8 @@
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(LightNode);
 
 LightNode::LightNode(Scene * _scene)
     :   SceneNode(_scene)
@@ -58,7 +60,7 @@ void LightNode::SetType(DAVA::LightNode::eType _type)
 
 void LightNode::SetColor(DAVA::Color _color)
 {
-    color = color;
+    color = _color;
 }
 
 SceneNode* LightNode::Clone(SceneNode *dstNode)
@@ -77,7 +79,15 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     return dstNode;
 }
 
+LightNode::eType LightNode::GetType() const
+{
+    return type;
+}
     
+const Color & LightNode::GetColor() const
+{
+    return color;
+}
     
 };
 

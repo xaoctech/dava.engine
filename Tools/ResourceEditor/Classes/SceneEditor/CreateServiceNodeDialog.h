@@ -12,13 +12,10 @@ class CreateServiceNodeDialog: public CreateNodeDialog
     
 public:
     CreateServiceNodeDialog(const Rect & rect);
-    virtual ~CreateServiceNodeDialog();
     
 protected:
 
-    virtual void InitializeProperties();
     virtual void CreateNode();
-    virtual void ClearPropertyValues();
 
 };
 

@@ -24,6 +24,8 @@ public:
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue){};
     virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue){};
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue){};
+    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue){};
+    virtual void OnItemIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex){};
 };
 
 
@@ -47,20 +49,23 @@ public:
     void AddIntProperty(const String &propertyName, int32 currentIntValue, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddFloatProperty(const String &propertyName, float32 currentFloatValue, editableType propEditType = PROPERTY_IS_EDITABLE);
 
-    void AddFilepathProperty(const String &propertyName, const String &currentFilepath, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddFilepathProperty(const String &propertyName, const String &currentFilepath, const String &extensionFilter = ".*", editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddComboProperty(const String &propertyName, const Vector<String> &strings, int32 currentStringIndex);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
     void SetFloatPropertyValue(const String &propertyName, float32 newFloatValue);
     void SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath);
     void SetBoolPropertyValue(const String &propertyName, bool newBoolValue);
+    void SetComboPropertyValue(const String &propertyName, int32 currentStringIndex);
 
     String GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
     float32 GetFloatPropertyValue(const String &propertyName);
-    String GetFilepathProperty(const String &propertyName);
+    String GetFilepathPropertyValue(const String &propertyName);
     bool GetBoolPropertyValue(const String &propertyName);
+    String GetComboPropertyValue(const String &propertyName);
 
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);

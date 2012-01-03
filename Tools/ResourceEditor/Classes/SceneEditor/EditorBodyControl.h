@@ -7,11 +7,15 @@
 #include "EditMatrixControl.h"
 #include "../EditorScene.h"
 
+#include "SceneNodeIDs.h"
+#include "NodePropertyControl.h"
+
 using namespace DAVA;
 
 class BeastManager;
 class OutputPanelControl;
-class EditorBodyControl : public UIControl, public UIHierarchyDelegate
+class NodePropertyControl;
+class EditorBodyControl : public UIControl, public UIHierarchyDelegate, public NodePropertyDelegate
 {
     enum eConst
     {
@@ -66,14 +70,12 @@ public:
     EditorScene * GetScene();
     void AddNode(SceneNode *node);
     
+    virtual void NodePropertyChanged();
     
 protected:
 
     void CreateScene();
     void ReleaseScene();
-    
-    void CreatePropertyPanel();
-    void ReleasePropertyPanel();
     
 	void CreateModificationPanel(void);
     void ReleaseModificationPanel();
@@ -110,17 +112,26 @@ protected:
     WASDCameraController * cameraController;
     
     // Node preview information
+    void CreatePropertyPanel();
+    void ReleasePropertyPanel();
+    void UpdatePropertyPanel();
+    UIControl *rightPanel;
     SceneNode * selectedNode;
-    PropertyPanel * activePropertyPanel;
-    EditMatrixControl * localMatrixControl;
-    EditMatrixControl * worldMatrixControl;
-    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
+    UIHierarchyCell *savedTreeCell;
+//    PropertyPanel * activePropertyPanel;
+//    EditMatrixControl * localMatrixControl;
+//    EditMatrixControl * worldMatrixControl;
+//    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
+    
+    NodePropertyControl *nodePropertyPanel[ECNID_COUNT + 1];
+    NodePropertyControl *currentPropertyPanel;
+    ///
     
     
-    UIStaticText * nodeName;
-    UIStaticText * nodeCenter;
-    UIStaticText * nodeBoundingBoxMin;
-    UIStaticText * nodeBoundingBoxMax;
+//    UIStaticText * nodeName;
+//    UIStaticText * nodeCenter;
+//    UIStaticText * nodeBoundingBoxMin;
+//    UIStaticText * nodeBoundingBoxMax;
     
     // touch
     float32 currentTankAngle;

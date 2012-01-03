@@ -12,15 +12,10 @@ class CreateCameraDialog: public CreateNodeDialog
     
 public:
     CreateCameraDialog(const Rect & rect);
-    virtual ~CreateCameraDialog();
-    
     
 protected:
 
-    virtual void InitializeProperties();
     virtual void CreateNode();
-    virtual void ClearPropertyValues();
-
 };
 
 

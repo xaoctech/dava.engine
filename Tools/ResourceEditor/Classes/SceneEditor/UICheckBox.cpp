@@ -9,6 +9,7 @@ UICheckBox::UICheckBox()
     checkboxDelegate = NULL;
 
     GetBackground()->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+    GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UICheckBox::OnClick));
 }
@@ -19,6 +20,7 @@ UICheckBox::UICheckBox(const String &spriteName, const Rect &rect, bool rectInAb
     checkboxDelegate = NULL;
     
     GetBackground()->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+    GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     
     SetSprite(spriteName, 0);
     SetChecked(false);

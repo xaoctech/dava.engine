@@ -38,6 +38,7 @@
 #include "Scene3D/BoneNode.h"
 #include "Scene3D/Camera.h"
 #include "Scene3D/SceneNodeAnimationList.h"
+#include "Scene3D/DataNode.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 
@@ -62,8 +63,7 @@ SceneFile::Header::Header()
 	descriptor[0] = 'D'; descriptor[1] = 'V';
 	descriptor[2] = 'S'; descriptor[3] = 'C';
 	
-	version = 103;
-	textureCount = 0;			
+	version = 104;
 	materialCount = 0;
 	staticMeshCount = 0;
 
@@ -86,14 +86,16 @@ void SceneFile::SetDebugLog(bool _debugLogEnabled)
 
 bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBundle)
 {
+    materials.clear();
+    
 	scene = _scene;
 	String fname(filename);
     rootNodePath = fname;
     
-    textureIndexOffset = scene->GetTextureCount();
+    
+//    textureIndexOffset = scene->GetTextureCount();
 	staticMeshIndexOffset = scene->GetStaticMeshCount();
 	animatedMeshIndexOffset = scene->GetAnimatedMeshCount();
-	materialIndexOffset = scene->GetMaterialCount();
 	cameraIndexOffset = scene->GetCameraCount();
 	animationIndexOffset = scene->GetAnimationCount();
     
@@ -108,20 +110,24 @@ bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBund
 	
 	sceneFP->Read(&header, sizeof(SceneFile::Header));
 	
+    DVASSERT(header.version >= 104 && "Do not support old converted formats after refactoring. Please reconvert everything");
+    
+
+    
 	if (debugLogEnabled)Logger::Debug("File version: %d\n", header.version);
-	if (debugLogEnabled)Logger::Debug("Texture count: %d\n", header.textureCount);
 	if (debugLogEnabled)Logger::Debug("Material count: %d\n", header.materialCount);
 	if (debugLogEnabled)Logger::Debug("Static Mesh count: %d\n", header.staticMeshCount);
 	if (debugLogEnabled)Logger::Debug("Animated Mesh count: %d\n", header.animatedMeshCount);
 	if (debugLogEnabled)Logger::Debug("Cameras count: %d\n", header.cameraCount);
 	if (debugLogEnabled)Logger::Debug("Node animations count: %d\n", header.nodeAnimationsCount);
 	if (debugLogEnabled)Logger::Debug("Lights count: %d\n", header.lightCount);
-	
-	for (uint32 textureIndex = 0; textureIndex < header.textureCount; ++textureIndex)
-	{
-		ReadTexture();
-		if (sceneFP->IsEof())return false;
-	}
+
+//  Do not read textures anymore
+//	for (uint32 textureIndex = 0; textureIndex < header.textureCount; ++textureIndex)
+//	{
+//		ReadTexture();
+//		if (sceneFP->IsEof())return false;
+//	}
 
 	for (uint32 materialIndex = 0; materialIndex < header.materialCount; ++materialIndex)
 	{
@@ -205,7 +211,6 @@ bool SceneFile::ReadTexture()
     Texture::EnableMipmapGeneration();
     
 	SceneFile::TextureDef textureDef;
-	sceneFP->Read(&textureDef.id, sizeof(textureDef.id));
 	sceneFP->ReadString(textureDef.name, 512);
 	
 	// Texture * texture = Texture::CreateFromPNG(Format("XResources//%s//", textureDef.name));
@@ -218,10 +223,7 @@ bool SceneFile::ReadTexture()
 	tname = scenePath + tname;
     
     uint8 hasOpacity = false;
-    if (header.version >= 101)
-    {
-        sceneFP->Read(&hasOpacity, sizeof(hasOpacity));
-    }
+    sceneFP->Read(&hasOpacity, sizeof(hasOpacity));
 	
 	DAVA::Texture * texture = DAVA::Texture::CreateFromFile(tname);//textureDef.name);//0;
 	if (texture)
@@ -256,7 +258,7 @@ bool SceneFile::ReadTexture()
         SafeDeleteArray(textureData);
 	}
 	
-	if (debugLogEnabled)Logger::Debug("- Texture: %s %d hasOpacity: %s %s\n", textureDef.name, textureDef.id, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
+	if (debugLogEnabled)Logger::Debug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
     
     if (!mipMapsEnabled)
         Texture::DisableMipmapGeneration();
@@ -266,13 +268,14 @@ bool SceneFile::ReadTexture()
 	
 bool SceneFile::ReadMaterial()
 {
+    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
+    Texture::EnableMipmapGeneration();
+
 	SceneFile::MaterialDef materialDef; 
-	sceneFP->Read(&materialDef.id, sizeof(materialDef.id));
 	sceneFP->ReadString(materialDef.name, 512);
 
 	sceneFP->Read(&materialDef.ambient, sizeof(materialDef.ambient));
 	sceneFP->Read(&materialDef.diffuse, sizeof(materialDef.diffuse));
-	sceneFP->Read(&materialDef.diffuseTextureId, sizeof(materialDef.diffuseTextureId));
 	sceneFP->Read(&materialDef.emission, sizeof(materialDef.emission));
 	sceneFP->Read(&materialDef.indexOfRefraction, sizeof(materialDef.indexOfRefraction));
 	sceneFP->Read(&materialDef.reflective, sizeof(materialDef.reflective));
@@ -281,12 +284,21 @@ bool SceneFile::ReadMaterial()
 	sceneFP->Read(&materialDef.specular, sizeof(materialDef.specular));
 	sceneFP->Read(&materialDef.transparency, sizeof(materialDef.transparency));
 	sceneFP->Read(&materialDef.transparent, sizeof(materialDef.transparent));
+        
+//    char8	diffuseTexture[512];
+//    char8   lightmapTexture[512];       // decal texture as well
+//    char8	reflectiveTexture[512];
+//    char8   specularTexture[512];
+//    char8   normalMapTexture[512];
+
+    sceneFP->ReadString(materialDef.diffuseTexture, 512);
+    sceneFP->ReadString(materialDef.lightmapTexture, 512);
+    sceneFP->ReadString(materialDef.reflectiveTexture, 512);
+    sceneFP->ReadString(materialDef.specularTexture, 512);
+    sceneFP->ReadString(materialDef.normalMapTexture, 512);
+
     materialDef.hasOpacity = false;
-    if (header.version >= 101)
-        sceneFP->Read(&materialDef.hasOpacity, sizeof(materialDef.hasOpacity));
-    
-    if (header.version >= 102)
-        sceneFP->ReadString(materialDef.lightmapTexture, 512);
+    sceneFP->Read(&materialDef.hasOpacity, sizeof(materialDef.hasOpacity));
 
 
 	Material * mat = new Material(scene);
@@ -294,14 +306,13 @@ bool SceneFile::ReadMaterial()
 	mat->ambient = materialDef.ambient;
 	mat->diffuse = materialDef.diffuse;
 	
-	if (materialDef.diffuseTextureId < (uint32)scene->GetTextureCount())
-	{	
-		mat->textures[Material::TEXTURE_DIFFUSE] = scene->GetTexture(materialDef.diffuseTextureId + textureIndexOffset);
-	}else 
-	{
-		mat->textures[Material::TEXTURE_DIFFUSE] = 0;
-	}
-    
+    //String diffuseTextureName;
+   
+    if (strlen(materialDef.diffuseTexture))
+    {
+        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
+    }
+        
     String diffuseTextureName = "no texture"; 
     if (mat->textures[Material::TEXTURE_DIFFUSE])
     {
@@ -309,30 +320,60 @@ bool SceneFile::ReadMaterial()
         FileSystem::SplitPath(mat->textures[Material::TEXTURE_DIFFUSE]->GetPathname(), tempPath, diffuseTextureName);
     }
     
+    if (!mat->textures[Material::TEXTURE_DIFFUSE])
+    {
+        //Logger::Debug("*** error reading texture: %s\n", textureDef.name);
+        uint8 * textureData = new uint8[8 * 8 * 4]; 
+        for (int32 k = 0; k < 8 * 8 * 4; k += 4)
+        {
+            textureData[k + 0] = 0xFF; 
+            textureData[k + 1] = 0x00; 
+            textureData[k + 2] = 0xFF; 
+            textureData[k + 3] = 0xFF; 
+        }
+        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromData(Texture::FORMAT_RGBA8888, textureData, 8, 8);
+        scene->AddTexture(mat->textures[Material::TEXTURE_DIFFUSE]);
+        mat->textures[Material::TEXTURE_DIFFUSE]->GenerateMipmaps();
+        SafeDeleteArray(textureData);
+    }
+
+    
     if (strlen(materialDef.lightmapTexture))
     {
         //mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.lightmapTexture));
     }
-	if (debugLogEnabled)Logger::Debug("- Material: %s %d diffuseTexture: %s hasOpacity: %s\n", materialDef.name, materialDef.id, diffuseTextureName.c_str(), (materialDef.hasOpacity) ? ("yes") : ("no"));
+	if (debugLogEnabled)Logger::Debug("- Material: %s diffuseTexture: %s hasOpacity: %s\n", materialDef.name, diffuseTextureName.c_str(), (materialDef.hasOpacity) ? ("yes") : ("no"));
 	
 
+    for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
+    {
+        if (mat->textures[k])
+            mat->textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+    }
+    
+    
 	mat->emission = materialDef.emission;
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
 	mat->SetName(materialDef.name);
 	mat->reflective = materialDef.reflective;
-	// TODO for reflective texture
-	//mat->reflectiveTexture = materialDef.r
 	mat->reflectivity = materialDef.reflectivity;
-	// TODO for shader
 	mat->shininess = materialDef.shininess;
 	mat->specular = materialDef.specular;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
     mat->hasOpacity = materialDef.hasOpacity;
 	
+	//scene->AddMaterial(mat);
     
-	scene->AddMaterial(mat);
+    DataNode * materialsNode = dynamic_cast<DataNode*>(scene->FindByName("materials"));
+    materialsNode->AddNode(mat);
+    
+    materials.push_back(mat);
+    
 	SafeRelease(mat);
+    
+    if (!mipMapsEnabled)
+        Texture::DisableMipmapGeneration();
 
 	return true;
 }
@@ -478,23 +519,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 	sceneFP->ReadString(name, 512);
 
 	SceneFile::SceneNodeDef def;
-	
-	if (header.version <= 102)
-	{
-		SceneFile::SceneNodeDef_102 def102;
-		sceneFP->Read(&def102, sizeof(def102));
-		
-		def.parentId = def102.parentId;
-		def.childCount = def102.childCount;
-		def.localTransform = def102.localTransform;
-		def.nodeType = def102.nodeType;
-		def.customDataSize = def102.customDataSize;
-		def.isSolid = false;
-	}	
-	else
-	{
-		sceneFP->Read(&def, sizeof(def));		
-	}
+    sceneFP->Read(&def, sizeof(def));		
 
 	char8 nodeType[64];
 	nodeType[0] = 0;
@@ -591,18 +616,20 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 			sceneFP->Read(&meshIndex, sizeof(int32));
 			sceneFP->Read(&polyGroupIndex, sizeof(int32));
 			sceneFP->Read(&materialIndex, sizeof(int32));
+            
+            DVASSERT(materialIndex < materials.size());
 
 			if (debugLogEnabled)Logger::Debug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1), meshIndex, polyGroupIndex, materialIndex); 
 		
 			if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH)
 			{
 				StaticMesh * staticMesh = scene->GetStaticMesh(meshIndex + staticMeshIndexOffset);
-				meshNode->AddPolygonGroup(staticMesh, polyGroupIndex, scene->GetMaterial(materialIndex + materialIndexOffset));
+				meshNode->AddPolygonGroup(staticMesh, polyGroupIndex, materials[materialIndex]);
 			}else
 			{
 				// add animated mesh
 				AnimatedMesh * animatedMesh = scene->GetAnimatedMesh(meshIndex + animatedMeshIndexOffset);
-				meshNode->AddPolygonGroup(animatedMesh, polyGroupIndex, scene->GetMaterial(materialIndex + materialIndexOffset));
+				meshNode->AddPolygonGroup(animatedMesh, polyGroupIndex, materials[materialIndex]);
 			}
 		}
         if (parentNode != scene) 

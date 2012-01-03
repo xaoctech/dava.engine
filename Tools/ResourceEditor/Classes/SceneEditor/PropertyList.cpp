@@ -57,8 +57,13 @@ void PropertyList::AddFloatProperty(const String &propertyName, float32 currentF
 }
 
 
-void PropertyList::AddFilepathProperty(const String &propertyName, const String &currentFilepath, editableType propEditType)
+void PropertyList::AddFilepathProperty(const String &propertyName, const String &currentFilepath, const String &extensionFilter, editableType propEditType)
 {
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
+    p->cellType = PropertyCell::PROP_CELL_FILEPATH;
+    p->SetString(currentFilepath);
+    p->SetExtensionFilter(extensionFilter);
+    AddProperty(p, propertyName, propEditType);
 }
 
 void PropertyList::AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType)
@@ -113,7 +118,12 @@ void PropertyList::SetFloatPropertyValue(const String &propertyName, float32 new
 
 void PropertyList::SetFilepathPropertyValue(const String &propertyName, const String &currentFilepath)
 {
-    
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetString(currentFilepath);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
 }
 
 void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBoolValue)
@@ -145,11 +155,10 @@ float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
     return p->GetFloat();   
 }
 
-String PropertyList::GetFilepathProperty(const String &propertyName)
+String PropertyList::GetFilepathPropertyValue(const String &propertyName)
 {
-//    PropertyCellData *p = PropertyByName(propertyName);
-//    return p->GetString();   
-    return "";
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetString();   
 }
 
 bool PropertyList::GetBoolPropertyValue(const String &propertyName)
@@ -171,10 +180,21 @@ PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 
 void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
 {
+    //ADD Combobox
     switch (changedProperty->GetValueType())
     {
         case PropertyCellData::PROP_VALUE_STRING:
-            delegate->OnStringPropertyChanged(this, changedProperty->key, changedProperty->GetString());
+        {
+            switch (changedProperty->cellType)
+            {
+                case PropertyCell::PROP_CELL_TEXT:
+                    delegate->OnStringPropertyChanged(this, changedProperty->key, changedProperty->GetString());
+                    break;
+                case PropertyCell::PROP_CELL_FILEPATH:
+                    delegate->OnFilepathPropertyChanged(this, changedProperty->key, changedProperty->GetString());
+                    break;
+            }
+        }
             break;
         case PropertyCellData::PROP_VALUE_INTEGER:
             delegate->OnIntPropertyChanged(this, changedProperty->key, changedProperty->GetInt());
@@ -184,6 +204,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
             break;
         case PropertyCellData::PROP_VALUE_BOOL:
             delegate->OnBoolPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
+            break;
+        case PropertyCellData::PROP_VALUE_STRINGS:
+            delegate->OnItemIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex());
             break;
     }
 }
@@ -205,8 +228,14 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
             case PropertyCell::PROP_CELL_TEXT:
                 c = new PropertyTextCell(this, props[index], size.x);
                 break;
+            case PropertyCell::PROP_CELL_FILEPATH:
+                c = new PropertyFilepathCell(this, props[index], size.x);
+                break;
             case PropertyCell::PROP_CELL_BOOL:
                 c = new PropertyBoolCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_COMBO:
+                c = new PropertyComboboxCell(this, props[index], size.x);
                 break;
         }
     }
@@ -237,8 +266,14 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
         case PropertyCell::PROP_CELL_TEXT:
             return PropertyTextCell::GetHeightForWidth(size.x);
             break;
+        case PropertyCell::PROP_CELL_FILEPATH:
+            return PropertyFilepathCell::GetHeightForWidth(size.x);
+            break;
         case PropertyCell::PROP_CELL_BOOL:
             return PropertyBoolCell::GetHeightForWidth(size.x);
+            break;
+        case PropertyCell::PROP_CELL_COMBO:
+            return PropertyComboboxCell::GetHeightForWidth(size.x);
             break;
     }
     return 50;//todo: rework
@@ -268,3 +303,32 @@ void PropertyList::ReleaseProperties()
     
     propsList->Refresh();
 }
+
+
+void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings, int32 currentStringIndex)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRINGS);
+    p->cellType = PropertyCell::PROP_CELL_COMBO;
+    p->SetStrings(strings);
+    p->SetItemIndex(currentStringIndex);
+    AddProperty(p, propertyName, PROPERTY_IS_READ_ONLY);
+}
+
+void PropertyList::SetComboPropertyValue(const String &propertyName, int32 currentStringIndex)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetItemIndex(currentStringIndex);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+String PropertyList::GetComboPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    Vector<String> strings = p->GetStrings();
+    int32 currentStringIndex = p->GetItemIndex();
+    return strings[currentStringIndex];   
+}
+

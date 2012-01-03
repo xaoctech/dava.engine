@@ -2,7 +2,6 @@
 #define __CREATE_NODE_DIALOG_H__
 
 #include "DAVAEngine.h"
-#include "PropertyList.h"
 #include "DraggableDialog.h"
 
 using namespace DAVA;
@@ -14,13 +13,9 @@ public:
     virtual void DialogClosed(int32 retCode) = 0;
 };
 
-class CreateNodeDialog: public DraggableDialog, public PropertyListDelegate
+class NodePropertyControl;
+class CreateNodeDialog: public DraggableDialog
 {
-    enum eConst
-    {
-        BUTTON_HEIGHT = 20,
-        BUTTON_WIDTH = 100,
-    };
     
 public:
     enum eRetCode
@@ -44,9 +39,8 @@ public:
     
 protected:
 
-    virtual void InitializeProperties() = 0;
-    virtual void CreateNode() = 0;
-    virtual void ClearPropertyValues() = 0;
+    virtual void CreateNode();
+    void ClearPropertyValues();
 
     
     void SetHeader(const WideString &headerText);
@@ -56,7 +50,8 @@ protected:
 
     CreateNodeDialogDelegeate *dialogDelegate;
     
-    PropertyList *propertyList;
+    Rect propertyRect;
+    NodePropertyControl *propertyList;
   
     UIStaticText *header;
     SceneNode *sceneNode;

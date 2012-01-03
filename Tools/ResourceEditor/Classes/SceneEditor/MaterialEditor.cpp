@@ -54,6 +54,7 @@ MaterialEditor::MaterialEditor()
     {
         materialProps[i] = new PropertyList(Rect(size.x * materialListPart, size.y * previewHeightPart + 25, size.x - size.x * materialListPart, size.y - size.y * previewHeightPart - 25), this);
         materialProps[i]->AddStringProperty("Name", " ");
+        materialProps[i]->AddFilepathProperty("Diffuse texture", " ", ".png");
     }
     
 }
@@ -96,7 +97,7 @@ void MaterialEditor::OnItemSelected(ComboBox *forComboBox, const String &itemKey
     {
         Material *mat = workingScene->GetMaterial(selectedMaterial);
         mat->SetType((Material::eType)itemIndex);
-        PreparePropertiesFroMaterialType(mat->type);
+        PreparePropertiesForMaterialType(mat->type);
     }
 }
 
@@ -122,15 +123,37 @@ void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &
 {
 }
 
+void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+{
+    if (forKey == "Diffuse texture") 
+    {
+        Material *mat = workingScene->GetMaterial(selectedMaterial);
+        if (mat->textures[Material::TEXTURE_DIFFUSE])
+        {
+            SafeRelease(mat->textures[Material::TEXTURE_DIFFUSE]);
+        }
+        Texture *tx = Texture::CreateFromFile(newValue);
+        if (tx) 
+        {
+            mat->textures[Material::TEXTURE_DIFFUSE] = tx;
+        }
+        else 
+        {
+            materialProps[mat->type]->SetFilepathPropertyValue("Diffuse texture", " ");
+        }
+
+    }
+}
+
 
 void MaterialEditor::SelectMaterial(int materialIndex)
 {
     Material *mat = workingScene->GetMaterial(materialIndex);
-    PreparePropertiesFroMaterialType(mat->type);
+    PreparePropertiesForMaterialType(mat->type);
     materialTypes->SetSelectedIndex(mat->type, false);
 }
 
-void MaterialEditor::PreparePropertiesFroMaterialType(int materialType)
+void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
 {
     for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
     {
@@ -143,7 +166,16 @@ void MaterialEditor::PreparePropertiesFroMaterialType(int materialType)
     
     Material *mat = workingScene->GetMaterial(selectedMaterial);
     materialProps[materialType]->SetStringPropertyValue("Name", mat->GetName());
-    
+    if (mat->textures[Material::TEXTURE_DIFFUSE])
+    {
+        materialProps[materialType]->SetFilepathPropertyValue("Diffuse texture", mat->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+    }
+    else 
+    {
+        materialProps[materialType]->SetFilepathPropertyValue("Diffuse texture", " ");
+    }
+
+
 }
 
 
