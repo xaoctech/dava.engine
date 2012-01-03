@@ -6,7 +6,7 @@
 CreateCameraDialog::CreateCameraDialog(const Rect & rect)
     :   CreateNodeDialog(rect)
 {
-    propertyList = new CameraPropertyControl(propertyRect);
+    propertyList = new CameraPropertyControl(propertyRect, false);
     propertyList->InitProperties();
     AddControl(propertyList);
 

@@ -11,7 +11,7 @@ class ServicenodePropertyControl: public NodePropertyControl
 {
 public:
 
-    ServicenodePropertyControl(const Rect & rect);
+    ServicenodePropertyControl(const Rect & rect, bool showMatrix);
 
     virtual void ReadFromNode(SceneNode *sceneNode);
     virtual void ReadToNode(SceneNode *sceneNode);

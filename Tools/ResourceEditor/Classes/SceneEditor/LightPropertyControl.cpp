@@ -1,7 +1,7 @@
 #include "LightPropertyControl.h"
 
-LightPropertyControl::LightPropertyControl(const Rect & rect)
-:   NodePropertyControl(rect)
+LightPropertyControl::LightPropertyControl(const Rect & rect, bool showMatrix)
+:   NodePropertyControl(rect, showMatrix)
 {
     types.push_back("Directional");
     types.push_back("Spot");
