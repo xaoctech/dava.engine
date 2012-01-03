@@ -164,6 +164,136 @@ void WASDCameraController::Input(UIEvent * event)
         camera->SetDirection(dir);
     }
 }
+	
+	
+	Max3dCameraController::Max3dCameraController()
+	{
+		
+	}
+
+	
+	Max3dCameraController::~Max3dCameraController()
+	{
+		
+	}
     
+	void Max3dCameraController::SetSelection(SceneNode * _selection)
+	{
+		selection = _selection;
+	}
+	
+	void Max3dCameraController::Input(UIEvent * event)
+	{
+//		if (!camera)return;
+//		if (event->phase == UIEvent::PHASE_KEYCHAR)
+//		{   
+//			switch(event->keyChar)
+//			{
+//				case 'z':
+//				case 'Z':
+//				{
+//					if (selection)
+//					{
+//						AABBox3 box = selection->GetWTMaximumBoundingBox();
+//						
+//					 	const Vector3 & pos = camera->GetPosition();
+//					 	const Vector3 & targ = camera->GetTarget();
+//						
+//						Vector3 dir = targ - pos;
+//						const Vector3 & c = box.GetCenter();
+//						
+//						camera->SetTarget(c);
+//						camera->SetPosition(c - dir);
+//					}					
+//				}
+//				break;
+//					
+//				case 'w':
+//				case 'W':
+//				{
+//					Vector3 pos = camera->GetPosition();
+//					Vector3 direction = camera->GetDirection();
+//					//Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//					
+//					direction.Normalize();
+//					pos += direction * speed * SystemTimer::Instance()->FrameDelta();
+//					camera->SetPosition(pos);
+//					camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+//					
+//					//Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
+//				}
+//					break;
+//					
+//				case 'a':
+//				case 'A':
+//				{ 
+//					Vector3 pos = camera->GetPosition();
+//					Vector3 dir = camera->GetDirection();
+//					Vector3 left = camera->GetLeft();
+//					
+//					pos -= left * speed * SystemTimer::Instance()->FrameDelta();
+//					camera->SetPosition(pos);
+//					camera->SetDirection(dir);
+//				}
+//					break;
+//					
+//				case 's':
+//				case 'S':
+//				{
+//					Vector3 pos = camera->GetPosition();
+//					Vector3 direction = camera->GetDirection();
+//					//Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//					
+//					pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
+//					camera->SetPosition(pos);
+//					camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+//					//Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//				}
+//					break;
+//					
+//				case 'd':
+//				case 'D':
+//				{
+//					Vector3 pos = camera->GetPosition();
+//					Vector3 dir = camera->GetDirection();
+//					Vector3 left = camera->GetLeft();
+//					
+//					pos += left * speed * SystemTimer::Instance()->FrameDelta();
+//					camera->SetPosition(pos);
+//					camera->SetDirection(dir);
+//				}
+//					break;
+//			};
+//		} 
+//		
+//		if (event->phase == UIEvent::PHASE_BEGAN) 
+//		{
+//			oldTouchPoint = event->point;
+//		}
+//		else if(event->phase == UIEvent::PHASE_DRAG || event->phase == UIEvent::PHASE_ENDED)
+//		{
+//			Vector2 dp = oldTouchPoint - event->point;
+//			dp *= 8.f;
+//			viewXAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
+//			viewYAngle -= dp.y * SystemTimer::Instance()->FrameDelta();
+//			oldTouchPoint = event->point;
+//			//ClampAngles();
+//			//LOG_AS_FLOAT(viewXAngle);
+//			//LOG_AS_FLOAT(viewYAngle);
+//			Matrix4 aimUser;
+//			aimUser.Identity();
+//			Matrix4 mt, mt2;
+//			mt.CreateTranslation(Vector3(0,10,0));
+//			aimUser *= mt;
+//			mt.CreateRotation(Vector3(0,0,1), DegToRad(viewXAngle));
+//			mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+//			mt2 *= mt;
+//			aimUser *= mt2;
+//			
+//			Vector3 dir = Vector3() * aimUser;
+//			camera->SetDirection(dir);
+//		}
+	}
+	
     
 };
