@@ -33,7 +33,7 @@ bool ColladaDocument::Open( const char * filename )
 	FCDGeometryLibrary * geometryLibrary = document->GetGeometryLibrary();
 
 	
-	printf("* Export geometry: %d\n", (int)geometryLibrary->GetEntityCount());
+	DAVA::Logger::Debug("* Export geometry: %d\n", (int)geometryLibrary->GetEntityCount());
 	for (int entityIndex = 0; entityIndex < (int)geometryLibrary->GetEntityCount(); ++entityIndex)
 	{
 		FCDGeometry * geometry = geometryLibrary->GetEntity(entityIndex);
@@ -75,7 +75,7 @@ bool ColladaDocument::Open( const char * filename )
 	}
 
 	FCDCameraLibrary * cameraLibrary = document->GetCameraLibrary();
-	printf("Cameras:%d\n", cameraLibrary->GetEntityCount());
+	DAVA::Logger::Debug("Cameras:%d\n", cameraLibrary->GetEntityCount());
 	
 	for (int entityIndex = 0; entityIndex < (int)cameraLibrary->GetEntityCount(); ++entityIndex)
 	{
@@ -85,12 +85,12 @@ bool ColladaDocument::Open( const char * filename )
 	
 	FCDAnimationLibrary * animationLibrary = document->GetAnimationLibrary();
 	FCDAnimationClipLibrary * animationClipLibrary = document->GetAnimationClipLibrary();
-	printf("[A] Animations:%d Clips:%d\n", animationLibrary->GetEntityCount(), animationClipLibrary->GetEntityCount());
+	DAVA::Logger::Debug("[A] Animations:%d Clips:%d\n", animationLibrary->GetEntityCount(), animationClipLibrary->GetEntityCount());
 	
 	
 	FCDControllerLibrary * controllerLibrary = document->GetControllerLibrary();
 	
-	printf("* Export animation controllers: %d\n", controllerLibrary->GetEntityCount());
+	DAVA::Logger::Debug("* Export animation controllers: %d\n", controllerLibrary->GetEntityCount());
 	for (int entityIndex = 0; entityIndex < (int)controllerLibrary->GetEntityCount(); ++entityIndex)
 	{
 		FCDController * controller = controllerLibrary->GetEntity(entityIndex);
@@ -114,13 +114,13 @@ bool ColladaDocument::ExportNodeAnimations(FCDocument * exportDoc, FCDSceneNode 
 	FCDAnimationLibrary * animationLibrary = exportDoc->GetAnimationLibrary();
 	if (animationLibrary->GetEntityCount() == 0)
 	{
-		printf("*** Can't find any animations in this file: %s\n", exportDoc->GetFileUrl().c_str());
+		DAVA::Logger::Debug("*** Can't find any animations in this file: %s\n", exportDoc->GetFileUrl().c_str());
 		return false;
 	}
 	
 	float32 timeStart, timeEnd;
 	GetAnimationTimeInfo(exportDoc, timeStart, timeEnd);
-	printf("== Additional animation: %s start: %0.3f end: %0.3f\n ", exportDoc->GetFileUrl().c_str(), timeStart, timeEnd);
+	DAVA::Logger::Debug("== Additional animation: %s start: %0.3f end: %0.3f\n ", exportDoc->GetFileUrl().c_str(), timeStart, timeEnd);
 	
 	std::string fullPathName = exportDoc->GetFileUrl().c_str();
 	std::string path;
@@ -142,7 +142,7 @@ bool ColladaDocument::ExportAnimations(const char * filename)
 	bool val = FCollada::LoadDocumentFromFile( exportDoc, FUStringConversion::ToFString(filename));
 	if (!val)
 	{
-		printf("*** Can't find file: %s\n", filename);
+		DAVA::Logger::Debug("*** Can't find file: %s\n", filename);
 		return false;
 	}
 	FCDSceneNode * exportNode =  exportDoc->GetVisualSceneInstance();
@@ -160,7 +160,7 @@ void ColladaDocument::GetAnimationTimeInfo(FCDocument * document, float32 & retT
 	for (int entityIndex = 0; entityIndex < (int)animationLibrary->GetEntityCount(); ++entityIndex)
 	{
 		FCDAnimation * anim = animationLibrary->GetEntity(entityIndex);
-		// printf("* Export animation: %d channelCount:%d\n", entityIndex, anim->GetChannelCount());
+		// DAVA::Logger::Debug("* Export animation: %d channelCount:%d\n", entityIndex, anim->GetChannelCount());
 		
 		timeMin = 10000000.0f;
 		timeMax = 0.0f;
@@ -168,11 +168,11 @@ void ColladaDocument::GetAnimationTimeInfo(FCDocument * document, float32 & retT
 		for (int channelIndex = 0; channelIndex < anim->GetChannelCount(); ++channelIndex)
 		{
 			FCDAnimationChannel * channel = anim->GetChannel(channelIndex);
-			// printf("- channel: %d curveCount: %d\n", channelIndex, channel->GetCurveCount());
+			// DAVA::Logger::Debug("- channel: %d curveCount: %d\n", channelIndex, channel->GetCurveCount());
 			for (int curveIndex = 0; curveIndex < channel->GetCurveCount(); ++curveIndex)
 			{
 				FCDAnimationCurve * curve = channel->GetCurve(curveIndex);
-				// printf("-- curve: %d target:%s\n", curveIndex, curve->GetTargetQualifier().c_str());
+				// DAVA::Logger::Debug("-- curve: %d target:%s\n", curveIndex, curve->GetTargetQualifier().c_str());
 				for (int keyIndex = 0; keyIndex < curve->GetKeyCount(); ++keyIndex)
 				{
 					FCDAnimationKey * key = curve->GetKey(keyIndex);
@@ -184,7 +184,7 @@ void ColladaDocument::GetAnimationTimeInfo(FCDocument * document, float32 & retT
 		}
 		colladaScene->animationStartTime = Min(timeMin, colladaScene->animationStartTime);
 		colladaScene->animationEndTime = Max(timeMax, colladaScene->animationEndTime);
-		//printf("- timeMin: %f timeMax: %f\n", timeMin, timeMax);  
+		//DAVA::Logger::Debug("- timeMin: %f timeMax: %f\n", timeMin, timeMax);  
 	}
 	
 	retTimeStart = 0.0f;
@@ -223,7 +223,7 @@ String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture 
 
 void ColladaDocument::SaveScene( const String & scenePath, const String & sceneName )
 {
-	printf("* Write begin: %s/%s\n", scenePath.c_str(), sceneName.c_str());
+	DAVA::Logger::Debug("* Write begin: %s/%s\n", scenePath.c_str(), sceneName.c_str());
 	
 	String scenePathName = scenePath + String("/") + sceneName;
 	
@@ -274,7 +274,7 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
         texture.hasOpacity = colladaScene->colladaTextures[textureIndex]->hasOpacity;
 		////
 		
-		printf("- texture: %s %d\n", texture.name, texture.id);
+		DAVA::Logger::Debug("- texture: %s %d\n", texture.name, texture.id);
 		WriteTexture(&texture);
 	}*/
 	
@@ -338,7 +338,7 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
             strcpy(material.lightmapTexture,"");
         }
         
-		printf("- material: %s diffuse texture: %s idx:%d\n", material.name, material.diffuseTexture, materialIndex); 
+		DAVA::Logger::Debug("- material: %s diffuse texture: %s idx:%d\n", material.name, material.diffuseTexture, materialIndex); 
 		WriteMaterial(&material);
 	}
 	
@@ -374,7 +374,7 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 	
 	
 	
-	printf("* Write scene graph:\n");
+	DAVA::Logger::Debug("* Write scene graph:\n");
 	// write scene graph
 	int nodeId = 0;
 	WriteSceneNode(colladaScene->rootNode, nodeId, -1, 0);
@@ -383,14 +383,14 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 	fwrite(&header, sizeof(SceneFile::Header), 1, sceneFP);
 
 	fclose(sceneFP);
-	printf("* Write end\n");
-	printf("===============\n");
+	DAVA::Logger::Debug("* Write end\n");
+	DAVA::Logger::Debug("===============\n");
 
-//	printf("* Verify start: %s\n", scenePathName.c_str());
+//	DAVA::Logger::Debug("* Verify start: %s\n", scenePathName.c_str());
 //	SceneFile file;
 //	Scene * scene = new Scene();
 //	file.LoadScene(scenePathName.c_str(), scene, false);
-//	printf("* Verify end\n");
+//	DAVA::Logger::Debug("* Verify end\n");
 }
 	
 void ColladaDocument::WriteTexture(SceneFile::TextureDef * texture)
@@ -438,7 +438,7 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
 	uint32 groupCount = mesh->GetPolygonGroupCount();
 	fwrite(&groupCount, sizeof(uint32), 1, sceneFP);
 	
-	printf("- static mesh: %s idx: %d groupCount: %d\n", mesh->name.c_str(), meshIndex, groupCount); 
+	DAVA::Logger::Debug("- static mesh: %s idx: %d groupCount: %d\n", mesh->name.c_str(), meshIndex, groupCount); 
 
 	for (int k = 0; k < groupCount; ++k)
 	{
@@ -451,7 +451,7 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
 		fwrite(&vertexCount, sizeof(uint32), 1, sceneFP);
 		fwrite(&indexCount, sizeof(uint32), 1, sceneFP);
 
-		printf("    group: %d vertexCount: %d indexCount:%d\n", k, vertexCount, indexCount); 
+		DAVA::Logger::Debug("    group: %d vertexCount: %d indexCount:%d\n", k, vertexCount, indexCount); 
 			
 		for (int vi = 0; vi < vertexCount; ++vi)
 		{
@@ -485,7 +485,7 @@ void ColladaDocument::WriteAnimatedMesh(ColladaAnimatedMesh * animMesh, int mesh
 	int groupCount = mesh->GetPolygonGroupCount();
 	fwrite(&groupCount, sizeof(int32), 1, sceneFP);
 	
-	printf("- animated mesh: %s idx: %d groupCount: %d\n", mesh->name.c_str(), meshIndex, groupCount); 
+	DAVA::Logger::Debug("- animated mesh: %s idx: %d groupCount: %d\n", mesh->name.c_str(), meshIndex, groupCount); 
 	
 	for (int k = 0; k < groupCount; ++k)
 	{
@@ -498,7 +498,7 @@ void ColladaDocument::WriteAnimatedMesh(ColladaAnimatedMesh * animMesh, int mesh
 		fwrite(&vertexCount, sizeof(int32), 1, sceneFP);
 		fwrite(&indexCount, sizeof(int32), 1, sceneFP);
 		
-		printf("    group: %d vertexCount: %d indexCount:%d\n", k, vertexCount, indexCount); 
+		DAVA::Logger::Debug("    group: %d vertexCount: %d indexCount:%d\n", k, vertexCount, indexCount); 
 		
 		for (int vi = 0; vi < vertexCount; ++vi)
 		{
@@ -525,7 +525,7 @@ void ColladaDocument::WriteAnimatedMesh(ColladaAnimatedMesh * animMesh, int mesh
 			
 			if (v.jointCount > 4)
 			{
-				printf("-- WARNING: JOINT COUNT MORE THAN 4 : %d", v.jointCount);
+				DAVA::Logger::Debug("-- WARNING: JOINT COUNT MORE THAN 4 : %d", v.jointCount);
 			}
 			
 			
@@ -575,8 +575,8 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 	strcpy(name, node->originalNode->GetDaeId().c_str());
 	
 	for (int k = 0; k < level + 1; ++k)
-		printf("-");
-	printf(" ");
+		DAVA::Logger::Debug("-");
+	DAVA::Logger::Debug(" ");
 	
 	
 	fwrite(&nodeId, sizeof(int32), 1, sceneFP);
@@ -599,7 +599,7 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 		}		
 	}
 
-	printf("Write scene node: %s childCount: %d isJoint: %d\n", name, def.childCount, (int)node->isJoint);
+	DAVA::Logger::Debug("Write scene node: %s childCount: %d isJoint: %d\n", name, def.childCount, (int)node->isJoint);
 	
 	fwrite(&def, sizeof(def), 1, sceneFP);
 	
@@ -639,10 +639,10 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
 	fwrite(name, strlen(name) + 1, 1, sceneFP);
 	
 	for (int k = 0; k < level + 1; ++k)
-		printf("-");
-	printf(" ");
+		DAVA::Logger::Debug("-");
+	DAVA::Logger::Debug(" ");
 	
-	printf("Write mesh instance node: %s\n", name);
+	DAVA::Logger::Debug("Write mesh instance node: %s\n", name);
 	
 	// write node information
 	SceneFile::SceneNodeDef def;
@@ -666,7 +666,7 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
         int32 materialIndex = colladaScene->FindMaterialIndex(polyGroupInstance->material);
 		if (materialIndex == -1)
 		{
-			printf("*** Error: failed to find material index\n");
+			DAVA::Logger::Debug("*** Error: failed to find material index\n");
 		}
 		
 		int32 meshIndex = 0;
@@ -674,16 +674,16 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
 		
 		if (!colladaScene->FindPolyGroupIndex(polyGroupInstance->polyGroup, meshIndex, polyGroupIndex))
 		{
-			printf("- search : 0x%p\n", polyGroupInstance->polyGroup);
-			printf("*** Error: failed to find poly group index\n");
+			DAVA::Logger::Debug("- search : 0x%p\n", polyGroupInstance->polyGroup);
+			DAVA::Logger::Debug("*** Error: failed to find poly group index\n");
 		}
 		
 		
 		for (int k = 0; k < level + 1; ++k)
-			printf("-");
-		printf(" ");
+			DAVA::Logger::Debug("-");
+		DAVA::Logger::Debug(" ");
 		
-		printf("Write poly instance node: %d materialIdx: %d meshIndex: %d polygroupIndex: %d\n", pgi, materialIndex, meshIndex, polyGroupIndex);
+		DAVA::Logger::Debug("Write poly instance node: %d materialIdx: %d meshIndex: %d polygroupIndex: %d\n", pgi, materialIndex, meshIndex, polyGroupIndex);
 		fwrite(&meshIndex, sizeof(int32), 1, sceneFP);
 		fwrite(&polyGroupIndex, sizeof(int32), 1, sceneFP);
 		fwrite(&materialIndex, sizeof(int32), 1, sceneFP);
@@ -707,10 +707,10 @@ void ColladaDocument::WriteCameraNode(ColladaCamera * node, int32 & globalNodeId
 	fwrite(name, strlen(name) + 1, 1, sceneFP);
 	
 	for (int k = 0; k < level + 1; ++k)
-		printf("-");
-	printf(" ");
+		DAVA::Logger::Debug("-");
+	DAVA::Logger::Debug(" ");
 	
-	printf("Write camera node: %s\n", name);
+	DAVA::Logger::Debug("Write camera node: %s\n", name);
 	
 	// write node information
 	SceneFile::SceneNodeDef def;
@@ -743,7 +743,7 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 	int32 cnt = animation->animations.size();
 	fwrite(&cnt, sizeof(int32), 1, sceneFP);
 	
-	printf("- scene node anim list: %s\n", name); 
+	DAVA::Logger::Debug("- scene node anim list: %s\n", name); 
 	for (Map<ColladaSceneNode*, SceneNodeAnimation*>::iterator it = animation->animations.begin(); it != animation->animations.end(); ++it)
 	{
 		ColladaSceneNode * node = it->first;
@@ -759,7 +759,7 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 		int32 keyCount = anim->GetKeyCount();
 		fwrite(&keyCount, sizeof(int32), 1, sceneFP);
 		
-		printf("-- scene node anim: %s keyCount: %d\n", name, keyCount); 
+		DAVA::Logger::Debug("-- scene node anim: %s keyCount: %d\n", name, keyCount); 
 		
 		SceneNodeAnimationKey * keys = anim->GetKeys();
 		for (int k = 0; k < anim->GetKeyCount(); ++k)
@@ -769,7 +769,7 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 			fwrite(&key.translation, sizeof(Vector3), 1, sceneFP);
 			fwrite(&key.rotation, sizeof(Quaternion), 1, sceneFP);
 			
-			//printf("---- key: %f tr: %f %f %f q: %f %f %f %f\n", key.time, key.translation.x, key.translation.y, key.translation.z
+			//DAVA::Logger::Debug("---- key: %f tr: %f %f %f q: %f %f %f %f\n", key.time, key.translation.x, key.translation.y, key.translation.z
 			//, key.rotation.x, key.rotation.y, key.rotation.z, key.rotation.w); 
 		}
 	}
@@ -778,7 +778,7 @@ void ColladaDocument::WriteNodeAnimationList(ColladaAnimation * animation)
 void ColladaDocument::WriteCamera(ColladaCamera * cam, int32 i)
 {
 	// write fov/ortho...
-	printf("write camera %i\n", i);
+	DAVA::Logger::Debug("write camera %i\n", i);
 	SceneFile::CameraDef cd;
 	
 	if (cam->camera->HasHorizontalFov())
@@ -796,7 +796,7 @@ void ColladaDocument::WriteCamera(ColladaCamera * cam, int32 i)
 	
 void ColladaDocument::WriteLight(ColladaLight * light, int32 i)
 {
-	printf("write light %i\n", i);
+	DAVA::Logger::Debug("write light %i\n", i);
 	SceneFile::LightDef ldef;
 	
 	memset(&ldef, 0, sizeof(ldef));
