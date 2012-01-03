@@ -27,10 +27,10 @@ public:
 	void UpdateCollisionObject(void);
 
 
-	inline DebugNode * GetDebugNode()
-	{
-		return debugNode;
-	}
+//	inline DebugNode * GetDebugNode()
+//	{
+//		return debugNode;
+//	}
 	
 	inline btCollisionObject * GetCollisionObject(void)
 	{
@@ -44,9 +44,11 @@ protected:
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
 	btCollisionObject *collisionObject;
-	btConvexHullShape * shape;
-	DebugNode * debugNode;
-	std::vector<float32> debugShapes;
+//	btConvexHullShape * shape;
+    btTriangleMesh* trimesh;
+	btBvhTriangleMeshShape * shape;
+//	DebugNode * debugNode;
+//	std::vector<float32> debugShapes;
 };
 
 #endif

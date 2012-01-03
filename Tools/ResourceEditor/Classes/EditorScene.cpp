@@ -62,11 +62,11 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		SceneNodeUserData * data = new SceneNodeUserData();
 		curr->userData = data;
 		data->bulletObject = new BulletObject(this, collisionWorld, (MeshInstanceNode*)mesh, mesh->GetWorldTransform());
-		mesh->AddNode(data->bulletObject->GetDebugNode());
-		BulletLink link;
-		link.bulletObj = data->bulletObject;
-		link.sceneNode = curr;
-		links.push_back(link);
+//		mesh->AddNode(data->bulletObject->GetDebugNode());
+//		BulletLink link;
+//		link.bulletObj = data->bulletObject;
+//		link.sceneNode = curr;
+//		links.push_back(link);
 //		Logger::Debug("%d Meshes count: %d", depth, mesh->GetMeshes().size());
 	}
 	else if (mesh && mesh->userData)
@@ -101,23 +101,33 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
     {
 		coll = cb.m_collisionObject;
 		Logger::Debug("Has Hit");
+		selection = FindSelected(this, coll);
 	}
 	else 
 	{
 		selection = 0;		
 	}
+}
 
+SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
+{
+	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);
 	
-	for (Vector<BulletLink>::iterator it = links.begin(); it != links.end(); it++) 
+	if (mesh && mesh->userData)
 	{
-		BulletLink & link = *it;
-		bool isDraw = (coll == link.bulletObj->GetCollisionObject());
-		link.bulletObj->GetDebugNode()->isDraw = isDraw;
-		if (isDraw)
-		{
-			selection = link.sceneNode;
-		}
+		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		if (data->bulletObject->GetCollisionObject() == coll)
+			return curr;
 	}
+	int size = curr->GetChildrenCount();
+	//	Logger::Debug("GetChildrenCount %d",size);
+	for (int i = 0; i < size; i++)
+	{
+		SceneNode * result = FindSelected(curr->GetChild(i), coll);
+		if (result)
+			return result;
+	}
+	return 0;
 }
 
 SceneNode * EditorScene::GetSelection()
