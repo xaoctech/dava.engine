@@ -1,7 +1,7 @@
 #include "CameraPropertyControl.h"
 
-CameraPropertyControl::CameraPropertyControl(const Rect & rect)
-:   NodePropertyControl(rect)
+CameraPropertyControl::CameraPropertyControl(const Rect & rect, bool showMatrix)
+:   NodePropertyControl(rect, showMatrix)
 {
     
 }

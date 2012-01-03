@@ -11,7 +11,7 @@ class CameraPropertyControl: public NodePropertyControl
 {
 public:
 
-    CameraPropertyControl(const Rect & rect);
+    CameraPropertyControl(const Rect & rect, bool showMatrix);
 
     virtual void ReadFromNode(SceneNode *sceneNode);
     virtual void ReadToNode(SceneNode *sceneNode);

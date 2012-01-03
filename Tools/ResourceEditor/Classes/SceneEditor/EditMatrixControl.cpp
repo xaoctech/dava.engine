@@ -64,7 +64,7 @@ EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
             matrixButtons[i][j]->SetStateDrawType(UIControl::STATE_HOVER, UIControlBackground::DRAW_FILL);
             matrixButtons[i][j]->GetStateBackground(UIControl::STATE_HOVER)->SetColor(Color(0.2, 0.2, 0.2, 0.2));
             matrixButtons[i][j]->SetStateFont(UIControl::STATE_NORMAL, f);
-            matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, L"0.000000");
+            matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, L"0.00");
             matrixButtons[i][j]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditMatrixControl::OnEditButtonPressed));
             AddControl(matrixButtons[i][j]);
         }
@@ -113,7 +113,7 @@ void EditMatrixControl::OnEditButtonPressed(BaseObject * obj, void *, void *)
         GetIndexByButton(obj, editI, editJ);
         if ((editI != -1) && (editJ != -1))
         {
-            textField->SetText(Format(L"%f", matrix._data[editI][editJ]));
+            textField->SetText(Format(L"%0.2f", matrix._data[editI][editJ]));
         }
         
         AddControl(textFieldBackground);
@@ -136,7 +136,7 @@ void EditMatrixControl::SetMatrix(const Matrix4 & _matrix)
     for (int32 i = 0; i < 4; ++i)
         for (int32 j = 0; j < 4; ++j)
         {
-            matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, Format(L"%f", matrix._data[i][j]));
+            matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, Format(L"%0.2f", matrix._data[i][j]));
         }
 }
     
@@ -171,5 +171,9 @@ bool EditMatrixControl::TextFieldKeyPressed(UITextField * textField, int32 repla
     return true;
 }
 
+void EditMatrixControl::SetReadOnly(bool _readOnly)
+{
+    readOnly = _readOnly;
+}
     
 };

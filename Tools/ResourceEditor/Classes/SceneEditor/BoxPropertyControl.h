@@ -11,7 +11,7 @@ class BoxPropertyControl: public NodePropertyControl
 {
 public:
 
-    BoxPropertyControl(const Rect & rect);
+    BoxPropertyControl(const Rect & rect, bool showMatrix);
 
     virtual void ReadFromNode(SceneNode *sceneNode);
     virtual void ReadToNode(SceneNode *sceneNode);

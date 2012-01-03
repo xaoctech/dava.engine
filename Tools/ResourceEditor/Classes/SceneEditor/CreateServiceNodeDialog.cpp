@@ -6,7 +6,7 @@
 CreateServiceNodeDialog::CreateServiceNodeDialog(const Rect & rect)
     :   CreateNodeDialog(rect)
 {
-    propertyList = new ServicenodePropertyControl(propertyRect);
+    propertyList = new ServicenodePropertyControl(propertyRect, false);
     propertyList->InitProperties();
     AddControl(propertyList);
 

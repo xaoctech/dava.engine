@@ -11,7 +11,7 @@ class LandscapePropertyControl: public NodePropertyControl
 {
 public:
 
-    LandscapePropertyControl(const Rect & rect);
+    LandscapePropertyControl(const Rect & rect, bool showMatrix);
 
     virtual void ReadFromNode(SceneNode *sceneNode);
     virtual void ReadToNode(SceneNode *sceneNode);
