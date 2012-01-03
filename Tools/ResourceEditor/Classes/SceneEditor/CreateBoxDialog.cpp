@@ -6,7 +6,7 @@
 CreateBoxDialog::CreateBoxDialog(const Rect & rect)
     :   CreateNodeDialog(rect)
 {
-    propertyList = new BoxPropertyControl(propertyRect);
+    propertyList = new BoxPropertyControl(propertyRect, false);
     propertyList->InitProperties();
     AddControl(propertyList);
     

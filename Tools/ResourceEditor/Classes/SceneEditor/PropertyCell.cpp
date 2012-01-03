@@ -430,3 +430,51 @@ void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &i
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }
+
+//*************** PropertyMatrix4Cell **************
+PropertyMatrix4Cell::PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+:       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width/2;
+    
+    float32 usedWidth = keyName->size.x;
+
+    matrix = new EditMatrixControl(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)));
+    matrix->OnMatrixChanged = Message(this, &PropertyMatrix4Cell::OnLocalTransformChanged);
+
+    AddControl(matrix);
+    SetData(prop);
+}
+
+PropertyMatrix4Cell::~PropertyMatrix4Cell()
+{
+    SafeRelease(matrix);
+}
+
+float32 PropertyMatrix4Cell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT * 4;
+}
+
+void PropertyMatrix4Cell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_MATRIX4:
+            matrix->SetMatrix(prop->GetMatrix4());
+            matrix->SetReadOnly(!prop->isEditable);
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    property->SetMatrix4(matrix->GetMatrix());
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}

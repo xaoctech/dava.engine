@@ -11,7 +11,7 @@ class SpherePropertyControl: public NodePropertyControl
 {
 public:
 
-    SpherePropertyControl(const Rect & rect);
+    SpherePropertyControl(const Rect & rect, bool showMatrix);
 
     virtual void ReadFromNode(SceneNode *sceneNode);
     virtual void ReadToNode(SceneNode *sceneNode);

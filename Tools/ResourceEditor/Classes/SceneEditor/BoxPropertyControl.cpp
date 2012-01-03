@@ -1,8 +1,8 @@
 #include "BoxPropertyControl.h"
 
 
-BoxPropertyControl::BoxPropertyControl(const Rect & rect)
-:   NodePropertyControl(rect)
+BoxPropertyControl::BoxPropertyControl(const Rect & rect, bool showMatrix)
+:   NodePropertyControl(rect, showMatrix)
 {
     
 }
