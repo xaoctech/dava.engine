@@ -28,7 +28,7 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Render/3D/PolygonGroup.h"
-
+#include "FileSystem/KeyedArchive.h"
 
 namespace DAVA 
 {
@@ -39,7 +39,7 @@ PolygonGroup::PolygonGroup()
 	textureCoordCount(0),
 	vertexStride(0),
 	vertexFormat(0),
-	renderPassCount(0),
+    indexFormat(EIF_16),
 	triangleCount(0),
 	
 	vertexArray(0), 
@@ -62,27 +62,15 @@ PolygonGroup::~PolygonGroup()
 {
 	ReleaseData();
 }
-
-void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount, int32 _textureCoordCount)
+    
+void PolygonGroup::UpdateDataPointersAndStreams()
 {
-	vertexCount = _vertexCount;
-	indexCount = _indexCount;
-	textureCoordCount = _textureCoordCount;
-	vertexStride = GetVertexSize(_meshFormat);
-	vertexFormat = _meshFormat;
-	
-	meshData = new uint8[vertexStride * vertexCount];
-	indexArray = new int16[indexCount];
-	textureCoordArray = new Vector2*[textureCoordCount];
-	
-    renderDataObject = new RenderDataObject();
-
-	int32 baseShift = 0;
+    int32 baseShift = 0;
 	if (vertexFormat & EVF_VERTEX)
 	{
 		vertexArray = reinterpret_cast<Vector3*>(meshData + baseShift);
 		baseShift += GetVertexSize(EVF_VERTEX);
-
+        
         renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, vertexStride, vertexArray);
     }
 	if (vertexFormat & EVF_NORMAL)
@@ -112,7 +100,7 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
 	{
 		textureCoordArray[1] = reinterpret_cast<Vector2*>(meshData + baseShift);
 		baseShift += GetVertexSize(EVF_TEXCOORD1);
-
+        
         renderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, vertexStride, textureCoordArray[1]);
     }
 	if (vertexFormat & EVF_TEXCOORD2)
@@ -133,14 +121,14 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
 	{
 		tangentArray = reinterpret_cast<Vector3*>(meshData + baseShift);
 		baseShift += GetVertexSize(EVF_TANGENT);
-
+        
         renderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, vertexStride, tangentArray);
 	}
 	if (vertexFormat & EVF_BINORMAL)
 	{
 		binormalArray = reinterpret_cast<Vector3*>(meshData + baseShift);
 		baseShift += GetVertexSize(EVF_BINORMAL);
-
+        
         renderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, vertexStride, binormalArray);
 	}
     
@@ -152,6 +140,23 @@ void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _in
 		
 		jointCountArray = new int32[vertexCount];
 	}
+}
+
+void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount, int32 _textureCoordCount)
+{
+	vertexCount = _vertexCount;
+	indexCount = _indexCount;
+	textureCoordCount = _textureCoordCount;
+	vertexStride = GetVertexSize(_meshFormat);
+	vertexFormat = _meshFormat;
+	
+	meshData = new uint8[vertexStride * vertexCount];
+	indexArray = new int16[indexCount];
+	textureCoordArray = new Vector2*[textureCoordCount];
+	
+    renderDataObject = new RenderDataObject();
+    
+    UpdateDataPointersAndStreams();
 }
     
 void PolygonGroup::BuildTangents()
@@ -187,6 +192,64 @@ void PolygonGroup::BuildVertexBuffer()
     renderDataObject->BuildVertexBuffer(vertexCount);
 };
 
+    
+void PolygonGroup::Save(KeyedArchive * keyedArchive)
+{
+    BaseObject::Save(keyedArchive);
+    
+    keyedArchive->SetInt32("vertexFormat", vertexFormat);
+    keyedArchive->SetInt32("vertexCount", vertexCount); 
+    keyedArchive->SetInt32("indexCount", indexCount); 
+    keyedArchive->SetInt32("textureCoordCount", textureCoordCount);
+    keyedArchive->SetInt32("primitiveType", primitiveType);
+                           
+    keyedArchive->SetInt32("packing", PACKING_NONE);
+    keyedArchive->SetByteArray("vertices", meshData, vertexCount * vertexStride);
+    keyedArchive->SetInt32("indexFormat", indexFormat);
+    keyedArchive->SetByteArray("indices", (uint8*)indexArray, indexCount * INDEX_FORMAT_SIZE[indexFormat]);
+}
+
+void PolygonGroup::Load(KeyedArchive * keyedArchive)
+{
+    BaseObject::Load(keyedArchive);
+    
+    vertexFormat = keyedArchive->GetInt32("vertexFormat");
+    vertexStride = GetVertexSize(vertexFormat);
+    vertexCount = keyedArchive->GetInt32("vertexCount");
+    indexCount = keyedArchive->GetInt32("indexCount");
+    textureCoordCount = keyedArchive->GetInt32("textureCoordCount");
+    primitiveType = (ePrimitiveType)keyedArchive->GetInt32("primitiveType");
+    
+    int32 formatPacking = keyedArchive->GetInt32("packing");
+    if (formatPacking == PACKING_NONE)
+    {
+        int size = keyedArchive->GetByteArraySize("vertices");
+        if (size != vertexCount * vertexStride)
+        {
+            Logger::Error("PolygonGroup::Load - Something is going wrong, size of vertex array is incorrect");
+            return;
+        }
+        meshData = new uint8[vertexCount * vertexStride];
+        const uint8 * archiveData = keyedArchive->GetByteArray("vertices");
+        memcpy(meshData, archiveData, size);
+    }
+    
+    indexFormat = keyedArchive->GetInt32("indexFormat");
+    if (indexFormat == EIF_16)
+    {
+        int size = keyedArchive->GetByteArraySize("indices");
+        if (size != indexCount * INDEX_FORMAT_SIZE[indexFormat])
+        {
+            Logger::Error("PolygonGroup::Load - Something is going wrong, size of index array is incorrect");   
+            return;
+        }
+        indexArray = new int16[indexCount];
+        const uint8 * archiveData = keyedArchive->GetByteArray("indices");
+        memcpy(indexArray, archiveData, indexCount * INDEX_FORMAT_SIZE[indexFormat]);         
+    }
+    UpdateDataPointersAndStreams();
+}
+    
 };
 
 

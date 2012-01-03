@@ -87,8 +87,7 @@ public:
 		Header();
 
 		char8	descriptor[4];			// DVSC
-		uint32	version;				// 100
-		uint32	textureCount;			
+		uint32	version;				
 		uint32	materialCount;
 		uint32	lightCount;
 		uint32	cameraCount;
@@ -105,7 +104,6 @@ public:
 	{
 	public:
 		char8	name[512];		// for convinient search
-		uint32	id;				// for fast binding
 	};
 
 	class TextureDef : public ObjectDef
@@ -117,6 +115,15 @@ public:
 	class MaterialDef : public ObjectDef
 	{
 	public:
+        MaterialDef()
+        {
+            diffuseTexture[0] = 0;
+            lightmapTexture[0] = 0;
+            reflectiveTexture[0] = 0;
+            specularTexture[0] = 0;
+            normalMapTexture[0] = 0;
+        }
+        
 		Vector4 ambient;
 		Vector4 diffuse;
 		Vector4 specular;
@@ -130,10 +137,11 @@ public:
 		float32	transparency; 
 		float32	indexOfRefraction;
 
-		uint32	diffuseTextureId;	
 		char8	diffuseTexture[512];
+        char8   lightmapTexture[512];       // decal texture as well
 		char8	reflectiveTexture[512];
-        char8   lightmapTexture[512];
+        char8   specularTexture[512];
+        char8   normalMapTexture[512];
         
         uint8   hasOpacity;                 // means material has opacity and have to be sorted from back to front
 	};
@@ -203,27 +211,6 @@ public:
 		// void * customNodeData;		
 		// void * childsData;
 	};
-
-	struct SceneNodeDef_102
-	{
-		enum
-		{
-			SCENE_NODE_BASE = 0,		// base node without additional data
-			SCENE_NODE_MESH,			// node with mesh instance
-			SCENE_NODE_ANIMATED_MESH,	// node with animated mesh
-			SCENE_NODE_CAMERA,			// node with camera
-			SCENE_NODE_SKELETON,		// root skeleton node
-			SCENE_NODE_BONE,			// other skeleton bones
-		};
-		
-		int32	parentId;				// id of parent node
-		int32	childCount;				// number of childs
-		Matrix4 localTransform;			// local transform matrix
-		int32	nodeType;				// type of node
-		int32	customDataSize;			// custom data size
-		// void * customNodeData;		
-		// void * childsData;
-	};
 	
 	struct PolygonGroupInstanceDef
 	{
@@ -238,13 +225,15 @@ private:
     String rootNodePath;
     SceneNode *rootNode;
     
-    int32 textureIndexOffset;
+    //int32 textureIndexOffset;
 	int32 staticMeshIndexOffset;
 	int32 animatedMeshIndexOffset;
-	int32 materialIndexOffset;
 	int32 cameraIndexOffset;
 	int32 animationIndexOffset;
-    
+  
+    Vector<Material*> materials;
+    Vector<StaticMesh*> staticMeshes;
+    Vector<AnimatedMesh*> animatedMeshes;
 };
 
 

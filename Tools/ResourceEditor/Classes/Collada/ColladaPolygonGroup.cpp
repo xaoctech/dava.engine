@@ -286,19 +286,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 //	std::stable_sort(unoptimizedVerteces.begin(), unoptimizedVerteces.end(), sortFunc);
 //	time_t tm2 = time(0);
 //	printf("Optimization Time: %0.3f\n", difftime(tm2, tm1));
-	
-	int **equalMap;
-	int *equalCount;
-	
-	equalMap = new int*[vertexIndexCount];
-	equalCount = new int[vertexIndexCount];
-	
-	for (int k = 0; k < vertexIndexCount; ++k)
-		equalMap[k] = new int[vertexIndexCount];
-	
-	//for (int i = 0; i < vertexIndexCount - 1; ++i)
-	//	for (int 
-	
+		
 
  	//ColladaVertex *optimizedVerteces = new ColladaVertex[200000];
  	//for (int32 i = 0; i < vertexIndexCount; ++i)

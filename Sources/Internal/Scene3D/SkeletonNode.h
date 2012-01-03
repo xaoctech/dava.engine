@@ -38,7 +38,7 @@ namespace DAVA
 class SkeletonNode : public BoneNode
 {
 public:
-	SkeletonNode(Scene * _scene);
+	SkeletonNode(Scene * _scene = 0);
 	virtual ~SkeletonNode();
 	
 	void EnableDebugDraw(bool enableDebugDraw);
