@@ -62,6 +62,21 @@ protected:
     Vector2 oldTouchPoint;
 };
 
+
+class Max3dCameraController : public CameraController
+{
+public:
+    Max3dCameraController();
+    ~Max3dCameraController();
+    
+    virtual void Input(UIEvent * event);
+    void SetSelection(SceneNode * selection);
+	
+protected:
+	SceneNode * selection;
 };
+
+};
+
 
 #endif // __DAVAENGINE_CAMERA_CONTROLLER_H__
