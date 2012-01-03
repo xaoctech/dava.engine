@@ -32,6 +32,8 @@
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(LightNode);
 
 LightNode::LightNode(Scene * _scene)
     :   SceneNode(_scene)

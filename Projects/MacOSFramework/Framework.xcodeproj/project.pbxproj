@@ -46,6 +46,10 @@
 		FE044F43140EEA75002A6D27 /* RenderManagerGL20.h in Headers */ = {isa = PBXBuildFile; fileRef = FE044F41140EEA75002A6D27 /* RenderManagerGL20.h */; };
 		FE04522C140EED5C002A6D27 /* LandscapeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE4A005213EBDC24006E924D /* LandscapeNode.cpp */; };
 		FE04522D140EED6F002A6D27 /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECA0D7013D5F67000059D5D /* Frustum.cpp */; };
+		FE08B5D114AF18A700912C99 /* DataNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE08B5D014AF18A600912C99 /* DataNode.h */; };
+		FE08B5D314B1B0D900912C99 /* DataNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE08B5D214B1B0D900912C99 /* DataNode.cpp */; };
+		FE08B5E814B2444B00912C99 /* ProxyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE08B5E614B2444900912C99 /* ProxyNode.cpp */; };
+		FE08B5E914B2444B00912C99 /* ProxyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE08B5E714B2444A00912C99 /* ProxyNode.h */; };
 		FE0A502F134B2E43001EAA90 /* Cursor.h in Headers */ = {isa = PBXBuildFile; fileRef = FE0A502C134B2E43001EAA90 /* Cursor.h */; };
 		FE0A5030134B2E43001EAA90 /* CursorMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = FE0A502D134B2E43001EAA90 /* CursorMacOS.mm */; };
 		FE0A5031134B2E43001EAA90 /* CursorWin32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE0A502E134B2E43001EAA90 /* CursorWin32.cpp */; };
@@ -506,10 +510,14 @@
 		FE044F3E140EEA53002A6D27 /* RenderManagerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderManagerFactory.cpp; sourceTree = "<group>"; };
 		FE044F40140EEA75002A6D27 /* RenderManagerGL20.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderManagerGL20.cpp; sourceTree = "<group>"; };
 		FE044F41140EEA75002A6D27 /* RenderManagerGL20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderManagerGL20.h; sourceTree = "<group>"; };
+		FE08B5D014AF18A600912C99 /* DataNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataNode.h; sourceTree = "<group>"; };
+		FE08B5D214B1B0D900912C99 /* DataNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataNode.cpp; sourceTree = "<group>"; };
+		FE08B5E614B2444900912C99 /* ProxyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProxyNode.cpp; sourceTree = "<group>"; };
+		FE08B5E714B2444A00912C99 /* ProxyNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyNode.h; sourceTree = "<group>"; };
 		FE0A502C134B2E43001EAA90 /* Cursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cursor.h; sourceTree = "<group>"; };
 		FE0A502D134B2E43001EAA90 /* CursorMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CursorMacOS.mm; sourceTree = "<group>"; };
 		FE0A502E134B2E43001EAA90 /* CursorWin32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CursorWin32.cpp; sourceTree = "<group>"; };
-		FE25F784145DB0FB00A72F9C /* Material.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
+		FE25F784145DB0FB00A72F9C /* Material.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Material.cpp; path = ../Material.cpp; sourceTree = "<group>"; };
 		FE25F786145DB33E00A72F9C /* UberShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UberShader.cpp; sourceTree = "<group>"; };
 		FE25F787145DB33E00A72F9C /* UberShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UberShader.h; sourceTree = "<group>"; };
 		FE25F78A145DB75700A72F9C /* Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Data.h; sourceTree = "<group>"; };
@@ -744,7 +752,7 @@
 		FECFC17A12E87E3000C71562 /* LibPngHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPngHelpers.cpp; sourceTree = "<group>"; };
 		FECFC17B12E87E3000C71562 /* LibPngHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPngHelpers.h; sourceTree = "<group>"; };
 		FECFC17C12E87E3000C71562 /* Light.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Light.h; sourceTree = "<group>"; };
-		FECFC17D12E87E3000C71562 /* Material.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Material.h; sourceTree = "<group>"; };
+		FECFC17D12E87E3000C71562 /* Material.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Material.h; path = ../Material.h; sourceTree = "<group>"; };
 		FECFC17E12E87E3000C71562 /* OGLHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OGLHelpers.h; sourceTree = "<group>"; };
 		FECFC17F12E87E3000C71562 /* RenderBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderBase.h; sourceTree = "<group>"; };
 		FECFC18012E87E3000C71562 /* RenderEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderEffect.cpp; sourceTree = "<group>"; };
@@ -1349,8 +1357,6 @@
 				FECFC17A12E87E3000C71562 /* LibPngHelpers.cpp */,
 				FECFC17B12E87E3000C71562 /* LibPngHelpers.h */,
 				FECFC17C12E87E3000C71562 /* Light.h */,
-				FECFC17D12E87E3000C71562 /* Material.h */,
-				FE25F784145DB0FB00A72F9C /* Material.cpp */,
 				FE25F787145DB33E00A72F9C /* UberShader.h */,
 				FE25F786145DB33E00A72F9C /* UberShader.cpp */,
 				FECFC17F12E87E3000C71562 /* RenderBase.h */,
@@ -1412,6 +1418,8 @@
 		FECFC16A12E87E3000C71562 /* 3D */ = {
 			isa = PBXGroup;
 			children = (
+				FECFC17D12E87E3000C71562 /* Material.h */,
+				FE25F784145DB0FB00A72F9C /* Material.cpp */,
 				FECFC16B12E87E3000C71562 /* AnimatedMesh.cpp */,
 				FECFC16C12E87E3000C71562 /* AnimatedMesh.h */,
 				FECFC16D12E87E3000C71562 /* PolygonGroup.cpp */,
@@ -1476,6 +1484,10 @@
 				FEC711AE149F839C00939323 /* SceneFile2.h */,
 				FECFC1B112E87E3000C71562 /* SceneNode.cpp */,
 				FECFC1B212E87E3000C71562 /* SceneNode.h */,
+				FE08B5D214B1B0D900912C99 /* DataNode.cpp */,
+				FE08B5D014AF18A600912C99 /* DataNode.h */,
+				FE08B5E614B2444900912C99 /* ProxyNode.cpp */,
+				FE08B5E714B2444A00912C99 /* ProxyNode.h */,
 				FECFC1B612E87E3000C71562 /* SceneNodeAnimation.cpp */,
 				FECFC1B712E87E3000C71562 /* SceneNodeAnimation.h */,
 				FECFC1B812E87E3000C71562 /* SceneNodeAnimationKey.cpp */,
@@ -1859,6 +1871,8 @@
 				FE01C9BF14A8591A008675BD /* CubeNode.h in Headers */,
 				FE01C9C314A85924008675BD /* SphereNode.h in Headers */,
 				FE01C9C714A8593A008675BD /* LightNode.h in Headers */,
+				FE08B5D114AF18A700912C99 /* DataNode.h in Headers */,
+				FE08B5E914B2444B00912C99 /* ProxyNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2135,6 +2149,8 @@
 				FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */,
 				FE01C9C214A85924008675BD /* SphereNode.cpp in Sources */,
 				FE01C9C614A8593A008675BD /* LightNode.cpp in Sources */,
+				FE08B5D314B1B0D900912C99 /* DataNode.cpp in Sources */,
+				FE08B5E814B2444B00912C99 /* ProxyNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

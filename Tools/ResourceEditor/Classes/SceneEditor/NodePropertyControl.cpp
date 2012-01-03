@@ -24,18 +24,24 @@ void NodePropertyControl::InitProperties()
 {
     propertyList->AddStringProperty("Name", "SceneNode", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddStringProperty("Retain Count", "1", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("Class Name", "Unknown", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("C++ Class Name", "Unknown", PropertyList::PROPERTY_IS_READ_ONLY);
 }
 
 void NodePropertyControl::SetDefaultValues()
 {
     propertyList->SetStringPropertyValue("Name", "SceneNode");
     propertyList->SetStringPropertyValue("Retain Count", "1");
+    propertyList->SetStringPropertyValue("Class Name", "Unknown");
+    propertyList->SetStringPropertyValue("C++ Class Name", "Unknown");
 }
 
 void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
 {
     propertyList->SetStringPropertyValue("Name", sceneNode->GetName());
     propertyList->SetStringPropertyValue("Retain Count", Format("%d", sceneNode->GetRetainCount()));
+    propertyList->SetStringPropertyValue("Class Name", sceneNode->GetClassName());
+    propertyList->SetStringPropertyValue("C++ Class Name", typeid(*sceneNode).name());
 }
 
 void NodePropertyControl::ReadToNode(SceneNode *sceneNode)

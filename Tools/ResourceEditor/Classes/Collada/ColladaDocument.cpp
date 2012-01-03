@@ -200,6 +200,26 @@ void ColladaDocument::Render()
 {
 	colladaScene->Render();
 }
+    
+String ColladaDocument::GetTextureName(const String & scenePath, ColladaTexture * texture)
+{
+    String textureRelativePathName = String(texture->texturePathName.c_str());
+    printf("+ get texture name: %s", textureRelativePathName.c_str());
+    CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath);
+    
+    if (textureRelativePathName.c_str()[0] == '/')
+        textureRelativePathName.erase(0, 1);
+    
+    if (textureRelativePathName.substr(0, 2) == "./")
+        textureRelativePathName.erase(0,2);
+    
+    int32 pos = textureRelativePathName.find(".");
+    if(-1 != pos)
+    {
+        textureRelativePathName.replace(pos, 4, ".png");
+    }
+    return textureRelativePathName;
+}
 
 void ColladaDocument::SaveScene( const String & scenePath, const String & sceneName )
 {
@@ -217,7 +237,6 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 	fwrite(&header, sizeof(SceneFile::Header), 1, sceneFP);
 
     //header.version = 
-	header.textureCount = (uint32)colladaScene->colladaTextures.size();
 	header.materialCount = (uint32)colladaScene->colladaMaterials.size();
 	header.staticMeshCount = (uint32)colladaScene->colladaMeshes.size();
 	header.animatedMeshCount = (uint32)colladaScene->colladaAnimatedMeshes.size();
@@ -225,7 +244,7 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 	header.nodeAnimationsCount = (uint32)colladaScene->colladaAnimations.size();
 	header.lightCount = (uint32)colladaScene->colladaLights.size();
 	
-	for (uint32 textureIndex = 0; textureIndex < header.textureCount; ++textureIndex)
+	/*for (uint32 textureIndex = 0; textureIndex < header.textureCount; ++textureIndex)
 	{
 		SceneFile::TextureDef texture;
 	
@@ -257,8 +276,7 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 		
 		printf("- texture: %s %d\n", texture.name, texture.id);
 		WriteTexture(&texture);
-		
-	}
+	}*/
 	
 	for (uint32 materialIndex = 0; materialIndex < header.materialCount; ++materialIndex)
 	{
@@ -286,37 +304,41 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 		material.specular.z = colladaMaterial->diffuse.z;
 		material.specular.w = colladaMaterial->diffuse.w;
 		
-		material.diffuseTextureId = -1;
- 
         material.hasOpacity = false;
 		
-		for (uint32 textureIndex = 0; textureIndex < header.textureCount; ++textureIndex)
-			if (colladaMaterial->diffuseTexture == colladaScene->colladaTextures[textureIndex])
-			{
-				material.diffuseTextureId = textureIndex;
-                material.hasOpacity = colladaMaterial->diffuseTexture->hasOpacity;
-                break;
-			}
+//		for (uint32 textureIndex = 0; textureIndex < colladaScene->colladaTextures.size(); ++textureIndex)
+//			if (colladaMaterial->diffuseTexture == colladaScene->colladaTextures[textureIndex])
+//			{
+//				material.diffuseTextureId = textureIndex;
+//                material.hasOpacity = colladaMaterial->diffuseTexture->hasOpacity;
+//                break;
+//			}
+        
+        if (colladaMaterial->diffuseTexture)
+        {
+            String diffuseTextureName = GetTextureName(scenePath, colladaMaterial->diffuseTexture);
+            strcpy(material.diffuseTexture, diffuseTextureName.c_str());
+            material.hasOpacity = colladaMaterial->diffuseTexture->hasOpacity;
+        }
         
         if ((colladaMaterial->lightmapTexture) && (colladaMaterial->hasLightmapTexture))
         {
-            String textureRelativePathName = String(colladaMaterial->lightmapTexture->texturePathName.c_str());
-            CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath);
+//            String textureRelativePathName = String(colladaMaterial->lightmapTexture->texturePathName.c_str());
+//            CommandLineParser::RemoveFromPath(textureRelativePathName, scenePath);
+//            
+//            if (textureRelativePathName.c_str()[0] == '/')
+//                textureRelativePathName.erase(0, 1);
+//            
+//            if (textureRelativePathName.substr(0, 2) == "./")
+//                textureRelativePathName.erase(0,2);
             
-            if (textureRelativePathName.c_str()[0] == '/')
-                textureRelativePathName.erase(0, 1);
-            
-            if (textureRelativePathName.substr(0, 2) == "./")
-                textureRelativePathName.erase(0,2);
-
-            
-            strcpy(material.lightmapTexture, textureRelativePathName.c_str()); 
+            strcpy(material.lightmapTexture, GetTextureName(scenePath, colladaMaterial->lightmapTexture).c_str()); 
         }else
         {
             strcpy(material.lightmapTexture,"");
         }
         
-		printf("- material: %s diffuse texture: %d idx:%d\n", material.name, material.diffuseTextureId, materialIndex); 
+		printf("- material: %s diffuse texture: %s idx:%d\n", material.name, material.diffuseTexture, materialIndex); 
 		WriteMaterial(&material);
 	}
 	
@@ -373,7 +395,6 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 	
 void ColladaDocument::WriteTexture(SceneFile::TextureDef * texture)
 {
-	fwrite(&texture->id, sizeof(texture->id), 1, sceneFP);
 	fwrite(texture->name, strlen(texture->name) + 1, 1, sceneFP);
     if (header.version >= 101)
     {
@@ -383,12 +404,10 @@ void ColladaDocument::WriteTexture(SceneFile::TextureDef * texture)
 	
 void ColladaDocument::WriteMaterial(SceneFile::MaterialDef * material)
 {
-	fwrite(&material->id, sizeof(int32), 1, sceneFP);
 	fwrite(material->name, strlen(material->name) + 1, 1, sceneFP);
 
 	fwrite(&material->ambient, sizeof(material->ambient), 1, sceneFP);
 	fwrite(&material->diffuse, sizeof(material->diffuse), 1, sceneFP);
-	fwrite(&material->diffuseTextureId, sizeof(material->diffuseTextureId), 1, sceneFP);
 	fwrite(&material->emission, sizeof(material->emission), 1, sceneFP);
 	fwrite(&material->indexOfRefraction, sizeof(material->indexOfRefraction), 1, sceneFP);
 	fwrite(&material->reflective, sizeof(material->reflective), 1, sceneFP);
@@ -397,16 +416,14 @@ void ColladaDocument::WriteMaterial(SceneFile::MaterialDef * material)
 	fwrite(&material->specular, sizeof(material->specular), 1, sceneFP);
 	fwrite(&material->transparency, sizeof(material->transparency), 1, sceneFP);
 	fwrite(&material->transparent, sizeof(material->transparent), 1, sceneFP);
-	
-    if (header.version >= 101)
-        fwrite(&material->hasOpacity, sizeof(material->hasOpacity), 1, sceneFP);
     
-    if (header.version >= 102)
-        fwrite(material->lightmapTexture, strlen(material->lightmapTexture) + 1, 1, sceneFP);
+    fwrite(material->diffuseTexture, strlen(material->diffuseTexture) + 1, 1, sceneFP);
+    fwrite(material->lightmapTexture, strlen(material->lightmapTexture) + 1, 1, sceneFP);
+    fwrite(material->reflectiveTexture, strlen(material->reflectiveTexture) + 1, 1, sceneFP);
+    fwrite(material->specularTexture, strlen(material->specularTexture) + 1, 1, sceneFP);
+    fwrite(material->normalMapTexture, strlen(material->normalMapTexture) + 1, 1, sceneFP);
     
-	// TODO diffuseTexture ? refl texture?
-
-	//fwrite(material, sizeof(material), 1, sceneFP);
+    fwrite(&material->hasOpacity, sizeof(material->hasOpacity), 1, sceneFP);
 }
 
 
@@ -646,7 +663,7 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
 	for (int pgi = 0; pgi < pgInstancesCount; ++pgi)
 	{
 		ColladaPolygonGroupInstance * polyGroupInstance = node->polyGroupInstances[pgi];
-		int32 materialIndex = colladaScene->FindMaterialIndex(polyGroupInstance->material);
+        int32 materialIndex = colladaScene->FindMaterialIndex(polyGroupInstance->material);
 		if (materialIndex == -1)
 		{
 			printf("*** Error: failed to find material index\n");
@@ -657,7 +674,7 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
 		
 		if (!colladaScene->FindPolyGroupIndex(polyGroupInstance->polyGroup, meshIndex, polyGroupIndex))
 		{
-			printf("- search : 0x%08x\n", polyGroupInstance->polyGroup);
+			printf("- search : 0x%p\n", polyGroupInstance->polyGroup);
 			printf("*** Error: failed to find poly group index\n");
 		}
 		

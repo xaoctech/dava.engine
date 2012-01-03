@@ -206,6 +206,8 @@ enum eIndexFormat
 	EIF_32 = 0x1,
 };
     
+static const int32 INDEX_FORMAT_SIZE[2] = {2, 4};
+    
 enum eCull
 {
     CULL_FRONT = 0,

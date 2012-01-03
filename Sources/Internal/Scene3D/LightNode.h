@@ -47,7 +47,7 @@ public:
     
     
 public:
-    LightNode(Scene * _scene);
+    LightNode(Scene * _scene = 0);
     virtual ~LightNode();
     
     virtual void Draw();

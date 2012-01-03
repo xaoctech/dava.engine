@@ -69,7 +69,7 @@ public:
         MATERIAL_TYPES_COUNT
     };
 
-    Material(Scene * sc);
+    Material(Scene * sc = 0);
     ~Material();
     
     static const char * GetTypeName();
