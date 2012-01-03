@@ -295,7 +295,7 @@ void EditorBodyControl::CreatePropertyPanel()
     rightPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
     AddControl(rightPanel);
     propertyPanelRect.x = propertyPanelRect.y = 0;
-    nodePropertyPanel[ECNID_LANDSCAPE] = new LandscapePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_LANDSCAPE] = new LandscapePropertyControl(propertyPanelRect, true);
     KeyedArchive *keyedArchieve = new KeyedArchive();
     keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
     String path = keyedArchieve->GetString("LastSavedPath", "/");
@@ -303,12 +303,12 @@ void EditorBodyControl::CreatePropertyPanel()
     SafeRelease(keyedArchieve);
     
     
-    nodePropertyPanel[ECNID_LIGHT] = new LightPropertyControl(propertyPanelRect);
-    nodePropertyPanel[ECNID_SERVICENODE] = new ServicenodePropertyControl(propertyPanelRect);
-    nodePropertyPanel[ECNID_BOX] = new BoxPropertyControl(propertyPanelRect);
-    nodePropertyPanel[ECNID_SPHERE] = new SpherePropertyControl(propertyPanelRect);
-    nodePropertyPanel[ECNID_CAMERA] = new CameraPropertyControl(propertyPanelRect);
-    nodePropertyPanel[ECNID_COUNT] = new NodePropertyControl(propertyPanelRect);
+    nodePropertyPanel[ECNID_LIGHT] = new LightPropertyControl(propertyPanelRect, true);
+    nodePropertyPanel[ECNID_SERVICENODE] = new ServicenodePropertyControl(propertyPanelRect, true);
+    nodePropertyPanel[ECNID_BOX] = new BoxPropertyControl(propertyPanelRect, true);
+    nodePropertyPanel[ECNID_SPHERE] = new SpherePropertyControl(propertyPanelRect, true);
+    nodePropertyPanel[ECNID_CAMERA] = new CameraPropertyControl(propertyPanelRect, true);
+    nodePropertyPanel[ECNID_COUNT] = new NodePropertyControl(propertyPanelRect, true);
 
     for(int32 i = 0; i <= ECNID_COUNT; ++i)
     {

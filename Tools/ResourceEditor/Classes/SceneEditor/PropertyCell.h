@@ -13,6 +13,7 @@
 #include "DAVAEngine.h"
 #include "UICheckBox.h"
 #include "ComboBox.h"
+#include "EditMatrixControl.h"
 
 using namespace DAVA;
 
@@ -43,6 +44,7 @@ public:
         PROP_CELL_FILEPATH,
         PROP_CELL_BOOL,
         PROP_CELL_COMBO,
+        PROP_CELL_MATRIX4,
         
         PROP_CELL_COUNT
     };
@@ -133,6 +135,23 @@ public:
 private:
     
     ComboBox *combo;
+};
+
+class PropertyMatrix4Cell: public PropertyCell
+{
+public:
+    
+    PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyMatrix4Cell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+    
+private:
+    
+    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
+
+    EditMatrixControl *matrix;
 };
 
 

@@ -2,9 +2,11 @@
 #include "ControlsFactory.h"
 
 
-NodePropertyControl::NodePropertyControl(const Rect & rect)
+NodePropertyControl::NodePropertyControl(const Rect & rect, bool _showMatrix)
     :   UIControl(rect)
 {
+    showMatrix = _showMatrix;
+    
     nodeDelegate = NULL;
     
     propertyList = new PropertyList(Rect(0, 0, rect.dx, rect.dy), this);
@@ -26,6 +28,13 @@ void NodePropertyControl::InitProperties()
     propertyList->AddStringProperty("Retain Count", "1", PropertyList::PROPERTY_IS_READ_ONLY);
     propertyList->AddStringProperty("Class Name", "Unknown", PropertyList::PROPERTY_IS_READ_ONLY);
     propertyList->AddStringProperty("C++ Class Name", "Unknown", PropertyList::PROPERTY_IS_READ_ONLY);
+    
+    if(showMatrix)
+    {
+        Matrix4 matrix;
+        propertyList->AddMatrix4Property("Local Matrix", matrix, PropertyList::PROPERTY_IS_EDITABLE);
+        propertyList->AddMatrix4Property("Word Matrix", matrix, PropertyList::PROPERTY_IS_READ_ONLY);
+    }
 }
 
 void NodePropertyControl::SetDefaultValues()
@@ -34,6 +43,13 @@ void NodePropertyControl::SetDefaultValues()
     propertyList->SetStringPropertyValue("Retain Count", "1");
     propertyList->SetStringPropertyValue("Class Name", "Unknown");
     propertyList->SetStringPropertyValue("C++ Class Name", "Unknown");
+    
+    if(showMatrix)
+    {
+        Matrix4 matrix;
+        propertyList->SetMatrix4PropertyValue("Local Matrix", matrix);
+        propertyList->SetMatrix4PropertyValue("Word Matrix", matrix);
+    }
 }
 
 void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
@@ -42,11 +58,23 @@ void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
     propertyList->SetStringPropertyValue("Retain Count", Format("%d", sceneNode->GetRetainCount()));
     propertyList->SetStringPropertyValue("Class Name", sceneNode->GetClassName());
     propertyList->SetStringPropertyValue("C++ Class Name", typeid(*sceneNode).name());
+    
+    if(showMatrix)
+    {
+        propertyList->SetMatrix4PropertyValue("Local Matrix", sceneNode->GetLocalTransform());
+        propertyList->SetMatrix4PropertyValue("Word Matrix", sceneNode->GetWorldTransform());
+    }
 }
 
 void NodePropertyControl::ReadToNode(SceneNode *sceneNode)
 {
     sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
+ 
+    if(showMatrix)
+    {
+        sceneNode->SetLocalTransform(propertyList->GetMatrix4PropertyValue("Local Matrix"));
+        //    sceneNode->SetWordTransform(propertyList->GetMatrix4PropertyValue("Word Matrix"));
+    }
 }
 
 
@@ -91,6 +119,14 @@ void NodePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const
     }
 }
 void NodePropertyControl::OnItemIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex)
+{
+    if(nodeDelegate)
+    {
+        nodeDelegate->NodePropertyChanged();
+    }
+}
+
+void NodePropertyControl::OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4)
 {
     if(nodeDelegate)
     {
