@@ -51,7 +51,16 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
-	
+    const List<LodData>::const_iterator & end = lodLayers.end();
+    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+        size_t size = ld.materials.size();
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            SafeRelease(ld.materials[idx]);
+        }
+    }
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -72,7 +81,7 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
 
 	ld->meshes.push_back(mesh);
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
-	ld->materials.push_back(material);
+	ld->materials.push_back(SafeRetain(material));
 	
 	PolygonGroup * group = mesh->GetPolygonGroup(polygonGroupIndex);
 	bbox.AddAABBox(group->GetBoundingBox());
@@ -126,7 +135,7 @@ void MeshInstanceNode::AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, i
     
 	ld->meshes.push_back(mesh);
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
-	ld->materials.push_back(material);
+	ld->materials.push_back(SafeRetain(material));
 
 	if (ld->layer == 0) 
     {

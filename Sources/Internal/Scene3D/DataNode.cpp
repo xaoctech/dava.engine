@@ -27,28 +27,33 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_BONE_NODE_H__
-#define __DAVAENGINE_BONE_NODE_H__
+#include "DataNode.h"
 
-#include "Scene3D/SceneNode.h"
 
 namespace DAVA 
 {
-	
-class SkeletonNode;
-class BoneNode : public SceneNode
-{
-public:
-	BoneNode(Scene * scene = 0, SkeletonNode * owner = 0);
-	virtual ~BoneNode();
-	
-	virtual void Draw();
-	
-	Matrix4 finalMatrix;
-	Matrix4 inverse0Matrix;	//	inverse 0 matrix
-	Matrix4 bindPoseMatrix;	//	bindPos matrix
-	
-};	
-};
 
-#endif // __DAVAENGINE_BONE_NODE_H__
+REGISTER_CLASS(DataNode);
+    
+DataNode::DataNode(Scene * scene)
+    : SceneNode(scene)
+{
+    
+}
+
+DataNode::~DataNode()
+{
+    
+}
+
+    
+void DataNode::Update(float32 timeElapsed)
+{
+    
+}
+void DataNode::Draw()
+{
+    
+}
+
+}

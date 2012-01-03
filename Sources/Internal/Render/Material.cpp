@@ -36,6 +36,8 @@
 namespace DAVA 
 {
     
+REGISTER_CLASS(Material);
+    
 UberShader * Material::uberShader = 0;
 
 Material::Material(Scene * scene) 

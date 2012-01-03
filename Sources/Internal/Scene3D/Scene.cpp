@@ -35,6 +35,8 @@
 #include "Render/3D/AnimatedMesh.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
+#include "Scene3D/DataNode.h"
+#include "Scene3D/ProxyNode.h"
 #include "Platform/SystemTimer.h"
 
 namespace DAVA 
@@ -48,11 +50,22 @@ Scene::Scene()
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
 {
+    
+    materials = new DataNode();
+    materials->SetName("materials");
+    AddNode(materials);
+    
+    DataNode * polygroups = new DataNode();
+    polygroups->SetName("polygroups");
+    AddNode(polygroups);
+
+    scenes = new DataNode();
+    scenes->SetName("scenes");
+    AddNode(scenes);
 }
 
 Scene::~Scene()
 {
-    
 	for (Map<String, SceneNode*>::iterator t = rootNodes.begin(); t != rootNodes.end(); ++t)
 	{
 		SceneNode * obj = t->second;
@@ -67,12 +80,12 @@ Scene::~Scene()
 	}
 	textures.clear();
 
-	for (Vector<Material*>::iterator t = materials.begin(); t != materials.end(); ++t)
-	{
-		Material * obj = *t;
-		obj->Release();
-	}
-	materials.clear();
+//	for (Vector<Material*>::iterator t = materials.begin(); t != materials.end(); ++t)
+//	{
+//		Material * obj = *t;
+//		obj->Release();
+//	}
+//	materials.clear();
 
 	for (Vector<StaticMesh*>::iterator t = staticMeshes.begin(); t != staticMeshes.end(); ++t)
 	{
@@ -97,6 +110,10 @@ Scene::~Scene()
     
     SafeRelease(currentCamera);
     SafeRelease(clipCamera);
+    
+    SafeRelease(materials);
+    SafeRelease(polygroups);
+    SafeRelease(scenes);
 }
 
 // 
@@ -130,23 +147,17 @@ Texture * Scene::GetTexture(int32 index)
 	
 	return textures[index];
 }
-
-void Scene::AddMaterial(Material * material)
+    
+int32 Scene::GetMaterialCount()
 {
-	if (material)
-	{
-		material->Retain();
-		materials.push_back(material);
-	}
-}
-
-void Scene::RemoveMaterial(Material * material)
-{
+    DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+    return (int32)materialsNode->GetChildrenCount();
 }
 
 Material * Scene::GetMaterial(int32 index)
 {
-	return materials[index];
+    DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+	return dynamic_cast<Material*>(materialsNode->GetChild(index));
 }
 
 void Scene::AddStaticMesh(StaticMesh * mesh)
@@ -234,28 +245,52 @@ Camera * Scene::GetCamera(int32 n)
 
 void Scene::AddRootNode(SceneNode *node, const String &rootNodePath)
 {
-    rootNodes[rootNodePath] = SafeRetain(node);
+    ProxyNode * proxyNode = new ProxyNode(this);
+    proxyNode->SetNode(node);
+    
+    scenes->AddNode(proxyNode);
+    proxyNode->SetName(rootNodePath);
+    
+    SafeRelease(proxyNode);
 }
 
 SceneNode *Scene::GetRootNode(const String &rootNodePath)
 {
-	Map<String, SceneNode*>::const_iterator it;
-	it = rootNodes.find(rootNodePath);
-	if (it != rootNodes.end())
-	{
-		return it->second;
-	}
+    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
+    if (proxyNode)
+    {
+        return proxyNode->GetNode();
+    }
+    
 	SceneFile * file = new SceneFile();
 	file->SetDebugLog(true);
 	file->LoadScene(rootNodePath.c_str(), this);
 	SafeRelease(file);
 
-	it = rootNodes.find(rootNodePath);
-	if (it != rootNodes.end())
-	{
-		return it->second;
-	}
-    return rootNodes[rootNodePath];
+    proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
+    if (proxyNode)
+    {
+        return proxyNode->GetNode();
+    }
+    return 0;
+    
+//	Map<String, SceneNode*>::const_iterator it;
+//	it = rootNodes.find(rootNodePath);
+//	if (it != rootNodes.end())
+//	{
+//		return it->second;
+//	}
+//	SceneFile * file = new SceneFile();
+//	file->SetDebugLog(true);
+//	file->LoadScene(rootNodePath.c_str(), this);
+//	SafeRelease(file);
+//
+//	it = rootNodes.find(rootNodePath);
+//	if (it != rootNodes.end())
+//	{
+//		return it->second;
+//	}
+//    return rootNodes[rootNodePath];
 }
 
 void Scene::ReleaseRootNode(const String &rootNodePath)

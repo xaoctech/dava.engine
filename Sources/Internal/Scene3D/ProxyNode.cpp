@@ -27,28 +27,44 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_BONE_NODE_H__
-#define __DAVAENGINE_BONE_NODE_H__
+#include "ProxyNode.h"
 
-#include "Scene3D/SceneNode.h"
 
 namespace DAVA 
 {
-	
-class SkeletonNode;
-class BoneNode : public SceneNode
-{
-public:
-	BoneNode(Scene * scene = 0, SkeletonNode * owner = 0);
-	virtual ~BoneNode();
-	
-	virtual void Draw();
-	
-	Matrix4 finalMatrix;
-	Matrix4 inverse0Matrix;	//	inverse 0 matrix
-	Matrix4 bindPoseMatrix;	//	bindPos matrix
-	
-};	
-};
 
-#endif // __DAVAENGINE_BONE_NODE_H__
+REGISTER_CLASS(ProxyNode);
+    
+ProxyNode::ProxyNode(Scene * scene)
+    : SceneNode(scene)
+    , node(0)
+{
+    
+}
+
+ProxyNode::~ProxyNode()
+{
+    SafeRelease(node);
+}
+    
+void ProxyNode::SetNode(SceneNode * _node)
+{
+    SafeRelease(node);
+    node = SafeRetain(_node);
+}
+
+SceneNode * ProxyNode::GetNode()
+{
+    return node;
+}
+
+void ProxyNode::Update(float32 timeElapsed)
+{
+    
+}
+void ProxyNode::Draw()
+{
+    
+}
+
+}
