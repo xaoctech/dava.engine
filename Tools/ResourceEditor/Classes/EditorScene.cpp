@@ -88,19 +88,9 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	if (selection)
 		selection->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
 
-	
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
-	
-	ShootTrace tr;
-	tr.from = from;	
-//	tr.to = from + direction * 10000.0f;
-	tr.to = direction;
-	traces.push_back(tr);
-	
-	
-	
-//		btAlignedObjectArray<btCollisionObject*>		m_collisionObjects;
+		
     btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
     collisionWorld->rayTest(pos, to, cb);
 	btCollisionObject * coll = 0;
@@ -148,7 +138,6 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 			return curr;
 	}
 	int size = curr->GetChildrenCount();
-	//	Logger::Debug("GetChildrenCount %d",size);
 	for (int i = 0; i < size; i++)
 	{
 		SceneNode * result = FindSelected(curr->GetChild(i), coll);
@@ -163,31 +152,4 @@ SceneNode * EditorScene::GetSelection()
 	return selection;
 }
 
-void EditorScene::Draw()
-{
-    Scene::Draw();
-	
-    if (0)// (!traces.empty()) 
-    {
-        Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-        Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
-        
-        RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
-        Color cr(1.0, 1.0, 1.0, 1.0);
-
-		int num = 0;
-        for (List<ShootTrace>::iterator it = traces.end(); it != traces.begin(); it--) 
-        {
-			num++;
-            cr.a = 1.0;
-            RenderManager::Instance()->SetColor(cr);
-			RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-            RenderHelper::Instance()->DrawLine(it->from, it->to);
-			if (num == 3)
-				break;
-		}
-        RenderManager::Instance()->ResetColor();
-        RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-    }
-}
 
