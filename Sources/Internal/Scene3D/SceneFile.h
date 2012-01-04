@@ -226,7 +226,7 @@ private:
     SceneNode *rootNode;
     
     //int32 textureIndexOffset;
-	int32 staticMeshIndexOffset;
+	//int32 staticMeshIndexOffset;
 	int32 animatedMeshIndexOffset;
 	int32 cameraIndexOffset;
 	int32 animationIndexOffset;

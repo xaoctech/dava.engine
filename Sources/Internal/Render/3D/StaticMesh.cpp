@@ -29,6 +29,7 @@
 =====================================================================================*/
 
 #include "Render/3D/StaticMesh.h"
+#include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
 #include "Render/RenderManager.h"
 #include "FileSystem/Logger.h"
@@ -37,32 +38,46 @@ namespace DAVA
 {
 
 StaticMesh::StaticMesh(Scene * _scene)
-	: SceneNode(_scene)
+	: DataNode(_scene)
 {
-	
+    DataNode * staticMeshes = scene->GetStaticMeshes();
+    staticMeshes->AddNode(this);
+}
+    
+int32 StaticMesh::Release()
+{
+    int32 retainCount = BaseObject::Release();
+    if (retainCount == 1)
+    {
+        DataNode * staticMeshes = scene->GetStaticMeshes();
+        staticMeshes->RemoveNode(this);
+    }
+    return retainCount;
 }
 	
 StaticMesh::~StaticMesh()
 {
-	for (int32 p = 0; p < (int32)polygroupCount; ++p)
-	{
-        SafeRelease(polygroups[p]);
+}   
+    
+void StaticMesh::AddNode(DataNode * node)
+{
+    PolygonGroup * group = dynamic_cast<PolygonGroup*>(node);
+    DVASSERT(group != 0);
+    if (group)
+    {
+        DataNode::AddNode(group);
     }
-    polygroups.clear();
 }
 	
-void StaticMesh::Create(uint32 _polygroupCount)
+uint32 StaticMesh::GetPolygonGroupCount()
 {
-	polygroupCount = _polygroupCount;
-	for (int32 p = 0; p < (int32)polygroupCount; ++p)
-	{
-		polygroups.push_back(new PolygonGroup());
-	}
+    return (uint32)children.size();
 }
 
-//int32 StaticMesh::Release()
-//{	
-//}
+PolygonGroup * StaticMesh::GetPolygonGroup(uint32 index)
+{
+    return reinterpret_cast<PolygonGroup*>(children[index]);
+}
 	
 
 void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
@@ -82,7 +97,7 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
 //    LOG_AS_MATRIX4(glModelView);
     
     
-    PolygonGroup * group = polygroups[index];
+    PolygonGroup * group = reinterpret_cast<PolygonGroup*>(children[index]);
     
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(group->renderDataObject);
@@ -147,7 +162,7 @@ void StaticMesh::Draw()
 	}
 	glPopMatrix();
 #endif
-	SceneNode::Draw();
+	//SceneNode::Draw();
 }
 	
 	

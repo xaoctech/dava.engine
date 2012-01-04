@@ -32,6 +32,8 @@
 #include "Render/Texture.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/StringFormat.h"
+#include "Scene3D/DataNode.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
@@ -40,9 +42,15 @@ REGISTER_CLASS(Material);
     
 UberShader * Material::uberShader = 0;
 
-Material::Material(Scene * scene) 
-    :   SceneNode(scene)
+Material::Material(Scene * _scene) 
+    :   DataNode(_scene)
 {
+    if (scene)
+    {
+        DataNode * materialsNode = scene->GetMaterials();
+        materialsNode->AddNode(this);
+    }
+    
     if (!uberShader)
     {
         uberShader = new UberShader();
@@ -58,6 +66,19 @@ Material::Material(Scene * scene)
         textures[tc] = 0;
 }
     
+
+    
+int32 Material::Release()
+{
+    int32 retainCount = BaseObject::Release();
+    if (retainCount == 1)
+    {
+        DataNode * materialsNode = scene->GetMaterials();
+        materialsNode->RemoveNode(this);
+    }
+    return retainCount;
+}
+
 Material::~Material()
 {
 }
