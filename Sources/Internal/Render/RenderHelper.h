@@ -175,6 +175,15 @@ public:
      */
 	void DrawBox(const AABBox3 & box);
 	
+    /**
+	 \brief Draws 3D bounding box with corners
+	 \param box given bounding box
+     */
+	void DrawCornerBox(AABBox3 bbox);
+	
+	void DrawSphere(float32 r);
+
+	
     // Other debug functions  
 	void DrawBSpline(BezierSpline3 * bSpline, int segments = 20, float ts = 0.0f, float te = 1.0f);
 	void DrawInterpolationFunc(Interpolation::Func func, const Rect & destRect);

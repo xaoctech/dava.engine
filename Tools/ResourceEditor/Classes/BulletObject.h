@@ -22,6 +22,7 @@ class BulletObject : public BaseObject
 public:
     
     BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *meshNode, const Matrix4 &pWorldTransform);
+    BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *lightNode, const Matrix4 &pWorldTransform);
     ~BulletObject();
 	
 	void UpdateCollisionObject(void);
@@ -40,15 +41,13 @@ public:
 protected:
 
 	void CreateShape(MeshInstanceNode *meshNode);
-	
+	void CreateLightShape(float32 radius);
+
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
 	btCollisionObject *collisionObject;
-//	btConvexHullShape * shape;
     btTriangleMesh* trimesh;
-	btBvhTriangleMeshShape * shape;
-//	DebugNode * debugNode;
-//	std::vector<float32> debugShapes;
+	btCollisionShape * shape;
 };
 
 #endif
