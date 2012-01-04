@@ -208,6 +208,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_STRINGS:
             delegate->OnItemIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex());
             break;
+        case PropertyCellData::PROP_VALUE_MATRIX4:
+            delegate->OnMatrix4Changed(this, changedProperty->key, changedProperty->GetMatrix4());
+            break;
     }
 }
 
@@ -236,6 +239,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
                 break;
             case PropertyCell::PROP_CELL_COMBO:
                 c = new PropertyComboboxCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_MATRIX4:
+                c = new PropertyMatrix4Cell(this, props[index], size.x);
                 break;
         }
     }
@@ -274,6 +280,9 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
             break;
         case PropertyCell::PROP_CELL_COMBO:
             return PropertyComboboxCell::GetHeightForWidth(size.x);
+            break;
+        case PropertyCell::PROP_CELL_MATRIX4:
+            return PropertyMatrix4Cell::GetHeightForWidth(size.x);
             break;
     }
     return 50;//todo: rework
@@ -331,4 +340,29 @@ String PropertyList::GetComboPropertyValue(const String &propertyName)
     int32 currentStringIndex = p->GetItemIndex();
     return strings[currentStringIndex];   
 }
+
+void PropertyList::AddMatrix4Property(const String &propertyName, const Matrix4 &currentMatrix, editableType propEditType)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_MATRIX4);
+    p->cellType = PropertyCell::PROP_CELL_MATRIX4;
+    p->SetMatrix4(currentMatrix);
+    AddProperty(p, propertyName, propEditType);
+}
+
+void PropertyList::SetMatrix4PropertyValue(const String &propertyName, const Matrix4 &currentMatrix)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetMatrix4(currentMatrix);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+const Matrix4 & PropertyList::GetMatrix4PropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetMatrix4();
+}
+
 

@@ -58,12 +58,14 @@ public:
     
     eType GetType() const;
     const Color & GetColor() const;    
+	float32 GetRadius(void);
     
 protected:
     
     eType type;
     Color color;
-    
+	float32 r;
+	
 };
 
 };

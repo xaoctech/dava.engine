@@ -6,7 +6,7 @@
 CreateLandscapeDialog::CreateLandscapeDialog(const Rect & rect)
     :   CreateNodeDialog(rect)
 {
-    propertyList = new LandscapePropertyControl(propertyRect);
+    propertyList = new LandscapePropertyControl(propertyRect, false);
     propertyList->InitProperties();
     AddControl(propertyList);
 

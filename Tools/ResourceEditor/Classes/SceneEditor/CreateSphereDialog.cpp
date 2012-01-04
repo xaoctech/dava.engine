@@ -6,7 +6,7 @@
 CreateSphereDialog::CreateSphereDialog(const Rect & rect)
     :   CreateNodeDialog(rect)
 {
-    propertyList = new SpherePropertyControl(propertyRect);
+    propertyList = new SpherePropertyControl(propertyRect, false);
     propertyList->InitProperties();
     AddControl(propertyList);
 

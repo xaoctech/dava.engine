@@ -11,7 +11,7 @@ class LightPropertyControl: public NodePropertyControl
 {
 public:
 
-    LightPropertyControl(const Rect & rect);
+    LightPropertyControl(const Rect & rect, bool showMatrix);
 
     virtual void ReadFromNode(SceneNode *sceneNode);
     virtual void ReadToNode(SceneNode *sceneNode);

@@ -56,6 +56,8 @@ public:
     
     Message OnMatrixChanged;
 
+    void SetReadOnly(bool _readOnly);
+
 protected:
     Matrix4 matrix;
     UITextField * textField;

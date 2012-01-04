@@ -6,7 +6,7 @@
 CreateLightDialog::CreateLightDialog(const Rect & rect)
     :   CreateNodeDialog(rect)
 {
-    propertyList = new LightPropertyControl(propertyRect);
+    propertyList = new LightPropertyControl(propertyRect, false);
     propertyList->InitProperties();
     AddControl(propertyList);
 

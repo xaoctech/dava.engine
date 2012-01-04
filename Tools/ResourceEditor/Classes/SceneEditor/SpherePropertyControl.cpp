@@ -1,8 +1,8 @@
 #include "SpherePropertyControl.h"
 
 
-SpherePropertyControl::SpherePropertyControl(const Rect & rect)
-:   NodePropertyControl(rect)
+SpherePropertyControl::SpherePropertyControl(const Rect & rect, bool showMatrix)
+:   NodePropertyControl(rect, showMatrix)
 {
     
 }
