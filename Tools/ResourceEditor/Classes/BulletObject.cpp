@@ -105,7 +105,6 @@ void BulletObject::CreateShape(MeshInstanceNode *meshNode)
     delete tmpConvexShape;
     delete hull;
     delete trimesh;
-    
 }
 
 void BulletObject::UpdateCollisionObject()

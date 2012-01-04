@@ -1418,8 +1418,8 @@
 		FECFC16A12E87E3000C71562 /* 3D */ = {
 			isa = PBXGroup;
 			children = (
-				FECFC17D12E87E3000C71562 /* Material.h */,
 				FE25F784145DB0FB00A72F9C /* Material.cpp */,
+				FECFC17D12E87E3000C71562 /* Material.h */,
 				FECFC16B12E87E3000C71562 /* AnimatedMesh.cpp */,
 				FECFC16C12E87E3000C71562 /* AnimatedMesh.h */,
 				FECFC16D12E87E3000C71562 /* PolygonGroup.cpp */,

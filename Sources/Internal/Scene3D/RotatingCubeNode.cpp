@@ -79,7 +79,7 @@ void RotatingCubeNode::SetupCube()
 	};
 	
 	
-	cube = new PolygonGroup();
+	cube = new PolygonGroup(scene);
 	cube->AllocateData( EVF_VERTEX | EVF_COLOR, 12, 36, 0);
 
 	for (int i = 0; i < 8 ; ++i)
