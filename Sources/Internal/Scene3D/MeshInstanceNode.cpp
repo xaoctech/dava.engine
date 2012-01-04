@@ -310,7 +310,26 @@ void MeshInstanceNode::Draw()
 			RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
 			RenderHelper::Instance()->DrawLine(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 50.0f));
 		}
-        
+
+		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
+		{
+			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f;
+			Vector3 off = Vector3(offs, offs, offs);			
+			AABBox3 newBox(bbox.min - off, bbox.max + off);
+
+//			RenderHelper::Instance()->DrawLine(newBox.min, newBox.min + Vector3(0, 0, offs));
+//			RenderHelper::Instance()->DrawLine(newBox.min, newBox.min + Vector3(0, offs, 0));
+//			RenderHelper::Instance()->DrawLine(newBox.min, newBox.min + Vector3(offs, 0, 0));
+//
+//			RenderHelper::Instance()->DrawLine(newBox.max, newBox.max - Vector3(0, 0, offs));
+//			RenderHelper::Instance()->DrawLine(newBox.max, newBox.max - Vector3(0, offs, 0));
+//			RenderHelper::Instance()->DrawLine(newBox.max, newBox.max - Vector3(offs, 0, 0));
+			RenderHelper::Instance()->DrawBox(newBox);
+		}
+		
+		
+		
 //      RenderManager::Instance()->EnableDepthTest(true);
 //		RenderManager::Instance()->EnableTexturing(true);
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
@@ -318,13 +337,6 @@ void MeshInstanceNode::Draw()
 	}
 	//glPopMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-    
-    if (debugFlags & DEBUG_DRAW_AABBOX)
-    {
-        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-        RenderHelper::Instance()->DrawBox(transformedBox);
-        RenderManager::Instance()->ResetColor();
-    }
 
     SceneNode::Draw();
 }
@@ -354,6 +366,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
 {
     AABBox3 retBBox = bbox;
+	
     bbox.GetTransformedBox(GetWorldTransform(), retBBox);
     
     Vector<SceneNode*>::iterator itEnd = childs.end();
