@@ -1,7 +1,7 @@
 #include "ServicenodePropertyControl.h"
 
-ServicenodePropertyControl::ServicenodePropertyControl(const Rect & rect)
-:   NodePropertyControl(rect)
+ServicenodePropertyControl::ServicenodePropertyControl(const Rect & rect, bool showMatrix)
+:   NodePropertyControl(rect, showMatrix)
 {
     
 }

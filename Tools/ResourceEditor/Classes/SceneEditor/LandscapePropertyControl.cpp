@@ -1,8 +1,8 @@
 #include "LandscapePropertyControl.h"
 
 
-LandscapePropertyControl::LandscapePropertyControl(const Rect & rect)
-    :   NodePropertyControl(rect)
+LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool showMatrix)
+    :   NodePropertyControl(rect, showMatrix)
 {
     projectPath = "/";
     

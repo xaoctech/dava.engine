@@ -19,7 +19,7 @@ class NodePropertyControl: public UIControl, public PropertyListDelegate
 {
     
 public:
-    NodePropertyControl(const Rect & rect);
+    NodePropertyControl(const Rect & rect, bool showMatrix);
     virtual ~NodePropertyControl();
     
     virtual void WillAppear();
@@ -35,6 +35,7 @@ public:
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     virtual void OnItemIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex);
+    virtual void OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4);
 
     void SetDelegate(NodePropertyDelegate *delegate);
 
@@ -42,6 +43,8 @@ protected:
 
     NodePropertyDelegate *nodeDelegate;
     PropertyList *propertyList;
+    
+    bool showMatrix;
 };
 
 

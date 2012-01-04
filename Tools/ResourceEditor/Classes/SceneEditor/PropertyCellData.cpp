@@ -115,3 +115,18 @@ int32 PropertyCellData::GetItemIndex()
     DVASSERT(valueType == PROP_VALUE_STRINGS);
     return itemIndex;
 }
+
+void PropertyCellData::SetMatrix4(const Matrix4 & _matrix)
+{
+    DVASSERT(valueType == PROP_VALUE_MATRIX4);
+
+    matrix4 = _matrix;
+}
+
+const Matrix4 & PropertyCellData::GetMatrix4() const
+{
+    DVASSERT(valueType == PROP_VALUE_MATRIX4);
+
+    return matrix4;
+}
+

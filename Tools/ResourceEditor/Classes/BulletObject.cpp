@@ -12,18 +12,15 @@
 #include "bullet/BulletCollision/CollisionShapes/btShapeHull.h"
 
 BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *meshNode, const Matrix4 &pWorldTransform)
-{
-	collWorld = collisionWorld;
-
-//    CollisionCache *coll = CollisionCache::Create(currentConfig->modelName);
-    
+:collWorld(collisionWorld),
+collisionPartTransform(&((Matrix4&)pWorldTransform))
+{    
     btTransform startTransform;
     startTransform.setIdentity();
     float start_x = 0;
     float start_y = 0;
     float start_z = 0;
-//	std::vector<float32> debugShapes;
-	
+
     startTransform.setOrigin(btVector3(btScalar(start_x),
                                        btScalar(start_y),
                                        btScalar(start_z)));
@@ -33,12 +30,29 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Mesh
 	CreateShape(meshNode);
     collisionObject->setCollisionShape(shape);
     collisionWorld->addCollisionObject(collisionObject);
-    
-	//    collisionPartWorldTransform = &((Matrix4&)pWorldTransform);
-    collisionPartTransform = &((Matrix4&)pWorldTransform);
-	
-	debugNode = new DebugNode(scene, debugShapes);
 }
+
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *lightNode, const Matrix4 &pWorldTransform)
+:collWorld(collisionWorld),
+collisionPartTransform(&((Matrix4&)pWorldTransform))
+{
+    btTransform startTransform;
+    startTransform.setIdentity();
+    float start_x = 0;
+    float start_y = 0;
+    float start_z = 0;
+	
+    startTransform.setOrigin(btVector3(btScalar(start_x),
+                                       btScalar(start_y),
+                                       btScalar(start_z)));
+    
+    collisionObject = new btCollisionObject();
+    collisionObject->setWorldTransform(startTransform);
+	CreateLightShape(lightNode->GetRadius());
+    collisionObject->setCollisionShape(shape);
+    collisionWorld->addCollisionObject(collisionObject);	
+}
+
 
 BulletObject::~BulletObject()
 {
@@ -50,61 +64,50 @@ BulletObject::~BulletObject()
 	collWorld = 0;
 	collisionPartTransform = 0;
 	SafeDelete(shape);
-	SafeRelease(debugNode);
+	SafeDelete(trimesh);
 }
 
 void BulletObject::CreateShape(MeshInstanceNode *meshNode)
 {    
-    btTriangleMesh* trimesh = new btTriangleMesh(true, false);
-    
-    PolygonGroup *pg = meshNode->GetMeshes()[0]->GetPolygonGroup(0);
-    
-    int i;
-    for (i = 0; i < pg->indexCount / 3; i++)
-    {
-        int index0 = pg->indexArray[i*3];
-        int index1 = pg->indexArray[i*3+1];
-        int index2 = pg->indexArray[i*3+2];
-        Vector3 v;
-        pg->GetCoord(index0, v);
-        v = v * meshNode->GetLocalTransform();
-        btVector3 vertex0(v.x, v.y, v.z);
-        pg->GetCoord(index1, v);
-        v = v * meshNode->GetLocalTransform();
-        btVector3 vertex1(v.x, v.y, v.z);
-        pg->GetCoord(index2, v);
-        v = v * meshNode->GetLocalTransform();
-        btVector3 vertex2(v.x, v.y, v.z);
-        
-        trimesh->addTriangle(vertex0,vertex1,vertex2);
-    }
-    
-    btConvexShape* tmpConvexShape = new btConvexTriangleMeshShape(trimesh);
+	trimesh = new btTriangleMesh();
 	
-	//create a hull approximation
-    btShapeHull* hull = new btShapeHull(tmpConvexShape);
-    btScalar margin = tmpConvexShape->getMargin();
-    hull->buildHull(margin);
-        
-    shape = new btConvexHullShape();
-    for (i=0;i<hull->numVertices();i++)
-    {
-        shape->addPoint(hull->getVertexPointer()[i]);
-    }
-    
-	for (i=1;i<hull->numIndices();i++)
+	const Vector<StaticMesh*> & meshes = meshNode->GetMeshes();
+	const Vector<int32> & indexes = meshNode->GetPolygonGroupIndexes();
+	
+	uint32 meshesSize = (uint32)meshes.size();
+
+	for (uint32 k = 0; k < meshesSize; ++k)
 	{
-		debugShapes.push_back(hull->getVertexPointer()[hull->getIndexPointer()[i-1]].getX());
-		debugShapes.push_back(hull->getVertexPointer()[hull->getIndexPointer()[i-1]].getY());
-		debugShapes.push_back(hull->getVertexPointer()[hull->getIndexPointer()[i-1]].getZ());
-		
-		debugShapes.push_back(hull->getVertexPointer()[hull->getIndexPointer()[i]].getX());
-		debugShapes.push_back(hull->getVertexPointer()[hull->getIndexPointer()[i]].getY());
-		debugShapes.push_back(hull->getVertexPointer()[hull->getIndexPointer()[i]].getZ());
-	}
-    delete tmpConvexShape;
-    delete hull;
-    delete trimesh;
+		PolygonGroup * pg = meshes[k]->GetPolygonGroup(indexes[k]);    
+	
+		int i;
+		for (i = 0; i < pg->indexCount / 3; i++)
+		{
+			int index0 = pg->indexArray[i*3];
+			int index1 = pg->indexArray[i*3+1];
+			int index2 = pg->indexArray[i*3+2];
+			Vector3 v;
+			pg->GetCoord(index0, v);
+			v = v * meshNode->GetLocalTransform();
+			btVector3 vertex0(v.x, v.y, v.z);
+			pg->GetCoord(index1, v);
+			v = v * meshNode->GetLocalTransform();
+			btVector3 vertex1(v.x, v.y, v.z);
+			pg->GetCoord(index2, v);
+			v = v * meshNode->GetLocalTransform();
+			btVector3 vertex2(v.x, v.y, v.z);
+			
+			trimesh->addTriangle(vertex0,vertex1,vertex2, false);
+		}
+	}	
+	
+	shape = new btBvhTriangleMeshShape(trimesh, true, true);    
+}
+
+void BulletObject::CreateLightShape(float32 radius)
+{
+	trimesh = 0;
+	shape = new btSphereShape(radius);
 }
 
 void BulletObject::UpdateCollisionObject()
@@ -114,6 +117,5 @@ void BulletObject::UpdateCollisionObject()
     btt.setFromOpenGLMatrix(collisionPartTransform->data);
     collisionObject->setWorldTransform(btt);
 }
-
 
 
