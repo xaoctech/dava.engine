@@ -85,6 +85,10 @@ void EditorScene::CheckNodes(SceneNode * curr)
 
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
+	if (selection)
+		selection->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
+
+	
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
 	
@@ -102,6 +106,9 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		coll = cb.m_collisionObject;
 		Logger::Debug("Has Hit");
 		selection = FindSelected(this, coll);
+	
+		if(selection) 
+			selection->SetDebugFlags(SceneNode::DEBUG_DRAW_AABOX_CORNERS);
 	}
 	else 
 	{
