@@ -12,9 +12,9 @@
 #include "bullet/BulletCollision/CollisionShapes/btShapeHull.h"
 
 BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *meshNode, const Matrix4 &pWorldTransform)
-{
-	collWorld = collisionWorld;
-    
+:collWorld(collisionWorld),
+collisionPartTransform(&((Matrix4&)pWorldTransform))
+{    
     btTransform startTransform;
     startTransform.setIdentity();
     float start_x = 0;
@@ -30,9 +30,29 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Mesh
 	CreateShape(meshNode);
     collisionObject->setCollisionShape(shape);
     collisionWorld->addCollisionObject(collisionObject);
-    
-    collisionPartTransform = &((Matrix4&)pWorldTransform);
 }
+
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *lightNode, const Matrix4 &pWorldTransform)
+:collWorld(collisionWorld),
+collisionPartTransform(&((Matrix4&)pWorldTransform))
+{
+    btTransform startTransform;
+    startTransform.setIdentity();
+    float start_x = 0;
+    float start_y = 0;
+    float start_z = 0;
+	
+    startTransform.setOrigin(btVector3(btScalar(start_x),
+                                       btScalar(start_y),
+                                       btScalar(start_z)));
+    
+    collisionObject = new btCollisionObject();
+    collisionObject->setWorldTransform(startTransform);
+	CreateLightShape(lightNode->GetRadius());
+    collisionObject->setCollisionShape(shape);
+    collisionWorld->addCollisionObject(collisionObject);	
+}
+
 
 BulletObject::~BulletObject()
 {
@@ -84,6 +104,12 @@ void BulletObject::CreateShape(MeshInstanceNode *meshNode)
 	shape = new btBvhTriangleMeshShape(trimesh, true, true);    
 }
 
+void BulletObject::CreateLightShape(float32 radius)
+{
+	trimesh = 0;
+	shape = new btSphereShape(radius);
+}
+
 void BulletObject::UpdateCollisionObject()
 {
     btTransform btt;
@@ -91,6 +117,5 @@ void BulletObject::UpdateCollisionObject()
     btt.setFromOpenGLMatrix(collisionPartTransform->data);
     collisionObject->setWorldTransform(btt);
 }
-
 
 

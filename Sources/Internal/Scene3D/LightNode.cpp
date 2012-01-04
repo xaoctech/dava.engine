@@ -29,6 +29,8 @@
 =====================================================================================*/
 
 #include "Scene3D/LightNode.h"
+#include "RenderManager.h"
+#include "RenderHelper.h"
 
 namespace DAVA 
 {
@@ -40,7 +42,7 @@ LightNode::LightNode(Scene * _scene)
     ,   type(ET_DIRECTIONAL)
     ,   color(1.0f, 1.0f, 1.0f, 1.0f)
 {
-
+	r = 1.0f;
 }
     
 LightNode::~LightNode()
@@ -49,8 +51,34 @@ LightNode::~LightNode()
 }
     
 void LightNode::Draw()
-{
-    SceneNode::Draw();
+{	
+	if (debugFlags > 0)
+	{
+		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+		Matrix4 finalMatrix = worldTransform * prevMatrix;
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+		
+		RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_CULL); 
+		RenderManager::Instance()->FlushState();
+		
+		
+		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
+		{
+			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			RenderHelper::Instance()->DrawCornerBox(AABBox3(Vector3(-r,-r,-r),Vector3(r,r,r)));
+		}
+		if (debugFlags & DEBUG_DRAW_LIGHT_NODE)
+		{
+			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			RenderHelper::Instance()->DrawSphere(r);
+		}
+
+		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);	
+		
+	}
+	SceneNode::Draw();
 }
     
 void LightNode::SetType(DAVA::LightNode::eType _type)
@@ -89,6 +117,12 @@ const Color & LightNode::GetColor() const
     return color;
 }
     
+float32 LightNode::GetRadius(void)
+{
+	return r;
+}
+
+	
 };
 
 

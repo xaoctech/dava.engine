@@ -44,39 +44,42 @@ EditorScene::~EditorScene()
 void EditorScene::Update(float32 timeElapsed)
 {    
     Scene::Update(timeElapsed);
-//	depth = 0;
 	CheckNodes(this);
 	collisionWorld->updateAabbs();
-//	Logger::Debug("CheckNodes end");
 }
 
 void EditorScene::CheckNodes(SceneNode * curr)
 {
-//	depth++;
-//	Logger::Debug("%d CheckNodes curr: %s", depth, curr->GetName().c_str());
-
-	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);
+	LightNode * light = dynamic_cast<LightNode *> (curr);
+	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
 	
 	if (mesh && mesh->userData == 0)
 	{
 		SceneNodeUserData * data = new SceneNodeUserData();
 		curr->userData = data;
-		data->bulletObject = new BulletObject(this, collisionWorld, (MeshInstanceNode*)mesh, mesh->GetWorldTransform());
-//		mesh->AddNode(data->bulletObject->GetDebugNode());
-//		BulletLink link;
-//		link.bulletObj = data->bulletObject;
-//		link.sceneNode = curr;
-//		links.push_back(link);
-//		Logger::Debug("%d Meshes count: %d", depth, mesh->GetMeshes().size());
+		data->bulletObject = new BulletObject(this, collisionWorld, mesh, mesh->GetWorldTransform());
 	}
 	else if (mesh && mesh->userData)
 	{
 		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
 		data->bulletObject->UpdateCollisionObject();
 	}
+	else if (light && light->userData == 0)
+	{
+		SceneNodeUserData * data = new SceneNodeUserData();
+		curr->userData = data;
+		data->bulletObject = new BulletObject(this, collisionWorld, light, light->GetWorldTransform());
+		light->SetDebugFlags(DEBUG_DRAW_LIGHT_NODE);
+	}
+	else if (light && light->userData)
+	{
+		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		data->bulletObject->UpdateCollisionObject();
+	}
+	
+	
 
 	int size = curr->GetChildrenCount();
-//	Logger::Debug("GetChildrenCount %d",size);
 	for (int i = 0; i < size; i++)
 	{
 		CheckNodes(curr->GetChild(i));
@@ -86,7 +89,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
-		selection->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -97,11 +100,11 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	if (cb.hasHit()) 
     {
 		Logger::Debug("Has Hit");
-		int findedIndex = 0;
+		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(selection)
 		{
 			SceneNodeUserData * data = (SceneNodeUserData*)selection->userData;
-			for (int i = 0; i < cb.m_collisionObjects.size(); i++)
+			for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
 			{					
 				if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
 				{
@@ -109,17 +112,19 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 					break;
 				}
 			}
-			while (findedIndex < cb.m_collisionObjects.size() && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
-				findedIndex++;
+			while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+				findedIndex--;
 			findedIndex = findedIndex % cb.m_collisionObjects.size();
 		}
 		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
+		if (findedIndex == -1)
+			findedIndex = cb.m_collisionObjects.size() - 1;
 		coll = cb.m_collisionObjects[findedIndex];
 		selection = FindSelected(this, coll);
 	
 		if(selection)
-			selection->SetDebugFlags(SceneNode::DEBUG_DRAW_AABOX_CORNERS);
+			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
 	}
 	else 
 	{
@@ -129,9 +134,11 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
-	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);
+	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);
+	if (node == 0)
+		node = dynamic_cast<LightNode *> (curr);
 	
-	if (mesh && mesh->userData)
+	if (node && node->userData)
 	{
 		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
 		if (data->bulletObject->GetCollisionObject() == coll)

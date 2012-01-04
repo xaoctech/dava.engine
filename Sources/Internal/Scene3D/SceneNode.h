@@ -156,6 +156,7 @@ public:
 		DEBUG_DRAW_AABBOX = 1,              
 		DEBUG_DRAW_LOCAL_AXIS = 2,
 		DEBUG_DRAW_AABOX_CORNERS = 4,
+		DEBUG_DRAW_LIGHT_NODE = 8,
         DEBUG_DRAW_ALL = 0xFFFFFFFF,
 	};
 	/**
