@@ -98,16 +98,37 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	tr.to = direction;
 	traces.push_back(tr);
 	
-    btCollisionWorld::ClosestRayResultCallback cb(pos, to);
+	
+	
+//		btAlignedObjectArray<btCollisionObject*>		m_collisionObjects;
+    btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
     collisionWorld->rayTest(pos, to, cb);
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
-		coll = cb.m_collisionObject;
 		Logger::Debug("Has Hit");
+		int findedIndex = 0;
+		if(selection)
+		{
+			SceneNodeUserData * data = (SceneNodeUserData*)selection->userData;
+			for (int i = 0; i < cb.m_collisionObjects.size(); i++)
+			{					
+				if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+				{
+					findedIndex = i;
+					break;
+				}
+			}
+			while (findedIndex < cb.m_collisionObjects.size() && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+				findedIndex++;
+			findedIndex = findedIndex % cb.m_collisionObjects.size();
+		}
+		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
+		
+		coll = cb.m_collisionObjects[findedIndex];
 		selection = FindSelected(this, coll);
 	
-		if(selection) 
+		if(selection)
 			selection->SetDebugFlags(SceneNode::DEBUG_DRAW_AABOX_CORNERS);
 	}
 	else 
