@@ -229,7 +229,15 @@ inline void RenderStateBlock::SetColorInHW()
     
 inline void RenderStateBlock::SetColorMaskInHW()
 {
-    RENDER_VERIFY(glColorMask(state & STATE_COLORMASK_RED, state & STATE_COLORMASK_GREEN, state & STATE_COLORMASK_BLUE, state & STATE_COLORMASK_ALPHA));
+    GLboolean redMask = (state & STATE_COLORMASK_RED) != 0;
+    GLboolean greenMask = (state & STATE_COLORMASK_GREEN) != 0;
+    GLboolean blueMask = (state & STATE_COLORMASK_BLUE) != 0;
+    GLboolean alphaMask = (state & STATE_COLORMASK_ALPHA) != 0;
+    
+    RENDER_VERIFY(glColorMask(redMask, 
+                              greenMask, 
+                              blueMask, 
+                              alphaMask));
 }
 
 inline void RenderStateBlock::SetEnableBlendingInHW()
