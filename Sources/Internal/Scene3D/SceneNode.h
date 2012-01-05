@@ -210,7 +210,7 @@ protected:
 	
 	Scene * scene;
 	SceneNode * parent;
-	std::vector<SceneNode*> childs;
+	std::vector<SceneNode*> children;
 	std::deque<SceneNode*> removedCache;
 	bool visible;
     bool inUpdate;

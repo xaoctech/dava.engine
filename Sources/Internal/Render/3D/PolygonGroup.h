@@ -34,6 +34,7 @@
 #include "Base/BaseMath.h"
 #include "Render/VertexBuffer.h"
 #include "Render/RenderDataObject.h"
+#include "Scene3D/DataNode.h"
 
 namespace DAVA
 {	
@@ -41,7 +42,7 @@ namespace DAVA
 	\ingroup render_3d
 	\brief Group of polygons with same data type & structure
  */
-class PolygonGroup : public BaseObject
+class PolygonGroup : public DataNode
 {
 public:
 	enum VertexDataType
@@ -58,7 +59,7 @@ public:
     };
     
     
-	PolygonGroup();
+	PolygonGroup(Scene * _scene);
 	~PolygonGroup();
 	
 	//! Getters

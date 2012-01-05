@@ -27,16 +27,17 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "DataNode.h"
-
+#include "Scene3D/DataNode.h"
+#include "FileSystem/KeyedArchive.h"
 
 namespace DAVA 
 {
 
 REGISTER_CLASS(DataNode);
     
-DataNode::DataNode(Scene * scene)
-    : SceneNode(scene)
+DataNode::DataNode(Scene * _scene)
+:   scene(_scene)
+,   index(-1)
 {
     
 }
@@ -45,15 +46,107 @@ DataNode::~DataNode()
 {
     
 }
+void DataNode::SetName(const String & _name)
+{
+    name = _name;
+}
+    
+const String & DataNode::GetName()
+{
+    return name;
+}
 
-    
-void DataNode::Update(float32 timeElapsed)
+void DataNode::AddNode(DataNode * node)
 {
+    if (node)
+    {
+        node->Retain();
+        node->index = children.size();
+        children.push_back(node);
+        //node->SetParent(this);
+    }
+}
+
+DataNode *	DataNode::FindByName(const String & searchName)
+{
+    if (name == searchName)
+        return this;
+    
+    uint32 size = (uint32)children.size();
+    for (uint32 c = 0; c < size; ++c)
+    {
+        DataNode * res = children[c]->FindByName(searchName);
+        if (res != 0)return res;
+    }
+    return 0;
+}
+
+void DataNode::RemoveNode(DataNode * node)
+{
+    if (!node) 
+    {
+        return;
+    }
+//    if (inUpdate) 
+//    {
+//        removedCache.push_back(node);
+//        return;
+//    }
+    const std::vector<DataNode*>::iterator & childrenEnd = children.end();
+    for (std::vector<DataNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
+    {
+        if (*t == node)
+        {
+            children.erase(t);
+            if (node)
+            {
+                //node->SetParent(0);
+                node->index = -1;
+                node->Release();
+            }
+            break;
+        }
+    }
     
 }
-void DataNode::Draw()
+
+DataNode * DataNode::GetChild(int32 index)
 {
-    
+    return children[index];
 }
+
+int32 DataNode::GetChildrenCount()
+{
+    return (int32)children.size();
+}
+
+void DataNode::RemoveAllChildren()
+{
+    for (std::vector<DataNode*>::iterator t = children.begin(); t != children.end(); ++t)
+    {
+        DataNode *node = *t;
+        //node->SetParent(0);
+        node->index = -1;
+        node->Release();
+    }
+    children.clear();
+}
+
+int32  DataNode::GetNodeIndex()
+{
+    return index;
+}
+    
+void DataNode::Load(KeyedArchive * archive)
+{
+    archive->SetInt32("#index", index);
+}
+
+void DataNode::Save(KeyedArchive * archive)
+{
+    index = archive->GetInt32("#index", -1);
+}
+
+
 
 }

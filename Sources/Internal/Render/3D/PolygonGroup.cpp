@@ -33,8 +33,9 @@
 namespace DAVA 
 {
 	
-PolygonGroup::PolygonGroup()
-:	vertexCount(0),
+PolygonGroup::PolygonGroup(Scene * _scene)
+:	DataNode(_scene),
+    vertexCount(0),
 	indexCount(0),
 	textureCoordCount(0),
 	vertexStride(0),
@@ -195,7 +196,7 @@ void PolygonGroup::BuildVertexBuffer()
     
 void PolygonGroup::Save(KeyedArchive * keyedArchive)
 {
-    BaseObject::Save(keyedArchive);
+    DataNode::Save(keyedArchive);
     
     keyedArchive->SetInt32("vertexFormat", vertexFormat);
     keyedArchive->SetInt32("vertexCount", vertexCount); 
@@ -211,7 +212,7 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive)
 
 void PolygonGroup::Load(KeyedArchive * keyedArchive)
 {
-    BaseObject::Load(keyedArchive);
+    DataNode::Load(keyedArchive);
     
     vertexFormat = keyedArchive->GetInt32("vertexFormat");
     vertexStride = GetVertexSize(vertexFormat);

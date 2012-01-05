@@ -178,6 +178,7 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     
     renderingMode = _renderingMode;
     ReleaseShaders(); // release previous shaders
+    ReleaseAllRDOQuads();
     InitShaders(); // init new shaders according to the selected rendering mode
     
     heightmap = Image::CreateFromFile(heightmapPathname);
@@ -923,8 +924,8 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     AABBox3 retBBox = box;
     box.GetTransformedBox(GetWorldTransform(), retBBox);
     
-    Vector<SceneNode*>::iterator itEnd = childs.end();
-    for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    const Vector<SceneNode*>::iterator & itEnd = children.end();
+    for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
         AABBox3 lbox = (*it)->GetWTMaximumBoundingBox();
         if(  (AABBOX_INFINITY != lbox.min.x && AABBOX_INFINITY != lbox.min.y && AABBOX_INFINITY != lbox.min.z)

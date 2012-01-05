@@ -59,6 +59,7 @@ MeshInstanceNode::~MeshInstanceNode()
         for (size_t idx = 0; idx < size; ++idx)
         {
             SafeRelease(ld.materials[idx]);
+            SafeRelease(ld.meshes[idx]);
         }
     }
 }
@@ -79,7 +80,7 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
     }
     ld = &(*lodLayers.begin());
 
-	ld->meshes.push_back(mesh);
+	ld->meshes.push_back(SafeRetain(mesh));
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
 	ld->materials.push_back(SafeRetain(material));
 	
@@ -133,7 +134,7 @@ void MeshInstanceNode::AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, i
     }
 
     
-	ld->meshes.push_back(mesh);
+	ld->meshes.push_back(SafeRetain(mesh));
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
 	ld->materials.push_back(SafeRetain(material));
 
@@ -339,6 +340,19 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
     SceneNode::Clone(dstNode);
     MeshInstanceNode *nd = (MeshInstanceNode *)dstNode;
     nd->lodLayers = lodLayers;
+    
+    const List<LodData>::const_iterator & end = nd->lodLayers.end();
+    for (List<LodData>::iterator it = nd->lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+        size_t size = ld.materials.size();
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            ld.materials[idx]->Retain();
+            ld.meshes[idx]->Retain();
+        }
+    }
+ 
     nd->lodPresents = lodPresents;
     nd->lastLodUpdateFrame = 1000;
     nd->currentLod = &(*nd->lodLayers.begin());
@@ -356,8 +370,8 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
 	
     bbox.GetTransformedBox(GetWorldTransform(), retBBox);
     
-    Vector<SceneNode*>::iterator itEnd = childs.end();
-	for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    const Vector<SceneNode*>::iterator & itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
         AABBox3 box = (*it)->GetWTMaximumBoundingBox();
         if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)

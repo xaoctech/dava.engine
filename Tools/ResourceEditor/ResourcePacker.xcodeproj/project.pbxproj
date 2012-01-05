@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		8DD76F6A0486A84900D96B5E /* ResourceEditorConsole.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* ResourceEditorConsole.1 */; };
 		D968F2F8149792B1007B6499 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D968F2F7149792B1007B6499 /* libpng.a */; };
-		D968F31814979536007B6499 /* CameraPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968F31014979536007B6499 /* CameraPanel.cpp */; };
-		D968F31914979536007B6499 /* EditMatrixControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968F31214979536007B6499 /* EditMatrixControl.cpp */; };
-		D968F31A14979536007B6499 /* PanelSwitcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968F31414979536007B6499 /* PanelSwitcher.cpp */; };
-		D968F31B14979536007B6499 /* PropertyPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D968F31614979536007B6499 /* PropertyPanel.cpp */; };
 		FEC3E2C2133A946000442ADD /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2A7133A946000442ADD /* FrameworkMain.cpp */; };
 		FEC3E2C3133A946000442ADD /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2A9133A946000442ADD /* GameCore.cpp */; };
 		FEC3E2C4133A946000442ADD /* iPhoneProjectDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = FEC3E2AC133A946000442ADD /* iPhoneProjectDelegate.mm */; };
@@ -37,8 +33,6 @@
 		FEC3E54A133CD83C00442ADD /* ResourcePacker in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8DD76F6C0486A84900D96B5E /* ResourcePacker */; };
 		FEC3EC7113432F4400442ADD /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FEC3EC7013432F4400442ADD /* libz.dylib */; };
 		FEC3EC7313432F5500442ADD /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FEC3EC7213432F5500442ADD /* libbz2.dylib */; };
-		FECCC5191403DFCD00033316 /* CameraController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECCC5151403DFCD00033316 /* CameraController.cpp */; };
-		FECCC51A1403DFCD00033316 /* SceneEditorScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECCC5171403DFCD00033316 /* SceneEditorScreen.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,14 +79,6 @@
 		8DD76F6C0486A84900D96B5E /* ResourcePacker */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ResourcePacker; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859E8B029090EE04C91782 /* ResourceEditorConsole.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ResourceEditorConsole.1; sourceTree = "<group>"; };
 		D968F2F7149792B1007B6499 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng.a"; sourceTree = SOURCE_ROOT; };
-		D968F31014979536007B6499 /* CameraPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPanel.cpp; sourceTree = "<group>"; };
-		D968F31114979536007B6499 /* CameraPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraPanel.h; sourceTree = "<group>"; };
-		D968F31214979536007B6499 /* EditMatrixControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditMatrixControl.cpp; sourceTree = "<group>"; };
-		D968F31314979536007B6499 /* EditMatrixControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditMatrixControl.h; sourceTree = "<group>"; };
-		D968F31414979536007B6499 /* PanelSwitcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanelSwitcher.cpp; sourceTree = "<group>"; };
-		D968F31514979536007B6499 /* PanelSwitcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelSwitcher.h; sourceTree = "<group>"; };
-		D968F31614979536007B6499 /* PropertyPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyPanel.cpp; sourceTree = "<group>"; };
-		D968F31714979536007B6499 /* PropertyPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyPanel.h; sourceTree = "<group>"; };
 		FEC3E2A6133A946000442ADD /* AppScreens.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreens.h; path = Classes/AppScreens.h; sourceTree = "<group>"; };
 		FEC3E2A7133A946000442ADD /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FrameworkMain.cpp; path = Classes/FrameworkMain.cpp; sourceTree = "<group>"; };
 		FEC3E2A8133A946000442ADD /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
@@ -130,10 +116,6 @@
 		FEC3E4EA133CBC1100442ADD /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = MacOSSpecific/main.cpp; sourceTree = "<group>"; };
 		FEC3EC7013432F4400442ADD /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		FEC3EC7213432F5500442ADD /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
-		FECCC5151403DFCD00033316 /* CameraController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraController.cpp; sourceTree = "<group>"; };
-		FECCC5161403DFCD00033316 /* CameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraController.h; sourceTree = "<group>"; };
-		FECCC5171403DFCD00033316 /* SceneEditorScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditorScreen.cpp; sourceTree = "<group>"; };
-		FECCC5181403DFCD00033316 /* SceneEditorScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditorScreen.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,7 +164,6 @@
 				FEC3E2AC133A946000442ADD /* iPhoneProjectDelegate.mm */,
 				FEC3E2AD133A946000442ADD /* ResourcePackerScreen.cpp */,
 				FEC3E2AE133A946000442ADD /* ResourcePackerScreen.h */,
-				FECCC5141403DFCD00033316 /* SceneEditor */,
 				FEC3E2AF133A946000442ADD /* TexturePacker */,
 				FEC3E2BA133A946000442ADD /* UIFileTree.cpp */,
 				FEC3E2BB133A946000442ADD /* UIFileTree.h */,
@@ -253,26 +234,6 @@
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
-		};
-		FECCC5141403DFCD00033316 /* SceneEditor */ = {
-			isa = PBXGroup;
-			children = (
-				D968F31014979536007B6499 /* CameraPanel.cpp */,
-				D968F31114979536007B6499 /* CameraPanel.h */,
-				D968F31214979536007B6499 /* EditMatrixControl.cpp */,
-				D968F31314979536007B6499 /* EditMatrixControl.h */,
-				D968F31414979536007B6499 /* PanelSwitcher.cpp */,
-				D968F31514979536007B6499 /* PanelSwitcher.h */,
-				D968F31614979536007B6499 /* PropertyPanel.cpp */,
-				D968F31714979536007B6499 /* PropertyPanel.h */,
-				FECCC5151403DFCD00033316 /* CameraController.cpp */,
-				FECCC5161403DFCD00033316 /* CameraController.h */,
-				FECCC5171403DFCD00033316 /* SceneEditorScreen.cpp */,
-				FECCC5181403DFCD00033316 /* SceneEditorScreen.h */,
-			);
-			name = SceneEditor;
-			path = Classes/SceneEditor;
-			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -356,12 +317,6 @@
 				FEC3E2CD133A946000442ADD /* UIScrollView.cpp in Sources */,
 				FEC3E2CE133A946000442ADD /* UISpriteEditor.cpp in Sources */,
 				FEC3E4EB133CBC1100442ADD /* main.cpp in Sources */,
-				FECCC5191403DFCD00033316 /* CameraController.cpp in Sources */,
-				FECCC51A1403DFCD00033316 /* SceneEditorScreen.cpp in Sources */,
-				D968F31814979536007B6499 /* CameraPanel.cpp in Sources */,
-				D968F31914979536007B6499 /* EditMatrixControl.cpp in Sources */,
-				D968F31A14979536007B6499 /* PanelSwitcher.cpp in Sources */,
-				D968F31B14979536007B6499 /* PropertyPanel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

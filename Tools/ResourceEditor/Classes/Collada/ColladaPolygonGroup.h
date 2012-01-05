@@ -71,12 +71,13 @@ public:
 	inline int			GetTriangleCount() { return triangleCount; };
 	inline std::vector<ColladaVertex> & GetVertices() { return unoptimizedVerteces; }
 	inline std::vector<int>	& GetIndices() { return indexArray; };
+    inline uint32 GetVertexFormat() { return vertexFormat; };
 	
 	std::vector<ColladaVertex>	unoptimizedVerteces;
 	std::vector<ColladaVertex>	skinVerteces;
 
 	ColladaMesh	* parentMesh;
-private:
+protected:
 	bool						skinAnimation;
 
 	FCDGeometryPolygons *		polygons;
@@ -92,7 +93,7 @@ private:
 	AABBox3						bbox;
 
 	fstring						materialSemantic;
-    int32                       vertexFormat;
+    uint32                      vertexFormat;
 };
 
 };
