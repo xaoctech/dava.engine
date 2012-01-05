@@ -113,7 +113,7 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
 
     //	cube->AllocateData( EVF_VERTEX | EVF_COLOR, 12, 36, 0);  //почему 12?
     cubeMesh->AddNode(cube);
-    cube->AllocateData( EVF_VERTEX | EVF_COLOR, 8, 36, 0); 
+    cube->AllocateData( EVF_VERTEX | EVF_COLOR, 8, 36); 
     
 	for (int32 i = 0; i < 8 ; ++i)
 	{
