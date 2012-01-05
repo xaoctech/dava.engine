@@ -46,13 +46,13 @@ public:
 
 //    void AddPropertyByData(PropertyCellData *newProp);
 
-    void AddStringProperty(const String &propertyName, const String &currentText, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddIntProperty(const String &propertyName, int32 currentIntValue, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddFloatProperty(const String &propertyName, float32 currentFloatValue, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddFilepathProperty(const String &propertyName, const String &currentFilepath, const String &extensionFilter = ".*", editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddComboProperty(const String &propertyName, const Vector<String> &strings, int32 currentStringIndex);
-    void AddMatrix4Property(const String &propertyName, const Matrix4 &currentMatrix, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddStringProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddIntProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddFloatProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddFilepathProperty(const String &propertyName, const String &extensionFilter = ".*", editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddBoolProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddComboProperty(const String &propertyName, const Vector<String> &strings);
+    void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);

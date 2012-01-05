@@ -524,7 +524,7 @@ void EditorBodyControl::UpdatePropertyPanel()
 //        currentPropertyPanel = nodePropertyPanel[ECNID_COUNT];
 //    }
 
-    currentPropertyPanel->ReadFromNode(selectedNode);
+    currentPropertyPanel->ReadFrom(selectedNode);
     rightPanel->AddControl(currentPropertyPanel);
 }
 
@@ -946,7 +946,7 @@ void EditorBodyControl::NodePropertyChanged()
 {
     if(selectedNode && currentPropertyPanel)
     {
-        currentPropertyPanel->ReadToNode(selectedNode);
+        currentPropertyPanel->WriteTo(selectedNode);
         savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
     }
 }
@@ -955,7 +955,7 @@ void EditorBodyControl::OnRefreshPressed(BaseObject * obj, void *, void *)
 {
     if(selectedNode && currentPropertyPanel)
     {
-        currentPropertyPanel->ReadToNode(selectedNode);
+        currentPropertyPanel->WriteTo(selectedNode);
         savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
     }
 }

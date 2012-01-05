@@ -239,11 +239,17 @@ void LandscapeEditorControl::CreateLeftPanel()
     }
     SafeRelease(keyedArchieve);
     
-    propertyList->AddIntProperty("Size", 1024, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddIntProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetIntPropertyValue("Size", 1024);
 //    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
 //    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath + "Data/Landscape/tex3.png", ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath + "Data/Landscape/detail_gravel.png", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath + "Data/Landscape/tex3.png");
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath + "Data/Landscape/detail_gravel.png");
 }
 
 void LandscapeEditorControl::ReleaseLeftPanel()
