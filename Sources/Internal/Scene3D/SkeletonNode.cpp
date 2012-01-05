@@ -32,6 +32,8 @@
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(SkeletonNode);
 
 SkeletonNode::SkeletonNode(Scene * _scene)
 	: BoneNode(_scene, 0)

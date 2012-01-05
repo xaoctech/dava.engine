@@ -168,7 +168,7 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
 	Polygon3 pts;
     float32 seglength = 15.0f;
     float32 angle = seglength / radius;
-	int ptsCount = (int)(2 * PI / angle) + 1;
+	int ptsCount = (int)(2 * PI / (DegToRad(angle))) + 1;
 
 
 	for (int k = 0; k < ptsCount; ++k)
@@ -445,7 +445,146 @@ void RenderHelper::DrawBox(const AABBox3 & box)
 	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.max.z), Vector3(box.max.x, box.min.y, box.max.z));
 	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.max.x, box.max.y, box.max.z));
 }
+	
+	void RenderHelper::DrawCornerBox(AABBox3 bbox)
+	{
+		float32 offs = ((bbox.max - bbox.min).Length()) * 0.05f;
+		Vector3 off = Vector3(offs, offs, offs);
+		AABBox3 newBox(bbox.min - off, bbox.max + off);
+		offs *= 2.0f;
+		
+		//1
+		Vector3 point = newBox.min;
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+		
+		//2
+		point = newBox.max;
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
+		
+		//3
+		point = Vector3(newBox.min.x, newBox.max.y, newBox.min.z);
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+		
+		//4
+		point = Vector3(newBox.max.x, newBox.max.y, newBox.min.z);
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
+		
+		//5
+		point = Vector3(newBox.max.x, newBox.min.y, newBox.min.z);
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));
+		
+		//6
+		point = Vector3(newBox.min.x, newBox.max.y, newBox.max.z);
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+		
+		//7
+		point = Vector3(newBox.min.x, newBox.min.y, newBox.max.z);
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0));
+		
+		//8
+		point = Vector3(newBox.max.x, newBox.min.y, newBox.max.z);
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs));
+		RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0));
+		RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0));	
+	}
+	
+	void RenderHelper::DrawSphere(float32 r)
+	{
+		int32 n = 2;
+        Vector<Vector3> points;
+        Vector<int32> triangleIndices;
 
-	
-	
+		int32 e;
+		float32 segmentRad = PI / (2.0f * ((float32)(n + 1)));
+		int32 numberOfSeparators = 4 * n + 4;
+				
+		for (e = -n; e <= n; e++)
+		{
+			float32 r_e = r * cosf(segmentRad * e);
+			float32 y_e = r * sinf(segmentRad * e);
+			
+			for (int s = 0; s < numberOfSeparators; s++)
+			{
+				float32 z_s = r_e * sinf(segmentRad * s) * (-1.0f);
+				float32 x_s = r_e * cosf(segmentRad * s);
+				points.push_back(Vector3(x_s, y_e, z_s));
+			}
+		}
+		points.push_back(Vector3(0, r, 0));
+		points.push_back(Vector3(0, -r, 0));
+		
+		for (e = 0; e < 4 * n ; e++)
+		{
+			for (int i = 0; i < numberOfSeparators; i++)
+			{
+				triangleIndices.push_back(e * numberOfSeparators + i);
+				triangleIndices.push_back(e * numberOfSeparators + i + 
+									numberOfSeparators);
+				triangleIndices.push_back(e * numberOfSeparators + (i + 1) % 
+									numberOfSeparators + numberOfSeparators);
+				
+				triangleIndices.push_back(e * numberOfSeparators + (i + 1) % 
+									numberOfSeparators + numberOfSeparators);
+				triangleIndices.push_back(e * numberOfSeparators + 
+									(i + 1) % numberOfSeparators);
+				triangleIndices.push_back(e * numberOfSeparators + i);
+			}
+		}
+		
+//		for (int i = 0; i < numberOfSeparators; i++)
+//		{
+//			triangleIndices.push_back(e * numberOfSeparators + i);
+//			triangleIndices.push_back(numberOfSeparators * (2 * n + 1));
+//			triangleIndices.push_back(e * numberOfSeparators + (i + 1) %
+//								numberOfSeparators);
+//		}
+		
+//		for (int i = 0; i < numberOfSeparators; i++)
+//		{
+//			triangleIndices.push_back(i);
+//			triangleIndices.push_back((i + 1) % numberOfSeparators);
+//			triangleIndices.push_back(numberOfSeparators * (2 * n + 1) + 1);
+//		}
+		
+		
+		
+		
+		
+		
+		//draw
+		
+		for (int i = 0; i < triangleIndices.size() / 3; i++)
+		{
+			Vector3 p1 = points[triangleIndices[i]];
+			Vector3 p2 = points[triangleIndices[i + 1]];
+			Vector3 p3 = points[triangleIndices[i + 2]];
+						
+			RenderHelper::Instance()->DrawLine(p1, p2);
+			RenderHelper::Instance()->DrawLine(p1, p3);
+			RenderHelper::Instance()->DrawLine(p2, p3);
+		
+			p1.y = -p1.y;
+			p2.y = -p2.y;
+			p3.y = -p3.y;
+		
+			RenderHelper::Instance()->DrawLine(p1, p2);
+			RenderHelper::Instance()->DrawLine(p1, p3);
+			RenderHelper::Instance()->DrawLine(p2, p3);			
+		}			
+	}
+
 };

@@ -51,7 +51,16 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
-	
+    const List<LodData>::const_iterator & end = lodLayers.end();
+    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+        size_t size = ld.materials.size();
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            SafeRelease(ld.materials[idx]);
+        }
+    }
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -72,7 +81,7 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
 
 	ld->meshes.push_back(mesh);
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
-	ld->materials.push_back(material);
+	ld->materials.push_back(SafeRetain(material));
 	
 	PolygonGroup * group = mesh->GetPolygonGroup(polygonGroupIndex);
 	bbox.AddAABBox(group->GetBoundingBox());
@@ -126,7 +135,7 @@ void MeshInstanceNode::AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, i
     
 	ld->meshes.push_back(mesh);
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
-	ld->materials.push_back(material);
+	ld->materials.push_back(SafeRetain(material));
 
 	if (ld->layer == 0) 
     {
@@ -301,7 +310,13 @@ void MeshInstanceNode::Draw()
 			RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
 			RenderHelper::Instance()->DrawLine(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 50.0f));
 		}
-        
+
+		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
+		{
+			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			RenderHelper::Instance()->DrawCornerBox(bbox);
+		}
+		
 //      RenderManager::Instance()->EnableDepthTest(true);
 //		RenderManager::Instance()->EnableTexturing(true);
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
@@ -309,13 +324,6 @@ void MeshInstanceNode::Draw()
 	}
 	//glPopMatrix();
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
-    
-    if (debugFlags & DEBUG_DRAW_AABBOX)
-    {
-        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-        RenderHelper::Instance()->DrawBox(transformedBox);
-        RenderManager::Instance()->ResetColor();
-    }
 
     SceneNode::Draw();
 }
@@ -345,6 +353,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
 {
     AABBox3 retBBox = bbox;
+	
     bbox.GetTransformedBox(GetWorldTransform(), retBBox);
     
     Vector<SceneNode*>::iterator itEnd = childs.end();

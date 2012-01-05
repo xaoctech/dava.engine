@@ -49,10 +49,17 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 	// convert fstring to char*, amazing code based on http://msdn2.microsoft.com/en-us/library/ms235631(vs.80).aspx
 	size_t convertedChars = 0;
 	
-	swprintf(orig, 512,L"%s", image->GetFilename().c_str() );
+	swprintf(orig, 512,L"%S", image->GetFilename().c_str() );
 	size_t origsize = wcslen(orig) + 1;
+	for(int i = 0; i < origsize; ++i)
+	{
+		if(orig[i] == '\\')
+		{
+			orig[i] = '/';
+		}
+	}
 	
-	wcstombs_s(&convertedChars, nstring, origsize, orig, _TRUNCATE);
+	wcstombs_s(&convertedChars, nstring, origsize, orig+2/*remove C:*/, _TRUNCATE);
 #else
 	swprintf(orig, 512,L"%s", image->GetFilename().c_str() );
 	const wchar_t * origTmp = &orig[0];

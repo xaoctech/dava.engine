@@ -12,13 +12,10 @@ class CreateLandscapeDialog: public CreateNodeDialog
     
 public:
     CreateLandscapeDialog(const Rect & rect);
-    virtual ~CreateLandscapeDialog();
     
 protected:
 
-    virtual void InitializeProperties();
     virtual void CreateNode();
-    virtual void ClearPropertyValues();
 
 };
 

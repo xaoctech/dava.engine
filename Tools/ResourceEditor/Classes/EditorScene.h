@@ -16,40 +16,20 @@
 
 using namespace DAVA;
 
-struct BulletLink
-{
-	BulletObject * bulletObj;
-	SceneNode * sceneNode;
-};
-
 class EditorScene : public Scene
 {
 public:
-    
-	class ShootTrace
-    {
-    public:
-        Vector3 from;
-        Vector3 to;
-    };
-	
 	
     EditorScene();
     ~EditorScene();
     
     virtual void Update(float32 timeElapsed);
-    virtual void Draw();
-
-//    void AddTank(HittableObject *hittableObject);
-//    void AddBuilding(RealBuilding *building);
-	
 
     btCollisionWorld *collisionWorld;
 	void CheckNodes(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
 	SceneNode * GetSelection();
-	
 	
 protected:
 
@@ -58,9 +38,10 @@ protected:
 	btAxisSweep3* broadphase;
     int depth;
 	
-    Vector<BulletLink> links;
 	SceneNode * selection;
-    List<ShootTrace> traces;
+	
+	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
+
 };
 
 #endif

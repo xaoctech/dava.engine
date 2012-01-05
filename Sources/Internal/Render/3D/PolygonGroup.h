@@ -50,13 +50,14 @@ public:
 		//		VERTEX_FIXED16_16,
 		//		VERTEX_SHORT,
 	};
-	
-	enum IndexFormat
-	{
-		INDEX_16 = 1,
-		INDEX_32,
-	};
-	
+        	
+    enum 
+    {
+        PACKING_NONE = 0, 
+        PACKING_DEFAULT,
+    };
+    
+    
 	PolygonGroup();
 	~PolygonGroup();
 	
@@ -71,6 +72,8 @@ public:
 	inline void	GetColor(int32 i, RGBColor & v);
 	inline void	GetTexcoord(int32 ti, int32 i, Vector2 & v);
 	inline void	GetIndex(int32 i, int32 & index);
+    
+    inline ePrimitiveType GetPrimitiveType();
 	
 	//! Setters
 	inline void	SetCoord(int32 i, const Vector3 & v);
@@ -90,14 +93,20 @@ public:
 	inline int32 GetIndexCount();
 	
 	inline AABBox3 & GetBoundingBox();
+    
+    
+    inline void SetPrimitiveType(ePrimitiveType type);
+    
+    
 	
 	int32	vertexCount;
 	int32	indexCount;
 	int32	textureCoordCount;
 	int32	vertexStride;
 	int32	vertexFormat;
-	int32	renderPassCount;
+	int32	indexFormat;
 	int32	triangleCount;
+    ePrimitiveType primitiveType;
 	
 	Vector3		*vertexArray;
 	Vector2		**textureCoordArray;
@@ -110,7 +119,7 @@ public:
 	int32		*jointCountArray;
 	
 	RGBColor	*colorArray;
-	int16		*indexArray;
+	int16		*indexArray; // Boroda: why int16? should be uint16? 
 	uint8		*meshData;
 	
 	AABBox3		aabbox;
@@ -128,19 +137,36 @@ public:
 						 int32 textureCoordCount);
 	void	ReleaseData();
     
+    
     /*
         If you want you can build tangents for your submesh
         This function rebuild the polygroup from ground with binormal  
      */
     void    BuildTangents();
     
+    /*
+        Go through all vertices and optimize it, remove redundant vertices. 
+     */ 
+    void    OptimizeVertices();
+    
+    /*
+        Use greedy algorithm to convert mesh from triangle lists to triangle strips
+     */
+    void    ConvertToStrips();
+    
+    
     
     void    BuildVertexBuffer();
     
     
     RenderDataObject * renderDataObject;
-private:
-	
+    
+    void Save(KeyedArchive * keyedArchive);
+    void Load(KeyedArchive * keyedArchive);
+
+private:	
+    void    UpdateDataPointersAndStreams();
+
 };
 
 // Static Mesh Implementation	
@@ -205,6 +231,11 @@ inline void	PolygonGroup::SetIndex(int32 i, int16 index)
 	indexArray[i] = index;
 }
     
+inline void	PolygonGroup::SetPrimitiveType(ePrimitiveType type)
+{
+    primitiveType = type;
+}
+    
 inline int32 PolygonGroup::GetFormat()
 {
     return vertexFormat;
@@ -265,6 +296,10 @@ inline AABBox3 & PolygonGroup::GetBoundingBox()
 	return aabbox;
 }
 	
+inline ePrimitiveType PolygonGroup::GetPrimitiveType()
+{
+    return primitiveType;
+}
 
 
 

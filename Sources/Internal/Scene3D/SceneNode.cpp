@@ -38,7 +38,7 @@ namespace DAVA
 {
     
     
-//REGISTER_CLASS(SceneNode);
+REGISTER_CLASS(SceneNode);
 	
 SceneNode::SceneNode(Scene * _scene)
 	: scene(_scene)

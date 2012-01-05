@@ -305,6 +305,8 @@ void PropertyBoolCell::ValueChanged(bool newValue)
 PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
+    dialog = NULL;
+    
     keyName->size.x = size.x;
     keyName->size.y = size.y/2;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
@@ -345,7 +347,7 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 
 void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void * callerData)
 {
-    if (dialog) 
+    if(dialog) 
     {
         return;
     }
@@ -380,3 +382,99 @@ void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDial
 //{
 //}
 
+
+//*************** PropertyComboboxCell **************
+PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+    :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width/2;
+    
+    float32 usedWidth = keyName->size.x;
+//    Vector<String> empty;
+//    empty.push_back("Empty combo");
+//    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, empty);
+    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, prop->GetStrings());
+    AddControl(combo);
+    SetData(prop);
+}
+
+PropertyComboboxCell::~PropertyComboboxCell()
+{
+    SafeRelease(combo);
+}
+
+float32 PropertyComboboxCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT;
+}
+
+void PropertyComboboxCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_STRINGS:
+            combo->SetNewItemsSet(prop->GetStrings());
+            combo->SetSelectedIndex(prop->GetItemIndex(), false);
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
+{
+    property->SetItemIndex(itemIndex);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}
+
+//*************** PropertyMatrix4Cell **************
+PropertyMatrix4Cell::PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+:       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width/2;
+    
+    float32 usedWidth = keyName->size.x;
+
+    matrix = new EditMatrixControl(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)));
+    matrix->OnMatrixChanged = Message(this, &PropertyMatrix4Cell::OnLocalTransformChanged);
+
+    AddControl(matrix);
+    SetData(prop);
+}
+
+PropertyMatrix4Cell::~PropertyMatrix4Cell()
+{
+    SafeRelease(matrix);
+}
+
+float32 PropertyMatrix4Cell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT * 4;
+}
+
+void PropertyMatrix4Cell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_MATRIX4:
+            matrix->SetMatrix(prop->GetMatrix4());
+            matrix->SetReadOnly(!prop->isEditable);
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    property->SetMatrix4(matrix->GetMatrix());
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}

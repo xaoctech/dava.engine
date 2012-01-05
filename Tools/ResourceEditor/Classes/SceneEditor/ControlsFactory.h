@@ -13,6 +13,9 @@ public:
     {
         BUTTON_HEIGHT = 20,
         BUTTON_WIDTH = 100,
+        
+        LEFT_SIDE_WIDTH = 200,
+        RIGHT_SIDE_WIDTH = 200,
     };
     
     
@@ -56,6 +59,7 @@ public:
     static void CustomizeUneditablePropertyCell(UIControl *c);
     
     static void CustomizeDialogFreeSpace(UIControl *c);
+    static void CustomizeDialog(UIControl *c);
     
     static void SetScrollbar(UIList *l);
     static void SetScrollbar(UIHierarchy *l);

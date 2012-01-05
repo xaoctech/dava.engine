@@ -187,6 +187,20 @@ public:
 	 */
 	void GetGeometry(Vector<LandscapeVertex> & vertices, Vector<int32> & indices);
     
+    //Returns maximum Bounding Box as WorlTransformedBox
+    virtual AABBox3 GetWTMaximumBoundingBox();
+
+	inline AABBox3 & GetBoundingBox();
+
+    /**
+     \brief Function to receive pathname of heightmap object
+     \returns pathname of heightmap
+     */
+    inline const String & GetHeightMapPathname();
+
+    inline const eRenderingMode GetRenderingMode();
+    
+    
 protected:	
     
     class LandscapeQuad
@@ -266,9 +280,26 @@ protected:
     
     void FlushQueue();
     void ClearQueue();
+    
+    String heightMapPath;
 };
 
-	
+inline AABBox3 & LandscapeNode::GetBoundingBox()
+{
+    return box;
+}
+    
+inline const String & LandscapeNode::GetHeightMapPathname()
+{
+    return heightMapPath;
+}
+
+inline const LandscapeNode::eRenderingMode LandscapeNode::GetRenderingMode()
+{
+    return renderingMode;
+}
+
+    
 };
 
 #endif // __DAVAENGINE_LANDSCAPE_NODE_H__

@@ -243,6 +243,11 @@ void ControlsFactory::CustomizeDialogFreeSpace(UIControl *c)
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
 
+void ControlsFactory::CustomizeDialog(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.0f, 0.0f, 0.0f, 0.5f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
 
 void ControlsFactory::SetScrollbar(DAVA::UIList *l)
 {

@@ -111,6 +111,12 @@ public:
     float32 GetZFar() const;
     
     /**
+     \brief return ortho value for this camera
+     \returns current ortho value
+     */
+    bool GetIsOrtho() const;
+    
+    /**
         \brief Function change camera position.
         \param[in] position new camera position
      */
@@ -203,6 +209,15 @@ public:
         \returns 2D point on screen.
      */
     Vector2 GetOnScreenPosition(const Vector3 & forPoint, const Rect & viewport);
+    
+    /**
+        \brief Function to return 3D position of 2D point that was transformed before. 
+        \param[in] win windows coords of the point
+        \param[in] viewport viewport coords
+        \returns point position in 3D world space, before modelview & projection
+     */
+	Vector3 UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport);	
+
 
     /**
         \brief Get frustum object for this camera.
@@ -225,7 +240,8 @@ public:
      */
     void Draw();
 
-	Vector3 UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport);	
+    void Save(KeyedArchive * archive);
+    void Load(KeyedArchive * archive);
 
 public:
     enum
@@ -249,7 +265,7 @@ public:
     
     Vector3 direction;  // right now this variable updated only when you call GetDirection.
     
-	Quaternion rotation;	// 
+	//Quaternion rotation;	// 
 	Matrix4 cameraTransform;
 
     Matrix4 modelMatrix;

@@ -49,6 +49,7 @@ class Material;
 class StaticMesh;
 class AnimatedMesh;
 class SceneNodeAnimationList;
+class DataNode;
 	
 /** 
     \ingroup scene3d
@@ -76,16 +77,19 @@ public:
 	~Scene();
 	
 	void		ClearScene();
+    
+    
+    //
+    // void EnumerateObjects
+    // 
 	
 	void AddTexture(Texture * texture);
 	void RemoveTexture(Texture * texture);
 	Texture * GetTexture(int32 index);
 	inline int32	GetTextureCount();
 	
-	void AddMaterial(Material * material);
-	void RemoveMaterial(Material * material);
 	Material * GetMaterial(int32 index);
-	inline int32	GetMaterialCount();
+	int32	GetMaterialCount();
 	
 	void AddStaticMesh(StaticMesh * mesh);
 	void RemoveStaticMesh(StaticMesh * mesh);
@@ -182,6 +186,11 @@ public:
 
     
 private:	
+    DataNode * materials;
+    DataNode * polygroups;
+    DataNode * scenes;
+    
+    
     uint64 updateTime;
     uint64 drawTime;
     uint32 nodeCounter;
@@ -189,7 +198,6 @@ private:
 	Vector<Texture*> textures;
 	Vector<StaticMesh*> staticMeshes;
 	Vector<AnimatedMesh*> animatedMeshes;
-	Vector<Material*> materials;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     Map<String, SceneNode*> rootNodes;
@@ -215,11 +223,6 @@ int32 Scene::GetAnimationCount()
 int32 Scene::GetTextureCount()
 {
     return (int32)textures.size();
-}
-
-int32 Scene::GetMaterialCount()
-{
-    return (int32)materials.size();
 }
 
 int32 Scene::GetStaticMeshCount()
