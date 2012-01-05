@@ -16,6 +16,7 @@ PaintAreaControl::PaintAreaControl(const Rect & rect)
     
     startPoint = endPoint = Vector2(0, 0);
     
+    currentMousePos = Vector2(-100, -100);
     prevDrawPos = Vector2(-100, -100);
     
     SetTextureSideSize(rect.dx, rect.dy);
@@ -63,13 +64,17 @@ void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
     {
         srcBlendMode = BLEND_SRC_ALPHA;
         dstBlendMode = BLEND_ONE;
+
         paintColor = Color(1.f, 1.f, 1.f, 1.f);
+        currentMousePos = currentInput->point;
     }
     else if(UIEvent::BUTTON_2 == currentInput->tid)
     {
         srcBlendMode = BLEND_SRC_ALPHA;
         dstBlendMode = BLEND_ONE_MINUS_SRC_ALPHA;
+
         paintColor = Color(0.f, 0.f, 0.f, 1.f);
+        currentMousePos = currentInput->point;
     }
 
     if(UIEvent::PHASE_BEGAN == currentInput->phase)
@@ -96,6 +101,26 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
 {
     savedGeometricData = geometricData;
     UIControl::Draw(geometricData);
+    
+    if(usedTool && toolSprite && usedTool->zoom && -100 != currentMousePos.x)
+    {
+        RenderManager::Instance()->SetColor(Color(1.f, 0.f, 0.f, 1.f));
+
+        RenderManager::Instance()->ClipPush();
+        RenderManager::Instance()->SetClip(geometricData.GetUnrotatedRect());
+        
+        float32 scaleSize = toolSprite->GetWidth() * usedTool->radius * 2;
+        float32 radiusSize = scaleSize * usedTool->solidRadius;
+
+        Vector2 pos = (currentMousePos);
+        RenderManager::Instance()->SetColor(Color(1.f, 0.f, 0.f, 1.f));
+
+        RenderHelper::Instance()->DrawCircle(pos, radiusSize);
+        
+        RenderManager::Instance()->ClipPop();
+        
+        RenderManager::Instance()->ResetColor();
+    }
 }
 
 void PaintAreaControl::UpdateMap()
@@ -103,9 +128,10 @@ void PaintAreaControl::UpdateMap()
     if(usedTool && toolSprite && usedTool->zoom)
     {
         float32 scaleSize = toolSprite->GetWidth() * usedTool->radius * 4 / usedTool->zoom;
-        
+//        float32 radiusSize = scaleSize * usedTool->solidRadius;
+
         Vector2 deltaPos = endPoint - startPoint;
-        if(scaleSize/4 <  deltaPos.Length() || !deltaPos.Length())
+//        if(radiusSize/4 <  deltaPos.Length() || !deltaPos.Length())
         {
             RenderManager::Instance()->SetRenderTarget(spriteForDrawing);
             
@@ -228,11 +254,22 @@ void LandscapeEditorControl::CreatePaintAreaPanel()
         "~res:/Gfx/LandscapeEditor/Tools/WaterErodeIcon",
     };
 
+    const float32 actualRadius[] = 
+    {
+        0.5f,
+        0.35f,
+        0.7f,
+        0.5f,
+        0.6f,
+        0.6f,
+    };
+
+    
     int32 x = 0;
     int32 y = (TOOLS_HEIGHT - TOOL_BUTTON_SIDE) / 2;
     for(int32 i = 0; i < PaintTool::EBT_COUNT; ++i, x += (TOOL_BUTTON_SIDE + 1))
     {
-        tools[i] = new PaintTool((PaintTool::eBrushType) i, sprites[i]);
+        tools[i] = new PaintTool((PaintTool::eBrushType) i, sprites[i], actualRadius[i]);
         
         toolButtons[i] = new UIControl(Rect(x, y, TOOL_BUTTON_SIDE, TOOL_BUTTON_SIDE));
         toolButtons[i]->SetSprite(tools[i]->spriteName, 0);
