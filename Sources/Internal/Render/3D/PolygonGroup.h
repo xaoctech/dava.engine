@@ -131,11 +131,7 @@ public:
 	void		CreateBaseVertexArray();
 	Vector3		* baseVertexArray;
 	
-	void	AllocateData(
-						 int32 meshFormat, 
-						 int32 vertexCount, 
-						 int32 indexCount, 
-						 int32 textureCoordCount);
+	void AllocateData( int32 meshFormat, int32 vertexCount, int32 indexCount);
 	void	ReleaseData();
     
     
