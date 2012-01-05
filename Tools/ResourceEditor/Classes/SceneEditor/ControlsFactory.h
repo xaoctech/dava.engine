@@ -13,6 +13,9 @@ public:
     {
         BUTTON_HEIGHT = 20,
         BUTTON_WIDTH = 100,
+        
+        LEFT_SIDE_WIDTH = 200,
+        RIGHT_SIDE_WIDTH = 200,
     };
     
     

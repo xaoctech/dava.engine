@@ -66,8 +66,6 @@ protected:
 		STATE_SCROLL_TO_SPECIAL,
 	};
 	
-	
-	
 	void		StartScroll(Vector2 startScrollPosition);
 	void		ProcessScroll(Vector2 currentScrollPosition);
 	void		EndScroll();
@@ -76,7 +74,7 @@ protected:
 	Vector2		contentSize;
 	
 	int32		state;
-	Vector2		scrollPosition; // Used only during rendering process
+//	Vector2		scrollPosition; // Used only during rendering process
 	Vector2		scrollOrigin;
 	Vector2		scrollCurrentShift;	
 	Vector2		scrollZero; //point of autoscroll aim
