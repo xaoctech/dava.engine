@@ -25,7 +25,7 @@ public:
     
 public:
 
-    PaintTool(eBrushType _type, const String & _spriteName)
+    PaintTool(eBrushType _type, const String & _spriteName, float32 _solidRadius)
     {
         brushType = _type;
         spriteName = _spriteName;
@@ -33,6 +33,8 @@ public:
         radius = 0.5f;
         height = 0.5f;
         zoom = 0.5f;
+        
+        solidRadius = _solidRadius;
     }
     
     eBrushType brushType;
@@ -41,6 +43,7 @@ public:
     float32 radius;
     float32 height;
     float32 zoom;
+    float32 solidRadius;
 };
 
 class PaintAreaControl: public UIControl
@@ -71,6 +74,7 @@ protected:
     
     Vector2 startPoint;
     Vector2 endPoint;
+    Vector2 currentMousePos;
     
     Vector2 prevDrawPos;
     
