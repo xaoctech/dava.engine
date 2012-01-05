@@ -417,6 +417,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 
+static int32 oldModifersFlags = 0;
 - (void) keyDown:(NSEvent *)event
 {
 	{
@@ -445,8 +446,13 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 	}
 	
-	
-	//NSLog(@"key Down View");
+    InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed([event keyCode]);
+    if ([event modifierFlags]&NSCommandKeyMask)
+    {
+        InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
+    }
+
+//NSLog(@"key Down View");
 //	unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
 //	
 //	if ([event modifierFlags] & NSCommandKeyMask)
@@ -465,5 +471,36 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 //	}
 
 }	
+
+- (void) keyUp:(NSEvent *)event
+{
+    InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
+}
+
+- (void) flagsChanged :(NSEvent *)event
+{
+    int32 newModifers = [event modifierFlags];
+    static int32 masks[] = {NSAlphaShiftKeyMask, NSShiftKeyMask, NSControlKeyMask, NSAlternateKeyMask, NSCommandKeyMask};
+    static int32 keyCodes[] = {DVMACOS_CAPS_LOCK, DVMACOS_SHIFT, DVMACOS_CONTROL, DVMACOS_OPTION, DVMACOS_COMMAND};
+
+    for (int i = 0; i < 5; i++) 
+    {
+        if ((oldModifersFlags&masks[i]) != (newModifers&masks[i]))
+        {
+            if (newModifers&masks[i]) 
+            {
+                InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed(keyCodes[i]);
+            }
+            else 
+            {
+                InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(keyCodes[i]);
+            }
+        }
+    }
+    
+    
+    oldModifersFlags = newModifers;
+}
+
 
 @end
