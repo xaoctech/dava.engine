@@ -583,9 +583,9 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 	char name[64];
 	strcpy(name, node->originalNode->GetDaeId().c_str());
 	
-	for (int k = 0; k < level + 1; ++k)
-		DAVA::Logger::Debug("-");
-	DAVA::Logger::Debug(" ");
+	//for (int k = 0; k < level + 1; ++k)
+	//	DAVA::Logger::Debug("-");
+	DAVA::Logger::Debug(GetIndentString('-', level + 1));
 	
 	
 	fwrite(&nodeId, sizeof(int32), 1, sceneFP);

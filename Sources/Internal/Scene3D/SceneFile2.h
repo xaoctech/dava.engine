@@ -109,8 +109,12 @@ private:
         int32   nodeCount;
     };
 
+    
+    bool SaveHierarchy(DataNode * node, File * file, int32 level);
+    void LoadHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
+
     bool SaveHierarchy(SceneNode * node, File * file, int32 level);
-    SceneNode * LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
+    void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
     bool isDebugLogEnabled;
 };

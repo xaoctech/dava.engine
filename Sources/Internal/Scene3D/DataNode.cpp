@@ -46,6 +46,13 @@ DataNode::~DataNode()
 {
     
 }
+    
+void DataNode::SetScene(Scene * _scene)
+{
+    DVASSERT(scene == 0);
+    scene = _scene;
+}
+    
 void DataNode::SetName(const String & _name)
 {
     name = _name;
@@ -139,12 +146,16 @@ int32  DataNode::GetNodeIndex()
     
 void DataNode::Load(KeyedArchive * archive)
 {
-    archive->SetInt32("#index", index);
+    BaseObject::Load(archive);
+    name = archive->GetString("name");
+    index = archive->GetInt32("#index", -1);
 }
 
 void DataNode::Save(KeyedArchive * archive)
 {
-    index = archive->GetInt32("#index", -1);
+    BaseObject::Save(archive);
+    archive->SetInt32("#index", index);
+    archive->SetString("name", name);
 }
 
 

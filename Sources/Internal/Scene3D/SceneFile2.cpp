@@ -40,6 +40,7 @@
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
+#include "Base/ObjectFactory.h"
 
 namespace DAVA
 {
@@ -80,8 +81,9 @@ bool SceneFile2::SaveScene(const char *filename, DAVA::Scene *_scene)
     
     // save data objects
     Logger::Debug("+ save data objects");
-    // _scene->Get
-    
+
+    SaveHierarchy(_scene->GetMaterials(), file, 1);
+    SaveHierarchy(_scene->GetStaticMeshes(), file, 1);
     
     // save hierarchy
     Logger::Debug("+ save hierarchy");
@@ -124,8 +126,10 @@ bool SceneFile2::LoadScene(const char * filename, Scene * _scene)
         return false;
     }
     
-    Logger::Debug("+ save data objects");
+    Logger::Debug("+ load data objects");
 
+    LoadHierarchy(_scene, _scene->GetMaterials(), file, 1);
+    LoadHierarchy(_scene, _scene->GetStaticMeshes(), file, 1);
 
     Logger::Debug("+ load hierarchy");
     for (int ci = 0; ci < header.nodeCount; ++ci)
@@ -137,7 +141,7 @@ bool SceneFile2::LoadScene(const char * filename, Scene * _scene)
     return true;
 }
     
-bool SceneFile2::SaveHierarchy(SceneNode * node, File * file, int32 level)
+bool SceneFile2::SaveHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     node->Save(archive);    
@@ -146,6 +150,56 @@ bool SceneFile2::SaveHierarchy(SceneNode * node, File * file, int32 level)
         Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
     
     archive->SetInt32("#childrenCount", node->GetChildrenCount());
+    archive->Save(file);
+    
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        DataNode * child = node->GetChild(ci);
+        SaveHierarchy(child, file, level + 1);
+    }
+    
+    SafeRelease(archive);
+    return true;
+}
+
+void SceneFile2::LoadHierarchy(Scene * scene, DataNode * root, File * file, int32 level)
+{
+    KeyedArchive * archive = new KeyedArchive();
+    archive->Load(file);
+    DataNode * node = dynamic_cast<DataNode*>(BaseObject::LoadFromArchive(archive));
+    if (node)
+    {
+        if (node->GetClassName() == "DataNode")
+        {
+            SafeRelease(node);
+            node = root;
+        }   
+        node->SetScene(scene);
+        if (node != root)
+            root->AddNode(node);
+        if (isDebugLogEnabled)
+            Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
+        
+        int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+        for (int ci = 0; ci < childrenCount; ++ci)
+        {
+            LoadHierarchy(scene, node, file, level + 1);
+        }
+    }
+    
+    SafeRelease(archive);
+}
+    
+bool SceneFile2::SaveHierarchy(SceneNode * node, File * file, int32 level)
+{
+    KeyedArchive * archive = new KeyedArchive();
+    node->Save(archive);    
+    
+    archive->SetInt32("#childrenCount", node->GetChildrenCount());
+
+    if (isDebugLogEnabled)
+        Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
+    
     archive->Save(file);
 
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
@@ -158,27 +212,33 @@ bool SceneFile2::SaveHierarchy(SceneNode * node, File * file, int32 level)
     return true;
 }
 
-SceneNode * SceneFile2::LoadHierarchy(Scene * scene, SceneNode * root, File * file, int32 level)
+void SceneFile2::LoadHierarchy(Scene * scene, SceneNode * root, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
-    SceneNode * node = dynamic_cast<SceneNode*>(BaseObject::LoadFromArchive(archive));
-
+    //SceneNode * node = dynamic_cast<SceneNode*>(BaseObject::LoadFromArchive(archive));
+    
+    String name = archive->GetString("##name");
+    SceneNode * node = dynamic_cast<SceneNode*>(ObjectFactory::Instance()->New(name));
     if (node)
     {
-        if (isDebugLogEnabled)
-            Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
-
+        node->SetScene(scene);
+        node->Load(archive);
+        root->AddNode(node);
         int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+
+        if (isDebugLogEnabled)
+            Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), childrenCount);
+
         for (int ci = 0; ci < childrenCount; ++ci)
         {
-            SceneNode * childNode = LoadHierarchy(scene, node, file, level + 1);
-            node->AddNode(childNode);
+            LoadHierarchy(scene, node, file, level + 1);
         }
+    }else 
+    {
     }
     
     SafeRelease(archive);
-    return node;
 }
     
 };

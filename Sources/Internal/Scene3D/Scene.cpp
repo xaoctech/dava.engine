@@ -49,14 +49,13 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
-{
-    
+{   
     materials = new DataNode();
-    //materials->SetName("materials");
+    materials->SetName("materials");
     //AddNode(materials);
     
     staticMeshes = new DataNode();
-    //staticMeshes->SetName("staticMeshes");
+    staticMeshes->SetName("staticMeshes");
     //AddNode(staticMeshes);
 
     scenes = new DataNode();

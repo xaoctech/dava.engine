@@ -32,6 +32,7 @@
 #include "Render/3D/StaticMesh.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
@@ -383,6 +384,63 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
     
     return retBBox;
 }
+    
+void MeshInstanceNode::Save(KeyedArchive * archive)
+{
+    SceneNode::Save(archive);
+    archive->SetInt32("lodCount", (int32)lodLayers.size());
+    
+    int32 lodIdx = 0;
+    const List<LodData>::iterator & end = lodLayers.end();
+    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+        size_t size = ld.materials.size();
+        size_t sizeMeshes = ld.meshes.size();
+        DVASSERT(size == sizeMeshes);
+        archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            archive->SetInt32(Format("l%d_%d_mat", lodIdx, idx), ld.materials[idx]->GetNodeIndex());
+            archive->SetInt32(Format("l%d_%d_ms", lodIdx, idx), ld.meshes[idx]->GetNodeIndex());
+            archive->SetInt32(Format("l%d_%d_pg", lodIdx, idx), ld.polygonGroupIndexes[idx]);
+        }
+        lodIdx++;
+    }
+}
+
+void MeshInstanceNode::Load(KeyedArchive * archive)
+{
+    SceneNode::Load(archive);
+
+    int32 lodCount = archive->GetInt32("lodCount", 0);
+    
+    for (int32 lodIdx = 0; lodIdx < lodCount; ++lodIdx)
+    {
+        size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            int32 materialIndex = archive->GetInt32(Format("l%d_%d_mat", lodIdx, idx), -1);
+            int32 meshIndex = archive->GetInt32(Format("l%d_%d_ms", lodIdx, idx), -1);
+            int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
+            if ((materialIndex != -1) && (meshIndex != -1))
+            {
+                AddPolygonGroup(SafeRetain(dynamic_cast<StaticMesh*>(scene->GetStaticMeshes()->GetChild(meshIndex))), 
+                                pgIndex,
+                                SafeRetain(dynamic_cast<Material*>(scene->GetMaterials()->GetChild(materialIndex))));
+            }
+        }
+        lodIdx++;
+    }
+    
+    currentLod = &(*lodLayers.begin());
+}
+    
+//String MeshInstanceNode::GetDebugDescription()
+//{
+//    /return Format(": %d ", GetChildrenCount());
+//}
+
 
     
 };
