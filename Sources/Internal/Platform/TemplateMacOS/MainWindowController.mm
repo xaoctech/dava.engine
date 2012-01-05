@@ -506,6 +506,11 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
                     [NSApp sendEvent:event];
                     //[fullscreenWindow keyDown:event];
                     break;
+                case NSKeyUp:
+                        //[self keyDown:event];
+                    [NSApp sendEvent:event];
+                        //[fullscreenWindow keyDown:event];
+                    break;
 					
                 default:
                     [NSApp sendEvent:event];
@@ -600,6 +605,16 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 //		default:
 //            break;
 //    }	
+}
+
+- (void) keyUp:(NSEvent *)event
+{
+	[openGLView keyUp:event];
+}
+
+- (void) flagsChanged :(NSEvent *)event
+{
+	[openGLView flagsChanged:event];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent

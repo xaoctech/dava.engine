@@ -13,6 +13,10 @@
 		473DB5B1139E87C3007F2498 /* UIScrollBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 473DB5AF139E87C3007F2498 /* UIScrollBar.cpp */; };
 		475D57BC12FF59E800A18EC7 /* Box2DTileCollider.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D57BA12FF59E800A18EC7 /* Box2DTileCollider.h */; };
 		475D57BD12FF59E800A18EC7 /* Box2DTileCollider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D57BB12FF59E800A18EC7 /* Box2DTileCollider.cpp */; };
+		4780A32B14B5F4EB00BAA259 /* InputSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780A32714B5F4EB00BAA259 /* InputSystem.cpp */; };
+		4780A32C14B5F4EB00BAA259 /* InputSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A32814B5F4EB00BAA259 /* InputSystem.h */; };
+		4780A32D14B5F4EB00BAA259 /* KeyboardDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780A32914B5F4EB00BAA259 /* KeyboardDevice.cpp */; };
+		4780A32E14B5F4EB00BAA259 /* KeyboardDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A32A14B5F4EB00BAA259 /* KeyboardDevice.h */; };
 		47DF9D3012F753590034D79F /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9D2E12F753590034D79F /* Box2DGameObject.h */; };
 		47DF9D3112F753590034D79F /* Box2DGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47DF9D2F12F753590034D79F /* Box2DGameObject.cpp */; };
 		47DF9D8B12F76BB90034D79F /* Box2DHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9D8912F76BB90034D79F /* Box2DHelper.h */; };
@@ -474,6 +478,10 @@
 		473DB5AF139E87C3007F2498 /* UIScrollBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollBar.cpp; sourceTree = "<group>"; };
 		475D57BA12FF59E800A18EC7 /* Box2DTileCollider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DTileCollider.h; sourceTree = "<group>"; };
 		475D57BB12FF59E800A18EC7 /* Box2DTileCollider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DTileCollider.cpp; sourceTree = "<group>"; };
+		4780A32714B5F4EB00BAA259 /* InputSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputSystem.cpp; sourceTree = "<group>"; };
+		4780A32814B5F4EB00BAA259 /* InputSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputSystem.h; sourceTree = "<group>"; };
+		4780A32914B5F4EB00BAA259 /* KeyboardDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardDevice.cpp; sourceTree = "<group>"; };
+		4780A32A14B5F4EB00BAA259 /* KeyboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardDevice.h; sourceTree = "<group>"; };
 		47DF9D2E12F753590034D79F /* Box2DGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DGameObject.h; sourceTree = "<group>"; };
 		47DF9D2F12F753590034D79F /* Box2DGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DGameObject.cpp; sourceTree = "<group>"; };
 		47DF9D8912F76BB90034D79F /* Box2DHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DHelper.h; sourceTree = "<group>"; };
@@ -1229,6 +1237,10 @@
 		FECFC10212E87E3000C71562 /* Input */ = {
 			isa = PBXGroup;
 			children = (
+				4780A32714B5F4EB00BAA259 /* InputSystem.cpp */,
+				4780A32814B5F4EB00BAA259 /* InputSystem.h */,
+				4780A32914B5F4EB00BAA259 /* KeyboardDevice.cpp */,
+				4780A32A14B5F4EB00BAA259 /* KeyboardDevice.h */,
 				FECFC10312E87E3000C71562 /* Accelerometer.cpp */,
 				FECFC10412E87E3000C71562 /* Accelerometer.h */,
 				FECFC10512E87E3000C71562 /* AccelerometeriPhone.h */,
@@ -1859,6 +1871,8 @@
 				FE01C9BF14A8591A008675BD /* CubeNode.h in Headers */,
 				FE01C9C314A85924008675BD /* SphereNode.h in Headers */,
 				FE01C9C714A8593A008675BD /* LightNode.h in Headers */,
+				4780A32C14B5F4EB00BAA259 /* InputSystem.h in Headers */,
+				4780A32E14B5F4EB00BAA259 /* KeyboardDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2135,6 +2149,8 @@
 				FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */,
 				FE01C9C214A85924008675BD /* SphereNode.cpp in Sources */,
 				FE01C9C614A8593A008675BD /* LightNode.cpp in Sources */,
+				4780A32B14B5F4EB00BAA259 /* InputSystem.cpp in Sources */,
+				4780A32D14B5F4EB00BAA259 /* KeyboardDevice.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
