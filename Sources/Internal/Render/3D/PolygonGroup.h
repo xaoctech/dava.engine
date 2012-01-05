@@ -59,7 +59,7 @@ public:
     };
     
     
-	PolygonGroup(Scene * _scene);
+	PolygonGroup(Scene * _scene = 0);
 	~PolygonGroup();
 	
 	//! Getters

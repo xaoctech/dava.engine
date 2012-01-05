@@ -66,8 +66,18 @@ Material::Material(Scene * _scene)
         textures[tc] = 0;
 }
     
+void Material::SetScene(Scene * _scene)
+{
+    DVASSERT(scene == 0);
+    scene = _scene;
+    if (scene)
+    {
+        DataNode * materialsNode = scene->GetMaterials();
+        materialsNode->AddNode(this);
+    }
+}
 
-    
+
 int32 Material::Release()
 {
     int32 retainCount = BaseObject::Release();
@@ -105,7 +115,7 @@ void Material::SetType(eType _type)
     
 void Material::Save(KeyedArchive * keyedArchive)
 {
-    BaseObject::Save(keyedArchive);
+    DataNode::Save(keyedArchive);
     
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int k = 0; k < TEXTURE_COUNT; ++k)
@@ -116,12 +126,16 @@ void Material::Save(KeyedArchive * keyedArchive)
     
 void Material::Load(KeyedArchive * keyedArchive)
 {
-    BaseObject::Load(keyedArchive);
+    DataNode::Load(keyedArchive);
 
     int texCount = keyedArchive->GetInt32("mat.texCount");
     for (int k = 0; k < texCount; ++k)
     {
         names[k] = keyedArchive->GetString(Format("mat.tex%d", k));
+        //if (textures[k].length())
+        //{
+        textures[k] = Texture::CreateFromFile(names[k]);
+        //}
     }
 }
 

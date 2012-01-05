@@ -72,6 +72,8 @@ public:
     Material(Scene * _scene = 0);
     ~Material();
     
+    virtual void SetScene(Scene * _scene);
+   
 	virtual int32 Release();
     static const char * GetTypeName();
     
