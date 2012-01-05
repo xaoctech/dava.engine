@@ -168,9 +168,9 @@ void UIScrollView::Update(float32 timeElapsed)
 		}
 	} 
 	
-	float32 invScale = 1.0f / zoomScale;
-	scrollPosition.x = (scrollOrigin.x + scrollCurrentShift.x) * invScale;
-	scrollPosition.y = (scrollOrigin.y + scrollCurrentShift.y) * invScale;
+//	float32 invScale = 1.0f / zoomScale;
+//	scrollPosition.x = (scrollOrigin.x + scrollCurrentShift.x) * invScale;
+//	scrollPosition.y = (scrollOrigin.y + scrollCurrentShift.y) * invScale;
 	
 	//scrolling over the edge
 	drawScrollPos.x = scrollCurrentShift.x;
@@ -313,6 +313,19 @@ void UIScrollView::Input(UIEvent *currentTouch)
 	Vector<UIEvent> touches = UIControlSystem::Instance()->GetAllInputs();
 	if(1 == touches.size())
 	{
+//        bool spaceIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SPACE);
+        bool spaceIsPressed = false;
+        if(!spaceIsPressed)
+        {
+            for(List<UIControl*>::iterator it = childs.begin(); it != childs.end(); ++it)
+            {
+                (*it)->Input(currentTouch);
+            }
+
+            return;
+        }
+        
+        
 		switch(currentTouch->phase) 
 		{
 			case UIEvent::PHASE_BEGAN:
@@ -540,7 +553,7 @@ void UIScrollView::Input(UIEvent *currentTouch)
 
 void UIScrollView::SystemDraw(const UIGeometricData & geometricData)
 {
-	float32 invScale = 1.0f / zoomScale;
+	float32 invScale = 1.0f;// / zoomScale;
 	Vector2 drawPos;
 	drawPos.x = (scrollOrigin.x + drawScrollPos.x) * invScale;
 	drawPos.y = (scrollOrigin.y + drawScrollPos.y) * invScale;
@@ -572,10 +585,12 @@ void UIScrollView::SystemDraw(const UIGeometricData & geometricData)
 	}
 	
 	
-	drawData.position = drawPos + relativePosition * invScale;
+//	drawData.position = drawPos + relativePosition * invScale;
+	drawData.position = drawPos + relativePosition;
 	drawData.size = size;
 	drawData.pivotPoint = pivotPoint;
-	drawData.scale = scale;
+//	drawData.scale = scale;
+	drawData.scale = Vector2(zoomScale, zoomScale);
 	drawData.angle = angle;
 	drawData.AddToGeometricData(geometricData);
 

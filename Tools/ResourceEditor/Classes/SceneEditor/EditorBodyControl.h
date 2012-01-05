@@ -20,8 +20,6 @@ class EditorBodyControl : public UIControl, public UIHierarchyDelegate, public N
     enum eConst
     {
         SCENE_OFFSET = 10, 
-        LEFT_SIDE_WIDTH = 200,
-        RIGHT_SIDE_WIDTH = 200,
         CELL_HEIGHT = 20,
         MATRIX_HEIGHT = 100,
         OUTPUT_PANEL_HEIGHT = 200,
@@ -125,7 +123,11 @@ protected:
     
     NodePropertyControl *nodePropertyPanel[ECNID_COUNT + 1];
     NodePropertyControl *currentPropertyPanel;
-    ///
+    //
+    
+    UIButton *refreshButton;
+    void OnRefreshPressed(BaseObject * obj, void *, void *);
+
     
     
 //    UIStaticText * nodeName;

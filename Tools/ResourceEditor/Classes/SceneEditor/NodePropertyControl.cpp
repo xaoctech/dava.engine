@@ -33,7 +33,7 @@ void NodePropertyControl::InitProperties()
     {
         Matrix4 matrix;
         propertyList->AddMatrix4Property("Local Matrix", matrix, PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddMatrix4Property("Word Matrix", matrix, PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddMatrix4Property("World Matrix", matrix, PropertyList::PROPERTY_IS_READ_ONLY);
     }
 }
 
@@ -48,7 +48,7 @@ void NodePropertyControl::SetDefaultValues()
     {
         Matrix4 matrix;
         propertyList->SetMatrix4PropertyValue("Local Matrix", matrix);
-        propertyList->SetMatrix4PropertyValue("Word Matrix", matrix);
+        propertyList->SetMatrix4PropertyValue("World Matrix", matrix);
     }
 }
 
@@ -62,7 +62,7 @@ void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
     if(showMatrix)
     {
         propertyList->SetMatrix4PropertyValue("Local Matrix", sceneNode->GetLocalTransform());
-        propertyList->SetMatrix4PropertyValue("Word Matrix", sceneNode->GetWorldTransform());
+        propertyList->SetMatrix4PropertyValue("World Matrix", sceneNode->GetWorldTransform());
     }
 }
 
@@ -73,7 +73,7 @@ void NodePropertyControl::ReadToNode(SceneNode *sceneNode)
     if(showMatrix)
     {
         sceneNode->SetLocalTransform(propertyList->GetMatrix4PropertyValue("Local Matrix"));
-        //    sceneNode->SetWordTransform(propertyList->GetMatrix4PropertyValue("Word Matrix"));
+        //    sceneNode->SetWordTransform(propertyList->GetMatrix4PropertyValue("World Matrix"));
     }
 }
 
