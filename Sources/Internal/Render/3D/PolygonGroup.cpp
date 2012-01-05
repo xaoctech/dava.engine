@@ -32,6 +32,8 @@
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(PolygonGroup);
 	
 PolygonGroup::PolygonGroup(Scene * _scene)
 :	DataNode(_scene),
@@ -55,7 +57,8 @@ PolygonGroup::PolygonGroup(Scene * _scene)
 	colorArray(0), 
 	indexArray(0), 
 	meshData(0),
-	baseVertexArray(0)
+	baseVertexArray(0),
+    renderDataObject(0)
 {
 }
 
@@ -248,6 +251,9 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive)
         const uint8 * archiveData = keyedArchive->GetByteArray("indices");
         memcpy(indexArray, archiveData, indexCount * INDEX_FORMAT_SIZE[indexFormat]);         
     }
+    textureCoordArray = new Vector2*[textureCoordCount];
+
+    renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
 }
     

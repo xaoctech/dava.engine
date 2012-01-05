@@ -319,6 +319,8 @@ bool SceneFile::ReadMaterial()
    
     if (strlen(materialDef.diffuseTexture))
     {
+        // TODO rethink how to deal with paths here.
+        mat->names[Material::TEXTURE_DIFFUSE] = scenePath + String(materialDef.diffuseTexture);
         mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
     }
         

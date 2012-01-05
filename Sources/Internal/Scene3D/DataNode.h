@@ -49,6 +49,10 @@ public:
 	virtual ~DataNode();
     
     /**
+     */
+    void SetScene(Scene * _scene);
+    
+    /**
         \brief Set name of this particular node.
         \param[in] new name for this node
      */
