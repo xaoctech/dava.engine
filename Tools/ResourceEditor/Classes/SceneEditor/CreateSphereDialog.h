@@ -12,13 +12,10 @@ class CreateSphereDialog: public CreateNodeDialog
     
 public:
     CreateSphereDialog(const Rect & rect);
-    virtual ~CreateSphereDialog();
     
 protected:
 
-    virtual void InitializeProperties();
     virtual void CreateNode();
-    virtual void ClearPropertyValues();
 
 };
 

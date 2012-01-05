@@ -11,7 +11,7 @@
 
 
 DebugNode::DebugNode(Scene * scene, std::vector<float32> &data)
-:SceneNode(scene)
+    : SceneNode(scene)
 {
 	verts = data;
 	

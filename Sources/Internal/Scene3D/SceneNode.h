@@ -51,7 +51,7 @@ class KeyedArchive;
 class SceneNode : public BaseObject
 {
 public:	
-	SceneNode(Scene * scene);
+	SceneNode(Scene * scene = 0);
 	virtual ~SceneNode();
 	
 	// working with childs
@@ -64,17 +64,19 @@ public:
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);
     
     /**
-        \brief 
+        \brief Find node by it's name inside this scene node.
+        \param[in] name name of object you want to find. 
+        \returns pointer to the object if object with such name available, 0 in case if it's not exists.
      */
 	virtual SceneNode *	FindByName(const String & name);
     /**
-        \brief Set name of this particular node
+        \brief Set name of this particular node.
         \param[in] new name for this node
      */
     virtual void SetName(const String & name);
 
     /**
-        \brief Get name of this particular node
+        \brief Get name of this particular node.
         \returns name of this node
      */
     inline const String & GetName();
@@ -86,7 +88,7 @@ public:
     String GetFullName();
     
     /**
-        \brief Set tag for this object
+        \brief Set tag for this object.
         Tag can be used to identify object, or find it. You can mark objects with same properies by tag, and later find them using tag criteria. 
      */
     inline void SetTag(int32 _tag);
@@ -153,6 +155,8 @@ public:
 		DEBUG_DRAW_NONE = 0,
 		DEBUG_DRAW_AABBOX = 1,              
 		DEBUG_DRAW_LOCAL_AXIS = 2,
+		DEBUG_DRAW_AABOX_CORNERS = 4,
+		DEBUG_DRAW_LIGHT_NODE = 8,
         DEBUG_DRAW_ALL = 0xFFFFFFFF,
 	};
 	/**

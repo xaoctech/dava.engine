@@ -47,6 +47,8 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     , heightmap(0)
     , indices(0)
 {
+    heightMapPath = "";
+    
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)
         textures[t] = 0;
     
@@ -172,6 +174,8 @@ void LandscapeNode::SetLods(const Vector4 & lods)
 
 void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMode, const String & heightmapPathname, const AABBox3 & _box)
 {
+    heightMapPath = heightmapPathname;
+    
     renderingMode = _renderingMode;
     ReleaseShaders(); // release previous shaders
     InitShaders(); // init new shaders according to the selected rendering mode
@@ -914,4 +918,25 @@ void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vec
 	}
 }
 
+AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
+{
+    AABBox3 retBBox = box;
+    box.GetTransformedBox(GetWorldTransform(), retBBox);
+    
+    Vector<SceneNode*>::iterator itEnd = childs.end();
+    for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    {
+        AABBox3 lbox = (*it)->GetWTMaximumBoundingBox();
+        if(  (AABBOX_INFINITY != lbox.min.x && AABBOX_INFINITY != lbox.min.y && AABBOX_INFINITY != lbox.min.z)
+           &&(-AABBOX_INFINITY != lbox.max.x && -AABBOX_INFINITY != lbox.max.y && -AABBOX_INFINITY != lbox.max.z))
+        {
+            retBBox.AddAABBox(lbox);
+        }
+    }
+    
+    return retBBox;
+}
+
+
+    
 };

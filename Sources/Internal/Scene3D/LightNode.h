@@ -47,7 +47,7 @@ public:
     
     
 public:
-    LightNode(Scene * _scene);
+    LightNode(Scene * _scene = 0);
     virtual ~LightNode();
     
     virtual void Draw();
@@ -56,11 +56,16 @@ public:
     void SetType(eType _type);
     void SetColor(Color _color);
     
+    eType GetType() const;
+    const Color & GetColor() const;    
+	float32 GetRadius(void);
+    
 protected:
     
     eType type;
     Color color;
-    
+	float32 r;
+	
 };
 
 };
