@@ -36,11 +36,13 @@
 #include "Platform/Thread.h"
 #include "UI/UIScreenManager.h"
 #include "UI/UIControlSystem.h"
+#include "Input/InputSystem.h"
 #include "Debug/DVAssert.h"
 #include "Render/2D/TextBlock.h"
 #include "Debug/Replay.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/Sound.h"
+#include "Input/InputSystem.h"
 
 
 #if defined(__DAVAENGINE_IPHONE__)
@@ -96,6 +98,8 @@ void Core::CreateSingletons()
 	}
 	Logger::Debug("[Core::Create] successfull");
 
+    new InputSystem();
+    
 	new LocalizationSystem();
 
 	new SystemTimer();
@@ -569,6 +573,7 @@ void Core::SystemProcessFrame()
 // 			firstRun = false;
 // 		}
 // #else
+        InputSystem::Instance()->OnBeforeUpdate();
 		core->BeginFrame();
 //#endif
 		RenderResource::SaveAllResourcesToSystemMem();
@@ -599,6 +604,7 @@ void Core::SystemProcessFrame()
 		}
 		
 		core->Update(frameDelta);
+        InputSystem::Instance()->OnAfterUpdate();
 		core->Draw();
 
 		core->EndFrame();

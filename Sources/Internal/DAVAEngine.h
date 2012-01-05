@@ -65,6 +65,9 @@
 // Accelerometer
 #include "Input/Accelerometer.h"
 
+#include "Input/InputSystem.h"
+#include "Input/KeyboardDevice.h"
+
 // Localization
 #include "FileSystem/LocalizationSystem.h"
 

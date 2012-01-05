@@ -671,6 +671,9 @@
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1647,6 +1650,9 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,6 +14,8 @@
 #include "CreateSphereDialog.h"
 #include "CreateCameraDialog.h"
 
+#include "LandscapeEditorControl.h"
+
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -37,7 +39,9 @@ void SceneEditorScreenMain::LoadResources()
     AddLineControl(Rect(0, MENU_HEIGHT, fullRect.dx, LINE_HEIGHT));
     CreateTopMenu();
     
-    menuPopup = new MenuPopupControl(fullRect, BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
+    landscapeEditor = new LandscapeEditorControl(Rect(0, MENU_HEIGHT + 1, fullRect.dx, fullRect.dy - MENU_HEIGHT-1));
+    
+    menuPopup = new MenuPopupControl(fullRect, ControlsFactory::BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
     InitializeNodeDialogs();    
@@ -49,7 +53,10 @@ void SceneEditorScreenMain::LoadResources()
     
     //Library
     libraryButton = ControlsFactory::CreateButton(
-                        Rect(fullRect.dx - BUTTON_WIDTH, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
+                                                  Rect(fullRect.dx - ControlsFactory::BUTTON_WIDTH, 
+                                                       BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT, 
+                                                       ControlsFactory::BUTTON_WIDTH, 
+                                                       ControlsFactory::BUTTON_HEIGHT), 
                         L"Library");
     libraryButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLibraryPressed));
     AddControl(libraryButton);
@@ -61,15 +68,15 @@ void SceneEditorScreenMain::LoadResources()
 
     //properties
     propertiesButton = ControlsFactory::CreateButton(
-                        Rect(fullRect.dx - (BUTTON_WIDTH*2 + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
+                            Vector2(fullRect.dx - (ControlsFactory::BUTTON_WIDTH*2 + 1), 
+                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
                         L"Properties");
     propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
     AddControl(propertiesButton);
     
     
     sceneGraphButton = ControlsFactory::CreateButton(
-                         Rect(0, BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 
-                         L"Scene Graph");
+                                        Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), L"Scene Graph");
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
@@ -92,6 +99,8 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(fileSystemDialog);
     
     ReleaseBodyList();
+    
+    SafeRelease(landscapeEditor);
     
     ReleaseTopMenu();
 }
@@ -120,8 +129,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 {
     int32 x = 0;
     int32 y = 0;
-    int32 dx = BUTTON_WIDTH;
-    int32 dy = BUTTON_HEIGHT;
+    int32 dx = ControlsFactory::BUTTON_WIDTH;
+    int32 dy = ControlsFactory::BUTTON_HEIGHT;
     btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open");
     x += dx + 1;
     btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save");
@@ -133,8 +142,12 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
     x += dx + 1;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open Project");
+#ifdef __DAVAENGINE_BEAST__
 	x += dx + 1;
 	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Beast");
+#endif //#ifdef __DAVAENGINE_BEAST__
+	x += dx + 1;
+	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Landscape");
     
     
 
@@ -147,6 +160,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	AddControl(btnBeast);
 #endif
+    AddControl(btnLandscape);
+    
 
     btnOpen->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenPressed));
     btnSave->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSavePressed));
@@ -154,7 +169,10 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnCreate->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCreatePressed));
     btnNew->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnNewPressed));
     btnProject->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenProjectPressed));
+#ifdef __DAVAENGINE_BEAST__
 	btnBeast->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
+#endif// #ifdef __DAVAENGINE_BEAST__
+	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapePressed));
 }
 
 void SceneEditorScreenMain::ReleaseTopMenu()
@@ -165,7 +183,10 @@ void SceneEditorScreenMain::ReleaseTopMenu()
     SafeRelease(btnCreate);
     SafeRelease(btnNew);
     SafeRelease(btnProject);
+#ifdef __DAVAENGINE_BEAST__
 	SafeRelease(btnBeast);
+#endif// #ifdef __DAVAENGINE_BEAST__
+    SafeRelease(btnLandscape);
 }
 
 void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
@@ -320,17 +341,17 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     
     int32 count = bodies.size();
     c->headerButton = ControlsFactory::CreateButton(
-                        Rect(TAB_BUTTONS_OFFSET + count * (BUTTON_WIDTH + 1), 
-                             BODY_Y_OFFSET - BUTTON_HEIGHT, 
-                             BUTTON_WIDTH, 
-                             BUTTON_HEIGHT), 
+                        Vector2(TAB_BUTTONS_OFFSET + count * (ControlsFactory::BUTTON_WIDTH + 1), 
+                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
                         text);
 
     c->headerButton->SetTag(count);
     c->headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
     if(isCloseable)
     {
-        c->closeButton = ControlsFactory::CreateCloseWindowButton(Rect(BUTTON_WIDTH - BUTTON_HEIGHT, 0, BUTTON_HEIGHT, BUTTON_HEIGHT));
+        c->closeButton = ControlsFactory::CreateCloseWindowButton(
+                                        Rect(ControlsFactory::BUTTON_WIDTH - ControlsFactory::BUTTON_HEIGHT, 0, 
+                                        ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT));
         c->closeButton->SetTag(count);
         c->closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCloseBody));
         c->headerButton->AddControl(c->closeButton);
@@ -417,7 +438,10 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
 
     for(int32 i = 0; i < bodies.size(); ++i)
     {
-        bodies[i]->headerButton->SetRect(Rect(TAB_BUTTONS_OFFSET + i * (BUTTON_WIDTH + 1), BODY_Y_OFFSET - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT));
+        bodies[i]->headerButton->SetRect(
+                            Rect(TAB_BUTTONS_OFFSET + i * (ControlsFactory::BUTTON_WIDTH + 1), 
+                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT, 
+                            ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
         
         bodies[i]->headerButton->SetTag(i);
         if(bodies[i]->closeButton)
@@ -670,4 +694,14 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
     }
     
     SafeRelease(dialogBack);
+}
+
+void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
+{
+    if(landscapeEditor->GetParent())
+    {
+        RemoveControl(landscapeEditor);
+    }
+    else
+        AddControl(landscapeEditor);
 }

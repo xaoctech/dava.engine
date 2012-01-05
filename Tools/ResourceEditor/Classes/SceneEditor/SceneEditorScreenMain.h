@@ -10,7 +10,7 @@
 
 using namespace DAVA;
 
-
+class LandscapeEditorControl;
 class EditorBodyControl;
 class MaterialEditor;
 class SceneEditorScreenMain: 
@@ -18,10 +18,7 @@ class SceneEditorScreenMain:
     public MenuPopupDelegate, public CreateNodeDialogDelegeate
 {
     enum eConst
-    {
-        BUTTON_HEIGHT = 20,
-        BUTTON_WIDTH = 100, 
-        
+    {        
         MENU_HEIGHT = 20,
         LINE_HEIGHT = 1,
 
@@ -84,6 +81,7 @@ private:
     UIButton * btnNew;
     UIButton * btnProject;
 	UIButton * btnBeast;
+	UIButton * btnLandscape;
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
     void OnSavePressed(BaseObject * obj, void *, void *);
@@ -92,6 +90,7 @@ private:
     void OnNewPressed(BaseObject * obj, void *, void *);
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
 	void OnBeastPressed(BaseObject * obj, void *, void *);
+	void OnLandscapePressed(BaseObject * obj, void *, void *);
         
     //Body list
     struct BodyItem
@@ -144,6 +143,9 @@ private:
     void ReleaseNodeDialogs();
     
     UIControl *dialogBack;
+    
+    //Landscape
+    LandscapeEditorControl *landscapeEditor;
     
     // general
     Font *font;
