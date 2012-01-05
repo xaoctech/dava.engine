@@ -183,6 +183,12 @@ public:
         STATE_TEXTURE2 = 1 << 10,            // fixed func only / in programmable pipeline only checks for consistency
         STATE_TEXTURE3 = 1 << 11,            // fixed func only / in programmable pipeline only checks for consistency
         
+        STATE_COLORMASK_RED =  1 << 12,
+        STATE_COLORMASK_GREEN = 1 << 13,
+        STATE_COLORMASK_BLUE = 1 << 14,
+        STATE_COLORMASK_ALPHA = 1 << 15,
+        STATE_COLORMASK_ALL = (STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA),
+        
         // 4 bits for sourceBlendFactor
         // 4 bits for destBlendFactor
         // 
@@ -190,11 +196,11 @@ public:
         // 32 bits * 4 for color ??? can be switched to 4ub.
     };
 
-    static const uint32 DEFAULT_2D_STATE = (STATE_TEXTURE0);
-    static const uint32 DEFAULT_2D_STATE_BLEND = (STATE_BLEND | STATE_TEXTURE0);
+    static const uint32 DEFAULT_2D_STATE = (STATE_TEXTURE0 | STATE_COLORMASK_ALL);
+    static const uint32 DEFAULT_2D_STATE_BLEND = (STATE_BLEND | STATE_TEXTURE0 | STATE_COLORMASK_ALL);
     
-    static const uint32 DEFAULT_3D_STATE = (STATE_DEPTH_WRITE | STATE_DEPTH_TEST | STATE_CULL | STATE_TEXTURE0);
-    static const uint32 DEFAULT_3D_STATE_BLEND = (STATE_BLEND | STATE_DEPTH_WRITE | STATE_DEPTH_TEST | STATE_CULL | STATE_TEXTURE0);
+    static const uint32 DEFAULT_3D_STATE = (STATE_DEPTH_WRITE | STATE_DEPTH_TEST | STATE_CULL | STATE_TEXTURE0 | STATE_COLORMASK_ALL);
+    static const uint32 DEFAULT_3D_STATE_BLEND = (STATE_BLEND | STATE_DEPTH_WRITE | STATE_DEPTH_TEST | STATE_CULL | STATE_TEXTURE0 | STATE_COLORMASK_ALL);
 
     enum
     {
@@ -301,6 +307,8 @@ public:
     inline void SetCullInHW();
     inline void SetCullModeInHW();
     inline void SetColorInHW();
+    inline void SetColorMaskInHW();
+
     inline void SetAlphaTestInHW();
     inline void SetAlphaTestFuncInHW();
     

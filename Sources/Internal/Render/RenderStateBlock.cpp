@@ -78,6 +78,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         SetBlendModeInHW();
         SetDepthTestInHW();
         SetDepthWriteInHW();
+        SetColorMaskInHW();
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
         {
@@ -133,6 +134,9 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
         
         if (diffState & STATE_CULL)
             SetCullInHW();
+        
+        if (diffState & STATE_COLORMASK_ALL)
+            SetColorMaskInHW();
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
             if (diffState & STATE_ALPHA_TEST)
@@ -221,6 +225,19 @@ inline void RenderStateBlock::SetColorInHW()
 {
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
         RENDER_VERIFY(glColor4f(color.r * color.a, color.g * color.a, color.b * color.a, color.a));
+}
+    
+inline void RenderStateBlock::SetColorMaskInHW()
+{
+    GLboolean redMask = (state & STATE_COLORMASK_RED) != 0;
+    GLboolean greenMask = (state & STATE_COLORMASK_GREEN) != 0;
+    GLboolean blueMask = (state & STATE_COLORMASK_BLUE) != 0;
+    GLboolean alphaMask = (state & STATE_COLORMASK_ALPHA) != 0;
+    
+    RENDER_VERIFY(glColorMask(redMask, 
+                              greenMask, 
+                              blueMask, 
+                              alphaMask));
 }
 
 inline void RenderStateBlock::SetEnableBlendingInHW()
@@ -329,6 +346,24 @@ inline void RenderStateBlock::SetColorInHW()
 {
 	//if (renderer != Core::RENDERER_OPENGL_ES_2_0)
 	//	RENDER_VERIFY(glColor4f(color.r * color.a, color.g * color.a, color.b * color.a, color.a));
+}
+    
+inline void RenderStateBlock::SetColorMaskInHW()
+{
+    DWORD flags = 0;
+    if (state & STATE_COLORMASK_RED)
+        flags |= D3DCOLORWRITEENABLE_RED;
+    
+    if (state & STATE_COLORMASK_GREEN)
+        flags |= D3DCOLORWRITEENABLE_GREEN;
+    
+    if (state & STATE_COLORMASK_BLUE)
+        flags |= D3DCOLORWRITEENABLE_BLUE;
+    
+    if (state & STATE_COLORMASK_ALPHA)
+        flags |= D3DCOLORWRITEENABLE_ALPHA;
+    
+    RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flags));
 }
 
 inline void RenderStateBlock::SetEnableBlendingInHW()

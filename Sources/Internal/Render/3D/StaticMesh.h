@@ -38,38 +38,27 @@
 namespace DAVA
 {
 	
-class StaticMesh : public SceneNode
+class StaticMesh : public DataNode
 {
 public:
 	StaticMesh(Scene * _scene);
 	~StaticMesh();
+    
+    virtual int32 Release();
 	
-	void	Create(uint32 _polygroupCount);
-	//int32	Release();
-	
+    virtual void AddNode(DataNode * node);
+
 	virtual void Draw();
 	// TODO pass material to it
 	virtual void DrawPolygonGroup(int32 index, Material * material);
 	
-	inline uint32			GetPolygonGroupCount();
-	inline PolygonGroup *	GetPolygonGroup(uint32 index);
+	uint32			GetPolygonGroupCount();
+	PolygonGroup *	GetPolygonGroup(uint32 index);
 	
 protected:	
-	uint32					polygroupCount;
-	Vector<PolygonGroup *>	polygroups;
+	//uint32					polygroupCount;
+	//Vector<PolygonGroup *>	polygroups;
 };
-
-// Static Mesh Implementation
-	
-inline uint32 StaticMesh::GetPolygonGroupCount()
-{
-	return polygroupCount;
-}
-	
-inline PolygonGroup * StaticMesh::GetPolygonGroup(uint32 index)
-{
-	return polygroups[index];
-}
 
 };
 

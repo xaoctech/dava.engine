@@ -42,18 +42,66 @@ namespace DAVA
 /**
     
  */
-class DataNode : public SceneNode
+class DataNode : public BaseObject
 {
 public:	
-	DataNode(Scene * scene = 0);
+	DataNode(Scene * _scene = 0);
 	virtual ~DataNode();
-	
     
-    // virtual updates
-	virtual void Update(float32 timeElapsed);
-	virtual void Draw();
+    /**
+        \brief Set name of this particular node.
+        \param[in] new name for this node
+     */
+    void SetName(const String & name);
+
+    /**
+        \brief Get name of this particular node.
+        \returns name of this node
+     */
+    const String & GetName();
     
+    DataNode *	FindByName(const String & searchName);
+    virtual void	AddNode(DataNode * node);
+	virtual void	RemoveNode(DataNode * node);
+	virtual DataNode * GetChild(int32 index);
+	virtual int32   GetChildrenCount();
+	virtual void	RemoveAllChildren();
+
+    //DataNode * FindByAddress();
+    int32  GetNodeIndex();
+    
+    /**
+        \brief virtual function to save node to KeyedArchive
+     */
+    virtual void Save(KeyedArchive * archive);
+    
+    /**
+        \brief virtual function to load node to KeyedArchive
+     */
+	virtual void Load(KeyedArchive * archive);
+protected:
+    Scene * scene;
+    String name;
+    std::vector<DataNode*> children;
+    int32 index;
 };
+    
+/*class DataNodeArray : public BaseObject
+{
+public:
+    DataNodeArray(Scene * _scene);
+    
+    virtual void	AddNode(DataNode * node);
+	virtual void	RemoveNode(DataNode * node);
+	virtual DataNode * GetChild(int32 index);
+	virtual int32   GetChildrenCount();
+	virtual void	RemoveAllChildren();
+
+protected:
+    
+    Scene * scene;
+};*/
+    
 
 };
 

@@ -73,7 +73,7 @@ void SceneNode::AddNode(SceneNode * node)
 	if (node)
     {
         node->Retain();
-        childs.push_back(node);
+        children.push_back(node);
         node->SetParent(this);
     }
 }
@@ -89,12 +89,12 @@ void SceneNode::RemoveNode(SceneNode * node)
         removedCache.push_back(node);
         return;
     }
-    std::vector<SceneNode*>::iterator childsEnd = childs.end();
-	for (std::vector<SceneNode*>::iterator t = childs.begin(); t != childsEnd; ++t)
+    const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
+	for (std::vector<SceneNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
 	{
 		if (*t == node)
 		{
-			childs.erase(t);
+			children.erase(t);
             if (node)
             {
                 node->SetParent(0);
@@ -108,23 +108,23 @@ void SceneNode::RemoveNode(SceneNode * node)
 	
 SceneNode * SceneNode::GetChild(int32 index)
 {
-	return childs[index];
+	return children[index];
 }
 
 int32 SceneNode::GetChildrenCount()
 {
-    return (int32)childs.size();
+    return (int32)children.size();
 }
 
 void SceneNode::RemoveAllChildren()
 {
-	for (std::vector<SceneNode*>::iterator t = childs.begin(); t != childs.end(); ++t)
+	for (std::vector<SceneNode*>::iterator t = children.begin(); t != children.end(); ++t)
 	{
         SceneNode *node = *t;
         node->SetParent(0);
         node->Release();
 	}
-	childs.clear();
+	children.clear();
 }
 
 
@@ -133,10 +133,10 @@ SceneNode *	SceneNode::FindByName(const String & searchName)
 	if (name == searchName)
 		return this;
 	
-	uint32 size = (uint32)childs.size();
+	uint32 size = (uint32)children.size();
 	for (uint32 c = 0; c < size; ++c)
 	{
-		SceneNode * res = childs[c]->FindByName(searchName);
+		SceneNode * res = children[c]->FindByName(searchName);
 		if (res != 0)return res;
 	}
 	return 0;
@@ -177,9 +177,9 @@ void SceneNode::StopAllAnimations(bool recursive)
 	nodeAnimations.clear();
 	if (recursive)
 	{
-		uint32 size = (uint32)childs.size();
+		uint32 size = (uint32)children.size();
 		for (uint32 c = 0; c < size; ++c)
-			childs[c]->StopAllAnimations(recursive);
+			children[c]->StopAllAnimations(recursive);
 	}	
 }
 
@@ -187,9 +187,9 @@ void SceneNode::RestoreOriginalTransforms()
 {
     SetLocalTransform(GetDefaultLocalTransform());
 	
-	uint32 size = (uint32)childs.size();
+	uint32 size = (uint32)children.size();
 	for (uint32 c = 0; c < size; ++c)
-		childs[c]->RestoreOriginalTransforms();
+		children[c]->RestoreOriginalTransforms();
 }
 	
 void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
@@ -264,20 +264,20 @@ void SceneNode::Update(float32 timeElapsed)
         
         // need propagate changes to child nodes
         flags |= NODE_WORLD_MATRIX_ACTUAL;
-        uint32 size = (uint32)childs.size();
+        uint32 size = (uint32)children.size();
         for (uint32 c = 0; c < size; ++c)
         {
-            childs[c]->InvalidateLocalTransform();
-            childs[c]->Update(timeElapsed);
+            children[c]->InvalidateLocalTransform();
+            children[c]->Update(timeElapsed);
         }
         
 	}
     else 
     {
-        uint32 size = (uint32)childs.size();
+        uint32 size = (uint32)children.size();
         for (uint32 c = 0; c < size; ++c)
         {
-            childs[c]->Update(timeElapsed);
+            children[c]->Update(timeElapsed);
         }
     }
 
@@ -298,9 +298,9 @@ void SceneNode::Update(float32 timeElapsed)
 
 void SceneNode::Draw()
 {
-	//uint32 size = (uint32)childs.size();
-    Vector<SceneNode*>::iterator itEnd = childs.end();
-	for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+	//uint32 size = (uint32)children.size();
+    const Vector<SceneNode*>::iterator & itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
 		(*it)->Draw();
     if (scene)
         scene->nodeCounter++;
@@ -339,9 +339,9 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     
     
 //    Logger::Debug("Children +++++++++++++++++++++++++++++++");
-    std::vector<SceneNode*>::iterator it = childs.begin();
+    std::vector<SceneNode*>::iterator it = children.begin();
     
-    std::vector<SceneNode*>::iterator childsEnd = childs.end();
+    const std::vector<SceneNode*>::iterator & childsEnd = children.end();
     for(; it != childsEnd; it++)
     {
         SceneNode *n = (*it)->Clone();
@@ -358,9 +358,9 @@ void SceneNode::SetDebugFlags(uint32 _debugFlags, bool isRecursive)
     debugFlags = _debugFlags;
     if (isRecursive)
     {
-        std::vector<SceneNode*>::iterator it = childs.begin();
-        std::vector<SceneNode*>::iterator childsEnd = childs.end();
-        for(; it != childsEnd; it++)
+        std::vector<SceneNode*>::iterator it = children.begin();
+        const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
+        for(; it != childrenEnd; it++)
         {
             SceneNode *n = (*it);
             n->SetDebugFlags(_debugFlags, isRecursive);
@@ -399,10 +399,10 @@ bool SceneNode::FindNodesByNamePart(const String &namePart, List<SceneNode *> &o
         isFind = true;
     }
     
-    int32 sz = (int32)childs.size();
+    int32 sz = (int32)children.size();
     for (int32 i = 0; i < sz; i++) 
     {
-        if (childs[i]->FindNodesByNamePart(namePart, outNodeList)) 
+        if (children[i]->FindNodesByNamePart(namePart, outNodeList)) 
         {
             isFind = true;
         }
@@ -414,8 +414,8 @@ bool SceneNode::FindNodesByNamePart(const String &namePart, List<SceneNode *> &o
 AABBox3 SceneNode::GetWTMaximumBoundingBox()
 {
     AABBox3 retBBox;
-    Vector<SceneNode*>::iterator itEnd = childs.end();
-	for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    const Vector<SceneNode*>::iterator & itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
         AABBox3 box = (*it)->GetWTMaximumBoundingBox();
         if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)

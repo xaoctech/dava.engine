@@ -69,7 +69,7 @@ SceneNode* CubeNode::Clone(SceneNode *dstNode)
     
     CubeNode *cube = (CubeNode *)dstNode;
     
-    cube->cubeMesh = (StaticMesh *)cubeMesh->Clone();
+    //cube->cubeMesh = (StaticMesh *)cubeMesh->Clone();
     cube->color = color;
     cube->size = size;
   
@@ -108,10 +108,11 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
 	
 	SafeRelease(cubeMesh);
     cubeMesh = new StaticMesh(GetScene());
-    cubeMesh->Create(1);
     
-    PolygonGroup * cube = cubeMesh->GetPolygonGroup(0);
-//	cube->AllocateData( EVF_VERTEX | EVF_COLOR, 12, 36, 0);  //почему 12?
+    PolygonGroup * cube = new PolygonGroup(scene); // cubeMesh->GetPolygonGroup(0);
+
+    //	cube->AllocateData( EVF_VERTEX | EVF_COLOR, 12, 36, 0);  //почему 12?
+    cubeMesh->AddNode(cube);
     cube->AllocateData( EVF_VERTEX | EVF_COLOR, 8, 36, 0); 
     
 	for (int32 i = 0; i < 8 ; ++i)
@@ -125,6 +126,8 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
 	}
 
     AddPolygonGroup(cubeMesh, 0, NULL);
+    
+    SafeRelease(cube);
 }
     
 const Vector3 & CubeNode::GetSize() const

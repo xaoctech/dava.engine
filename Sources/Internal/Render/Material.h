@@ -32,7 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Scene3D/SceneNode.h"
+#include "Scene3D/DataNode.h"
 
 namespace DAVA
 {
@@ -45,7 +45,7 @@ class Texture;
     
     
 // TODO: move Material to Scene3D
-class Material : public SceneNode /* Need to rethink hierarchy here */
+class Material : public DataNode
 {
 public:
     enum eType
@@ -69,9 +69,10 @@ public:
         MATERIAL_TYPES_COUNT
     };
 
-    Material(Scene * sc = 0);
+    Material(Scene * _scene = 0);
     ~Material();
     
+	virtual int32 Release();
     static const char * GetTypeName();
     
     void SetType(eType _type);

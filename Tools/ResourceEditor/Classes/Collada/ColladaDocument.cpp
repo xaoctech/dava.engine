@@ -445,9 +445,11 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
 		ColladaPolygonGroup * group = mesh->GetPolygonGroup(k);
 		std::vector<ColladaVertex> & vertices = group->GetVertices();
 		std::vector<int> & indices = group->GetIndices();
+        uint32 vertexFormat = group->GetVertexFormat();
 		uint32 vertexCount = vertices.size();
 		uint32 indexCount = group->GetTriangleCount() * 3;
 		
+        fwrite(&vertexFormat, sizeof(uint32), 1, sceneFP);
 		fwrite(&vertexCount, sizeof(uint32), 1, sceneFP);
 		fwrite(&indexCount, sizeof(uint32), 1, sceneFP);
 
@@ -465,14 +467,21 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
 //			int		joint[20];
 //			float	weight[20];
 			ColladaVertex & v = vertices[vi];
-			fwrite(&v.position, sizeof(Vector3), 1, sceneFP);
-			fwrite(&v.normal, sizeof(Vector3), 1, sceneFP);
+            if (vertexFormat & EVF_VERTEX)
+                fwrite(&v.position, sizeof(Vector3), 1, sceneFP);
+			if (vertexFormat & EVF_NORMAL)
+                fwrite(&v.normal, sizeof(Vector3), 1, sceneFP);
 			
-			FlipTexCoords(v.texCoords[0]);
-			FlipTexCoords(v.texCoords[1]);
-			
-			fwrite(&v.texCoords[0], sizeof(Vector2), 1, sceneFP);
-			fwrite(&v.texCoords[1], sizeof(Vector2), 1, sceneFP);
+            if (vertexFormat & EVF_TEXCOORD0)
+            {
+                FlipTexCoords(v.texCoords[0]);
+                fwrite(&v.texCoords[0], sizeof(Vector2), 1, sceneFP);
+			}
+            if (vertexFormat & EVF_TEXCOORD1)
+            {
+                FlipTexCoords(v.texCoords[1]);
+                fwrite(&v.texCoords[1], sizeof(Vector2), 1, sceneFP);
+            }
 		}
 		
 		fwrite(&indices.front(), sizeof(int), indexCount, sceneFP);

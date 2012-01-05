@@ -106,10 +106,11 @@ private:
     {
         char    signature[4];
         int32   version;
+        int32   nodeCount;
     };
 
     bool SaveHierarchy(SceneNode * node, File * file, int32 level);
-    SceneNode * LoadHierarchy(File * file, int32 level);
+    SceneNode * LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
     bool isDebugLogEnabled;
 };

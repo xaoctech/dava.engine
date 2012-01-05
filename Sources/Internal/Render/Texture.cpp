@@ -39,6 +39,7 @@
 #include "FileSystem/File.h"
 #include "Render/D3D9Helpers.h"
 #include "Render/ImageConvert.h"
+#include "FileSystem/FileSystem.h"
 //#include "LibPngHelpers.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
@@ -900,7 +901,7 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
 Texture * Texture::CreateFromFile(const String & pathName)
 {
 	// TODO: add check that pathName 
-	String extension = pathName.substr(pathName.length() - 4, 4); 
+	String extension = FileSystem::GetExtension(pathName);
 
 	if (extension == String(".png"))
 		return CreateFromPNG(pathName);
