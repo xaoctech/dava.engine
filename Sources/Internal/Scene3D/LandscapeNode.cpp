@@ -406,8 +406,10 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
-    textureNames[level] = textureName;
     Texture * texture = Texture::CreateFromFile(textureName);
+    if (!texture)return;
+
+    textureNames[level] = textureName;
     texture->GenerateMipmaps();
     texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
 
@@ -937,6 +939,7 @@ void LandscapeNode::Save(KeyedArchive * archive)
     SceneNode::Save(archive);
     archive->SetString("hmap", heightMapPath);
     archive->SetInt32("renderingMode", renderingMode);
+    archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         archive->SetString(Format("tex_%d", k), textureNames[k]);
@@ -952,16 +955,15 @@ void LandscapeNode::Load(KeyedArchive * archive)
     AABBox3 box;
     archive->GetByteArrayAsType("bbox", box);
     
-    // renderingMode = archive->GetInt32("renderingMode", RENDERING_MODE_TEXTURE);
-    
+    renderingMode = (eRenderingMode)archive->GetInt32("renderingMode", RENDERING_MODE_TEXTURE);
     
     BuildLandscapeFromHeightmapImage(renderingMode, path, box);
     
-//    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
-//    {
-//        String textureName = archive->GetString(Format("tex_%d", k));
-//        SetTexture(k, textureName);
-//    }
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        String textureName = archive->GetString(Format("tex_%d", k));
+        SetTexture((eTextureLevel)k, textureName);
+    }
 
 }
 
