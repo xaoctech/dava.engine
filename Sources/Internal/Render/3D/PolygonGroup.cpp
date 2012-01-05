@@ -146,14 +146,14 @@ void PolygonGroup::UpdateDataPointersAndStreams()
 	}
 }
 
-void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount, int32 _textureCoordCount)
+void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount)
 {
 	vertexCount = _vertexCount;
 	indexCount = _indexCount;
-	textureCoordCount = _textureCoordCount;
 	vertexStride = GetVertexSize(_meshFormat);
 	vertexFormat = _meshFormat;
-	
+	textureCoordCount = GetTexCoordCount(vertexFormat);
+
 	meshData = new uint8[vertexStride * vertexCount];
 	indexArray = new int16[indexCount];
 	textureCoordArray = new Vector2*[textureCoordCount];

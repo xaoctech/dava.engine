@@ -97,7 +97,7 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
     PolygonGroup *sphere = new PolygonGroup(scene);
     sphereMesh->AddNode(sphere);
     
-	sphere->AllocateData( EVF_VERTEX | EVF_COLOR, gnVert, gnTria * 3, 0);
+	sphere->AllocateData( EVF_VERTEX | EVF_COLOR, gnVert, gnTria * 3);
 
     //====== Формирование массива вершин 
     //====== Северный полюс 
