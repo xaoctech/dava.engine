@@ -33,6 +33,7 @@
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Base/ObjectFactory.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -61,6 +62,12 @@ SceneNode::~SceneNode()
 {
     RemoveAllChildren();
 	SafeDelete(userData);
+}
+
+void SceneNode::SetScene(Scene * _scene)
+{
+    DVASSERT(scene == 0);
+    scene = _scene;
 }
 
 void SceneNode::SetParent(SceneNode * node)
@@ -438,6 +445,11 @@ void SceneNode::Save(KeyedArchive * archive)
     archive->SetByteArray("localTransform", (uint8*)&localTransform, sizeof(Matrix4));
     archive->SetUInt32("flags", flags);
     archive->SetUInt32("debugFlags", debugFlags);
+}
+
+String SceneNode::GetDebugDescription()
+{
+    return Format("children: %d ", GetChildrenCount());
 }
 
 void SceneNode::Load(KeyedArchive * archive)

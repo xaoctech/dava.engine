@@ -54,6 +54,9 @@ public:
 	SceneNode(Scene * scene = 0);
 	virtual ~SceneNode();
 	
+    
+    virtual void SetScene(Scene * _scene);
+    
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
 	virtual void	RemoveNode(SceneNode * node);
@@ -200,6 +203,11 @@ public:
         \brief virtual function to load node to KeyedArchive
      */
 	virtual void Load(KeyedArchive * archive);
+    
+    /**
+        \brief Function to get node description for debug printing
+     */
+    virtual String GetDebugDescription();
     
 protected:
 

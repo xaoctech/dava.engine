@@ -41,9 +41,10 @@ namespace DAVA
 class StaticMesh : public DataNode
 {
 public:
-	StaticMesh(Scene * _scene);
+	StaticMesh(Scene * _scene = 0);
 	~StaticMesh();
     
+    virtual void SetScene(Scene * _scene);
     virtual int32 Release();
 	
     virtual void AddNode(DataNode * node);
