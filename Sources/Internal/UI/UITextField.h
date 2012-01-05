@@ -63,6 +63,15 @@ public:
 	virtual void TextFieldShouldReturn(UITextField * textField)
     {
     };
+
+    /**
+        \brief Asks the delegate if the text field should process the pressing of the ESC button.
+        In this function you can check what you want to do with UITextField when ESC button pressed.
+        Don't work on iOS for now.
+     */
+	virtual void TextFieldShouldCancel(UITextField * textField)
+    {
+    };
     
     virtual void TextFieldLostFocus(UITextField * textField)
     {
