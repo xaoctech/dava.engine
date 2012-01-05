@@ -2,6 +2,7 @@
 
 #include "ControlsFactory.h"
 
+#include "OutputManager.h"
 #include "OutputPanelControl.h"
 
 #include "../BeastProxy.h"
@@ -447,6 +448,7 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
 //            }
             
             UpdatePropertyPanel();
+            DebugInfo();
         }
         
         List<UIControl*> children = sceneTree->GetVisibleCells();
@@ -457,6 +459,24 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         }
         
         selectedCell->SetSelected(true, false);
+    }
+}
+
+void EditorBodyControl::DebugInfo()
+{
+    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
+    if(mesh)
+    {
+        AABBox3 bbox = mesh->GetBoundingBox();
+        AABBox3 transformedBox;
+        bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
+
+        OutputManager::Instance()->Log(StringToWString(mesh->GetName()) + 
+                                       Format(L": Min: (%0.2f, %0.2f, %0.2f)", 
+                                            transformedBox.min.x, transformedBox.min.y, transformedBox.min.z) + 
+                                       
+                                       Format(L"; Max: (%0.2f, %0.2f, %0.2f)", 
+                                              transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
     }
 }
 
