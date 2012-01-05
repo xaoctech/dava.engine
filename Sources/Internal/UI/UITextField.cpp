@@ -299,12 +299,16 @@ void UITextField::Input(UIEvent *currentInput)
     if (currentInput->phase == UIEvent::PHASE_KEYCHAR)
     {	
         /// macos
+        Logger::Debug("Key char = %d", currentInput->keyChar);
+        
 #ifdef __DAVAENGINE_MACOS__
         const int32 backSpaceKeyCode = 127;
         const int32 enterKeyCode = 13;
+        const int32 escKeyCode = 27;
 #else
         const int32 backSpaceKeyCode = 8;
-        const int32 enterKeyCode = 13;//TODO: Fix this code please. Can't test on Windows :(
+        const int32 escKeyCode = 13;//TODO: Fix this code please. Can't test on Windows :(
+        const int32 escKeyCode = 27;
 #endif
 
         if (currentInput->keyChar == backSpaceKeyCode)
@@ -319,6 +323,10 @@ void UITextField::Input(UIEvent *currentInput)
 		else if (currentInput->keyChar == enterKeyCode)
 		{
 			delegate->TextFieldShouldReturn(this);
+		}
+		else if (currentInput->keyChar == escKeyCode)
+		{
+			delegate->TextFieldShouldCancel(this);
 		}
         else
         {

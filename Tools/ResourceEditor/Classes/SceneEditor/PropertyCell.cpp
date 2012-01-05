@@ -124,6 +124,12 @@ void PropertyTextCell::TextFieldShouldReturn(UITextField * textField)
     editableText->ReleaseFocus();
 }
 
+void PropertyTextCell::TextFieldShouldCancel(UITextField * textField)
+{
+    SetData(property);
+    editableText->ReleaseFocus();
+}
+
 void PropertyTextCell::TextFieldLostFocus(UITextField * textField)
 {
     switch (property->GetValueType())
