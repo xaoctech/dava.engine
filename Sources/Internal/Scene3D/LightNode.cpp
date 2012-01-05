@@ -29,8 +29,8 @@
 =====================================================================================*/
 
 #include "Scene3D/LightNode.h"
-#include "RenderManager.h"
-#include "RenderHelper.h"
+#include "Render/RenderManager.h"
+#include "Render/RenderHelper.h"
 
 namespace DAVA 
 {
