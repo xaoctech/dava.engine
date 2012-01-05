@@ -178,6 +178,7 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     
     renderingMode = _renderingMode;
     ReleaseShaders(); // release previous shaders
+    ReleaseAllRDOQuads();
     InitShaders(); // init new shaders according to the selected rendering mode
     
     heightmap = Image::CreateFromFile(heightmapPathname);
