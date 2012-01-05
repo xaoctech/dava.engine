@@ -40,7 +40,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     
     
-    CreateScene();
+    CreateScene(true);
 
     outputPanel = new OutputPanelControl(scene, Rect(
                                               ControlsFactory::LEFT_SIDE_WIDTH, 
@@ -68,6 +68,8 @@ EditorBodyControl::~EditorBodyControl()
     
     ReleaseScene();
   
+    SafeRelease(scene3dView);
+
     ReleaseLeftPanel();
 }
 
@@ -123,73 +125,52 @@ void EditorBodyControl::ReleaseLeftPanel()
 }
 
 
-void EditorBodyControl::CreateScene()
+void EditorBodyControl::CreateScene(bool withCameras)
 {
     scene = new EditorScene();
     // Camera setup
     cameraController = new WASDCameraController(40);
-    Camera * cam = new Camera(scene);
-    cam->SetName("editor-camera");
-    cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-    cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-    cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
     
-    cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
-    
-    scene->AddNode(cam);
-    scene->AddCamera(cam);
-    scene->SetCurrentCamera(cam);
-    cameraController->SetCamera(cam);
-    
-    SafeRelease(cam);
-    
-    Camera * cam2 = new Camera(scene);
-    cam2->SetName("editor-top-camera");
-    cam2->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-    cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
-    cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
-    cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
-    
-    cam2->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
-    
-    scene->AddNode(cam2);
-    scene->AddCamera(cam2);
-    
-    SafeRelease(cam2);
-    
-    
-//    LandscapeNode * node = new LandscapeNode(scene);
-//    //node->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-//    AABBox3 box(Vector3(198, 201, 0), Vector3(-206, -203, 13.7f));
-//    
-//    node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
-//#if 1
-//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
-//    
-//    Texture::EnableMipmapGeneration();
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/tex3.png");
-//    node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
-//    Texture::DisableMipmapGeneration();
-//#else  
-//    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
-//    
-//    Texture::EnableMipmapGeneration();
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
-//    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
-//    Texture::DisableMipmapGeneration();
-//#endif
-//    
-//    node->SetName("landscapeNode");
-//    scene->AddNode(node);
+    if(withCameras)
+    {
+        Camera * cam = new Camera(scene);
+        cam->SetName("editor-camera");
+        cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+        cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+        cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+        cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
+        
+        cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
+        
+        scene->AddNode(cam);
+        scene->AddCamera(cam);
+        scene->SetCurrentCamera(cam);
+        cameraController->SetCamera(cam);
+        
+        SafeRelease(cam);
+        
+        Camera * cam2 = new Camera(scene);
+        cam2->SetName("editor-top-camera");
+        cam2->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+        cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
+        cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
+        cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
+        
+        cam2->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
+        
+        scene->AddNode(cam2);
+        scene->AddCamera(cam2);
+        
+        SafeRelease(cam2);
+    }
     
     scene3dView->SetScene(scene);
 }
 
 void EditorBodyControl::ReleaseScene()
 {
-    SafeRelease(scene3dView);
+    //TODO: need to release root nodes?
+    
     SafeRelease(scene);
     SafeRelease(cameraController);
 }
@@ -977,4 +958,9 @@ void EditorBodyControl::OnRefreshPressed(BaseObject * obj, void *, void *)
         currentPropertyPanel->ReadToNode(selectedNode);
         savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
     }
+}
+
+void EditorBodyControl::Refresh()
+{
+    sceneTree->Refresh();
 }
