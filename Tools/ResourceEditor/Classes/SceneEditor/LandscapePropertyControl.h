@@ -13,9 +13,8 @@ public:
 
     LandscapePropertyControl(const Rect & rect, bool showMatrix);
 
-    virtual void ReadFromNode(SceneNode *sceneNode);
-    virtual void ReadToNode(SceneNode *sceneNode);
-    virtual void SetDefaultValues();
+    virtual void ReadFrom(SceneNode *sceneNode);
+    virtual void WriteTo(SceneNode *sceneNode);
     virtual void InitProperties();
     
     void SetProjectPath(const String &path);

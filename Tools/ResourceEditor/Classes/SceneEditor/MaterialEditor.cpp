@@ -53,8 +53,11 @@ MaterialEditor::MaterialEditor()
     for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
     {
         materialProps[i] = new PropertyList(Rect(size.x * materialListPart, size.y * previewHeightPart + 25, size.x - size.x * materialListPart, size.y - size.y * previewHeightPart - 25), this);
-        materialProps[i]->AddStringProperty("Name", " ");
-        materialProps[i]->AddFilepathProperty("Diffuse texture", " ", ".png");
+        materialProps[i]->AddStringProperty("Name");
+        materialProps[i]->SetStringPropertyValue("Name", " ");
+
+        materialProps[i]->AddFilepathProperty("Diffuse texture", ".png");
+        materialProps[i]->SetFilepathPropertyValue("Diffuse texture", " ");
     }
     
 }
