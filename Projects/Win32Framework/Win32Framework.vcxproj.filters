@@ -924,6 +924,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Input\InputSystem.h">
+      <Filter>Internal\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Input\KeyboardDevice.h">
+      <Filter>Internal\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1603,6 +1609,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp">
       <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Input\InputSystem.cpp">
+      <Filter>Internal\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Input\KeyboardDevice.cpp">
+      <Filter>Internal\Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

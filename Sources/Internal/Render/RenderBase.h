@@ -267,6 +267,20 @@ enum
 {
     VERTEX_FORMAT_STREAM_MAX_COUNT = 10
 };
+
+inline int32 GetTexCoordCount(int32 vertexFormat)
+{
+	int32 ret = 0;
+	for(int32 i = EVF_TEXCOORD0; i < EVF_TEXCOORD3+1; i = (i << 1))
+	{
+		if(vertexFormat & i)
+		{
+			ret++;
+		}
+	}
+
+	return ret;
+}
     
 inline int32 GetVertexSize(int32 flags)
 {
