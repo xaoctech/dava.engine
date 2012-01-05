@@ -40,6 +40,8 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     
 CreateNodeDialog::~CreateNodeDialog()
 {
+    SafeRelease(sceneNode);
+
     SafeRelease(header);
     SafeRelease(propertyList);
     dialogDelegate = NULL;

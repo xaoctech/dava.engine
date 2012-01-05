@@ -12,7 +12,7 @@ public:
     enum eControlSize
     {
         BUTTON_HEIGHT = 20,
-        BUTTON_WIDTH = 100,
+        BUTTON_WIDTH = 80,
         
         LEFT_SIDE_WIDTH = 200,
         RIGHT_SIDE_WIDTH = 200,

@@ -19,7 +19,23 @@ PaintAreaControl::PaintAreaControl(const Rect & rect)
     currentMousePos = Vector2(-100, -100);
     prevDrawPos = Vector2(-100, -100);
     
+    for (int32 i = 0; i < ET_COUNT; ++i)
+    {
+        textures[i] = "";
+    }
+    
     SetTextureSideSize(rect.dx, rect.dy);
+    
+    blendedShader = 0;
+
+//    blendedShader = new Shader();
+//    blendedShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
+//    blendedShader->Recompile();
+//    
+//    uniformTexture0 = blendedShader->FindUniformLocationByName("texture0");
+//    uniformTexture1 = blendedShader->FindUniformLocationByName("texture1");
+//    uniformTextureMask = blendedShader->FindUniformLocationByName("textureMask");
+
 }
 
 PaintAreaControl::~PaintAreaControl()
@@ -33,8 +49,14 @@ void PaintAreaControl::SetTextureSideSize(int32 sideSizeW, int32 sideSizeH)
     textureSideSize = Vector2(sideSizeW, sideSizeH);
 
     SafeRelease(spriteForDrawing);
-    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGB565);
+    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGBA8888);
     SetSprite(spriteForDrawing, 0);
+    
+    RenderManager::Instance()->SetRenderTarget(spriteForDrawing);
+    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 1.f));
+    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+    RenderManager::Instance()->ResetColor();
+    RenderManager::Instance()->RestoreRenderTarget();
 }
 
 void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
@@ -42,8 +64,14 @@ void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
     textureSideSize = sideSize;
     
     SafeRelease(spriteForDrawing);
-    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGB565);
+    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGBA8888);
     SetSprite(spriteForDrawing, 0);
+    
+    RenderManager::Instance()->SetRenderTarget(spriteForDrawing);
+    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 1.f));
+    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+    RenderManager::Instance()->ResetColor();
+    RenderManager::Instance()->RestoreRenderTarget();
 }
 
 
@@ -53,6 +81,11 @@ void PaintAreaControl::SetPaintTool(PaintTool *tool)
     SafeRelease(toolSprite);
     
     toolSprite = Sprite::Create(usedTool->spriteName);
+}
+
+void PaintAreaControl::SetTexture(eTextures id, const String &path)
+{
+    textures[id] = path;
 }
 
 
@@ -71,7 +104,7 @@ void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
     else if(UIEvent::BUTTON_2 == currentInput->tid)
     {
         srcBlendMode = BLEND_SRC_ALPHA;
-        dstBlendMode = BLEND_ONE_MINUS_SRC_ALPHA;
+        dstBlendMode = BLEND_SRC_ALPHA_SATURATE;
 
         paintColor = Color(0.f, 0.f, 0.f, 1.f);
         currentMousePos = currentInput->point;
@@ -104,8 +137,6 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
     
     if(usedTool && toolSprite && usedTool->zoom && -100 != currentMousePos.x)
     {
-        RenderManager::Instance()->SetColor(Color(1.f, 0.f, 0.f, 1.f));
-
         RenderManager::Instance()->ClipPush();
         RenderManager::Instance()->SetClip(geometricData.GetUnrotatedRect());
         
@@ -209,8 +240,10 @@ void LandscapeEditorControl::CreateLeftPanel()
     SafeRelease(keyedArchieve);
     
     propertyList->AddIntProperty("Size", 1024, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath + "Data/Landscape/tex3.png", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath + "Data/Landscape/detail_gravel.png", ".png", PropertyList::PROPERTY_IS_EDITABLE);
 }
 
 void LandscapeEditorControl::ReleaseLeftPanel()
@@ -357,6 +390,9 @@ void LandscapeEditorControl::WillAppear()
 {
     scrollView->SetScale(zoom->GetValue());
 
+    paintArea->SetTexture(PaintAreaControl::ET_TEXTURE0, propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0"));
+    paintArea->SetTexture(PaintAreaControl::ET_TEXTURE1, propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL"));
+
     if(!selectedTool)
     {
         toolButtons[0]->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
@@ -435,11 +471,11 @@ void LandscapeEditorControl::OnFilepathPropertyChanged(PropertyList *forList, co
     {
         if("TEXTURE_TEXTURE0" == forKey)
         {
-            
+            paintArea->SetTexture(PaintAreaControl::ET_TEXTURE0, newValue);
         }
         else if("TEXTURE_TEXTURE1/TEXTURE_DETAIL" == forKey)
         {
-            
+            paintArea->SetTexture(PaintAreaControl::ET_TEXTURE1, newValue);
         }
     }
 }
