@@ -76,6 +76,7 @@ public:
 
 protected:
 
+    void DebugInfo();
     
 	void CreateModificationPanel(void);
     void ReleaseModificationPanel();
