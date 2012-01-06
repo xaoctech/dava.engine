@@ -54,6 +54,9 @@ public:
 	SceneNode(Scene * scene = 0);
 	virtual ~SceneNode();
 	
+    
+    virtual void SetScene(Scene * _scene);
+    
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
 	virtual void	RemoveNode(SceneNode * node);
@@ -201,6 +204,11 @@ public:
      */
 	virtual void Load(KeyedArchive * archive);
     
+    /**
+        \brief Function to get node description for debug printing
+     */
+    virtual String GetDebugDescription();
+    
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
@@ -210,7 +218,7 @@ protected:
 	
 	Scene * scene;
 	SceneNode * parent;
-	std::vector<SceneNode*> childs;
+	std::vector<SceneNode*> children;
 	std::deque<SceneNode*> removedCache;
 	bool visible;
     bool inUpdate;

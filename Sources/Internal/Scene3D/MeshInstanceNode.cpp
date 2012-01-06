@@ -32,6 +32,7 @@
 #include "Render/3D/StaticMesh.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
@@ -59,6 +60,7 @@ MeshInstanceNode::~MeshInstanceNode()
         for (size_t idx = 0; idx < size; ++idx)
         {
             SafeRelease(ld.materials[idx]);
+            SafeRelease(ld.meshes[idx]);
         }
     }
 }
@@ -79,7 +81,7 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
     }
     ld = &(*lodLayers.begin());
 
-	ld->meshes.push_back(mesh);
+	ld->meshes.push_back(SafeRetain(mesh));
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
 	ld->materials.push_back(SafeRetain(material));
 	
@@ -133,7 +135,7 @@ void MeshInstanceNode::AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, i
     }
 
     
-	ld->meshes.push_back(mesh);
+	ld->meshes.push_back(SafeRetain(mesh));
 	ld->polygonGroupIndexes.push_back(polygonGroupIndex);
 	ld->materials.push_back(SafeRetain(material));
 
@@ -275,15 +277,24 @@ void MeshInstanceNode::Draw()
     
     uint32 meshesSize = (uint32)currentLod->meshes.size();
 
-	for (uint32 k = 0; k < meshesSize; ++k)
+	if (debugFlags == DEBUG_DRAW_NONE)
 	{
-		currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
-	}
+        for (uint32 k = 0; k < meshesSize; ++k)
+        {
+            currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
+        }
+    }else
+    {
+        for (uint32 k = 0; k < meshesSize; ++k)
+        {
+            currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
+        }
+    }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
         //RenderManager::PushState();
-        RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_CULL); 
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE); 
 //        RenderManager::Instance()->EnableDepthTest(false);
 //		RenderManager::Instance()->EnableTexturing(false);
 		RenderManager::Instance()->FlushState();
@@ -339,6 +350,19 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
     SceneNode::Clone(dstNode);
     MeshInstanceNode *nd = (MeshInstanceNode *)dstNode;
     nd->lodLayers = lodLayers;
+    
+    const List<LodData>::const_iterator & end = nd->lodLayers.end();
+    for (List<LodData>::iterator it = nd->lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+        size_t size = ld.materials.size();
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            ld.materials[idx]->Retain();
+            ld.meshes[idx]->Retain();
+        }
+    }
+ 
     nd->lodPresents = lodPresents;
     nd->lastLodUpdateFrame = 1000;
     nd->currentLod = &(*nd->lodLayers.begin());
@@ -356,8 +380,8 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
 	
     bbox.GetTransformedBox(GetWorldTransform(), retBBox);
     
-    Vector<SceneNode*>::iterator itEnd = childs.end();
-	for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    const Vector<SceneNode*>::iterator & itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
         AABBox3 box = (*it)->GetWTMaximumBoundingBox();
         if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)
@@ -369,6 +393,63 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
     
     return retBBox;
 }
+    
+void MeshInstanceNode::Save(KeyedArchive * archive)
+{
+    SceneNode::Save(archive);
+    archive->SetInt32("lodCount", (int32)lodLayers.size());
+    
+    int32 lodIdx = 0;
+    const List<LodData>::iterator & end = lodLayers.end();
+    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+        size_t size = ld.materials.size();
+        size_t sizeMeshes = ld.meshes.size();
+        DVASSERT(size == sizeMeshes);
+        archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            archive->SetInt32(Format("l%d_%d_mat", lodIdx, idx), ld.materials[idx]->GetNodeIndex());
+            archive->SetInt32(Format("l%d_%d_ms", lodIdx, idx), ld.meshes[idx]->GetNodeIndex());
+            archive->SetInt32(Format("l%d_%d_pg", lodIdx, idx), ld.polygonGroupIndexes[idx]);
+        }
+        lodIdx++;
+    }
+}
+
+void MeshInstanceNode::Load(KeyedArchive * archive)
+{
+    SceneNode::Load(archive);
+
+    int32 lodCount = archive->GetInt32("lodCount", 0);
+    
+    for (int32 lodIdx = 0; lodIdx < lodCount; ++lodIdx)
+    {
+        size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            int32 materialIndex = archive->GetInt32(Format("l%d_%d_mat", lodIdx, idx), -1);
+            int32 meshIndex = archive->GetInt32(Format("l%d_%d_ms", lodIdx, idx), -1);
+            int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
+            if ((materialIndex != -1) && (meshIndex != -1) && (pgIndex != -1))
+            {
+                AddPolygonGroup(SafeRetain(dynamic_cast<StaticMesh*>(scene->GetStaticMeshes()->GetChild(meshIndex))), 
+                                pgIndex,
+                                SafeRetain(dynamic_cast<Material*>(scene->GetMaterials()->GetChild(materialIndex))));
+            }
+        }
+        lodIdx++;
+    }
+    
+    currentLod = &(*lodLayers.begin());
+}
+    
+//String MeshInstanceNode::GetDebugDescription()
+//{
+//    /return Format(": %d ", GetChildrenCount());
+//}
+
 
     
 };

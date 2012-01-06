@@ -65,6 +65,9 @@
 // Accelerometer
 #include "Input/Accelerometer.h"
 
+#include "Input/InputSystem.h"
+#include "Input/KeyboardDevice.h"
+
 // Localization
 #include "FileSystem/LocalizationSystem.h"
 
@@ -101,6 +104,7 @@
 #include "Render/2D/Sprite.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"
+#include "Render/Shader.h"
 
 #include "Core/DisplayMode.h"
 #include "Render/RenderManager.h"

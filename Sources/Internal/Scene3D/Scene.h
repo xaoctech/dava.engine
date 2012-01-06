@@ -78,23 +78,13 @@ public:
 	
 	void		ClearScene();
     
-    
-    //
-    // void EnumerateObjects
-    // 
-	
-	void AddTexture(Texture * texture);
-	void RemoveTexture(Texture * texture);
-	Texture * GetTexture(int32 index);
-	inline int32	GetTextureCount();
-	
+    DataNode * GetMaterials();
 	Material * GetMaterial(int32 index);
 	int32	GetMaterialCount();
 	
-	void AddStaticMesh(StaticMesh * mesh);
-	void RemoveStaticMesh(StaticMesh * mesh);
+    DataNode * GetStaticMeshes();
 	StaticMesh * GetStaticMesh(int32 index);
-	inline int32	GetStaticMeshCount();
+	int32	GetStaticMeshCount();
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -187,7 +177,7 @@ public:
     
 private:	
     DataNode * materials;
-    DataNode * polygroups;
+    DataNode * staticMeshes;
     DataNode * scenes;
     
     
@@ -195,12 +185,12 @@ private:
     uint64 drawTime;
     uint32 nodeCounter;
 
-	Vector<Texture*> textures;
-	Vector<StaticMesh*> staticMeshes;
+	// Vector<Texture*> textures;
+	// Vector<StaticMesh*> staticMeshes;
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
-    Map<String, SceneNode*> rootNodes;
+    //Map<String, SceneNode*> rootNodes;
 
     // Vector<SceneNode*> alphaObjectQueue;
     
@@ -219,15 +209,6 @@ private:
 int32 Scene::GetAnimationCount()
 {
     return (int32)animations.size();
-}
-int32 Scene::GetTextureCount()
-{
-    return (int32)textures.size();
-}
-
-int32 Scene::GetStaticMeshCount()
-{
-    return (int32)staticMeshes.size();
 }
 
 int32 Scene::GetAnimatedMeshCount()

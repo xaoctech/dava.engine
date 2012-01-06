@@ -32,6 +32,8 @@
 #include "Render/Texture.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/StringFormat.h"
+#include "Scene3D/DataNode.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
@@ -40,9 +42,20 @@ REGISTER_CLASS(Material);
     
 UberShader * Material::uberShader = 0;
 
-Material::Material(Scene * scene) 
-    :   SceneNode(scene)
+Material::Material(Scene * _scene) 
+    :   DataNode(_scene)
+    ,   diffuse(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   specular(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   ambient(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   emission(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   isOpaque(false)
 {
+    if (scene)
+    {
+        DataNode * materialsNode = scene->GetMaterials();
+        materialsNode->AddNode(this);
+    }
+    
     if (!uberShader)
     {
         uberShader = new UberShader();
@@ -58,6 +71,29 @@ Material::Material(Scene * scene)
         textures[tc] = 0;
 }
     
+void Material::SetScene(Scene * _scene)
+{
+    DVASSERT(scene == 0);
+    scene = _scene;
+    if (scene)
+    {
+        DataNode * materialsNode = scene->GetMaterials();
+        materialsNode->AddNode(this);
+    }
+}
+
+
+int32 Material::Release()
+{
+    int32 retainCount = BaseObject::Release();
+    if (retainCount == 1)
+    {
+        DataNode * materialsNode = scene->GetMaterials();
+        materialsNode->RemoveNode(this);
+    }
+    return retainCount;
+}
+
 Material::~Material()
 {
 }
@@ -84,24 +120,45 @@ void Material::SetType(eType _type)
     
 void Material::Save(KeyedArchive * keyedArchive)
 {
-    BaseObject::Save(keyedArchive);
+    DataNode::Save(keyedArchive);
     
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int k = 0; k < TEXTURE_COUNT; ++k)
     {
         keyedArchive->SetString(Format("mat.tex%d", k), names[k].c_str());
     }
+    
+    keyedArchive->SetByteArrayAsType("diffuse", diffuse);
+    keyedArchive->SetByteArrayAsType("ambient", ambient);
+    keyedArchive->SetByteArrayAsType("specular", specular);
+    keyedArchive->SetByteArrayAsType("emission", emission);
+    keyedArchive->SetBool("isOpaque", isOpaque);
 }
     
 void Material::Load(KeyedArchive * keyedArchive)
 {
-    BaseObject::Load(keyedArchive);
+    DataNode::Load(keyedArchive);
 
     int texCount = keyedArchive->GetInt32("mat.texCount");
     for (int k = 0; k < texCount; ++k)
     {
         names[k] = keyedArchive->GetString(Format("mat.tex%d", k));
+        //if (textures[k].length())
+        //{
+        textures[k] = Texture::CreateFromFile(names[k]);
+        //}
+//        if (names[k].size())
+//        {
+//            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
+//        } 
     }
+    
+    keyedArchive->GetByteArrayAsType("diffuse", diffuse);
+    keyedArchive->GetByteArrayAsType("ambient", ambient);
+    keyedArchive->GetByteArrayAsType("specular", specular);
+    keyedArchive->GetByteArrayAsType("emission", emission);
+    
+    isOpaque = keyedArchive->GetBool("isOpaque", isOpaque);
 }
 
 

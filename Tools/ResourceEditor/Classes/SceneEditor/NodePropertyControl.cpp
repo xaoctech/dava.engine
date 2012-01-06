@@ -24,21 +24,11 @@ void NodePropertyControl::WillAppear()
 
 void NodePropertyControl::InitProperties()
 {
-    propertyList->AddStringProperty("Name", "SceneNode", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddStringProperty("Retain Count", "1", PropertyList::PROPERTY_IS_READ_ONLY);
-    propertyList->AddStringProperty("Class Name", "Unknown", PropertyList::PROPERTY_IS_READ_ONLY);
-    propertyList->AddStringProperty("C++ Class Name", "Unknown", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("Name", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddStringProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
     
-    if(showMatrix)
-    {
-        Matrix4 matrix;
-        propertyList->AddMatrix4Property("Local Matrix", matrix, PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddMatrix4Property("World Matrix", matrix, PropertyList::PROPERTY_IS_READ_ONLY);
-    }
-}
-
-void NodePropertyControl::SetDefaultValues()
-{
     propertyList->SetStringPropertyValue("Name", "SceneNode");
     propertyList->SetStringPropertyValue("Retain Count", "1");
     propertyList->SetStringPropertyValue("Class Name", "Unknown");
@@ -47,12 +37,14 @@ void NodePropertyControl::SetDefaultValues()
     if(showMatrix)
     {
         Matrix4 matrix;
+        propertyList->AddMatrix4Property("Local Matrix", PropertyList::PROPERTY_IS_EDITABLE);
+        propertyList->AddMatrix4Property("World Matrix", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->SetMatrix4PropertyValue("Local Matrix", matrix);
         propertyList->SetMatrix4PropertyValue("World Matrix", matrix);
     }
 }
 
-void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
+void NodePropertyControl::ReadFrom(SceneNode *sceneNode)
 {
     propertyList->SetStringPropertyValue("Name", sceneNode->GetName());
     propertyList->SetStringPropertyValue("Retain Count", Format("%d", sceneNode->GetRetainCount()));
@@ -66,7 +58,7 @@ void NodePropertyControl::ReadFromNode(SceneNode *sceneNode)
     }
 }
 
-void NodePropertyControl::ReadToNode(SceneNode *sceneNode)
+void NodePropertyControl::WriteTo(SceneNode *sceneNode)
 {
     sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
  

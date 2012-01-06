@@ -49,51 +49,22 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
-{
-    
+{   
     materials = new DataNode();
     materials->SetName("materials");
-    AddNode(materials);
+    //AddNode(materials);
     
-    DataNode * polygroups = new DataNode();
-    polygroups->SetName("polygroups");
-    AddNode(polygroups);
+    staticMeshes = new DataNode();
+    staticMeshes->SetName("staticMeshes");
+    //AddNode(staticMeshes);
 
     scenes = new DataNode();
-    scenes->SetName("scenes");
-    AddNode(scenes);
+    //scenes->SetName("scenes");
+    //AddNode(scenes);
 }
 
 Scene::~Scene()
 {
-	for (Map<String, SceneNode*>::iterator t = rootNodes.begin(); t != rootNodes.end(); ++t)
-	{
-		SceneNode * obj = t->second;
-		obj->Release();
-	}
-	rootNodes.clear();
-    
-	for (Vector<Texture*>::iterator t = textures.begin(); t != textures.end(); ++t)
-	{
-		Texture * obj = *t;
-		obj->Release();
-	}
-	textures.clear();
-
-//	for (Vector<Material*>::iterator t = materials.begin(); t != materials.end(); ++t)
-//	{
-//		Material * obj = *t;
-//		obj->Release();
-//	}
-//	materials.clear();
-
-	for (Vector<StaticMesh*>::iterator t = staticMeshes.begin(); t != staticMeshes.end(); ++t)
-	{
-		StaticMesh * obj = *t;
-		obj->Release();
-	}
-	staticMeshes.clear();
-
 	for (Vector<AnimatedMesh*>::iterator t = animatedMeshes.begin(); t != animatedMeshes.end(); ++t)
 	{
 		AnimatedMesh * obj = *t;
@@ -112,72 +83,42 @@ Scene::~Scene()
     SafeRelease(clipCamera);
     
     SafeRelease(materials);
-    SafeRelease(polygroups);
+    SafeRelease(staticMeshes);
     SafeRelease(scenes);
 }
 
-// 
-void Scene::AddTexture(Texture * texture)
+DataNode * Scene::GetMaterials()
 {
-	if (texture)
-	{
-		texture->Retain();
-		textures.push_back(texture);
-	}
-};
-
-	
-void Scene::RemoveTexture(Texture * texture)
-{
-	for (Vector<Texture*>::iterator t = textures.begin(); t != textures.end(); ++t)
-	{
-		if (*t == texture)
-		{
-			texture->Release();
-			textures.erase(t);
-			break;
-		}
-	}		
-};
-	
-Texture * Scene::GetTexture(int32 index)
-{
-	if (index >= (int32)textures.size())
-		return NULL;
-	
-	return textures[index];
+    return materials;
 }
     
+DataNode * Scene::GetStaticMeshes()
+{
+    return staticMeshes;
+}
+
 int32 Scene::GetMaterialCount()
 {
-    DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-    return (int32)materialsNode->GetChildrenCount();
+    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+    return (int32)materials->GetChildrenCount();
 }
 
 Material * Scene::GetMaterial(int32 index)
 {
-    DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-	return dynamic_cast<Material*>(materialsNode->GetChild(index));
+    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+	return dynamic_cast<Material*>(materials->GetChild(index));
 }
 
-void Scene::AddStaticMesh(StaticMesh * mesh)
+int32 Scene::GetStaticMeshCount()
 {
-	if (mesh)
-	{
-		mesh->Retain();
-		staticMeshes.push_back(mesh);
-	}
-}
-	
-void Scene::RemoveStaticMesh(StaticMesh * mesh)
-{
+    return (int32)staticMeshes->GetChildrenCount();
 }
 
 StaticMesh * Scene::GetStaticMesh(int32 index)
 {
-	return staticMeshes[index];
+	return dynamic_cast<StaticMesh*>(staticMeshes->GetChild(index));
 }
-	
+    
 void Scene::AddAnimatedMesh(AnimatedMesh * mesh)
 {
 	if (mesh)
@@ -295,27 +236,27 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
 
 void Scene::ReleaseRootNode(const String &rootNodePath)
 {
-	Map<String, SceneNode*>::iterator it;
-	it = rootNodes.find(rootNodePath);
-	if (it != rootNodes.end())
-	{
-        it->second->Release();
-        rootNodes.erase(it);
-	}
+//	Map<String, SceneNode*>::iterator it;
+//	it = rootNodes.find(rootNodePath);
+//	if (it != rootNodes.end())
+//	{
+//        it->second->Release();
+//        rootNodes.erase(it);
+//	}
 }
     
 void Scene::ReleaseRootNode(SceneNode *nodeToRelease)
 {
-	for (Map<String, SceneNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
-	{
-        if (nodeToRelease == it->second) 
-        {
-            SceneNode * obj = it->second;
-            obj->Release();
-            rootNodes.erase(it);
-            return;
-        }
-	}
+//	for (Map<String, SceneNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
+//	{
+//        if (nodeToRelease == it->second) 
+//        {
+//            SceneNode * obj = it->second;
+//            obj->Release();
+//            rootNodes.erase(it);
+//            return;
+//        }
+//	}
 }
 
     

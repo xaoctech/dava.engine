@@ -25,93 +25,88 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
-#ifndef __DAVAENGINE_DATANODE_H__
-#define __DAVAENGINE_DATANODE_H__
-
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
+#include "KeyboardDevice.h"
 
 namespace DAVA
 {
 
-/**
-    
- */
-class DataNode : public BaseObject
+KeyboardDevice::KeyboardDevice()
 {
-public:	
-	DataNode(Scene * _scene = 0);
-	virtual ~DataNode();
-    
-    /**
-     */
-    void SetScene(Scene * _scene);
-    
-    /**
-        \brief Set name of this particular node.
-        \param[in] new name for this node
-     */
-    void SetName(const String & name);
+    PrepareKeyTranslator();
+}
 
-    /**
-        \brief Get name of this particular node.
-        \returns name of this node
-     */
-    const String & GetName();
-    
-    DataNode *	FindByName(const String & searchName);
-    virtual void	AddNode(DataNode * node);
-	virtual void	RemoveNode(DataNode * node);
-	virtual DataNode * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-	virtual void	RemoveAllChildren();
-
-    //DataNode * FindByAddress();
-    int32  GetNodeIndex();
-    
-    /**
-        \brief virtual function to save node to KeyedArchive
-     */
-    virtual void Save(KeyedArchive * archive);
-    
-    /**
-        \brief virtual function to load node to KeyedArchive
-     */
-	virtual void Load(KeyedArchive * archive);
-protected:
-    Scene * scene;
-    String name;
-    std::vector<DataNode*> children;
-    int32 index;
-};
-    
-/*class DataNodeArray : public BaseObject
+KeyboardDevice::~KeyboardDevice()
 {
-public:
-    DataNodeArray(Scene * _scene);
+}
     
-    virtual void	AddNode(DataNode * node);
-	virtual void	RemoveNode(DataNode * node);
-	virtual DataNode * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-	virtual void	RemoveAllChildren();
+bool KeyboardDevice::IsKeyPressed(int32 keyCode)
+{
+    DVASSERT(keyCode < DVKEY_COUNT);
+    return keyStatus[keyCode];
+}
 
-protected:
+void KeyboardDevice::OnKeyPressed(int32 keyCode)
+{
+    DVASSERT(keyCode < DVKEY_COUNT);
+    keyStatus[keyCode] = true;
+    realKeyStatus[keyCode] = true;
+}
+
+void KeyboardDevice::OnKeyUnpressed(int32 keyCode)
+{
+    DVASSERT(keyCode < DVKEY_COUNT);
+    realKeyStatus[keyCode] = false;
+}
+
+void KeyboardDevice::OnBeforeUpdate()
+{
+}
+
+void KeyboardDevice::OnAfterUpdate()
+{
+    for (int i = 0; i < DVKEY_COUNT; i++) 
+    {
+        keyStatus[i] = realKeyStatus[i];
+    }
+}
+
+void KeyboardDevice::OnSystemKeyPressed(int32 systemKeyCode)
+{
+    Logger::Debug("System key pressed 0x%X", systemKeyCode);
+    DVASSERT(systemKeyCode < MAX_KEYS);
+    OnKeyPressed(keyTranslator[systemKeyCode]);
+}
+
+void KeyboardDevice::OnSystemKeyUnpressed(int32 systemKeyCode)
+{
+    Logger::Debug("System key unpressed 0x%X", systemKeyCode);
+    DVASSERT(systemKeyCode < MAX_KEYS);
+    OnKeyUnpressed(keyTranslator[systemKeyCode]);
+}
+
     
-    Scene * scene;
-};*/
+void KeyboardDevice::PrepareKeyTranslator()
+{
+    for (int i = 0; i < MAX_KEYS; i++) 
+    {
+        keyTranslator[i] = DVKEY_UNKNOWN;
+    }
+#if defined(__DAVAENGINE_WIN32__)
+#endif
+
+#if defined(__DAVAENGINE_MACOS__)
+    keyTranslator[0x7B] = DVKEY_LEFT;
+    keyTranslator[0x7C] = DVKEY_RIGHT;
+    keyTranslator[0x7D] = DVKEY_UP;
+    keyTranslator[0x7E] = DVKEY_DOWN;
+    keyTranslator[DVMACOS_COMMAND] = DVKEY_CTRL;
+    keyTranslator[DVMACOS_OPTION] = DVKEY_ALT;
+    keyTranslator[DVMACOS_SHIFT] = DVKEY_SHIFT;
+    keyTranslator[DVMACOS_CAPS_LOCK] = DVKEY_CAPSLOCK;
+#endif
+}
     
 
 };
-
-#endif // __DAVAENGINE_SCENENODE_H__
-
-
-
-
-

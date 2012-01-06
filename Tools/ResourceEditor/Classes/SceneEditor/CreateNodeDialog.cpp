@@ -40,6 +40,8 @@ CreateNodeDialog::CreateNodeDialog(const Rect & rect)
     
 CreateNodeDialog::~CreateNodeDialog()
 {
+    SafeRelease(sceneNode);
+
     SafeRelease(header);
     SafeRelease(propertyList);
     dialogDelegate = NULL;
@@ -74,13 +76,6 @@ SceneNode * CreateNodeDialog::GetSceneNode()
 }
 
 
-void CreateNodeDialog::WillAppear()
-{
-    ClearPropertyValues();
-    
-    DraggableDialog::WillAppear();
-}
-
 void CreateNodeDialog::SetScene(Scene *_scene)
 {
     scene = _scene;
@@ -99,11 +94,6 @@ void CreateNodeDialog::SetProjectPath(const String &path)
 
 void CreateNodeDialog::CreateNode()
 {
-    propertyList->ReadToNode(sceneNode);
-}
-
-void CreateNodeDialog::ClearPropertyValues()
-{
-    propertyList->SetDefaultValues();
+    propertyList->WriteTo(sceneNode);
 }
 

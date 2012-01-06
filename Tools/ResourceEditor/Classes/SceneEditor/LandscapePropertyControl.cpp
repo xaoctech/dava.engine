@@ -16,24 +16,22 @@ void LandscapePropertyControl::InitProperties()
     NodePropertyControl::InitProperties();
     
     String projectPath = "/";
-    propertyList->AddFloatProperty("Size", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Height", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("Height", PropertyList::PROPERTY_IS_EDITABLE); 
 
-    propertyList->AddComboProperty("renderingMode", renderingModes, 1);
+    propertyList->AddComboProperty("renderingMode", renderingModes);
     
-    propertyList->AddFilepathProperty("HeightMap", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_BUMP", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-}
-
-void LandscapePropertyControl::SetDefaultValues()
-{
+    propertyList->AddFilepathProperty("HeightMap", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_BUMP", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    
+    
     propertyList->SetStringPropertyValue("Name", "Landscape");
     propertyList->SetFloatPropertyValue("Size", 1.f);
     propertyList->SetFloatPropertyValue("Height", 1.f); 
-
+    
     propertyList->SetComboPropertyValue("renderingMode", 1);
     
     propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
@@ -43,9 +41,10 @@ void LandscapePropertyControl::SetDefaultValues()
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
 }
 
-void LandscapePropertyControl::ReadFromNode(SceneNode *sceneNode)
+
+void LandscapePropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadFromNode(sceneNode);
+    NodePropertyControl::ReadFrom(sceneNode);
     
     LandscapeNode *landscape = (LandscapeNode *)sceneNode;
     
@@ -110,9 +109,9 @@ void LandscapePropertyControl::ReadFromNode(SceneNode *sceneNode)
     }
 }
 
-void LandscapePropertyControl::ReadToNode(SceneNode *sceneNode)
+void LandscapePropertyControl::WriteTo(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadToNode(sceneNode);
+    NodePropertyControl::WriteTo(sceneNode);
     
     LandscapeNode *landscape = (LandscapeNode *)sceneNode;
     

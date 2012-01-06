@@ -104,6 +104,14 @@ public:
 		\param[in] name name of class you want to create
 	 */
 	BaseObject * New(const String & name); 
+	/**
+        \brief creates a class with given name
+
+        \param[in] name name of class you want to create
+        \param[in] object you can pass as creation parameter
+	 */
+    template <class T>
+	BaseObject * New(const String & name, const T & object); 
     
     //    /**
     //        \brief 

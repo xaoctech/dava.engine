@@ -28,8 +28,6 @@ public:
     CreateNodeDialog(const Rect & rect);
     virtual ~CreateNodeDialog();
     
-    virtual void WillAppear();
-    
     void SetDelegate(CreateNodeDialogDelegeate *delegate);
     
     void SetScene(Scene *_scene);
@@ -40,7 +38,6 @@ public:
 protected:
 
     virtual void CreateNode();
-    void ClearPropertyValues();
 
     
     void SetHeader(const WideString &headerText);

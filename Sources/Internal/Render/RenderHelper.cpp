@@ -509,7 +509,7 @@ void RenderHelper::DrawBox(const AABBox3 & box)
         Vector<int32> triangleIndices;
 
 		int32 e;
-		float32 segmentRad = M_PI / (2.0f * ((float32)(n + 1)));
+		float32 segmentRad = PI / (2.0f * ((float32)(n + 1)));
 		int32 numberOfSeparators = 4 * n + 4;
 				
 		for (e = -n; e <= n; e++)

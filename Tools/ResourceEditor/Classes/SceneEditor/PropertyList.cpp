@@ -32,45 +32,45 @@ PropertyList::~PropertyList()
     SafeRelease(propsList);
 }
 
-void PropertyList::AddStringProperty(const String &propertyName, const String &currentText, editableType propEditType)
+void PropertyList::AddStringProperty(const String &propertyName, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->SetString(currentText);
+    p->SetString("");
     AddProperty(p, propertyName, propEditType);
 }
 
-void PropertyList::AddIntProperty(const String &propertyName, int32 currentIntValue, editableType propEditType)
+void PropertyList::AddIntProperty(const String &propertyName, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_INTEGER);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->SetInt(currentIntValue);
+    p->SetInt(0);
     AddProperty(p, propertyName, propEditType);
 }
 
-void PropertyList::AddFloatProperty(const String &propertyName, float32 currentFloatValue, editableType propEditType)
+void PropertyList::AddFloatProperty(const String &propertyName, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_FLOAT);
     p->cellType = PropertyCell::PROP_CELL_TEXT;
-    p->SetFloat(currentFloatValue);
+    p->SetFloat(0.f);
     AddProperty(p, propertyName, propEditType);
 }
 
 
-void PropertyList::AddFilepathProperty(const String &propertyName, const String &currentFilepath, const String &extensionFilter, editableType propEditType)
+void PropertyList::AddFilepathProperty(const String &propertyName, const String &extensionFilter, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_FILEPATH;
-    p->SetString(currentFilepath);
+    p->SetString("/");
     p->SetExtensionFilter(extensionFilter);
     AddProperty(p, propertyName, propEditType);
 }
 
-void PropertyList::AddBoolProperty(const String &propertyName, bool currentBoolValue, editableType propEditType)
+void PropertyList::AddBoolProperty(const String &propertyName, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_BOOL);
     p->cellType = PropertyCell::PROP_CELL_BOOL;
-    p->SetBool(currentBoolValue);
+    p->SetBool(false);
     AddProperty(p, propertyName, propEditType);
 }
 
@@ -314,12 +314,12 @@ void PropertyList::ReleaseProperties()
 }
 
 
-void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings, int32 currentStringIndex)
+void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRINGS);
     p->cellType = PropertyCell::PROP_CELL_COMBO;
     p->SetStrings(strings);
-    p->SetItemIndex(currentStringIndex);
+    p->SetItemIndex(0);
     AddProperty(p, propertyName, PROPERTY_IS_READ_ONLY);
 }
 
@@ -341,11 +341,11 @@ String PropertyList::GetComboPropertyValue(const String &propertyName)
     return strings[currentStringIndex];   
 }
 
-void PropertyList::AddMatrix4Property(const String &propertyName, const Matrix4 &currentMatrix, editableType propEditType)
+void PropertyList::AddMatrix4Property(const String &propertyName, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_MATRIX4);
     p->cellType = PropertyCell::PROP_CELL_MATRIX4;
-    p->SetMatrix4(currentMatrix);
+    p->SetMatrix4(Matrix4());
     AddProperty(p, propertyName, propEditType);
 }
 

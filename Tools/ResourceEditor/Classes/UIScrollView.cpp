@@ -313,8 +313,8 @@ void UIScrollView::Input(UIEvent *currentTouch)
 	Vector<UIEvent> touches = UIControlSystem::Instance()->GetAllInputs();
 	if(1 == touches.size())
 	{
-//        bool spaceIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SPACE);
-        bool spaceIsPressed = false;
+        bool spaceIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SPACE);
+//        bool spaceIsPressed = false;
         if(!spaceIsPressed)
         {
             for(List<UIControl*>::iterator it = childs.begin(); it != childs.end(); ++it)

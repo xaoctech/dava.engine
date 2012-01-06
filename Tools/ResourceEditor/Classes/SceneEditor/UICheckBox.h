@@ -22,7 +22,7 @@ public:
 	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
     virtual void LoadFromYamlNodeCompleted();
 
-	void SetChecked(bool _checked);
+	void SetChecked(bool _checked, bool needDelegateCall);
 	bool Checked();
 
     void SetDelegate(UICheckBoxDelegate *delegate);
