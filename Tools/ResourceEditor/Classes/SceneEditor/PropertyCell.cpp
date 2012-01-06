@@ -459,7 +459,8 @@ void PropertyComboboxCell::SetData(PropertyCellData *prop)
 void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
 {
     property->SetItemIndex(itemIndex);
-    SetData(property);
+    combo->SetSelectedIndex(property->GetItemIndex(), false);
+//    SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }
 
