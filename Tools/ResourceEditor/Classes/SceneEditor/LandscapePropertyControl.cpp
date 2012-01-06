@@ -15,7 +15,6 @@ void LandscapePropertyControl::InitProperties()
 {
     NodePropertyControl::InitProperties();
     
-    String projectPath = "/";
     propertyList->AddFloatProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("Height", PropertyList::PROPERTY_IS_EDITABLE); 
 
@@ -175,6 +174,12 @@ void LandscapePropertyControl::SetProjectPath(const String &path)
     {
         projectPath += '/';
     }
+    
+    propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", projectPath);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
 }
 
 bool LandscapePropertyControl::IsValidPath(const String &path)
