@@ -43,6 +43,8 @@ public:
     
     PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate);
     ~PropertyList();
+    
+    bool IsPropertyAvaliable(const String &propertyName);
 
 //    void AddPropertyByData(PropertyCellData *newProp);
 
