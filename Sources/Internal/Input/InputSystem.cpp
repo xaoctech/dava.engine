@@ -25,93 +25,37 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
-#ifndef __DAVAENGINE_DATANODE_H__
-#define __DAVAENGINE_DATANODE_H__
+#include "InputSystem.h"
+#include "Input/KeyboardDevice.h"
 
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
-
-namespace DAVA
+namespace DAVA 
 {
 
-/**
-    
- */
-class DataNode : public BaseObject
+InputSystem::InputSystem()
 {
-public:	
-	DataNode(Scene * _scene = 0);
-	virtual ~DataNode();
+    keyboard = new KeyboardDevice();
+}
     
-    /**
-     */
-    void SetScene(Scene * _scene);
-    
-    /**
-        \brief Set name of this particular node.
-        \param[in] new name for this node
-     */
-    void SetName(const String & name);
+InputSystem::~InputSystem()
+{
+    SafeRelease(keyboard);
+}
 
-    /**
-        \brief Get name of this particular node.
-        \returns name of this node
-     */
-    const String & GetName();
+void InputSystem::OnBeforeUpdate()
+{
+    keyboard->OnBeforeUpdate();
+}
     
-    DataNode *	FindByName(const String & searchName);
-    virtual void	AddNode(DataNode * node);
-	virtual void	RemoveNode(DataNode * node);
-	virtual DataNode * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-	virtual void	RemoveAllChildren();
-
-    //DataNode * FindByAddress();
-    int32  GetNodeIndex();
+void InputSystem::OnAfterUpdate()
+{
+    keyboard->OnAfterUpdate();
+}
     
-    /**
-        \brief virtual function to save node to KeyedArchive
-     */
-    virtual void Save(KeyedArchive * archive);
+KeyboardDevice *InputSystem::GetKeyboard()
+{
+    return keyboard;
+}
     
-    /**
-        \brief virtual function to load node to KeyedArchive
-     */
-	virtual void Load(KeyedArchive * archive);
-protected:
-    Scene * scene;
-    String name;
-    std::vector<DataNode*> children;
-    int32 index;
 };
-    
-/*class DataNodeArray : public BaseObject
-{
-public:
-    DataNodeArray(Scene * _scene);
-    
-    virtual void	AddNode(DataNode * node);
-	virtual void	RemoveNode(DataNode * node);
-	virtual DataNode * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-	virtual void	RemoveAllChildren();
-
-protected:
-    
-    Scene * scene;
-};*/
-    
-
-};
-
-#endif // __DAVAENGINE_SCENENODE_H__
-
-
-
-
-

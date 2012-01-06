@@ -63,7 +63,7 @@ SceneFile::Header::Header()
 	descriptor[0] = 'D'; descriptor[1] = 'V';
 	descriptor[2] = 'S'; descriptor[3] = 'C';
 	
-	version = 104;
+	version = 105;
 	materialCount = 0;
 	staticMeshCount = 0;
 
@@ -93,8 +93,8 @@ bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBund
     rootNodePath = fname;
     
     
-//    textureIndexOffset = scene->GetTextureCount();
-	staticMeshIndexOffset = scene->GetStaticMeshCount();
+//  textureIndexOffset = scene->GetTextureCount();
+//	staticMeshIndexOffset = scene->GetStaticMeshCount();
 	animatedMeshIndexOffset = scene->GetAnimatedMeshCount();
 	cameraIndexOffset = scene->GetCameraCount();
 	animationIndexOffset = scene->GetAnimationCount();
@@ -110,7 +110,7 @@ bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBund
 	
 	sceneFP->Read(&header, sizeof(SceneFile::Header));
 	
-    DVASSERT(header.version >= 104 && "Do not support old converted formats after refactoring. Please reconvert everything");
+    DVASSERT(header.version >= 105 && "Do not support old converted formats after refactoring. Please reconvert everything");
     
 
     
@@ -196,7 +196,19 @@ bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBund
 	SafeRelease(sceneFP);
 	
 	Logger::Debug("scene loaded");
-	return true;
+	
+    for (size_t mi = 0; mi < materials.size(); ++mi)
+    {
+        SafeRelease(materials[mi]);
+    }
+    materials.clear();
+    
+    for (size_t mi = 0; mi < staticMeshes.size(); ++mi)
+    {
+        SafeRelease(staticMeshes[mi]);
+    }
+    staticMeshes.clear();
+    return true;
 }
 
 bool SceneFile::SaveScene(const char * filename)
@@ -239,8 +251,6 @@ bool SceneFile::ReadTexture()
 		}
 
 		texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-//		texture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
-		scene->AddTexture(texture);
 	}else
 	{
 		Logger::Debug("*** error reading texture: %s\n", textureDef.name);
@@ -253,7 +263,6 @@ bool SceneFile::ReadTexture()
             textureData[k + 3] = 0xFF; 
         }
         texture = Texture::CreateFromData(Texture::FORMAT_RGBA8888, textureData, 8, 8);
-        scene->AddTexture(texture);
         texture->GenerateMipmaps();
         SafeDeleteArray(textureData);
 	}
@@ -310,6 +319,8 @@ bool SceneFile::ReadMaterial()
    
     if (strlen(materialDef.diffuseTexture))
     {
+        // TODO rethink how to deal with paths here.
+        mat->names[Material::TEXTURE_DIFFUSE] = scenePath + String(materialDef.diffuseTexture);
         mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
     }
         
@@ -332,12 +343,10 @@ bool SceneFile::ReadMaterial()
             textureData[k + 3] = 0xFF; 
         }
         mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromData(Texture::FORMAT_RGBA8888, textureData, 8, 8);
-        scene->AddTexture(mat->textures[Material::TEXTURE_DIFFUSE]);
         mat->textures[Material::TEXTURE_DIFFUSE]->GenerateMipmaps();
         SafeDeleteArray(textureData);
     }
 
-    
     if (strlen(materialDef.lightmapTexture))
     {
         //mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.lightmapTexture));
@@ -351,7 +360,6 @@ bool SceneFile::ReadMaterial()
             mat->textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
     }
     
-    
 	mat->emission = materialDef.emission;
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
 	mat->SetName(materialDef.name);
@@ -361,14 +369,10 @@ bool SceneFile::ReadMaterial()
 	mat->specular = materialDef.specular;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
-    mat->hasOpacity = materialDef.hasOpacity;
+    mat->isOpaque = materialDef.hasOpacity;
 	
-	//scene->AddMaterial(mat);
-    
-    DataNode * materialsNode = dynamic_cast<DataNode*>(scene->FindByName("materials"));
-    materialsNode->AddNode(mat);
-    
-    materials.push_back(mat);
+    // retain object when we put it to array
+    materials.push_back(SafeRetain(mat));
     
 	SafeRelease(mat);
     
@@ -385,33 +389,50 @@ bool SceneFile::ReadStaticMesh()
 	if (debugLogEnabled)Logger::Debug("- Static Mesh: %d\n", polyGroupCount);
 	
 	StaticMesh * mesh = new StaticMesh(scene);
-	mesh->Create(polyGroupCount);
+    
 	for (uint32 polyGroupIndex = 0; polyGroupIndex < polyGroupCount; polyGroupIndex++)
 	{
-		uint32 vertexCount, indexCount;
+        PolygonGroup * polygonGroup = new PolygonGroup(scene);
+        mesh->AddNode(polygonGroup);
+        
+		uint32 vertexCount, indexCount, vertexFormat;
+        sceneFP->Read(&vertexFormat, sizeof(uint32));
 		sceneFP->Read(&vertexCount, sizeof(uint32));
 		sceneFP->Read(&indexCount, sizeof(uint32));
+        if (debugLogEnabled)Logger::Debug("--- vertex format: %x\n", vertexFormat); 
 		if (debugLogEnabled)Logger::Debug("--- vertex count: %d\n", vertexCount);
 		if (debugLogEnabled)Logger::Debug("--- index count: %d\n", indexCount);
 		
-		PolygonGroup * polygonGroup = mesh->GetPolygonGroup(polyGroupIndex);
-		polygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL | /*EVF_COLOR | */EVF_TEXCOORD0, vertexCount, indexCount, 1);
+		polygonGroup->AllocateData(vertexFormat, vertexCount, indexCount);
 		
 		for (uint32 v = 0; v < vertexCount; ++v)
 		{
 			Vector3 position, normal; 
 			Vector2 texCoords0, texCoords1;
-			sceneFP->Read(&position, sizeof(Vector3));
-			sceneFP->Read(&normal, sizeof(Vector3));
-			sceneFP->Read(&texCoords0, sizeof(Vector2));
-			sceneFP->Read(&texCoords1, sizeof(Vector2));
-		
+            
             if (polygonGroup->GetFormat() & EVF_VERTEX)
+            {
+                sceneFP->Read(&position, sizeof(Vector3));
                 polygonGroup->SetCoord(v, position);
+            }
+            
             if (polygonGroup->GetFormat() & EVF_NORMAL)
+            {
+                sceneFP->Read(&normal, sizeof(Vector3));
                 polygonGroup->SetNormal(v, normal);
-            if (polygonGroup->GetFormat() & EVF_TEXCOORD0)
+            }
+            
+			if (polygonGroup->GetFormat() & EVF_TEXCOORD0)
+            {
+                sceneFP->Read(&texCoords0, sizeof(Vector2));
                 polygonGroup->SetTexcoord(0, v, texCoords0);
+            }
+            
+            if (polygonGroup->GetFormat() & EVF_TEXCOORD1)
+            {
+                sceneFP->Read(&texCoords1, sizeof(Vector2));
+                polygonGroup->SetTexcoord(1, v, texCoords1);
+            }
 		}
 		
         polygonGroup->BuildVertexBuffer();
@@ -423,9 +444,12 @@ bool SceneFile::ReadStaticMesh()
 			polygonGroup->SetIndex(i, indices[i]);
         }
         delete [] indices;
+        
+        SafeRelease(polygonGroup);
 	}
 	
-	scene->AddStaticMesh(mesh);
+	//scene->AddStaticMesh(mesh);
+    staticMeshes.push_back(SafeRetain(mesh));
 	SafeRelease(mesh);
 	
 	return true;
@@ -438,17 +462,21 @@ bool SceneFile::ReadAnimatedMesh()
 	if (debugLogEnabled)Logger::Debug("- Animated Mesh: %d\n", polyGroupCount);
 	
 	AnimatedMesh * mesh = new AnimatedMesh(scene);
-	mesh->Create(polyGroupCount);
+	//mesh->Create(polyGroupCount);
+    
 	for (int polyGroupIndex = 0; polyGroupIndex < polyGroupCount; polyGroupIndex++)
 	{
+        PolygonGroup * polygonGroup = new PolygonGroup(scene);
+        mesh->AddNode(polygonGroup);
+        
 		int vertexCount, indexCount;
 		sceneFP->Read(&vertexCount, sizeof(int));
 		sceneFP->Read(&indexCount, sizeof(int));
 		if (debugLogEnabled)Logger::Debug("--- vertex count: %d\n", vertexCount);
 		if (debugLogEnabled)Logger::Debug("--- index count: %d\n", indexCount);
 		
-		PolygonGroup * polygonGroup = mesh->GetPolygonGroup(polyGroupIndex);
-		polygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL | EVF_COLOR | EVF_TEXCOORD0 | EVF_JOINTWEIGHT, vertexCount, indexCount, 1);
+		
+		polygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL | EVF_COLOR | EVF_TEXCOORD0 | EVF_JOINTWEIGHT, vertexCount, indexCount);
 		
 		for (int v = 0; v < vertexCount; ++v)
 		{
@@ -489,6 +517,8 @@ bool SceneFile::ReadAnimatedMesh()
         delete [] indices;
 		
 		polygonGroup->CreateBaseVertexArray();
+        
+        SafeRelease(polygonGroup);
 	}
 	Matrix4 bindShapeMatrix;
 	sceneFP->Read(&bindShapeMatrix, sizeof(Matrix4));
@@ -623,7 +653,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		
 			if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH)
 			{
-				StaticMesh * staticMesh = scene->GetStaticMesh(meshIndex + staticMeshIndexOffset);
+				StaticMesh * staticMesh = staticMeshes[meshIndex]; // staticMeshIndexOffset);
 				meshNode->AddPolygonGroup(staticMesh, polyGroupIndex, materials[materialIndex]);
 			}else
 			{

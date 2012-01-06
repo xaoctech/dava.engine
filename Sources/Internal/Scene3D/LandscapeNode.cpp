@@ -36,6 +36,7 @@
 #include "Scene3D/Scene.h"
 #include "Render/Shader.h"
 #include "Platform/SystemTimer.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -178,6 +179,7 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     
     renderingMode = _renderingMode;
     ReleaseShaders(); // release previous shaders
+    ReleaseAllRDOQuads();
     InitShaders(); // init new shaders according to the selected rendering mode
     
     heightmap = Image::CreateFromFile(heightmapPathname);
@@ -405,6 +407,9 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     Texture * texture = Texture::CreateFromFile(textureName);
+    if (!texture)return;
+
+    textureNames[level] = textureName;
     texture->GenerateMipmaps();
     texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
 
@@ -412,14 +417,6 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     textures[level] = texture;
 }
     
-void LandscapeNode::SetTexture(eTextureLevel level, Texture * texture)
-{
-    texture->GenerateMipmaps();
-    texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-    SafeRelease(textures[level]);
-    textures[level] = SafeRetain(texture);
-}
-
 Texture * LandscapeNode::GetTexture(eTextureLevel level)
 {
 	return textures[level];
@@ -923,8 +920,8 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     AABBox3 retBBox = box;
     box.GetTransformedBox(GetWorldTransform(), retBBox);
     
-    Vector<SceneNode*>::iterator itEnd = childs.end();
-    for (Vector<SceneNode*>::iterator it = childs.begin(); it != itEnd; ++it)
+    const Vector<SceneNode*>::iterator & itEnd = children.end();
+    for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
         AABBox3 lbox = (*it)->GetWTMaximumBoundingBox();
         if(  (AABBOX_INFINITY != lbox.min.x && AABBOX_INFINITY != lbox.min.y && AABBOX_INFINITY != lbox.min.z)
@@ -937,6 +934,38 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
 
+void LandscapeNode::Save(KeyedArchive * archive)
+{
+    SceneNode::Save(archive);
+    archive->SetString("hmap", heightMapPath);
+    archive->SetInt32("renderingMode", renderingMode);
+    archive->SetByteArrayAsType("bbox", box);
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        archive->SetString(Format("tex_%d", k), textureNames[k]);
+    }
+        
+}
+    
+void LandscapeNode::Load(KeyedArchive * archive)
+{
+    SceneNode::Load(archive);
+    
+    String path = archive->GetString("hmap");
+    AABBox3 box;
+    archive->GetByteArrayAsType("bbox", box);
+    
+    renderingMode = (eRenderingMode)archive->GetInt32("renderingMode", RENDERING_MODE_TEXTURE);
+    
+    BuildLandscapeFromHeightmapImage(renderingMode, path, box);
+    
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        String textureName = archive->GetString(Format("tex_%d", k));
+        SetTexture((eTextureLevel)k, textureName);
+    }
+
+}
 
     
 };

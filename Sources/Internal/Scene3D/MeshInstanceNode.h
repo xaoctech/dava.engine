@@ -82,6 +82,15 @@ public:
     virtual AABBox3 GetWTMaximumBoundingBox();
 
 	
+    /**
+        \brief virtual function to save node to KeyedArchive
+     */
+    virtual void Save(KeyedArchive * archive);
+    
+    /**
+        \brief virtual function to load node to KeyedArchive
+     */
+	virtual void Load(KeyedArchive * archive);
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 

@@ -25,93 +25,52 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
-#ifndef __DAVAENGINE_DATANODE_H__
-#define __DAVAENGINE_DATANODE_H__
+#ifndef __DAVAENGINE_INPUT_SYSTEM_H__
+#define __DAVAENGINE_INPUT_SYSTEM_H__
 
-#include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
+#include "Base/Singleton.h"
+#include "Core/Core.h"
+//#include "UI/UIControl.h"
+//#include "UI/UIEvent.h"
+//#include "UI/UIScreenTransition.h"
+//#include "UI/UILoadingTransition.h"
+//#include "UI/UIPopup.h"
 
+/**
+	\defgroup inputsystem	Input System
+*/
 namespace DAVA
 {
 
-/**
-    
- */
-class DataNode : public BaseObject
+class KeyboardDevice;
+class InputSystem : public Singleton<InputSystem>
 {
-public:	
-	DataNode(Scene * _scene = 0);
-	virtual ~DataNode();
-    
-    /**
-     */
-    void SetScene(Scene * _scene);
-    
-    /**
-        \brief Set name of this particular node.
-        \param[in] new name for this node
-     */
-    void SetName(const String & name);
-
-    /**
-        \brief Get name of this particular node.
-        \returns name of this node
-     */
-    const String & GetName();
-    
-    DataNode *	FindByName(const String & searchName);
-    virtual void	AddNode(DataNode * node);
-	virtual void	RemoveNode(DataNode * node);
-	virtual DataNode * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-	virtual void	RemoveAllChildren();
-
-    //DataNode * FindByAddress();
-    int32  GetNodeIndex();
-    
-    /**
-        \brief virtual function to save node to KeyedArchive
-     */
-    virtual void Save(KeyedArchive * archive);
-    
-    /**
-        \brief virtual function to load node to KeyedArchive
-     */
-	virtual void Load(KeyedArchive * archive);
+	friend void Core::CreateSingletons();
+	
 protected:
-    Scene * scene;
-    String name;
-    std::vector<DataNode*> children;
-    int32 index;
-};
-    
-/*class DataNodeArray : public BaseObject
-{
+	~InputSystem();
+	/**
+	 \brief Don't call this constructor!
+	 */
+	InputSystem();
+			
 public:
-    DataNodeArray(Scene * _scene);
     
-    virtual void	AddNode(DataNode * node);
-	virtual void	RemoveNode(DataNode * node);
-	virtual DataNode * GetChild(int32 index);
-	virtual int32   GetChildrenCount();
-	virtual void	RemoveAllChildren();
+    
+    void OnBeforeUpdate();
+    void OnAfterUpdate();
+    
+    KeyboardDevice *GetKeyboard();
 
 protected:
     
-    Scene * scene;
-};*/
-    
+    KeyboardDevice *keyboard;
 
 };
+};
 
-#endif // __DAVAENGINE_SCENENODE_H__
-
-
-
-
-
+#endif

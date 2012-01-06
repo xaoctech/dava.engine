@@ -161,10 +161,10 @@ void AnimatedMesh::Update(float32 timeElapsed)
 		bones[b]->finalMatrix = bindShapeMatrix * bones[b]->inverse0Matrix * bones[b]->GetWorldTransform();
 	}
 	
-	int32 polygroupCount = (int32)polygroups.size();
+	int32 polygroupCount = GetPolygonGroupCount();
 	for (int32 poly = 0; poly < polygroupCount; ++poly)
 	{
-		PolygonGroup * polyGroup = polygroups[poly];	
+		PolygonGroup * polyGroup = GetPolygonGroup(poly);	
 		
 		int32 vertexCount = polyGroup->GetVertexCount();
 		

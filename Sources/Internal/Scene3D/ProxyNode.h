@@ -27,13 +27,14 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENENODEADAPTER_H__
-#define __DAVAENGINE_DATANODE_H__
+#ifndef __DAVAENGINE_PROXYNODE_H__
+#define __DAVAENGINE_PROXYNODE_H__
 
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
+#include "Scene3D/DataNode.h"
 #include "Scene3D/SceneNode.h"
 
 namespace DAVA
@@ -42,7 +43,7 @@ namespace DAVA
 /**
     
  */
-class ProxyNode : public SceneNode
+class ProxyNode : public DataNode
 {
 public:	
 	ProxyNode(Scene * scene = 0);
@@ -60,7 +61,7 @@ protected:
 
 };
 
-#endif // __DAVAENGINE_SCENENODE_H__
+#endif // __DAVAENGINE_PROXYNODE_H__
 
 
 

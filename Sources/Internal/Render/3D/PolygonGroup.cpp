@@ -29,12 +29,18 @@
 =====================================================================================*/
 #include "Render/3D/PolygonGroup.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Render/RenderHelper.h"
+#include "Render/RenderManager.h"
+
 
 namespace DAVA 
 {
+    
+REGISTER_CLASS(PolygonGroup);
 	
-PolygonGroup::PolygonGroup()
-:	vertexCount(0),
+PolygonGroup::PolygonGroup(Scene * _scene)
+:	DataNode(_scene),
+    vertexCount(0),
 	indexCount(0),
 	textureCoordCount(0),
 	vertexStride(0),
@@ -54,7 +60,9 @@ PolygonGroup::PolygonGroup()
 	colorArray(0), 
 	indexArray(0), 
 	meshData(0),
-	baseVertexArray(0)
+	baseVertexArray(0),
+    renderDataObject(0),
+    primitiveType(PRIMITIVETYPE_TRIANGLELIST)
 {
 }
 
@@ -142,14 +150,14 @@ void PolygonGroup::UpdateDataPointersAndStreams()
 	}
 }
 
-void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount, int32 _textureCoordCount)
+void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount)
 {
 	vertexCount = _vertexCount;
 	indexCount = _indexCount;
-	textureCoordCount = _textureCoordCount;
 	vertexStride = GetVertexSize(_meshFormat);
 	vertexFormat = _meshFormat;
-	
+	textureCoordCount = GetTexCoordCount(vertexFormat);
+
 	meshData = new uint8[vertexStride * vertexCount];
 	indexArray = new int16[indexCount];
 	textureCoordArray = new Vector2*[textureCoordCount];
@@ -195,7 +203,7 @@ void PolygonGroup::BuildVertexBuffer()
     
 void PolygonGroup::Save(KeyedArchive * keyedArchive)
 {
-    BaseObject::Save(keyedArchive);
+    DataNode::Save(keyedArchive);
     
     keyedArchive->SetInt32("vertexFormat", vertexFormat);
     keyedArchive->SetInt32("vertexCount", vertexCount); 
@@ -211,7 +219,7 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive)
 
 void PolygonGroup::Load(KeyedArchive * keyedArchive)
 {
-    BaseObject::Load(keyedArchive);
+    DataNode::Load(keyedArchive);
     
     vertexFormat = keyedArchive->GetInt32("vertexFormat");
     vertexStride = GetVertexSize(vertexFormat);
@@ -247,8 +255,39 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive)
         const uint8 * archiveData = keyedArchive->GetByteArray("indices");
         memcpy(indexArray, archiveData, indexCount * INDEX_FORMAT_SIZE[indexFormat]);         
     }
+    textureCoordArray = new Vector2*[textureCoordCount];
+
+    renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
+    RecalcAABBox();
 }
+void PolygonGroup::RecalcAABBox()
+{
+    // recalc aabbox
+    for (int vi = 0; vi < vertexCount; ++vi)
+    {
+        Vector3 point;
+        GetCoord(vi, point);
+        aabbox.AddPoint(point);
+    }
+}
+    
+void PolygonGroup::DebugDraw()
+{
+    RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+    for (int k = 0; k < indexCount / 3; ++k)
+    {
+        Vector3 v0, v1, v2;
+        GetCoord(indexArray[k * 3 + 0], v0);
+        GetCoord(indexArray[k * 3 + 1], v1);
+        GetCoord(indexArray[k * 3 + 2], v2);
+        RenderHelper::Instance()->DrawLine(v0, v1);
+        RenderHelper::Instance()->DrawLine(v1, v2);
+        RenderHelper::Instance()->DrawLine(v0, v2);
+    }
+}
+
+    
     
 };
 

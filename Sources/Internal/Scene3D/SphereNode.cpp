@@ -70,7 +70,7 @@ SceneNode* SphereNode::Clone(SceneNode *dstNode)
     
     SphereNode *sphere = (SphereNode *)dstNode;
     
-    sphere->sphereMesh = (StaticMesh *)sphereMesh->Clone();
+    //sphere->sphereMesh = (StaticMesh *)sphereMesh->Clone();
     sphere->color = color;
     sphere->radius = radius;
     sphere->quality = quality;
@@ -87,15 +87,17 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
     
 	SafeRelease(sphereMesh);
     sphereMesh = new StaticMesh(GetScene());
-    sphereMesh->Create(1);
+    //sphereMesh->Create(1);
     
     //====== Общее количество треугольников 
     const int32 gnTria = (quality + 1) * quality * 2; 
     //====== Общее количество вершин 
     const int32 gnVert = (quality+1) * quality + 2; 
     
-    PolygonGroup *sphere = sphereMesh->GetPolygonGroup(0);
-	sphere->AllocateData( EVF_VERTEX | EVF_COLOR, gnVert, gnTria * 3, 0);
+    PolygonGroup *sphere = new PolygonGroup(scene);
+    sphereMesh->AddNode(sphere);
+    
+	sphere->AllocateData( EVF_VERTEX | EVF_COLOR, gnVert, gnTria * 3);
 
     //====== Формирование массива вершин 
     //====== Северный полюс 
@@ -186,6 +188,9 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
     }            
 
     AddPolygonGroup(sphereMesh, 0, NULL);
+    
+    
+    SafeRelease(sphere);
 }
     
 void SphereNode::SetQuality(int32 newQuality)

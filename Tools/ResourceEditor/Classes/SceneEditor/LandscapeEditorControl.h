@@ -25,7 +25,7 @@ public:
     
 public:
 
-    PaintTool(eBrushType _type, const String & _spriteName)
+    PaintTool(eBrushType _type, const String & _spriteName, float32 _solidRadius)
     {
         brushType = _type;
         spriteName = _spriteName;
@@ -33,6 +33,8 @@ public:
         radius = 0.5f;
         height = 0.5f;
         zoom = 0.5f;
+        
+        solidRadius = _solidRadius;
     }
     
     eBrushType brushType;
@@ -41,10 +43,21 @@ public:
     float32 radius;
     float32 height;
     float32 zoom;
+    float32 solidRadius;
 };
 
 class PaintAreaControl: public UIControl
 {
+public:
+    
+    enum eTextures
+    {
+        ET_TEXTURE0 = 0,
+        ET_TEXTURE1,
+        
+        ET_COUNT
+    };
+    
 public:
     PaintAreaControl(const Rect & rect);
     virtual ~PaintAreaControl();
@@ -56,11 +69,20 @@ public:
     virtual void Draw(const UIGeometricData &geometricData);
 
     
-    void SetTextureSideSize(int32 sideSizeW, int32 sideSizeH);
     void SetTextureSideSize(const Vector2 & sideSize);
+    
+    void SetTexture(eTextures id, const String &path);
 
 protected:
-
+    
+    void DrawCursor();
+    void DrawRenderObject();
+    
+    void DrawShader();
+    void InitShader();
+    void ReleaseShader();
+    
+    
     UIGeometricData savedGeometricData;
     void UpdateMap();
     void GeneratePreview();
@@ -71,6 +93,7 @@ protected:
     
     Vector2 startPoint;
     Vector2 endPoint;
+    Vector2 currentMousePos;
     
     Vector2 prevDrawPos;
     
@@ -79,6 +102,20 @@ protected:
     Color paintColor;
     
     Vector2 textureSideSize;
+    
+    Texture *textures[ET_COUNT];
+    
+    //
+    Shader * blendedShader;
+    int32 uniformTexture0;
+    int32 uniformTexture1;
+    int32 uniformTextureMask;
+    
+    Vector<float32> verts;
+    Vector<float32> textureCoords;
+    RenderDataObject *renderData;
+    
+    void CreateMeshFromSprite(int32 frameToGen);
 };
 
 

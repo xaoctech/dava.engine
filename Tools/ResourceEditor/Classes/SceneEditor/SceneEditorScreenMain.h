@@ -43,6 +43,14 @@ class SceneEditorScreenMain:
         MENUID_NEW = 200,
     };
     
+    enum eNewMenuIDS
+    {
+        ENMID_ENPTYSCENE = 0,
+        ENMID_SCENE_WITH_CAMERA,
+        
+        ENMID_COUNT
+    };
+    
 
 public:
 

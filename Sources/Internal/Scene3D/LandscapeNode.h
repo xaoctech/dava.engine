@@ -147,20 +147,11 @@ public:
     
     /**
         \brief Set texture for the specific texture level
-        To render landscape you need to set textures. 
-            
+        
+     To render landscape you need to set textures.  
         For RENDERING_MODE_TEXTURE you need to set only TEXTURE_TEXTURE0.
         For RENDERING_MODE_DETAIL_SHADER you have to set TEXTURE_TEXTURE0 and TEXTURE_DETAIL
         For RENDERING_MODE_BLENDED_SHADER you have to set TEXTURE_TEXTURE0, TEXTURE_TEXTURE1, TEXTURE_TEXTUREMASK
-     
-        \param[in] level level of texture you want to set
-        \param[in] texture pointer to Texture object you want to set
-     */
-    void SetTexture(eTextureLevel level, Texture * texture);
-    
-    /**
-        \brief Set texture for the specific texture level
-        To render landscape you need to set textures.  
           
         \param[in] level level of texture you want to set
         \param[in] textureName name of texture you want to open and set to specific level
@@ -200,6 +191,8 @@ public:
 
     inline const eRenderingMode GetRenderingMode();
     
+    void Save(KeyedArchive * archive);
+    void Load(KeyedArchive * archive);
     
 protected:	
     
@@ -241,6 +234,7 @@ protected:
     
     uint16 * indices;
     Texture * textures[TEXTURE_COUNT];
+    String textureNames[TEXTURE_COUNT];
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //

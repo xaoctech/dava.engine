@@ -71,6 +71,7 @@ public:
     virtual void SetData(PropertyCellData *prop);
 
     virtual void TextFieldShouldReturn(UITextField * textField);
+    virtual void TextFieldShouldCancel(UITextField * textField);
     virtual void TextFieldLostFocus(UITextField * textField);
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
     
@@ -89,8 +90,12 @@ public:
     
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
-    
+
     virtual void ValueChanged(bool newValue);
+    
+protected:    
+
+    void UpdateText();
     
     UICheckBox *checkBox;
     UIStaticText *falseText;

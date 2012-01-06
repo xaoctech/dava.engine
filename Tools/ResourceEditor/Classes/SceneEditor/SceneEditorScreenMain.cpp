@@ -251,6 +251,7 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
     file->EnableDebugLog(true);
     file->LoadScene("scene.sc2", scene);
     SafeRelease(file);
+    bodies[0]->bodyControl->Refresh();
 }
 
 
@@ -298,6 +299,8 @@ void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnNewPressed(BaseObject * obj, void *, void *)
 {
+    menuPopup->InitControl(MENUID_NEW, btnNew->GetRect());
+    AddControl(menuPopup);
 }
 
 
@@ -558,6 +561,30 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_NEW:
+        {
+            switch (itemID) 
+            {
+                case ENMID_ENPTYSCENE:
+                    bodies[0]->bodyControl->ReleaseScene();
+                    bodies[0]->bodyControl->CreateScene(false);
+                    bodies[0]->bodyControl->Refresh();
+                    break;
+                    
+                case ENMID_SCENE_WITH_CAMERA:
+                    bodies[0]->bodyControl->ReleaseScene();
+                    bodies[0]->bodyControl->CreateScene(true);
+                    bodies[0]->bodyControl->Refresh();
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            break;
+        }
+            
+            
         default:
             break;
     }
@@ -617,6 +644,25 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_NEW:
+        {
+            switch (itemID) 
+            {
+                case ENMID_ENPTYSCENE:
+                    text = L"Empty Scene";
+                    break;
+                    
+                case ENMID_SCENE_WITH_CAMERA:
+                    text = L"Scene+camera";
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            break;
+        }
+            
         default:
             break;
     }
@@ -633,6 +679,12 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         case MENUID_CREATENODE:
         {
             retCount = ECNID_COUNT;
+            break;
+        }
+            
+        case MENUID_NEW:
+        {
+            retCount = ENMID_COUNT;
             break;
         }
             
@@ -703,5 +755,7 @@ void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
         RemoveControl(landscapeEditor);
     }
     else
+    {
         AddControl(landscapeEditor);
+    }
 }

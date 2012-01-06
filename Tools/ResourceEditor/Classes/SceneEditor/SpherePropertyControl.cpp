@@ -11,15 +11,12 @@ void SpherePropertyControl::InitProperties()
 {
     NodePropertyControl::InitProperties();
     
-    propertyList->AddFloatProperty("Radius", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("r", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("g", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("b", 0.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("a", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-}
+    propertyList->AddFloatProperty("Radius", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
 
-void SpherePropertyControl::SetDefaultValues()
-{
     propertyList->SetStringPropertyValue("Name", "Sphere");
     propertyList->SetFloatPropertyValue("Radius", 1.f);
     propertyList->SetFloatPropertyValue("r", 0.f);
@@ -28,9 +25,10 @@ void SpherePropertyControl::SetDefaultValues()
     propertyList->SetFloatPropertyValue("a", 1.f); 
 }
 
-void SpherePropertyControl::ReadFromNode(SceneNode *sceneNode)
+
+void SpherePropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadFromNode(sceneNode);
+    NodePropertyControl::ReadFrom(sceneNode);
     
     SphereNode *sphere = (SphereNode *)sceneNode;
     
@@ -42,9 +40,9 @@ void SpherePropertyControl::ReadFromNode(SceneNode *sceneNode)
     propertyList->SetFloatPropertyValue("a", sphere->GetColor().a);
 }
 
-void SpherePropertyControl::ReadToNode(SceneNode *sceneNode)
+void SpherePropertyControl::WriteTo(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadToNode(sceneNode);
+    NodePropertyControl::WriteTo(sceneNode);
     
     SphereNode *sphere = (SphereNode *)sceneNode;
     Color color(

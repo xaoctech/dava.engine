@@ -54,7 +54,10 @@ BaseObject * BaseObject::LoadFromArchive(KeyedArchive * archive)
 {
     String name = archive->GetString("##name");
     BaseObject * object = ObjectFactory::Instance()->New(name);
-    object->Load(archive);
+    if (object)
+    {
+        object->Load(archive);
+    }
     return object;
 }
 
