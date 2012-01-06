@@ -86,9 +86,10 @@ public:
 	Vector4 specular;
 	Vector4 emission;
 
-	float	shininess;
+    // Boroda: I do not know is these fields will be required. Get them from exporter, but actually we do not using them
+	float32	shininess;
 	Vector4 reflective;
-	float	reflectivity;
+	float32	reflectivity;
 
 	Vector4 transparent;
 	float	transparency; 
@@ -109,19 +110,10 @@ public:
 
     void Save(KeyedArchive * keyedArchive);
     void Load(KeyedArchive * keyedArchive);
-//    union
-//    {
-//        Texture * detailTexture;
-//        Texture * decalTexture;
-//    };
-//    Texture * normalMap;
     
     
     
-    uint8    hasOpacity;         // require sorting
-    
-	char	* reflectiveTexture;
-	char	* shaderName;
+    bool    isOpaque;    
     
     Shader  * shader;
     static UberShader * uberShader;

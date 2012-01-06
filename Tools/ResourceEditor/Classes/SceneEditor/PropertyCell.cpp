@@ -432,7 +432,7 @@ PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, P
 //    Vector<String> empty;
 //    empty.push_back("Empty combo");
 //    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, empty);
-    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, prop->GetStrings());
+    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, prop->GetStringVector());
     AddControl(combo);
     SetData(prop);
 }
@@ -451,16 +451,8 @@ void PropertyComboboxCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
     
-    switch (prop->GetValueType())
-    {
-        case PropertyCellData::PROP_VALUE_STRINGS:
-            combo->SetNewItemsSet(prop->GetStrings());
-            combo->SetSelectedIndex(prop->GetItemIndex(), false);
-            break;
-            
-        default:
-            break;
-    }
+    combo->SetNewItemsSet(prop->GetStringVector());
+    combo->SetSelectedIndex(prop->GetItemIndex(), false);
 }
 
 void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)

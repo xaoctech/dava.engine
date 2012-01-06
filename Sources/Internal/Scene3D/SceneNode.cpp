@@ -464,6 +464,7 @@ void SceneNode::Load(KeyedArchive * archive)
         memcpy(&localTransform, archive->GetByteArray("localTransform"), size);
 
     flags = archive->GetUInt32("flags", 0);
+    InvalidateLocalTransform();
     debugFlags = archive->GetUInt32("debugFlags", 0);
 }
 

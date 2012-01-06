@@ -277,15 +277,24 @@ void MeshInstanceNode::Draw()
     
     uint32 meshesSize = (uint32)currentLod->meshes.size();
 
-	for (uint32 k = 0; k < meshesSize; ++k)
+	if (debugFlags == DEBUG_DRAW_NONE)
 	{
-		currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
-	}
+        for (uint32 k = 0; k < meshesSize; ++k)
+        {
+            currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
+        }
+    }else
+    {
+        for (uint32 k = 0; k < meshesSize; ++k)
+        {
+            currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
+        }
+    }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
         //RenderManager::PushState();
-        RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_CULL); 
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE); 
 //        RenderManager::Instance()->EnableDepthTest(false);
 //		RenderManager::Instance()->EnableTexturing(false);
 		RenderManager::Instance()->FlushState();
@@ -423,7 +432,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive)
             int32 materialIndex = archive->GetInt32(Format("l%d_%d_mat", lodIdx, idx), -1);
             int32 meshIndex = archive->GetInt32(Format("l%d_%d_ms", lodIdx, idx), -1);
             int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
-            if ((materialIndex != -1) && (meshIndex != -1))
+            if ((materialIndex != -1) && (meshIndex != -1) && (pgIndex != -1))
             {
                 AddPolygonGroup(SafeRetain(dynamic_cast<StaticMesh*>(scene->GetStaticMeshes()->GetChild(meshIndex))), 
                                 pgIndex,

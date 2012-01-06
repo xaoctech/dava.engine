@@ -137,7 +137,7 @@ void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBool
 }
 
 
-String PropertyList::GetStringPropertyValue(const String &propertyName)
+const String &PropertyList::GetStringPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetString();   
@@ -155,7 +155,7 @@ float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
     return p->GetFloat();   
 }
 
-String PropertyList::GetFilepathPropertyValue(const String &propertyName)
+const String &PropertyList::GetFilepathPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetString();   
@@ -205,8 +205,8 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_BOOL:
             delegate->OnBoolPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
             break;
-        case PropertyCellData::PROP_VALUE_STRINGS:
-            delegate->OnItemIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex());
+        case PropertyCellData::PROP_VALUE_COMBO_BOX:
+            delegate->OnComboIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex(), changedProperty->GetStringVector()[changedProperty->GetItemIndex()]);
             break;
         case PropertyCellData::PROP_VALUE_MATRIX4:
             delegate->OnMatrix4Changed(this, changedProperty->key, changedProperty->GetMatrix4());
@@ -314,16 +314,27 @@ void PropertyList::ReleaseProperties()
 }
 
 
-void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings)
+void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType)
 {
-    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRINGS);
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_COMBO_BOX);
     p->cellType = PropertyCell::PROP_CELL_COMBO;
-    p->SetStrings(strings);
+    p->SetStringVector(strings);
     p->SetItemIndex(0);
-    AddProperty(p, propertyName, PROPERTY_IS_READ_ONLY);
+    AddProperty(p, propertyName, propEditType);
 }
 
-void PropertyList::SetComboPropertyValue(const String &propertyName, int32 currentStringIndex)
+
+void PropertyList::SetComboPropertyStrings(const String &propertyName, const Vector<String> &strings)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetStringVector(strings);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+void PropertyList::SetComboPropertyIndex(const String &propertyName, int32 currentStringIndex)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     p->SetItemIndex(currentStringIndex);
@@ -333,12 +344,10 @@ void PropertyList::SetComboPropertyValue(const String &propertyName, int32 curre
     }
 }
 
-String PropertyList::GetComboPropertyValue(const String &propertyName)
+const String &PropertyList::GetComboPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
-    Vector<String> strings = p->GetStrings();
-    int32 currentStringIndex = p->GetItemIndex();
-    return strings[currentStringIndex];   
+    return p->GetStringVector()[p->GetItemIndex()];
 }
 
 void PropertyList::AddMatrix4Property(const String &propertyName, editableType propEditType)
