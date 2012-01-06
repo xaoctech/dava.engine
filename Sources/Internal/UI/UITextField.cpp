@@ -307,7 +307,7 @@ void UITextField::Input(UIEvent *currentInput)
         const int32 escKeyCode = 27;
 #else
         const int32 backSpaceKeyCode = 8;
-        const int32 escKeyCode = 13;//TODO: Fix this code please. Can't test on Windows :(
+        const int32 enterKeyCode = 13;//TODO: Fix this code please. Can't test on Windows :(
         const int32 escKeyCode = 27;
 #endif
 
