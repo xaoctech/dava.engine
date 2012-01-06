@@ -83,7 +83,7 @@ void EditorBodyControl::CreateLeftPanel()
     AddControl(leftPanel);
 
     Rect treeRect = leftRect;
-    leftRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 3);
+    treeRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 3);
     sceneTree = new UIHierarchy(treeRect);
     ControlsFactory::CusomizeListControl(sceneTree);
     ControlsFactory::SetScrollbar(sceneTree);
@@ -92,7 +92,7 @@ void EditorBodyControl::CreateLeftPanel()
     sceneTree->SetClipContents(true);
     leftPanel->AddControl(sceneTree);
     
-    int32 y = leftRect.dy;
+    int32 y = treeRect.dy;
     lookAtButton = ControlsFactory::CreateButton(Rect(
                                         0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
                                         L"Look At Object");

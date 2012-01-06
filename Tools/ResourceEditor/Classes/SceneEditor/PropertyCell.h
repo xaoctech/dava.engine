@@ -90,8 +90,12 @@ public:
     
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
-    
+
     virtual void ValueChanged(bool newValue);
+    
+protected:    
+
+    void UpdateText();
     
     UICheckBox *checkBox;
     UIStaticText *falseText;
