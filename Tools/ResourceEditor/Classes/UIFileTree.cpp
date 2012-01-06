@@ -146,6 +146,9 @@ int32 UIFileTree::CellHeight(UIList *forList, int32 index)
     
 void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
+	if (delegate)
+		delegate->OnCellSelected(this, dynamic_cast<UIFileTreeCell*>(selectedCell));
+
     int32 index = selectedCell->GetIndex();
     
 	UITreeItemInfo * entry = treeHead->EntryByIndex(index);
@@ -153,12 +156,14 @@ void UIFileTree::OnCellSelected(UIList *forList, UIListCell *selectedCell)
     if(!(isRootFolderExpandingDisabled && 0 == index))
     {
         entry->ToggleExpanded();
+        if(entry->IsDirectory())
+        {
+            Refresh();
+        }
     }
 	
-	if (delegate)
-		delegate->OnCellSelected(this, dynamic_cast<UIFileTreeCell*>(selectedCell));
 	
-	Refresh();
+//	Refresh();
 };
 
 	
