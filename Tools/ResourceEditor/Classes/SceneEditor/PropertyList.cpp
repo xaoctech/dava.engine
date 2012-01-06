@@ -167,6 +167,14 @@ bool PropertyList::GetBoolPropertyValue(const String &propertyName)
     return p->GetBool();   
 }
 
+bool PropertyList::IsPropertyAvaliable(const String &propertyName)
+{
+	Map<String, PropertyCellData*>::const_iterator it;
+	it = propsMap.find(propertyName);
+    
+    return it != propsMap.end();
+}
+
 
 PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 {
