@@ -159,4 +159,27 @@ SceneNode * EditorScene::GetSelection()
 	return selection;
 }
 
+void EditorScene::Draw()
+{
+	Scene::Draw();
+//	DrawDebugNodes(this);
+}
+
+void EditorScene::DrawDebugNodes(SceneNode * curr)
+{
+	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
+	
+	if (mesh && mesh->userData)
+	{
+		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		data->bulletObject->Draw(mesh->GetWorldTransform());
+	}
+
+	int size = curr->GetChildrenCount();
+	for (int i = 0; i < size; i++)
+	{
+		DrawDebugNodes(curr->GetChild(i));
+	}
+}
+
 
