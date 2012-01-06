@@ -61,8 +61,8 @@ MaterialEditor::MaterialEditor()
         materialProps[i]->AddFilepathProperty("Diffuse texture", ".png");
         materialProps[i]->SetFilepathPropertyValue("Diffuse texture", " ");
         
-        materialProps[i]->AddBoolProperty("Has Opacity");
-        materialProps[i]->SetBoolPropertyValue("Has Opacity", true);
+        materialProps[i]->AddBoolProperty("Is Opaque");
+        materialProps[i]->SetBoolPropertyValue("Is Opaque", false);
         
         
         materialProps[i]->AddFloatProperty("Diffuse.r");
@@ -160,10 +160,10 @@ void MaterialEditor::OnIntPropertyChanged(PropertyList *forList, const String &f
 
 void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if(forKey == "Has Opacity")
+    if(forKey == "Is Opaque")
     {
         Material *mat = workingScene->GetMaterial(selectedMaterial);
-        mat->hasOpacity = newValue;
+        mat->isOpaque = newValue;
     }
 }
 
@@ -219,7 +219,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
     {
         currentList->SetFilepathPropertyValue("Diffuse texture", " ");
     }
-    currentList->SetBoolPropertyValue("Has Opacity", mat->hasOpacity);
+    currentList->SetBoolPropertyValue("Is Opaque", mat->isOpaque);
 
     
     currentList->SetFloatPropertyValue("Diffuse.r", mat->diffuse.x);
