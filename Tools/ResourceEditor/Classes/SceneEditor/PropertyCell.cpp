@@ -510,3 +510,30 @@ void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }
+
+
+//*************** PropertySectionHeaderCell **************
+PropertySectionHeaderCell::PropertySectionHeaderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+    :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    ControlsFactory::CustomizePropertySectionCell(this);
+    keyName->size.x = width;
+
+    SetData(prop);
+}
+
+PropertySectionHeaderCell::~PropertySectionHeaderCell()
+{
+}
+
+float32 PropertySectionHeaderCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT;
+}
+
+void PropertySectionHeaderCell::ToggleExpand()
+{
+    property->SetBool(!property->GetBool());
+    SetData(property);
+}
+
