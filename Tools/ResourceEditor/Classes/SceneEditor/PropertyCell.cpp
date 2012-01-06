@@ -356,6 +356,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     ControlsFactory::CustomizeEditablePropertyCell(pathTextContainer);
     pathText = new UIStaticText(Rect(0, 0, pathTextContainer->size.x, pathTextContainer->size.y));
     pathText->SetFont(font);
+    pathText->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
     pathTextContainer->AddControl(pathText);
     AddControl(pathTextContainer);
     
