@@ -263,7 +263,7 @@ void PropertyBoolCell::SetData(PropertyCellData *prop)
     switch (prop->GetValueType())
     {
         case PropertyCellData::PROP_VALUE_BOOL:
-            checkBox->SetChecked(prop->GetBool());
+            checkBox->SetChecked(prop->GetBool(), false);
             break;
             
         default:
@@ -279,6 +279,8 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
 void PropertyBoolCell::ValueChanged(bool newValue)
 {
     property->SetBool(newValue);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
     
     if(newValue)
     {
