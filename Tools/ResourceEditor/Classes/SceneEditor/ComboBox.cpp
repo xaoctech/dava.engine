@@ -48,6 +48,21 @@ int32 ComboBox::IndexByKey(const String &key)
 
 void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
 {
+    indecesMap.clear();
+    items = listItems;
+    for (int i = 0; i < items.size(); i++)
+    {
+        indecesMap[items[i]] = i;
+    }
+    int32 sz = Min(8, (int32)items.size());
+    SafeRelease(list);
+    list = new UIList(Rect(0, size.y, size.x, size.y * sz), UIList::ORIENTATION_VERTICAL);
+    list->SetDelegate(this);
+    ControlsFactory::CusomizeListControl(list);
+    
+    selectionIndex = 0;
+    ControlsFactory::CustomizeButton(comboButton, StringToWString(items[selectionIndex]));
+    SetSelectedIndex(0, false);
 }
 
 
