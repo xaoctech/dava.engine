@@ -225,7 +225,8 @@ void MaterialEditor::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
     if (selectedCell->GetIndex() != selectedMaterial)
     {
-        if (lastSelection->GetIndex() == selectedMaterial) 
+        
+        if (lastSelection && lastSelection->GetIndex() == selectedMaterial) 
         {
             lastSelection->SetSelected(false, false);
         }
