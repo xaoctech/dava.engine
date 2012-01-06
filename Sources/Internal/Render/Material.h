@@ -70,7 +70,7 @@ public:
     };
 
     Material(Scene * _scene = 0);
-    ~Material();
+    virtual ~Material();
     
     virtual void SetScene(Scene * _scene);
    
