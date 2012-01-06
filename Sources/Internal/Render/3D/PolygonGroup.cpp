@@ -29,6 +29,9 @@
 =====================================================================================*/
 #include "Render/3D/PolygonGroup.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Render/RenderHelper.h"
+#include "Render/RenderManager.h"
+
 
 namespace DAVA 
 {
@@ -58,7 +61,8 @@ PolygonGroup::PolygonGroup(Scene * _scene)
 	indexArray(0), 
 	meshData(0),
 	baseVertexArray(0),
-    renderDataObject(0)
+    renderDataObject(0),
+    primitiveType(PRIMITIVETYPE_TRIANGLELIST)
 {
 }
 
@@ -255,7 +259,35 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive)
 
     renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
+    RecalcAABBox();
 }
+void PolygonGroup::RecalcAABBox()
+{
+    // recalc aabbox
+    for (int vi = 0; vi < vertexCount; ++vi)
+    {
+        Vector3 point;
+        GetCoord(vi, point);
+        aabbox.AddPoint(point);
+    }
+}
+    
+void PolygonGroup::DebugDraw()
+{
+    RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+    for (int k = 0; k < indexCount / 3; ++k)
+    {
+        Vector3 v0, v1, v2;
+        GetCoord(indexArray[k * 3 + 0], v0);
+        GetCoord(indexArray[k * 3 + 1], v1);
+        GetCoord(indexArray[k * 3 + 2], v2);
+        RenderHelper::Instance()->DrawLine(v0, v1);
+        RenderHelper::Instance()->DrawLine(v1, v2);
+        RenderHelper::Instance()->DrawLine(v0, v2);
+    }
+}
+
+    
     
 };
 

@@ -44,6 +44,11 @@ UberShader * Material::uberShader = 0;
 
 Material::Material(Scene * _scene) 
     :   DataNode(_scene)
+    ,   diffuse(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   specular(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   ambient(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   emission(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   isOpaque(false)
 {
     if (scene)
     {
@@ -122,6 +127,12 @@ void Material::Save(KeyedArchive * keyedArchive)
     {
         keyedArchive->SetString(Format("mat.tex%d", k), names[k].c_str());
     }
+    
+    keyedArchive->SetByteArrayAsType("diffuse", diffuse);
+    keyedArchive->SetByteArrayAsType("ambient", ambient);
+    keyedArchive->SetByteArrayAsType("specular", specular);
+    keyedArchive->SetByteArrayAsType("emission", emission);
+    keyedArchive->SetBool("isOpaque", isOpaque);
 }
     
 void Material::Load(KeyedArchive * keyedArchive)
@@ -136,7 +147,18 @@ void Material::Load(KeyedArchive * keyedArchive)
         //{
         textures[k] = Texture::CreateFromFile(names[k]);
         //}
+//        if (names[k].size())
+//        {
+//            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
+//        } 
     }
+    
+    keyedArchive->GetByteArrayAsType("diffuse", diffuse);
+    keyedArchive->GetByteArrayAsType("ambient", ambient);
+    keyedArchive->GetByteArrayAsType("specular", specular);
+    keyedArchive->GetByteArrayAsType("emission", emission);
+    
+    isOpaque = keyedArchive->GetBool("isOpaque", isOpaque);
 }
 
 

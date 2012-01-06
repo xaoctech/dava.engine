@@ -459,7 +459,9 @@ void Camera::Draw()
         this->Set();
         
         // Restore original camera
-        prevCamera->Set();
+        // Do that only if exists because potentially it can be scene without camera set
+        if (prevCamera)
+            prevCamera->Set();
         
         RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
         
