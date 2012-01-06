@@ -11,17 +11,14 @@ void BoxPropertyControl::InitProperties()
 {
     NodePropertyControl::InitProperties();
     
-    propertyList->AddFloatProperty("Length", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Width", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("Depth", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("r", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("g", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("b", 0.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("a", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-}
+    propertyList->AddFloatProperty("Length", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("Width", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("Depth", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
 
-void BoxPropertyControl::SetDefaultValues()
-{
     propertyList->SetStringPropertyValue("Name", "Box");
     propertyList->SetFloatPropertyValue("Length", 1.f);
     propertyList->SetFloatPropertyValue("Width", 1.f); 
@@ -32,9 +29,10 @@ void BoxPropertyControl::SetDefaultValues()
     propertyList->SetFloatPropertyValue("a", 1.f); 
 }
 
-void BoxPropertyControl::ReadFromNode(SceneNode *sceneNode)
+
+void BoxPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadFromNode(sceneNode);
+    NodePropertyControl::ReadFrom(sceneNode);
     
     CubeNode *cube = (CubeNode *)sceneNode;
     
@@ -48,9 +46,9 @@ void BoxPropertyControl::ReadFromNode(SceneNode *sceneNode)
     propertyList->SetFloatPropertyValue("a", cube->GetColor().a);
 }
 
-void BoxPropertyControl::ReadToNode(SceneNode *sceneNode)
+void BoxPropertyControl::WriteTo(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadToNode(sceneNode);
+    NodePropertyControl::WriteTo(sceneNode);
     
     CubeNode *cube = (CubeNode *)sceneNode;
     Color color(

@@ -9,22 +9,17 @@ ServicenodePropertyControl::ServicenodePropertyControl(const Rect & rect, bool s
 void ServicenodePropertyControl::InitProperties()
 {
     NodePropertyControl::InitProperties();
-}
-
-void ServicenodePropertyControl::SetDefaultValues()
-{
     propertyList->SetStringPropertyValue("Name", "Service node");
 }
 
-void ServicenodePropertyControl::ReadFromNode(SceneNode *sceneNode)
+void ServicenodePropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadFromNode(sceneNode);
-
+    NodePropertyControl::ReadFrom(sceneNode);
 }
 
-void ServicenodePropertyControl::ReadToNode(SceneNode *sceneNode)
+void ServicenodePropertyControl::WriteTo(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadToNode(sceneNode);
+    NodePropertyControl::WriteTo(sceneNode);
 }
 
 

@@ -2,6 +2,7 @@
 
 #include "ControlsFactory.h"
 
+
 //***************    PaintAreaControl    **********************
 PaintAreaControl::PaintAreaControl(const Rect & rect)
     :   UIControl(rect)
@@ -19,22 +20,28 @@ PaintAreaControl::PaintAreaControl(const Rect & rect)
     currentMousePos = Vector2(-100, -100);
     prevDrawPos = Vector2(-100, -100);
     
-    SetTextureSideSize(rect.dx, rect.dy);
+    for (int32 i = 0; i < ET_COUNT; ++i)
+    {
+        textures[i] = NULL;
+    }
+    
+    SetTextureSideSize(Vector2(rect.dx, rect.dy));
+    
+    renderData = NULL;
+    InitShader();
 }
 
 PaintAreaControl::~PaintAreaControl()
 {
+    ReleaseShader();
+    
+    for (int32 i = 0; i < ET_COUNT; ++i)
+    {
+        SafeRelease(textures[i]);
+    }
+
     SafeRelease(toolSprite);
     SafeRelease(spriteForDrawing);
-}
-
-void PaintAreaControl::SetTextureSideSize(int32 sideSizeW, int32 sideSizeH)
-{
-    textureSideSize = Vector2(sideSizeW, sideSizeH);
-
-    SafeRelease(spriteForDrawing);
-    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGB565);
-    SetSprite(spriteForDrawing, 0);
 }
 
 void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
@@ -42,8 +49,14 @@ void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
     textureSideSize = sideSize;
     
     SafeRelease(spriteForDrawing);
-    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGB565);
-    SetSprite(spriteForDrawing, 0);
+    spriteForDrawing = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGBA8888);
+//    SetSprite(spriteForDrawing, 0);
+    
+    RenderManager::Instance()->SetRenderTarget(spriteForDrawing);
+    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 1.f));
+    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+    RenderManager::Instance()->ResetColor();
+    RenderManager::Instance()->RestoreRenderTarget();
 }
 
 
@@ -55,6 +68,151 @@ void PaintAreaControl::SetPaintTool(PaintTool *tool)
     toolSprite = Sprite::Create(usedTool->spriteName);
 }
 
+void PaintAreaControl::SetTexture(eTextures id, const String &path)
+{
+    SafeRelease(textures[id]);
+    textures[id] = Texture::CreateFromFile(path);
+}
+
+void PaintAreaControl::InitShader()
+{
+    blendedShader = new Shader();
+    blendedShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
+    blendedShader->Recompile();
+    
+    uniformTexture0 = blendedShader->FindUniformLocationByName("texture0");
+    uniformTexture1 = blendedShader->FindUniformLocationByName("texture1");
+    uniformTextureMask = blendedShader->FindUniformLocationByName("textureMask");
+}
+
+void PaintAreaControl::ReleaseShader()
+{
+    SafeRelease(renderData);
+    SafeRelease(blendedShader);
+}
+
+void PaintAreaControl::DrawShader()
+{
+    if (textures[ET_TEXTURE0])
+    {
+        RenderManager::Instance()->SetTexture(textures[ET_TEXTURE0], 0);   
+    }
+    if (textures[ET_TEXTURE1])
+    {
+        RenderManager::Instance()->SetTexture(textures[ET_TEXTURE1], 1);
+    }
+//    if (textures[TEXTURE_TEXTUREMASK])
+    {
+        RenderManager::Instance()->SetTexture(spriteForDrawing->GetTexture(), 2);
+    }
+    
+    RenderManager::Instance()->SetShader(blendedShader);
+    RenderManager::Instance()->FlushState();
+    blendedShader->SetUniformValue(uniformTexture0, 0);
+    blendedShader->SetUniformValue(uniformTexture1, 1);
+    blendedShader->SetUniformValue(uniformTextureMask, 2);
+//    blendedShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+    
+    
+    RenderManager::Instance()->SetTexture(0, 1);
+    RenderManager::Instance()->SetTexture(0, 2);
+}
+
+void PaintAreaControl::DrawRenderObject()
+{
+//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+
+    RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+//    RenderManager::Instance()->SetState(
+//                                        RenderStateBlock::STATE_BLEND | 
+//                                        RenderStateBlock::STATE_TEXTURE0 | 
+//                                        RenderStateBlock::STATE_CULL);
+    
+    int32 frame = 0;
+    RenderManager::Instance()->SetTexture(spriteForDrawing->GetTexture(frame));
+    RenderManager::Instance()->SetRenderData(renderData);
+    RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, frame * 4, 4);
+
+//    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
+}
+
+void PaintAreaControl::DrawCursor()
+{
+    if(usedTool && toolSprite && usedTool->zoom && -100 != currentMousePos.x)
+    {
+        RenderManager::Instance()->ClipPush();
+        RenderManager::Instance()->SetClip(savedGeometricData.GetUnrotatedRect());
+        
+        float32 scaleSize = toolSprite->GetWidth() * usedTool->radius * 2;
+        float32 radiusSize = scaleSize * usedTool->solidRadius;
+        
+        Vector2 pos = (currentMousePos);
+        RenderManager::Instance()->SetColor(Color(1.f, 0.f, 0.f, 1.f));
+        
+        RenderHelper::Instance()->DrawCircle(pos, radiusSize);
+        
+        RenderManager::Instance()->ClipPop();
+        
+        RenderManager::Instance()->ResetColor();
+    } 
+}
+
+void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
+{
+    savedGeometricData = geometricData;
+    
+    DrawCursor();
+    
+//    DrawShader();
+    
+    DrawRenderObject();
+    
+    UIControl::Draw(geometricData);
+}
+
+
+void PaintAreaControl::CreateMeshFromSprite(int32 frameToGen)
+{
+    float32 x0 = spriteForDrawing->GetRectOffsetValueForFrame(frameToGen, Sprite::X_OFFSET_TO_ACTIVE);
+    float32 y0 = spriteForDrawing->GetRectOffsetValueForFrame(frameToGen, Sprite::Y_OFFSET_TO_ACTIVE);
+    float32 x1 = x0 + spriteForDrawing->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_WIDTH);
+    float32 y1 = y0 + spriteForDrawing->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_HEIGHT);
+//    x0 *= sprScale.x;
+//    x1 *= sprScale.y;
+//    y0 *= sprScale.x;
+//    y1 *= sprScale.y;
+    
+    //triangle 1
+    //0, 0
+    float32 *pT = spriteForDrawing->GetTextureVerts(frameToGen);
+    
+    verts.push_back(x0);
+    verts.push_back(y0);
+    verts.push_back(0);
+    
+    
+    //1, 0
+    verts.push_back(x1);
+    verts.push_back(y0);
+    verts.push_back(0);
+    
+    
+    //0, 1
+    verts.push_back(x0);
+    verts.push_back(y1);
+    verts.push_back(0);
+    
+    //1, 1
+    verts.push_back(x1);
+    verts.push_back(y1);
+    verts.push_back(0);
+    
+    for (int i = 0; i < 2*4; i++) 
+    {
+        textureCoords.push_back(*pT);
+        pT++;
+    }
+}
 
 void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
 {
@@ -71,7 +229,7 @@ void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
     else if(UIEvent::BUTTON_2 == currentInput->tid)
     {
         srcBlendMode = BLEND_SRC_ALPHA;
-        dstBlendMode = BLEND_ONE_MINUS_SRC_ALPHA;
+        dstBlendMode = BLEND_SRC_ALPHA_SATURATE;
 
         paintColor = Color(0.f, 0.f, 0.f, 1.f);
         currentMousePos = currentInput->point;
@@ -94,32 +252,6 @@ void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
         prevDrawPos = Vector2(-100, -100);
         
         GeneratePreview();
-    }
-}
-
-void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
-{
-    savedGeometricData = geometricData;
-    UIControl::Draw(geometricData);
-    
-    if(usedTool && toolSprite && usedTool->zoom && -100 != currentMousePos.x)
-    {
-        RenderManager::Instance()->SetColor(Color(1.f, 0.f, 0.f, 1.f));
-
-        RenderManager::Instance()->ClipPush();
-        RenderManager::Instance()->SetClip(geometricData.GetUnrotatedRect());
-        
-        float32 scaleSize = toolSprite->GetWidth() * usedTool->radius * 2;
-        float32 radiusSize = scaleSize * usedTool->solidRadius;
-
-        Vector2 pos = (currentMousePos);
-        RenderManager::Instance()->SetColor(Color(1.f, 0.f, 0.f, 1.f));
-
-        RenderHelper::Instance()->DrawCircle(pos, radiusSize);
-        
-        RenderManager::Instance()->ClipPop();
-        
-        RenderManager::Instance()->ResetColor();
     }
 }
 
@@ -164,7 +296,17 @@ void PaintAreaControl::UpdateMap()
 
 void PaintAreaControl::GeneratePreview()
 {
+    SafeRelease(renderData);
+    verts.clear();
+    textureCoords.clear();
     
+    for (int i = 0; i < spriteForDrawing->GetFrameCount(); i++) 
+    {
+        CreateMeshFromSprite(i);
+    }
+    renderData = new RenderDataObject();
+    renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
+    renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textureCoords.front());
 }
 
 
@@ -208,9 +350,17 @@ void LandscapeEditorControl::CreateLeftPanel()
     }
     SafeRelease(keyedArchieve);
     
-    propertyList->AddIntProperty("Size", 1024, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddIntProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetIntPropertyValue("Size", 1024);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath + "Data/Landscape/tex3.png");
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath + "Data/Landscape/detail_gravel.png");
 }
 
 void LandscapeEditorControl::ReleaseLeftPanel()
@@ -357,6 +507,9 @@ void LandscapeEditorControl::WillAppear()
 {
     scrollView->SetScale(zoom->GetValue());
 
+    paintArea->SetTexture(PaintAreaControl::ET_TEXTURE0, propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0"));
+    paintArea->SetTexture(PaintAreaControl::ET_TEXTURE1, propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL"));
+
     if(!selectedTool)
     {
         toolButtons[0]->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
@@ -435,11 +588,11 @@ void LandscapeEditorControl::OnFilepathPropertyChanged(PropertyList *forList, co
     {
         if("TEXTURE_TEXTURE0" == forKey)
         {
-            
+            paintArea->SetTexture(PaintAreaControl::ET_TEXTURE0, newValue);
         }
         else if("TEXTURE_TEXTURE1/TEXTURE_DETAIL" == forKey)
         {
-            
+            paintArea->SetTexture(PaintAreaControl::ET_TEXTURE1, newValue);
         }
     }
 }

@@ -10,40 +10,39 @@ void CameraPropertyControl::InitProperties()
 {
     NodePropertyControl::InitProperties();
     
-    propertyList->AddFloatProperty("Fov", 70.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("zNear", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("zFar", 5000.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddBoolProperty("isOrtho", false, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetStringPropertyValue("Name", "Camera");
+    
+    propertyList->AddFloatProperty("Fov", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("zNear", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("zFar", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddBoolProperty("isOrtho", PropertyList::PROPERTY_IS_EDITABLE);
 
-    propertyList->AddFloatProperty("position.x", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("position.y", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("position.z", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("position.x", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("position.y", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("position.z", PropertyList::PROPERTY_IS_EDITABLE);
 
-    propertyList->AddFloatProperty("target.x", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("target.y", 0.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("target.z", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-}
+    propertyList->AddFloatProperty("target.x", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("target.y", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("target.z", PropertyList::PROPERTY_IS_EDITABLE);
 
-void CameraPropertyControl::SetDefaultValues()
-{
     propertyList->SetStringPropertyValue("Name", "Camera");
     propertyList->SetFloatPropertyValue("Fov", 70.f);
     propertyList->SetFloatPropertyValue("zNear", 1.f);
     propertyList->SetFloatPropertyValue("zFar", 5000.f);
     propertyList->SetBoolPropertyValue("isOrtho", false);
-
+    
     propertyList->SetFloatPropertyValue("position.x", 0.f);
     propertyList->SetFloatPropertyValue("position.y", 0.f);
     propertyList->SetFloatPropertyValue("position.z", 0.f);
-
+    
     propertyList->SetFloatPropertyValue("target.x", 0.f);
     propertyList->SetFloatPropertyValue("target.y", 0.f);
     propertyList->SetFloatPropertyValue("target.z", 1.f);
 }
 
-void CameraPropertyControl::ReadFromNode(SceneNode *sceneNode)
+void CameraPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadFromNode(sceneNode);
+    NodePropertyControl::ReadFrom(sceneNode);
     
     Camera *camera = (Camera *)sceneNode;
     
@@ -64,9 +63,9 @@ void CameraPropertyControl::ReadFromNode(SceneNode *sceneNode)
 
 }
 
-void CameraPropertyControl::ReadToNode(SceneNode *sceneNode)
+void CameraPropertyControl::WriteTo(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadToNode(sceneNode);
+    NodePropertyControl::WriteTo(sceneNode);
     
     Camera *camera = (Camera *)sceneNode;
     

@@ -263,7 +263,8 @@ void PropertyBoolCell::SetData(PropertyCellData *prop)
     switch (prop->GetValueType())
     {
         case PropertyCellData::PROP_VALUE_BOOL:
-            checkBox->SetChecked(prop->GetBool());
+            checkBox->SetChecked(prop->GetBool(), false);
+            UpdateText();
             break;
             
         default:
@@ -276,11 +277,9 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::ValueChanged(bool newValue)
+void PropertyBoolCell::UpdateText()
 {
-    property->SetBool(newValue);
-    
-    if(newValue)
+    if(property->GetBool())
     {
         if(falseText->GetParent())
         {
@@ -304,6 +303,40 @@ void PropertyBoolCell::ValueChanged(bool newValue)
             textContainer->AddControl(falseText);
         }
     }
+}
+
+void PropertyBoolCell::ValueChanged(bool newValue)
+{
+    property->SetBool(newValue);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+
+    UpdateText();
+    
+//    if(newValue)
+//    {
+//        if(falseText->GetParent())
+//        {
+//            textContainer->RemoveControl(falseText);
+//        }
+//        
+//        if(!trueText->GetParent())
+//        {
+//            textContainer->AddControl(trueText);
+//        }
+//    }
+//    else
+//    {
+//        if(trueText->GetParent())
+//        {
+//            textContainer->RemoveControl(trueText);
+//        }
+//        
+//        if(!falseText->GetParent())
+//        {
+//            textContainer->AddControl(falseText);
+//        }
+//    }
 }
 
 

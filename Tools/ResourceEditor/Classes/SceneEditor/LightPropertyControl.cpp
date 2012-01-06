@@ -12,26 +12,25 @@ void LightPropertyControl::InitProperties()
 {
     NodePropertyControl::InitProperties();
     
-    propertyList->AddComboProperty("Type", types, 1);
-    propertyList->AddFloatProperty("r", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("g", 1.f, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("b", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("a", 1.f, PropertyList::PROPERTY_IS_EDITABLE); 
-}
-
-void LightPropertyControl::SetDefaultValues()
-{
+    propertyList->AddComboProperty("Type", types);
+    propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
+    
     propertyList->SetStringPropertyValue("Name", "LightNode");
     propertyList->SetComboPropertyValue("Type", 0);
     propertyList->SetFloatPropertyValue("r", 1.f);
     propertyList->SetFloatPropertyValue("g", 1.f);
     propertyList->SetFloatPropertyValue("b", 1.f);
     propertyList->SetFloatPropertyValue("a", 1.f);
+
 }
 
-void LightPropertyControl::ReadFromNode(SceneNode *sceneNode)
+
+void LightPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadFromNode(sceneNode);
+    NodePropertyControl::ReadFrom(sceneNode);
     
     LightNode *light = (LightNode *)sceneNode;
 
@@ -42,9 +41,9 @@ void LightPropertyControl::ReadFromNode(SceneNode *sceneNode)
     propertyList->SetFloatPropertyValue("a", light->GetColor().a);
 }
 
-void LightPropertyControl::ReadToNode(SceneNode *sceneNode)
+void LightPropertyControl::WriteTo(SceneNode *sceneNode)
 {
-    NodePropertyControl::ReadToNode(sceneNode);
+    NodePropertyControl::WriteTo(sceneNode);
     
     LightNode *light = (LightNode *)sceneNode;
 
