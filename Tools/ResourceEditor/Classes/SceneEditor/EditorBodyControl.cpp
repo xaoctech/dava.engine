@@ -127,7 +127,8 @@ void EditorBodyControl::CreateScene()
 {
     scene = new EditorScene();
     // Camera setup
-    cameraController = new WASDCameraController(40);
+//    cameraController = new Max3dCameraController();
+	cameraController = new WASDCameraController(40);
     Camera * cam = new Camera(scene);
     cam->SetName("editor-camera");
     cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
@@ -619,7 +620,17 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			if (event->tid == UIEvent::BUTTON_1)
 			{
 				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-				selection->SetLocalTransform(currTransform);
+				const Matrix4 & worldTransform = selection->GetWorldTransform();
+				
+				Matrix4 worldTransformInverse;
+
+				((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
+
+				selection->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
+				
+				
+//				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
+//				selection->SetLocalTransform(currTransform);
 			}
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
@@ -632,6 +643,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	}
 	else
 	{
+//		cameraController->SetSelection(selection);
 		cameraController->Input(event);
 	}
 	UIControl::Input(event);

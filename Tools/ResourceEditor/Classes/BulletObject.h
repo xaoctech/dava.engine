@@ -26,17 +26,13 @@ public:
     ~BulletObject();
 	
 	void UpdateCollisionObject(void);
-
-
-//	inline DebugNode * GetDebugNode()
-//	{
-//		return debugNode;
-//	}
 	
 	inline btCollisionObject * GetCollisionObject(void)
 	{
 		return collisionObject;
 	}
+
+	void Draw(const Matrix4 & worldTransform);
 	
 protected:
 
@@ -48,6 +44,7 @@ protected:
 	btCollisionObject *collisionObject;
     btTriangleMesh* trimesh;
 	btCollisionShape * shape;
+	Vector<Vector3> triangles;
 };
 
 #endif
