@@ -23,7 +23,7 @@ UICheckBox::UICheckBox(const String &spriteName, const Rect &rect, bool rectInAb
     GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     
     SetSprite(spriteName, 0);
-    SetChecked(false);
+    SetChecked(false, false);
 
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UICheckBox::OnClick));
 }
@@ -37,10 +37,10 @@ void UICheckBox::LoadFromYamlNodeCompleted()
 {
     UIControl::LoadFromYamlNodeCompleted();
 
-	SetChecked(checked);
+	SetChecked(checked, false);
 }
 
-void UICheckBox::SetChecked( bool _checked )
+void UICheckBox::SetChecked( bool _checked, bool needDelegateCall)
 {
 	checked = _checked;
 
@@ -49,7 +49,7 @@ void UICheckBox::SetChecked( bool _checked )
         SetSpriteFrame((checked) ? 1 : 0);
     }
     
-    if(checkboxDelegate)
+    if(checkboxDelegate && needDelegateCall)
     {
         checkboxDelegate->ValueChanged(checked);
     }
@@ -62,7 +62,7 @@ bool UICheckBox::Checked()
 
 void UICheckBox::OnClick( BaseObject * owner, void * userData, void * callerData )
 {
-	SetChecked(!checked);
+	SetChecked(!checked, true);
 }
 
 void UICheckBox::SetDelegate(UICheckBoxDelegate *delegate)
