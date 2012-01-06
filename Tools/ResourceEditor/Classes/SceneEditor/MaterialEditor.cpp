@@ -56,32 +56,21 @@ MaterialEditor::MaterialEditor()
     {
         materialProps[i] = new PropertyList(Rect(size.x * materialListPart, size.y * previewHeightPart + 25, size.x - size.x * materialListPart, size.y - size.y * previewHeightPart - 25), this);
         materialProps[i]->AddStringProperty("Name");
-        materialProps[i]->SetStringPropertyValue("Name", " ");
 
         materialProps[i]->AddFilepathProperty("Diffuse texture", ".png");
-        materialProps[i]->SetFilepathPropertyValue("Diffuse texture", " ");
         
         materialProps[i]->AddBoolProperty("Is Opaque");
-        materialProps[i]->SetBoolPropertyValue("Is Opaque", false);
         
         
         materialProps[i]->AddFloatProperty("Diffuse.r");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.r", 1.f);
         materialProps[i]->AddFloatProperty("Diffuse.g");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.g", 1.f);
         materialProps[i]->AddFloatProperty("Diffuse.b");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.b", 1.f);
         materialProps[i]->AddFloatProperty("Diffuse.a");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.a", 1.f);
 
         materialProps[i]->AddFloatProperty("Specular.r");
-        materialProps[i]->SetFloatPropertyValue("Specular.r", 1.f);
         materialProps[i]->AddFloatProperty("Specular.g");
-        materialProps[i]->SetFloatPropertyValue("Specular.g", 1.f);
         materialProps[i]->AddFloatProperty("Specular.b");
-        materialProps[i]->SetFloatPropertyValue("Specular.b", 1.f);
         materialProps[i]->AddFloatProperty("Specular.a");
-        materialProps[i]->SetFloatPropertyValue("Specular.a", 1.f);
     }
 }
 
@@ -256,14 +245,6 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         c->SetSelected(true, false);
         lastSelection = c;
     }
-//    if (index == selectionIndex) 
-//    {
-//        c->SetSelected(true);
-//    }
-//    else 
-//    {
-//        c->SetSelected(false);
-//    }
     
     return c;
 }
