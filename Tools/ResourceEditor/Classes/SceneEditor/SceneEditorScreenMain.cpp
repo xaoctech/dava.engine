@@ -7,12 +7,12 @@
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
 
-#include "CreateLandscapeDialog.h"
-#include "CreateLightDialog.h"
-#include "CreateServiceNodeDialog.h"
-#include "CreateBoxDialog.h"
-#include "CreateSphereDialog.h"
-#include "CreateCameraDialog.h"
+//#include "CreateLandscapeDialog.h"
+//#include "CreateLightDialog.h"
+//#include "CreateServiceNodeDialog.h"
+//#include "CreateBoxDialog.h"
+//#include "CreateSphereDialog.h"
+//#include "CreateCameraDialog.h"
 
 #include "LandscapeEditorControl.h"
 
@@ -550,14 +550,18 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
     {
         case MENUID_CREATENODE:
         {
-            currentNodeDialog = itemID;
+//            currentNodeDialog = itemID;
             
             BodyItem *iBody = FindCurrentBody();
             EditorScene *scene = iBody->bodyControl->GetScene();
-            nodeDialogs[currentNodeDialog]->SetScene(scene);
+            nodeDialog->SetScene(scene);
+            nodeDialog->CreateNode(itemID);
+            
+//            nodeDialogs[currentNodeDialog]->SetScene(scene);
 
             AddControl(dialogBack);
-            AddControl(nodeDialogs[currentNodeDialog]);
+            AddControl(nodeDialog);
+//            AddControl(nodeDialogs[currentNodeDialog]);
             break;
         }
             
@@ -697,17 +701,18 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
-    RemoveControl(nodeDialogs[currentNodeDialog]);
+//    RemoveControl(nodeDialogs[currentNodeDialog]);
+    RemoveControl(nodeDialog);
     RemoveControl(dialogBack);
     
-    if(CreateNodeDialog::RCODE_OK == retCode)
+//    if(CreateNodeDialog::RCODE_OK == retCode)
+    if(CreateNodesDialog::RCODE_OK == retCode)
     {
         BodyItem *iBody = FindCurrentBody();
-        iBody->bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
+//        iBody->bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
+        iBody->bodyControl->AddNode(nodeDialog->GetSceneNode());
     }
 }
-
-
 
 void SceneEditorScreenMain::InitializeNodeDialogs()
 {
@@ -715,8 +720,8 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
     dialogBack = ControlsFactory::CreatePanelControl(rect);
     ControlsFactory::CustomizeDialogFreeSpace(dialogBack);
     
-    String path = keyedArchieve->GetString("LastSavedPath", "/");
-    
+//    String path = keyedArchieve->GetString("LastSavedPath", "/");
+//    
     Rect r;
     r.dx = rect.dx / 2;
     r.dy = rect.dy / 2;
@@ -724,26 +729,31 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
     r.x = rect.x + r.dx / 2;
     r.y = rect.y + r.dy / 2;
 
-    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(r);    
-    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(r);    
-    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(r);    
-    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(r);    
-    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(r);    
-    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(r);    
+//    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(r);    
+//    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(r);    
+//    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(r);    
+//    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(r);    
+//    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(r);    
+//    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(r);    
+//    
+//    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
+//    {
+//        nodeDialogs[iDlg]->SetDelegate(this);
+//        nodeDialogs[iDlg]->SetProjectPath(path);
+//    }
     
-    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
-    {
-        nodeDialogs[iDlg]->SetDelegate(this);
-        nodeDialogs[iDlg]->SetProjectPath(path);
-    }
+    nodeDialog = new CreateNodesDialog(r);
+    nodeDialog->SetDelegate(this);
 }
 
 void SceneEditorScreenMain::ReleaseNodeDialogs()
 {
-    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
-    {
-        SafeRelease(nodeDialogs[iDlg]);
-    }
+//    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
+//    {
+//        SafeRelease(nodeDialogs[iDlg]);
+//    }
+
+    SafeRelease(nodeDialog);
     
     SafeRelease(dialogBack);
 }

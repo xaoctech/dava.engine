@@ -45,6 +45,7 @@ public:
         PROP_CELL_BOOL,
         PROP_CELL_COMBO,
         PROP_CELL_MATRIX4,
+        PROP_CELL_SECTION_HEADER,
         
         PROP_CELL_COUNT
     };
@@ -157,6 +158,21 @@ private:
     void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
 
     EditMatrixControl *matrix;
+};
+
+class PropertySectionHeaderCell: public PropertyCell
+{
+public:
+    
+    PropertySectionHeaderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertySectionHeaderCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    
+    void ToggleExpand();
+    
+private:
+
 };
 
 

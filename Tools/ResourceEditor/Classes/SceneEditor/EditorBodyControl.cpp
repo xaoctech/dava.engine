@@ -294,66 +294,18 @@ void EditorBodyControl::CreatePropertyPanel()
     
     propertyPanelRect.x = propertyPanelRect.y = 0;
     propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
-    nodePropertyPanel[ECNID_LANDSCAPE] = new LandscapePropertyControl(propertyPanelRect, true);
-    KeyedArchive *keyedArchieve = new KeyedArchive();
-    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
-    String path = keyedArchieve->GetString("LastSavedPath", "/");
-    ((LandscapePropertyControl *)nodePropertyPanel[ECNID_LANDSCAPE])->SetProjectPath(path);
-    SafeRelease(keyedArchieve);
-    
-    
-    nodePropertyPanel[ECNID_LIGHT] = new LightPropertyControl(propertyPanelRect, true);
-    nodePropertyPanel[ECNID_SERVICENODE] = new ServicenodePropertyControl(propertyPanelRect, true);
-    nodePropertyPanel[ECNID_BOX] = new BoxPropertyControl(propertyPanelRect, true);
-    nodePropertyPanel[ECNID_SPHERE] = new SpherePropertyControl(propertyPanelRect, true);
-    nodePropertyPanel[ECNID_CAMERA] = new CameraPropertyControl(propertyPanelRect, true);
-    nodePropertyPanel[ECNID_COUNT] = new NodePropertyControl(propertyPanelRect, true);
 
-    for(int32 i = 0; i <= ECNID_COUNT; ++i)
-    {
-        nodePropertyPanel[i]->InitProperties();
-        nodePropertyPanel[i]->SetDelegate(this);
-    }
-    currentPropertyPanel = NULL;
-    
-    
-//    localMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT));
-//    localMatrixControl->OnMatrixChanged = Message(this, &EditorBodyControl::OnLocalTransformChanged);
-//    
-//    worldMatrixControl = new EditMatrixControl(Rect(0, 0, RIGHT_SIDE_WIDTH, MATRIX_HEIGHT), true);
-//
-//    
-//    Rect fullRect = GetRect();
-//    activePropertyPanel = new PropertyPanel(Rect(fullRect.dx - RIGHT_SIDE_WIDTH, 0, RIGHT_SIDE_WIDTH, size.y));
-//    
-//    nodeName = SafeRetain(activePropertyPanel->AddHeader(L"Node name:"));
-//    
-//    activePropertyPanel->AddHeader(L"Local Matrix:");
-//    activePropertyPanel->AddPropertyControl(localMatrixControl);
-//    activePropertyPanel->AddHeader(L"World Matrix:");
-//    activePropertyPanel->AddPropertyControl(worldMatrixControl);
-//    nodeBoundingBoxMin = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-//    nodeBoundingBoxMax = SafeRetain(activePropertyPanel->AddHeader(L"-"));
-//    
-//    AddControl(activePropertyPanel);
+    nodesPropertyPanel = new NodesPropertyControl(propertyPanelRect, false);
+    nodesPropertyPanel->SetDelegate(this);
 }
 
 void EditorBodyControl::ReleasePropertyPanel()
 {
     SafeRelease(refreshButton);
+
+    SafeRelease(nodesPropertyPanel);
     
-    currentPropertyPanel = NULL;
-    for(int32 i = 0; i <= ECNID_COUNT; ++i)
-    {
-        SafeRelease(nodePropertyPanel[i]);
-    }
     SafeRelease(rightPanel);
-    
-//    SafeRelease(nodeName);
-//    SafeRelease(nodeBoundingBoxMin);
-//    SafeRelease(nodeBoundingBoxMax);
-    
-//    SafeRelease(activePropertyPanel);
 }
 
 bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
@@ -482,70 +434,21 @@ void EditorBodyControl::DebugInfo()
 
 void EditorBodyControl::UpdatePropertyPanel()
 {
-    if(currentPropertyPanel)
+    if(selectedNode)
     {
-        rightPanel->RemoveControl(currentPropertyPanel);   
+        if(!nodesPropertyPanel->GetParent())
+        {
+            rightPanel->AddControl(nodesPropertyPanel);
+        }
+        nodesPropertyPanel->ReadFrom(selectedNode);
     }
-
-    if(!selectedNode)
+    else
     {
-        currentPropertyPanel = NULL;
-        return;
+        if(nodesPropertyPanel->GetParent())
+        {
+            rightPanel->RemoveControl(nodesPropertyPanel);
+        }
     }
-    
-    
-    currentPropertyPanel = nodePropertyPanel[ECNID_COUNT]; // for not categorized nodes
-    
-    Camera * camera = dynamic_cast<Camera*> (selectedNode);
-    if (camera)
-    {
-        scene->SetCurrentCamera(camera);
-        Camera * cam2 = scene->GetCamera(0);
-        scene->SetClipCamera(cam2);
-        //cameraController->SetCamera(camera);
-        
-        outputPanel->UpdateCamera();
-        currentPropertyPanel = nodePropertyPanel[ECNID_CAMERA];
-    }
-    
-    LightNode * light = dynamic_cast<LightNode*> (selectedNode);
-    if (light)
-    {
-        currentPropertyPanel = nodePropertyPanel[ECNID_LIGHT];
-    }
-    
-//    ServiceNode * serviceNode = dynamic_cast<ServiceNode*> (node);
-//    if (serviceNode)
-//    {
-//        currentPropertyPanel = nodePropertyPanel[ECNID_SERVICENODE];
-//    }
-    
-    CubeNode * box = dynamic_cast<CubeNode*> (selectedNode);
-    if (box)
-    {
-        currentPropertyPanel = nodePropertyPanel[ECNID_BOX];
-    }
-    
-    SphereNode * sphere = dynamic_cast<SphereNode*> (selectedNode);
-    if (sphere)
-    {
-        currentPropertyPanel = nodePropertyPanel[ECNID_SPHERE];
-    }
-    
-    LandscapeNode * landscape = dynamic_cast<LandscapeNode*> (selectedNode);
-    if (landscape)
-    {
-        currentPropertyPanel = nodePropertyPanel[ECNID_LANDSCAPE];
-    }
-    
-//    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
-//    if(mesh)
-//    {
-//        currentPropertyPanel = nodePropertyPanel[ECNID_COUNT];
-//    }
-
-    currentPropertyPanel->ReadFrom(selectedNode);
-    rightPanel->AddControl(currentPropertyPanel);
 }
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
@@ -785,14 +688,6 @@ void EditorBodyControl::Update(float32 timeElapsed)
     UIControl::Update(timeElapsed);
 }
 
-//void EditorBodyControl::OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData)
-//{
-//    if (selectedNode)
-//    {
-//        selectedNode->SetLocalTransform(localMatrixControl->GetMatrix());
-//    }
-//}
-
 void EditorBodyControl::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
 {
     MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(selectedNode);
@@ -962,22 +857,18 @@ void EditorBodyControl::ChangeControlWidthLeft(UIControl *c, float32 width)
     c->SetRect(r);
 }
 
-void EditorBodyControl::NodePropertyChanged()
+void EditorBodyControl::NodesPropertyChanged()
 {
-    if(selectedNode && currentPropertyPanel)
+    if(selectedNode)
     {
-        currentPropertyPanel->WriteTo(selectedNode);
+        nodesPropertyPanel->WriteTo(selectedNode);
         savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
     }
 }
 
 void EditorBodyControl::OnRefreshPressed(BaseObject * obj, void *, void *)
 {
-    if(selectedNode && currentPropertyPanel)
-    {
-        currentPropertyPanel->WriteTo(selectedNode);
-        savedTreeCell->text->SetText(StringToWString(selectedNode->GetName()));
-    }
+    NodesPropertyChanged();
 }
 
 void EditorBodyControl::Refresh()

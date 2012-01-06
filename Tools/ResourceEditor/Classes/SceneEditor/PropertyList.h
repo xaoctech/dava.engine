@@ -55,6 +55,7 @@ public:
     void AddBoolProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddSectionHeader(const String &propertyName);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
@@ -72,6 +73,7 @@ public:
     const String &GetFilepathPropertyValue(const String &propertyName);
     bool GetBoolPropertyValue(const String &propertyName);
     const String &GetComboPropertyValue(const String &propertyName);
+    const int32 GetComboPropertyIndex(const String &propertyName);
     const Matrix4 & GetMatrix4PropertyValue(const String &propertyName);
 
     virtual int32 ElementsCount(UIList *forList);
@@ -87,6 +89,7 @@ public:
     
 protected:
     
+//    PropertyCellData *GetDataForIndex(int32 index);
     
     void AddProperty(PropertyCellData *newProp, const String &propertyName, editableType propEditType);
     PropertyCellData *PropertyByName(const String &propertyName);
