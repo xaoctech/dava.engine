@@ -262,10 +262,13 @@ template <class T>
 void KeyedArchive::GetByteArrayAsType(const String & key, T & value)
 {
     int size = GetByteArraySize(key);
-    DVASSERT(size == sizeof(T));
-    
-    const uint8 * arrayData = GetByteArray(key);
-    memcpy(&value, arrayData, sizeof(T));
+    if (size != 0)
+    {
+        DVASSERT(size == sizeof(T));
+        
+        const uint8 * arrayData = GetByteArray(key);
+        memcpy(&value, arrayData, sizeof(T));
+    }
 }
     
 template<class T>
