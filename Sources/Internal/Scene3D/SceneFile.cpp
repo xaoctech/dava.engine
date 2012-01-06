@@ -369,7 +369,7 @@ bool SceneFile::ReadMaterial()
 	mat->specular = materialDef.specular;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
-    mat->hasOpacity = materialDef.hasOpacity;
+    mat->isOpaque = materialDef.hasOpacity;
 	
     // retain object when we put it to array
     materials.push_back(SafeRetain(mat));

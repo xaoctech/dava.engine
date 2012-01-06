@@ -24,9 +24,8 @@ public:
     
     virtual void WillAppear();
 
-    virtual void ReadFromNode(SceneNode *sceneNode);
-    virtual void ReadToNode(SceneNode *sceneNode);
-    virtual void SetDefaultValues();
+    virtual void ReadFrom(SceneNode *sceneNode);
+    virtual void WriteTo(SceneNode *sceneNode);
     virtual void InitProperties();
     
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);

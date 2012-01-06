@@ -69,11 +69,14 @@ public:
     void AddNode(SceneNode *node);
     
     virtual void NodePropertyChanged();
-    
+
+    void CreateScene(bool withCameras);
+    void ReleaseScene();
+    void Refresh();
+
 protected:
 
-    void CreateScene();
-    void ReleaseScene();
+    void DebugInfo();
     
 	void CreateModificationPanel(void);
     void ReleaseModificationPanel();
