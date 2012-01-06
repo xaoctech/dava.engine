@@ -69,13 +69,20 @@ public:
     virtual void Draw(const UIGeometricData &geometricData);
 
     
-    void SetTextureSideSize(int32 sideSizeW, int32 sideSizeH);
     void SetTextureSideSize(const Vector2 & sideSize);
     
     void SetTexture(eTextures id, const String &path);
 
 protected:
-
+    
+    void DrawCursor();
+    void DrawRenderObject();
+    
+    void DrawShader();
+    void InitShader();
+    void ReleaseShader();
+    
+    
     UIGeometricData savedGeometricData;
     void UpdateMap();
     void GeneratePreview();
@@ -96,13 +103,19 @@ protected:
     
     Vector2 textureSideSize;
     
-    String textures[ET_COUNT];
+    Texture *textures[ET_COUNT];
     
     //
     Shader * blendedShader;
     int32 uniformTexture0;
     int32 uniformTexture1;
     int32 uniformTextureMask;
+    
+    Vector<float32> verts;
+    Vector<float32> textureCoords;
+    RenderDataObject *renderData;
+    
+    void CreateMeshFromSprite(int32 frameToGen);
 };
 
 
