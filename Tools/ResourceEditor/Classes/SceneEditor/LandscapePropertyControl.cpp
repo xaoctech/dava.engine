@@ -31,7 +31,7 @@ void LandscapePropertyControl::InitProperties()
     propertyList->SetFloatPropertyValue("Size", 1.f);
     propertyList->SetFloatPropertyValue("Height", 1.f); 
     
-    propertyList->SetComboPropertyValue("renderingMode", 1);
+    propertyList->SetComboPropertyIndex("renderingMode", 1);
     
     propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
@@ -55,7 +55,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode *sceneNode)
     propertyList->SetFloatPropertyValue("Size", size.x);
     propertyList->SetFloatPropertyValue("Height", size.z);
 
-    propertyList->SetComboPropertyValue("renderingMode", landscape->GetRenderingMode());
+    propertyList->SetComboPropertyIndex("renderingMode", landscape->GetRenderingMode());
 
     String heightMap = landscape->GetHeightMapPathname();
     if(heightMap.length())

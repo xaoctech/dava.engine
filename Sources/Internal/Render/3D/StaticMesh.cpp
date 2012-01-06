@@ -126,12 +126,12 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
 			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DIFFUSE]);
         }
         
-        if (material->hasOpacity)
-        {
-            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
-            //RenderManager::Instance()->EnableCulling(false);
-            RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
-        }
+//        if (material->hasOpacity)
+//        {
+//            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
+//            //RenderManager::Instance()->EnableCulling(false);
+//            RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
+//        }
 	}
 #else 
     if (material)

@@ -251,6 +251,7 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
     file->EnableDebugLog(true);
     file->LoadScene("scene.sc2", scene);
     SafeRelease(file);
+    bodies[0]->bodyControl->Refresh();
 }
 
 

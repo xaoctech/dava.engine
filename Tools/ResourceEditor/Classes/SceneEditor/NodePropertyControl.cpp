@@ -110,7 +110,7 @@ void NodePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const
         nodeDelegate->NodePropertyChanged();
     }
 }
-void NodePropertyControl::OnItemIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex)
+void NodePropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
     if(nodeDelegate)
     {

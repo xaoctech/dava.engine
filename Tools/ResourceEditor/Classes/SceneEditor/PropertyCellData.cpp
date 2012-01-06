@@ -92,28 +92,28 @@ void PropertyCellData::SetBool(bool newBool)
     boolValue = newBool;
 }
 
-void PropertyCellData::SetStrings(const Vector<String> &newStrings)
+void PropertyCellData::SetStringVector(const Vector<String> &newStrings)
 {
-    DVASSERT(valueType == PROP_VALUE_STRINGS);
-    strings = newStrings;
+    DVASSERT(valueType == PROP_VALUE_COMBO_BOX);
+    stringVector = newStrings;
 }
 
-const Vector<String> & PropertyCellData::GetStrings()
+const Vector<String> & PropertyCellData::GetStringVector()
 {
-    DVASSERT(valueType == PROP_VALUE_STRINGS);
-    return strings;
+    DVASSERT(valueType == PROP_VALUE_COMBO_BOX);
+    return stringVector;
 }
 
 void PropertyCellData::SetItemIndex(int32 newItemIndex)
 {
-    DVASSERT(valueType == PROP_VALUE_STRINGS);
-    itemIndex = newItemIndex;
+    DVASSERT(valueType == PROP_VALUE_COMBO_BOX);
+    intValue = newItemIndex;
 }
 
 int32 PropertyCellData::GetItemIndex()
 {
-    DVASSERT(valueType == PROP_VALUE_STRINGS);
-    return itemIndex;
+    DVASSERT(valueType == PROP_VALUE_COMBO_BOX);
+    return intValue;
 }
 
 void PropertyCellData::SetMatrix4(const Matrix4 & _matrix)
