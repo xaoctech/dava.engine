@@ -17,6 +17,17 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     renderingModes.push_back("SHADER");
     renderingModes.push_back("BLENDED_SHADER");
     
+    
+    materialTypes.push_back("UNLIT");
+    materialTypes.push_back("UNLIT_DETAIL");
+    materialTypes.push_back("UNLIT_DECAL");
+    materialTypes.push_back("VERTEX_LIT");
+    materialTypes.push_back("VERTEX_LIT_DETAIL");
+    materialTypes.push_back("VERTEX_LIT_DECAL");
+    materialTypes.push_back("NORMAL_MAPPED_DIFFUSE");
+    materialTypes.push_back("NORMAL_MAPPED_SPECULAR");
+
+    
     propertyList = new PropertyList(Rect(0, 0, rect.dx, rect.dy), this);
     AddControl(propertyList);
 }
@@ -119,8 +130,25 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     {
         propertyList->AddSectionHeader("Mesh Instance");
         
-        propertyList->AddStringProperty("Test", PropertyList::PROPERTY_IS_READ_ONLY);
-        propertyList->SetStringPropertyValue("Test", "mi");
+        
+        Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
+        Vector<Material*> materials = mesh->GetMaterials();
+        Vector<StaticMesh*> meshes = mesh->GetMeshes();
+
+        for(int32 i = 0; i < meshes.size(); ++i)
+        {
+            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+            
+            String fieldName = Format("PolygonGroup. #%d", i);
+            propertyList->AddStringProperty(fieldName, PropertyList::PROPERTY_IS_READ_ONLY);
+            propertyList->SetStringPropertyValue(fieldName, pg->GetName());
+            
+            if(materials[i])
+            {
+                propertyList->AddComboProperty("Material", materialTypes);
+                propertyList->SetComboPropertyIndex("Material", materials[i]->type);
+            }
+        }
     }
     
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (sceneNode);
