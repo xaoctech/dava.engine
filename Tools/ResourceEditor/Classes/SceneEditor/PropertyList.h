@@ -55,7 +55,7 @@ public:
     void AddBoolProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddSectionHeader(const String &propertyName);
+    void AddSection(const String &sectionName);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
@@ -65,6 +65,7 @@ public:
     void SetComboPropertyStrings(const String &propertyName, const Vector<String> &strings);
     void SetComboPropertyIndex(const String &propertyName, int32 currentStringIndex);
     void SetMatrix4PropertyValue(const String &propertyName, const Matrix4 &currentMatrix);
+    void SetSectionIsOpened(const String &sectionName, bool isOpened);
 
     
     const String &GetStringPropertyValue(const String &propertyName);
@@ -75,6 +76,7 @@ public:
     const String &GetComboPropertyValue(const String &propertyName);
     const int32 GetComboPropertyIndex(const String &propertyName);
     const Matrix4 & GetMatrix4PropertyValue(const String &propertyName);
+    bool GetSectionIsOpened(const String &sectrionName);
 
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
@@ -93,11 +95,13 @@ protected:
     
     void AddProperty(PropertyCellData *newProp, const String &propertyName, editableType propEditType);
     PropertyCellData *PropertyByName(const String &propertyName);
+    int32 GetRealIndex(int32 index);
     
     PropertyListDelegate *delegate;
     UIList *propsList;
     Vector<PropertyCellData*> props;
     Map<String, PropertyCellData*> propsMap;
+    PropertyCellData *currentSection;
 };
 
 #endif

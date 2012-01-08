@@ -514,27 +514,29 @@ void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void
 
 
 //*************** PropertySectionHeaderCell **************
-PropertySectionHeaderCell::PropertySectionHeaderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+PropertySectionCell::PropertySectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     ControlsFactory::CustomizePropertySectionCell(this);
     keyName->size.x = width;
 
+	AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertySectionCell::OnButton));
+
     SetData(prop);
 }
 
-PropertySectionHeaderCell::~PropertySectionHeaderCell()
+PropertySectionCell::~PropertySectionCell()
 {
 }
 
-float32 PropertySectionHeaderCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertySectionCell::GetHeightForWidth(float32 currentWidth)
 {
     return CELL_HEIGHT;
 }
 
-void PropertySectionHeaderCell::ToggleExpand()
+void PropertySectionCell::OnButton(BaseObject * object, void * userData, void * callerData)
 {
-    property->SetBool(!property->GetBool());
-    SetData(property);
+    property->SetIsSectionOpened(!property->GetIsSectionOpened());
+    propertyDelegate->OnPropertyChanged(property);
 }
 
