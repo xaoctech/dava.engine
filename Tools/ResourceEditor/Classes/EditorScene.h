@@ -30,6 +30,8 @@ public:
 	
 	void TrySelection(Vector3 from, Vector3 direction);
 	SceneNode * GetSelection();
+	void SetSelection(SceneNode *newSelection);
+    
 	virtual void Draw();
 	
 protected:
