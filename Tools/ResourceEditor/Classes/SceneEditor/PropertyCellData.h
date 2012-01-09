@@ -23,8 +23,9 @@ public:
         PROP_VALUE_INTEGER,
         PROP_VALUE_FLOAT,
         PROP_VALUE_BOOL,
-        PROP_VALUE_STRINGS,
         PROP_VALUE_MATRIX4,
+        PROP_VALUE_COMBO_BOX,
+        PROP_VALUE_SECTION,
         
         PROP_VALUE_COUNT
     };
@@ -39,18 +40,22 @@ public:
     const String& GetString();
     bool GetBool();
     const String& GetExtensionFilter();
-    const Vector<String> & GetStrings();
+    const Vector<String> & GetStringVector();
     int32 GetItemIndex(); 
     const Matrix4 & GetMatrix4() const;
+    int32 GetIsSectionOpened(); 
+    int32 GetSectionElementsCount();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
     void SetString(const String& newString);
     void SetBool(bool newBool);
     void SetExtensionFilter(const String& newString);
-    void SetStrings(const Vector<String> &newStrings);
+    void SetStringVector(const Vector<String> &newStrings);
     void SetItemIndex(int32 newItemIndex);
     void SetMatrix4(const Matrix4 & _matrix);
+    void SetIsSectionOpened(bool isSectionOpened);
+    void SetSectionElementsCount(int32 sectionElementsCount);
     
     int32 cellType;
     String key;
@@ -68,9 +73,8 @@ protected:
 
     String extensionFilter;
     
-    Vector<String> strings;
-    int32 itemIndex;
-    
+    Vector<String> stringVector;
+
     Matrix4 matrix4;
 };
 

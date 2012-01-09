@@ -22,7 +22,7 @@ PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDel
     propsList = new UIList(Rect(0,0, size.x, size.y), UIList::ORIENTATION_VERTICAL);
     propsList->SetDelegate(this);
     AddControl(propsList);
-
+    currentSection = NULL;
 }
 
 PropertyList::~PropertyList()
@@ -74,8 +74,6 @@ void PropertyList::AddBoolProperty(const String &propertyName, editableType prop
     AddProperty(p, propertyName, propEditType);
 }
 
-
-
 void PropertyList::AddProperty(PropertyCellData *newProp, const String &propertyName, editableType propEditType)
 {
     newProp->key = propertyName;
@@ -83,6 +81,10 @@ void PropertyList::AddProperty(PropertyCellData *newProp, const String &property
     newProp->index = props.size();
     props.push_back(newProp);
     propsMap[propertyName] = newProp;
+    if (currentSection)
+    {
+        currentSection->SetSectionElementsCount(currentSection->GetSectionElementsCount() + 1);
+    }
     propsList->Refresh();
 }
 
@@ -137,7 +139,7 @@ void PropertyList::SetBoolPropertyValue(const String &propertyName, bool newBool
 }
 
 
-String PropertyList::GetStringPropertyValue(const String &propertyName)
+const String &PropertyList::GetStringPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetString();   
@@ -155,7 +157,7 @@ float32 PropertyList::GetFloatPropertyValue(const String &propertyName)
     return p->GetFloat();   
 }
 
-String PropertyList::GetFilepathPropertyValue(const String &propertyName)
+const String &PropertyList::GetFilepathPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetString();   
@@ -165,6 +167,14 @@ bool PropertyList::GetBoolPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetBool();   
+}
+
+bool PropertyList::IsPropertyAvaliable(const String &propertyName)
+{
+	Map<String, PropertyCellData*>::const_iterator it;
+	it = propsMap.find(propertyName);
+    
+    return it != propsMap.end();
 }
 
 
@@ -205,11 +215,14 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_BOOL:
             delegate->OnBoolPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
             break;
-        case PropertyCellData::PROP_VALUE_STRINGS:
-            delegate->OnItemIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex());
+        case PropertyCellData::PROP_VALUE_COMBO_BOX:
+            delegate->OnComboIndexChanged(this, changedProperty->key, changedProperty->GetItemIndex(), changedProperty->GetStringVector()[changedProperty->GetItemIndex()]);
             break;
         case PropertyCellData::PROP_VALUE_MATRIX4:
             delegate->OnMatrix4Changed(this, changedProperty->key, changedProperty->GetMatrix4());
+            break;
+        case PropertyCellData::PROP_VALUE_SECTION:
+            propsList->Refresh();
             break;
     }
 }
@@ -218,11 +231,59 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
 
 int32 PropertyList::ElementsCount(UIList *forList)
 {
-    return props.size();
+    int32 count = 0;
+    for (int32 i = 0; i < props.size(); i++) 
+    {
+        if (props[i]->GetValueType() == PropertyCellData::PROP_VALUE_SECTION)
+        {
+            if (props[i]->GetIsSectionOpened())
+            {
+                count += props[i]->GetSectionElementsCount();
+            }
+            else 
+            {
+                count++;
+            }
+
+            i += props[i]->GetSectionElementsCount()-1;
+        }
+        else 
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+int32 PropertyList::GetRealIndex(int32 index)
+{
+    int32 realIndex = 0;
+    for (int32 i = 0; i <= index; i++) 
+    {
+        if (realIndex > 0 && props[realIndex - 1]->GetValueType() == PropertyCellData::PROP_VALUE_SECTION)
+        {
+            if (!props[realIndex - 1]->GetIsSectionOpened())
+            {
+                realIndex += props[realIndex - 1]->GetSectionElementsCount();
+            }
+            else 
+            {
+                realIndex++;
+            }
+        }
+        else 
+        {
+            realIndex++;
+        }
+    }
+    return realIndex - 1;
 }
 
 UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
 {
+    
+    index = GetRealIndex(index);
+    
     PropertyCell *c = (PropertyCell *)forList->GetReusableCell(PropertyCell::GetTypeName(props[index]->cellType));
     if (!c) 
     {
@@ -243,6 +304,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
             case PropertyCell::PROP_CELL_MATRIX4:
                 c = new PropertyMatrix4Cell(this, props[index], size.x);
                 break;
+            case PropertyCell::PROP_CELL_SECTION:
+                c = new PropertySectionCell(this, props[index], size.x);
+                break;
         }
     }
     else 
@@ -253,20 +317,11 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
 
     
     return c;
-//                               //fill cell whith data
-//                               c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
-//                               c->SetStateText(UIControl::STATE_NORMAL, c->serverName, Vector2(c->GetStateBackground(UIControl::STATE_NORMAL)->GetSprite()->GetWidth() * 1.7 - 30, 0));
-//                               c->connection = GameServer::Instance()->totalServers[index].connection;
-//                               c->serverIndex = GameServer::Instance()->totalServers[index].index;
-//                               
-//                               return c;//returns cell
-//                               //your application don't need to manage cells. UIList do all cells management.
-//                               //you can create cells of your own types derived from the UIListCell
-//                               Format("PropCellType%d", cellType)
 }
 
 int32 PropertyList::CellHeight(UIList *forList, int32 index)
 {
+    index = GetRealIndex(index);
     switch (props[index]->cellType) 
     {
         case PropertyCell::PROP_CELL_TEXT:
@@ -284,12 +339,21 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
         case PropertyCell::PROP_CELL_MATRIX4:
             return PropertyMatrix4Cell::GetHeightForWidth(size.x);
             break;
+        case PropertyCell::PROP_CELL_SECTION:
+            return PropertySectionCell::GetHeightForWidth(size.x);
+            break;
     }
     return 50;//todo: rework
 }
 
 void PropertyList::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
+//    PropertySectionHeaderCell *sectionHeader = dynamic_cast<PropertySectionHeaderCell *> (selectedCell);
+//    if(sectionHeader)
+//    {
+//        sectionHeader->ToggleExpand();
+//        forList->Refresh();
+//    }
 }
 
 //void PropertyList::AddPropertyByData(PropertyCellData *newProp)
@@ -311,19 +375,31 @@ void PropertyList::ReleaseProperties()
     props.clear();
     
     propsList->Refresh();
+    currentSection = NULL;
 }
 
 
-void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings)
+void PropertyList::AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType)
 {
-    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRINGS);
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_COMBO_BOX);
     p->cellType = PropertyCell::PROP_CELL_COMBO;
-    p->SetStrings(strings);
+    p->SetStringVector(strings);
     p->SetItemIndex(0);
-    AddProperty(p, propertyName, PROPERTY_IS_READ_ONLY);
+    AddProperty(p, propertyName, propEditType);
 }
 
-void PropertyList::SetComboPropertyValue(const String &propertyName, int32 currentStringIndex)
+
+void PropertyList::SetComboPropertyStrings(const String &propertyName, const Vector<String> &strings)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetStringVector(strings);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+void PropertyList::SetComboPropertyIndex(const String &propertyName, int32 currentStringIndex)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     p->SetItemIndex(currentStringIndex);
@@ -333,12 +409,16 @@ void PropertyList::SetComboPropertyValue(const String &propertyName, int32 curre
     }
 }
 
-String PropertyList::GetComboPropertyValue(const String &propertyName)
+const String &PropertyList::GetComboPropertyValue(const String &propertyName)
 {
     PropertyCellData *p = PropertyByName(propertyName);
-    Vector<String> strings = p->GetStrings();
-    int32 currentStringIndex = p->GetItemIndex();
-    return strings[currentStringIndex];   
+    return p->GetStringVector()[p->GetItemIndex()];
+}
+
+const int32 PropertyList::GetComboPropertyIndex(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetItemIndex();
 }
 
 void PropertyList::AddMatrix4Property(const String &propertyName, editableType propEditType)
@@ -364,5 +444,32 @@ const Matrix4 & PropertyList::GetMatrix4PropertyValue(const String &propertyName
     PropertyCellData *p = PropertyByName(propertyName);
     return p->GetMatrix4();
 }
+
+void PropertyList::AddSection(const String &sectionName)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_SECTION);
+    p->cellType = PropertyCell::PROP_CELL_SECTION;
+    p->SetIsSectionOpened(true);
+    currentSection = p;
+    AddProperty(p, sectionName, PROPERTY_IS_EDITABLE);
+}
+
+void PropertyList::SetSectionIsOpened(const String &sectionName, bool isOpened)
+{
+    PropertyCellData *p = PropertyByName(sectionName);
+    p->SetIsSectionOpened(isOpened);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+    propsList->Refresh();
+}
+
+bool PropertyList::GetSectionIsOpened(const String &sectionName)
+{
+    PropertyCellData *p = PropertyByName(sectionName);
+    return p->GetIsSectionOpened();
+}
+
 
 

@@ -170,8 +170,8 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
 //    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
     c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
-    
 }
+
 
 void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 {
@@ -234,6 +234,12 @@ void ControlsFactory::CustomizeEditablePropertyCell(UIControl *c)
 void ControlsFactory::CustomizeUneditablePropertyCell(UIControl *c)
 {
     c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 0.5f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
+
+void ControlsFactory::CustomizePropertySectionCell(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.4f, 0.8f, 0.4f, 1.0f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
 

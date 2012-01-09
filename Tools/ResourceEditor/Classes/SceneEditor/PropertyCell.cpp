@@ -356,6 +356,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     ControlsFactory::CustomizeEditablePropertyCell(pathTextContainer);
     pathText = new UIStaticText(Rect(0, 0, pathTextContainer->size.x, pathTextContainer->size.y));
     pathText->SetFont(font);
+    pathText->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
     pathTextContainer->AddControl(pathText);
     AddControl(pathTextContainer);
     
@@ -432,7 +433,7 @@ PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, P
 //    Vector<String> empty;
 //    empty.push_back("Empty combo");
 //    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, empty);
-    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, prop->GetStrings());
+    combo = new ComboBox(Rect(usedWidth, 0, usedWidth, GetHeightForWidth(width)), this, prop->GetStringVector());
     AddControl(combo);
     SetData(prop);
 }
@@ -451,22 +452,15 @@ void PropertyComboboxCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
     
-    switch (prop->GetValueType())
-    {
-        case PropertyCellData::PROP_VALUE_STRINGS:
-            combo->SetNewItemsSet(prop->GetStrings());
-            combo->SetSelectedIndex(prop->GetItemIndex(), false);
-            break;
-            
-        default:
-            break;
-    }
+    combo->SetNewItemsSet(prop->GetStringVector());
+    combo->SetSelectedIndex(prop->GetItemIndex(), false);
 }
 
 void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
 {
     property->SetItemIndex(itemIndex);
-    SetData(property);
+    combo->SetSelectedIndex(property->GetItemIndex(), false);
+//    SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }
 
@@ -517,3 +511,32 @@ void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }
+
+
+//*************** PropertySectionHeaderCell **************
+PropertySectionCell::PropertySectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+    :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    ControlsFactory::CustomizePropertySectionCell(this);
+    keyName->size.x = width;
+
+	AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertySectionCell::OnButton));
+
+    SetData(prop);
+}
+
+PropertySectionCell::~PropertySectionCell()
+{
+}
+
+float32 PropertySectionCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT;
+}
+
+void PropertySectionCell::OnButton(BaseObject * object, void * userData, void * callerData)
+{
+    property->SetIsSectionOpened(!property->GetIsSectionOpened());
+    propertyDelegate->OnPropertyChanged(property);
+}
+
