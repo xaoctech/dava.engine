@@ -64,6 +64,7 @@ struct Matrix3
 	inline Matrix3(const Matrix3 & m);
 
 	inline float32 Det() const;
+
 	
 	// Helpers
 	inline void Identity();
@@ -198,6 +199,17 @@ inline Vector2 operator * (const Vector2 & _v, const Matrix3 & _m)
 	res.y = _v.x * _m._01 + _v.y * _m._11 + _m._21;
 	
 	return res;
+}
+    
+inline Vector3 operator * (const Vector3 & _v, const Matrix3 & _m)
+{
+    Vector3 res;
+    
+    res.x = _v.x * _m._00 + _v.y * _m._10 + _v.z * _m._20;
+    res.y = _v.x * _m._01 + _v.y * _m._11 + _v.z * _m._21;
+    res.z = _v.x * _m._02 + _v.y * _m._12 + _v.z * _m._22;
+    
+    return res;
 }
 	
 	
