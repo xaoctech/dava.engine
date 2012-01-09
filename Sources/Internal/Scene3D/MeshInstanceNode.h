@@ -37,6 +37,7 @@ namespace DAVA
 class Scene;
 class StaticMesh;
 class Material;
+class Texture;
 class MeshInstanceNode : public SceneNode
 {
 public:	
@@ -91,6 +92,14 @@ public:
         \brief virtual function to load node to KeyedArchive
      */
 	virtual void Load(KeyedArchive * archive);
+
+	/**
+	 \brief Set lightmap texture
+	 \param[in] lightmapName path to texture
+	 \returns 
+	 */
+	void SetLightmap(const String & lightmapName);
+
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
@@ -111,6 +120,9 @@ protected:
     
     bool lodPresents;
     int lastLodUpdateFrame;
+
+	Texture * lightmap;
+	String lightmapName;
 };
 	
 inline AABBox3 & MeshInstanceNode::GetBoundingBox()
