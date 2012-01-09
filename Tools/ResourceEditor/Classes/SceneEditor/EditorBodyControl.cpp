@@ -13,7 +13,7 @@
 #include "SpherePropertyControl.h"
 #include "BoxPropertyControl.h"
 #include "ServicenodePropertyControl.h"
-
+#include "SceneNodeUserData.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -516,24 +516,27 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				touchStart = event->point;
 				
 				startTransform = selection->GetLocalTransform();
+				
+				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
+				userData->bulletObject->SetUpdateFlag(false);
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
 		{
 			if (event->tid == UIEvent::BUTTON_1)
 			{
-				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-				const Matrix4 & worldTransform = selection->GetWorldTransform();
-				
-				Matrix4 worldTransformInverse;
-
-				((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
-
-				selection->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
-				
-				
 //				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-//				selection->SetLocalTransform(currTransform);
+//				const Matrix4 & worldTransform = selection->GetWorldTransform();
+//				
+//				Matrix4 worldTransformInverse;
+//
+//				((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
+//
+//				selection->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
+				
+				
+				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
+				selection->SetLocalTransform(currTransform);
 			}
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
@@ -541,6 +544,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			if (event->tid == UIEvent::BUTTON_1)
 			{
 				inTouch = false;
+				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
+				userData->bulletObject->SetUpdateFlag(true);
 			}
 		}
 	}
