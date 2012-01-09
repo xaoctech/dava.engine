@@ -836,6 +836,11 @@ void EditorBodyControl::BeastProcessScene()
 {
 	beastManager = BeastProxy::Instance()->CreateManager();
 
+	KeyedArchive *keyedArchieve = new KeyedArchive();
+	keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
+	String path = keyedArchieve->GetString("LastSavedPath", "/") +"/DataSource/3d/lightmaps/";
+	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
+
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
 	BeastProxy::Instance()->CreateSkyLight(beastManager);
 	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());

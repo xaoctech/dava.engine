@@ -46,6 +46,7 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 ,   lodPresents(false)
 ,   currentLod(NULL)
 ,   lastLodUpdateFrame(0)
+,	lightmap(0)
 {
 	
 }
@@ -416,6 +417,8 @@ void MeshInstanceNode::Save(KeyedArchive * archive)
         }
         lodIdx++;
     }
+
+	archive->SetString("lightmap", lightmapName);
 }
 
 void MeshInstanceNode::Load(KeyedArchive * archive)
@@ -441,15 +444,24 @@ void MeshInstanceNode::Load(KeyedArchive * archive)
         }
         lodIdx++;
     }
+
+	lightmapName = archive->GetString("lightmap", "");
+	SetLightmap(lightmapName);
     
     currentLod = &(*lodLayers.begin());
 }
-    
+
+void MeshInstanceNode::SetLightmap(const String & _lightmapName)
+{
+	SafeRelease(lightmap);
+	lightmapName = _lightmapName;
+
+	lightmap = Texture::CreateFromFile(lightmapName);
+}
+
 //String MeshInstanceNode::GetDebugDescription()
 //{
 //    /return Format(": %d ", GetChildrenCount());
 //}
-
-
     
 };
