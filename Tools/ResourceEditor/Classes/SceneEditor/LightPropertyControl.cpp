@@ -19,7 +19,7 @@ void LightPropertyControl::InitProperties()
     propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
     
     propertyList->SetStringPropertyValue("Name", "LightNode");
-    propertyList->SetComboPropertyValue("Type", 0);
+    propertyList->SetComboPropertyIndex("Type", 0);
     propertyList->SetFloatPropertyValue("r", 1.f);
     propertyList->SetFloatPropertyValue("g", 1.f);
     propertyList->SetFloatPropertyValue("b", 1.f);
@@ -34,7 +34,7 @@ void LightPropertyControl::ReadFrom(SceneNode *sceneNode)
     
     LightNode *light = (LightNode *)sceneNode;
 
-    propertyList->SetComboPropertyValue("Type", (int32)light->GetType());
+    propertyList->SetComboPropertyIndex("Type", (int32)light->GetType());
     propertyList->SetFloatPropertyValue("r", light->GetColor().r);
     propertyList->SetFloatPropertyValue("g", light->GetColor().g);
     propertyList->SetFloatPropertyValue("b", light->GetColor().b);

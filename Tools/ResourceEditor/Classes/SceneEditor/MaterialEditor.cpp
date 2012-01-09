@@ -12,6 +12,18 @@
 static const float32 materialListPart = 0.33;
 static const float32 previewHeightPart = 0.5;
 
+static const String textureNames[] = {
+    "Diffuse texture"
+    , "Decal texture"
+    , "Detail texture"
+    , "Normal map"};
+
+static const int32 textureTypes[] = {
+    Material::TEXTURE_DIFFUSE
+    , Material::TEXTURE_DECAL
+    , Material::TEXTURE_DETAIL
+    , Material::TEXTURE_NORMALMAP};
+
 MaterialEditor::MaterialEditor()
 : DraggableDialog(Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3))
 {//todo: create draggable dealog
@@ -56,32 +68,51 @@ MaterialEditor::MaterialEditor()
     {
         materialProps[i] = new PropertyList(Rect(size.x * materialListPart, size.y * previewHeightPart + 25, size.x - size.x * materialListPart, size.y - size.y * previewHeightPart - 25), this);
         materialProps[i]->AddStringProperty("Name");
-        materialProps[i]->SetStringPropertyValue("Name", " ");
 
-        materialProps[i]->AddFilepathProperty("Diffuse texture", ".png");
-        materialProps[i]->SetFilepathPropertyValue("Diffuse texture", " ");
+        materialProps[i]->AddFilepathProperty(textureNames[ME_DIFFUSE], ".png");
+        if (i == Material::MATERIAL_UNLIT_DECAL
+            || i == Material::MATERIAL_VERTEX_LIT_DECAL)
+        {
+            materialProps[i]->AddFilepathProperty(textureNames[ME_DECAL], ".png");
+        }
+
+        if (i == Material::MATERIAL_UNLIT_DETAIL
+            || i == Material::MATERIAL_VERTEX_LIT_DETAIL)
+        {
+            materialProps[i]->AddFilepathProperty(textureNames[ME_DETAIL], ".png");
+        }
+
+        if (i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
+            || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
+        {
+            materialProps[i]->AddFilepathProperty(textureNames[ME_NORMAL_MAP], ".png");
+        }
         
         materialProps[i]->AddBoolProperty("Is Opaque");
-        materialProps[i]->SetBoolPropertyValue("Is Opaque", false);
         
-        
-        materialProps[i]->AddFloatProperty("Diffuse.r");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.r", 1.f);
-        materialProps[i]->AddFloatProperty("Diffuse.g");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.g", 1.f);
-        materialProps[i]->AddFloatProperty("Diffuse.b");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.b", 1.f);
-        materialProps[i]->AddFloatProperty("Diffuse.a");
-        materialProps[i]->SetFloatPropertyValue("Diffuse.a", 1.f);
+        if (i == Material::MATERIAL_VERTEX_LIT
+            || i == Material::MATERIAL_VERTEX_LIT_DECAL
+            || i == Material::MATERIAL_VERTEX_LIT_DETAIL
+            || i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
+            || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
+        {
+            materialProps[i]->AddFloatProperty("Diffuse color R");
+            materialProps[i]->AddFloatProperty("Diffuse color G");
+            materialProps[i]->AddFloatProperty("Diffuse color B");
+            materialProps[i]->AddFloatProperty("Diffuse color A");
+        }
 
-        materialProps[i]->AddFloatProperty("Specular.r");
-        materialProps[i]->SetFloatPropertyValue("Specular.r", 1.f);
-        materialProps[i]->AddFloatProperty("Specular.g");
-        materialProps[i]->SetFloatPropertyValue("Specular.g", 1.f);
-        materialProps[i]->AddFloatProperty("Specular.b");
-        materialProps[i]->SetFloatPropertyValue("Specular.b", 1.f);
-        materialProps[i]->AddFloatProperty("Specular.a");
-        materialProps[i]->SetFloatPropertyValue("Specular.a", 1.f);
+        if (i == Material::MATERIAL_VERTEX_LIT
+            || i == Material::MATERIAL_VERTEX_LIT_DECAL
+            || i == Material::MATERIAL_VERTEX_LIT_DETAIL
+            || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
+        {
+            materialProps[i]->AddFloatProperty("Specular color R");
+            materialProps[i]->AddFloatProperty("Specular color G");
+            materialProps[i]->AddFloatProperty("Specular color B");
+            materialProps[i]->AddFloatProperty("Specular color A");
+        }
+        
     }
 }
 
@@ -141,17 +172,23 @@ void MaterialEditor::OnFloatPropertyChanged(PropertyList *forList, const String 
 {
     Material *mat = workingScene->GetMaterial(selectedMaterial);
     
-    PropertyList *currentList = materialProps[mat->type];
 
-    mat->diffuse.x = currentList->GetFloatPropertyValue("Diffuse.r");
-    mat->diffuse.y = currentList->GetFloatPropertyValue("Diffuse.g");
-    mat->diffuse.z = currentList->GetFloatPropertyValue("Diffuse.b");
-    mat->diffuse.w = currentList->GetFloatPropertyValue("Diffuse.a");
+    if (forList->IsPropertyAvaliable("Diffuse color R"))
+    {
+        mat->diffuse.x = forList->GetFloatPropertyValue("Diffuse color R");
+        mat->diffuse.y = forList->GetFloatPropertyValue("Diffuse color G");
+        mat->diffuse.z = forList->GetFloatPropertyValue("Diffuse color B");
+        mat->diffuse.w = forList->GetFloatPropertyValue("Diffuse color A");
+    }
+
+    if (forList->IsPropertyAvaliable("Specular color R"))
+    {
+        mat->specular.x = forList->GetFloatPropertyValue("Specular color R");
+        mat->specular.y = forList->GetFloatPropertyValue("Specular color G");
+        mat->specular.z = forList->GetFloatPropertyValue("Specular color B");
+        mat->specular.w = forList->GetFloatPropertyValue("Specular color A");
+    }
     
-    mat->specular.x = currentList->GetFloatPropertyValue("Specular.r");
-    mat->specular.y = currentList->GetFloatPropertyValue("Specular.g");
-    mat->specular.z = currentList->GetFloatPropertyValue("Specular.b");
-    mat->specular.w = currentList->GetFloatPropertyValue("Specular.a");
 }
 
 void MaterialEditor::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
@@ -169,21 +206,26 @@ void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &
 
 void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
-    if (forKey == "Diffuse texture") 
+    for (int i = 0; i < ME_TEX_COUNT; i++) 
     {
-        Material *mat = workingScene->GetMaterial(selectedMaterial);
-        if (mat->textures[Material::TEXTURE_DIFFUSE])
+        if (forKey == textureNames[i]) 
         {
-            SafeRelease(mat->textures[Material::TEXTURE_DIFFUSE]);
-        }
-        Texture *tx = Texture::CreateFromFile(newValue);
-        if (tx) 
-        {
-            mat->textures[Material::TEXTURE_DIFFUSE] = tx;
-        }
-        else 
-        {
-            materialProps[mat->type]->SetFilepathPropertyValue("Diffuse texture", " ");
+            Material *mat = workingScene->GetMaterial(selectedMaterial);
+            if (mat->textures[textureTypes[i]])
+            {
+                SafeRelease(mat->textures[textureTypes[i]]);
+            }
+            Texture *tx = Texture::CreateFromFile(newValue);
+            if (tx) 
+            {
+                mat->textures[textureTypes[i]] = tx;
+            }
+            else 
+            {
+                materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], " ");
+            }
+
+            break;
         }
     }
 }
@@ -211,26 +253,41 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
     
     Material *mat = workingScene->GetMaterial(selectedMaterial);
     currentList->SetStringPropertyValue("Name", mat->GetName());
-    if (mat->textures[Material::TEXTURE_DIFFUSE])
+    for (int i = 0; i < ME_TEX_COUNT; i++) 
     {
-        currentList->SetFilepathPropertyValue("Diffuse texture", mat->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+        if (currentList->IsPropertyAvaliable(textureNames[i]))
+        {
+            if (mat->textures[textureTypes[i]])
+            {
+                currentList->SetFilepathPropertyValue(textureNames[i], mat->textures[textureTypes[i]]->relativePathname);
+            }
+            else 
+            {
+                currentList->SetFilepathPropertyValue(textureNames[i], " ");
+            }
+        }
     }
-    else 
-    {
-        currentList->SetFilepathPropertyValue("Diffuse texture", " ");
-    }
+    
+    
     currentList->SetBoolPropertyValue("Is Opaque", mat->isOpaque);
 
     
-    currentList->SetFloatPropertyValue("Diffuse.r", mat->diffuse.x);
-    currentList->SetFloatPropertyValue("Diffuse.g", mat->diffuse.y);
-    currentList->SetFloatPropertyValue("Diffuse.b", mat->diffuse.z);
-    currentList->SetFloatPropertyValue("Diffuse.a", mat->diffuse.w);
-        
-    currentList->SetFloatPropertyValue("Specular.r", mat->diffuse.x);
-    currentList->SetFloatPropertyValue("Specular.g", mat->diffuse.x);
-    currentList->SetFloatPropertyValue("Specular.b", mat->diffuse.x);
-    currentList->SetFloatPropertyValue("Specular.a", mat->diffuse.x);
+    if (currentList->IsPropertyAvaliable("Diffuse color R"))
+    {
+        currentList->SetFloatPropertyValue("Diffuse color R", mat->diffuse.x);
+        currentList->SetFloatPropertyValue("Diffuse color G", mat->diffuse.y);
+        currentList->SetFloatPropertyValue("Diffuse color B", mat->diffuse.z);
+        currentList->SetFloatPropertyValue("Diffuse color A", mat->diffuse.w);
+    }
+    
+    if (currentList->IsPropertyAvaliable("Specular color R"))
+    {
+        currentList->SetFloatPropertyValue("Specular color R", mat->specular.x);
+        currentList->SetFloatPropertyValue("Specular color G", mat->specular.y);
+        currentList->SetFloatPropertyValue("Specular color B", mat->specular.z);
+        currentList->SetFloatPropertyValue("Specular color A", mat->specular.w);
+    }
+    
 }
 
 
@@ -256,14 +313,6 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
         c->SetSelected(true, false);
         lastSelection = c;
     }
-//    if (index == selectionIndex) 
-//    {
-//        c->SetSelected(true);
-//    }
-//    else 
-//    {
-//        c->SetSelected(false);
-//    }
     
     return c;
 }

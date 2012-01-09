@@ -8,14 +8,16 @@
 #include "../EditorScene.h"
 
 #include "SceneNodeIDs.h"
-#include "NodePropertyControl.h"
+#include "NodesPropertyControl.h"
 
 using namespace DAVA;
 
 class BeastManager;
 class OutputPanelControl;
-class NodePropertyControl;
-class EditorBodyControl : public UIControl, public UIHierarchyDelegate, public NodePropertyDelegate
+class EditorBodyControl : 
+        public UIControl, 
+        public UIHierarchyDelegate, 
+        public NodesPropertyDelegate
 {
     enum eConst
     {
@@ -68,7 +70,7 @@ public:
     EditorScene * GetScene();
     void AddNode(SceneNode *node);
     
-    virtual void NodePropertyChanged();
+    virtual void NodesPropertyChanged();
 
     void CreateScene(bool withCameras);
     void ReleaseScene();
@@ -119,24 +121,12 @@ protected:
     UIControl *rightPanel;
     SceneNode * selectedNode;
     UIHierarchyCell *savedTreeCell;
-//    PropertyPanel * activePropertyPanel;
-//    EditMatrixControl * localMatrixControl;
-//    EditMatrixControl * worldMatrixControl;
-//    void OnLocalTransformChanged(BaseObject * object, void * userData, void * callerData);
-    
-    NodePropertyControl *nodePropertyPanel[ECNID_COUNT + 1];
-    NodePropertyControl *currentPropertyPanel;
+
+    NodesPropertyControl *nodesPropertyPanel;
     //
     
     UIButton *refreshButton;
     void OnRefreshPressed(BaseObject * obj, void *, void *);
-
-    
-    
-//    UIStaticText * nodeName;
-//    UIStaticText * nodeCenter;
-//    UIStaticText * nodeBoundingBoxMin;
-//    UIStaticText * nodeBoundingBoxMax;
     
     // touch
     float32 currentTankAngle;

@@ -22,6 +22,16 @@ class MaterialEditor : public DraggableDialog, public UIListDelegate, public Com
 {
 public:
     
+    enum eTextureType 
+    {
+        ME_DIFFUSE = 0,
+        ME_DECAL,
+        ME_DETAIL,
+        ME_NORMAL_MAP,
+        
+        ME_TEX_COUNT
+    };
+    
     MaterialEditor();
     ~MaterialEditor();
     

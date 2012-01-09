@@ -4,7 +4,9 @@
 #include "DAVAEngine.h"
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
-#include "CreateNodeDialog.h"
+
+//#include "CreateNodeDialog.h"
+#include "CreateNodesDialog.h"
 
 #include "SceneNodeIDs.h"
 
@@ -15,7 +17,8 @@ class EditorBodyControl;
 class MaterialEditor;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
-    public MenuPopupDelegate, public CreateNodeDialogDelegeate
+//    public MenuPopupDelegate, public CreateNodeDialogDelegeate
+public MenuPopupDelegate, public CreateNodesDialogDelegeate
 {
     enum eConst
     {        
@@ -142,11 +145,12 @@ private:
     MenuPopupControl *menuPopup;
 
     //create node dialog
-    CreateNodeDialog *nodeDialog;
+//    CreateNodeDialog *nodeDialog;
+    CreateNodesDialog *nodeDialog;
     
     MaterialEditor *materialEditor;
-    CreateNodeDialog *nodeDialogs[ECNID_COUNT];
-    int32 currentNodeDialog;
+//    CreateNodeDialog *nodeDialogs[ECNID_COUNT];
+//    int32 currentNodeDialog;
     void InitializeNodeDialogs();
     void ReleaseNodeDialogs();
     
