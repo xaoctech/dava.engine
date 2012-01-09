@@ -164,7 +164,7 @@ SceneNode * EditorScene::GetSelection()
 void EditorScene::Draw()
 {
 	Scene::Draw();
-	DrawDebugNodes(this);
+//	DrawDebugNodes(this);
 }
 
 void EditorScene::DrawDebugNodes(SceneNode * curr)
