@@ -124,7 +124,9 @@ struct Matrix4
 
 
 	inline Vector3 GetTranslationVector() const;
-
+	inline Vector3 GetScaleVector() const;
+	
+	
 	//! Simple operator for directly accessing every element of the matrix.
 	float32 & operator()(int32 row, int32 col) { return _data[col][row]; }
 	//! Simple operator for directly accessing every element of the matrix.
@@ -545,7 +547,11 @@ inline Vector3 Matrix4::GetTranslationVector() const
 	return Vector3(_30, _31, _32);
 }
 
-
+inline Vector3 Matrix4::GetScaleVector() const
+{
+	return Vector3(_00, _11, _22);	
+}
+	
 inline void	Matrix4::CreateScale(const Vector3 & _v)
 {
 	Identity();
