@@ -188,10 +188,39 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
         for(int32 i = 0; i < meshes.size(); ++i)
         {
-//            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
-//            
+            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+            
             String fieldName = Format("PolygonGroup #%d", i);
             propertyList->AddSection(fieldName);
+            
+            int32 vertexFormat = pg->GetFormat();
+            propertyList->AddBoolProperty("fmt.NORMAL", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.NORMAL", vertexFormat & EVF_NORMAL);
+
+            propertyList->AddBoolProperty("fmt.COLOR", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.COLOR", vertexFormat & EVF_COLOR);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD0", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD0", vertexFormat & EVF_TEXCOORD0);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD1", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD1", vertexFormat & EVF_TEXCOORD1);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD2", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD2", vertexFormat & EVF_TEXCOORD2);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD3", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD3", vertexFormat & EVF_TEXCOORD3);
+
+            propertyList->AddBoolProperty("fmt.TANGENT", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TANGENT", vertexFormat & EVF_TANGENT);
+
+            propertyList->AddBoolProperty("fmt.BINORMAL", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.BINORMAL", vertexFormat & EVF_BINORMAL);
+
+            propertyList->AddBoolProperty("fmt.JOINTWEIGHT", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
+            
             
             if(materials[i])
             {
@@ -410,6 +439,34 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
     if(mesh)
     {
         //Add Code
+        
+        Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
+        Vector<Material*> materials = mesh->GetMaterials();
+        Vector<StaticMesh*> meshes = mesh->GetMeshes();
+        
+        for(int32 i = 0; i < meshes.size(); ++i)
+        {
+            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+            
+            int32 vertexFormat = EVF_VERTEX;
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.NORMAL");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.COLOR");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD0");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD1");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD2");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD3");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TANGENT");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.BINORMAL");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.JOINTWEIGHT");
+            
+            //TODO: set it to pg
+            
+            if(materials[i])
+            {
+                propertyList->AddComboProperty("Material", materialTypes);
+                propertyList->SetComboPropertyIndex("Material", materials[i]->type);
+            }
+        }
     }
     
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (sceneNode);
@@ -732,7 +789,6 @@ void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedC
             break;
         }
     }
-
 }
 
 void NodesPropertyControl::OnCancel(BaseObject * object, void * userData, void * callerData)

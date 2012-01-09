@@ -224,7 +224,8 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     keyName->size.x = width/2;
-    
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+
     float32 usedWidth = keyName->size.x;
     float32 checkBoxWidth = GetHeightForWidth(usedWidth);
     
@@ -356,7 +357,8 @@ PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, P
     :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     keyName->size.x = width/2;
-    
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+
     float32 usedWidth = keyName->size.x;
 //    Vector<String> empty;
 //    empty.push_back("Empty combo");
