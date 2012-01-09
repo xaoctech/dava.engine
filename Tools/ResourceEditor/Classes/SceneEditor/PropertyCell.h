@@ -96,12 +96,7 @@ public:
     
 protected:    
 
-    void UpdateText();
-    
     UICheckBox *checkBox;
-    UIStaticText *falseText;
-    UIStaticText *trueText;
-    UIControl *textContainer;
 };
 
 class PropertyFilepathCell : public PropertyCell, public UIFileSystemDialogDelegate

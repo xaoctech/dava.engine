@@ -189,7 +189,6 @@ public:
 
 
     UIHierarchyCell* GetReusableCell(const String &cellIdentifier);
-
     void OpenNodes(const List<void *> &userNodes);
     
     void Refresh();
