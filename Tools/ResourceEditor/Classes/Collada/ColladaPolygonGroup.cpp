@@ -390,7 +390,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
                 equalIJ = false;
             }
             
-            /*if (!FLOAT_EQUAL_EPS( tvi->normal.x, tvj->normal.x, EPS))
+            if (!FLOAT_EQUAL_EPS( tvi->normal.x, tvj->normal.x, EPS))
             {
                 equalIJ = false;
             }
@@ -401,7 +401,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
             if (!FLOAT_EQUAL_EPS( tvi->normal.z, tvj->normal.z, EPS))
             {
                 equalIJ = false;
-            }*/
+            }
             
             if (!FLOAT_EQUAL_EPS( tvi->texCoords[0].x, tvj->texCoords[0].x, EPS))
             {

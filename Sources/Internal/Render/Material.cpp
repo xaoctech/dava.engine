@@ -34,6 +34,7 @@
 #include "Utils/StringFormat.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
+#include "Render/Shader.h"
 
 namespace DAVA 
 {
@@ -63,6 +64,10 @@ Material::Material(Scene * _scene)
         uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
         uberShader->CompileShaderCombination("MATERIAL_DECAL");
         uberShader->CompileShaderCombination("MATERIAL_DETAIL");
+        
+        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
+        uberShader->CompileShaderCombination("MATERIAL_DECAL;VERTEX_LIT");
+        uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
     }
     
     type = MATERIAL_UNLIT;
@@ -112,10 +117,32 @@ void Material::SetType(eType _type)
         case MATERIAL_UNLIT_DETAIL:
             shaderCombileCombo = "MATERIAL_DETAIL";
             break;
+        case MATERIAL_VERTEX_LIT:
+            shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
+            break;
         default:
             break;
     };
     shader = uberShader->GetShader(shaderCombileCombo);
+
+    switch (type) {
+        case MATERIAL_UNLIT:
+            break;
+        case MATERIAL_UNLIT_DECAL:
+        case MATERIAL_UNLIT_DETAIL:
+            //shader->SetT
+            uniformTexture0 = shader->FindUniformLocationByName("texture0");
+            uniformTexture1 = shader->FindUniformLocationByName("texture1");
+            
+            break;
+        case MATERIAL_VERTEX_LIT:
+            //
+            shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
+            break;
+        default:
+            break;
+    };
+
 }
     
 void Material::Save(KeyedArchive * keyedArchive)
@@ -128,11 +155,14 @@ void Material::Save(KeyedArchive * keyedArchive)
         keyedArchive->SetString(Format("mat.tex%d", k), names[k].c_str());
     }
     
-    keyedArchive->SetByteArrayAsType("diffuse", diffuse);
-    keyedArchive->SetByteArrayAsType("ambient", ambient);
-    keyedArchive->SetByteArrayAsType("specular", specular);
-    keyedArchive->SetByteArrayAsType("emission", emission);
-    keyedArchive->SetBool("isOpaque", isOpaque);
+    keyedArchive->SetByteArrayAsType("mat.diffuse", diffuse);
+    keyedArchive->SetByteArrayAsType("mat.ambient", ambient);
+    keyedArchive->SetByteArrayAsType("mat.specular", specular);
+    keyedArchive->SetByteArrayAsType("mat.emission", emission);
+    keyedArchive->SetBool("mat.isOpaque", isOpaque);
+    
+    
+    keyedArchive->SetInt32("mat.type", type);
 }
     
 void Material::Load(KeyedArchive * keyedArchive)
@@ -146,19 +176,26 @@ void Material::Load(KeyedArchive * keyedArchive)
         //if (textures[k].length())
         //{
         textures[k] = Texture::CreateFromFile(names[k]);
-        //}
+        if (textures[k])
+        {
+            textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        }
+        
 //        if (names[k].size())
 //        {
 //            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
 //        } 
     }
     
-    keyedArchive->GetByteArrayAsType("diffuse", diffuse);
-    keyedArchive->GetByteArrayAsType("ambient", ambient);
-    keyedArchive->GetByteArrayAsType("specular", specular);
-    keyedArchive->GetByteArrayAsType("emission", emission);
+    keyedArchive->GetByteArrayAsType("mat.diffuse", diffuse);
+    keyedArchive->GetByteArrayAsType("mat.ambient", ambient);
+    keyedArchive->GetByteArrayAsType("mat.specular", specular);
+    keyedArchive->GetByteArrayAsType("mat.emission", emission);
     
-    isOpaque = keyedArchive->GetBool("isOpaque", isOpaque);
+    isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
+
+    eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
+    SetType(mtype);
 }
 
 

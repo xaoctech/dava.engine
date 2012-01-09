@@ -82,6 +82,8 @@ const char * uniformStrings[Shader::UNIFORM_COUNT] =
     {
         "none",
         "modelViewProjectionMatrix",
+        "modelViewMatrix",
+        "normalMatrix",
         "flatColor",
     };
 
@@ -90,7 +92,7 @@ const char * attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
         "inPosition",
         "inNormal",
         "inColor",
-        "inTexCoord",
+        "inTexCoord0",
         "inTexCoord1",
         "inTexCoord2",
         "inTexCoord3",
@@ -248,7 +250,7 @@ bool Shader::Recompile()
         
         int32 flagIndex = GetAttributeIndexByName(attributeName);
         vertexFormatAttribIndeces[flagIndex] = k;
-        //Logger::Debug("shader attr: %s size: %d type: %s", attributeName, size, VertexTypeStringFromEnum(type).c_str());
+        Logger::Debug("shader attr: %s size: %d type: %s flagIndex: %d", attributeName, size, VertexTypeStringFromEnum(type).c_str(), flagIndex);
         //if (vertexFormatAttribIndeces[k] != -1)
         //    Logger::Debug("shader attr matched: 0x%08x", (1 << flagIndex));
     }
@@ -268,7 +270,7 @@ bool Shader::Recompile()
         uniformNames[k] = attributeName;
         uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
         uniformIDs[k] = uniform;
-        //Logger::Debug("shader known uniform: %s size: %d type: %s", uniformNames[k].c_str(), size, VertexTypeStringFromEnum(type).c_str());
+        Logger::Debug("shader known uniform: %s size: %d type: %s", uniformNames[k].c_str(), size, VertexTypeStringFromEnum(type).c_str());
     }
     
     RenderManager::Instance()->UnlockNonMain();
@@ -418,6 +420,17 @@ void Shader::Bind()
                 const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
                 glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelViewProj.data);
                 break;
+            }
+        case UNIFORM_MODEL_VIEW_MATRIX:
+            {    
+                const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+                glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelView.data);
+                break;
+            }
+        case UNIFORM_NORMAL_MATRIX:
+            {
+                const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
+                glUniformMatrix3fv(uniformLocations[k], 1, GL_FALSE, normalMatrix.data);
             }
         case UNIFORM_COLOR:
             {

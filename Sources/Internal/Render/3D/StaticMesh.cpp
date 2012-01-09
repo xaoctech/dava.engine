@@ -33,6 +33,7 @@
 #include "Scene3D/Scene.h"
 #include "Render/RenderManager.h"
 #include "FileSystem/Logger.h"
+#include "Render/Shader.h"
 
 namespace DAVA 
 {
@@ -115,9 +116,8 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
     
     PolygonGroup * group = reinterpret_cast<PolygonGroup*>(children[index]);
     
-    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(group->renderDataObject);
-#if 1 // old material code
+#if 0 // old material code
     if (material)
 	{
 
@@ -140,26 +140,34 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
 
 		if (material->textures[Material::TEXTURE_DIFFUSE])
 		{
-            RenderManager::Instance()->SetRenderData(group->renderDataObject);
-			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DIFFUSE]);
+			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DIFFUSE], 0);
         }
-        
+
         if (material->textures[Material::TEXTURE_DECAL])
         {
 			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DECAL], 1);
         }
         
-        if (material->hasOpacity)
+        if (material->isOpaque)
         {
-            RenderManager::Instance()->EnableCulling(false);
+            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
+            RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
         }
 	}
 
 #endif
 
-	// render
+	
+    // render
+	RenderManager::Instance()->FlushState();
+    
 
-	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+    if (material->textures[Material::TEXTURE_DECAL])
+    {
+        material->shader->SetUniformValue(material->uniformTexture0, 0);
+        material->shader->SetUniformValue(material->uniformTexture1, 1);
+    }
+    RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
     
     
     RenderManager::Instance()->SetTexture(0, 1); // clear texture block 1

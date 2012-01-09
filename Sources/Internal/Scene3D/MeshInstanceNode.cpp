@@ -277,27 +277,15 @@ void MeshInstanceNode::Draw()
     
     uint32 meshesSize = (uint32)currentLod->meshes.size();
 
-	if (debugFlags == DEBUG_DRAW_NONE)
-	{
-        for (uint32 k = 0; k < meshesSize; ++k)
-        {
-            currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
-        }
-    }else
+    for (uint32 k = 0; k < meshesSize; ++k)
     {
-        for (uint32 k = 0; k < meshesSize; ++k)
-        {
-            currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
-        }
+        currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
     }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
-        //RenderManager::PushState();
-        RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE); 
-//        RenderManager::Instance()->EnableDepthTest(false);
-//		RenderManager::Instance()->EnableTexturing(false);
-		RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
 		
 		
 		if (debugFlags & DEBUG_DRAW_AABBOX)
@@ -326,7 +314,36 @@ void MeshInstanceNode::Draw()
 		{
 			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 			RenderHelper::Instance()->DrawCornerBox(bbox);
-		}
+            
+//            for (uint32 k = 0; k < meshesSize; ++k)
+//            {
+//                currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
+//            }
+            
+//        }
+//        if (debugFlags & DEBUG_DRAW_NORMALS)
+//        {
+            
+            const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+            const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
+            
+            for (uint32 k = 0; k < meshesSize; ++k)
+            {
+                PolygonGroup * pGroup = currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k]);
+                for (int vi = 0; vi < pGroup->GetVertexCount(); ++vi)
+                {
+                    Vector3 vertex;
+                    Vector3 normal;
+                    pGroup->GetCoord(vi, vertex);
+                    pGroup->GetNormal(vi, normal);
+                    
+                    vertex = vertex;
+                    normal = normal * modelView;
+                    Vector3 vertex2 = vertex + normal * 1.0f;
+                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
+                }
+            }
+        }
 		
 //      RenderManager::Instance()->EnableDepthTest(true);
 //		RenderManager::Instance()->EnableTexturing(true);

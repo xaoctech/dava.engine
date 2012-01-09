@@ -253,6 +253,7 @@ public:
     
     
     void EnableVertexArray(bool isEnabled);
+    void EnableNormalArray(bool isEnabled);
 	void EnableTextureCoordArray(bool isEnabled);
 	void EnableColorArray(bool isEnabled);
 	
@@ -431,12 +432,14 @@ public:
     enum eUniformMatrixType
     {
         UNIFORM_MATRIX_MODELVIEWPROJECTION = 0,
+        UNIFORM_MATRIX_NORMAL,
         UNIFORM_MATRIX_COUNT,
     };
     
     virtual void SetMatrix(eMatrixType type, const Matrix4 & matrix);
     virtual const Matrix4 & GetMatrix(eMatrixType type);
     virtual const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
+    virtual const Matrix3 & GetNormalMatrix();
     virtual void  ClearUniformMatrices();
 
 
@@ -463,6 +466,7 @@ protected:
     Matrix4 matrices[MATRIX_COUNT];
     int32   uniformMatrixFlags[UNIFORM_MATRIX_COUNT];
     Matrix4 uniformMatrices[UNIFORM_MATRIX_COUNT];
+    Matrix3 uniformMatrixNormal;
     
 
     void RectFromRenderOrientationToViewport(Rect & rect);
@@ -530,6 +534,7 @@ protected:
     RenderStateBlock hardwareState;
 
     int oldVertexArrayEnabled;                      // state
+    int oldNormalArrayEnabled;                      // state
 	int oldTextureCoordArrayEnabled;                // state
 	int oldColorArrayEnabled;                       // state
 	int oldBlendingEnabled;                         // state

@@ -70,9 +70,11 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 // RENDERSTATE
 //    newTextureEnabled = 0;
 //	oldTextureEnabled = 0;
-//	oldVertexArrayEnabled = 0;
-//	oldTextureCoordArrayEnabled = 0;
-//	oldColorArrayEnabled = 0;
+	oldVertexArrayEnabled = 0;
+    oldNormalArrayEnabled = 0;
+    oldTextureCoordArrayEnabled = 0;
+	oldColorArrayEnabled = 0;
+
 //	oldBlendingEnabled = 0;
 //    depthWriteEnabled = 0;
 //    depthTestEnabled = 0;
@@ -662,6 +664,20 @@ void RenderManager::RectFromRenderOrientationToViewport(Rect & rect)
 const Matrix4 & RenderManager::GetMatrix(eMatrixType type)
 {
     return matrices[type];
+}
+
+const Matrix3 & RenderManager::GetNormalMatrix()
+{
+    if (uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] == 0)
+    {
+        GetUniformMatrix(UNIFORM_MATRIX_MODELVIEWPROJECTION);
+        
+        uniformMatrices[UNIFORM_MATRIX_MODELVIEWPROJECTION].GetInverse(uniformMatrices[UNIFORM_MATRIX_NORMAL]);
+        uniformMatrices[UNIFORM_MATRIX_NORMAL].Transpose();
+        uniformMatrixNormal = uniformMatrices[UNIFORM_MATRIX_NORMAL];
+        uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 1; // matrix is ready
+    }
+    return uniformMatrixNormal;
 }
 
 const Matrix4 & RenderManager::GetUniformMatrix(eUniformMatrixType type)

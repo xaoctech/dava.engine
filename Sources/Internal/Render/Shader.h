@@ -53,6 +53,8 @@ public:
     {
         UNIFORM_NONE = 0, 
         UNIFORM_MODEL_VIEW_PROJECTION_MATRIX,  // gl_ModelViewProjectionMatrix
+        UNIFORM_MODEL_VIEW_MATRIX,
+        UNIFORM_NORMAL_MATRIX, 
         UNIFORM_COLOR,
         UNIFORM_COUNT,
     };
