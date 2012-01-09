@@ -31,6 +31,7 @@
 #define __DAVAENGINE_MATRIX_H__
 
 #include "Neon/NeonMath.h"
+#include "Math/Matrix3.h"
 
 namespace DAVA
 {
@@ -138,6 +139,7 @@ struct Matrix4
 	//! matrix multiplication
 	inline Matrix4 operator *(const Matrix4 & m) const;
 	inline const Matrix4 & operator *=(const Matrix4 & m);
+    inline operator Matrix3 () const;
 
 	//! Comparison operators
 	inline bool operator == (const Matrix4 & _m) const;
@@ -187,6 +189,16 @@ inline Matrix4 & Matrix4::operator= (const Matrix4 & m)
 	_30 = m._30; _31 = m._31; _32 = m._32; _33 = m._33;
 	return *this;
 }
+    
+inline Matrix4::operator Matrix3 () const
+{
+    Matrix3 m;
+    m._00 = _00; m._01 = _01; m._02 = _02; 
+	m._10 = _10; m._11 = _11; m._12 = _12; 
+	m._20 = _20; m._21 = _21; m._22 = _22; 
+    return m;
+}
+
 
 
 inline void	Matrix4::Identity()
