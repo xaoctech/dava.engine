@@ -652,6 +652,7 @@ void UIHierarchy::OpenNodes(const List<void *> &userNodes)
             if ((*cit)->userNode == *it)
             {
                 curNode = (*cit);
+                break;
             }
         }
     }

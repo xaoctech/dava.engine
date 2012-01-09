@@ -155,8 +155,6 @@ protected:
     void ChangeControlWidthRight(UIControl *c, float32 width);
     void ChangeControlWidthLeft(UIControl *c, float32 width);
     
-    //
-    void OnTestButton(BaseObject * obj, void *, void *);
     void SelectNodeAtTree(SceneNode *node);
 };
 

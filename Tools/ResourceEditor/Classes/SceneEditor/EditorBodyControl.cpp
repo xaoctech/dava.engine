@@ -50,11 +50,6 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreatePropertyPanel();
 	
 	CreateModificationPanel();
-    
-    UIButton *testButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::LEFT_SIDE_WIDTH, 0), L"Test");
-    testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnTestButton));
-    AddControl(testButton);
-    SafeRelease(testButton);
 }
 
 
@@ -895,19 +890,6 @@ void EditorBodyControl::Refresh()
     sceneTree->Refresh();
 }
 
-void EditorBodyControl::OnTestButton(DAVA::BaseObject *obj, void *, void *)
-{
-    SceneNode *node = scene->FindByName("node-lod0_turret_01");
-    if(node)
-    {
-        SceneNode *nodeForFinding = node->FindByName("instance_0");
-        if(nodeForFinding)
-        {
-            SelectNodeAtTree(nodeForFinding);
-        }
-    }
-}
-
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
     if(savedTreeCell)
@@ -921,24 +903,9 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
     SceneNode *nd = node;
     while(nd)
     {
-        SceneNode *n = nd;
+        nodesForSearch.push_front(nd);
         nd = nd->GetParent();
-        if(nd)
-        {
-            nodesForSearch.push_front(n);
-        }
     }
     
-    nodesForSearch.push_front(NULL);
-
-    
-//    do
-//    {
-//        nodesForSearch.push_front(nd);
-//        nd = nd->GetParent();
-//    }
-//    while(nd);
-    
-
     sceneTree->OpenNodes(nodesForSearch);
 }
