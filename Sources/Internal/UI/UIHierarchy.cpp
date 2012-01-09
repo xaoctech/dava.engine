@@ -628,6 +628,36 @@ void UIHierarchy::CorrectOpenedInParent(UIHierarchyNode *parent, int32 nodesDelt
     }
 }
 
+void UIHierarchy::OpenNodes(const List<void *> &userNodes)
+{
+    DVASSERT(delegate);
+    DVASSERT(*userNodes.begin() == baseNode->userNode);
+    
+
+    UIHierarchyNode *curNode = baseNode;
+    List<void *>::const_iterator it = userNodes.begin();
+    it++;
+    for (; it != userNodes.end(); it++) 
+    {
+        if (curNode != baseNode) 
+        {
+            if (!curNode->isOpen)
+            {
+                curNode->isOpen = true;
+                CorrectOpenedInParent(curNode->parent, RecalcNode(curNode));
+            }
+        }
+        for (List<UIHierarchyNode *>::iterator cit = curNode->children.begin(); cit != curNode->children.end(); cit++) 
+        {
+            if ((*cit)->userNode == *it)
+            {
+                curNode = (*cit);
+            }
+        }
+    }
+
+    Refresh();
+}
 
 
 float32 UIHierarchy::VisibleAreaSize(UIScrollBar *forScrollBar)
