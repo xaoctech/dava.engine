@@ -143,7 +143,7 @@ void ComboBox::Update(float32 timeElapsed)
         }
         else 
         {
-            if (f->GetParent() && f->GetParent()->GetParent() == list)
+            if (f && f->GetParent() && f->GetParent()->GetParent() == list)
             {
                 isFocused = true;
             }

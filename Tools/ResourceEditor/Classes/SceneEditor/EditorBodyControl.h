@@ -112,8 +112,8 @@ protected:
     EditorScene * scene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
+//    Max3dCameraController * cameraController;
     WASDCameraController * cameraController;
-    
     // Node preview information
     void CreatePropertyPanel();
     void ReleasePropertyPanel();

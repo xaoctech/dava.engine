@@ -170,8 +170,8 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
 //    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
     c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
-    
 }
+
 
 void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 {

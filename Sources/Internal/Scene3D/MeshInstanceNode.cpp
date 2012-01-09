@@ -320,9 +320,9 @@ void MeshInstanceNode::Draw()
 //                currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
 //            }
             
-//        }
-//        if (debugFlags & DEBUG_DRAW_NORMALS)
-//        {
+        }
+        if (debugFlags & DEBUG_DRAW_NORMALS)
+        {
             
             const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
             const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
@@ -433,6 +433,15 @@ void MeshInstanceNode::Save(KeyedArchive * archive)
         }
         lodIdx++;
     }
+
+	archive->SetInt32("lightmapsCount", (int32)lightmaps.size());
+	int32 lightmapIndex = 0;
+	List<LightmapData>::iterator lighmapsEnd = lightmaps.end();
+	for(List<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
+	{
+		archive->SetString(Format("lightmap%d", lightmapIndex), (*lightmapsIterator).lightmapName.c_str());
+		lightmapIndex++;
+	}
 }
 
 void MeshInstanceNode::Load(KeyedArchive * archive)
@@ -458,15 +467,41 @@ void MeshInstanceNode::Load(KeyedArchive * archive)
         }
         lodIdx++;
     }
+
+	int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
+	for(int32 i = 0; i < lightmapsCount; ++i)
+	{
+		String lightmapName = archive->GetString(Format("lightmap%d", i), "");
+		AddLightmap(lightmapName);
+	}
     
     currentLod = &(*lodLayers.begin());
 }
-    
+
+void MeshInstanceNode::AddLightmap(const String & lightmapName)
+{
+	LightmapData data;
+	data.lightmapName = lightmapName;
+	data.lightmap = Texture::CreateFromFile(lightmapName);
+	lightmaps.push_back(data);
+}
+
+void MeshInstanceNode::ClearLightmaps()
+{
+	List<LightmapData>::iterator lighmapsEnd = lightmaps.end();
+	for(List<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
+	{
+		LightmapData & data = (*lightmapsIterator);
+		SafeRelease(data.lightmap);
+	}
+
+	lightmaps.clear();
+}
+
+
 //String MeshInstanceNode::GetDebugDescription()
 //{
 //    /return Format(": %d ", GetChildrenCount());
 //}
-
-
     
 };

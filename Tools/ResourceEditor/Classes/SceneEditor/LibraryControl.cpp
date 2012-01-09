@@ -171,7 +171,6 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
     }
     
     selectedCell->SetSelected(true, false);
-
 }
 
 void LibraryControl::RefreshTree()

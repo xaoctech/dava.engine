@@ -37,6 +37,7 @@ namespace DAVA
 class Scene;
 class StaticMesh;
 class Material;
+class Texture;
 class MeshInstanceNode : public SceneNode
 {
 public:	
@@ -91,6 +92,28 @@ public:
         \brief virtual function to load node to KeyedArchive
      */
 	virtual void Load(KeyedArchive * archive);
+
+	/**
+	 \brief Add lightmap texture.
+	 Consequent calls of this function will add lightmaps to consequent PolygonGroups of this MeshInstance.
+	 Normal usage (pseudocode):
+	 \code
+		ClearLightmaps();
+		for(each polygon group)
+		{
+			AddLightmap(...);
+		}
+	 \endcode
+
+	 \param[in] lightmapName path to texture
+	 */
+	void AddLightmap(const String & lightmapName);
+
+	/**
+	 \brief Delete all lightmaps for this MeshInstance. 
+	 */
+	void ClearLightmaps();
+
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
@@ -111,6 +134,13 @@ protected:
     
     bool lodPresents;
     int lastLodUpdateFrame;
+
+	struct LightmapData
+	{
+		Texture * lightmap;
+		String lightmapName;
+	};
+	List<LightmapData> lightmaps;
 };
 	
 inline AABBox3 & MeshInstanceNode::GetBoundingBox()
