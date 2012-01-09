@@ -674,6 +674,15 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1654,6 +1663,15 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h">
       <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
+      <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
