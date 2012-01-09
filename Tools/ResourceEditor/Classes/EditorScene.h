@@ -30,6 +30,7 @@ public:
 	
 	void TrySelection(Vector3 from, Vector3 direction);
 	SceneNode * GetSelection();
+	virtual void Draw();
 	
 protected:
 
@@ -41,6 +42,7 @@ protected:
 	SceneNode * selection;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
+	void DrawDebugNodes(SceneNode * curr);
 
 };
 
