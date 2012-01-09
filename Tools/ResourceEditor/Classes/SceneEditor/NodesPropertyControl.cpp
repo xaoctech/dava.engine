@@ -17,6 +17,17 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     renderingModes.push_back("SHADER");
     renderingModes.push_back("BLENDED_SHADER");
     
+    
+    materialTypes.push_back("UNLIT");
+    materialTypes.push_back("UNLIT_DETAIL");
+    materialTypes.push_back("UNLIT_DECAL");
+    materialTypes.push_back("VERTEX_LIT");
+    materialTypes.push_back("VERTEX_LIT_DETAIL");
+    materialTypes.push_back("VERTEX_LIT_DECAL");
+    materialTypes.push_back("NORMAL_MAPPED_DIFFUSE");
+    materialTypes.push_back("NORMAL_MAPPED_SPECULAR");
+
+    
     propertyList = new PropertyList(Rect(0, 0, rect.dx, rect.dy), this);
     AddControl(propertyList);
 }
@@ -38,7 +49,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
     if(!createNodeProperties)
     {
-        propertyList->AddSectionHeader("General C++");
+        propertyList->AddSection("General C++");
         propertyList->AddIntProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
@@ -48,7 +59,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetStringPropertyValue("C++ Class Name", typeid(*sceneNode).name());
     }
 
-    propertyList->AddSectionHeader("Scene Node");
+    propertyList->AddSection("Scene Node");
     propertyList->AddStringProperty("Name", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetStringPropertyValue("Name", sceneNode->GetName());
 
@@ -64,7 +75,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     Camera *camera = dynamic_cast<Camera*> (sceneNode);
     if(camera)
     {
-        propertyList->AddSectionHeader("Camera");
+        propertyList->AddSection("Camera");
         
         propertyList->AddFloatProperty("Fov", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("zNear", PropertyList::PROPERTY_IS_EDITABLE);
@@ -98,7 +109,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     LightNode *light = dynamic_cast<LightNode *> (sceneNode);
     if(light)
     {
-        propertyList->AddSectionHeader("Light");
+        propertyList->AddSection("Light");
         
         propertyList->AddComboProperty("Type", types);
         propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
@@ -117,16 +128,33 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
     if(mesh)
     {
-        propertyList->AddSectionHeader("Mesh Instance");
+        propertyList->AddSection("Mesh Instance");
         
-        propertyList->AddStringProperty("Test", PropertyList::PROPERTY_IS_READ_ONLY);
-        propertyList->SetStringPropertyValue("Test", "mi");
+        
+        Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
+        Vector<Material*> materials = mesh->GetMaterials();
+        Vector<StaticMesh*> meshes = mesh->GetMeshes();
+
+        for(int32 i = 0; i < meshes.size(); ++i)
+        {
+            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+            
+            String fieldName = Format("PolygonGroup. #%d", i);
+            propertyList->AddStringProperty(fieldName, PropertyList::PROPERTY_IS_READ_ONLY);
+            propertyList->SetStringPropertyValue(fieldName, pg->GetName());
+            
+            if(materials[i])
+            {
+                propertyList->AddComboProperty("Material", materialTypes);
+                propertyList->SetComboPropertyIndex("Material", materials[i]->type);
+            }
+        }
     }
     
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (sceneNode);
     if(landscape)
     {
-        propertyList->AddSectionHeader("Landscape");
+        propertyList->AddSection("Landscape");
         
         propertyList->AddFloatProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("Height", PropertyList::PROPERTY_IS_EDITABLE); 
@@ -205,7 +233,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
     if (cube)
     {
-        propertyList->AddSectionHeader("Cube");
+        propertyList->AddSection("Cube");
 
         propertyList->AddFloatProperty("Length", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("Width", PropertyList::PROPERTY_IS_EDITABLE); 
@@ -228,7 +256,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
     if(sphere)
     {
-        propertyList->AddSectionHeader("Sphere");
+        propertyList->AddSection("Sphere");
 
         propertyList->AddFloatProperty("Radius", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);

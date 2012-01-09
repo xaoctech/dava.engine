@@ -74,6 +74,8 @@ public:
 	
 protected:
 	SceneNode * selection;
+    float32 viewXAngle, viewYAngle;
+    Vector2 oldTouchPoint;
 };
 
 };

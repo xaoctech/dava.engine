@@ -89,7 +89,8 @@ void EditorScene::CheckNodes(SceneNode * curr)
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+	//	selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABBOX));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -124,7 +125,8 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		selection = FindSelected(this, coll);
 	
 		if(selection)
-			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+//			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABBOX));
 	}
 	else 
 	{
@@ -157,6 +159,29 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 SceneNode * EditorScene::GetSelection()
 {
 	return selection;
+}
+
+void EditorScene::Draw()
+{
+	Scene::Draw();
+	DrawDebugNodes(this);
+}
+
+void EditorScene::DrawDebugNodes(SceneNode * curr)
+{
+	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
+	
+	if (mesh && mesh->userData)
+	{
+		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		data->bulletObject->Draw(mesh->GetWorldTransform(), mesh);
+	}
+
+	int size = curr->GetChildrenCount();
+	for (int i = 0; i < size; i++)
+	{
+		DrawDebugNodes(curr->GetChild(i));
+	}
 }
 
 

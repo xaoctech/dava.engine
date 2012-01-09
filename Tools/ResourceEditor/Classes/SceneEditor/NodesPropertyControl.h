@@ -46,6 +46,7 @@ protected:
     
     Vector<String> types;
     Vector<String> renderingModes;
+    Vector<String> materialTypes;
     
     NodesPropertyDelegate *nodesDelegate;
     PropertyList *propertyList;
