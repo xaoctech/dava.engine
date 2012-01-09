@@ -46,7 +46,7 @@ public:
     void DeleteChildren();
     UIHierarchyNode *CheckChildrenForUserNode(void *userNodePtr);
     void * GetUserNode();
-    
+
     
     UIHierarchyNode *parent;
     void *userNode;
