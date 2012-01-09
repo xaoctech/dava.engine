@@ -21,7 +21,7 @@ class BulletObject : public BaseObject
 {
 public:
     
-    BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *meshNode, const Matrix4 &pWorldTransform);
+    BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform);
     BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *lightNode, const Matrix4 &pWorldTransform);
     ~BulletObject();
 	
@@ -32,12 +32,20 @@ public:
 		return collisionObject;
 	}
 
-	void Draw(const Matrix4 & worldTransform);
+	void Draw(const Matrix4 & worldTransform, MeshInstanceNode * node);
+
+	inline void SetUpdateFlag(bool flag)
+	{
+		updateFlag = flag;
+	}
 	
 protected:
 
-	void CreateShape(MeshInstanceNode *meshNode);
-	void CreateLightShape(float32 radius);
+	void DeleteCollisionObject();	
+	void CreateCollisionObject();
+
+	void CreateLightObject(float32 radius);
+	void DeleteLightObject(float32 radius);
 
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
@@ -45,6 +53,10 @@ protected:
     btTriangleMesh* trimesh;
 	btCollisionShape * shape;
 	Vector<Vector3> triangles;
+	Matrix4 createdWith;
+	MeshInstanceNode * meshNode;
+	LightNode *lightNode;
+	bool updateFlag;
 };
 
 #endif

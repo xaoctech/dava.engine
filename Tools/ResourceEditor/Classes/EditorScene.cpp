@@ -164,7 +164,7 @@ SceneNode * EditorScene::GetSelection()
 void EditorScene::Draw()
 {
 	Scene::Draw();
-//	DrawDebugNodes(this);
+	DrawDebugNodes(this);
 }
 
 void EditorScene::DrawDebugNodes(SceneNode * curr)
@@ -174,7 +174,7 @@ void EditorScene::DrawDebugNodes(SceneNode * curr)
 	if (mesh && mesh->userData)
 	{
 		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
-		data->bulletObject->Draw(mesh->GetWorldTransform());
+		data->bulletObject->Draw(mesh->GetWorldTransform(), mesh);
 	}
 
 	int size = curr->GetChildrenCount();
