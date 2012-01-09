@@ -90,13 +90,13 @@ void BulletObject::CreateShape(MeshInstanceNode *meshNode)
 				int index2 = pg->indexArray[i*3+2];
 				Vector3 v;
 				pg->GetCoord(index0, v);
-				v = v * meshNode->GetLocalTransform();
+//				v = v * meshNode->GetLocalTransform();
 				btVector3 vertex0(v.x, v.y, v.z);
 				pg->GetCoord(index1, v);
-				v = v * meshNode->GetLocalTransform();
+//				v = v * meshNode->GetLocalTransform();
 				btVector3 vertex1(v.x, v.y, v.z);
 				pg->GetCoord(index2, v);
-				v = v * meshNode->GetLocalTransform();
+//				v = v * meshNode->GetLocalTransform();
 				btVector3 vertex2(v.x, v.y, v.z);
 				
 				trimesh->addTriangle(vertex0,vertex1,vertex2, false);
@@ -118,7 +118,21 @@ void BulletObject::UpdateCollisionObject()
 {
     btTransform btt;
     btt.setIdentity();
-    btt.setFromOpenGLMatrix(collisionPartTransform->data);
+	
+	//scale
+	Vector3 scale = collisionPartTransform->GetScaleVector();
+	shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+	
+	//origin
+	Vector3 origin = collisionPartTransform->GetTranslationVector();
+	btt.setOrigin(btVector3(origin.x, origin.y, origin.z));
+	
+	//rotation
+	Quaternion qt;
+	qt.Construct(*collisionPartTransform);
+	btt.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w));
+					
+//    btt.setFromOpenGLMatrix(collisionPartTransform->data);
     collisionObject->setWorldTransform(btt);
 }
 

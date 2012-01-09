@@ -277,19 +277,19 @@ void MeshInstanceNode::Draw()
     
     uint32 meshesSize = (uint32)currentLod->meshes.size();
 
-	if (debugFlags == DEBUG_DRAW_NONE)
-	{
+//	if (debugFlags == DEBUG_DRAW_NONE)
+//	{
         for (uint32 k = 0; k < meshesSize; ++k)
         {
             currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
         }
-    }else
-    {
-        for (uint32 k = 0; k < meshesSize; ++k)
-        {
-            currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
-        }
-    }
+//    }else
+//   {
+//        for (uint32 k = 0; k < meshesSize; ++k)
+//        {
+//            currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
+//        }
+//    }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
