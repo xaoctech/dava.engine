@@ -13,7 +13,7 @@
 #include "SpherePropertyControl.h"
 #include "BoxPropertyControl.h"
 #include "ServicenodePropertyControl.h"
-#include "SceneNodeUserData.h"
+#include "../SceneNodeUserData.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
