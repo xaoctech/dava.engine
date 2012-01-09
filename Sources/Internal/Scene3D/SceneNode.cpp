@@ -56,12 +56,16 @@ SceneNode::SceneNode(Scene * _scene)
     flags = 0;
 	isSolidNode = false;
 	userData = 0;
+    
+    customProperties = new KeyedArchive();
 }
 
 SceneNode::~SceneNode()
 {
     RemoveAllChildren();
 	SafeDelete(userData);
+
+    SafeRelease(customProperties);
 }
 
 void SceneNode::SetScene(Scene * _scene)
@@ -468,6 +472,11 @@ void SceneNode::Load(KeyedArchive * archive)
     debugFlags = archive->GetUInt32("debugFlags", 0);
 }
 
+KeyedArchive * SceneNode::GetCustomProperties()
+{
+    return customProperties;
+}
+    
 };
 
 
