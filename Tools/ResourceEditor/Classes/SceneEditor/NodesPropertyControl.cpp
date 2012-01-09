@@ -1,6 +1,7 @@
 #include "NodesPropertyControl.h"
 #include "ControlsFactory.h"
 
+#include "DraggableDialog.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
@@ -94,7 +95,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     currentNode = sceneNode;
     propertyList->ReleaseProperties();
     
-    UpdateProjectPath();
+    projectPath = DraggableDialog::GetProjectPath();
 
     if(!createNodeProperties)
     {
@@ -589,18 +590,6 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String 
     }
 }
 
-void NodesPropertyControl::UpdateProjectPath()
-{
-    KeyedArchive *keyedArchieve = new KeyedArchive();
-    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
-    projectPath = keyedArchieve->GetString("LastSavedPath", "/");
-    if('/' != projectPath[projectPath.length() - 1])
-    {
-        projectPath += '/';
-    }
-
-    SafeRelease(keyedArchieve);
-}
 
 void NodesPropertyControl::OnPlus(BaseObject * object, void * userData, void * callerData)
 {

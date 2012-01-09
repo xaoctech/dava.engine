@@ -59,3 +59,18 @@ void DraggableDialog::Input(UIEvent *currentInput)
         }
     }
 }
+
+String DraggableDialog::GetProjectPath()
+{
+    KeyedArchive *keyedArchieve = new KeyedArchive();
+    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
+    String projectPath = keyedArchieve->GetString("LastSavedPath", "/");
+    if('/' != projectPath[projectPath.length() - 1])
+    {
+        projectPath += '/';
+    }
+    
+    SafeRelease(keyedArchieve);
+    
+    return projectPath;
+}

@@ -56,8 +56,6 @@ protected:
 
     bool IsValidPath(const String &path);
 
-    void UpdateProjectPath();
-    
     Vector<String> types;
     Vector<String> renderingModes;
     Vector<String> materialTypes;
