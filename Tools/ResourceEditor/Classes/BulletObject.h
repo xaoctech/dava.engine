@@ -44,7 +44,8 @@ protected:
 	void DeleteCollisionObject();	
 	void CreateCollisionObject();
 
-	void CreateLightShape(float32 radius);
+	void CreateLightObject(float32 radius);
+	void DeleteLightObject(float32 radius);
 
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
@@ -54,6 +55,7 @@ protected:
 	Vector<Vector3> triangles;
 	Matrix4 createdWith;
 	MeshInstanceNode * meshNode;
+	LightNode *lightNode;
 	bool updateFlag;
 };
 

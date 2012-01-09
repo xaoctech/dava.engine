@@ -14,32 +14,41 @@
 BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform)
 :collWorld(collisionWorld),
 collisionPartTransform(&((Matrix4&)pWorldTransform)),
-meshNode(_meshNode)
+meshNode(_meshNode),
+lightNode(0),
+updateFlag(true)
+
 {    
 	CreateCollisionObject();
-	updateFlag = true;
 }
 
-BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *lightNode, const Matrix4 &pWorldTransform)
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *_lightNode, const Matrix4 &pWorldTransform)
 :collWorld(collisionWorld),
-collisionPartTransform(&((Matrix4&)pWorldTransform))
+collisionPartTransform(&((Matrix4&)pWorldTransform)),
+lightNode(_lightNode),
+meshNode(0),
+updateFlag(true),
+trimesh(0)
 {
-    btTransform startTransform;
-    startTransform.setIdentity();
-    float start_x = 0;
-    float start_y = 0;
-    float start_z = 0;
+//    btTransform startTransform;
+//    startTransform.setIdentity();
+//    float start_x = 0;
+//    float start_y = 0;
+//    float start_z = 0;
+//	
+//    startTransform.setOrigin(btVector3(btScalar(start_x),
+//                                       btScalar(start_y),
+//                                       btScalar(start_z)));
+//    
+//    collisionObject = new btCollisionObject();
+//    collisionObject->setWorldTransform(startTransform);
+//	CreateLightShape(lightNode->GetRadius());
+//    collisionObject->setCollisionShape(shape);
+//    collisionWorld->addCollisionObject(collisionObject);	
+
 	
-    startTransform.setOrigin(btVector3(btScalar(start_x),
-                                       btScalar(start_y),
-                                       btScalar(start_z)));
-    
-    collisionObject = new btCollisionObject();
-    collisionObject->setWorldTransform(startTransform);
-	CreateLightShape(lightNode->GetRadius());
-    collisionObject->setCollisionShape(shape);
-    collisionWorld->addCollisionObject(collisionObject);	
-	updateFlag = true;
+	CreateLightObject(lightNode->GetRadius());
+	
 }
 
 
@@ -113,11 +122,14 @@ void BulletObject::CreateCollisionObject()
 	
 	collisionObject->setCollisionShape(shape);
     collWorld->addCollisionObject(collisionObject);
-}	
-void BulletObject::CreateLightShape(float32 radius)
+}
+
+void BulletObject::CreateLightObject(float32 radius)
 {
-	trimesh = 0;
+	collisionObject = new btCollisionObject();
 	shape = new btSphereShape(radius);
+	collisionObject->setCollisionShape(shape);
+	collWorld->addCollisionObject(collisionObject);
 }
 
 void BulletObject::UpdateCollisionObject()
@@ -127,7 +139,10 @@ void BulletObject::UpdateCollisionObject()
 	if (!(*collisionPartTransform == createdWith))
 	{
 		DeleteCollisionObject();
-		CreateCollisionObject();
+		if (meshNode)
+			CreateCollisionObject();
+		else if (lightNode)
+			CreateLightObject(lightNode->GetRadius());
 	}
 	
 //    btTransform btt;
