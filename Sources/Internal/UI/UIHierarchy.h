@@ -190,6 +190,8 @@ public:
 
     UIHierarchyCell* GetReusableCell(const String &cellIdentifier);
 
+    void OpenNodes(const List<void *> &userNodes);
+    
     void Refresh();
 
     
@@ -226,7 +228,8 @@ protected:
     void AddBefore(UIHierarchyNode *forParent);
 
     List<UIHierarchyNode *> iheritanceQueue;
-    
+
+
     
     
     UIControl *scrollContainer;
