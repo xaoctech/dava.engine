@@ -106,6 +106,7 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h" />
     <ClInclude Include="Classes\BulletObject.h" />
@@ -388,6 +389,7 @@
     <ClInclude Include="Classes\SceneEditor\CreateLandscapeDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreateLightDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreateNodeDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreateServiceNodeDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreateSphereDialog.h" />
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
@@ -400,6 +402,7 @@
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\NodePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
     <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
@@ -442,6 +445,7 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp" />
     <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
@@ -623,6 +627,7 @@
     <ClCompile Include="Classes\SceneEditor\CreateLandscapeDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateLightDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateNodeDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateServiceNodeDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateSphereDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
@@ -635,6 +640,7 @@
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
