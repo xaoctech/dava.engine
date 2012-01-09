@@ -161,6 +161,24 @@ SceneNode * EditorScene::GetSelection()
 	return selection;
 }
 
+void EditorScene::SetSelection(SceneNode *newSelection)
+{
+    if (selection)
+    {
+        //	selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABBOX));
+    }
+    
+    selection = newSelection;
+    
+    if(selection)
+    {
+        //			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+        selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABBOX));
+    }
+}
+
+
 void EditorScene::Draw()
 {
 	Scene::Draw();
