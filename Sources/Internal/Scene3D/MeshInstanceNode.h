@@ -94,11 +94,25 @@ public:
 	virtual void Load(KeyedArchive * archive);
 
 	/**
-	 \brief Set lightmap texture
+	 \brief Add lightmap texture.
+	 Consequent calls of this function will add lightmaps to consequent PolygonGroups of this MeshInstance.
+	 Normal usage (pseudocode):
+	 \code
+		ClearLightmaps();
+		for(each polygon group)
+		{
+			AddLightmap(...);
+		}
+	 \endcode
+
 	 \param[in] lightmapName path to texture
-	 \returns 
 	 */
-	void SetLightmap(const String & lightmapName);
+	void AddLightmap(const String & lightmapName);
+
+	/**
+	 \brief Delete all lightmaps for this MeshInstance. 
+	 */
+	void ClearLightmaps();
 
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
@@ -121,8 +135,12 @@ protected:
     bool lodPresents;
     int lastLodUpdateFrame;
 
-	Texture * lightmap;
-	String lightmapName;
+	struct LightmapData
+	{
+		Texture * lightmap;
+		String lightmapName;
+	};
+	List<LightmapData> lightmaps;
 };
 	
 inline AABBox3 & MeshInstanceNode::GetBoundingBox()
