@@ -239,6 +239,14 @@ public:
 	 */
 	void DeleteAllKeys();
 	
+    
+	/**
+     \brief Function to get all data of archive.
+     \returns map of VariantType class with names
+	 */
+    const Map<String, VariantType> & GetArchieveData();
+
+    
 
 //	yaml
 // 	/**
