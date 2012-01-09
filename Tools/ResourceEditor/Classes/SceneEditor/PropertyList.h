@@ -55,7 +55,7 @@ public:
     void AddBoolProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddSection(const String &sectionName);
+    void AddSection(const String &sectionName, bool expanded = true);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);

@@ -228,19 +228,6 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
     float32 usedWidth = keyName->size.x;
     float32 checkBoxWidth = GetHeightForWidth(usedWidth);
     
-    textContainer = new UIControl(Rect(usedWidth + checkBoxWidth, 0, usedWidth - checkBoxWidth, checkBoxWidth));
-    ControlsFactory::CustomizeUneditablePropertyCell(textContainer);
-    AddControl(textContainer);
-    
-    Font * font = ControlsFactory::GetFontLight();
-    falseText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
-    falseText->SetText(L"False");
-    falseText->SetFont(font);
-    
-    trueText = new UIStaticText(Rect(0, 0, usedWidth - checkBoxWidth, checkBoxWidth));
-    trueText->SetText(L"True");
-    trueText->SetFont(font);
-    
     checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(usedWidth, 0, checkBoxWidth, checkBoxWidth));
     checkBox->SetDelegate(this);
     AddControl(checkBox);
@@ -250,10 +237,7 @@ PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyC
 
 PropertyBoolCell::~PropertyBoolCell()
 {
-    SafeRelease(textContainer);
     SafeRelease(checkBox);
-    SafeRelease(falseText);
-    SafeRelease(trueText);
 }
 
 void PropertyBoolCell::SetData(PropertyCellData *prop)
@@ -264,7 +248,6 @@ void PropertyBoolCell::SetData(PropertyCellData *prop)
     {
         case PropertyCellData::PROP_VALUE_BOOL:
             checkBox->SetChecked(prop->GetBool(), false);
-            UpdateText();
             break;
             
         default:
@@ -277,66 +260,11 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::UpdateText()
-{
-    if(property->GetBool())
-    {
-        if(falseText->GetParent())
-        {
-            textContainer->RemoveControl(falseText);
-        }
-        
-        if(!trueText->GetParent())
-        {
-            textContainer->AddControl(trueText);
-        }
-    }
-    else
-    {
-        if(trueText->GetParent())
-        {
-            textContainer->RemoveControl(trueText);
-        }
-        
-        if(!falseText->GetParent())
-        {
-            textContainer->AddControl(falseText);
-        }
-    }
-}
-
 void PropertyBoolCell::ValueChanged(bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
-
-    UpdateText();
-    
-//    if(newValue)
-//    {
-//        if(falseText->GetParent())
-//        {
-//            textContainer->RemoveControl(falseText);
-//        }
-//        
-//        if(!trueText->GetParent())
-//        {
-//            textContainer->AddControl(trueText);
-//        }
-//    }
-//    else
-//    {
-//        if(trueText->GetParent())
-//        {
-//            textContainer->RemoveControl(trueText);
-//        }
-//        
-//        if(!falseText->GetParent())
-//        {
-//            textContainer->AddControl(falseText);
-//        }
-//    }
 }
 
 

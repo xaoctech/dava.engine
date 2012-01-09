@@ -4,6 +4,8 @@
 #include "DAVAEngine.h"
 #include "PropertyList.h"
 
+#include "CreatePropertyControl.h"
+
 using namespace DAVA;
 
 
@@ -15,8 +17,12 @@ public:
     
 };
 
-class NodesPropertyControl: public UIControl, public PropertyListDelegate
+class NodesPropertyControl: public UIControl, public PropertyListDelegate, public CreatePropertyControlDelegate, public UIListDelegate
 {
+    enum eConst
+    {
+        CELL_HEIGHT = 20,
+    };
     
 public:
     NodesPropertyControl(const Rect & rect, bool createNodeProperties);
@@ -37,6 +43,14 @@ public:
     virtual void OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4);
 
     void SetDelegate(NodesPropertyDelegate *delegate);
+    
+    virtual void NodeCreated(bool success);
+    
+    
+    virtual int32 ElementsCount(UIList * list);
+	virtual UIListCell *CellAtIndex(UIList *list, int32 index);
+	virtual int32 CellHeight(UIList * list, int32 index);
+	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 
 protected:
 
@@ -54,6 +68,20 @@ protected:
     String projectPath;
     
     bool createNodeProperties;
+    
+    UIButton *btnPlus;
+    UIButton *btnMinus;
+    
+    void OnPlus(BaseObject * object, void * userData, void * callerData);
+    void OnMinus(BaseObject * object, void * userData, void * callerData);
+    
+    CreatePropertyControl *propControl;
+    SceneNode *currentNode;
+    
+    UIList *deletionList;
+    UIControl *listHolder;
+    UIButton *btnCancel;
+    void OnCancel(BaseObject * object, void * userData, void * callerData);
 };
 
 
