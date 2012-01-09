@@ -392,6 +392,23 @@ void RenderManager::EnableVertexArray(bool isEnabled)
         oldVertexArrayEnabled = isEnabled;
     }
 }
+
+void RenderManager::EnableNormalArray(bool isEnabled)
+{
+    if(isEnabled != oldNormalArrayEnabled)
+    {
+        if(isEnabled)
+        {
+            RENDER_VERIFY(glEnableClientState(GL_NORMAL_ARRAY));
+        }
+        else
+        {
+            RENDER_VERIFY(glDisableClientState(GL_NORMAL_ARRAY));
+        }
+        oldNormalArrayEnabled = isEnabled;
+    }
+}
+
 void RenderManager::EnableTextureCoordArray(bool isEnabled)
 {
     if(isEnabled != oldTextureCoordArrayEnabled)
@@ -675,6 +692,7 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
     GLint matrixMode[2] = {GL_MODELVIEW, GL_PROJECTION};
     matrices[type] = matrix;
     uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
+    uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
     
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
     {
@@ -722,9 +740,19 @@ void RenderManager::AttachRenderData(Shader * shader)
                     SetVertexPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_VERTEX;
                     break;
+                case EVF_NORMAL:
+                    SetNormalPointer(stream->type, stream->stride, stream->pointer);
+                    pointerArraysCurrentState |= EVF_NORMAL;
+                    break;
                 case EVF_TEXCOORD0:
+                    glClientActiveTexture(GL_TEXTURE0);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_TEXCOORD0;
+                    break;
+                case EVF_TEXCOORD1:
+                    glClientActiveTexture(GL_TEXTURE1);
+                    SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
+                    pointerArraysCurrentState |= EVF_TEXCOORD1;
                     break;
                 default:
                     break;
@@ -737,9 +765,19 @@ void RenderManager::AttachRenderData(Shader * shader)
         {
             EnableVertexArray((pointerArraysCurrentState & EVF_VERTEX) != 0);
         }
+        if (difference & EVF_NORMAL)
+        {
+            EnableNormalArray((pointerArraysCurrentState & EVF_NORMAL) != 0);
+        }
         if (difference & EVF_TEXCOORD0)
         {
+            glClientActiveTexture(GL_TEXTURE0);
             EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
+        }
+        if (difference & EVF_TEXCOORD1)
+        {
+            glClientActiveTexture(GL_TEXTURE1);
+            EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
         }
         pointerArraysRendererState = pointerArraysCurrentState;
         

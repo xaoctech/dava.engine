@@ -111,7 +111,8 @@ public:
     void Save(KeyedArchive * keyedArchive);
     void Load(KeyedArchive * keyedArchive);
     
-    
+    int32 uniformTexture0;
+    int32 uniformTexture1;
     
     bool    isOpaque;    
     

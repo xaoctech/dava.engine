@@ -105,7 +105,8 @@ Shader * UberShader::GetShader(const String & combination)
     Map<String, CompiledShader *>::iterator it = compiledShadersMap.find(combination);
     if (it != compiledShadersMap.end())
     {
-        return it->second->shader;
+        CompiledShader * c = it->second;
+        return c->shader;
     }
     return 0;
 }
