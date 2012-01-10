@@ -40,6 +40,7 @@ public:
         
     const String GetPropName() const;
     int32 GetPropType() const;
+    
         
 protected:
 
