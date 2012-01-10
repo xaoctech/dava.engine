@@ -6,6 +6,11 @@
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
 {
+	btnPlus = 0;
+	btnMinus = 0;
+	propControl = 0;
+	workingScene = 0;
+
     deletionList = NULL;
     listHolder = NULL;
     btnCancel = NULL;
@@ -24,15 +29,6 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     renderingModes.push_back("SHADER");
     renderingModes.push_back("BLENDED_SHADER");
     
-    materialTypes.push_back("UNLIT");
-    materialTypes.push_back("UNLIT_DETAIL");
-    materialTypes.push_back("UNLIT_DECAL");
-    materialTypes.push_back("VERTEX_LIT");
-    materialTypes.push_back("VERTEX_LIT_DETAIL");
-    materialTypes.push_back("VERTEX_LIT_DECAL");
-    materialTypes.push_back("NORMAL_MAPPED_DIFFUSE");
-    materialTypes.push_back("NORMAL_MAPPED_SPECULAR");
-
     Rect propertyRect(0, 0, rect.dx, rect.dy);
     
     if(!createNodeProperties)
@@ -96,7 +92,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     propertyList->ReleaseProperties();
     
     projectPath = DraggableDialog::GetProjectPath();
-
+    
     if(!createNodeProperties)
     {
         propertyList->AddSection("General C++");
@@ -181,9 +177,20 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     {
         propertyList->AddSection("Mesh Instance");
         
+        materials.clear();
+        materialNames.clear();
+        
+        int32 matCount = workingScene->GetMaterialCount();
+        for(int32 i = 0; i < matCount; ++i)
+        {
+            Material *mat = workingScene->GetMaterial(i);
+            materialNames.push_back(mat->GetName());
+            materials.push_back(mat);
+        }
+        
         
         Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-        Vector<Material*> materials = mesh->GetMaterials();
+        Vector<Material*> meshMaterials = mesh->GetMaterials();
         Vector<StaticMesh*> meshes = mesh->GetMeshes();
 
         for(int32 i = 0; i < meshes.size(); ++i)
@@ -220,12 +227,30 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
             propertyList->AddBoolProperty("fmt.JOINTWEIGHT", PropertyList::PROPERTY_IS_EDITABLE);
             propertyList->SetBoolPropertyValue("fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
-            
-            
-            if(materials[i])
+
+            if(matCount)
             {
-                propertyList->AddComboProperty("Material", materialTypes);
-                propertyList->SetComboPropertyIndex("Material", materials[i]->type);
+                String comboName = Format("Materials for #%d", i);
+                propertyList->AddComboProperty(comboName, materialNames);
+
+                if(meshMaterials[i])
+                {
+                    String meshMatName = meshMaterials[i]->GetName();
+                    for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+                    {
+                        if(meshMatName == materialNames[iMat])
+                        {
+                            propertyList->SetComboPropertyIndex(comboName, iMat);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    propertyList->SetComboPropertyIndex(comboName, 0);
+                }
+                
+//                propertyList->AddMessageProperty("GoToMaterials", Message(this, &NodesPropertyControl::OnGo2Materials));
             }
         }
     }
@@ -442,9 +467,10 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
         //Add Code
         
         Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-        Vector<Material*> materials = mesh->GetMaterials();
+        Vector<Material*> meshMaterials = mesh->GetMaterials();
         Vector<StaticMesh*> meshes = mesh->GetMeshes();
         
+        int32 currentMaterial = 0;
         for(int32 i = 0; i < meshes.size(); ++i)
         {
             PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
@@ -461,11 +487,11 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
             vertexFormat |= propertyList->GetBoolPropertyValue("fmt.JOINTWEIGHT");
             
             //TODO: set it to pg
-            
-            if(materials[i])
+            if(materials.size())
             {
-                propertyList->AddComboProperty("Material", materialTypes);
-                propertyList->SetComboPropertyIndex("Material", materials[i]->type);
+                String comboName = Format("Materials for #%d", i);
+                currentMaterial = propertyList->GetComboPropertyIndex(comboName);
+                mesh->ReplaceMaterial(materials[currentMaterial], i);
             }
         }
     }
@@ -816,3 +842,12 @@ String NodesPropertyControl::GetCustomPropertyName(const String &keyName)
     return retStr;
 }
 
+void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
+{
+    workingScene = scene;
+}
+
+void NodesPropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    
+}

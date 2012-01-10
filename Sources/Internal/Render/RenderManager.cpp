@@ -670,9 +670,10 @@ const Matrix3 & RenderManager::GetNormalMatrix()
 {
     if (uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] == 0)
     {
-        GetUniformMatrix(UNIFORM_MATRIX_MODELVIEWPROJECTION);
+        //GetUniformMatrix(UNIFORM_MATRIX_MODELVIEWPROJECTION);
+        const Matrix4 & modelViewMatrix = GetMatrix(MATRIX_MODELVIEW);
         
-        uniformMatrices[UNIFORM_MATRIX_MODELVIEWPROJECTION].GetInverse(uniformMatrices[UNIFORM_MATRIX_NORMAL]);
+        modelViewMatrix.GetInverse(uniformMatrices[UNIFORM_MATRIX_NORMAL]);
         uniformMatrices[UNIFORM_MATRIX_NORMAL].Transpose();
         uniformMatrixNormal = uniformMatrices[UNIFORM_MATRIX_NORMAL];
         uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 1; // matrix is ready

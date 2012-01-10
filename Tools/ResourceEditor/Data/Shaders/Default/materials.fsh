@@ -32,7 +32,7 @@ void main()
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
-    gl_FragColor = varDiffuseColor * 0.5 + 0.5;
+    gl_FragColor = varDiffuseColor * textureColor0;
 #else
     #if defined(MATERIAL_TEXTURE)
     	gl_FragColor = textureColor0;

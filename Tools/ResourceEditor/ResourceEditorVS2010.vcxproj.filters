@@ -9,24 +9,6 @@
     <ClCompile Include="Classes\UIScrollView.cpp" />
     <ClCompile Include="Classes\UISpriteEditor.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
-    <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp">
       <Filter>TexturePacker</Filter>
     </ClCompile>
@@ -538,15 +520,6 @@
     <ClCompile Include="Classes\bullet\MiniCL\MiniCLTaskScheduler.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
@@ -577,29 +550,8 @@
     <ClCompile Include="Classes\BeastProxy.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
       <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateNodeDialog.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyList.cpp">
-      <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp">
       <Filter>SceneEditor\Beast</Filter>
@@ -607,38 +559,53 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp">
       <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\EditorScene.cpp" />
-    <ClCompile Include="Classes\SceneEditor\CreateBoxDialog.cpp">
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateCameraDialog.cpp">
+    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateLandscapeDialog.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateLightDialog.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateServiceNodeDialog.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateSphereDialog.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp">
+    <ClCompile Include="Classes\SceneEditor\CameraPanel.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ComboBox.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp">
@@ -650,38 +617,32 @@
     <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\PropertyList.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\NodePropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ServicenodePropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp">
+    <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp">
+    <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
       <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
-      <Filter>SceneEditor\Beast</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -693,24 +654,6 @@
     <ClInclude Include="Classes\UIFileTreeCell.h" />
     <ClInclude Include="Classes\UIScrollView.h" />
     <ClInclude Include="Classes\UISpriteEditor.h" />
-    <ClInclude Include="Classes\SceneEditor\CameraController.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraPanel.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyPanel.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h">
       <Filter>TexturePacker</Filter>
     </ClInclude>
@@ -1522,15 +1465,6 @@
     <ClInclude Include="Classes\bullet\Bullet-C-Api.h">
       <Filter>Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\BulletObject.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
@@ -1564,29 +1498,8 @@
     <ClInclude Include="Classes\BeastProxy.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ControlsFactory.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
       <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateNodeDialog.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyCell.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyCellData.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyList.h">
-      <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
       <Filter>SceneEditor\Beast</Filter>
@@ -1594,38 +1507,53 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\EditorScene.h" />
-    <ClInclude Include="Classes\SceneEditor\CreateBoxDialog.h">
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CameraController.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateCameraDialog.h">
+    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateLandscapeDialog.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateLightDialog.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateServiceNodeDialog.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateSphereDialog.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MaterialEditor.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\DraggableDialog.h">
+    <ClInclude Include="Classes\SceneEditor\CameraPanel.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ComboBox.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
+    <ClInclude Include="Classes\SceneEditor\ControlsFactory.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\DraggableDialog.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\MaterialEditor.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\OutputControl.h">
@@ -1637,41 +1565,35 @@
     <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\PropertyCell.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\PropertyCellData.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\PropertyList.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\NodePropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\PropertyPanel.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ServicenodePropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h">
+    <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
       <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
-      <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

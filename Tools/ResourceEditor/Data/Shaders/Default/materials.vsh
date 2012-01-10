@@ -23,7 +23,6 @@ attribute vec2 inTexCoord1;
 
 
 #if defined(VERTEX_LIT)
-vec3 lightPosition0 = vec3(1.0, 1.0, 1.0); 
 #endif
 
 
@@ -33,6 +32,8 @@ uniform mat4 modelViewProjectionMatrix;
 #if defined(VERTEX_LIT)
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
+
+uniform vec3 lightPosition0; 
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -50,10 +51,21 @@ void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
 #if defined(VERTEX_LIT)
+    vec4 ecPosition = modelViewMatrix * inPosition;
+    vec3 ecPosition3 = vec3(ecPosition);
     vec3 normal = normalMatrix * inNormal; // normal in eye coordinates
-    vec3 lightDirection = normalize(lightPosition0);
-    float diffuse = max(0.0, dot(normal, lightDirection));
-    varDiffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
+    vec3 VP = lightPosition0 - ecPosition3;
+    
+    VP = normalize(VP);
+    
+    float diffuse = max(0.0, dot(normal, VP));
+//#if defined(SPECULAR)
+    vec3 eye = vec3(0.0, 0.0, 1.0);
+    vec3 halfVector = normalize(VP + eye);
+    float nDotHV = max(0.0, dot(normal, halfVector));
+    float specular = pow(nDotHV, 30.0);
+//#endif
+    varDiffuseColor = vec4(0.5 + diffuse + specular);
 #endif
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)

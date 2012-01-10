@@ -33,7 +33,7 @@ public:
 
     void CreateNode(int32 nodeID);
     SceneNode *GetSceneNode();
-    
+
 protected:
 
     void SetHeader(const WideString &headerText);

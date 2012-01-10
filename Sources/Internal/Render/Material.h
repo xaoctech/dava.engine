@@ -113,6 +113,7 @@ public:
     
     int32 uniformTexture0;
     int32 uniformTexture1;
+    int32 uniformLightPosition0;
     
     bool    isOpaque;    
     

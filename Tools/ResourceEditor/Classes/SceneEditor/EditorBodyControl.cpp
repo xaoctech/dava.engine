@@ -431,7 +431,7 @@ void EditorBodyControl::UpdatePropertyPanel()
         {
             rightPanel->AddControl(nodesPropertyPanel);
         }
-        nodesPropertyPanel->ReadFrom(selectedNode);
+        RefreshProperties();
     }
     else
     {
@@ -752,13 +752,16 @@ void EditorBodyControl::OnEnableDebugFlagsPressed(BaseObject * obj, void *, void
     }
 }
 
-void EditorBodyControl::OpenScene(const String &pathToFile)
+void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
-    SceneFile * file = new SceneFile();
-    file->SetDebugLog(true);
-    file->LoadScene(pathToFile.c_str(), scene);
-    scene->AddNode(scene->GetRootNode(pathToFile));
-    SafeRelease(file);
+    if(editScene)
+    {
+        scene->AddNode(scene->GetRootNode(pathToFile));
+    }
+    else
+    {
+        scene->AddNode(scene->GetRootNode(pathToFile)->Clone());
+    }
     
     if (scene->GetCamera(0))
     {
@@ -772,6 +775,8 @@ void EditorBodyControl::WillAppear()
 {
     selectedNode = NULL;
     savedTreeCell = NULL;
+    
+    nodesPropertyPanel->SetWorkingScene(scene);
     
     sceneTree->Refresh();
 }
@@ -907,15 +912,29 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         savedTreeCell->SetSelected(false, false);
     }
 
-    List<void *> nodesForSearch;
-    
-    selectedNode = node;
-    SceneNode *nd = node;
-    while(nd)
+    if(node)
     {
-        nodesForSearch.push_front(nd);
-        nd = nd->GetParent();
+        List<void *> nodesForSearch;
+        
+        selectedNode = node;
+        SceneNode *nd = node;
+        while(nd)
+        {
+            nodesForSearch.push_front(nd);
+            nd = nd->GetParent();
+        }
+        
+        sceneTree->OpenNodes(nodesForSearch);
+        RefreshProperties();
     }
-    
-    sceneTree->OpenNodes(nodesForSearch);
 }
+
+
+void EditorBodyControl::RefreshProperties()
+{
+    if(selectedNode)
+    {
+        nodesPropertyPanel->ReadFrom(selectedNode);
+    }
+}
+
