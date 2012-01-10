@@ -1,11 +1,23 @@
 #include "NodesPropertyControl.h"
 #include "ControlsFactory.h"
 
+#include "DraggableDialog.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
 {
+	btnPlus = 0;
+	btnMinus = 0;
+	propControl = 0;
+	workingScene = 0;
+
+    deletionList = NULL;
+    listHolder = NULL;
+    btnCancel = NULL;
+    
+    
     nodesDelegate = NULL;
+    currentNode = NULL;
     createNodeProperties = _createNodeProperties;
     projectPath = "/";
     
@@ -17,23 +29,56 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     renderingModes.push_back("SHADER");
     renderingModes.push_back("BLENDED_SHADER");
     
+    Rect propertyRect(0, 0, rect.dx, rect.dy);
     
-    materialTypes.push_back("UNLIT");
-    materialTypes.push_back("UNLIT_DETAIL");
-    materialTypes.push_back("UNLIT_DECAL");
-    materialTypes.push_back("VERTEX_LIT");
-    materialTypes.push_back("VERTEX_LIT_DETAIL");
-    materialTypes.push_back("VERTEX_LIT_DECAL");
-    materialTypes.push_back("NORMAL_MAPPED_DIFFUSE");
-    materialTypes.push_back("NORMAL_MAPPED_SPECULAR");
-
+    if(!createNodeProperties)
+    {
+        propertyRect.dy -= ControlsFactory::BUTTON_HEIGHT;
+        
+        btnPlus = ControlsFactory::CreateButton(
+                                                Rect(0, propertyRect.dy, 
+                                                     ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
+                                                L"+");
+        btnPlus->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnPlus));
+        AddControl(btnPlus);
+        
+        btnMinus = ControlsFactory::CreateButton(
+                                                 Rect(ControlsFactory::BUTTON_HEIGHT, propertyRect.dy, 
+                                                      ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
+                                                 L"-");
+        btnMinus->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnMinus));
+        AddControl(btnMinus);
+        
+        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*4, 
+                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*3), this);
+        
+        
+        listHolder = new UIControl(propertyRect);
+        btnCancel = ControlsFactory::CreateButton(
+                                                Rect(0, propertyRect.dy - ControlsFactory::BUTTON_HEIGHT, 
+                                                propertyRect.dx, ControlsFactory::BUTTON_HEIGHT), 
+                                                L"Cancel");
+        btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnCancel));
+        listHolder->AddControl(btnCancel);
+    }
     
-    propertyList = new PropertyList(Rect(0, 0, rect.dx, rect.dy), this);
+    propertyList = new PropertyList(propertyRect, this);
     AddControl(propertyList);
 }
     
 NodesPropertyControl::~NodesPropertyControl()
 {
+    SafeRelease(deletionList);
+    SafeRelease(listHolder);
+    SafeRelease(btnCancel);
+
+    
+    SafeRelease(propControl);
+    
+    SafeRelease(btnMinus);
+    SafeRelease(btnPlus);
+    
+    
     SafeRelease(propertyList);
 }
 
@@ -43,9 +88,10 @@ void NodesPropertyControl::WillAppear()
 
 void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
+    currentNode = sceneNode;
     propertyList->ReleaseProperties();
     
-    UpdateProjectPath();
+    projectPath = DraggableDialog::GetProjectPath();
 
     if(!createNodeProperties)
     {
@@ -65,6 +111,8 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
     if(!createNodeProperties)
     {
+        propertyList->AddSection("Matrixes", false);
+        
         propertyList->AddMatrix4Property("Local Matrix", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddMatrix4Property("World Matrix", PropertyList::PROPERTY_IS_READ_ONLY);
 
@@ -117,7 +165,6 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
         propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
 
-//        propertyList->SetComboPropertyStrings("Type", types);
         propertyList->SetComboPropertyIndex("Type", light->GetType());
         propertyList->SetFloatPropertyValue("r", light->GetColor().r);
         propertyList->SetFloatPropertyValue("g", light->GetColor().g);
@@ -130,23 +177,78 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     {
         propertyList->AddSection("Mesh Instance");
         
+        materials.clear();
+        materialNames.clear();
+        
+        int32 matCount = workingScene->GetMaterialCount();
+        for(int32 i = 0; i < matCount; ++i)
+        {
+            Material *mat = workingScene->GetMaterial(i);
+            materialNames.push_back(mat->GetName());
+            materials.push_back(mat);
+        }
+        
         
         Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-        Vector<Material*> materials = mesh->GetMaterials();
+        Vector<Material*> meshMaterials = mesh->GetMaterials();
         Vector<StaticMesh*> meshes = mesh->GetMeshes();
 
         for(int32 i = 0; i < meshes.size(); ++i)
         {
             PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
             
-            String fieldName = Format("PolygonGroup. #%d", i);
-            propertyList->AddStringProperty(fieldName, PropertyList::PROPERTY_IS_READ_ONLY);
-            propertyList->SetStringPropertyValue(fieldName, pg->GetName());
+            String fieldName = Format("PolygonGroup #%d", i);
+            propertyList->AddSection(fieldName);
             
-            if(materials[i])
+            int32 vertexFormat = pg->GetFormat();
+            propertyList->AddBoolProperty("fmt.NORMAL", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.NORMAL", vertexFormat & EVF_NORMAL);
+
+            propertyList->AddBoolProperty("fmt.COLOR", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.COLOR", vertexFormat & EVF_COLOR);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD0", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD0", vertexFormat & EVF_TEXCOORD0);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD1", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD1", vertexFormat & EVF_TEXCOORD1);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD2", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD2", vertexFormat & EVF_TEXCOORD2);
+
+            propertyList->AddBoolProperty("fmt.TEXCOORD3", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TEXCOORD3", vertexFormat & EVF_TEXCOORD3);
+
+            propertyList->AddBoolProperty("fmt.TANGENT", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.TANGENT", vertexFormat & EVF_TANGENT);
+
+            propertyList->AddBoolProperty("fmt.BINORMAL", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.BINORMAL", vertexFormat & EVF_BINORMAL);
+
+            propertyList->AddBoolProperty("fmt.JOINTWEIGHT", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
+
+            if(matCount)
             {
-                propertyList->AddComboProperty("Material", materialTypes);
-                propertyList->SetComboPropertyIndex("Material", materials[i]->type);
+                String comboName = Format("Materials for #%d", i);
+                propertyList->AddComboProperty(comboName, materialNames);
+
+                if(meshMaterials[i])
+                {
+                    String meshMatName = meshMaterials[i]->GetName();
+                    for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+                    {
+                        if(meshMatName == materialNames[iMat])
+                        {
+                            propertyList->SetComboPropertyIndex(comboName, iMat);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    propertyList->SetComboPropertyIndex(comboName, 0);
+                }
             }
         }
     }
@@ -176,7 +278,6 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetFloatPropertyValue("Size", size.x);
         propertyList->SetFloatPropertyValue("Height", size.z);
         
-//        propertyList->SetComboPropertyStrings("renderingMode", renderingModes);
         propertyList->SetComboPropertyIndex("renderingMode", landscape->GetRenderingMode());
         
         String heightMap = landscape->GetHeightMapPathname();
@@ -271,6 +372,46 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetFloatPropertyValue("b", sphere->GetColor().b);
         propertyList->SetFloatPropertyValue("a", sphere->GetColor().a);
     }
+    
+    //must be last
+    if(!createNodeProperties)
+    {
+        propertyList->AddSection("Custom properties");
+        
+        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+        Map<String, VariantType> propsData = customProperties->GetArchieveData();
+        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
+        {
+            String name = it->first;
+            String propName = GetCustomPropertyName(name);
+            VariantType key = it->second;
+            switch (key.type) 
+            {
+                case VariantType::TYPE_BOOLEAN:
+                    propertyList->AddBoolProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetBoolPropertyValue(propName, key.AsBool());
+                    break;
+                    
+                case VariantType::TYPE_STRING:
+                    propertyList->AddStringProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetStringPropertyValue(propName, key.AsString());
+                    break;
+
+                case VariantType::TYPE_INT32:
+                    propertyList->AddIntProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetIntPropertyValue(propName, key.AsInt32());
+                    break;
+
+                case VariantType::TYPE_FLOAT:
+                    propertyList->AddFloatProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetFloatPropertyValue(propName, key.AsFloat());
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
@@ -312,16 +453,6 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
                     propertyList->GetFloatPropertyValue("b"),
                     propertyList->GetFloatPropertyValue("a"));
         
-//        int32 type = LightNode::ET_DIRECTIONAL; 
-//        String typeName = propertyList->GetComboPropertyValue("Type");
-//        for(int32 i = 0; i < types.size(); ++i)
-//        {
-//            if(typeName == types[i])
-//            {
-//                type = i;
-//                break;
-//            }
-//        }
         int32 type = propertyList->GetComboPropertyIndex("Type");
         
         light->SetColor(color);
@@ -332,6 +463,35 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
     if(mesh)
     {
         //Add Code
+        
+        Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
+        Vector<Material*> meshMaterials = mesh->GetMaterials();
+        Vector<StaticMesh*> meshes = mesh->GetMeshes();
+        
+        int32 currentMaterial = 0;
+        for(int32 i = 0; i < meshes.size(); ++i)
+        {
+            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+            
+            int32 vertexFormat = EVF_VERTEX;
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.NORMAL");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.COLOR");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD0");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD1");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD2");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TEXCOORD3");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.TANGENT");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.BINORMAL");
+            vertexFormat |= propertyList->GetBoolPropertyValue("fmt.JOINTWEIGHT");
+            
+            //TODO: set it to pg
+            if(materials.size())
+            {
+                String comboName = Format("Materials for #%d", i);
+                currentMaterial = propertyList->GetComboPropertyIndex(comboName);
+                mesh->ReplaceMaterial(materials[currentMaterial], i);
+            }
+        }
     }
     
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (sceneNode);
@@ -346,19 +506,8 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
         bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
         
 
-//        String renderingModeName = propertyList->GetComboPropertyValue("renderingMode");
-//        int32 renderingMode = LandscapeNode::RENDERING_MODE_TEXTURE;
-//        for(int32 i = 0; i < renderingModes.size(); ++i)
-//        {
-//            if(renderingModeName == renderingModes[i])
-//            {
-//                renderingMode = i;
-//                break;
-//            }
-//        }
         int32 renderingMode = propertyList->GetComboPropertyIndex("renderingMode");
 
-        
         String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
         String texture0 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0");
         String texture1 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL");
@@ -425,6 +574,40 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
         sphere->SetColor(color);
         sphere->SetRadius(radius);
     }
+    
+    //must be last
+    if(!createNodeProperties)
+    {
+        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+        Map<String, VariantType> propsData = customProperties->GetArchieveData();
+        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
+        {
+            String name = it->first;
+            String propName = GetCustomPropertyName(name);
+            VariantType key = it->second;
+            switch (key.type) 
+            {
+                case VariantType::TYPE_BOOLEAN:
+                    customProperties->SetBool(name, propertyList->GetBoolPropertyValue(propName));
+                    break;
+                    
+                case VariantType::TYPE_STRING:
+                    customProperties->SetString(name, propertyList->GetStringPropertyValue(propName));
+                    break;
+                    
+                case VariantType::TYPE_INT32:
+                    customProperties->SetInt32(name, propertyList->GetIntPropertyValue(propName));
+                    break;
+                    
+                case VariantType::TYPE_FLOAT:
+                    customProperties->SetFloat(name, propertyList->GetFloatPropertyValue(propName));
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 bool NodesPropertyControl::IsValidPath(const String &path)
@@ -490,16 +673,175 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String 
     }
 }
 
-void NodesPropertyControl::UpdateProjectPath()
+
+void NodesPropertyControl::OnPlus(BaseObject * object, void * userData, void * callerData)
 {
-    KeyedArchive *keyedArchieve = new KeyedArchive();
-    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
-    projectPath = keyedArchieve->GetString("LastSavedPath", "/");
-    if('/' != projectPath[projectPath.length() - 1])
+    if(propControl->GetParent() || listHolder->GetParent())
     {
-        projectPath += '/';
+        return;
     }
 
-    SafeRelease(keyedArchieve);
+    AddControl(propControl);
+}
+void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * callerData)
+{
+    if(propControl->GetParent() || listHolder->GetParent())
+    {
+        return;
+    }
+    
+    KeyedArchive *customProperties = currentNode->GetCustomProperties();
+    Map<String, VariantType> propsData = customProperties->GetArchieveData();
+
+    float32 size = propsData.size();
+    if(size)
+    {
+        Rect r = listHolder->GetRect();
+        r.dy = Min(r.dy, size * CellHeight(NULL, 0));
+        r.y = listHolder->GetRect().dy - r.dy - ControlsFactory::BUTTON_HEIGHT;
+        
+        deletionList = new UIList(r, UIList::ORIENTATION_VERTICAL);
+//        ControlsFactory::CustomizeDialog(deletionList);
+        ControlsFactory::CustomizePropertyCell(deletionList, false);
+
+        deletionList->SetDelegate(this);
+        
+        listHolder->AddControl(deletionList);
+        deletionList->Refresh();
+        AddControl(listHolder);
+    }
+}
+
+void NodesPropertyControl::NodeCreated(bool success)
+{
+    RemoveControl(propControl);
+    if(success)
+    {
+        KeyedArchive *currentProperties = currentNode->GetCustomProperties();
+        
+        String name = propControl->GetPropName();
+        switch (propControl->GetPropType()) 
+        {
+            case CreatePropertyControl::EPT_STRING:
+                propertyList->AddStringProperty(name);
+                propertyList->SetStringPropertyValue(name, "");
+                
+                currentProperties->SetString("editor." + name, "");
+                break;
+
+            case CreatePropertyControl::EPT_INT:
+                propertyList->AddIntProperty(name);
+                propertyList->SetIntPropertyValue(name, 0);
+                
+                currentProperties->SetInt32("editor." + name, 0);
+
+                break;
+            case CreatePropertyControl::EPT_FLOAT:
+                propertyList->AddFloatProperty(name);
+                propertyList->SetFloatPropertyValue(name, 0.f);
+                
+                currentProperties->SetFloat("editor." + name, 0.f);
+
+                break;
+            case CreatePropertyControl::EPT_BOOL:
+                propertyList->AddBoolProperty(name);
+                propertyList->SetBoolPropertyValue(name, false);
+                
+                currentProperties->SetBool("editor." + name, false);
+
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+
+int32 NodesPropertyControl::ElementsCount(UIList * list)
+{
+    KeyedArchive *customProperties = currentNode->GetCustomProperties();
+    Map<String, VariantType> propsData = customProperties->GetArchieveData();
+    
+    return propsData.size();
+}
+
+UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
+{
+    UIListCell *c = (UIListCell *)list->GetReusableCell("Deletion list");
+    if (!c) 
+    {
+        c = new UIListCell(Rect(0, 0, 200, 20), "Deletion list");
+    }
+    
+    KeyedArchive *customProperties = currentNode->GetCustomProperties();
+    Map<String, VariantType> propsData = customProperties->GetArchieveData();
+    int32 i = 0; 
+    for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
+    {
+        if(i == index)
+        {
+            String name = it->first;
+            String propName = GetCustomPropertyName(name);
+
+            ControlsFactory::CustomizeListCell(c, StringToWString(propName));
+            break;
+        }
+    }
+    
+    return c;
+}
+
+int32 NodesPropertyControl::CellHeight(UIList * list, int32 index)
+{
+    return CELL_HEIGHT;
+}
+
+void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
+{
+    int32 index = selectedCell->GetIndex();
+    KeyedArchive *customProperties = currentNode->GetCustomProperties();
+    Map<String, VariantType> propsData = customProperties->GetArchieveData();
+    int32 i = 0; 
+    for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
+    {
+        if(i == index)
+        {
+            WriteTo(currentNode);
+            
+            customProperties->DeleteKey(it->first);
+            
+            OnCancel(NULL, NULL, NULL);
+            ReadFrom(currentNode);
+            break;
+        }
+    }
+}
+
+void NodesPropertyControl::OnCancel(BaseObject * object, void * userData, void * callerData)
+{
+    listHolder->RemoveControl(deletionList);
+    SafeRelease(deletionList);
+    RemoveControl(listHolder);
+}
+
+
+String NodesPropertyControl::GetCustomPropertyName(const String &keyName)
+{
+    String retStr = "";
+    
+    int32 pos = keyName.find("editor.");
+    if(String::npos != pos)
+    {
+        pos += 7; //"editor."
+        retStr = keyName.substr(pos);
+    }
+        
+    return retStr;
+}
+
+void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
+{
+    workingScene = scene;
 }
 

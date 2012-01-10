@@ -501,6 +501,12 @@ void MeshInstanceNode::ClearLightmaps()
 
 	lightmaps.clear();
 }
+    
+void MeshInstanceNode::ReplaceMaterial(DAVA::Material *material, int32 index)
+{
+    SafeRelease(lodLayers.begin()->materials[index]);
+    lodLayers.begin()->materials[index] = SafeRetain(material);
+}
 
 
 //String MeshInstanceNode::GetDebugDescription()

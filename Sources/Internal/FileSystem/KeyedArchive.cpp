@@ -332,6 +332,10 @@ void KeyedArchive::Dump()
 }
 
 
+const Map<String, VariantType> & KeyedArchive::GetArchieveData()
+{
+    return objectMap;
+}
 
 
 

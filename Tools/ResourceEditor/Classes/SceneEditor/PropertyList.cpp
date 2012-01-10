@@ -445,11 +445,11 @@ const Matrix4 & PropertyList::GetMatrix4PropertyValue(const String &propertyName
     return p->GetMatrix4();
 }
 
-void PropertyList::AddSection(const String &sectionName)
+void PropertyList::AddSection(const String &sectionName, bool expanded)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_SECTION);
     p->cellType = PropertyCell::PROP_CELL_SECTION;
-    p->SetIsSectionOpened(true);
+    p->SetIsSectionOpened(expanded);
     currentSection = p;
     AddProperty(p, sectionName, PROPERTY_IS_EDITABLE);
 }

@@ -210,6 +210,8 @@ public:
      */
     virtual String GetDebugDescription();
     
+    KeyedArchive *GetCustomProperties();
+    
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
@@ -231,6 +233,9 @@ protected:
     uint32 debugFlags;
 
 	Matrix4 worldTransform;
+
+    KeyedArchive *customProperties;
+    
 private:
     Matrix4 localTransform;
     Matrix4 defaultLocalTransform;

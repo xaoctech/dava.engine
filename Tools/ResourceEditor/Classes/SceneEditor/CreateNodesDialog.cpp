@@ -80,6 +80,7 @@ SceneNode * CreateNodesDialog::GetSceneNode()
 void CreateNodesDialog::SetScene(Scene *_scene)
 {
     scene = _scene;
+    propertyList->SetWorkingScene(scene);
 }
 
 void CreateNodesDialog::SetHeader(const WideString &headerText)
