@@ -901,23 +901,29 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         savedTreeCell->SetSelected(false, false);
     }
 
-    List<void *> nodesForSearch;
-    
-    selectedNode = node;
-    SceneNode *nd = node;
-    while(nd)
+    if(node)
     {
-        nodesForSearch.push_front(nd);
-        nd = nd->GetParent();
+        List<void *> nodesForSearch;
+        
+        selectedNode = node;
+        SceneNode *nd = node;
+        while(nd)
+        {
+            nodesForSearch.push_front(nd);
+            nd = nd->GetParent();
+        }
+        
+        sceneTree->OpenNodes(nodesForSearch);
+        RefreshProperties();
     }
-    
-    sceneTree->OpenNodes(nodesForSearch);
-    RefreshProperties();
 }
 
 
 void EditorBodyControl::RefreshProperties()
 {
-    nodesPropertyPanel->ReadFrom(selectedNode);
+    if(selectedNode)
+    {
+        nodesPropertyPanel->ReadFrom(selectedNode);
+    }
 }
 
