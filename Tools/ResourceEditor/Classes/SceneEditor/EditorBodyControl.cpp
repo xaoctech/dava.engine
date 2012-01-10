@@ -513,6 +513,15 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 				if (userData)
 					userData->bulletObject->SetUpdateFlag(false);
+				//calculate move koefficient for moving
+
+				
+				Camera * cam = scene->GetCurrentCamera();
+				const Vector3 & camPos = cam->GetPosition();
+				const Matrix4 & wt = selection->GetWorldTransform();
+				Vector3 objPos = Vector3(0,0,0) * wt;
+				Vector3 dir = objPos - camPos;
+				moveKf = dir.Length() * 0.1;
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
@@ -527,7 +536,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 //				((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
 //
 //				selection->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
-				
 				
 				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 				selection->SetLocalTransform(currTransform);
@@ -565,19 +573,19 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 		{
 			case AXIS_X:
 			case AXIS_Y:
-				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis]);
+				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis] * moveKf);
 				break;
 			case AXIS_Z:
-				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z]);
+				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z] * moveKf);
 				break;
 			case AXIS_XY:
-				modification.CreateTranslation(vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]);
+				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]) * moveKf);
 				break;
 			case AXIS_YZ:
-				modification.CreateTranslation(vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]);
+				modification.CreateTranslation((vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
 				break;
 			case AXIS_XZ:
-				modification.CreateTranslation(vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]);
+				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
 				break;
 			default:
 				break;
