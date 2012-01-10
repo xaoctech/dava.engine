@@ -277,6 +277,8 @@ void MeshInstanceNode::Draw()
     
     uint32 meshesSize = (uint32)currentLod->meshes.size();
 
+    // RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
+    
     for (uint32 k = 0; k < meshesSize; ++k)
     {
         currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
@@ -337,9 +339,11 @@ void MeshInstanceNode::Draw()
                     pGroup->GetCoord(vi, vertex);
                     pGroup->GetNormal(vi, normal);
                     
-                    vertex = vertex;
-                    normal = normal * modelView;
+                    //vertex = vertex;
+                    //normal = normal * modelView;
                     Vector3 vertex2 = vertex + normal * 1.0f;
+                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
+                    RenderManager::Instance()->SetColor(color);
                     RenderHelper::Instance()->DrawLine(vertex, vertex2);
                 }
             }
