@@ -746,9 +746,6 @@ void EditorBodyControl::OnEnableDebugFlagsPressed(BaseObject * obj, void *, void
 
 void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
-    SceneFile * file = new SceneFile();
-    file->SetDebugLog(true);
-    file->LoadScene(pathToFile.c_str(), scene);
     if(editScene)
     {
         scene->AddNode(scene->GetRootNode(pathToFile));
@@ -757,7 +754,6 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     {
         scene->AddNode(scene->GetRootNode(pathToFile)->Clone());
     }
-    SafeRelease(file);
     
     if (scene->GetCamera(0))
     {
