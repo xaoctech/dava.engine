@@ -151,6 +151,8 @@ protected:
 	
     //OutputPanelControl
     OutputPanelControl *outputPanel;
+	
+	float32 moveKf;
     
     void ChangeControlWidthRight(UIControl *c, float32 width);
     void ChangeControlWidthLeft(UIControl *c, float32 width);
