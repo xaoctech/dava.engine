@@ -41,7 +41,6 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     btn->SetStateText(UIControl::STATE_DISABLED, buttonText);
     btn->SetStateText(UIControl::STATE_NORMAL, buttonText);
     btn->SetStateText(UIControl::STATE_SELECTED, buttonText);
-    
 }
 
 UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
@@ -242,6 +241,26 @@ void ControlsFactory::CustomizePropertySectionCell(UIControl *c)
     c->GetBackground()->color = Color(0.4f, 0.8f, 0.4f, 1.0f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
+
+void ControlsFactory::CustomizePropertyButtonCell(UIListCell *c)
+{
+    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    c->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
+    c->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
+    c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
+    
+    c->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
+    c->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
+    c->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
+    c->GetStateBackground(UIControl::STATE_SELECTED)->SetColor(Color(0.0f, 0.0f, 1.0f, 0.2f));
+    
+    Font *font = GetFontLight();
+    c->SetStateFont(UIControl::STATE_PRESSED_INSIDE, font);
+    c->SetStateFont(UIControl::STATE_DISABLED, font);
+    c->SetStateFont(UIControl::STATE_NORMAL, font);
+    c->SetStateFont(UIControl::STATE_SELECTED, font);
+}
+
 
 void ControlsFactory::CustomizeDialogFreeSpace(UIControl *c)
 {
