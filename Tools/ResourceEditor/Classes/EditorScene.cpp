@@ -89,8 +89,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
-	//	selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABBOX));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -125,8 +124,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		selection = FindSelected(this, coll);
 	
 		if(selection)
-//			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABBOX));
+			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
 	}
 	else 
 	{
@@ -165,16 +163,14 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 {
     if (selection)
     {
-        //	selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABBOX));
+		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
     }
     
     selection = newSelection;
     
     if(selection)
     {
-        //			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-        selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABBOX));
+		selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
     }
 }
 
