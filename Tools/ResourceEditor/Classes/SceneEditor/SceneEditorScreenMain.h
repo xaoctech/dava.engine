@@ -78,6 +78,8 @@ public:
     // create node dialog
     virtual void DialogClosed(int32 retCode);
 
+    void ShowMaterialEditor();
+    
 private:
     
     void AddLineControl(Rect r);

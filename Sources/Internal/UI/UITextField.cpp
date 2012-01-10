@@ -31,6 +31,7 @@
 #include "Base/ObjectFactory.h"
 #include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
+#include "Input/KeyboardDevice.h"
 #include "UI/UIYamlLoader.h"
 #include "UI/UIControlSystem.h"
 
@@ -299,19 +300,8 @@ void UITextField::Input(UIEvent *currentInput)
     if (currentInput->phase == UIEvent::PHASE_KEYCHAR)
     {	
         /// macos
-        Logger::Debug("Key char = %d", currentInput->keyChar);
         
-#ifdef __DAVAENGINE_MACOS__
-        const int32 backSpaceKeyCode = 127;
-        const int32 enterKeyCode = 13;
-        const int32 escKeyCode = 27;
-#else
-        const int32 backSpaceKeyCode = 8;
-        const int32 enterKeyCode = 13;//TODO: Fix this code please. Can't test on Windows :(
-        const int32 escKeyCode = 27;
-#endif
-
-        if (currentInput->keyChar == backSpaceKeyCode)
+        if (currentInput->tid == DVKEY_BACKSPACE)
         {
             //TODO: act the same way on iPhone
             WideString str = L"";
@@ -320,11 +310,11 @@ void UITextField::Input(UIEvent *currentInput)
                 SetText(GetAppliedChanges((int32)GetText().length(),  -1, str));
 			}
         }
-		else if (currentInput->keyChar == enterKeyCode)
+		else if (currentInput->tid == DVKEY_ENTER)
 		{
 			delegate->TextFieldShouldReturn(this);
 		}
-		else if (currentInput->keyChar == escKeyCode)
+		else if (currentInput->tid == DVKEY_ESCAPE)
 		{
 			delegate->TextFieldShouldCancel(this);
 		}

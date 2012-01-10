@@ -437,7 +437,7 @@ static int32 oldModifersFlags = 0;
 		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
 		ev.timestamp = event.timestamp;
 		ev.tapCount = 1;
-		ev.tid = c;
+		ev.tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey([event keyCode]);
         
         touches.push_back(ev);
 		

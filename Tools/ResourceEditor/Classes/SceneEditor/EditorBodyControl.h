@@ -76,9 +76,12 @@ public:
     void ReleaseScene();
     void Refresh();
     void RefreshProperties();
+    
+    const String &GetFilePath();
 
 protected:
 
+    void ResetSelection();
     void DebugInfo();
     
 	void CreateModificationPanel(void);
@@ -155,6 +158,8 @@ protected:
     OutputPanelControl *outputPanel;
 	
 	float32 moveKf;
+    
+    String mainFilePath;
     
     void ChangeControlWidthRight(UIControl *c, float32 width);
     void ChangeControlWidthLeft(UIControl *c, float32 width);

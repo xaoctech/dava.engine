@@ -58,6 +58,7 @@ public:
     static void CustomizeEditablePropertyCell(UIControl *c);
     static void CustomizeUneditablePropertyCell(UIControl *c);
     static void CustomizePropertySectionCell(UIControl *c);
+    static void CustomizePropertyButtonCell(UIListCell *c);
     
     static void CustomizeDialogFreeSpace(UIControl *c);
     static void CustomizeDialog(UIControl *c);
