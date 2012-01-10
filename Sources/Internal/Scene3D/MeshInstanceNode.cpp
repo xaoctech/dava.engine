@@ -282,8 +282,8 @@ void MeshInstanceNode::Draw()
     for (uint32 k = 0; k < meshesSize; ++k)
     {
         if (currentLod->materials[k]->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
-        {
-            currentLod->materials[k]->textures[Material::TEXTURE_DECAL] = lightmaps[k].lightmap;
+		{
+            currentLod->materials[k]->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
         }
         
         currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
@@ -511,6 +511,18 @@ void MeshInstanceNode::ReplaceMaterial(DAVA::Material *material, int32 index)
 {
     SafeRelease(lodLayers.begin()->materials[index]);
     lodLayers.begin()->materials[index] = SafeRetain(material);
+}
+
+Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
+{
+	if(index < lightmaps.size())
+	{
+		return lightmaps[index].lightmap;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 
