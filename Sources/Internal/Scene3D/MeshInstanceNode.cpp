@@ -281,6 +281,11 @@ void MeshInstanceNode::Draw()
     
     for (uint32 k = 0; k < meshesSize; ++k)
     {
+        if (currentLod->materials[k]->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+        {
+            currentLod->materials[k]->textures[Material::TEXTURE_DECAL] = lightmaps[k].lightmap;
+        }
+        
         currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
     }
 	
@@ -440,8 +445,8 @@ void MeshInstanceNode::Save(KeyedArchive * archive)
 
 	archive->SetInt32("lightmapsCount", (int32)lightmaps.size());
 	int32 lightmapIndex = 0;
-	List<LightmapData>::iterator lighmapsEnd = lightmaps.end();
-	for(List<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
+	Vector<LightmapData>::iterator lighmapsEnd = lightmaps.end();
+	for(Vector<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
 	{
 		archive->SetString(Format("lightmap%d", lightmapIndex), (*lightmapsIterator).lightmapName.c_str());
 		lightmapIndex++;
@@ -492,8 +497,8 @@ void MeshInstanceNode::AddLightmap(const String & lightmapName)
 
 void MeshInstanceNode::ClearLightmaps()
 {
-	List<LightmapData>::iterator lighmapsEnd = lightmaps.end();
-	for(List<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
+	Vector<LightmapData>::iterator lighmapsEnd = lightmaps.end();
+	for(Vector<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
 	{
 		LightmapData & data = (*lightmapsIterator);
 		SafeRelease(data.lightmap);
