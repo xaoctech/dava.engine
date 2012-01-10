@@ -54,7 +54,7 @@ public:
 	virtual void Update(float32 timeElapsed);
     virtual void Input(UIEvent * touch);
 
-    void OpenScene(const String &pathToFile);
+    void OpenScene(const String &pathToFile, bool editScene);
     
     void ShowProperties(bool show);
     bool PropertiesAreShown();
