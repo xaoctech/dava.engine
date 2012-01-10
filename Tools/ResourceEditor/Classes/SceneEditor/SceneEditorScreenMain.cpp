@@ -128,6 +128,8 @@ void SceneEditorScreenMain::CreateTopMenu()
     x += dx + 1;
     btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save");
     x += dx + 1;
+    btnExport = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save to Game");
+    x += dx + 1;
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
     x += dx + 1;
     btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create Node");
@@ -146,6 +148,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 
     AddControl(btnOpen);
     AddControl(btnSave);
+    AddControl(btnExport);
     AddControl(btnMaterials);
     AddControl(btnCreate);
     AddControl(btnNew);
@@ -158,6 +161,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 
     btnOpen->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenPressed));
     btnSave->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSavePressed));
+    btnExport->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnExportPressed));
     btnMaterials->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnMaterialsPressed));
     btnCreate->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCreatePressed));
     btnNew->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnNewPressed));
@@ -172,6 +176,7 @@ void SceneEditorScreenMain::ReleaseTopMenu()
 {
     SafeRelease(btnOpen);
     SafeRelease(btnSave);
+    SafeRelease(btnExport);
     SafeRelease(btnMaterials);
     SafeRelease(btnCreate);
     SafeRelease(btnNew);
@@ -264,6 +269,11 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 //        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
 //    }
 }
+
+void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
+{
+}
+
 
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
