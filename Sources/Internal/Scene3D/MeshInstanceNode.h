@@ -147,6 +147,8 @@ protected:
 		String lightmapName;
 	};
 	Vector<LightmapData> lightmaps;
+	Texture * GetLightmapForIndex(int32 index);
+
 };
 	
 inline AABBox3 & MeshInstanceNode::GetBoundingBox()
