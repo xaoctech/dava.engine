@@ -58,7 +58,7 @@ void LightNode::Draw()
 		Matrix4 finalMatrix = worldTransform * prevMatrix;
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 		
-		RenderManager::Instance()->SetState(RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_CULL); 
+		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_CULL); 
 		RenderManager::Instance()->FlushState();
 		
 		
