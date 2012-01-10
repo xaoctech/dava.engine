@@ -511,7 +511,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				startTransform = selection->GetLocalTransform();
 				
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				userData->bulletObject->SetUpdateFlag(false);
+				if (userData)
+					userData->bulletObject->SetUpdateFlag(false);
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
@@ -538,7 +539,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			{
 				inTouch = false;
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				userData->bulletObject->SetUpdateFlag(true);
+				if (userData)
+					userData->bulletObject->SetUpdateFlag(true);
 			}
 		}
 	}
