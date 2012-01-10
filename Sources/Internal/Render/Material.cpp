@@ -70,10 +70,12 @@ Material::Material(Scene * _scene)
         uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
     }
     
-    type = MATERIAL_UNLIT;
-    shader = uberShader->GetShader("MATERIAL_TEXTURE");
+//    type = MATERIAL_UNLIT_TEXTURE;
+//    shader = uberShader->GetShader("MATERIAL_TEXTURE");
     for (int32 tc = 0; tc < TEXTURE_COUNT; ++tc)
         textures[tc] = 0;
+
+    SetType(MATERIAL_UNLIT_TEXTURE);
 }
     
 void Material::SetScene(Scene * _scene)
@@ -112,34 +114,37 @@ void Material::SetType(eType _type)
     type = _type;
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     switch (type) {
-        case MATERIAL_UNLIT:
+        case MATERIAL_UNLIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
-        case MATERIAL_UNLIT_DECAL:
+        case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+        case MATERIAL_UNLIT_TEXTURE_DECAL:
             shaderCombileCombo = "MATERIAL_DECAL";
             break;
-        case MATERIAL_UNLIT_DETAIL:
+        case MATERIAL_UNLIT_TEXTURE_DETAIL:
             shaderCombileCombo = "MATERIAL_DETAIL";
             break;
-        case MATERIAL_VERTEX_LIT:
+        case MATERIAL_VERTEX_LIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
             break;
+            
         default:
             break;
     };
     shader = uberShader->GetShader(shaderCombileCombo);
 
     switch (type) {
-        case MATERIAL_UNLIT:
+        case MATERIAL_UNLIT_TEXTURE:
             break;
-        case MATERIAL_UNLIT_DECAL:
-        case MATERIAL_UNLIT_DETAIL:
+        case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+        case MATERIAL_UNLIT_TEXTURE_DECAL:
+        case MATERIAL_UNLIT_TEXTURE_DETAIL:
             //shader->SetT
             uniformTexture0 = shader->FindUniformLocationByName("texture0");
             uniformTexture1 = shader->FindUniformLocationByName("texture1");
             
             break;
-        case MATERIAL_VERTEX_LIT:
+        case MATERIAL_VERTEX_LIT_TEXTURE:
             //
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
             uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
