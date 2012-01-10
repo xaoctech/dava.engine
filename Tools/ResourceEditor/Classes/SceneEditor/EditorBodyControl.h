@@ -75,6 +75,7 @@ public:
     void CreateScene(bool withCameras);
     void ReleaseScene();
     void Refresh();
+    void RefreshProperties();
 
 protected:
 

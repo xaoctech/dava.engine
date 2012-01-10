@@ -431,7 +431,7 @@ void EditorBodyControl::UpdatePropertyPanel()
         {
             rightPanel->AddControl(nodesPropertyPanel);
         }
-        nodesPropertyPanel->ReadFrom(selectedNode);
+        RefreshProperties();
     }
     else
     {
@@ -765,6 +765,8 @@ void EditorBodyControl::WillAppear()
     selectedNode = NULL;
     savedTreeCell = NULL;
     
+    nodesPropertyPanel->SetWorkingScene(scene);
+    
     sceneTree->Refresh();
 }
 
@@ -910,4 +912,12 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
     }
     
     sceneTree->OpenNodes(nodesForSearch);
+    RefreshProperties();
 }
+
+
+void EditorBodyControl::RefreshProperties()
+{
+    nodesPropertyPanel->ReadFrom(selectedNode);
+}
+

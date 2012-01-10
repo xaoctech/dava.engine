@@ -52,13 +52,17 @@ public:
 	virtual int32 CellHeight(UIList * list, int32 index);
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 
+    void SetWorkingScene(Scene *scene);
+    
 protected:
 
     bool IsValidPath(const String &path);
 
     Vector<String> types;
     Vector<String> renderingModes;
-    Vector<String> materialTypes;
+    Vector<Material*> materials;
+    Vector<String> materialNames;
+
     
     NodesPropertyDelegate *nodesDelegate;
     PropertyList *propertyList;
@@ -77,6 +81,8 @@ protected:
     SceneNode *currentNode;
     
     String GetCustomPropertyName(const String &keyName);
+    Scene *workingScene;
+
     
     UIList *deletionList;
     UIControl *listHolder;
