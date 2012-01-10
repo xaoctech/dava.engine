@@ -105,6 +105,10 @@ Material::~Material()
     
 void Material::SetType(eType _type)
 {
+    uniformTexture0 = -1;
+    uniformTexture1 = -1;
+    uniformLightPosition0 = -1;
+    
     type = _type;
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     switch (type) {
@@ -138,6 +142,8 @@ void Material::SetType(eType _type)
         case MATERIAL_VERTEX_LIT:
             //
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
+            uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
+    
             break;
         default:
             break;

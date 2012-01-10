@@ -105,7 +105,7 @@ struct Matrix4
 	inline void Transpose();
 
 	inline bool	Inverse();
-	inline bool GetInverse(Matrix4 & out);
+	inline bool GetInverse(Matrix4 & out) const;
 	
 
     //! 
@@ -444,7 +444,7 @@ inline void Matrix4::Transpose()
 	*this = t;
 }
 
-inline bool Matrix4::GetInverse(Matrix4 & out)
+inline bool Matrix4::GetInverse(Matrix4 & out) const
 {
 	/// Calculates the inverse of this Matrix 
 	/// The inverse is calculated using Cramers rule.

@@ -470,8 +470,10 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
             if (vertexFormat & EVF_VERTEX)
                 fwrite(&v.position, sizeof(Vector3), 1, sceneFP);
 			if (vertexFormat & EVF_NORMAL)
+            {
+                v.normal.Normalize();
                 fwrite(&v.normal, sizeof(Vector3), 1, sceneFP);
-			
+			}
             if (vertexFormat & EVF_TEXCOORD0)
             {
                 FlipTexCoords(v.texCoords[0]);

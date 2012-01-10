@@ -114,7 +114,11 @@ void DataNode::RemoveNode(DataNode * node)
             break;
         }
     }
-    
+    uint32 size = (uint32)children.size();
+    for (uint32 c = 0; c < size; ++c)
+    {
+        children[c]->index = c;
+    }
 }
 
 DataNode * DataNode::GetChild(int32 index)

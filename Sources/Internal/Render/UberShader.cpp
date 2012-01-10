@@ -82,6 +82,7 @@ int32 UberShader::CompileShaderCombination(const String & combination)
     }
     
     // Create new shader and combile it
+    Logger::Debug("Compile shader combo: %s", combination.c_str());
     Shader * newShader = baseShader->RecompileNewInstance(combination);
     
     if (newShader)
