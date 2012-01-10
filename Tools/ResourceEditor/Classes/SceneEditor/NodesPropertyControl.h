@@ -76,6 +76,8 @@ protected:
     CreatePropertyControl *propControl;
     SceneNode *currentNode;
     
+    String GetCustomPropertyName(const String &keyName);
+    
     UIList *deletionList;
     UIControl *listHolder;
     UIButton *btnCancel;
