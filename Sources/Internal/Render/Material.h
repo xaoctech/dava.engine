@@ -51,11 +51,12 @@ public:
     enum eType
     {
         // Normal Materials
-        MATERIAL_UNLIT = 0,                 // single texture
-        MATERIAL_UNLIT_DETAIL,              // single texture * detail texture * 2.0
-        MATERIAL_UNLIT_DECAL,               // single texture * lightmap 
+        MATERIAL_UNLIT_TEXTURE = 0,                 // texture
+        MATERIAL_UNLIT_TEXTURE_DETAIL,              // texture * detail texture * 2.0
+        MATERIAL_UNLIT_TEXTURE_DECAL,               // texture * decal 
+        MATERIAL_UNLIT_TEXTURE_LIGHTMAP,            // texture * lightmap
         
-        MATERIAL_VERTEX_LIT,                // single texture with vertex lighting
+        MATERIAL_VERTEX_LIT_TEXTURE,                // single texture with vertex lighting
         MATERIAL_VERTEX_LIT_DETAIL,         // single texture * detail texture * 2.0 with vertex lighting
         MATERIAL_VERTEX_LIT_DECAL,
         
