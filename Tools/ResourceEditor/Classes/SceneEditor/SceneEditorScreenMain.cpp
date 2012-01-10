@@ -196,7 +196,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         case DIALOG_OPERATION_MENU_OPEN:
         {
             BodyItem *iBody = FindCurrentBody();
-            iBody->bodyControl->OpenScene(pathToFile);
+            iBody->bodyControl->OpenScene(pathToFile, false);
             
             break;
         }
@@ -510,13 +510,13 @@ void SceneEditorScreenMain::OnEditSCE(const String &pathName, const String &name
 {
     AddBodyItem(StringToWString(name), true);
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->OpenScene(pathName);
+    iBody->bodyControl->OpenScene(pathName, true);
 }
 
 void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->OpenScene(pathName);
+    iBody->bodyControl->OpenScene(pathName, false);
 }
 
 void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)

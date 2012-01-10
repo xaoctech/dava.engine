@@ -126,10 +126,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	
 		if(selection)
 			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-<<<<<<< HEAD
 //			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABBOX));
-=======
->>>>>>> c4e6a84c2868784a705126411b963831d14d7269
 	}
 	else 
 	{
