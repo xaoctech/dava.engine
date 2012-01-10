@@ -172,12 +172,8 @@ void ScenePreviewControl::OpenScene(const String &pathToFile)
     }
     currentScenePath = pathToFile;
     
-    SceneFile * file = new SceneFile();
-    file->SetDebugLog(true);
-    file->LoadScene(pathToFile.c_str(), scene);
     rootNode = scene->GetRootNode(pathToFile);
     scene->AddNode(rootNode);
-    SafeRelease(file);
     
     needSetCamera = true;
     Camera *cam = scene->GetCamera(0);
