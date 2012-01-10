@@ -76,6 +76,8 @@ public:
     void ReleaseScene();
     void Refresh();
     void RefreshProperties();
+    
+    const String &GetFilePath();
 
 protected:
 
@@ -152,6 +154,8 @@ protected:
 	
     //OutputPanelControl
     OutputPanelControl *outputPanel;
+    
+    String mainFilePath;
     
     void ChangeControlWidthRight(UIControl *c, float32 width);
     void ChangeControlWidthLeft(UIControl *c, float32 width);

@@ -71,6 +71,12 @@ void KeyboardDevice::OnAfterUpdate()
         keyStatus[i] = realKeyStatus[i];
     }
 }
+    
+int32 KeyboardDevice::GetDavaKeyForSystemKey(int32 systemKeyCode)
+{
+    DVASSERT(systemKeyCode < MAX_KEYS);
+    return keyTranslator[systemKeyCode];
+}
 
 void KeyboardDevice::OnSystemKeyPressed(int32 systemKeyCode)
 {
@@ -101,6 +107,9 @@ void KeyboardDevice::PrepareKeyTranslator()
     keyTranslator[0x7C] = DVKEY_RIGHT;
     keyTranslator[0x7D] = DVKEY_UP;
     keyTranslator[0x7E] = DVKEY_DOWN;
+    keyTranslator[0x35] = DVKEY_ESCAPE;
+    keyTranslator[0x33] = DVKEY_BACKSPACE;
+    keyTranslator[0x24] = DVKEY_ENTER;
     keyTranslator[DVMACOS_COMMAND] = DVKEY_CTRL;
     keyTranslator[DVMACOS_OPTION] = DVKEY_ALT;
     keyTranslator[DVMACOS_SHIFT] = DVKEY_SHIFT;

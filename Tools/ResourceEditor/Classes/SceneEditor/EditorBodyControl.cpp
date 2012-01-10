@@ -748,6 +748,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
     if(editScene)
     {
+        mainFilePath = pathToFile;
         scene->AddNode(scene->GetRootNode(pathToFile));
     }
     else
@@ -761,6 +762,11 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         cameraController->SetCamera(scene->GetCamera(0));
     }
     sceneTree->Refresh();
+}
+
+const String &EditorBodyControl::GetFilePath()
+{
+    return mainFilePath;
 }
 
 void EditorBodyControl::WillAppear()
