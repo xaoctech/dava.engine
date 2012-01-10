@@ -46,6 +46,7 @@ public:
         PROP_CELL_COMBO,
         PROP_CELL_MATRIX4,
         PROP_CELL_SECTION,
+        PROP_CELL_BUTTON,
         
         PROP_CELL_COUNT
     };
@@ -167,6 +168,22 @@ public:
     
 private:
 
+    
+};
+
+class PropertyButtonCell: public PropertyCell
+{
+public:
+    
+    PropertyButtonCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyButtonCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+
+private:
+    
+    Message buttonEvent;
 };
 
 

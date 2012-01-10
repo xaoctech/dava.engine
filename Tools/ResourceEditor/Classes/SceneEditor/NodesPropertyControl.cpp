@@ -92,7 +92,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     propertyList->ReleaseProperties();
     
     projectPath = DraggableDialog::GetProjectPath();
-
+    
     if(!createNodeProperties)
     {
         propertyList->AddSection("General C++");
@@ -249,6 +249,8 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
                 {
                     propertyList->SetComboPropertyIndex(comboName, 0);
                 }
+                
+//                propertyList->AddMessageProperty("GoToMaterials", Message(this, &NodesPropertyControl::OnGo2Materials));
             }
         }
     }
@@ -845,3 +847,7 @@ void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
     workingScene = scene;
 }
 
+void NodesPropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    
+}

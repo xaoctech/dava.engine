@@ -155,3 +155,16 @@ int32 PropertyCellData::GetSectionElementsCount()
     return intValue;
 }
 
+const Message & PropertyCellData::GetMessage()
+{
+    DVASSERT(valueType == PROP_VALUE_MESSAGE);
+    return messageValue;
+}
+
+void PropertyCellData::SetMessage(const Message &newMessage)
+{
+    DVASSERT(valueType == PROP_VALUE_MESSAGE);
+    messageValue = newMessage;
+}
+
+
