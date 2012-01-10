@@ -47,14 +47,18 @@ MaterialEditor::MaterialEditor()
     selectedMaterial = -1;
     lastSelection = NULL;
     Vector<String> v;
-    v.push_back("UNLIT");
-    v.push_back("UNLIT_DETAIL");
-    v.push_back("UNLIT_DECAL");
-    v.push_back("VERTEX_LIT");
-    v.push_back("VERTEX_LIT_DETAIL");
-    v.push_back("VERTEX_LIT_DECAL");
+    v.push_back("UNLIT_TEXTURE");
+    v.push_back("UNLIT_TEXTURE_DETAIL");
+    v.push_back("UNLIT_TEXTURE_DECAL");
+    v.push_back("UNLIT_TEXTURE_LIGHTMAP");
+    
+    v.push_back("VERTEX_LIT_TEXTURE");
+    v.push_back("VERTEX_LIT_TEXTURE_DETAIL");
+    v.push_back("VERTEX_LIT_TEXTURE_DECAL");
+    
     v.push_back("NORMAL_MAPPED_DIFFUSE");
     v.push_back("NORMAL_MAPPED_SPECULAR");
+    
     text = new UIStaticText(Rect(size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20));
     text->SetFont(ControlsFactory::GetFontLight());
     text->SetText(L"Material type :");
@@ -70,13 +74,13 @@ MaterialEditor::MaterialEditor()
         materialProps[i]->AddStringProperty("Name");
 
         materialProps[i]->AddFilepathProperty(textureNames[ME_DIFFUSE], ".png");
-        if (i == Material::MATERIAL_UNLIT_DECAL
+        if (i == Material::MATERIAL_UNLIT_TEXTURE_DECAL
             || i == Material::MATERIAL_VERTEX_LIT_DECAL)
         {
             materialProps[i]->AddFilepathProperty(textureNames[ME_DECAL], ".png");
         }
 
-        if (i == Material::MATERIAL_UNLIT_DETAIL
+        if (i == Material::MATERIAL_UNLIT_TEXTURE_DETAIL
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL)
         {
             materialProps[i]->AddFilepathProperty(textureNames[ME_DETAIL], ".png");
@@ -90,7 +94,7 @@ MaterialEditor::MaterialEditor()
         
         materialProps[i]->AddBoolProperty("Is Opaque");
         
-        if (i == Material::MATERIAL_VERTEX_LIT
+        if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
             || i == Material::MATERIAL_VERTEX_LIT_DECAL
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL
             || i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
@@ -102,7 +106,7 @@ MaterialEditor::MaterialEditor()
             materialProps[i]->AddFloatProperty("Diffuse color A");
         }
 
-        if (i == Material::MATERIAL_VERTEX_LIT
+        if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
             || i == Material::MATERIAL_VERTEX_LIT_DECAL
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL
             || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
