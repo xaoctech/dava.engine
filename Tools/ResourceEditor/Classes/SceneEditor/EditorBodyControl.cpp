@@ -442,6 +442,17 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
 }
 
+SceneNode * getHighestProxy(SceneNode* curr)
+{
+	int32 cc = curr->GetChildrenCount();
+	if (cc == 0)
+		return getHighestProxy(curr->GetParent());
+	if (cc > 1)
+		return 0;
+	if (cc == 1 && getHighestProxy(curr->GetParent()) == 0)
+		return curr;
+}
+
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
@@ -508,11 +519,23 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				inTouch = true;	
 				touchStart = event->point;
 				
-				startTransform = selection->GetLocalTransform();
+				proxy = getHighestProxy(selection);
+				if (proxy == 0)
+					proxy = selection;
+				
+				startTransform = proxy->GetLocalTransform();
 				
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 				if (userData)
 					userData->bulletObject->SetUpdateFlag(false);
+				
+				//calculate koefficient for moving
+				Camera * cam = scene->GetCurrentCamera();
+				const Vector3 & camPos = cam->GetPosition();
+				const Matrix4 & wt = selection->GetWorldTransform();
+				Vector3 objPos = Vector3(0,0,0) * wt;
+				Vector3 dir = objPos - camPos;
+				moveKf = dir.Length() * 0.1;
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
@@ -520,17 +543,18 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			if (event->tid == UIEvent::BUTTON_1)
 			{
 //				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-//				const Matrix4 & worldTransform = selection->GetWorldTransform();
-//				
+//				const Matrix4 & worldTransform = proxy->GetWorldTransform();
+//
 //				Matrix4 worldTransformInverse;
 //
-//				((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
-//
-//				selection->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
-				
+//				bool result = ((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
+//				if (result)
+//					proxy->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
+//				else 
+//					Logger::Debug(L"Error matrix calculation");
 				
 				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-				selection->SetLocalTransform(currTransform);
+				proxy->SetLocalTransform(currTransform);
 			}
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
@@ -565,19 +589,19 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 		{
 			case AXIS_X:
 			case AXIS_Y:
-				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis]);
+				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis] * moveKf);
 				break;
 			case AXIS_Z:
-				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z]);
+				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z] * moveKf);
 				break;
 			case AXIS_XY:
-				modification.CreateTranslation(vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]);
+				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]) * moveKf);
 				break;
 			case AXIS_YZ:
-				modification.CreateTranslation(vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]);
+				modification.CreateTranslation((vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
 				break;
 			case AXIS_XZ:
-				modification.CreateTranslation(vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]);
+				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
 				break;
 			default:
 				break;
