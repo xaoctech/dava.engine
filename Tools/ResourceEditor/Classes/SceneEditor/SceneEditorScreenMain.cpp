@@ -7,13 +7,6 @@
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
 
-//#include "CreateLandscapeDialog.h"
-//#include "CreateLightDialog.h"
-//#include "CreateServiceNodeDialog.h"
-//#include "CreateBoxDialog.h"
-//#include "CreateSphereDialog.h"
-//#include "CreateCameraDialog.h"
-
 #include "LandscapeEditorControl.h"
 
 
@@ -275,9 +268,9 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 {
+    BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
-        BodyItem *iBody = FindCurrentBody();
         materialEditor->SetWorkingScene(iBody->bodyControl->GetScene());
 
         AddControl(materialEditor);
@@ -285,8 +278,9 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
     else 
     {
         RemoveControl(materialEditor);
+        
+        iBody->bodyControl->RefreshProperties();
     }
-
 }
 
 
@@ -550,18 +544,13 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
     {
         case MENUID_CREATENODE:
         {
-//            currentNodeDialog = itemID;
-            
             BodyItem *iBody = FindCurrentBody();
             EditorScene *scene = iBody->bodyControl->GetScene();
             nodeDialog->SetScene(scene);
             nodeDialog->CreateNode(itemID);
             
-//            nodeDialogs[currentNodeDialog]->SetScene(scene);
-
             AddControl(dialogBack);
             AddControl(nodeDialog);
-//            AddControl(nodeDialogs[currentNodeDialog]);
             break;
         }
             
@@ -729,19 +718,6 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
     r.x = rect.x + r.dx / 2;
     r.y = rect.y + r.dy / 2;
 
-//    nodeDialogs[ECNID_LANDSCAPE] = new CreateLandscapeDialog(r);    
-//    nodeDialogs[ECNID_LIGHT] = new CreateLightDialog(r);    
-//    nodeDialogs[ECNID_SERVICENODE] = new CreateServiceNodeDialog(r);    
-//    nodeDialogs[ECNID_BOX] = new CreateBoxDialog(r);    
-//    nodeDialogs[ECNID_SPHERE] = new CreateSphereDialog(r);    
-//    nodeDialogs[ECNID_CAMERA] = new CreateCameraDialog(r);    
-//    
-//    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
-//    {
-//        nodeDialogs[iDlg]->SetDelegate(this);
-//        nodeDialogs[iDlg]->SetProjectPath(path);
-//    }
-    
     nodeDialog = new CreateNodesDialog(r);
     nodeDialog->SetDelegate(this);
 }

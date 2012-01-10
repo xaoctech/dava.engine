@@ -75,6 +75,7 @@ public:
     void CreateScene(bool withCameras);
     void ReleaseScene();
     void Refresh();
+    void RefreshProperties();
 
 protected:
 
@@ -154,6 +155,8 @@ protected:
     
     void ChangeControlWidthRight(UIControl *c, float32 width);
     void ChangeControlWidthLeft(UIControl *c, float32 width);
+    
+    void SelectNodeAtTree(SceneNode *node);
 };
 
 

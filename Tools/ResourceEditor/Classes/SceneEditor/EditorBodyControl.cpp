@@ -7,12 +7,6 @@
 
 #include "../BeastProxy.h"
 
-#include "LandscapePropertyControl.h"
-#include "LightPropertyControl.h"
-#include "CameraPropertyControl.h"
-#include "SpherePropertyControl.h"
-#include "BoxPropertyControl.h"
-#include "ServicenodePropertyControl.h"
 #include "../SceneNodeUserData.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
@@ -364,16 +358,21 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
             c = new UIHierarchyCell(Rect(0, 0, ControlsFactory::LEFT_SIDE_WIDTH, CELL_HEIGHT), "SceneGraph cell");
         }
         
+        ControlsFactory::CustomizeExpandButton(c->openButton);
+        ControlsFactory::CustomizeSceneGraphCell(c);
+        
         //fill cell whith data
         SceneNode *n = (SceneNode *)node;
-        
         c->text->SetText(StringToWString(n->GetName()));
+        if(n == selectedNode)
+        {
+            c->SetSelected(true, false);
+        }
+        else
+        {
+            c->SetSelected(false, false);
+        }
     }
-
-    c->SetSelected(false, false);
-    
-    ControlsFactory::CustomizeExpandButton(c->openButton);
-    ControlsFactory::CustomizeSceneGraphCell(c);
     
     return c;//returns cell
 }
@@ -388,16 +387,8 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         SceneNode * node = dynamic_cast<SceneNode*>((BaseObject*)hNode->GetUserNode());
         if (node)
         {
-//            if(selectedNode)
-//            {
-//                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_NONE);
-//            }
             selectedNode = node;
-            
-//            if(selectedNode)
-//            {
-//                selectedNode->SetDebugFlags(SceneNode::DEBUG_DRAW_AABBOX | SceneNode::DEBUG_DRAW_LOCAL_AXIS);
-//            }
+            scene->SetSelection(node);
             
             UpdatePropertyPanel();
             DebugInfo();
@@ -440,7 +431,7 @@ void EditorBodyControl::UpdatePropertyPanel()
         {
             rightPanel->AddControl(nodesPropertyPanel);
         }
-        nodesPropertyPanel->ReadFrom(selectedNode);
+        RefreshProperties();
     }
     else
     {
@@ -503,6 +494,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 		to *= 1000.f;
 		to += from;
 		scene->TrySelection(from, to);
+        
+        SelectNodeAtTree(scene->GetSelection());
 	}	
 	
     SceneNode * selection = scene->GetSelection();
@@ -518,7 +511,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				startTransform = selection->GetLocalTransform();
 				
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				userData->bulletObject->SetUpdateFlag(false);
+				if (userData)
+					userData->bulletObject->SetUpdateFlag(false);
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
@@ -545,7 +539,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			{
 				inTouch = false;
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				userData->bulletObject->SetUpdateFlag(true);
+				if (userData)
+					userData->bulletObject->SetUpdateFlag(true);
 			}
 		}
 	}
@@ -770,6 +765,8 @@ void EditorBodyControl::WillAppear()
     selectedNode = NULL;
     savedTreeCell = NULL;
     
+    nodesPropertyPanel->SetWorkingScene(scene);
+    
     sceneTree->Refresh();
 }
 
@@ -896,3 +893,31 @@ void EditorBodyControl::Refresh()
 {
     sceneTree->Refresh();
 }
+
+void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
+{
+    if(savedTreeCell)
+    {
+        savedTreeCell->SetSelected(false, false);
+    }
+
+    List<void *> nodesForSearch;
+    
+    selectedNode = node;
+    SceneNode *nd = node;
+    while(nd)
+    {
+        nodesForSearch.push_front(nd);
+        nd = nd->GetParent();
+    }
+    
+    sceneTree->OpenNodes(nodesForSearch);
+    RefreshProperties();
+}
+
+
+void EditorBodyControl::RefreshProperties()
+{
+    nodesPropertyPanel->ReadFrom(selectedNode);
+}
+

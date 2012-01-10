@@ -631,7 +631,7 @@ void UIHierarchy::CorrectOpenedInParent(UIHierarchyNode *parent, int32 nodesDelt
 void UIHierarchy::OpenNodes(const List<void *> &userNodes)
 {
     DVASSERT(delegate);
-    DVASSERT(*userNodes.begin() == baseNode->userNode);
+//    DVASSERT(*userNodes.begin() == baseNode->userNode);
     
 
     UIHierarchyNode *curNode = baseNode;
@@ -652,6 +652,7 @@ void UIHierarchy::OpenNodes(const List<void *> &userNodes)
             if ((*cit)->userNode == *it)
             {
                 curNode = (*cit);
+                break;
             }
         }
     }
@@ -680,5 +681,5 @@ void UIHierarchy::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPos
     scroll->SetPosition(-newPosition);
 }
 
-
+    
 };
