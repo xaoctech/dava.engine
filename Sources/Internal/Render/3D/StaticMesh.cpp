@@ -166,7 +166,17 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
     {
         material->shader->SetUniformValue(material->uniformTexture0, 0);
         material->shader->SetUniformValue(material->uniformTexture1, 1);
+        
     }
+    if (material->uniformLightPosition0 != -1)
+    {
+        Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
+        const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
+        lightPosition0 = lightPosition0 * matrix;
+        
+        material->shader->SetUniformValue(material->uniformLightPosition0, lightPosition0); 
+    }        
+
     RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
     
     

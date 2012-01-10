@@ -38,6 +38,7 @@ public MenuPopupDelegate, public CreateNodesDialogDelegeate
         DIALOG_OPERATION_MENU_OPEN,
         DIALOG_OPERATION_MENU_SAVE,
         DIALOG_OPERATION_MENU_PROJECT,
+        DIALOG_OPERATION_MENU_EXPORT,
     };
     
     enum eMenuIDS
@@ -87,6 +88,7 @@ private:
 
     UIButton * btnOpen;
     UIButton * btnSave;
+    UIButton * btnExport;
     UIButton * btnMaterials;
     UIButton * btnCreate;
     UIButton * btnNew;
@@ -96,6 +98,7 @@ private:
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
     void OnSavePressed(BaseObject * obj, void *, void *);
+    void OnExportPressed(BaseObject * obj, void *, void *);
     void OnMaterialsPressed(BaseObject * obj, void *, void *);
     void OnCreatePressed(BaseObject * obj, void *, void *);
     void OnNewPressed(BaseObject * obj, void *, void *);

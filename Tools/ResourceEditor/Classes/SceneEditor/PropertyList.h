@@ -56,6 +56,7 @@ public:
     void AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddSection(const String &sectionName, bool expanded = true);
+    void AddMessageProperty(const String &propertyName, const Message &newMessage);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
@@ -66,7 +67,7 @@ public:
     void SetComboPropertyIndex(const String &propertyName, int32 currentStringIndex);
     void SetMatrix4PropertyValue(const String &propertyName, const Matrix4 &currentMatrix);
     void SetSectionIsOpened(const String &sectionName, bool isOpened);
-
+    void SetMessagePropertyValue(const String &propertyName, const Message &newMessage);
     
     const String &GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
