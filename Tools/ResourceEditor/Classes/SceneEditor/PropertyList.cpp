@@ -307,6 +307,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
             case PropertyCell::PROP_CELL_SECTION:
                 c = new PropertySectionCell(this, props[index], size.x);
                 break;
+            case PropertyCell::PROP_CELL_BUTTON:
+                c = new PropertyButtonCell(this, props[index], size.x);
+                break;
         }
     }
     else 
@@ -341,6 +344,9 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
             break;
         case PropertyCell::PROP_CELL_SECTION:
             return PropertySectionCell::GetHeightForWidth(size.x);
+            break;
+        case PropertyCell::PROP_CELL_BUTTON:
+            return PropertyButtonCell::GetHeightForWidth(size.x);
             break;
     }
     return 50;//todo: rework
@@ -471,5 +477,23 @@ bool PropertyList::GetSectionIsOpened(const String &sectionName)
     return p->GetIsSectionOpened();
 }
 
+
+void PropertyList::AddMessageProperty(const String &propertyName, const Message &newMessage)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_MESSAGE);
+    p->cellType = PropertyCell::PROP_CELL_BUTTON;
+    p->SetMessage(newMessage);
+    AddProperty(p, propertyName, PROPERTY_IS_READ_ONLY);
+}
+
+void PropertyList::SetMessagePropertyValue(const String &propertyName, const Message &newMessage)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetMessage(newMessage);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
 
 

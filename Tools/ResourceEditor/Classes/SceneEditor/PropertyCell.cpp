@@ -470,3 +470,31 @@ void PropertySectionCell::OnButton(BaseObject * object, void * userData, void * 
     propertyDelegate->OnPropertyChanged(property);
 }
 
+
+//*************** PropertyButtonCell **************
+PropertyButtonCell::PropertyButtonCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+:   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width;
+    
+    buttonEvent = prop->GetMessage(); 
+	AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
+
+    SetData(prop);
+}
+
+PropertyButtonCell::~PropertyButtonCell()
+{
+}
+
+float32 PropertyButtonCell::GetHeightForWidth(float32 currentWidth)
+{
+    return ControlsFactory::BUTTON_HEIGHT;
+}
+
+void PropertyButtonCell::SetData(PropertyCellData *prop)
+{
+    RemoveEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
+    buttonEvent = prop->GetMessage(); 
+    AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
+}
