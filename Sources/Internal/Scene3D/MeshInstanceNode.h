@@ -113,6 +113,12 @@ public:
 	 \brief Delete all lightmaps for this MeshInstance. 
 	 */
 	void ClearLightmaps();
+    
+	/**
+	 \brief Replace material for polygon group. 
+	 */
+    void ReplaceMaterial(Material *material, int32 index);
+    
 
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
