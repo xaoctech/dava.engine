@@ -360,27 +360,28 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
         {
             String name = it->first;
+            String propName = GetCustomPropertyName(name);
             VariantType key = it->second;
             switch (key.type) 
             {
                 case VariantType::TYPE_BOOLEAN:
-                    propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetBoolPropertyValue(name, key.AsBool());
+                    propertyList->AddBoolProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetBoolPropertyValue(propName, key.AsBool());
                     break;
                     
                 case VariantType::TYPE_STRING:
-                    propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetStringPropertyValue(name, key.AsString());
+                    propertyList->AddStringProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetStringPropertyValue(propName, key.AsString());
                     break;
 
                 case VariantType::TYPE_INT32:
-                    propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetIntPropertyValue(name, key.AsInt32());
+                    propertyList->AddIntProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetIntPropertyValue(propName, key.AsInt32());
                     break;
 
                 case VariantType::TYPE_FLOAT:
-                    propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetFloatPropertyValue(name, key.AsFloat());
+                    propertyList->AddFloatProperty(propName, PropertyList::PROPERTY_IS_EDITABLE);
+                    propertyList->SetFloatPropertyValue(propName, key.AsFloat());
                     break;
                     
                 default:
@@ -558,23 +559,24 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
         for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
         {
             String name = it->first;
+            String propName = GetCustomPropertyName(name);
             VariantType key = it->second;
             switch (key.type) 
             {
                 case VariantType::TYPE_BOOLEAN:
-                    customProperties->SetBool(name, propertyList->GetBoolPropertyValue(name));
+                    customProperties->SetBool(name, propertyList->GetBoolPropertyValue(propName));
                     break;
                     
                 case VariantType::TYPE_STRING:
-                    customProperties->SetString(name, propertyList->GetStringPropertyValue(name));
+                    customProperties->SetString(name, propertyList->GetStringPropertyValue(propName));
                     break;
                     
                 case VariantType::TYPE_INT32:
-                    customProperties->SetInt32(name, propertyList->GetIntPropertyValue(name));
+                    customProperties->SetInt32(name, propertyList->GetIntPropertyValue(propName));
                     break;
                     
                 case VariantType::TYPE_FLOAT:
-                    customProperties->SetFloat(name, propertyList->GetFloatPropertyValue(name));
+                    customProperties->SetFloat(name, propertyList->GetFloatPropertyValue(propName));
                     break;
                     
                 default:
@@ -700,28 +702,28 @@ void NodesPropertyControl::NodeCreated(bool success)
                 propertyList->AddStringProperty(name);
                 propertyList->SetStringPropertyValue(name, "");
                 
-                currentProperties->SetString(name, "");
+                currentProperties->SetString("editor." + name, "");
                 break;
 
             case CreatePropertyControl::EPT_INT:
                 propertyList->AddIntProperty(name);
                 propertyList->SetIntPropertyValue(name, 0);
                 
-                currentProperties->SetInt32(name, 0);
+                currentProperties->SetInt32("editor." + name, 0);
 
                 break;
             case CreatePropertyControl::EPT_FLOAT:
                 propertyList->AddFloatProperty(name);
                 propertyList->SetFloatPropertyValue(name, 0.f);
                 
-                currentProperties->SetFloat(name, 0.f);
+                currentProperties->SetFloat("editor." + name, 0.f);
 
                 break;
             case CreatePropertyControl::EPT_BOOL:
                 propertyList->AddBoolProperty(name);
                 propertyList->SetBoolPropertyValue(name, false);
                 
-                currentProperties->SetBool(name, false);
+                currentProperties->SetBool("editor." + name, false);
 
                 break;
 
@@ -756,8 +758,9 @@ UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
         if(i == index)
         {
             String name = it->first;
+            String propName = GetCustomPropertyName(name);
 
-            ControlsFactory::CustomizeListCell(c, StringToWString(name));
+            ControlsFactory::CustomizeListCell(c, StringToWString(propName));
             break;
         }
     }
@@ -796,5 +799,20 @@ void NodesPropertyControl::OnCancel(BaseObject * object, void * userData, void *
     listHolder->RemoveControl(deletionList);
     SafeRelease(deletionList);
     RemoveControl(listHolder);
+}
+
+
+String NodesPropertyControl::GetCustomPropertyName(const String &keyName)
+{
+    String retStr = "";
+    
+    int32 pos = keyName.find("editor.");
+    if(String::npos != pos)
+    {
+        pos += 7; //"editor."
+        retStr = keyName.substr(pos);
+    }
+        
+    return retStr;
 }
 
