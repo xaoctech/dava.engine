@@ -90,7 +90,6 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
 		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-	//	selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABBOX));
 
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
@@ -105,17 +104,20 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		if(selection)
 		{
 			SceneNodeUserData * data = (SceneNodeUserData*)selection->userData;
-			for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
-			{					
-				if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
-				{
-					findedIndex = i;
-					break;
+			if (data)
+			{
+				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
+				{					
+					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+					{
+						findedIndex = i;
+						break;
+					}
 				}
+				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+					findedIndex--;
+				findedIndex = findedIndex % cb.m_collisionObjects.size();
 			}
-			while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
-				findedIndex--;
-			findedIndex = findedIndex % cb.m_collisionObjects.size();
 		}
 		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
@@ -126,7 +128,6 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	
 		if(selection)
 			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-//			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABBOX));
 	}
 	else 
 	{
