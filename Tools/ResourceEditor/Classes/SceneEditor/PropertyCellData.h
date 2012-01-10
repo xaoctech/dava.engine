@@ -26,6 +26,7 @@ public:
         PROP_VALUE_MATRIX4,
         PROP_VALUE_COMBO_BOX,
         PROP_VALUE_SECTION,
+        PROP_VALUE_MESSAGE,
         
         PROP_VALUE_COUNT
     };
@@ -45,6 +46,7 @@ public:
     const Matrix4 & GetMatrix4() const;
     int32 GetIsSectionOpened(); 
     int32 GetSectionElementsCount();
+    const Message & GetMessage();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
@@ -56,6 +58,7 @@ public:
     void SetMatrix4(const Matrix4 & _matrix);
     void SetIsSectionOpened(bool isSectionOpened);
     void SetSectionElementsCount(int32 sectionElementsCount);
+    void SetMessage(const Message &newMessage);
     
     int32 cellType;
     String key;
@@ -76,6 +79,8 @@ protected:
     Vector<String> stringVector;
 
     Matrix4 matrix4;
+    
+    Message messageValue;
 };
 
 #endif

@@ -88,6 +88,9 @@ protected:
     UIControl *listHolder;
     UIButton *btnCancel;
     void OnCancel(BaseObject * object, void * userData, void * callerData);
+    
+    
+    void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
 };
 
 
