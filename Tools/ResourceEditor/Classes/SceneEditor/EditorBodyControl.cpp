@@ -457,6 +457,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {
+        if(event->tid == DVKEY_ESCAPE)
+        {
+            ResetSelection();
+        }
+
         if (event->keyChar == '1')
             cameraController->SetSpeed(40);
         if (event->keyChar == '2')
@@ -934,11 +939,11 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         savedTreeCell->SetSelected(false, false);
     }
 
+    selectedNode = node;
     if(node)
     {
         List<void *> nodesForSearch;
         
-        selectedNode = node;
         SceneNode *nd = node;
         while(nd)
         {
@@ -947,8 +952,13 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         }
         
         sceneTree->OpenNodes(nodesForSearch);
-        RefreshProperties();
     }
+    else
+    {
+        sceneTree->Refresh();
+    }
+    
+    UpdatePropertyPanel();
 }
 
 
@@ -960,3 +970,8 @@ void EditorBodyControl::RefreshProperties()
     }
 }
 
+void EditorBodyControl::ResetSelection()
+{
+    scene->SetSelection(NULL);
+    SelectNodeAtTree(NULL);
+}
