@@ -532,10 +532,21 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				//calculate koefficient for moving
 				Camera * cam = scene->GetCurrentCamera();
 				const Vector3 & camPos = cam->GetPosition();
-				const Matrix4 & wt = selection->GetWorldTransform();
+				const Matrix4 & wt = proxy->GetWorldTransform();
 				Vector3 objPos = Vector3(0,0,0) * wt;
+				
+				Matrix4 invWT;
+				bool res = wt.GetInverse(invWT);				
+
+				float32 transformK = (Vector3(0,0,0) * invWT - (Vector3(1,1,1) * invWT)).Length();
 				Vector3 dir = objPos - camPos;
 				moveKf = dir.Length() * 0.1;
+				
+				Logger::Debug(L"transformK = %f", transformK);			
+				Logger::Debug(L"moveKf = %f", moveKf);				
+				moveKf /= transformK;
+				Logger::Debug(L"result = %f", moveKf);
+				Logger::Debug(L"inv = %d", res);
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
