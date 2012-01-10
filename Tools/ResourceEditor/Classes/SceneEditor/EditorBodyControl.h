@@ -147,6 +147,7 @@ protected:
 	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
+	SceneNode * proxy;
 
 	float32 axisSign[3];
 	
