@@ -6,6 +6,11 @@
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
 {
+	btnPlus = 0;
+	btnMinus = 0;
+	propControl = 0;
+	workingScene = 0;
+
     deletionList = NULL;
     listHolder = NULL;
     btnCancel = NULL;
