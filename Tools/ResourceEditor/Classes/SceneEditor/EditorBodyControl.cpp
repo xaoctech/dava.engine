@@ -918,6 +918,9 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 
 void EditorBodyControl::RefreshProperties()
 {
-    nodesPropertyPanel->ReadFrom(selectedNode);
+    if(selectedNode)
+    {
+        nodesPropertyPanel->ReadFrom(selectedNode);
+    }
 }
 
