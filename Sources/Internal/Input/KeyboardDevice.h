@@ -190,6 +190,8 @@ public:
     
     bool IsKeyPressed(int32 keyCode);
     
+    int32 GetDavaKeyForSystemKey(int32 systemKeyCode);
+    
     void OnKeyPressed(int32 keyCode);
     void OnKeyUnpressed(int32 keyCode);
 
