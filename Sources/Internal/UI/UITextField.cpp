@@ -318,7 +318,7 @@ void UITextField::Input(UIEvent *currentInput)
 		{
 			delegate->TextFieldShouldCancel(this);
 		}
-        else
+        else if(currentInput->keyChar != 0)
         {
 			WideString str;
 			str += currentInput->keyChar;
