@@ -62,6 +62,10 @@ public:
     void ShowSceneGraph(bool show);
     bool SceneGraphAreShown();
 
+    void ShowDataGraph(bool show);
+    bool DataGraphAreShown();
+
+    
     void UpdateLibraryState(bool isShown, int32 width);
 
 	void BeastProcessScene();
@@ -101,16 +105,28 @@ protected:
     void CreateLeftPanel();
     void ReleaseLeftPanel();
     
-    UIControl *leftPanel;
-    UIHierarchy * sceneTree;
+    UIControl *leftPanelSceneGraph;
+    UIHierarchy * sceneGraphTree;
     UIButton * lookAtButton;
     UIButton * removeNodeButton;
     UIButton * enableDebugFlagsButton;
-    
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
     void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
+
+    UIControl *leftPanelDataGraph;
+    UIHierarchy * dataGraphTree;
+    enum eDataNodesIDs
+    {
+        EDNID_MATERIAL = 0,
+        EDNID_MESH,
+        EDNID_SCENE,
+        
+        EDNID_COUNT
+    };
     
+    DataNode *dataNodes[EDNID_COUNT];
+    void RefreshDataGraph();
     
     //scene controls
     EditorScene * scene;
@@ -123,7 +139,8 @@ protected:
     void ReleasePropertyPanel();
     void UpdatePropertyPanel();
     UIControl *rightPanel;
-    SceneNode * selectedNode;
+    SceneNode * selectedSceneGraphNode;
+    DataNode * selectedDataGraphNode;
     UIHierarchyCell *savedTreeCell;
 
     NodesPropertyControl *nodesPropertyPanel;

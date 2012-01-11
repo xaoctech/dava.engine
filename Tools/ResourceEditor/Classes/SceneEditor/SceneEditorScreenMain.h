@@ -29,7 +29,7 @@ public MenuPopupDelegate, public CreateNodesDialogDelegeate
         
         LIBRARY_WIDTH = 200,
         
-        TAB_BUTTONS_OFFSET = 110,
+        TAB_BUTTONS_OFFSET = 200,
     };
 
     enum DIALOG_OPERATION
@@ -136,6 +136,11 @@ private:
     //SceneGraph
     UIButton *sceneGraphButton;
     void OnSceneGraphPressed(BaseObject * obj, void *, void *);
+
+    //DataGraph
+    UIButton *dataGraphButton;
+    void OnDataGraphPressed(BaseObject * obj, void *, void *);
+
     
     //Library
     UIButton *libraryButton;
