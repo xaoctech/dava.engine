@@ -665,47 +665,48 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
-				inTouch = true;	
-				touchStart = event->point;
-				
-				proxy = getHighestProxy(selection);
-				if (proxy == 0)
-					proxy = selection;
-				
-				startTransform = proxy->GetLocalTransform();
-				
-				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				if (userData)
-					userData->bulletObject->SetUpdateFlag(false);
-				
-				//calculate koefficient for moving
-				Camera * cam = scene->GetCurrentCamera();
-				const Vector3 & camPos = cam->GetPosition();
-				const Matrix4 & wt = proxy->GetWorldTransform();
-				Vector3 objPos = Vector3(0,0,0) * wt;
-				
-				Matrix4 inv;
-				Matrix4 worldTransform = proxy->GetWorldTransform();
-				worldTransform._03 = 0.0f;
-				worldTransform._13 = 0.0f;
-				worldTransform._23 = 0.0f;
-				worldTransform._33 = 1.0f;
-				worldTransform._30 = 0.0f;
-				worldTransform._31 = 0.0f;
-				worldTransform._32 = 0.0f;
-				
-//				bool res = worldTransform.GetInverse(inv);				
-
-				
-//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
-				Vector3 dir = objPos - camPos;
-				moveKf = dir.Length() * 0.003;
-				
-//				Logger::Debug(L"transformK = %f", transformK);			
-//				Logger::Debug(L"moveKf = %f", moveKf);				
-//				//moveKf /= transformK;
-//				Logger::Debug(L"result = %f", moveKf);
-//				Logger::Debug(L"inv = %d", res);
+			inTouch = true;	
+			touchStart = event->point;
+			
+			proxy = getHighestProxy(selection);
+			if (proxy == 0)
+				proxy = selection;
+			
+			startTransform = proxy->GetLocalTransform();
+			startWT = proxy->GetWorldTransform();
+			
+			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
+			if (userData)
+				userData->bulletObject->SetUpdateFlag(false);
+			
+			//calculate koefficient for moving
+			Camera * cam = scene->GetCurrentCamera();
+			const Vector3 & camPos = cam->GetPosition();
+			const Matrix4 & wt = proxy->GetWorldTransform();
+			Vector3 objPos = Vector3(0,0,0) * wt;
+			
+			Matrix4 inv;
+			Matrix4 worldTransform = proxy->GetWorldTransform();
+			worldTransform._03 = 0.0f;
+			worldTransform._13 = 0.0f;
+			worldTransform._23 = 0.0f;
+			worldTransform._33 = 1.0f;
+			worldTransform._30 = 0.0f;
+			worldTransform._31 = 0.0f;
+			worldTransform._32 = 0.0f;
+			
+			//				bool res = worldTransform.GetInverse(inv);				
+			
+			
+			//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
+			Vector3 dir = objPos - camPos;
+			moveKf = dir.Length() * 0.003;
+			
+			//				Logger::Debug(L"transformK = %f", transformK);			
+			//				Logger::Debug(L"moveKf = %f", moveKf);				
+			//				//moveKf /= transformK;
+			//				Logger::Debug(L"result = %f", moveKf);
+			//				Logger::Debug(L"inv = %d", res);
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
 		{
@@ -774,11 +775,14 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 	{
 		Matrix4 d;
 		Matrix4 translate1, translate2;
-		
-        SceneNode * selection = scene->GetSelection();
 
-		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
-		translate2.CreateTranslation(selection->GetWorldTransform().GetTranslationVector());
+		Vector3 v = startWT.GetTranslationVector();
+		translate1.CreateTranslation(-v);
+		translate2.CreateTranslation(v);
+		
+//        SceneNode * selection = scene->GetSelection();
+//		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
+//		translate2.CreateTranslation(selection->GetWorldTransform().GetTranslationVector());
 		
 		switch (modAxis) 
 		{

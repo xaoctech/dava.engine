@@ -86,6 +86,21 @@ void EditorScene::CheckNodes(SceneNode * curr)
 	}
 }
 
+SceneNode * GetSolidParent(SceneNode* curr)
+{
+	if (curr->GetSolid())
+	{
+		return curr;
+	}
+	else 
+	{
+		SceneNode * parent = curr->GetParent();
+		if (parent == 0)
+			return 0;
+		return GetSolidParent(parent);
+	}
+}
+
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
 	if (selection)
@@ -103,21 +118,21 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(selection)
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)selection->userData;
-			if (data)
-			{
-				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
-				{					
-					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
-					{
-						findedIndex = i;
-						break;
-					}
-				}
-				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
-					findedIndex--;
-				findedIndex = findedIndex % cb.m_collisionObjects.size();
-			}
+//			SceneNodeUserData * data = (SceneNodeUserData*)selection->userData;
+//			if (data)
+//			{
+//				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
+//				{					
+//					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+//					{
+//						findedIndex = i;
+//						break;
+//					}
+//				}
+//				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+//					findedIndex--;
+//				findedIndex = findedIndex % cb.m_collisionObjects.size();
+//			}
 		}
 		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
@@ -125,13 +140,19 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 			findedIndex = cb.m_collisionObjects.size() - 1;
 		coll = cb.m_collisionObjects[findedIndex];
 		selection = FindSelected(this, coll);
-	
+		
+		if (selection)
+		{
+			SceneNode * solid = GetSolidParent(selection);
+			if (solid)
+				selection = solid;
+		}
 		if(selection)
 			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
 	}
 	else 
 	{
-		selection = 0;		
+		selection = 0;
 	}
 }
 
@@ -181,7 +202,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 void EditorScene::Draw()
 {
 	Scene::Draw();
-	DrawDebugNodes(this);
+//	DrawDebugNodes(this);
 }
 
 void EditorScene::DrawDebugNodes(SceneNode * curr)
