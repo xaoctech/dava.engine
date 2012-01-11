@@ -879,3 +879,8 @@ void NodesPropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userDa
 {
     ((SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen())->ShowMaterialEditor();
 }
+
+void NodesPropertyControl::UpdateFieldsForCurrentNode()
+{
+    ReadFrom(currentNode);
+}
