@@ -417,6 +417,24 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     }
 }
 
+void NodesPropertyControl::ReadFrom(DataNode *dataNode)
+{
+    propertyList->ReleaseProperties();
+    if(!createNodeProperties)
+    {
+        propertyList->AddSection("General C++");
+        propertyList->AddIntProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
+        
+        propertyList->SetIntPropertyValue("Retain Count", dataNode->GetRetainCount());
+        propertyList->SetStringPropertyValue("Class Name", dataNode->GetClassName());
+        propertyList->SetStringPropertyValue("C++ Class Name", typeid(*dataNode).name());
+    }
+}
+
+
+
 void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
 {
     sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));

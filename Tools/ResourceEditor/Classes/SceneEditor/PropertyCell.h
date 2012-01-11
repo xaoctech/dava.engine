@@ -33,6 +33,7 @@ protected:
     enum eConst
     {
         CELL_HEIGHT = 15,
+        KEY_NAME_DEVIDER = 3,
     };
     
 public:

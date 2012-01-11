@@ -31,9 +31,7 @@
 #ifndef __DAVAENGINE_EDIT_MATRIX_CONTROL_H__
 #define __DAVAENGINE_EDIT_MATRIX_CONTROL_H__
 
-#include "Base/BaseTypes.h"
-#include "UI/UIButton.h"
-#include "UI/UITextField.h"
+#include "DAVAEngine.h"
 
 namespace DAVA 
 {
@@ -52,7 +50,11 @@ public:
     
 	void TextFieldShouldReturn(UITextField * textField);
 	bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
+    
+    virtual bool IsTextFieldShouldSetFocusedOnAppear(UITextField * textField);
 
+
+    virtual void Input(UIEvent * touch);
     
     Message OnMatrixChanged;
 
