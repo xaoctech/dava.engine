@@ -515,12 +515,10 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	}	
 	
     SceneNode * selection = scene->GetSelection();
-	if (selection != 0)
+	if (selection != 0 && event->tid == UIEvent::BUTTON_1)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
-			if (event->tid == UIEvent::BUTTON_1)
-			{
 				inTouch = true;	
 				touchStart = event->point;
 				
@@ -562,12 +560,9 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 //				//moveKf /= transformK;
 //				Logger::Debug(L"result = %f", moveKf);
 //				Logger::Debug(L"inv = %d", res);
-			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
 		{
-			if (event->tid == UIEvent::BUTTON_1)
-			{
 //				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 //				const Matrix4 & worldTransform = proxy->GetWorldTransform();
 //
@@ -581,22 +576,18 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				
 				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 				proxy->SetLocalTransform(currTransform);
-			}
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
 		{
-			if (event->tid == UIEvent::BUTTON_1)
-			{
 				inTouch = false;
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 				if (userData)
 					userData->bulletObject->SetUpdateFlag(true);
-			}
 		}
 	}
 	else
 	{
-//		cameraController->SetSelection(selection);
+		cameraController->SetSelection(selection);
 		cameraController->Input(event);
 	}
 	UIControl::Input(event);
