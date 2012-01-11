@@ -755,3 +755,14 @@ void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
         AddControl(landscapeEditor);
     }
 }
+
+void SceneEditorScreenMain::ShowMaterialEditor()
+{
+    BodyItem *iBody = FindCurrentBody();
+    if (!materialEditor->GetParent())
+    {
+        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene());
+        
+        AddControl(materialEditor);
+    }
+}

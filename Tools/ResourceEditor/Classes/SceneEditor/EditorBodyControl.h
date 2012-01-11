@@ -81,6 +81,7 @@ public:
 
 protected:
 
+    void ResetSelection();
     void DebugInfo();
     
 	void CreateModificationPanel(void);

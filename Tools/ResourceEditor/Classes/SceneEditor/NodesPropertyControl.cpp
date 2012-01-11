@@ -1,6 +1,7 @@
 #include "NodesPropertyControl.h"
 #include "ControlsFactory.h"
 
+#include "SceneEditorScreenMain.h"
 #include "DraggableDialog.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
@@ -228,7 +229,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
             propertyList->AddBoolProperty("fmt.JOINTWEIGHT", PropertyList::PROPERTY_IS_EDITABLE);
             propertyList->SetBoolPropertyValue("fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
 
-            if(matCount)
+            if(matCount && !createNodeProperties)
             {
                 String comboName = Format("Materials for #%d", i);
                 propertyList->AddComboProperty(comboName, materialNames);
@@ -250,7 +251,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
                     propertyList->SetComboPropertyIndex(comboName, 0);
                 }
                 
-//                propertyList->AddMessageProperty("GoToMaterials", Message(this, &NodesPropertyControl::OnGo2Materials));
+                propertyList->AddMessageProperty("GoToMaterials", Message(this, &NodesPropertyControl::OnGo2Materials));
             }
         }
     }
@@ -473,7 +474,7 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
         int32 currentMaterial = 0;
         for(int32 i = 0; i < meshes.size(); ++i)
         {
-            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+//            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
             
             int32 vertexFormat = EVF_VERTEX;
             vertexFormat |= propertyList->GetBoolPropertyValue("fmt.NORMAL");
@@ -487,7 +488,7 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
             vertexFormat |= propertyList->GetBoolPropertyValue("fmt.JOINTWEIGHT");
             
             //TODO: set it to pg
-            if(materials.size())
+            if(materials.size() && !createNodeProperties)
             {
                 String comboName = Format("Materials for #%d", i);
                 currentMaterial = propertyList->GetComboPropertyIndex(comboName);
@@ -849,5 +850,5 @@ void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
 
 void NodesPropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    
+    ((SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen())->ShowMaterialEditor();
 }

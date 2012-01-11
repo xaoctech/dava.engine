@@ -494,6 +494,10 @@ float32 PropertyButtonCell::GetHeightForWidth(float32 currentWidth)
 
 void PropertyButtonCell::SetData(PropertyCellData *prop)
 {
+    PropertyCell::SetData(prop);
+
+    ControlsFactory::CustomizePropertyButtonCell(this);
+    
     RemoveEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
     buttonEvent = prop->GetMessage(); 
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
