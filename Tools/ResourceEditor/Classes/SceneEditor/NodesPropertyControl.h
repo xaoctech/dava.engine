@@ -33,6 +33,8 @@ public:
     virtual void ReadFrom(SceneNode *sceneNode);
     virtual void ReadFrom(DataNode *dataNode);
     virtual void WriteTo(SceneNode *sceneNode);
+    
+    void UpdateFieldsForCurrentNode();
 
     
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);

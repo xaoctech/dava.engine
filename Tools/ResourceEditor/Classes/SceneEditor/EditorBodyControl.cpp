@@ -722,6 +722,9 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				
 				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 				proxy->SetLocalTransform(currTransform);
+            
+            nodesPropertyPanel->UpdateFieldsForCurrentNode();
+            
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
 		{
