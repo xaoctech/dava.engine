@@ -393,10 +393,11 @@ void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &i
 PropertyMatrix4Cell::PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
-    keyName->size.x = width/KEY_NAME_DEVIDER;
-    keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+    keyName->size.x = size.x;
+    keyName->size.y = CELL_HEIGHT;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
     
-    matrix = new EditMatrixControl(Rect(keyName->size.x, 0, width - keyName->size.x, GetHeightForWidth(width)));
+    matrix = new EditMatrixControl(Rect(0, CELL_HEIGHT, size.x, GetHeightForWidth(width) - CELL_HEIGHT));
     matrix->OnMatrixChanged = Message(this, &PropertyMatrix4Cell::OnLocalTransformChanged);
 
     AddControl(matrix);
@@ -410,7 +411,7 @@ PropertyMatrix4Cell::~PropertyMatrix4Cell()
 
 float32 PropertyMatrix4Cell::GetHeightForWidth(float32 currentWidth)
 {
-    return CELL_HEIGHT * 4;
+    return CELL_HEIGHT * 5;
 }
 
 void PropertyMatrix4Cell::SetData(PropertyCellData *prop)
