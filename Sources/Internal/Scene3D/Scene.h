@@ -86,6 +86,9 @@ public:
 	StaticMesh * GetStaticMesh(int32 index);
 	int32	GetStaticMeshCount();
     
+    
+    DataNode * GetScenes();
+    
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
 	AnimatedMesh * GetAnimatedMesh(int32 index);
