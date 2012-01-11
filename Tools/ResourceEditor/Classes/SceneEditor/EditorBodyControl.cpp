@@ -741,8 +741,10 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 		Matrix4 d;
 		Matrix4 translate1, translate2;
 		
-		translate1.CreateTranslation(-startTransform.GetTranslationVector());
-		translate2.CreateTranslation(startTransform.GetTranslationVector());
+        SceneNode * selection = scene->GetSelection();
+
+		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
+		translate2.CreateTranslation(selection->GetWorldTransform().GetTranslationVector());
 		
 		switch (modAxis) 
 		{
