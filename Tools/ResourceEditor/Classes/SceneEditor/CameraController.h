@@ -55,15 +55,28 @@ public:
     
     virtual void Input(UIEvent * event);
     void SetSpeed(float32 _speed);
-    
+    inline void SetSelection(SceneNode * _selection)
+	{
+		selection = _selection;
+	}
+
 protected:
+	SceneNode * selection;
     float32 speed;
-    float32 viewXAngle, viewYAngle;
+    float32 viewZAngle, viewYAngle;
     Vector2 oldTouchPoint;
+	
+	Vector2 startPt;
+    Vector2 stopPt;
+
+	void UpdateCam(void);
+	    
+    float32 radius;
+	Vector3 center;
 };
-
-
-class Max3dCameraController : public CameraController
+	
+	
+	class Max3dCameraController : public CameraController
 {
 public:
     Max3dCameraController();
@@ -74,8 +87,8 @@ public:
 	
 protected:
 	SceneNode * selection;
-    float32 viewXAngle, viewYAngle;
-    Vector2 oldTouchPoint;
+	float32 viewXAngle, viewYAngle;
+	Vector2 oldTouchPoint;
 };
 
 };
