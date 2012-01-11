@@ -73,11 +73,19 @@ void SceneEditorScreenMain::LoadResources()
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
+    dataGraphButton = ControlsFactory::CreateButton(
+                                                     Vector2(ControlsFactory::BUTTON_WIDTH + 1, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), L"Data Graph");
+    dataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnDataGraphPressed));
+    AddControl(dataGraphButton);
+    
     InitializeBodyList();
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(sceneGraphButton);
+    SafeRelease(dataGraphButton);
+    
     ReleaseNodeDialogs();
     
     SafeRelease(menuPopup);
@@ -532,9 +540,21 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ShowDataGraph(false);
+
     bool areShown = iBody->bodyControl->SceneGraphAreShown();
     iBody->bodyControl->ShowSceneGraph(!areShown);
 }
+
+void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ShowSceneGraph(false);
+    
+    bool areShown = iBody->bodyControl->DataGraphAreShown();
+    iBody->bodyControl->ShowDataGraph(!areShown);
+}
+
 
 void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
 {

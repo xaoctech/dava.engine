@@ -31,6 +31,7 @@ public:
     virtual void WillAppear();
 
     virtual void ReadFrom(SceneNode *sceneNode);
+    virtual void ReadFrom(DataNode *dataNode);
     virtual void WriteTo(SceneNode *sceneNode);
 
     
