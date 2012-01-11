@@ -34,6 +34,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Base/ObjectFactory.h"
 #include "Utils/StringFormat.h"
+#include "RenderHelper.h"
 
 namespace DAVA
 {
@@ -316,6 +317,24 @@ void SceneNode::Draw()
 		(*it)->Draw();
     if (scene)
         scene->nodeCounter++;
+
+	
+	if (!visible)return;
+	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
+	{
+//		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+//		Matrix4 finalMatrix = worldTransform * prevMatrix;
+//		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
+		
+		AABBox3 box = GetWTMaximumBoundingBox();
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
+		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+		RenderHelper::Instance()->DrawCornerBox(box);
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+//		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	}
 }
 
     

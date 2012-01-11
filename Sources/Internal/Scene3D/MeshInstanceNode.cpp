@@ -294,17 +294,6 @@ void MeshInstanceNode::Draw()
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		
-		
-		if (debugFlags & DEBUG_DRAW_AABBOX)
-		{
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-			RenderHelper::Instance()->DrawBox(bbox);
-		
-			//RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-            //bbox.GetTransformedBox(worldTransform, transformedBox);
-			//RenderHelper::Instance()->DrawBox(transformedBox);
-		}
-        
 		if (debugFlags & DEBUG_DRAW_LOCAL_AXIS)
 		{
 			RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f); 
@@ -317,17 +306,11 @@ void MeshInstanceNode::Draw()
 			RenderHelper::Instance()->DrawLine(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 50.0f));
 		}
 
-		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
-		{
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-			RenderHelper::Instance()->DrawCornerBox(bbox);
-            
-//            for (uint32 k = 0; k < meshesSize; ++k)
-//            {
-//                currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
-//            }
-            
-        }
+//		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
+//		{
+//			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+//			RenderHelper::Instance()->DrawCornerBox(bbox);
+//        }
         if (debugFlags & DEBUG_DRAW_NORMALS)
         {
             
