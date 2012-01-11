@@ -1244,11 +1244,11 @@ namespace DAVA
 #endif
 								if (IsPointInside(currentInput->point, true))
 								{
-									PerformEventWithData(EVENT_TOUCH_UP_INSIDE, currentInput);
                                     if (UIControlSystem::Instance()->GetFocusedControl() != this) 
                                     {
                                         UIControlSystem::Instance()->SetFocusedControl(this, false);
                                     }
+									PerformEventWithData(EVENT_TOUCH_UP_INSIDE, currentInput);
 								}
 								controlState &= ~STATE_PRESSED_INSIDE;
 								controlState &= ~STATE_PRESSED_OUTSIDE;
