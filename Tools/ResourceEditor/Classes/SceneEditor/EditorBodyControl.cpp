@@ -550,9 +550,15 @@ SceneNode * getHighestProxy(SceneNode* curr)
 		return getHighestProxy(curr->GetParent());
 	if (cc > 1)
 		return 0;
-	if (cc == 1 && getHighestProxy(curr->GetParent()) == 0)
-		return curr;
-    
+	if (cc == 1)
+    {
+        SceneNode * result = getHighestProxy(curr->GetParent());
+	    if (result == 0)
+            return curr;
+        else return result;
+        
+    }
+	
     return NULL;
 }
 
