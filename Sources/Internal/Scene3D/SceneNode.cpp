@@ -54,7 +54,7 @@ SceneNode::SceneNode(Scene * _scene)
 	//animation = 0;
     debugFlags = DEBUG_DRAW_NONE;
     flags = 0;
-	isSolidNode = false;
+//	isSolidNode = false;
 	userData = 0;
     
     customProperties = new KeyedArchive();
@@ -343,7 +343,8 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
-	dstNode->isSolidNode = isSolidNode;
+    dstNode->SetSolid(GetSolid());
+//	dstNode->isSolidNode = isSolidNode;
 
 //    Logger::Debug("Node %s clonned", name.c_str());
     

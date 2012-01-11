@@ -186,7 +186,7 @@ public:
     void SetSolid(bool isSolid);
     bool GetSolid();
     
-	bool isSolidNode;
+//	bool isSolidNode;
 	BaseObject * userData;
     
     //Returns maximum Bounding Box as WorlTransformedBox
