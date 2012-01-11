@@ -677,165 +677,13 @@ namespace DAVA
 
 		switch (message) 
 		{
-			//case WM_PAINT:
-			case WM_ERASEBKGND:
+		case WM_ERASEBKGND:
 				return 0;
-
-			/*case WM_PAINT:
+		case WM_KEYUP:
 			{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
-			}
-			return 0;
-
-			case WM_ERASEBKGND:
-			return 0;
-
-			case WM_SETCURSOR: 
-			envm = getEnvMapperFromHWnd(hWnd);
-			if (envm &&	!envm->irrDev->getWin32CursorControl()->isVisible())
-			{
-			SetCursor(NULL); 
-			return 0; 
-			}
+				InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)wParam);
+			};
 			break;
-
-			case WM_MOUSEWHEEL: 
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT; 
-			event.MouseInput.Wheel = (float)((short)HIWORD(wParam)) / (float)WHEEL_DELTA;
-			event.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
-			event.MouseInput.X = LOWORD(lParam); 
-			event.MouseInput.Y = HIWORD(lParam); 
-
-			dev = getDeviceFromHWnd(hWnd); 
-			if (dev) 
-			dev->postEventFromUser(event); 
-			break;
-			*/
-			/*
-			case WM_LBUTTONDOWN:
-				event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-				event.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
-				event.MouseInput.X = LOWORD(lParam);
-				event.MouseInput.Y = HIWORD(lParam);
-				dev = getDeviceFromHWnd(hWnd);
-				if (dev)
-					dev->postEventFromUser(event);
-			return 0;
-
-			case WM_LBUTTONUP:
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			event.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
-			event.MouseInput.X = LOWORD(lParam);
-			event.MouseInput.Y = HIWORD(lParam);
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->postEventFromUser(event);
-			return 0;
-
-			case WM_RBUTTONDOWN:
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			event.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
-			event.MouseInput.X = LOWORD(lParam);
-			event.MouseInput.Y = HIWORD(lParam);
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->postEventFromUser(event);
-			return 0;
-
-			case WM_RBUTTONUP:
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			event.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
-			event.MouseInput.X = LOWORD(lParam);
-			event.MouseInput.Y = HIWORD(lParam);
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->postEventFromUser(event);
-			return 0;
-
-			case WM_MBUTTONDOWN:
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			event.MouseInput.Event = irr::EMIE_MMOUSE_PRESSED_DOWN;
-			event.MouseInput.X = LOWORD(lParam);
-			event.MouseInput.Y = HIWORD(lParam);
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->postEventFromUser(event);
-			return 0;
-
-			case WM_MBUTTONUP:
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			event.MouseInput.Event = irr::EMIE_MMOUSE_LEFT_UP;
-			event.MouseInput.X = LOWORD(lParam);
-			event.MouseInput.Y = HIWORD(lParam);
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->postEventFromUser(event);
-			return 0;
-
-			case WM_MOUSEMOVE:
-			event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-			event.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-			event.MouseInput.X = LOWORD(lParam);
-			event.MouseInput.Y = HIWORD(lParam);
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->postEventFromUser(event);
-			return 0;
-
-			case WM_KEYDOWN:
-			{
-			event.EventType = irr::EET_KEY_INPUT_EVENT;
-			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
-			event.KeyInput.PressedDown = true;
-			dev = getDeviceFromHWnd(hWnd);
-
-			BYTE allKeys[256];
-			WORD KeyAsc=0;
-			GetKeyboardState(allKeys);
-			ToAscii(wParam,lParam,allKeys,&KeyAsc,0);
-
-			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
-			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
-			event.KeyInput.Char = KeyAsc; //KeyAsc >= 0 ? KeyAsc : 0;
-
-			if (dev)
-			dev->postEventFromUser(event);
-
-			return 0;
-			}
-			case WM_KEYUP:
-			{
-			event.EventType = irr::EET_KEY_INPUT_EVENT;
-			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
-			event.KeyInput.PressedDown = false;
-			dev = getDeviceFromHWnd(hWnd);
-
-			BYTE allKeys[256];
-			WORD KeyAsc=0;
-			GetKeyboardState(allKeys);
-			ToAscii(wParam,lParam,allKeys,&KeyAsc,0);
-
-			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
-			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
-			event.KeyInput.Char = KeyAsc; //KeyAsc >= 0 ? KeyAsc : 0;
-
-			if (dev)
-			dev->postEventFromUser(event);
-
-			return 0;
-			}
-
-			case WM_SIZE:
-			{
-			// resize
-			dev = getDeviceFromHWnd(hWnd);
-			if (dev)
-			dev->OnResized();
-			}
-			return 0;
-			*/
 		case WM_KEYDOWN:
 			{
 				BYTE allKeys[256];
@@ -847,11 +695,6 @@ namespace DAVA
 					ShowWindow(hWnd, SW_MINIMIZE);
 				}
 
-			};
-			break;
-		case WM_CHAR:
-			{
-				//Logger::Debug("wm_char");
 				Vector<DAVA::UIEvent> touches;
 				Vector<DAVA::UIEvent> emptyTouches;
 
@@ -861,21 +704,44 @@ namespace DAVA
 				}
 
 				DAVA::UIEvent ev;
-				ev.keyChar = (char16)wParam;
+				ev.keyChar = 0;
 				ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
 				ev.tapCount = 1;
-				ev.tid = (int32)wParam;
+				ev.tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey((int32)wParam);
 
 				touches.push_back(ev);
-
-				//if ((ev.keyChar == 'f') /*&& (GetKeyState(VK_LSHIFT) & 0x8000)*/)
-				//{
-				//	Core::Instance()->ToggleFullscreen();
-				//}
 
 				UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 				touches.pop_back();
 				UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+
+				InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed((int32)wParam);
+			};
+			break;
+		case WM_CHAR:
+			{
+				if(wParam > 27) //TODO: remove this elegant check
+				{
+					Vector<DAVA::UIEvent> touches;
+					Vector<DAVA::UIEvent> emptyTouches;
+
+					for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+					{
+						touches.push_back(*it);
+					}
+
+					DAVA::UIEvent ev;
+					ev.keyChar = (char16)wParam;
+					ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
+					ev.tapCount = 1;
+					ev.tid = 0;
+
+					touches.push_back(ev);
+
+					UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+					touches.pop_back();
+					UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+				}
 			}
 			break;
 
