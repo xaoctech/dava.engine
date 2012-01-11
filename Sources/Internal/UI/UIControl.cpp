@@ -1244,7 +1244,6 @@ namespace DAVA
 #endif
 								if (IsPointInside(currentInput->point, true))
 								{
-									PerformEventWithData(EVENT_TOUCH_UP_INSIDE, currentInput);
                                     if (UIControlSystem::Instance()->GetFocusedControl() != this) 
                                     {
                                         UIControlSystem::Instance()->SetFocusedControl(this, false);
