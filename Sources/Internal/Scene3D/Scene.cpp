@@ -96,7 +96,12 @@ DataNode * Scene::GetStaticMeshes()
 {
     return staticMeshes;
 }
-
+    
+DataNode * Scene::GetScenes()
+{
+    return scenes;
+}
+    
 int32 Scene::GetMaterialCount()
 {
     //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
