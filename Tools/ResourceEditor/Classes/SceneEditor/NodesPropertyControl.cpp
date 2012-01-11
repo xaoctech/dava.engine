@@ -65,10 +65,14 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     
     propertyList = new PropertyList(propertyRect, this);
     AddControl(propertyList);
+    
+    headerStates = new KeyedArchive();
 }
     
 NodesPropertyControl::~NodesPropertyControl()
 {
+    SafeRelease(headerStates);
+    
     SafeRelease(deletionList);
     SafeRelease(listHolder);
     SafeRelease(btnCancel);

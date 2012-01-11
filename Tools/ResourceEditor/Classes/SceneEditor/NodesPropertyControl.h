@@ -92,6 +92,8 @@ protected:
     
     
     void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
+    
+    KeyedArchive *headerStates;
 };
 
 

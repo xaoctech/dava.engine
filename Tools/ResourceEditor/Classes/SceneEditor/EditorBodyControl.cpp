@@ -82,9 +82,9 @@ void EditorBodyControl::CreateLeftPanel()
     leftPanelSceneGraph = ControlsFactory::CreatePanelControl(leftRect);
     AddControl(leftPanelSceneGraph);
     
-    Rect treeRect = leftRect;
-    treeRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 3);
-    sceneGraphTree = new UIHierarchy(treeRect);
+    Rect sceneGraphRect = leftRect;
+    sceneGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 4);
+    sceneGraphTree = new UIHierarchy(sceneGraphRect);
     ControlsFactory::CusomizeListControl(sceneGraphTree);
     ControlsFactory::SetScrollbar(sceneGraphTree);
     sceneGraphTree->SetCellHeight(CELL_HEIGHT);
@@ -92,37 +92,57 @@ void EditorBodyControl::CreateLeftPanel()
     sceneGraphTree->SetClipContents(true);
     leftPanelSceneGraph->AddControl(sceneGraphTree);
     
+    int32 y = sceneGraphRect.dy;
+    UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(
+                                                                      0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+                                                                 L"Refresh");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    
+    UIButton * lookAtButton = ControlsFactory::CreateButton(Rect(
+                                                                 0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+                                                            L"Look At Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * removeNodeButton = ControlsFactory::CreateButton(Rect(
+                                                                     0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+                                                                L"Remove Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
+                                                                           0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+                                                                      L"Debug Flags");
+    
+    refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshSceneGraph));
+    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
+    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
+    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
+    
+    leftPanelSceneGraph->AddControl(refreshSceneGraphButton);
+    leftPanelSceneGraph->AddControl(lookAtButton);
+    leftPanelSceneGraph->AddControl(removeNodeButton);
+    leftPanelSceneGraph->AddControl(enableDebugFlagsButton);
+    
+    SafeRelease(refreshSceneGraphButton);
+    SafeRelease(lookAtButton);
+    SafeRelease(removeNodeButton);
+    SafeRelease(enableDebugFlagsButton);
+    
+    
+    
+    Rect dataGraphRect = leftRect;
+    dataGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT);
     leftPanelDataGraph = ControlsFactory::CreatePanelControl(leftRect);
-    dataGraphTree = new UIHierarchy(treeRect);
+    dataGraphTree = new UIHierarchy(dataGraphRect);
     ControlsFactory::CusomizeListControl(dataGraphTree);
     ControlsFactory::SetScrollbar(dataGraphTree);
     dataGraphTree->SetCellHeight(CELL_HEIGHT);
     dataGraphTree->SetDelegate(this);
     dataGraphTree->SetClipContents(true);
     leftPanelDataGraph->AddControl(dataGraphTree);
-
-    
-    int32 y = treeRect.dy;
-    lookAtButton = ControlsFactory::CreateButton(Rect(
-                                        0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                        L"Look At Object");
-    y += ControlsFactory::BUTTON_HEIGHT;
-    removeNodeButton = ControlsFactory::CreateButton(Rect(
-                                        0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                        L"Remove Object");
-    y += ControlsFactory::BUTTON_HEIGHT;
-    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
-                                        0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                        L"Debug Flags");
-    
-    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
-    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
-    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
-
-    
-    leftPanelSceneGraph->AddControl(lookAtButton);
-    leftPanelSceneGraph->AddControl(removeNodeButton);
-    leftPanelSceneGraph->AddControl(enableDebugFlagsButton);
+    UIButton * refreshDataGraphButton = ControlsFactory::CreateButton(Rect(
+                                                                      0, dataGraphRect.dy, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+                                                                 L"Refresh");
+    refreshDataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshDataGraph));
+    leftPanelDataGraph->AddControl(refreshDataGraphButton);
+    SafeRelease(refreshDataGraphButton);
 }
 
 void EditorBodyControl::ReleaseLeftPanel()
@@ -132,10 +152,6 @@ void EditorBodyControl::ReleaseLeftPanel()
     
     SafeRelease(dataGraphTree);
     SafeRelease(leftPanelDataGraph);
-    
-    SafeRelease(lookAtButton);
-    SafeRelease(removeNodeButton);
-    SafeRelease(enableDebugFlagsButton);
 }
 
 
@@ -327,7 +343,15 @@ bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNod
     {
         if (forNode) 
         {
-            return ((SceneNode*)forNode)->GetChildrenCount() > 0;
+            SceneNode *node = (SceneNode*)forNode;
+            if(node->GetSolid())
+            {
+                return false;
+            }
+            else
+            {
+                return node->GetChildrenCount() > 0;
+            }
         }
         
         return scene->GetChildrenCount() > 0;
@@ -354,7 +378,16 @@ int32 EditorBodyControl::ChildrenCount(UIHierarchy *forHierarchy, void *forParen
     {
         if (forParent) 
         {
-            return ((SceneNode*)forParent)->GetChildrenCount();
+            SceneNode *node = (SceneNode*)forParent;
+            if(node->GetSolid())
+            {
+                return 0;
+            }
+            else
+            {
+                return node->GetChildrenCount();
+            }
+
         }
         
         return scene->GetChildrenCount();
@@ -431,6 +464,7 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         if(n == selectedSceneGraphNode)
         {
             c->SetSelected(true, false);
+            savedTreeCell = c;
         }
         else
         {
@@ -903,12 +937,16 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
     if(editScene)
     {
+        SceneNode *rootNode = scene->GetRootNode(pathToFile);
         mainFilePath = pathToFile;
-        scene->AddNode(scene->GetRootNode(pathToFile));
+        rootNode->SetSolid(false);
+        scene->AddNode(rootNode);
     }
     else
     {
-        scene->AddNode(scene->GetRootNode(pathToFile)->Clone());
+        SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+        rootNode->SetSolid(true);
+        scene->AddNode(rootNode);
     }
     
     if (scene->GetCamera(0))
@@ -1148,4 +1186,14 @@ void EditorBodyControl::RefreshDataGraph()
     dataNodes[EDNID_SCENE] = scene->GetScenes();
     
     dataGraphTree->Refresh();
+}
+
+void EditorBodyControl::OnRefreshSceneGraph(BaseObject * obj, void *, void *)
+{
+    sceneGraphTree->Refresh();
+}
+
+void EditorBodyControl::OnRefreshDataGraph(BaseObject * obj, void *, void *)
+{
+    RefreshDataGraph();
 }
