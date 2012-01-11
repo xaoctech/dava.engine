@@ -222,6 +222,7 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
             delegate->OnMatrix4Changed(this, changedProperty->key, changedProperty->GetMatrix4());
             break;
         case PropertyCellData::PROP_VALUE_SECTION:
+            delegate->OnSectionExpanded(this, changedProperty->key, changedProperty->GetIsSectionOpened());
             propsList->Refresh();
             break;
     }
