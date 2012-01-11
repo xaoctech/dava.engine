@@ -540,18 +540,28 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				const Matrix4 & wt = proxy->GetWorldTransform();
 				Vector3 objPos = Vector3(0,0,0) * wt;
 				
-				Matrix4 invWT;
-				bool res = wt.GetInverse(invWT);				
-
-				float32 transformK = (Vector3(0,0,0) * invWT - (Vector3(1,1,1) * invWT)).Length();
-				Vector3 dir = objPos - camPos;
-				moveKf = dir.Length() * 0.1;
+				Matrix4 inv;
+				Matrix4 worldTransform = proxy->GetWorldTransform();
+				worldTransform._03 = 0.0f;
+				worldTransform._13 = 0.0f;
+				worldTransform._23 = 0.0f;
+				worldTransform._33 = 1.0f;
+				worldTransform._30 = 0.0f;
+				worldTransform._31 = 0.0f;
+				worldTransform._32 = 0.0f;
 				
-				Logger::Debug(L"transformK = %f", transformK);			
-				Logger::Debug(L"moveKf = %f", moveKf);				
-				moveKf /= transformK;
-				Logger::Debug(L"result = %f", moveKf);
-				Logger::Debug(L"inv = %d", res);
+//				bool res = worldTransform.GetInverse(inv);				
+
+				
+//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
+				Vector3 dir = objPos - camPos;
+				moveKf = dir.Length() * 0.003;
+				
+//				Logger::Debug(L"transformK = %f", transformK);			
+//				Logger::Debug(L"moveKf = %f", moveKf);				
+//				//moveKf /= transformK;
+//				Logger::Debug(L"result = %f", moveKf);
+//				Logger::Debug(L"inv = %d", res);
 			}
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
@@ -665,7 +675,7 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 //		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
 		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * (winx/100.0f));
 	}
-	currTransform = startTransform * modification;
+	currTransform =  startTransform * modification;
 }
 
 

@@ -292,7 +292,7 @@ void MeshInstanceNode::Draw()
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		
 		
 		if (debugFlags & DEBUG_DRAW_AABBOX)
