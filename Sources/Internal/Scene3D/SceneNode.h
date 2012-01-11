@@ -183,6 +183,9 @@ public:
     
     inline Scene *GetScene() const;
 	
+    void SetSolid(bool isSolid);
+    bool GetSolid();
+    
 	bool isSolidNode;
 	BaseObject * userData;
     

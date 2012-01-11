@@ -58,6 +58,7 @@ SceneNode::SceneNode(Scene * _scene)
 	userData = 0;
     
     customProperties = new KeyedArchive();
+    customProperties->SetBool("editor.isSolid", false);
 }
 
 SceneNode::~SceneNode()
@@ -476,6 +477,20 @@ KeyedArchive * SceneNode::GetCustomProperties()
 {
     return customProperties;
 }
+    
+void SceneNode::SetSolid(bool isSolid)
+{
+//    isSolidNode = isSolid;
+    customProperties->SetBool("editor.isSolid", isSolid);
+}
+    
+bool SceneNode::GetSolid()
+{
+//    return isSolidNode;
+    return customProperties->GetBool("editor.isSolid", false);
+}
+    
+    
     
 };
 
