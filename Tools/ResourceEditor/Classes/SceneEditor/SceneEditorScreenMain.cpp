@@ -280,8 +280,42 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 {
-}
+    BodyItem *iBody = FindCurrentBody();
+    String path = iBody->bodyControl->GetFilePath();
+    path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
+    
+    String fileOnly;
+    String pathOnly;
+    FileSystem::SplitPath(path, pathOnly, fileOnly);
+    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+    path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
+    Scene * scene = iBody->bodyControl->GetScene();
+    SceneFile2 * file = new SceneFile2();
+    file->EnableDebugLog(true);
+    file->SaveScene(path.c_str(), scene);
+    SafeRelease(file);
+
+    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    {
+        Material *m = scene->GetMaterial(i);
+        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+        {
+            if (m->textures[n])
+            {
+                path = m->textures[n]->relativePathname;
+                if (!path.empty()) 
+                {
+                    String pathTo = path;
+                    pathTo.replace(path.find("DataSource"), strlen("DataSource"), "Data");
+                    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+                    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+                    FileSystem::Instance()->CopyFile(path, pathTo);
+                }
+            }
+        }
+    }
+}
 
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
