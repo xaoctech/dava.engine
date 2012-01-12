@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef MATERIAL_EDITOR
-#define MATERIAL_EDITOR
+#ifndef MODIFICATION_POPUP
+#define MODIFICATION_POPUP
 
 #include "DAVAEngine.h"
 #include "DraggableDialog.h"
@@ -24,14 +24,21 @@ public:
     ~ModificationPopUp();
 	
     void OnButton(BaseObject * object, void * userData, void * callerData);
-	void SetSelection(SceneNode * selection);
-
+	inline void SetSelection(SceneNode * _selection)
+	{
+		selection = _selection;
+//		parameters->Refresh();
+	}
+		
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
-        
+    void OnReset(BaseObject * object, void * userData, void * callerData);
+    
 protected:
 
     PropertyList *parameters;
     SceneNode * selection;
+	UIButton * btnReset;
+
 };
 
 #endif
