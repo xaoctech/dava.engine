@@ -29,10 +29,22 @@ public:
 	void CheckNodes(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
-	SceneNode * GetSelection();
+
+	inline SceneNode * GetSelection()
+	{
+		return selection;
+	}
+	
+	inline SceneNode * GetRealSelection()
+	{
+		return realSelection;
+	}
+	
 	void SetSelection(SceneNode *newSelection);
     
 	virtual void Draw();
+	void DrawGrid();
+
 	
 protected:
 
@@ -42,6 +54,7 @@ protected:
     int depth;
 	
 	SceneNode * selection;
+	SceneNode * realSelection;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	void DrawDebugNodes(SceneNode * curr);

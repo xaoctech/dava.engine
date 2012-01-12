@@ -121,16 +121,5 @@ float32 LightNode::GetRadius(void)
 {
 	return r;
 }
-
 	
 };
-
-
-
-
-
-
-
-
-
-

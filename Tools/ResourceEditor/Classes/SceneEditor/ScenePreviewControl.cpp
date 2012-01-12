@@ -162,7 +162,7 @@ void ScenePreviewControl::Input(DAVA::UIEvent *event)
     UIControl::Input(event);
 }
 
-void ScenePreviewControl::OpenScene(const String &pathToFile)
+bool ScenePreviewControl::OpenScene(const String &pathToFile)
 {
     if(currentScenePath.length())
     {
@@ -170,37 +170,46 @@ void ScenePreviewControl::OpenScene(const String &pathToFile)
         scene->RemoveNode(rootNode);
         rootNode = NULL;
     }
+    
     currentScenePath = pathToFile;
-    
     rootNode = scene->GetRootNode(pathToFile);
-    scene->AddNode(rootNode);
-    
-    needSetCamera = true;
-    Camera *cam = scene->GetCamera(0);
-    if(!cam)
+    if(rootNode)
     {
-        Camera * cam = new Camera(scene);
-        cam->SetName("preview-camera");
-        cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-        cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-        cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-        cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
+        scene->AddNode(rootNode);
         
-        cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
-        
-        scene->AddNode(cam);
-        scene->AddCamera(cam);
-        scene->SetCurrentCamera(cam);
-        cameraController->SetCamera(cam);
-        
-        SafeRelease(cam);
-        
-        sceCamera = false;
+        needSetCamera = true;
+        Camera *cam = scene->GetCamera(0);
+        if(!cam)
+        {
+            Camera * cam = new Camera(scene);
+            cam->SetName("preview-camera");
+            cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+            cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+            cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+            cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
+            
+            cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
+            
+            scene->AddNode(cam);
+            scene->AddCamera(cam);
+            scene->SetCurrentCamera(cam);
+            cameraController->SetCamera(cam);
+            
+            SafeRelease(cam);
+            
+            sceCamera = false;
+        }
+        else
+        {
+            sceCamera = true;
+        }
     }
     else
     {
-        sceCamera = true;
+        currentScenePath = "";
     }
+    
+    return (NULL != rootNode);
 }
 
 void ScenePreviewControl::Update(float32 timeElapsed)

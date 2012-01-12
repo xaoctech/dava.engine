@@ -20,6 +20,8 @@ class SceneEditorScreenMain:
 //    public MenuPopupDelegate, public CreateNodeDialogDelegeate
 public MenuPopupDelegate, public CreateNodesDialogDelegeate
 {
+	struct BodyItem;
+
     enum eConst
     {        
         MENU_HEIGHT = 20,
@@ -79,6 +81,8 @@ public:
     virtual void DialogClosed(int32 retCode);
 
     void ShowMaterialEditor();
+
+	BodyItem * FindCurrentBody();
     
 private:
     
@@ -116,7 +120,7 @@ private:
         EditorBodyControl *bodyControl;
     };
     
-    BodyItem * FindCurrentBody();
+    
     Vector<BodyItem *> bodies;
     
     void InitializeBodyList();

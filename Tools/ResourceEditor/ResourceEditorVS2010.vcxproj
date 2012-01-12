@@ -387,8 +387,10 @@
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
@@ -398,6 +400,7 @@
     <ClInclude Include="Classes\SceneEditor\PanelSwitcher.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
+    <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyList.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyPanel.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreen.h" />
@@ -612,8 +615,10 @@
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
@@ -623,6 +628,7 @@
     <ClCompile Include="Classes\SceneEditor\PanelSwitcher.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreen.cpp" />

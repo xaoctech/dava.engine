@@ -644,6 +644,15 @@
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
+      <Filter>SceneEditor\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp">
+      <Filter>SceneEditor\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1595,6 +1604,15 @@
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
+      <Filter>SceneEditor\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h">
+      <Filter>SceneEditor\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">
@@ -1611,6 +1629,9 @@
     </Filter>
     <Filter Include="Bullet">
       <UniqueIdentifier>{9e895edc-b0ef-43fb-b25f-fec691307173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneEditor\Light">
+      <UniqueIdentifier>{c15ad809-0a22-4925-9e14-8ae8ceead1b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

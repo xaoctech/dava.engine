@@ -2,6 +2,7 @@
 
 Font* ControlsFactory::fontLight = NULL;
 Font* ControlsFactory::fontDark = NULL;
+Font* ControlsFactory::fontError = NULL;
 
 UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText)
 {
@@ -41,6 +42,8 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     btn->SetStateText(UIControl::STATE_DISABLED, buttonText);
     btn->SetStateText(UIControl::STATE_NORMAL, buttonText);
     btn->SetStateText(UIControl::STATE_SELECTED, buttonText);
+    
+    AddBorder(btn);
 }
 
 UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
@@ -70,11 +73,6 @@ Font * ControlsFactory::GetFontLight()
     return fontLight;
 }
 
-void ControlsFactory::CustomizeFontLight(Font *font)
-{
-    font->SetSize(12);
-    font->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-}
 
 Font * ControlsFactory::GetFontDark()
 {
@@ -86,10 +84,32 @@ Font * ControlsFactory::GetFontDark()
     return fontDark;
 }
 
+Font * ControlsFactory::GetFontError()
+{
+    if (!fontError) 
+    {
+        fontError = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+        CustomizeFontError(fontError);
+    }
+    return fontError;
+}
+
+void ControlsFactory::CustomizeFontLight(Font *font)
+{
+    font->SetSize(12);
+    font->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+}
+
 void ControlsFactory::CustomizeFontDark(Font *font)
 {
     font->SetSize(12);
     font->SetColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
+}
+
+void ControlsFactory::CustomizeFontError(Font *font)
+{
+    font->SetSize(20);
+    font->SetColor(Color(1.0f, 0.0f, 0.0f, 0.8f));
 }
 
 void ControlsFactory::CustomizeScreenBack(UIControl *screen)
@@ -130,17 +150,22 @@ void ControlsFactory::CusomizeListControl(UIControl *c)
     c->GetBackground()->SetColor(Color(0.92f, 0.92f, 0.92f, 1.0f));
 }
 
-UIControl * ControlsFactory::CreatePanelControl(const Rect & rect)
+UIControl * ControlsFactory::CreatePanelControl(const Rect & rect, bool addBorder)
 {
     UIControl *ctrl = new UIControl(rect);
-    CustomizePanelControl(ctrl);
+    CustomizePanelControl(ctrl, addBorder);
     return ctrl;
 }
 
-void ControlsFactory::CustomizePanelControl(UIControl *c)
+void ControlsFactory::CustomizePanelControl(UIControl *c, bool addBorder)
 {
     c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 1.0f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    
+    if(addBorder)
+    {
+        AddBorder(c);
+    }
 }
 
 void ControlsFactory::CustomizeExpandButton(UIButton *btn)
@@ -316,3 +341,45 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     SafeRelease(scrollBar);
 }
 
+void ControlsFactory::AddBorder(DAVA::UIControl *c)
+{
+    Rect fullRect = c->GetRect();
+    
+    Color lineColor(1.f, 1.f, 1.f, 0.5f);
+    
+    UIControl *leftLine = c->FindByName("LeftLine", false);
+    if(!leftLine)
+    {
+        leftLine = ControlsFactory::CreateLine(Rect(0, 1, 1, fullRect.dy - 2), lineColor);
+        leftLine->SetName("LeftLine");
+        c->AddControl(leftLine);
+        SafeRelease(leftLine);
+    }
+
+    UIControl *rightLine = c->FindByName("RightLine", false);
+    if(!rightLine)
+    {
+        rightLine = ControlsFactory::CreateLine(Rect(fullRect.dx - 1, 1, 1, fullRect.dy - 2), lineColor);
+        rightLine->SetName("RightLine");
+        c->AddControl(rightLine);
+        SafeRelease(rightLine);
+    }
+
+    UIControl *topLine = c->FindByName("TopLine", false);
+    if(!topLine)
+    {
+        topLine = ControlsFactory::CreateLine(Rect(0, 0, fullRect.dx, 1), lineColor);
+        topLine->SetName("TopLine");
+        c->AddControl(topLine);
+        SafeRelease(topLine);
+    }
+
+    UIControl *bottomtLine = c->FindByName("BottomLine", false);
+    if(!bottomtLine)
+    {
+        bottomtLine = ControlsFactory::CreateLine(Rect(0, fullRect.dy-1, fullRect.dx, 1), lineColor);
+        bottomtLine->SetName("BottomLine");
+        c->AddControl(bottomtLine);
+        SafeRelease(bottomtLine);
+    }
+}

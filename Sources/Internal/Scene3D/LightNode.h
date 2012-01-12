@@ -43,6 +43,7 @@ public:
         ET_DIRECTIONAL = 0,
         ET_SPOT,
         ET_POINT,
+		ET_SKY
     };
     
     

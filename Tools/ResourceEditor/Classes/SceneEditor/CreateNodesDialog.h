@@ -27,6 +27,8 @@ public:
 public:
     CreateNodesDialog(const Rect & rect);
     virtual ~CreateNodesDialog();
+
+	virtual void WillDisappear();
     
     void SetDelegate(CreateNodesDialogDelegeate *delegate);
     void SetScene(Scene *_scene);
@@ -48,6 +50,8 @@ protected:
     UIStaticText *header;
     SceneNode *sceneNode;
     Scene *scene;
+
+	Rect propertyRect;
 };
 
 

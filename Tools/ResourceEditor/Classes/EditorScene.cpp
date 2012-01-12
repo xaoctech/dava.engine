@@ -18,6 +18,7 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
 { 
+	realSelection = 0;
 	selection = 0;
 //	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
 //	dynDispatcher = new	btCollisionDispatcher(dynCollisionConfiguration);
@@ -141,18 +142,11 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		coll = cb.m_collisionObjects[findedIndex];
 		selection = FindSelected(this, coll);
 		
-		if (selection)
-		{
-			SceneNode * solid = GetSolidParent(selection);
-			if (solid)
-				selection = solid;
-		}
-		if(selection)
-			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		SetSelection(selection);
 	}
 	else 
 	{
-		selection = 0;
+		SetSelection(0);
 	}
 }
 
@@ -178,11 +172,6 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 	return 0;
 }
 
-SceneNode * EditorScene::GetSelection()
-{
-	return selection;
-}
-
 void EditorScene::SetSelection(SceneNode *newSelection)
 {
     if (selection)
@@ -190,19 +179,53 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
     }
     
-    selection = newSelection;
-    
-    if(selection)
-    {
+	realSelection = newSelection;
+
+	selection = newSelection;
+	if (realSelection)
+	{
+		SceneNode * solid = GetSolidParent(realSelection);
+		if (solid)
+			selection = solid;
+	}
+
+	if(selection)
 		selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-    }
 }
 
 
 void EditorScene::Draw()
 {
-	Scene::Draw();
 //	DrawDebugNodes(this);
+	Scene::Draw();
+	DrawGrid();
+}
+
+#define GRIDMAX 500.0f
+#define GRIDSTEP 10.0f
+void EditorScene::DrawGrid()
+{
+    uint32 oldState = RenderManager::Instance()->GetState();	
+	RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
+	RenderManager::Instance()->SetColor(0.7f, 0.7f, 0.7f, 1.0f);
+	for (float32 x = -GRIDMAX; x <= GRIDMAX; x+=GRIDSTEP)
+	{
+		Vector3 v1(x, -GRIDMAX, 0);
+		Vector3 v2(x, GRIDMAX, 0);
+		
+		Vector3 v3(-GRIDMAX, x, 0);
+		Vector3 v4(GRIDMAX, x, 0);
+		if (x!= 0.0f)
+		{
+			RenderHelper::Instance()->DrawLine(v1, v2);
+			RenderHelper::Instance()->DrawLine(v3, v4);		
+		}
+	}
+	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	RenderHelper::Instance()->DrawLine(Vector3(-GRIDMAX, 0, 0), Vector3(GRIDMAX, 0, 0));
+	RenderHelper::Instance()->DrawLine(Vector3(0, -GRIDMAX, 0), Vector3(0, GRIDMAX, 0));
+	
+	RenderManager::Instance()->SetState(oldState);
 }
 
 void EditorScene::DrawDebugNodes(SceneNode * curr)

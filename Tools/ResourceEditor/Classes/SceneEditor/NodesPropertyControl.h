@@ -71,8 +71,6 @@ protected:
     NodesPropertyDelegate *nodesDelegate;
     PropertyList *propertyList;
     
-    String projectPath;
-    
     bool createNodeProperties;
     
     UIButton *btnPlus;
