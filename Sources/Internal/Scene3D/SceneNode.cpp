@@ -34,7 +34,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Base/ObjectFactory.h"
 #include "Utils/StringFormat.h"
-#include "RenderHelper.h"
+#include "Render/RenderHelper.h"
 
 namespace DAVA
 {
@@ -55,11 +55,9 @@ SceneNode::SceneNode(Scene * _scene)
 	//animation = 0;
     debugFlags = DEBUG_DRAW_NONE;
     flags = 0;
-//	isSolidNode = false;
 	userData = 0;
     
     customProperties = new KeyedArchive();
-    customProperties->SetBool("editor.isSolid", false);
 }
 
 SceneNode::~SceneNode()
@@ -362,7 +360,10 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
-    dstNode->SetSolid(GetSolid());
+    if(customProperties->IsKeyExists("editor.isSolid"))
+    {
+        dstNode->SetSolid(GetSolid());
+    }
 //	dstNode->isSolidNode = isSolidNode;
 
 //    Logger::Debug("Node %s clonned", name.c_str());

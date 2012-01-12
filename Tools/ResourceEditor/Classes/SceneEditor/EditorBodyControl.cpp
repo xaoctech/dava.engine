@@ -1,13 +1,10 @@
 #include "EditorBodyControl.h"
-
 #include "ControlsFactory.h"
-
 #include "OutputManager.h"
 #include "OutputPanelControl.h"
-
 #include "../BeastProxy.h"
-
 #include "../SceneNodeUserData.h"
+#include "PropertyControlCreator.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -18,6 +15,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = 0;
+	nodesPropertyPanel = 0;
     
     for(int32 i = 0; i < EDNID_COUNT; ++i)
     {
@@ -48,7 +46,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
                                               rect.dy - OUTPUT_PANEL_HEIGHT, 
                                               rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH, 
                                               OUTPUT_PANEL_HEIGHT));
-    ControlsFactory::CustomizePanelControl(outputPanel);
+    ControlsFactory::CustomizePanelControl(outputPanel, false);
     AddControl(outputPanel);
 
     
@@ -308,7 +306,7 @@ void EditorBodyControl::UpdateModState(void)
 void EditorBodyControl::CreatePropertyPanel()
 {
     Rect fullRect = GetRect();
-    Rect propertyPanelRect = Rect(fullRect.dx - ControlsFactory::RIGHT_SIDE_WIDTH, 0, ControlsFactory::RIGHT_SIDE_WIDTH, size.y);
+    propertyPanelRect = Rect(fullRect.dx - ControlsFactory::RIGHT_SIDE_WIDTH, 0, ControlsFactory::RIGHT_SIDE_WIDTH, size.y);
     rightPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
     AddControl(rightPanel);
 
@@ -324,8 +322,8 @@ void EditorBodyControl::CreatePropertyPanel()
     propertyPanelRect.x = propertyPanelRect.y = 0;
     propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
 
-    nodesPropertyPanel = new NodesPropertyControl(propertyPanelRect, false);
-    nodesPropertyPanel->SetDelegate(this);
+    //nodesPropertyPanel = new NodesPropertyControl(propertyPanelRect, false);
+    //nodesPropertyPanel->SetDelegate(this);
 }
 
 void EditorBodyControl::ReleasePropertyPanel()
@@ -562,6 +560,7 @@ void EditorBodyControl::UpdatePropertyPanel()
 {
     if(selectedSceneGraphNode || selectedDataGraphNode)
     {
+		RecreatePropertiesPanelForNode(selectedSceneGraphNode);
         if(!nodesPropertyPanel->GetParent())
         {
             rightPanel->AddControl(nodesPropertyPanel);
@@ -570,6 +569,7 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
     else
     {
+        if(nodesPropertyPanel)
         if(nodesPropertyPanel->GetParent())
         {
             rightPanel->RemoveControl(nodesPropertyPanel);
@@ -674,7 +674,16 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				proxy = selection;
 			
 			startTransform = proxy->GetLocalTransform();
-			startWT = proxy->GetWorldTransform();
+			SceneNode * realSelection = scene->GetRealSelection();
+			rotationCenter = realSelection->GetWorldTransform().GetTranslationVector();
+			
+			Matrix4 invProxyWorldTransform;
+			
+			bool invExists = proxy->GetParent()->GetWorldTransform().GetInverse(invProxyWorldTransform);
+			
+			DVASSERT(invExists == true);
+			rotationCenter = rotationCenter * invProxyWorldTransform; // transform world coord to proxy coord system			
+			
 			
 			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 			if (userData)
@@ -793,9 +802,8 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 		Matrix4 d;
 		Matrix4 translate1, translate2;
 
-		Vector3 v = startWT.GetTranslationVector();
-		translate1.CreateTranslation(-v);
-		translate2.CreateTranslation(v);
+		translate1.CreateTranslation(-rotationCenter);
+		translate2.CreateTranslation(rotationCenter);
 		
 //        SceneNode * selection = scene->GetSelection();
 //		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
@@ -842,7 +850,7 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
-	SceneNode * selection = scene->GetSelection();
+	SceneNode * selection = scene->GetRealSelection();
 	if (selection)
 	{
 //		RenderHelper::SetClip();
@@ -991,9 +999,6 @@ void EditorBodyControl::WillAppear()
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = NULL;
-
-    
-    nodesPropertyPanel->SetWorkingScene(scene);
     
     sceneGraphTree->Refresh();
     RefreshDataGraph();
@@ -1241,4 +1246,17 @@ void EditorBodyControl::OnRefreshSceneGraph(BaseObject * obj, void *, void *)
 void EditorBodyControl::OnRefreshDataGraph(BaseObject * obj, void *, void *)
 {
     RefreshDataGraph();
+}
+
+void EditorBodyControl::RecreatePropertiesPanelForNode(SceneNode * node)
+{
+	if(nodesPropertyPanel && nodesPropertyPanel->GetParent())
+	{
+		nodesPropertyPanel->GetParent()->RemoveControl(nodesPropertyPanel);
+	}
+	SafeRelease(nodesPropertyPanel);
+
+	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
+	nodesPropertyPanel->SetDelegate(this);
+	nodesPropertyPanel->SetWorkingScene(scene);
 }
