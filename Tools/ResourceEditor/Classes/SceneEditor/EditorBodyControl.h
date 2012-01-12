@@ -182,6 +182,9 @@ protected:
     void ChangeControlWidthLeft(UIControl *c, float32 width);
     
     void SelectNodeAtTree(SceneNode *node);
+
+	Rect propertyPanelRect;
+	void RecreatePropertiesPanelForNode(SceneNode *node);
 };
 
 

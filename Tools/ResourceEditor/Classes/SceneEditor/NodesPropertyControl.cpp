@@ -25,6 +25,7 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     types.push_back("Directional");
     types.push_back("Spot");
     types.push_back("Point");
+	types.push_back("Sky");
 
     renderingModes.push_back("TEXTURE");
     renderingModes.push_back("SHADER");
@@ -157,24 +158,6 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetFloatPropertyValue("target.x", target.x);
         propertyList->SetFloatPropertyValue("target.y", target.y);
         propertyList->SetFloatPropertyValue("target.z", target.z);
-    }
-    
-    LightNode *light = dynamic_cast<LightNode *> (sceneNode);
-    if(light)
-    {
-        propertyList->AddSection("Light", headerStates->GetBool("Light", true));
-        
-        propertyList->AddComboProperty("Type", types);
-        propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
-        propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
-
-        propertyList->SetComboPropertyIndex("Type", light->GetType());
-        propertyList->SetFloatPropertyValue("r", light->GetColor().r);
-        propertyList->SetFloatPropertyValue("g", light->GetColor().g);
-        propertyList->SetFloatPropertyValue("b", light->GetColor().b);
-        propertyList->SetFloatPropertyValue("a", light->GetColor().a);
     }
     
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
@@ -468,21 +451,7 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
                                   propertyList->GetFloatPropertyValue("target.y"),
                                   propertyList->GetFloatPropertyValue("target.z")));
     }
-    
-    LightNode *light = dynamic_cast<LightNode *> (sceneNode);
-    if(light)
-    {
-        Color color(
-                    propertyList->GetFloatPropertyValue("r"),
-                    propertyList->GetFloatPropertyValue("g"),
-                    propertyList->GetFloatPropertyValue("b"),
-                    propertyList->GetFloatPropertyValue("a"));
-        
-        int32 type = propertyList->GetComboPropertyIndex("Type");
-        
-        light->SetColor(color);
-        light->SetType((LightNode::eType)type);
-    }
+   
     
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
     if(mesh)
