@@ -576,7 +576,6 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
         {
             BodyItem *iBody = FindCurrentBody();
             EditorScene *scene = iBody->bodyControl->GetScene();
-            nodeDialog->SetScene(scene);
             nodeDialog->CreateNode(itemID);
             
             AddControl(dialogBack);
