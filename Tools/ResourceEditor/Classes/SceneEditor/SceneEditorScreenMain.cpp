@@ -278,25 +278,6 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 //    }
 }
 
-/**
- *  @brief  Replace characters with value from another string.
- *  @param pos  Index of first character to replace.
- *  @param n  Number of characters to be replaced.
- *  @param str  String to insert.
- *  @return  Reference to this string.
- *  @throw  std::out_of_range  If @a pos is beyond the end of this
- *  string.
- *  @throw  std::length_error  If new length exceeds @c max_size().
- *
- *  Removes the characters in the range [pos,pos+n) from this string.
- *  In place, the value of @a str is inserted.  If @a pos is beyond end
- *  of string, out_of_range is thrown.  If the length of the result
- *  exceeds max_size(), length_error is thrown.  The value of the string
- *  doesn't change if an error is thrown.
- */
-//basic_string&
-//replace(size_type __pos, size_type __n, const basic_string& __str)
-//{ return this->replace(__pos, __n, __str._M_data(), __str.size()); }
 void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
