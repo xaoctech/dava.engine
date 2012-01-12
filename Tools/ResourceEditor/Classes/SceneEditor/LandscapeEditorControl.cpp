@@ -120,7 +120,7 @@ void PaintAreaControl::DrawShader()
 
 void PaintAreaControl::DrawRenderObject()
 {
-//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //    RenderManager::Instance()->SetState(
