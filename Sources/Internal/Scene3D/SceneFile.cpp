@@ -562,7 +562,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
-        node->SetSolid(def.isSolid);
+//        node->SetSolid(def.isSolid);
 //		node->isSolidNode = def.isSolid;
         if (parentNode != scene) 
         {
@@ -581,7 +581,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		node->SetLocalTransform(def.localTransform);
 		currentSkeletonNode->inverse0Matrix = inverse0;
 		node->SetName(name);
-        node->SetSolid(def.isSolid);
+//        node->SetSolid(def.isSolid);
 //		node->isSolidNode = def.isSolid;
         if (parentNode != scene) 
         {
@@ -599,7 +599,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
 //		node->isSolidNode = def.isSolid;
-        node->SetSolid(def.isSolid);
+//        node->SetSolid(def.isSolid);
 
 		boneNode->inverse0Matrix = inverse0;    // TODO: make inverse0Matrix protected
         if (parentNode != scene) 
@@ -618,7 +618,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
-        node->SetSolid(def.isSolid);
+//        node->SetSolid(def.isSolid);
 //		node->isSolidNode = def.isSolid;
 
         if (parentNode != scene) 
@@ -639,7 +639,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
-        node->SetSolid(def.isSolid);
+//        node->SetSolid(def.isSolid);
 //		node->isSolidNode = def.isSolid;
         
 		int pgInstancesCount = 0;
