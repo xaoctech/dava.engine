@@ -46,7 +46,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
                                               rect.dy - OUTPUT_PANEL_HEIGHT, 
                                               rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH, 
                                               OUTPUT_PANEL_HEIGHT));
-    ControlsFactory::CustomizePanelControl(outputPanel);
+    ControlsFactory::CustomizePanelControl(outputPanel, false);
     AddControl(outputPanel);
 
     
@@ -569,6 +569,7 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
     else
     {
+        if(nodesPropertyPanel)
         if(nodesPropertyPanel->GetParent())
         {
             rightPanel->RemoveControl(nodesPropertyPanel);
