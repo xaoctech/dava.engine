@@ -141,18 +141,11 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		coll = cb.m_collisionObjects[findedIndex];
 		selection = FindSelected(this, coll);
 		
-		if (selection)
-		{
-			SceneNode * solid = GetSolidParent(selection);
-			if (solid)
-				selection = solid;
-		}
-		if(selection)
-			selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+		SetSelection(selection);
 	}
 	else 
 	{
-		selection = 0;
+		SetSelection(0);
 	}
 }
 
@@ -178,11 +171,6 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 	return 0;
 }
 
-SceneNode * EditorScene::GetSelection()
-{
-	return selection;
-}
-
 void EditorScene::SetSelection(SceneNode *newSelection)
 {
     if (selection)
@@ -190,12 +178,18 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
     }
     
-    selection = newSelection;
-    
-    if(selection)
-    {
+	realSelection = newSelection;
+
+	selection = newSelection;
+	if (realSelection)
+	{
+		SceneNode * solid = GetSolidParent(realSelection);
+		if (solid)
+			selection = solid;
+	}
+
+	if(selection)
 		selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
-    }
 }
 
 
