@@ -392,6 +392,7 @@
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
+    <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h" />
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
@@ -616,6 +617,7 @@
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
