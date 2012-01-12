@@ -70,7 +70,6 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		SceneNodeUserData * data = new SceneNodeUserData();
 		curr->userData = data;
 		data->bulletObject = new BulletObject(this, collisionWorld, light, light->GetWorldTransform());
-		light->SetDebugFlags(DEBUG_DRAW_LIGHT_NODE);
 	}
 	else if (light && light->userData)
 	{

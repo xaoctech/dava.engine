@@ -1,7 +1,9 @@
 #include "EditorLightNode.h"
 
+
 EditorLightNode::EditorLightNode(Scene * _scene)
-: SceneNode(scene)
+:	SceneNode(_scene),
+	type(LightNode::TYPE_COUNT)
 {
 
 }
@@ -11,13 +13,49 @@ EditorLightNode::~EditorLightNode()
 
 }
 
-LightNode * EditorLightNode::CreateSceneAndEditorLight(Scene * scene)
+LightNode * EditorLightNode::CreateSceneAndEditorLight(Scene * scene) 
 {
 	LightNode * ret = new LightNode(scene);
+	ret->SetSolid(true);
 	EditorLightNode * child = new EditorLightNode(scene);
 	child->SetName("editor.light");
 	ret->AddNode(child);
 
 	SafeRelease(child);
 	return ret;
+}
+
+void EditorLightNode::Update(float32 timeElapsed)
+{
+	SceneNode::Update(timeElapsed);
+	LightNode * parent = (LightNode*)GetParent();
+	if(type != parent->GetType())
+	{
+		RemoveAllChildren();
+
+		type = parent->GetType();
+		SceneNode * lightDrawNode = scene->GetRootNode(GetSceneFile())->Clone();
+		AddNode(lightDrawNode);
+		SafeRelease(lightDrawNode);
+	}
+}
+
+void EditorLightNode::Draw()
+{
+	SceneNode::Draw();
+}
+
+DAVA::String EditorLightNode::GetSceneFile()
+{
+	switch(type)
+	{
+	case LightNode::TYPE_SKY:
+		return "~res:/3d/lights/skylight/skylight.sce";
+		break;
+	case LightNode::TYPE_DIRECTIONAL:
+		return "~res:/3d/lights/directlight/directlight.sce";
+		break;
+	default:
+		return String();
+	}
 }
