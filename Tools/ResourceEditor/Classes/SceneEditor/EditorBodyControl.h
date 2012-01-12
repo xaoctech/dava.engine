@@ -9,6 +9,7 @@
 
 #include "SceneNodeIDs.h"
 #include "NodesPropertyControl.h"
+#include "ModificationPopUp.h"
 
 using namespace DAVA;
 
@@ -91,6 +92,7 @@ protected:
 	void CreateModificationPanel(void);
     void ReleaseModificationPanel();
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
+	void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
 	void UpdateModState(void);
 	void PrepareModMatrix(float32 a, float32 b);
 
@@ -160,6 +162,7 @@ protected:
 
 	UIButton *btnMod[3];
 	UIButton *btnAxis[3];
+	UIButton *btnPopUp;
 
 	UIControl *modificationPanel;
 	eModState modState;
@@ -185,6 +188,8 @@ protected:
 
 	Rect propertyPanelRect;
 	void RecreatePropertiesPanelForNode(SceneNode *node);
+	ModificationPopUp * modificationPopUp;
+	SceneNode * GetHighestProxy(SceneNode* curr);
 };
 
 
