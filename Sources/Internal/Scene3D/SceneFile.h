@@ -59,7 +59,7 @@ class SceneFile : public BaseObject
 public:
 	SceneFile();
 	
-	bool LoadScene(const char * filename, Scene * _scene, bool relToBundle = true);
+	bool LoadScene(const String & filename, Scene * _scene, bool relToBundle = true);
 	bool SaveScene(const char * filename);
 	
 	bool ReadTexture();

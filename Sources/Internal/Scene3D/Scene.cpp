@@ -215,7 +215,7 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
     {
         SceneFile *file = new SceneFile();
         file->SetDebugLog(true);
-        file->LoadScene(rootNodePath.c_str(), this);
+        file->LoadScene(rootNodePath, this);
         SafeRelease(file);
     }
     else if(ext == ".sc2")

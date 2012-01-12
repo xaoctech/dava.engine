@@ -84,13 +84,12 @@ void SceneFile::SetDebugLog(bool _debugLogEnabled)
 	debugLogEnabled = _debugLogEnabled;
 }
 
-bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBundle)
+bool SceneFile::LoadScene(const String & filename, Scene * _scene, bool relToBundle /*= true*/)
 {
     materials.clear();
     
 	scene = _scene;
-	String fname(filename);
-    rootNodePath = fname;
+    rootNodePath = filename;
     
     
 //  textureIndexOffset = scene->GetTextureCount();
@@ -100,11 +99,15 @@ bool SceneFile::LoadScene( const char * filename, Scene * _scene, bool relToBund
 	animationIndexOffset = scene->GetAnimationCount();
     
 
-	sceneFP = File::Create(fname, File::OPEN | File::READ);
-	if (!sceneFP)return false;
+	sceneFP = File::Create(filename, File::OPEN | File::READ);
+	if(!sceneFP)
+	{
+		Logger::Warning("SceneFile::LoadScene failed to open file %s", filename.c_str());
+		return false;
+	}
 
 	// get scene path, store it to add to texture paths
-	scenePath = PathManip(filename).GetPath();
+	scenePath = PathManip(filename.c_str()).GetPath();
 
 	Logger::Debug("scene start load: path = %s\n", scenePath.c_str());
 	
