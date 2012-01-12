@@ -8,6 +8,7 @@
 #include "SceneEditorScreenMain.h"
 #include "../AppScreens.h"
 #include "EditorBodyControl.h"
+#include "EditorLightNode.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -109,7 +110,7 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 
         case ECNID_LIGHT:
             SetHeader(L"Create light node");
-            sceneNode = new LightNode(scene);
+            sceneNode = EditorLightNode::CreateSceneAndEditorLight(scene);
             sceneNode->SetName("Light");
             break;
 
