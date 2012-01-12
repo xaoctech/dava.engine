@@ -61,7 +61,7 @@ void SceneEditorScreenMain::LoadResources()
 
     //properties
     propertiesButton = ControlsFactory::CreateButton(
-                            Vector2(fullRect.dx - (ControlsFactory::BUTTON_WIDTH*2 + 1), 
+                            Vector2(fullRect.dx - (ControlsFactory::BUTTON_WIDTH*2), 
                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
                         L"Properties");
     propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
@@ -74,7 +74,7 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(sceneGraphButton);
     
     dataGraphButton = ControlsFactory::CreateButton(
-                                                     Vector2(ControlsFactory::BUTTON_WIDTH + 1, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), L"Data Graph");
+                                                     Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), L"Data Graph");
     dataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnDataGraphPressed));
     AddControl(dataGraphButton);
     
@@ -133,23 +133,23 @@ void SceneEditorScreenMain::CreateTopMenu()
     int32 dx = ControlsFactory::BUTTON_WIDTH;
     int32 dy = ControlsFactory::BUTTON_HEIGHT;
     btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open");
-    x += dx + 1;
+    x += dx;
     btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save");
-    x += dx + 1;
+    x += dx;
     btnExport = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save to Game");
-    x += dx + 1;
+    x += dx;
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
-    x += dx + 1;
+    x += dx;
     btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create Node");
-    x += dx + 1;
+    x += dx;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
-    x += dx + 1;
+    x += dx;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open Project");
 #ifdef __DAVAENGINE_BEAST__
-	x += dx + 1;
+	x += dx;
 	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Beast");
 #endif //#ifdef __DAVAENGINE_BEAST__
-	x += dx + 1;
+	x += dx;
 	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Landscape");
     
     
@@ -454,7 +454,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
     for(int32 i = 0; i < bodies.size(); ++i)
     {
         bodies[i]->headerButton->SetRect(
-                            Rect(TAB_BUTTONS_OFFSET + i * (ControlsFactory::BUTTON_WIDTH + 1), 
+                            Rect(TAB_BUTTONS_OFFSET + i * (ControlsFactory::BUTTON_WIDTH), 
                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT, 
                             ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
         
@@ -576,7 +576,6 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
         {
             BodyItem *iBody = FindCurrentBody();
             EditorScene *scene = iBody->bodyControl->GetScene();
-            nodeDialog->SetScene(scene);
             nodeDialog->CreateNode(itemID);
             
             AddControl(dialogBack);

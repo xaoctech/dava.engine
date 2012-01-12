@@ -34,7 +34,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Base/ObjectFactory.h"
 #include "Utils/StringFormat.h"
-#include "RenderHelper.h"
+#include "Render/RenderHelper.h"
 
 namespace DAVA
 {
