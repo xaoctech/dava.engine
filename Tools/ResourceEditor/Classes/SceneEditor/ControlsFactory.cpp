@@ -41,6 +41,8 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     btn->SetStateText(UIControl::STATE_DISABLED, buttonText);
     btn->SetStateText(UIControl::STATE_NORMAL, buttonText);
     btn->SetStateText(UIControl::STATE_SELECTED, buttonText);
+    
+    AddBorder(btn);
 }
 
 UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
@@ -316,3 +318,45 @@ void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
     SafeRelease(scrollBar);
 }
 
+void ControlsFactory::AddBorder(DAVA::UIControl *c)
+{
+    Rect fullRect = c->GetRect();
+    
+    Color lineColor(1.f, 1.f, 1.f, 0.5f);
+    
+    UIControl *leftLine = c->FindByName("LeftLine", false);
+    if(!leftLine)
+    {
+        leftLine = ControlsFactory::CreateLine(Rect(0, 1, 1, fullRect.dy - 2), lineColor);
+        leftLine->SetName("LeftLine");
+        c->AddControl(leftLine);
+        SafeRelease(leftLine);
+    }
+
+    UIControl *rightLine = c->FindByName("RightLine", false);
+    if(!rightLine)
+    {
+        rightLine = ControlsFactory::CreateLine(Rect(fullRect.dx - 1, 1, 1, fullRect.dy - 2), lineColor);
+        rightLine->SetName("RightLine");
+        c->AddControl(rightLine);
+        SafeRelease(rightLine);
+    }
+
+    UIControl *topLine = c->FindByName("TopLine", false);
+    if(!topLine)
+    {
+        topLine = ControlsFactory::CreateLine(Rect(0, 0, fullRect.dx, 1), lineColor);
+        topLine->SetName("TopLine");
+        c->AddControl(topLine);
+        SafeRelease(topLine);
+    }
+
+    UIControl *bottomtLine = c->FindByName("BottomLine", false);
+    if(!bottomtLine)
+    {
+        bottomtLine = ControlsFactory::CreateLine(Rect(0, fullRect.dy-1, fullRect.dx, 1), lineColor);
+        bottomtLine->SetName("BottomLine");
+        c->AddControl(bottomtLine);
+        SafeRelease(bottomtLine);
+    }
+}

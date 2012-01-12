@@ -2,7 +2,12 @@
 #include "ControlsFactory.h"
 
 #include "NodesPropertyControl.h"
+#include "PropertyControlCreator.h"
 #include "SceneNodeIDs.h"
+#include "../EditorScene.h"
+#include "SceneEditorScreenMain.h"
+#include "../AppScreens.h"
+#include "EditorBodyControl.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -19,21 +24,19 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     AddControl(header);
     
-    int32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT - 2;
-    int32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2 - 2) / 2;
+    int32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
+    int32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2) / 2;
     
     UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), L"Cancel");
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnCancel));
     AddControl(btnCancel);
     
-    buttonX += ControlsFactory::BUTTON_WIDTH + 1;
+    buttonX += ControlsFactory::BUTTON_WIDTH;
     UIButton *btnOk = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), L"Ok");
     btnOk->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnOk));
     AddControl(btnOk);
     
-    Rect propertyRect = Rect(0, ControlsFactory::BUTTON_HEIGHT, rect.dx, buttonY - ControlsFactory::BUTTON_HEIGHT);
-    propertyList = new NodesPropertyControl(propertyRect, true);
-    AddControl(propertyList);
+    propertyRect = Rect(0, ControlsFactory::BUTTON_HEIGHT, rect.dx, buttonY - ControlsFactory::BUTTON_HEIGHT);
 
     SafeRelease(btnCancel);
     SafeRelease(btnOk);
@@ -92,6 +95,10 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 {
     SafeRelease(sceneNode);
 
+	SceneEditorScreenMain * screen = (SceneEditorScreenMain*)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
+	EditorScene * editorScene = screen->FindCurrentBody()->bodyControl->GetScene();
+	scene = editorScene;
+
     switch (nodeID) 
     {
         case ECNID_LANDSCAPE:
@@ -133,7 +140,18 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
         default:
             break;
     }
+
+	propertyList = PropertyControlCreator::CreateControlForNode(sceneNode, propertyRect, true);
+	AddControl(propertyList);
+
+	SetScene(editorScene);
     
     propertyList->ReadFrom(sceneNode);
+}
+
+void CreateNodesDialog::WillDisappear()
+{
+	RemoveControl(propertyList);
+	SafeRelease(propertyList);
 }
 

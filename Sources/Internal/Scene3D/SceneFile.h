@@ -207,9 +207,6 @@ public:
 		Matrix4 localTransform;			// local transform matrix
 		int32	nodeType;				// type of node
 		int32	customDataSize;			// custom data size
-		bool    isSolid;
-		// void * customNodeData;		
-		// void * childsData;
 	};
 	
 	struct PolygonGroupInstanceDef

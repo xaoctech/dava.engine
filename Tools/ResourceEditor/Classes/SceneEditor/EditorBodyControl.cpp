@@ -1,13 +1,10 @@
 #include "EditorBodyControl.h"
-
 #include "ControlsFactory.h"
-
 #include "OutputManager.h"
 #include "OutputPanelControl.h"
-
 #include "../BeastProxy.h"
-
 #include "../SceneNodeUserData.h"
+#include "PropertyControlCreator.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -18,6 +15,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = 0;
+	nodesPropertyPanel = 0;
     
     for(int32 i = 0; i < EDNID_COUNT; ++i)
     {
@@ -308,7 +306,7 @@ void EditorBodyControl::UpdateModState(void)
 void EditorBodyControl::CreatePropertyPanel()
 {
     Rect fullRect = GetRect();
-    Rect propertyPanelRect = Rect(fullRect.dx - ControlsFactory::RIGHT_SIDE_WIDTH, 0, ControlsFactory::RIGHT_SIDE_WIDTH, size.y);
+    propertyPanelRect = Rect(fullRect.dx - ControlsFactory::RIGHT_SIDE_WIDTH, 0, ControlsFactory::RIGHT_SIDE_WIDTH, size.y);
     rightPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
     AddControl(rightPanel);
 
@@ -324,8 +322,8 @@ void EditorBodyControl::CreatePropertyPanel()
     propertyPanelRect.x = propertyPanelRect.y = 0;
     propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
 
-    nodesPropertyPanel = new NodesPropertyControl(propertyPanelRect, false);
-    nodesPropertyPanel->SetDelegate(this);
+    //nodesPropertyPanel = new NodesPropertyControl(propertyPanelRect, false);
+    //nodesPropertyPanel->SetDelegate(this);
 }
 
 void EditorBodyControl::ReleasePropertyPanel()
@@ -562,6 +560,7 @@ void EditorBodyControl::UpdatePropertyPanel()
 {
     if(selectedSceneGraphNode || selectedDataGraphNode)
     {
+		RecreatePropertiesPanelForNode(selectedSceneGraphNode);
         if(!nodesPropertyPanel->GetParent())
         {
             rightPanel->AddControl(nodesPropertyPanel);
@@ -991,9 +990,6 @@ void EditorBodyControl::WillAppear()
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = NULL;
-
-    
-    nodesPropertyPanel->SetWorkingScene(scene);
     
     sceneGraphTree->Refresh();
     RefreshDataGraph();
@@ -1241,4 +1237,17 @@ void EditorBodyControl::OnRefreshSceneGraph(BaseObject * obj, void *, void *)
 void EditorBodyControl::OnRefreshDataGraph(BaseObject * obj, void *, void *)
 {
     RefreshDataGraph();
+}
+
+void EditorBodyControl::RecreatePropertiesPanelForNode(SceneNode * node)
+{
+	if(nodesPropertyPanel && nodesPropertyPanel->GetParent())
+	{
+		nodesPropertyPanel->GetParent()->RemoveControl(nodesPropertyPanel);
+	}
+	SafeRelease(nodesPropertyPanel);
+
+	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
+	nodesPropertyPanel->SetDelegate(this);
+	nodesPropertyPanel->SetWorkingScene(scene);
 }

@@ -20,11 +20,11 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     nodesDelegate = NULL;
     currentNode = NULL;
     createNodeProperties = _createNodeProperties;
-    projectPath = "/";
     
     types.push_back("Directional");
     types.push_back("Spot");
     types.push_back("Point");
+	types.push_back("Sky");
 
     renderingModes.push_back("TEXTURE");
     renderingModes.push_back("SHADER");
@@ -96,8 +96,6 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     currentNode = sceneNode;
     propertyList->ReleaseProperties();
     
-    projectPath = DraggableDialog::GetProjectPath();
-    
     if(!createNodeProperties)
     {
         propertyList->AddSection("General C++", headerStates->GetBool("General C++", true));
@@ -159,28 +157,24 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetFloatPropertyValue("target.z", target.z);
     }
     
-    LightNode *light = dynamic_cast<LightNode *> (sceneNode);
-    if(light)
-    {
-        propertyList->AddSection("Light", headerStates->GetBool("Light", true));
-        
-        propertyList->AddComboProperty("Type", types);
-        propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
-        propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
-
-        propertyList->SetComboPropertyIndex("Type", light->GetType());
-        propertyList->SetFloatPropertyValue("r", light->GetColor().r);
-        propertyList->SetFloatPropertyValue("g", light->GetColor().g);
-        propertyList->SetFloatPropertyValue("b", light->GetColor().b);
-        propertyList->SetFloatPropertyValue("a", light->GetColor().a);
-    }
-    
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
     if(mesh)
     {
         propertyList->AddSection("Mesh Instance", headerStates->GetBool("Mesh Instance", true));
+        
+        //BBOX
+        AABBox3 bbox = mesh->GetBoundingBox();
+        AABBox3 transformedBox;
+        bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
+        
+        propertyList->AddStringProperty("BBox.min", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("BBox.max", PropertyList::PROPERTY_IS_READ_ONLY);
+        
+        propertyList->SetStringPropertyValue("BBox.min", Format("%0.2f, %0.2f, %0.2f", 
+                                                transformedBox.min.x, transformedBox.min.y, transformedBox.min.z));
+        propertyList->SetStringPropertyValue("BBox.max", Format("%0.2f, %0.2f, %0.2f", 
+                                                transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
+
         
         materials.clear();
         materialNames.clear();
@@ -294,7 +288,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
+            propertyList->SetFilepathPropertyValue("HeightMap", "");
         }
         
         Texture *t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE0);
@@ -304,7 +298,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", "");
         }
         
         t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE1);
@@ -314,7 +308,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "");
         }
         
         t = landscape->GetTexture(LandscapeNode::TEXTURE_BUMP);
@@ -324,7 +318,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", "");
         }
         
         t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTUREMASK);
@@ -334,7 +328,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", "");
         }
     }
     
@@ -468,21 +462,7 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
                                   propertyList->GetFloatPropertyValue("target.y"),
                                   propertyList->GetFloatPropertyValue("target.z")));
     }
-    
-    LightNode *light = dynamic_cast<LightNode *> (sceneNode);
-    if(light)
-    {
-        Color color(
-                    propertyList->GetFloatPropertyValue("r"),
-                    propertyList->GetFloatPropertyValue("g"),
-                    propertyList->GetFloatPropertyValue("b"),
-                    propertyList->GetFloatPropertyValue("a"));
-        
-        int32 type = propertyList->GetComboPropertyIndex("Type");
-        
-        light->SetColor(color);
-        light->SetType((LightNode::eType)type);
-    }
+   
     
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
     if(mesh)
