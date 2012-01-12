@@ -5,6 +5,8 @@
 #include "../BeastProxy.h"
 #include "../SceneNodeUserData.h"
 #include "PropertyControlCreator.h"
+#include "EditorSettings.h"
+
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -546,10 +548,9 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         if (node)
         {
             selectedDataGraphNode = node;
-//            scene->SetSelection(node);
-//            
+
             UpdatePropertyPanel();
-//            DebugInfo();
+            DebugInfo();
         }
     }
     
@@ -566,20 +567,6 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
 
 void EditorBodyControl::DebugInfo()
 {
-    MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(selectedSceneGraphNode);
-    if(mesh)
-    {
-        AABBox3 bbox = mesh->GetBoundingBox();
-        AABBox3 transformedBox;
-        bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
-
-        OutputManager::Instance()->Log(StringToWString(mesh->GetName()) + 
-                                       Format(L": Min: (%0.2f, %0.2f, %0.2f)", 
-                                            transformedBox.min.x, transformedBox.min.y, transformedBox.min.z) + 
-                                       
-                                       Format(L"; Max: (%0.2f, %0.2f, %0.2f)", 
-                                              transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
-    }
 }
 
 void EditorBodyControl::UpdatePropertyPanel()
@@ -1136,9 +1123,7 @@ void EditorBodyControl::BeastProcessScene()
 {
 	beastManager = BeastProxy::Instance()->CreateManager();
 
-	KeyedArchive *keyedArchieve = new KeyedArchive();
-	keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
-	String path = keyedArchieve->GetString("LastSavedPath", "/") +"/DataSource/3d/lightmaps/";
+	String path = EditorSettings::Instance()->GetProjectPath() + "DataSource/3d/lightmaps/";
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 
 	BeastProxy::Instance()->ParseScene(beastManager, scene);

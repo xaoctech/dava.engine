@@ -60,6 +60,9 @@ public:
     
 protected:
 
+    bool GetHeaderState(const String & headerName, bool defaultValue = true);
+    void SetHeaderState(const String & headerName, bool newState);
+    
     bool IsValidPath(const String &path);
 
     Vector<String> types;
@@ -93,8 +96,6 @@ protected:
     
     
     void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
-    
-    KeyedArchive *headerStates;
 };
 
 

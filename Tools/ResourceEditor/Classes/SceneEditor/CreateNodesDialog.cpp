@@ -110,10 +110,13 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
             break;
 
         case ECNID_LIGHT:
+        {
             SetHeader(L"Create light node");
+            
             sceneNode = EditorLightNode::CreateSceneAndEditorLight(scene);
             sceneNode->SetName("Light");
             break;
+        }
 
         case ECNID_SERVICENODE:
             SetHeader(L"Create service node");
