@@ -97,8 +97,8 @@ public:
     SceneFile2();
     ~SceneFile2();
     
-    bool SaveScene(const char * filename, Scene * _scene);
-    bool LoadScene(const char * filename, Scene * _scene);
+    bool SaveScene(const String & filename, Scene * _scene);
+    bool LoadScene(const String & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
 private:
@@ -117,6 +117,7 @@ private:
     void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
     bool isDebugLogEnabled;
+    String rootNodePath;
 };
   
 }; // namespace DAVA
