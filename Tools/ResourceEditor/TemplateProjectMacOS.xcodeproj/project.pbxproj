@@ -27,6 +27,8 @@
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
 		5CD6295F14BB1ABF00795FCA /* CreatePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */; };
+		5CE5A40214BF3164008A1B3F /* LightPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */; };
+		5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */; };
 		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D92D797D1498BC5D002F58FB /* EditorScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* EditorScene.cpp */; };
@@ -329,6 +331,10 @@
 		5CA721D514B760D9000D2851 /* CreateNodesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNodesDialog.h; sourceTree = "<group>"; };
 		5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreatePropertyControl.cpp; sourceTree = "<group>"; };
 		5CD6295E14BB1ABF00795FCA /* CreatePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePropertyControl.h; sourceTree = "<group>"; };
+		5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightPropertyControl.cpp; sourceTree = "<group>"; };
+		5CE5A40114BF3164008A1B3F /* LightPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightPropertyControl.h; sourceTree = "<group>"; };
+		5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyControlCreator.cpp; sourceTree = "<group>"; };
+		5CE5A40414BF3171008A1B3F /* PropertyControlCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyControlCreator.h; sourceTree = "<group>"; };
 		5CE6F5DA14AB48DA006BBEE2 /* SceneNodeIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeIDs.h; sourceTree = "<group>"; };
 		5CFAF30E14A6334100355DCF /* UICheckBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UICheckBox.cpp; sourceTree = "<group>"; };
 		5CFAF30F14A6334100355DCF /* UICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBox.h; sourceTree = "<group>"; };
@@ -990,6 +996,10 @@
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
 			isa = PBXGroup;
 			children = (
+				5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */,
+				5CE5A40414BF3171008A1B3F /* PropertyControlCreator.h */,
+				5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */,
+				5CE5A40114BF3164008A1B3F /* LightPropertyControl.h */,
 				5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */,
 				5CD6295E14BB1ABF00795FCA /* CreatePropertyControl.h */,
 				5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */,
@@ -2081,6 +2091,8 @@
 				5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */,
 				5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */,
 				5CD6295F14BB1ABF00795FCA /* CreatePropertyControl.cpp in Sources */,
+				5CE5A40214BF3164008A1B3F /* LightPropertyControl.cpp in Sources */,
+				5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

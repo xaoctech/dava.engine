@@ -38,7 +38,7 @@ LibraryControl::LibraryControl(const Rect & rect)
     btnConvert->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnConvertPressed));
     panelDAE->AddControl(btnConvert);
     
-    int32 btnwidth = (rect.dx - 2) / 2;
+    int32 btnwidth = (rect.dx) / 2;
     panelSCE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
     btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, BUTTON_HEIGHT), L"Add");
     btnAdd->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnAddPressed));
