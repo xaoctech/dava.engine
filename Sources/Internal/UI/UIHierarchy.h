@@ -205,10 +205,13 @@ public:
     virtual void Input(UIEvent *currentInput);
     virtual bool SystemInput(UIEvent *currentInput);
     
-
+    void ScrollToData(void *userData);
+    
     
 protected:
-    
+
+    bool GetCount(UIHierarchyNode *curNode, void *userData, int32 &findCount);
+
 
 
     void OnSelectEvent(BaseObject *pCaller, void *pUserData, void *callerData);

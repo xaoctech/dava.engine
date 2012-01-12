@@ -282,8 +282,8 @@ void MeshInstanceNode::Draw()
     for (uint32 k = 0; k < meshesSize; ++k)
     {
         if (currentLod->materials[k]->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
-        {
-            currentLod->materials[k]->textures[Material::TEXTURE_DECAL] = lightmaps[k].lightmap;
+		{
+            currentLod->materials[k]->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
         }
         
         currentLod->meshes[k]->DrawPolygonGroup(currentLod->polygonGroupIndexes[k], currentLod->materials[k]);
@@ -294,17 +294,6 @@ void MeshInstanceNode::Draw()
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		
-		
-		if (debugFlags & DEBUG_DRAW_AABBOX)
-		{
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-			RenderHelper::Instance()->DrawBox(bbox);
-		
-			//RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-            //bbox.GetTransformedBox(worldTransform, transformedBox);
-			//RenderHelper::Instance()->DrawBox(transformedBox);
-		}
-        
 		if (debugFlags & DEBUG_DRAW_LOCAL_AXIS)
 		{
 			RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f); 
@@ -317,17 +306,11 @@ void MeshInstanceNode::Draw()
 			RenderHelper::Instance()->DrawLine(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 50.0f));
 		}
 
-		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
-		{
-			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-			RenderHelper::Instance()->DrawCornerBox(bbox);
-            
-//            for (uint32 k = 0; k < meshesSize; ++k)
-//            {
-//                currentLod->meshes[k]->GetPolygonGroup(currentLod->polygonGroupIndexes[k])->DebugDraw();
-//            }
-            
-        }
+//		if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
+//		{
+//			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+//			RenderHelper::Instance()->DrawCornerBox(bbox);
+//        }
         if (debugFlags & DEBUG_DRAW_NORMALS)
         {
             
@@ -511,6 +494,18 @@ void MeshInstanceNode::ReplaceMaterial(DAVA::Material *material, int32 index)
 {
     SafeRelease(lodLayers.begin()->materials[index]);
     lodLayers.begin()->materials[index] = SafeRetain(material);
+}
+
+Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
+{
+	if(index < lightmaps.size())
+	{
+		return lightmaps[index].lightmap;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 

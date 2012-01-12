@@ -107,12 +107,10 @@ protected:
     
     UIControl *leftPanelSceneGraph;
     UIHierarchy * sceneGraphTree;
-    UIButton * lookAtButton;
-    UIButton * removeNodeButton;
-    UIButton * enableDebugFlagsButton;
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
     void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
+    void OnRefreshSceneGraph(BaseObject * obj, void *, void *);
 
     UIControl *leftPanelDataGraph;
     UIHierarchy * dataGraphTree;
@@ -127,7 +125,8 @@ protected:
     
     DataNode *dataNodes[EDNID_COUNT];
     void RefreshDataGraph();
-    
+    void OnRefreshDataGraph(BaseObject * obj, void *, void *);
+
     //scene controls
     EditorScene * scene;
 	Camera * activeCamera;
@@ -167,6 +166,7 @@ protected:
 	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
+	Matrix4 startWT;
 	SceneNode * proxy;
 
 	float32 axisSign[3];

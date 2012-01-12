@@ -186,11 +186,13 @@ void Material::Load(KeyedArchive * keyedArchive)
         names[k] = keyedArchive->GetString(Format("mat.tex%d", k));
         //if (textures[k].length())
         //{
+        Texture::EnableMipmapGeneration();
         textures[k] = Texture::CreateFromFile(names[k]);
         if (textures[k])
         {
             textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
         }
+        Texture::DisableMipmapGeneration();
         
 //        if (names[k].size())
 //        {
