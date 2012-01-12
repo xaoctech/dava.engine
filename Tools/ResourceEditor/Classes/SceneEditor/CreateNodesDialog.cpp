@@ -24,14 +24,14 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     AddControl(header);
     
-    int32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT - 2;
-    int32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2 - 2) / 2;
+    int32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
+    int32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2) / 2;
     
     UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), L"Cancel");
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnCancel));
     AddControl(btnCancel);
     
-    buttonX += ControlsFactory::BUTTON_WIDTH + 1;
+    buttonX += ControlsFactory::BUTTON_WIDTH;
     UIButton *btnOk = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), L"Ok");
     btnOk->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnOk));
     AddControl(btnOk);

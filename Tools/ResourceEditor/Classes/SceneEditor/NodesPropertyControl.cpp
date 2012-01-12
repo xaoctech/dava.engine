@@ -20,7 +20,6 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     nodesDelegate = NULL;
     currentNode = NULL;
     createNodeProperties = _createNodeProperties;
-    projectPath = "/";
     
     types.push_back("Directional");
     types.push_back("Spot");
@@ -97,8 +96,6 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     currentNode = sceneNode;
     propertyList->ReleaseProperties();
     
-    projectPath = DraggableDialog::GetProjectPath();
-    
     if(!createNodeProperties)
     {
         propertyList->AddSection("General C++", headerStates->GetBool("General C++", true));
@@ -164,6 +161,20 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     if(mesh)
     {
         propertyList->AddSection("Mesh Instance", headerStates->GetBool("Mesh Instance", true));
+        
+        //BBOX
+        AABBox3 bbox = mesh->GetBoundingBox();
+        AABBox3 transformedBox;
+        bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
+        
+        propertyList->AddStringProperty("BBox.min", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("BBox.max", PropertyList::PROPERTY_IS_READ_ONLY);
+        
+        propertyList->SetStringPropertyValue("BBox.min", Format("%0.2f, %0.2f, %0.2f", 
+                                                transformedBox.min.x, transformedBox.min.y, transformedBox.min.z));
+        propertyList->SetStringPropertyValue("BBox.max", Format("%0.2f, %0.2f, %0.2f", 
+                                                transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
+
         
         materials.clear();
         materialNames.clear();
@@ -277,7 +288,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("HeightMap", projectPath);
+            propertyList->SetFilepathPropertyValue("HeightMap", "");
         }
         
         Texture *t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE0);
@@ -287,7 +298,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", "");
         }
         
         t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE1);
@@ -297,7 +308,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "");
         }
         
         t = landscape->GetTexture(LandscapeNode::TEXTURE_BUMP);
@@ -307,7 +318,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_BUMP", "");
         }
         
         t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTUREMASK);
@@ -317,7 +328,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         }
         else
         {
-            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", projectPath);
+            propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", "");
         }
     }
     
