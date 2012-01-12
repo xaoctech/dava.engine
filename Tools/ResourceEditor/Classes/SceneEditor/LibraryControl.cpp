@@ -49,10 +49,17 @@ LibraryControl::LibraryControl(const Rect & rect)
     panelSCE->AddControl(btnAdd);
     panelSCE->AddControl(btnEdit);
     panelSCE->AddControl(preview);
+    
+    errorMessage = new UIStaticText(panelSCE->GetRect());
+    errorMessage->SetMultiline(true);
+    errorMessage->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+    errorMessage->SetFont(ControlsFactory::GetFontError());
 }
     
 LibraryControl::~LibraryControl()
 {
+    SafeRelease(errorMessage);
+    
     SafeRelease(btnAdd);
     SafeRelease(btnConvert);
     SafeRelease(btnEdit);
@@ -119,6 +126,11 @@ void LibraryControl::OnRefreshPressed(DAVA::BaseObject *object, void *userData, 
 
 void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell *selectedCell)
 {
+    if(errorMessage->GetParent())
+    {
+        RemoveControl(errorMessage);
+    }
+
     UITreeItemInfo * itemInfo = selectedCell->GetItemInfo();
 	String extension = FileSystem::GetExtension(itemInfo->GetName());
 	if (0 == UIFileTree::CompareExtensions(extension, ".dae"))
@@ -137,17 +149,24 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
-        
+
         if(panelDAE->GetParent())
         {
             RemoveControl(panelDAE);
         }
         
-        preview->OpenScene(selectedFileName);
-
-        if(!panelSCE->GetParent())
+        bool isOpened = preview->OpenScene(selectedFileName);
+        if(isOpened)
         {
-            AddControl(panelSCE);
+            if(!panelSCE->GetParent())
+            {
+                AddControl(panelSCE);
+            }
+        }
+        else
+        {
+            errorMessage->SetText(L"Format is too old, reconvert .dae file.");
+            AddControl(errorMessage);
         }
 
     }

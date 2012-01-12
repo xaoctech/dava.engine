@@ -2,6 +2,7 @@
 
 Font* ControlsFactory::fontLight = NULL;
 Font* ControlsFactory::fontDark = NULL;
+Font* ControlsFactory::fontError = NULL;
 
 UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText)
 {
@@ -72,11 +73,6 @@ Font * ControlsFactory::GetFontLight()
     return fontLight;
 }
 
-void ControlsFactory::CustomizeFontLight(Font *font)
-{
-    font->SetSize(12);
-    font->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-}
 
 Font * ControlsFactory::GetFontDark()
 {
@@ -88,10 +84,32 @@ Font * ControlsFactory::GetFontDark()
     return fontDark;
 }
 
+Font * ControlsFactory::GetFontError()
+{
+    if (!fontError) 
+    {
+        fontError = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
+        CustomizeFontError(fontError);
+    }
+    return fontError;
+}
+
+void ControlsFactory::CustomizeFontLight(Font *font)
+{
+    font->SetSize(12);
+    font->SetColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
+}
+
 void ControlsFactory::CustomizeFontDark(Font *font)
 {
     font->SetSize(12);
     font->SetColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
+}
+
+void ControlsFactory::CustomizeFontError(Font *font)
+{
+    font->SetSize(20);
+    font->SetColor(Color(1.0f, 0.0f, 0.0f, 0.8f));
 }
 
 void ControlsFactory::CustomizeScreenBack(UIControl *screen)
@@ -132,17 +150,22 @@ void ControlsFactory::CusomizeListControl(UIControl *c)
     c->GetBackground()->SetColor(Color(0.92f, 0.92f, 0.92f, 1.0f));
 }
 
-UIControl * ControlsFactory::CreatePanelControl(const Rect & rect)
+UIControl * ControlsFactory::CreatePanelControl(const Rect & rect, bool addBorder)
 {
     UIControl *ctrl = new UIControl(rect);
-    CustomizePanelControl(ctrl);
+    CustomizePanelControl(ctrl, addBorder);
     return ctrl;
 }
 
-void ControlsFactory::CustomizePanelControl(UIControl *c)
+void ControlsFactory::CustomizePanelControl(UIControl *c, bool addBorder)
 {
     c->GetBackground()->color = Color(0.4f, 0.4f, 0.4f, 1.0f);
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    
+    if(addBorder)
+    {
+        AddBorder(c);
+    }
 }
 
 void ControlsFactory::CustomizeExpandButton(UIButton *btn)

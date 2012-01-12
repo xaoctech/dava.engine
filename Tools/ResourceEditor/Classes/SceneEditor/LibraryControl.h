@@ -69,6 +69,8 @@ protected:
     String selectedFileNameShort;
     
     LibraryControlDelegate *controlDelegate;
+    
+    UIStaticText *errorMessage;
 };
 
 
