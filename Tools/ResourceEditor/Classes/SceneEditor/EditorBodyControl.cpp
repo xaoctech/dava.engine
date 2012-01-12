@@ -674,7 +674,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				proxy = selection;
 			
 			startTransform = proxy->GetLocalTransform();
-			startWT = proxy->GetWorldTransform();
+			startWT = scene->GetRealSelection()->GetWorldTransform();
 			
 			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 			if (userData)
@@ -842,7 +842,7 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
-	SceneNode * selection = scene->GetSelection();
+	SceneNode * selection = scene->GetRealSelection();
 	if (selection)
 	{
 //		RenderHelper::SetClip();
