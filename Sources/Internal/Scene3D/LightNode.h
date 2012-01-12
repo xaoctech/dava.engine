@@ -40,10 +40,12 @@ class LightNode : public SceneNode
 public:
     enum eType
     {
-        ET_DIRECTIONAL = 0,
-        ET_SPOT,
-        ET_POINT,
-		ET_SKY
+        TYPE_DIRECTIONAL = 0,
+        TYPE_SPOT,
+        TYPE_POINT,
+		TYPE_SKY,
+
+		TYPE_COUNT
     };
     
     
@@ -51,7 +53,6 @@ public:
     LightNode(Scene * _scene = 0);
     virtual ~LightNode();
     
-    virtual void Draw();
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
     void SetType(eType _type);

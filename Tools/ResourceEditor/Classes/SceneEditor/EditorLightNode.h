@@ -10,9 +10,16 @@ public:
 	EditorLightNode(Scene * _scene);
 	virtual ~EditorLightNode();
 
+	virtual void Update(float32 timeElapsed);
+	virtual void Draw();
+
 	static LightNode * CreateSceneAndEditorLight(Scene * scene);
 
 private:
+
+	LightNode::eType type;
+
+	String GetSceneFile();
 };
 
 #endif //__EDITOR_LIGHT_NODE_H__
