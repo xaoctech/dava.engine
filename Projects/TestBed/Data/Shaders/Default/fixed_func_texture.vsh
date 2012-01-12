@@ -1,5 +1,5 @@
 attribute vec4 inPosition;
-attribute vec2 inTexCoord;
+attribute vec2 inTexCoord0;
 
 uniform mat4 modelViewProjectionMatrix;
 uniform lowp vec4 flatColor;
@@ -10,5 +10,5 @@ void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
 	varColor = flatColor * flatColor.a;
-	varTexCoord = inTexCoord;
+	varTexCoord = inTexCoord0;
 }

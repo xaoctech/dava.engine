@@ -253,10 +253,11 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
     
     Scene * scene = bodies[0]->bodyControl->GetScene();
     
-    SceneFile2 * file = new SceneFile2();
-    file->EnableDebugLog(true);
-    file->LoadScene("scene.sc2", scene);
-    SafeRelease(file);
+//    SceneFile2 * file = new SceneFile2();
+//    file->EnableDebugLog(true);
+//    file->LoadScene("scene.sc2", scene);
+//    SafeRelease(file);
+    scene->AddNode(scene->GetRootNode("scene.sc2"));
     bodies[0]->bodyControl->Refresh();
 }
 
@@ -751,15 +752,12 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
-//    RemoveControl(nodeDialogs[currentNodeDialog]);
     RemoveControl(nodeDialog);
     RemoveControl(dialogBack);
     
-//    if(CreateNodeDialog::RCODE_OK == retCode)
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
         BodyItem *iBody = FindCurrentBody();
-//        iBody->bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
         iBody->bodyControl->AddNode(nodeDialog->GetSceneNode());
     }
 }

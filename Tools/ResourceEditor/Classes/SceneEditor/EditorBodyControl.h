@@ -3,7 +3,6 @@
 
 #include "DAVAEngine.h"
 #include "CameraController.h"
-#include "PropertyPanel.h"
 #include "EditMatrixControl.h"
 #include "../EditorScene.h"
 

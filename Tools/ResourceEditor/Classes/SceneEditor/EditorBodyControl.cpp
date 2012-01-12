@@ -162,7 +162,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
     if(withCameras)
     {
         Camera * cam = new Camera(scene);
-        cam->SetName("editor-camera");
+        cam->SetName("editor.main-camera");
         cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
@@ -178,7 +178,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
         SafeRelease(cam);
         
         Camera * cam2 = new Camera(scene);
-        cam2->SetName("editor-top-camera");
+        cam2->SetName("editor.debug-camera");
         cam2->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
@@ -676,15 +676,18 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	if (event->phase == UIEvent::PHASE_BEGAN && event->tid == UIEvent::BUTTON_2)
 	{
 		Camera * cam = scene->GetCurrentCamera();
-		const Rect & rect = scene3dView->GetLastViewportRect();
-		Vector3 from = cam->GetPosition();
-		Vector3 to = cam->UnProject(event->point.x, event->point.y, 0, rect);
-		to -= from;
-		to *= 1000.f;
-		to += from;
-		scene->TrySelection(from, to);
-        
-        SelectNodeAtTree(scene->GetSelection());
+        if (cam)
+        {
+            const Rect & rect = scene3dView->GetLastViewportRect();
+            Vector3 from = cam->GetPosition();
+            Vector3 to = cam->UnProject(event->point.x, event->point.y, 0, rect);
+            to -= from;
+            to *= 1000.f;
+            to += from;
+            scene->TrySelection(from, to);
+            
+            SelectNodeAtTree(scene->GetSelection());
+        }
 	}	
 	
     SceneNode * selection = scene->GetSelection();
