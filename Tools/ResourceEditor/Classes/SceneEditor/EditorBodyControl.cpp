@@ -1169,13 +1169,34 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         List<void *> nodesForSearch;
         
         SceneNode *nd = node;
-        while(nd)
+        SceneNode *topSolidNode = NULL;
+        while(nd)   //find solid node
+        {
+            if(nd->GetSolid())
+            {
+                topSolidNode = nd;
+            }
+            nd = nd->GetParent();
+        }
+        
+        if(topSolidNode)
+        {
+            selectedSceneGraphNode = topSolidNode;
+            nd = topSolidNode;
+        }
+        else
+        {
+            nd = node;
+        }
+        
+        while(nd)   // fill list of nodes
         {
             nodesForSearch.push_front(nd);
             nd = nd->GetParent();
         }
         
         sceneGraphTree->OpenNodes(nodesForSearch);
+        sceneGraphTree->ScrollToData(selectedSceneGraphNode);
     }
     else
     {
