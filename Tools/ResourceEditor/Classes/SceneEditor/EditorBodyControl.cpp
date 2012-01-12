@@ -238,8 +238,13 @@ void EditorBodyControl::CreateModificationPanel(void)
 	st->SetText(L"5, 6, 7, 8");
     modificationPanel->AddControl(st);
 	
-	
 	UpdateModState();
+	
+	btnPopUp = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * 5, 0, BUTTON_W, BUTTON_W), L"#");
+	btnPopUp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPopUpPressed));
+	modificationPanel->AddControl(btnPopUp);
+	
+	modificationPopUp = new ModificationPopUp();
 }
 
 void EditorBodyControl::ReleaseModificationPanel()
@@ -250,6 +255,27 @@ void EditorBodyControl::ReleaseModificationPanel()
 		SafeRelease(btnAxis[i]);
 	}
 	SafeRelease(modificationPanel);
+}
+
+
+
+void EditorBodyControl::OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData)
+{
+	UIScreen * scr = UIScreenManager::Instance()->GetScreen();
+	if (modificationPopUp->GetParent() == 0)
+	{
+		SceneNode * selection = scene->GetSelection();
+		proxy = GetHighestProxy(selection);
+		if (proxy == 0)
+			proxy = selection;		
+		modificationPopUp->SetSelection(proxy);
+		scr->AddControl(modificationPopUp);
+	}
+	else
+	{
+		scr->RemoveControl(modificationPopUp);
+		modificationPopUp->SetSelection(0);
+	}
 }
 
 void EditorBodyControl::OnModificationPressed(BaseObject * object, void * userData, void * callerData)
@@ -577,16 +603,16 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
 }
 
-SceneNode * getHighestProxy(SceneNode* curr)
+SceneNode * EditorBodyControl::GetHighestProxy(SceneNode* curr)
 {
 	int32 cc = curr->GetChildrenCount();
 	if (cc == 0)
-		return getHighestProxy(curr->GetParent());
+		return GetHighestProxy(curr->GetParent());
 	if (cc > 1)
 		return 0;
 	if (cc == 1)
     {
-        SceneNode * result = getHighestProxy(curr->GetParent());
+        SceneNode * result = GetHighestProxy(curr->GetParent());
 	    if (result == 0)
             return curr;
         else return result;
@@ -672,7 +698,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			inTouch = true;	
 			touchStart = event->point;
 			
-			proxy = getHighestProxy(selection);
+			proxy = GetHighestProxy(selection);
 			if (proxy == 0)
 				proxy = selection;
 			
@@ -919,6 +945,9 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	else if (selection == 0 && modificationPanel->GetParent() != 0)
 	{
 		RemoveControl(modificationPanel);
+		modificationPopUp->SetSelection(0);
+		if (modificationPopUp->GetParent())
+			modificationPopUp->GetParent()->RemoveControl(modificationPopUp);
 	}
 	
     UIControl::Update(timeElapsed);
