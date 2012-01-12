@@ -673,7 +673,16 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				proxy = selection;
 			
 			startTransform = proxy->GetLocalTransform();
-			startWT = scene->GetRealSelection()->GetWorldTransform();
+			SceneNode * realSelection = scene->GetRealSelection();
+			rotationCenter = realSelection->GetWorldTransform().GetTranslationVector();
+			
+			Matrix4 invProxyWorldTransform;
+			
+			bool invExists = proxy->GetParent()->GetWorldTransform().GetInverse(invProxyWorldTransform);
+			
+			DVASSERT(invExists == true);
+			rotationCenter = rotationCenter * invProxyWorldTransform; // transform world coord to proxy coord system			
+			
 			
 			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 			if (userData)
@@ -792,9 +801,8 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 		Matrix4 d;
 		Matrix4 translate1, translate2;
 
-		Vector3 v = startWT.GetTranslationVector();
-		translate1.CreateTranslation(-v);
-		translate2.CreateTranslation(v);
+		translate1.CreateTranslation(-rotationCenter);
+		translate2.CreateTranslation(rotationCenter);
 		
 //        SceneNode * selection = scene->GetSelection();
 //		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
