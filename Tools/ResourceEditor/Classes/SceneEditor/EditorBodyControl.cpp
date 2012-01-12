@@ -730,9 +730,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 //					proxy->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
 //				else 
 //					Logger::Debug(L"Error matrix calculation");
+            
+            Logger::Debug("shift(%f, %f)", event->point.x - touchStart.x, event->point.y - touchStart.y); 
 				
-				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-				proxy->SetLocalTransform(currTransform);
+            PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
+            proxy->SetLocalTransform(currTransform);
             
             nodesPropertyPanel->UpdateFieldsForCurrentNode();
             
