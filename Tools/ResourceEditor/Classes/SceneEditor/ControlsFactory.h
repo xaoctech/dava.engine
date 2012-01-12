@@ -31,9 +31,11 @@ public:
     static void CustomizeCloseWindowButton(UIButton *btn);
     
     static Font* GetFontLight();
-    static void CustomizeFontLight(Font *font);
     static Font* GetFontDark();
+    static Font* GetFontError();
+    static void CustomizeFontLight(Font *font);
     static void CustomizeFontDark(Font *font);
+    static void CustomizeFontError(Font *font);
 
     static void CustomizeScreenBack(UIControl *screen);
     
@@ -46,8 +48,8 @@ public:
 
     static void CusomizeListControl(UIControl *c);
     
-    static UIControl *CreatePanelControl(const Rect & rect);
-    static void CustomizePanelControl(UIControl *c);
+    static UIControl *CreatePanelControl(const Rect & rect, bool addBorder = true);
+    static void CustomizePanelControl(UIControl *c, bool addBorder = true);
     
     static void CustomizeExpandButton(UIButton *btn);
 
@@ -70,6 +72,7 @@ public:
     
     static Font* fontLight;
     static Font* fontDark;
+    static Font* fontError;
 };
 
 
