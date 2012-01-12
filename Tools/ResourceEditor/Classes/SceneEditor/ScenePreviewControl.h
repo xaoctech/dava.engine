@@ -50,7 +50,7 @@ public:
     virtual void Input(UIEvent * touch);
     virtual void Update(float32 timeElapsed);
 
-    void OpenScene(const String &pathToFile);
+    bool OpenScene(const String &pathToFile);
     
 protected:
 
