@@ -257,9 +257,15 @@ KeyedArchive * KeyedArchive::GetArchiveFromByteArray(const String & key)
 {
     KeyedArchive * archive = new KeyedArchive;
     int32 size = GetByteArraySize(key);
+    if (size == 0)return 0;
     const uint8 * array = GetByteArray(key);
     DynamicMemoryFile * file = DynamicMemoryFile::Create(array, size, File::OPEN | File::READ);
-    archive->Load(file);
+    if (!archive->Load(file))
+    {
+        SafeRelease(file);
+        SafeRelease(archive);
+        return 0;
+    }
     SafeRelease(file);
     return archive;
 }	
