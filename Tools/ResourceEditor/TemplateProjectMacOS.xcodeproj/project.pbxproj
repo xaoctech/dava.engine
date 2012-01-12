@@ -29,6 +29,7 @@
 		5CD6295F14BB1ABF00795FCA /* CreatePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */; };
 		5CE5A40214BF3164008A1B3F /* LightPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */; };
 		5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */; };
+		5CE5A40814BF48A0008A1B3F /* EditorLightNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40614BF48A0008A1B3F /* EditorLightNode.cpp */; };
 		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D91B83CD14BF12F2002D07B7 /* ModificationPopUp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */; };
@@ -190,24 +191,19 @@
 		FE1AE2E21455B51F00C6F712 /* VertexOctTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE1AE2E01455B51F00C6F712 /* VertexOctTree.cpp */; };
 		FE1B7D5113DF052300BA032C /* CameraController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE1B7D5013DF052300BA032C /* CameraController.cpp */; };
 		FE2246EE142F7AB300BC3B92 /* ColladaConvert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE2246EC142F7AB300BC3B92 /* ColladaConvert.cpp */; };
-		FE39246F1490C8FD00766CEC /* PanelSwitcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */; };
 		FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */; };
 		FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */; };
 		FE54EBC013A1193400912810 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FE54EBBF13A1193400912810 /* libbz2.dylib */; };
 		FE54EBC213A1193400912810 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FE54EBC113A1193400912810 /* libz.dylib */; };
 		FE94203A1332599A00515418 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE9420391332597D00515418 /* libFramework.a */; };
 		FE94203F13325A0B00515418 /* ResourcePackerScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE94203D13325A0B00515418 /* ResourcePackerScreen.cpp */; };
-		FE96BD8C13B2347B009EB81D /* SceneEditorScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE96BD8A13B2347B009EB81D /* SceneEditorScreen.cpp */; };
 		FE9892E511638EF700500198 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E111638EF700500198 /* InfoPlist.strings */; };
 		FE9892E611638EF700500198 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E311638EF700500198 /* MainMenu.xib */; };
 		FEA30C331231362D00E691CC /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FEA30C291231362D00E691CC /* main.mm */; };
 		FEA30C361231362D00E691CC /* version.plist in Resources */ = {isa = PBXBuildFile; fileRef = FEA30C2E1231362D00E691CC /* version.plist */; };
 		FEC3CA811283557F00541220 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */; };
 		FEC3CA821283557F00541220 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA711283557F00541220 /* GameCore.cpp */; };
-		FED66B3C14BF420600A39A03 /* EditorLightNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66B3A14BF420600A39A03 /* EditorLightNode.cpp */; };
-		FEDDC9531428E59E0004BF1A /* CameraPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC94F1428E59E0004BF1A /* CameraPanel.cpp */; };
 		FEDDC9541428E59E0004BF1A /* EditMatrixControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */; };
-		FEDDC9571428E5C20004BF1A /* PropertyPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC9551428E5C20004BF1A /* PropertyPanel.cpp */; };
 		FEDDC9AB142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC98D142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp */; };
 		FEDDC9AC142A3DDB0004BF1A /* ColladaAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC98F142A3DDB0004BF1A /* ColladaAnimation.cpp */; };
 		FEDDC9AD142A3DDB0004BF1A /* ColladaCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC991142A3DDB0004BF1A /* ColladaCamera.cpp */; };
@@ -337,6 +333,8 @@
 		5CE5A40114BF3164008A1B3F /* LightPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightPropertyControl.h; sourceTree = "<group>"; };
 		5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyControlCreator.cpp; sourceTree = "<group>"; };
 		5CE5A40414BF3171008A1B3F /* PropertyControlCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyControlCreator.h; sourceTree = "<group>"; };
+		5CE5A40614BF48A0008A1B3F /* EditorLightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightNode.cpp; sourceTree = "<group>"; };
+		5CE5A40714BF48A0008A1B3F /* EditorLightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightNode.h; sourceTree = "<group>"; };
 		5CE6F5DA14AB48DA006BBEE2 /* SceneNodeIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeIDs.h; sourceTree = "<group>"; };
 		5CFAF30E14A6334100355DCF /* UICheckBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UICheckBox.cpp; sourceTree = "<group>"; };
 		5CFAF30F14A6334100355DCF /* UICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBox.h; sourceTree = "<group>"; };
@@ -757,8 +755,6 @@
 		FE1B7D5013DF052300BA032C /* CameraController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraController.cpp; sourceTree = "<group>"; };
 		FE2246EC142F7AB300BC3B92 /* ColladaConvert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColladaConvert.cpp; path = Classes/Collada/ColladaConvert.cpp; sourceTree = "<group>"; };
 		FE2246ED142F7AB300BC3B92 /* ColladaConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaConvert.h; path = Classes/Collada/ColladaConvert.h; sourceTree = "<group>"; };
-		FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanelSwitcher.cpp; sourceTree = "<group>"; };
-		FE39246E1490C8FD00766CEC /* PanelSwitcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelSwitcher.h; sourceTree = "<group>"; };
 		FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		FE54EBBF13A1193400912810 /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
@@ -767,8 +763,6 @@
 		FE94203D13325A0B00515418 /* ResourcePackerScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourcePackerScreen.cpp; path = Classes/ResourcePackerScreen.cpp; sourceTree = "<group>"; };
 		FE94203E13325A0B00515418 /* ResourcePackerScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourcePackerScreen.h; path = Classes/ResourcePackerScreen.h; sourceTree = "<group>"; };
 		FE94204013325A1400515418 /* AppScreens.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreens.h; path = Classes/AppScreens.h; sourceTree = "<group>"; };
-		FE96BD8A13B2347B009EB81D /* SceneEditorScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditorScreen.cpp; sourceTree = "<group>"; };
-		FE96BD8B13B2347B009EB81D /* SceneEditorScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditorScreen.h; sourceTree = "<group>"; };
 		FE9892E211638EF700500198 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = MacOSSpecific/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		FE9892E411638EF700500198 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = MacOSSpecific/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		FE98931D11638FBB00500198 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -780,12 +774,8 @@
 		FEC3CA721283557F00541220 /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCore.h; path = Classes/GameCore.h; sourceTree = "<group>"; };
 		FED66B3A14BF420600A39A03 /* EditorLightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightNode.cpp; sourceTree = "<group>"; };
 		FED66B3B14BF420600A39A03 /* EditorLightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightNode.h; sourceTree = "<group>"; };
-		FEDDC94F1428E59E0004BF1A /* CameraPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraPanel.cpp; sourceTree = "<group>"; };
-		FEDDC9501428E59E0004BF1A /* CameraPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraPanel.h; sourceTree = "<group>"; };
 		FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditMatrixControl.cpp; sourceTree = "<group>"; };
 		FEDDC9521428E59E0004BF1A /* EditMatrixControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditMatrixControl.h; sourceTree = "<group>"; };
-		FEDDC9551428E5C20004BF1A /* PropertyPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyPanel.cpp; sourceTree = "<group>"; };
-		FEDDC9561428E5C20004BF1A /* PropertyPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyPanel.h; sourceTree = "<group>"; };
 		FEDDC98D142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColladaAnimatedMesh.cpp; path = Classes/Collada/ColladaAnimatedMesh.cpp; sourceTree = "<group>"; };
 		FEDDC98E142A3DDB0004BF1A /* ColladaAnimatedMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColladaAnimatedMesh.h; path = Classes/Collada/ColladaAnimatedMesh.h; sourceTree = "<group>"; };
 		FEDDC98F142A3DDB0004BF1A /* ColladaAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColladaAnimation.cpp; path = Classes/Collada/ColladaAnimation.cpp; sourceTree = "<group>"; };
@@ -1004,6 +994,8 @@
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
 			isa = PBXGroup;
 			children = (
+				5CE5A40614BF48A0008A1B3F /* EditorLightNode.cpp */,
+				5CE5A40714BF48A0008A1B3F /* EditorLightNode.h */,
 				5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */,
 				5CE5A40414BF3171008A1B3F /* PropertyControlCreator.h */,
 				5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */,
@@ -1667,16 +1659,8 @@
 				D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */,
 				D92D797B1498BC5D002F58FB /* EditorScene.cpp */,
 				D92D797C1498BC5D002F58FB /* EditorScene.h */,
-				FE39246D1490C8FD00766CEC /* PanelSwitcher.cpp */,
-				FE39246E1490C8FD00766CEC /* PanelSwitcher.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
 				FE1B7D4F13DF04B600BA032C /* CameraController.h */,
-				FE96BD8A13B2347B009EB81D /* SceneEditorScreen.cpp */,
-				FE96BD8B13B2347B009EB81D /* SceneEditorScreen.h */,
-				FEDDC9551428E5C20004BF1A /* PropertyPanel.cpp */,
-				FEDDC9561428E5C20004BF1A /* PropertyPanel.h */,
-				FEDDC94F1428E59E0004BF1A /* CameraPanel.cpp */,
-				FEDDC9501428E59E0004BF1A /* CameraPanel.h */,
 				47809C6F14A4037E00BAA259 /* DraggableDialog.h */,
 				47809C7014A4037E00BAA259 /* DraggableDialog.cpp */,
 			);
@@ -1904,11 +1888,8 @@
 				FEF303B81335CFC50078054F /* UIFileTreeCell.cpp in Sources */,
 				FEF304E21336953A0078054F /* UISpriteEditor.cpp in Sources */,
 				FEF304E5133695BB0078054F /* UIScrollView.cpp in Sources */,
-				FE96BD8C13B2347B009EB81D /* SceneEditorScreen.cpp in Sources */,
 				FE1B7D5113DF052300BA032C /* CameraController.cpp in Sources */,
-				FEDDC9531428E59E0004BF1A /* CameraPanel.cpp in Sources */,
 				FEDDC9541428E59E0004BF1A /* EditMatrixControl.cpp in Sources */,
-				FEDDC9571428E5C20004BF1A /* PropertyPanel.cpp in Sources */,
 				FEDDC9AB142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp in Sources */,
 				FEDDC9AC142A3DDB0004BF1A /* ColladaAnimation.cpp in Sources */,
 				FEDDC9AD142A3DDB0004BF1A /* ColladaCamera.cpp in Sources */,
@@ -1925,7 +1906,6 @@
 				FEDDC9B9142A3DDB0004BF1A /* ColladaTexture.cpp in Sources */,
 				FE2246EE142F7AB300BC3B92 /* ColladaConvert.cpp in Sources */,
 				FE1AE2E21455B51F00C6F712 /* VertexOctTree.cpp in Sources */,
-				FE39246F1490C8FD00766CEC /* PanelSwitcher.cpp in Sources */,
 				D99311F31497B1BB00BB577D /* btAxisSweep3.cpp in Sources */,
 				D99311F41497B1BB00BB577D /* btBroadphaseProxy.cpp in Sources */,
 				D99311F51497B1BB00BB577D /* btCollisionAlgorithm.cpp in Sources */,
