@@ -34,7 +34,6 @@ public:
 	
 private:
 	ResourcePackerScreen * resourcePackerScreen;
-    SceneEditorScreen * sceneEditorScreen;
     SceneEditorScreenMain * sceneEditorScreenMain;
 };
 

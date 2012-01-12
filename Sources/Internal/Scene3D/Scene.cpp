@@ -35,9 +35,11 @@
 #include "Render/3D/AnimatedMesh.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
+#include "Scene3D/SceneFile2.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
 #include "Platform/SystemTimer.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA 
 {
@@ -208,10 +210,21 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
         return proxyNode->GetNode();
     }
     
-	SceneFile * file = new SceneFile();
-	file->SetDebugLog(true);
-	file->LoadScene(rootNodePath, this);
-	SafeRelease(file);
+    String ext = FileSystem::Instance()->GetExtension(rootNodePath);
+    if(ext == ".sce")
+    {
+        SceneFile *file = new SceneFile();
+        file->SetDebugLog(true);
+        file->LoadScene(rootNodePath, this);
+        SafeRelease(file);
+    }
+    else if(ext == ".sc2")
+    {
+        SceneFile2 *file = new SceneFile2();
+        file->EnableDebugLog(true);
+        file->LoadScene(rootNodePath.c_str(), this);
+        SafeRelease(file);
+    }
 
     proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
     if (proxyNode)
