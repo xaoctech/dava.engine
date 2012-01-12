@@ -18,6 +18,7 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
 { 
+	realSelection = 0;
 	selection = 0;
 //	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
 //	dynDispatcher = new	btCollisionDispatcher(dynCollisionConfiguration);
