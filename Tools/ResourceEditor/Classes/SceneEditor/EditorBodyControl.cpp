@@ -82,9 +82,9 @@ void EditorBodyControl::CreateLeftPanel()
     leftPanelSceneGraph = ControlsFactory::CreatePanelControl(leftRect);
     AddControl(leftPanelSceneGraph);
     
-    Rect treeRect = leftRect;
-    treeRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 3);
-    sceneGraphTree = new UIHierarchy(treeRect);
+    Rect sceneGraphRect = leftRect;
+    sceneGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 4);
+    sceneGraphTree = new UIHierarchy(sceneGraphRect);
     ControlsFactory::CusomizeListControl(sceneGraphTree);
     ControlsFactory::SetScrollbar(sceneGraphTree);
     sceneGraphTree->SetCellHeight(CELL_HEIGHT);
@@ -92,37 +92,57 @@ void EditorBodyControl::CreateLeftPanel()
     sceneGraphTree->SetClipContents(true);
     leftPanelSceneGraph->AddControl(sceneGraphTree);
     
+    int32 y = sceneGraphRect.dy;
+    UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(
+                                                                      0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+                                                                 L"Refresh");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    
+    UIButton * lookAtButton = ControlsFactory::CreateButton(Rect(
+                                                                 0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+                                                            L"Look At Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * removeNodeButton = ControlsFactory::CreateButton(Rect(
+                                                                     0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+                                                                L"Remove Object");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
+                                                                           0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+                                                                      L"Debug Flags");
+    
+    refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshSceneGraph));
+    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
+    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
+    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
+    
+    leftPanelSceneGraph->AddControl(refreshSceneGraphButton);
+    leftPanelSceneGraph->AddControl(lookAtButton);
+    leftPanelSceneGraph->AddControl(removeNodeButton);
+    leftPanelSceneGraph->AddControl(enableDebugFlagsButton);
+    
+    SafeRelease(refreshSceneGraphButton);
+    SafeRelease(lookAtButton);
+    SafeRelease(removeNodeButton);
+    SafeRelease(enableDebugFlagsButton);
+    
+    
+    
+    Rect dataGraphRect = leftRect;
+    dataGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT);
     leftPanelDataGraph = ControlsFactory::CreatePanelControl(leftRect);
-    dataGraphTree = new UIHierarchy(treeRect);
+    dataGraphTree = new UIHierarchy(dataGraphRect);
     ControlsFactory::CusomizeListControl(dataGraphTree);
     ControlsFactory::SetScrollbar(dataGraphTree);
     dataGraphTree->SetCellHeight(CELL_HEIGHT);
     dataGraphTree->SetDelegate(this);
     dataGraphTree->SetClipContents(true);
     leftPanelDataGraph->AddControl(dataGraphTree);
-
-    
-    int32 y = treeRect.dy;
-    lookAtButton = ControlsFactory::CreateButton(Rect(
-                                        0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                        L"Look At Object");
-    y += ControlsFactory::BUTTON_HEIGHT;
-    removeNodeButton = ControlsFactory::CreateButton(Rect(
-                                        0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                        L"Remove Object");
-    y += ControlsFactory::BUTTON_HEIGHT;
-    enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
-                                        0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                        L"Debug Flags");
-    
-    lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
-    removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
-    enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
-
-    
-    leftPanelSceneGraph->AddControl(lookAtButton);
-    leftPanelSceneGraph->AddControl(removeNodeButton);
-    leftPanelSceneGraph->AddControl(enableDebugFlagsButton);
+    UIButton * refreshDataGraphButton = ControlsFactory::CreateButton(Rect(
+                                                                      0, dataGraphRect.dy, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+                                                                 L"Refresh");
+    refreshDataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshDataGraph));
+    leftPanelDataGraph->AddControl(refreshDataGraphButton);
+    SafeRelease(refreshDataGraphButton);
 }
 
 void EditorBodyControl::ReleaseLeftPanel()
@@ -132,10 +152,6 @@ void EditorBodyControl::ReleaseLeftPanel()
     
     SafeRelease(dataGraphTree);
     SafeRelease(leftPanelDataGraph);
-    
-    SafeRelease(lookAtButton);
-    SafeRelease(removeNodeButton);
-    SafeRelease(enableDebugFlagsButton);
 }
 
 
@@ -327,7 +343,15 @@ bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNod
     {
         if (forNode) 
         {
-            return ((SceneNode*)forNode)->GetChildrenCount() > 0;
+            SceneNode *node = (SceneNode*)forNode;
+            if(node->GetSolid())
+            {
+                return false;
+            }
+            else
+            {
+                return node->GetChildrenCount() > 0;
+            }
         }
         
         return scene->GetChildrenCount() > 0;
@@ -354,7 +378,16 @@ int32 EditorBodyControl::ChildrenCount(UIHierarchy *forHierarchy, void *forParen
     {
         if (forParent) 
         {
-            return ((SceneNode*)forParent)->GetChildrenCount();
+            SceneNode *node = (SceneNode*)forParent;
+            if(node->GetSolid())
+            {
+                return 0;
+            }
+            else
+            {
+                return node->GetChildrenCount();
+            }
+
         }
         
         return scene->GetChildrenCount();
@@ -431,6 +464,7 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         if(n == selectedSceneGraphNode)
         {
             c->SetSelected(true, false);
+            savedTreeCell = c;
         }
         else
         {
@@ -550,9 +584,15 @@ SceneNode * getHighestProxy(SceneNode* curr)
 		return getHighestProxy(curr->GetParent());
 	if (cc > 1)
 		return 0;
-	if (cc == 1 && getHighestProxy(curr->GetParent()) == 0)
-		return curr;
-    
+	if (cc == 1)
+    {
+        SceneNode * result = getHighestProxy(curr->GetParent());
+	    if (result == 0)
+            return curr;
+        else return result;
+        
+    }
+	
     return NULL;
 }
 
@@ -560,49 +600,50 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {
-        if(event->tid == DVKEY_ESCAPE)
+        if(UIControlSystem::Instance()->GetFocusedControl() == this || 
+           UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
         {
-            if(UIControlSystem::Instance()->GetFocusedControl() == this)
+            if(event->tid == DVKEY_ESCAPE)
             {
                 ResetSelection();
             }
+            
+            if (event->keyChar == '1')
+                cameraController->SetSpeed(40);
+            if (event->keyChar == '2')
+                cameraController->SetSpeed(80);
+            if (event->keyChar == '3')
+                cameraController->SetSpeed(160);
+            if (event->keyChar == '4')
+                cameraController->SetSpeed(320);
+            
+            Camera * newCamera = 0;
+            if (event->keyChar == 'z')newCamera = scene->GetCamera(0);
+            if (event->keyChar == 'x')newCamera = scene->GetCamera(1);
+            if (event->keyChar == 'c')newCamera = scene->GetCamera(2);
+            if (event->keyChar == 'v')newCamera = scene->GetCamera(3);
+            if (event->keyChar == 'b')newCamera = scene->GetCamera(4);
+            if (newCamera)
+            {
+                scene->SetCurrentCamera(newCamera);
+                scene->SetClipCamera(scene->GetCamera(0));
+            }
+            
+            if (event->keyChar == 'w') modState = MOD_MOVE;
+            if (event->keyChar == 'e') modState = MOD_ROTATE;
+            if (event->keyChar == 'r') modState = MOD_SCALE;
+            if (event->keyChar == '5') modAxis = AXIS_X;
+            if (event->keyChar == '6') modAxis = AXIS_Y;
+            if (event->keyChar == '7') modAxis = AXIS_Z;
+            if (event->keyChar == '8') 
+            {
+                if (modAxis < AXIS_XY)
+                    modAxis = AXIS_XY;
+                else
+                    modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+            }
+            UpdateModState();
         }
-
-        if (event->keyChar == '1')
-            cameraController->SetSpeed(40);
-        if (event->keyChar == '2')
-            cameraController->SetSpeed(80);
-        if (event->keyChar == '3')
-            cameraController->SetSpeed(160);
-        if (event->keyChar == '4')
-            cameraController->SetSpeed(320);
-        
-        Camera * newCamera = 0;
-        if (event->keyChar == 'z')newCamera = scene->GetCamera(0);
-        if (event->keyChar == 'x')newCamera = scene->GetCamera(1);
-        if (event->keyChar == 'c')newCamera = scene->GetCamera(2);
-        if (event->keyChar == 'v')newCamera = scene->GetCamera(3);
-        if (event->keyChar == 'b')newCamera = scene->GetCamera(4);
-        if (newCamera)
-        {
-            scene->SetCurrentCamera(newCamera);
-            scene->SetClipCamera(scene->GetCamera(0));
-        }
-		
-        if (event->keyChar == 'w') modState = MOD_MOVE;
-		if (event->keyChar == 'e') modState = MOD_ROTATE;
-		if (event->keyChar == 'r') modState = MOD_SCALE;
-        if (event->keyChar == '5') modAxis = AXIS_X;
-		if (event->keyChar == '6') modAxis = AXIS_Y;
-		if (event->keyChar == '7') modAxis = AXIS_Z;
-		if (event->keyChar == '8') 
-		{
-			if (modAxis < AXIS_XY)
-				modAxis = AXIS_XY;
-			else
-				modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
-		}
-		UpdateModState();
 	}   
 	
 	//selection with second mouse button 
@@ -621,59 +662,55 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	}	
 	
     SceneNode * selection = scene->GetSelection();
-	if (selection != 0)
+	if (selection != 0 && event->tid == UIEvent::BUTTON_1)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
-			if (event->tid == UIEvent::BUTTON_1)
-			{
-				inTouch = true;	
-				touchStart = event->point;
-				
-				proxy = getHighestProxy(selection);
-				if (proxy == 0)
-					proxy = selection;
-				
-				startTransform = proxy->GetLocalTransform();
-				
-				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				if (userData)
-					userData->bulletObject->SetUpdateFlag(false);
-				
-				//calculate koefficient for moving
-				Camera * cam = scene->GetCurrentCamera();
-				const Vector3 & camPos = cam->GetPosition();
-				const Matrix4 & wt = proxy->GetWorldTransform();
-				Vector3 objPos = Vector3(0,0,0) * wt;
-				
-				Matrix4 inv;
-				Matrix4 worldTransform = proxy->GetWorldTransform();
-				worldTransform._03 = 0.0f;
-				worldTransform._13 = 0.0f;
-				worldTransform._23 = 0.0f;
-				worldTransform._33 = 1.0f;
-				worldTransform._30 = 0.0f;
-				worldTransform._31 = 0.0f;
-				worldTransform._32 = 0.0f;
-				
-//				bool res = worldTransform.GetInverse(inv);				
-
-				
-//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
-				Vector3 dir = objPos - camPos;
-				moveKf = dir.Length() * 0.003;
-				
-//				Logger::Debug(L"transformK = %f", transformK);			
-//				Logger::Debug(L"moveKf = %f", moveKf);				
-//				//moveKf /= transformK;
-//				Logger::Debug(L"result = %f", moveKf);
-//				Logger::Debug(L"inv = %d", res);
-			}
+			inTouch = true;	
+			touchStart = event->point;
+			
+			proxy = getHighestProxy(selection);
+			if (proxy == 0)
+				proxy = selection;
+			
+			startTransform = proxy->GetLocalTransform();
+			startWT = proxy->GetWorldTransform();
+			
+			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
+			if (userData)
+				userData->bulletObject->SetUpdateFlag(false);
+			
+			//calculate koefficient for moving
+			Camera * cam = scene->GetCurrentCamera();
+			const Vector3 & camPos = cam->GetPosition();
+			const Matrix4 & wt = proxy->GetWorldTransform();
+			Vector3 objPos = Vector3(0,0,0) * wt;
+			
+			Matrix4 inv;
+			Matrix4 worldTransform = proxy->GetWorldTransform();
+			worldTransform._03 = 0.0f;
+			worldTransform._13 = 0.0f;
+			worldTransform._23 = 0.0f;
+			worldTransform._33 = 1.0f;
+			worldTransform._30 = 0.0f;
+			worldTransform._31 = 0.0f;
+			worldTransform._32 = 0.0f;
+			
+			//				bool res = worldTransform.GetInverse(inv);				
+			
+			
+			//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
+			Vector3 dir = objPos - camPos;
+			moveKf = dir.Length() * 0.003;
+			
+			//				Logger::Debug(L"transformK = %f", transformK);			
+			//				Logger::Debug(L"moveKf = %f", moveKf);				
+			//				//moveKf /= transformK;
+			//				Logger::Debug(L"result = %f", moveKf);
+			//				Logger::Debug(L"inv = %d", res);
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
 		{
-			if (event->tid == UIEvent::BUTTON_1)
-			{
 //				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 //				const Matrix4 & worldTransform = proxy->GetWorldTransform();
 //
@@ -687,23 +724,35 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				
 				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
 				proxy->SetLocalTransform(currTransform);
-			}
+            
+            nodesPropertyPanel->UpdateFieldsForCurrentNode();
+            
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
 		{
-			if (event->tid == UIEvent::BUTTON_1)
-			{
 				inTouch = false;
 				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
 				if (userData)
 					userData->bulletObject->SetUpdateFlag(true);
-			}
 		}
 	}
 	else
 	{
-//		cameraController->SetSelection(selection);
-		cameraController->Input(event);
+		cameraController->SetSelection(selection);
+        
+        if (event->phase == UIEvent::PHASE_KEYCHAR)
+        {
+            if(UIControlSystem::Instance()->GetFocusedControl() == this || 
+               UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
+            {
+                cameraController->Input(event);
+            }
+        }
+        else
+        {
+            cameraController->Input(event);
+        }
+        
 	}
 	UIControl::Input(event);
 }
@@ -743,9 +792,14 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 	{
 		Matrix4 d;
 		Matrix4 translate1, translate2;
+
+		Vector3 v = startWT.GetTranslationVector();
+		translate1.CreateTranslation(-v);
+		translate2.CreateTranslation(v);
 		
-		translate1.CreateTranslation(-startTransform.GetTranslationVector());
-		translate2.CreateTranslation(startTransform.GetTranslationVector());
+//        SceneNode * selection = scene->GetSelection();
+//		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
+//		translate2.CreateTranslation(selection->GetWorldTransform().GetTranslationVector());
 		
 		switch (modAxis) 
 		{
@@ -800,6 +854,8 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 		Vector2 start = cam->GetOnScreenPosition(offs, rect);
 		Vector2 end;
 	
+		const Vector3 & vc = cam->GetPosition();
+		float32 kf = ((vc - offs).Length() - cam->GetZNear()) * 0.2;
 		
 		for(int i = 0; i < 3; i++)
 		{
@@ -815,7 +871,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 				RenderManager::Instance()->SetColor(1.0f, 0, 0, 1.0f);	
 			}
 
-			Vector3 v = offs + vect[i] * 5.0;
+			Vector3 v = offs + vect[i] * kf;
 			end = cam->GetOnScreenPosition(v, rect);
 			RenderHelper::Instance()->DrawLine(start, end);
 
@@ -904,12 +960,16 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
     if(editScene)
     {
+        SceneNode *rootNode = scene->GetRootNode(pathToFile);
         mainFilePath = pathToFile;
-        scene->AddNode(scene->GetRootNode(pathToFile));
+        rootNode->SetSolid(false);
+        scene->AddNode(rootNode);
     }
     else
     {
-        scene->AddNode(scene->GetRootNode(pathToFile)->Clone());
+        SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+        rootNode->SetSolid(true);
+        scene->AddNode(rootNode);
     }
     
     if (scene->GetCamera(0))
@@ -1080,7 +1140,8 @@ void EditorBodyControl::NodesPropertyChanged()
     if(selectedSceneGraphNode)
     {
         nodesPropertyPanel->WriteTo(selectedSceneGraphNode);
-        savedTreeCell->text->SetText(StringToWString(selectedSceneGraphNode->GetName()));
+        
+        sceneGraphTree->Refresh();
     }
 }
 
@@ -1108,13 +1169,34 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         List<void *> nodesForSearch;
         
         SceneNode *nd = node;
-        while(nd)
+        SceneNode *topSolidNode = NULL;
+        while(nd)   //find solid node
+        {
+            if(nd->GetSolid())
+            {
+                topSolidNode = nd;
+            }
+            nd = nd->GetParent();
+        }
+        
+        if(topSolidNode)
+        {
+            selectedSceneGraphNode = topSolidNode;
+            nd = topSolidNode;
+        }
+        else
+        {
+            nd = node;
+        }
+        
+        while(nd)   // fill list of nodes
         {
             nodesForSearch.push_front(nd);
             nd = nd->GetParent();
         }
         
         sceneGraphTree->OpenNodes(nodesForSearch);
+        sceneGraphTree->ScrollToData(selectedSceneGraphNode);
     }
     else
     {
@@ -1149,4 +1231,14 @@ void EditorBodyControl::RefreshDataGraph()
     dataNodes[EDNID_SCENE] = scene->GetScenes();
     
     dataGraphTree->Refresh();
+}
+
+void EditorBodyControl::OnRefreshSceneGraph(BaseObject * obj, void *, void *)
+{
+    sceneGraphTree->Refresh();
+}
+
+void EditorBodyControl::OnRefreshDataGraph(BaseObject * obj, void *, void *)
+{
+    RefreshDataGraph();
 }

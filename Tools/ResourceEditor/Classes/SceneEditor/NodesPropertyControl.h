@@ -33,6 +33,8 @@ public:
     virtual void ReadFrom(SceneNode *sceneNode);
     virtual void ReadFrom(DataNode *dataNode);
     virtual void WriteTo(SceneNode *sceneNode);
+    
+    void UpdateFieldsForCurrentNode();
 
     
     virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
@@ -42,6 +44,7 @@ public:
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     virtual void OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4);
+    virtual void OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded);
 
     void SetDelegate(NodesPropertyDelegate *delegate);
     
@@ -92,6 +95,8 @@ protected:
     
     
     void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
+    
+    KeyedArchive *headerStates;
 };
 
 

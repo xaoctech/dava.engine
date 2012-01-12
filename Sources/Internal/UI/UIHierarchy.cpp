@@ -681,5 +681,48 @@ void UIHierarchy::OnViewPositionChanged(UIScrollBar *byScrollBar, float32 newPos
     scroll->SetPosition(-newPosition);
 }
 
+bool UIHierarchy::GetCount(UIHierarchyNode *curNode, void *userData, int32 &findCount)    
+{
+    bool isFound = false;
+    int32 count = 0;
+    int32 childCount = 0;
+    if(!curNode)
+    {
+        curNode = baseNode;
+    }
+    
+    for (List<UIHierarchyNode *>::iterator cit = curNode->children.begin(); cit != curNode->children.end(); cit++) 
+    {
+        childCount = 0;
+        ++count;
+        UIHierarchyNode *nd = (*cit);
+        if (nd->userNode == userData)
+        {
+            isFound = true;
+        }
+        else if(nd->isOpen)
+        {
+            isFound = GetCount(nd, userData, childCount);
+        }
+        
+        if(isFound)
+        {
+            findCount = count + childCount;
+            break;
+        }
+    }
+    
+    return isFound;
+}
+    
+void UIHierarchy::ScrollToData(void *userData)
+{
+    int32 count = 0;
+    
+    bool found = GetCount(NULL, userData, count);
+    
+    float32 scrollPos = count * GetCellHeight();
+    scroll->SetPosition(-scrollPos);
+}
     
 };

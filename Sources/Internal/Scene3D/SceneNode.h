@@ -183,7 +183,10 @@ public:
     
     inline Scene *GetScene() const;
 	
-	bool isSolidNode;
+    void SetSolid(bool isSolid);
+    bool GetSolid();
+    
+//	bool isSolidNode;
 	BaseObject * userData;
     
     //Returns maximum Bounding Box as WorlTransformedBox
