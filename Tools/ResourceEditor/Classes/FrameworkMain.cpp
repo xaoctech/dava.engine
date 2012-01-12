@@ -107,7 +107,7 @@ void FrameworkDidLaunched()
     
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
-	DAVA::Core::SetOptions(appOptions);
+	DAVA::Core::Instance()->SetOptions(appOptions);
 }
 
 

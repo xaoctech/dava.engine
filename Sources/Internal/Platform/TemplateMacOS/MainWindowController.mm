@@ -167,7 +167,7 @@ namespace DAVA
 	//Core::Instance()->Creat();
     
 		// do all ground work & setup window itself according to value specified by user
-	KeyedArchive * options = DAVA::Core::GetOptions();
+	KeyedArchive * options = DAVA::Core::Instance()->GetOptions();
 	int32 width = options->GetInt32("width", 800);
 	int32 height = options->GetInt32("height", 600);
 	

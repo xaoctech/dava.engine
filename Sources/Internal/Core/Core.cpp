@@ -66,13 +66,13 @@ Core::Core()
 	isActive = false;
 	firstRun = true;
 	isConsoleMode = false;
+	options = new KeyedArchive();
 }
 
 Core::~Core()
 {
 }
 
-static KeyedArchive * options = 0;
 
 void Core::CreateSingletons()
 {
@@ -86,7 +86,6 @@ void Core::CreateSingletons()
     
     // check types size
     
-	options = new KeyedArchive();
 	new FileSystem();
 	new Logger();
 	if (isConsoleMode)
@@ -125,7 +124,6 @@ void Core::CreateSingletons()
 // We do not create RenderManager until we know which version of render manager we want to create
 void Core::CreateRenderManager()
 {
-    KeyedArchive * options = GetOptions();
     eRenderer renderer = (eRenderer)options->GetInt32("renderer");
     
     RenderManager::Create(renderer);
@@ -154,15 +152,13 @@ void Core::ReleaseSingletons()
 void Core::SetOptions(KeyedArchive * archiveOfOptions)
 {
 	SafeRelease(options);
+
 	options = SafeRetain(archiveOfOptions);
-	if (options) 
-	{
 #if defined(__DAVAENGINE_IPHONE__)
 		useAutodetectContentScaleFactor = options->GetBool("iPhone_autodetectScreenScaleFactor", false);
 #endif 
-	}
 	
-	Instance()->screenOrientation = options->GetInt32("orientation", SCREEN_ORIENTATION_PORTRAIT);
+	screenOrientation = options->GetInt32("orientation", SCREEN_ORIENTATION_PORTRAIT);
 	
 }
     

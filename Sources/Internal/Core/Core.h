@@ -152,8 +152,8 @@ public:
 	bool IsConsoleMode();
 	
 public:
-	static void SetOptions(KeyedArchive * archiveOfOptions);
-	static KeyedArchive * GetOptions();
+	void SetOptions(KeyedArchive * archiveOfOptions);
+	KeyedArchive * GetOptions();
 
 	
 	static void SetApplicationCore(ApplicationCore * core);
@@ -322,6 +322,8 @@ private:
 	static float32 physicalToVirtual;
 	static Vector2 drawOffset;
 	
+    KeyedArchive * options;
+
 	bool isActive;
 	
 	uint32 globalFrameIndex;
