@@ -49,16 +49,12 @@ public:
 	
     virtual void AddNode(DataNode * node);
 
-	virtual void Draw();
-	// TODO pass material to it
 	virtual void DrawPolygonGroup(int32 index, Material * material);
 	
 	uint32			GetPolygonGroupCount();
 	PolygonGroup *	GetPolygonGroup(uint32 index);
 	
 protected:	
-	//uint32					polygroupCount;
-	//Vector<PolygonGroup *>	polygroups;
 };
 
 };

@@ -185,10 +185,6 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 }
 
-void StaticMesh::Draw()
-{
-}
-	
-	
+
 
 };
