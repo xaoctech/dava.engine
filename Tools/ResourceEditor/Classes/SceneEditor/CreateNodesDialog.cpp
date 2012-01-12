@@ -19,6 +19,7 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     scene = NULL;
     
     dialogDelegate = NULL;
+	propertyList = 0;
     
     header = new UIStaticText(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT));
     header->SetFont(ControlsFactory::GetFontLight());
