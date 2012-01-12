@@ -43,6 +43,8 @@ public:
 	void SetSelection(SceneNode *newSelection);
     
 	virtual void Draw();
+	void DrawGrid();
+
 	
 protected:
 
