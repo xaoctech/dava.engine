@@ -19,6 +19,7 @@
 #endif //__DAVAENGINE_BEAST__
 
 #include "SceneEditor/OutputManager.h"
+#include "SceneEditor/EditorSettings.h"
 
 
 using namespace DAVA;
@@ -46,6 +47,7 @@ void GameCore::OnAppStarted()
 #endif //__DAVAENGINE_BEAST__
 	
     new OutputManager();
+    new EditorSettings();
     
     
 	resourcePackerScreen = new ResourcePackerScreen();
@@ -59,6 +61,10 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
+    EditorSettings::Instance()->Release();
+    OutputManager::Instance()->Release();
+
+    
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
 }
