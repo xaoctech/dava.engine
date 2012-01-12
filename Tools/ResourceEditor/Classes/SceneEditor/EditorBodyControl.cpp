@@ -840,6 +840,8 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 		Vector2 start = cam->GetOnScreenPosition(offs, rect);
 		Vector2 end;
 	
+		const Vector3 & vc = cam->GetPosition();
+		float32 kf = ((vc - offs).Length() - cam->GetZNear()) * 0.2;
 		
 		for(int i = 0; i < 3; i++)
 		{
@@ -855,7 +857,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 				RenderManager::Instance()->SetColor(1.0f, 0, 0, 1.0f);	
 			}
 
-			Vector3 v = offs + vect[i] * 5.0;
+			Vector3 v = offs + vect[i] * kf;
 			end = cam->GetOnScreenPosition(v, rect);
 			RenderHelper::Instance()->DrawLine(start, end);
 
