@@ -751,15 +751,12 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
-//    RemoveControl(nodeDialogs[currentNodeDialog]);
     RemoveControl(nodeDialog);
     RemoveControl(dialogBack);
     
-//    if(CreateNodeDialog::RCODE_OK == retCode)
     if(CreateNodesDialog::RCODE_OK == retCode)
     {
         BodyItem *iBody = FindCurrentBody();
-//        iBody->bodyControl->AddNode(nodeDialogs[currentNodeDialog]->GetSceneNode());
         iBody->bodyControl->AddNode(nodeDialog->GetSceneNode());
     }
 }
