@@ -115,14 +115,14 @@ void KeyboardDevice::PrepareKeyTranslator()
     // alpha keys
     for(int32 i = 0; i < 26; ++i)
     {
-        keyTranslator[0x41 + i] = DVKEY_A;
+        keyTranslator[0x41 + i] = DVKEY_A + i;
     }
     
     // numeric keys & keys at num pad
     for(int32 i = 0; i < 10; ++i)
     {
-        keyTranslator[0x30 + i] = DVKEY_0;
-        keyTranslator[0x60 + i] = DVKEY_0;
+        keyTranslator[0x30 + i] = DVKEY_0 + i;
+        keyTranslator[0x60 + i] = DVKEY_0 + i;
     }
     
 #endif
@@ -184,7 +184,7 @@ void KeyboardDevice::PrepareKeyTranslator()
     // numeric keys at numpad
     for(int32 i = 0; i < 10; ++i)
     {
-        keyTranslator[0x52 + i] = DVKEY_0;
+        keyTranslator[0x52 + i] = DVKEY_0 + i;
     }
     
 #endif
