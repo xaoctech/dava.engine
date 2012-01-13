@@ -11,9 +11,7 @@ public:
 	virtual void SafeDeleteManager(BeastManager ** manager) {};
 
 	virtual void ParseScene(BeastManager * manager, DAVA::Scene * scene) {};
-	virtual void CreateSkyLight(BeastManager * manager) {};
-	virtual void SetCamera(BeastManager * manager, DAVA::Camera * davaCamera) {};
-	virtual void WindowedRender(BeastManager * manager) {};
+	virtual void GenerateLightmaps(BeastManager * manager) {};
 	virtual void SetLightmapsDirectory(BeastManager * manager, const DAVA::String & path) {};
 };
 
