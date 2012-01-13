@@ -616,45 +616,130 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         if(UIControlSystem::Instance()->GetFocusedControl() == this || 
            UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
         {
-            if(event->tid == DVKEY_ESCAPE)
-            {
-                ResetSelection();
-            }
-            
-            if (event->keyChar == '1')
-                cameraController->SetSpeed(40);
-            if (event->keyChar == '2')
-                cameraController->SetSpeed(80);
-            if (event->keyChar == '3')
-                cameraController->SetSpeed(160);
-            if (event->keyChar == '4')
-                cameraController->SetSpeed(320);
             
             Camera * newCamera = 0;
-            if (event->keyChar == 'z')newCamera = scene->GetCamera(0);
-            if (event->keyChar == 'x')newCamera = scene->GetCamera(1);
-            if (event->keyChar == 'c')newCamera = scene->GetCamera(2);
-            if (event->keyChar == 'v')newCamera = scene->GetCamera(3);
-            if (event->keyChar == 'b')newCamera = scene->GetCamera(4);
+            switch(event->tid)
+            {
+                case DVKEY_ESCAPE:
+                    ResetSelection();
+                    break;
+
+                case DVKEY_1:
+                    cameraController->SetSpeed(40);
+                    break;
+
+                case DVKEY_2:
+                    cameraController->SetSpeed(80);
+                    break;
+                
+                case DVKEY_3:
+                    cameraController->SetSpeed(160);
+                    break;
+
+                case DVKEY_4:
+                    cameraController->SetSpeed(320);
+                    break;
+
+                case DVKEY_X:
+                    newCamera = scene->GetCamera(1);
+                    break;
+
+                case DVKEY_C:
+                    newCamera = scene->GetCamera(2);
+                    break;
+
+                case DVKEY_V:
+                    newCamera = scene->GetCamera(3);
+                    break;
+
+                case DVKEY_B:
+                    newCamera = scene->GetCamera(4);
+                    break;
+
+                case DVKEY_W:
+                    modState = MOD_MOVE;
+                    break;
+
+                case DVKEY_E:
+                    modState = MOD_ROTATE;
+                    break;
+
+                case DVKEY_R:
+                    modState = MOD_SCALE;
+                    break;
+
+                case DVKEY_5:
+                    modAxis = AXIS_X;
+                    break;
+
+                case DVKEY_6:
+                    modAxis = AXIS_Y;
+                    break;
+
+                case DVKEY_7:
+                    modAxis = AXIS_Z;
+                    break;
+
+                case DVKEY_8:
+                {
+                    if (modAxis < AXIS_XY) modAxis = AXIS_XY;
+                    else modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+                    
+                    break;
+                }
+
+                default:
+                    break;
+            }
+            
             if (newCamera)
             {
                 scene->SetCurrentCamera(newCamera);
                 scene->SetClipCamera(scene->GetCamera(0));
             }
+
             
-            if (event->keyChar == 'w') modState = MOD_MOVE;
-            if (event->keyChar == 'e') modState = MOD_ROTATE;
-            if (event->keyChar == 'r') modState = MOD_SCALE;
-            if (event->keyChar == '5') modAxis = AXIS_X;
-            if (event->keyChar == '6') modAxis = AXIS_Y;
-            if (event->keyChar == '7') modAxis = AXIS_Z;
-            if (event->keyChar == '8') 
-            {
-                if (modAxis < AXIS_XY)
-                    modAxis = AXIS_XY;
-                else
-                    modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
-            }
+            
+//            if(event->tid == DVKEY_ESCAPE)
+//            {
+//                ResetSelection();
+//            }
+//            
+//            if (event->keyChar == '1')
+//                cameraController->SetSpeed(40);
+//            if (event->keyChar == '2')
+//                cameraController->SetSpeed(80);
+//            if (event->keyChar == '3')
+//                cameraController->SetSpeed(160);
+//            if (event->keyChar == '4')
+//                cameraController->SetSpeed(320);
+            
+//            Camera * newCamera = 0;
+//            if (event->keyChar == 'z')newCamera = scene->GetCamera(0);
+//            if (event->keyChar == 'x')newCamera = scene->GetCamera(1);
+//            if (event->keyChar == 'c')newCamera = scene->GetCamera(2);
+//            if (event->keyChar == 'v')newCamera = scene->GetCamera(3);
+//            if (event->keyChar == 'b')newCamera = scene->GetCamera(4);
+//            if (newCamera)
+//            {
+//                scene->SetCurrentCamera(newCamera);
+//                scene->SetClipCamera(scene->GetCamera(0));
+//            }
+            
+//            if (event->keyChar == 'w') modState = MOD_MOVE;
+//            if (event->keyChar == 'e') modState = MOD_ROTATE;
+//            if (event->keyChar == 'r') modState = MOD_SCALE;
+//            if (event->keyChar == '5') modAxis = AXIS_X;
+//            if (event->keyChar == '6') modAxis = AXIS_Y;
+//            if (event->keyChar == '7') modAxis = AXIS_Z;
+//            if (event->keyChar == '8') 
+//            {
+//                if (modAxis < AXIS_XY)
+//                    modAxis = AXIS_XY;
+//                else
+//                    modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+//            }
+
             UpdateModState();
         }
 	}   
