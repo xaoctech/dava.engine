@@ -111,6 +111,20 @@ void KeyboardDevice::PrepareKeyTranslator()
 	keyTranslator[VK_MENU] = DVKEY_ALT;
 	keyTranslator[VK_SHIFT] = DVKEY_SHIFT;
 	keyTranslator[VK_CAPITAL] = DVKEY_CAPSLOCK;
+    
+    // alpha keys
+    for(int32 i = 0; i < 26; ++i)
+    {
+        keyTranslator[0x41 + i] = DVKEY_A;
+    }
+    
+    // numeric keys & keys at num pad
+    for(int32 i = 0; i < 10; ++i)
+    {
+        keyTranslator[0x30 + i] = DVKEY_0;
+        keyTranslator[0x60 + i] = DVKEY_0;
+    }
+    
 #endif
 
 #if defined(__DAVAENGINE_MACOS__)
@@ -125,6 +139,54 @@ void KeyboardDevice::PrepareKeyTranslator()
     keyTranslator[DVMACOS_OPTION] = DVKEY_ALT;
     keyTranslator[DVMACOS_SHIFT] = DVKEY_SHIFT;
     keyTranslator[DVMACOS_CAPS_LOCK] = DVKEY_CAPSLOCK;
+    
+
+    keyTranslator[0x00] = DVKEY_A;
+    keyTranslator[0x0B] = DVKEY_B;
+    keyTranslator[0x08] = DVKEY_C;
+    keyTranslator[0x02] = DVKEY_D;
+    keyTranslator[0x0E] = DVKEY_E;
+    keyTranslator[0x03] = DVKEY_F;
+    keyTranslator[0x05] = DVKEY_G;
+    keyTranslator[0x04] = DVKEY_H;
+    keyTranslator[0x22] = DVKEY_I;
+    keyTranslator[0x26] = DVKEY_J;
+    keyTranslator[0x28] = DVKEY_K;
+    keyTranslator[0x25] = DVKEY_L;
+    keyTranslator[0x2D] = DVKEY_M;
+    keyTranslator[0x2E] = DVKEY_N;
+    keyTranslator[0x1F] = DVKEY_O;
+    keyTranslator[0x23] = DVKEY_P;
+    keyTranslator[0x0C] = DVKEY_Q;
+    keyTranslator[0x0F] = DVKEY_R;
+    keyTranslator[0x01] = DVKEY_S;
+    keyTranslator[0x11] = DVKEY_T;
+    keyTranslator[0x20] = DVKEY_U;
+    keyTranslator[0x09] = DVKEY_V;
+    keyTranslator[0x0D] = DVKEY_W;
+    keyTranslator[0x07] = DVKEY_X;
+    keyTranslator[0x10] = DVKEY_Y;
+    keyTranslator[0x06] = DVKEY_Z;
+
+
+    keyTranslator[0x1D] = DVKEY_0;
+    keyTranslator[0x12] = DVKEY_1;
+    keyTranslator[0x13] = DVKEY_2;
+    keyTranslator[0x14] = DVKEY_3;
+    keyTranslator[0x15] = DVKEY_4;
+    keyTranslator[0x17] = DVKEY_5;
+    keyTranslator[0x16] = DVKEY_6;
+    keyTranslator[0x1A] = DVKEY_7;
+    keyTranslator[0x1C] = DVKEY_8;
+    keyTranslator[0x19] = DVKEY_9;
+
+    
+    // numeric keys at numpad
+    for(int32 i = 0; i < 10; ++i)
+    {
+        keyTranslator[0x52 + i] = DVKEY_0;
+    }
+    
 #endif
 }
     
