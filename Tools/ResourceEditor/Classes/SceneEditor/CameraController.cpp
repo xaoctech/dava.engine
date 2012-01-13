@@ -59,7 +59,6 @@ WASDCameraController::WASDCameraController(float32 _speed)
     , viewZAngle(0)
     , viewYAngle(0)
 	, selection(0)
-    , updateDelta(0.f)
 {
 
 }
@@ -78,12 +77,9 @@ void WASDCameraController::Update(float32 timeElapsed)
     UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
     if(!tf && camera)
     {
-        float32 CHECK_DELTA = 0.2f;
-        updateDelta += timeElapsed;
-        
-        if(CHECK_DELTA <= updateDelta)
+        float32 moveSpeed = speed * timeElapsed;        
+
         {
-            updateDelta = 0.f;
             
             bool moveUp = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_UP) | 
                            InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_W));
@@ -94,7 +90,7 @@ void WASDCameraController::Update(float32 timeElapsed)
                 //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
                 
                 direction.Normalize();
-                pos += direction * speed * SystemTimer::Instance()->FrameDelta();
+                pos += direction * moveSpeed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 
@@ -109,7 +105,7 @@ void WASDCameraController::Update(float32 timeElapsed)
                 Vector3 dir = camera->GetDirection();
                 Vector3 left = camera->GetLeft();
                 
-                pos -= left * speed * SystemTimer::Instance()->FrameDelta();
+                pos -= left * moveSpeed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(dir);
             }
@@ -123,7 +119,7 @@ void WASDCameraController::Update(float32 timeElapsed)
                 Vector3 direction = camera->GetDirection();
                 //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
                 
-                pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
+                pos -= direction * moveSpeed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
@@ -138,7 +134,7 @@ void WASDCameraController::Update(float32 timeElapsed)
                 Vector3 dir = camera->GetDirection();
                 Vector3 left = camera->GetLeft();
                 
-                pos += left * speed * SystemTimer::Instance()->FrameDelta();
+                pos += left * moveSpeed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(dir);
             }

@@ -34,6 +34,10 @@ namespace DAVA
 
 KeyboardDevice::KeyboardDevice()
 {
+    for (int i = 0; i < DVKEY_COUNT; i++) 
+    {
+        keyStatus[i] = realKeyStatus[i] = false;
+    }
     PrepareKeyTranslator();
 }
 
