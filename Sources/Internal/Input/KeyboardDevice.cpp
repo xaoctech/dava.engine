@@ -130,8 +130,8 @@ void KeyboardDevice::PrepareKeyTranslator()
 #if defined(__DAVAENGINE_MACOS__)
     keyTranslator[0x7B] = DVKEY_LEFT;
     keyTranslator[0x7C] = DVKEY_RIGHT;
-    keyTranslator[0x7D] = DVKEY_UP;
-    keyTranslator[0x7E] = DVKEY_DOWN;
+    keyTranslator[0x7E] = DVKEY_UP;
+    keyTranslator[0x7D] = DVKEY_DOWN;
     keyTranslator[0x35] = DVKEY_ESCAPE;
     keyTranslator[0x33] = DVKEY_BACKSPACE;
     keyTranslator[0x24] = DVKEY_ENTER;
