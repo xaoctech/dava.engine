@@ -63,51 +63,73 @@ int32 UIFileTree::ElementsCount(UIList *forList)
 
 UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
 {
-    int32 width = forList->GetRect().dx;
+    UIFileTreeCell *c = NULL;
+    if(delegate)
+    {
+        UITreeItemInfo * entry = treeHead->EntryByIndex(index);
+        c = delegate->CellAtIndex(this, entry, index);
+        c->SetItemInfo(entry);
+        
+        int32 width = forList->GetRect().dx;
+        float32 shiftX = entry->GetLevel() * 10.0f;
+        c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
+
+
+        c->RemoveEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));
+        if (entry->IsDirectory())
+        {
+            c->AddEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));
+        }
+    }
     
-	UIFileTreeCell *c = (UIFileTreeCell *)forList->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
-	if(!c)
-	{ //if cell of requested type isn't find in the store create new cell
-//		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
-		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
-	}
-	//fill cell whith data
-	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
-
-	UITreeItemInfo * entry = treeHead->EntryByIndex(index);
-
-//	String empty;
-//	for (int k = 0; k < entry->GetLevel(); ++k)
-//	{
-//		empty += ' ';
-//		empty += ' ';
-//	}
-	float32 shiftX = entry->GetLevel() * 10.0f;
-//	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
-	c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
-	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
-    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
-	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-
-    c->SetSelected(false, false);
-    
-	c->SetItemInfo(entry);
-	
-	/*
-		WTF ??? I can't call RemoveAllEvents here.
-	 */
-	c->RemoveEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));
-	
-	if (entry->IsDirectory())
-		c->AddEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));
-	
-	//c->connection = GameServer::Instance()->totalServers[index].connection;
-	//c->serverIndex = GameServer::Instance()->totalServers[index].index;
-
 	return c;//returns cell
-	//your application don't need to manage cells. UIList do all cells management.
-	//you can create cells of your own types derived from the UIListCell
+    
+    
+//    int32 width = forList->GetRect().dx;
+//    
+//	UIFileTreeCell *c = (UIFileTreeCell *)forList->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
+//	if(!c)
+//	{ //if cell of requested type isn't find in the store create new cell
+////		c = new UIFileTreeCell(Rect(0, 0, 200, 20), "FileTreeCell");
+//		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
+//	}
+//	//fill cell whith data
+//	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
+//
+//	UITreeItemInfo * entry = treeHead->EntryByIndex(index);
+//
+////	String empty;
+////	for (int k = 0; k < entry->GetLevel(); ++k)
+////	{
+////		empty += ' ';
+////		empty += ' ';
+////	}
+//	float32 shiftX = entry->GetLevel() * 10.0f;
+////	c->SetRect(Rect(shiftX, 0, 200 - shiftX, 16));
+//	c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
+//	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
+//    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+//    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
+//	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+//
+//    c->SetSelected(false, false);
+//    
+//	c->SetItemInfo(entry);
+//	
+//	/*
+//		WTF ??? I can't call RemoveAllEvents here.
+//	 */
+//	c->RemoveEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));
+//	
+//	if (entry->IsDirectory())
+//		c->AddEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));
+//	
+//	//c->connection = GameServer::Instance()->totalServers[index].connection;
+//	//c->serverIndex = GameServer::Instance()->totalServers[index].index;
+//
+//	return c;//returns cell
+//	//your application don't need to manage cells. UIList do all cells management.
+//	//you can create cells of your own types derived from the UIListCell
 }
 	
 void UIFileTree::OnDirectoryChange(BaseObject * obj, void * userData, void * callerData)
