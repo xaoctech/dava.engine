@@ -165,7 +165,6 @@ void EditorBodyControl::CreateScene(bool withCameras)
     {
         Camera * cam = new Camera(scene);
         cam->SetName("editor.main-camera");
-        cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
         cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
@@ -181,7 +180,6 @@ void EditorBodyControl::CreateScene(bool withCameras)
         
         Camera * cam2 = new Camera(scene);
         cam2->SetName("editor.debug-camera");
-        cam2->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
         cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
@@ -972,6 +970,10 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
 	}
 	
+    if(cameraController)
+    {
+        cameraController->Update(timeElapsed);
+    }
     UIControl::Update(timeElapsed);
 }
 

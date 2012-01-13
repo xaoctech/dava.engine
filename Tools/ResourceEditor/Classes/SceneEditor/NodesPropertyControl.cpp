@@ -6,7 +6,7 @@
 
 #include "EditorSettings.h"
 
-#include "AppScreens.h"
+#include "../AppScreens.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
@@ -24,11 +24,6 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     nodesDelegate = NULL;
     currentNode = NULL;
     createNodeProperties = _createNodeProperties;
-    
-    types.push_back("Directional");
-    types.push_back("Spot");
-    types.push_back("Point");
-	types.push_back("Sky");
 
     renderingModes.push_back("TEXTURE");
     renderingModes.push_back("SHADER");
