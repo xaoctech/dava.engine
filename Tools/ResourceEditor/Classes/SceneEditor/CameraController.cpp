@@ -59,6 +59,7 @@ WASDCameraController::WASDCameraController(float32 _speed)
     , viewZAngle(0)
     , viewYAngle(0)
 	, selection(0)
+    , updateDelta(0.f)
 {
 
 }
@@ -72,15 +73,21 @@ WASDCameraController::~WASDCameraController()
     
 }
     
-void WASDCameraController::Input(UIEvent * event)
+void WASDCameraController::Update(float32 timeElapsed)
 {
-    if (!camera)return;
-    if (event->phase == UIEvent::PHASE_KEYCHAR)
-    {   
-        switch (event->tid) 
+    UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+    if(!tf && camera)
+    {
+        float32 CHECK_DELTA = 0.2f;
+        updateDelta += timeElapsed;
+        
+        if(CHECK_DELTA <= updateDelta)
         {
-            case DVKEY_UP:
-            case DVKEY_W:
+            updateDelta = 0.f;
+            
+            bool moveUp = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_UP) | 
+                           InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_W));
+            if(moveUp)
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
@@ -92,12 +99,12 @@ void WASDCameraController::Input(UIEvent * event)
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 
                 //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
-                break;
             }
-
-            case DVKEY_LEFT:
-            case DVKEY_A:
-            { 
+ 
+            bool moveLeft = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_LEFT) | 
+                           InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_A));
+            if(moveLeft)
+            {
                 Vector3 pos = camera->GetPosition();
                 Vector3 dir = camera->GetDirection();
                 Vector3 left = camera->GetLeft();
@@ -105,11 +112,12 @@ void WASDCameraController::Input(UIEvent * event)
                 pos -= left * speed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(dir);
-                break;
             }
-                
-            case DVKEY_DOWN:
-			case DVKEY_S:
+            
+            
+            bool moveDown = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_DOWN) | 
+                             InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_S));
+            if(moveDown)
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
@@ -119,11 +127,12 @@ void WASDCameraController::Input(UIEvent * event)
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-                break;
             }
-                
-            case DVKEY_RIGHT:
-            case DVKEY_D:
+
+            
+            bool moveRight = (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_RIGHT) | 
+                             InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_D));
+            if(moveRight)
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 dir = camera->GetDirection();
@@ -132,8 +141,75 @@ void WASDCameraController::Input(UIEvent * event)
                 pos += left * speed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(dir);
-                break;
             }
+        }
+    }
+    
+    CameraController::Update(timeElapsed);
+}
+    
+void WASDCameraController::Input(UIEvent * event)
+{
+    if (!camera)return;
+    if (event->phase == UIEvent::PHASE_KEYCHAR)
+    {   
+        switch (event->tid) 
+        {
+//            case DVKEY_UP:
+//            case DVKEY_W:
+//            {
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 direction = camera->GetDirection();
+//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//                
+//                direction.Normalize();
+//                pos += direction * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+//                
+//                //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
+//                break;
+//            }
+//
+//            case DVKEY_LEFT:
+//            case DVKEY_A:
+//            { 
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 dir = camera->GetDirection();
+//                Vector3 left = camera->GetLeft();
+//                
+//                pos -= left * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(dir);
+//                break;
+//            }
+//                
+//            case DVKEY_DOWN:
+//			case DVKEY_S:
+//            {
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 direction = camera->GetDirection();
+//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//                
+//                pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+//                //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//                break;
+//            }
+//                
+//            case DVKEY_RIGHT:
+//            case DVKEY_D:
+//            {
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 dir = camera->GetDirection();
+//                Vector3 left = camera->GetLeft();
+//                
+//                pos += left * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(dir);
+//                break;
+//            }
 
             case DVKEY_Z:
             {

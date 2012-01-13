@@ -644,6 +644,9 @@
     <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1593,6 +1596,9 @@
       <Filter>SceneEditor\Light</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorSettings.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
