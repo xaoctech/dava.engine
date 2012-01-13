@@ -256,7 +256,7 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 //    file->EnableDebugLog(true);
 //    file->LoadScene("scene.sc2", scene);
 //    SafeRelease(file);
-    SceneNode * rootNode = scene->GetRootNode("scene.sc2");
+    SceneNode * rootNode = scene->GetRootNode("/Sources/dava.framework/Tools/ResourceEditor/DataSource/3d/scene.sc2");
     for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
     {
         scene->AddNode(rootNode->GetChild(ci));
@@ -272,7 +272,7 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
     
     SceneFile2 * file = new SceneFile2();
     file->EnableDebugLog(true);
-    file->SaveScene("scene.sc2", scene);
+    file->SaveScene("/Sources/dava.framework/Tools/ResourceEditor/DataSource/3d/scene.sc2", scene);
     SafeRelease(file);
     
 //    if(!fileSystemDialog->GetParent())
