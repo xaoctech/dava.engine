@@ -169,7 +169,6 @@ protected:
 	Matrix4 startTransform;
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
-	SceneNode * proxy;
 
 	float32 axisSign[3];
 	
@@ -188,7 +187,6 @@ protected:
 	Rect propertyPanelRect;
 	void RecreatePropertiesPanelForNode(SceneNode *node);
 	ModificationPopUp * modificationPopUp;
-	SceneNode * GetHighestProxy(SceneNode* curr);
 };
 
 
