@@ -221,6 +221,11 @@ void ScenePreviewControl::Update(float32 timeElapsed)
         needSetCamera = false;
         SetupCamera();
     }
+    
+    if(cameraController)
+    {
+        cameraController->Update(timeElapsed);
+    }
 }
 
 void ScenePreviewControl::SetupCamera()

@@ -970,6 +970,10 @@ void EditorBodyControl::Update(float32 timeElapsed)
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
 	}
 	
+    if(cameraController)
+    {
+        cameraController->Update(timeElapsed);
+    }
     UIControl::Update(timeElapsed);
 }
 
