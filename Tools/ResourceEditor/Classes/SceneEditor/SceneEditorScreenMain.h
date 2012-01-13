@@ -175,8 +175,6 @@ private:
     
     // general
     Font *font;
-    KeyedArchive *keyedArchieve;
-
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

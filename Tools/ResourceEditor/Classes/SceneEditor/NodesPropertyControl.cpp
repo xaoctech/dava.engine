@@ -4,6 +4,8 @@
 #include "SceneEditorScreenMain.h"
 #include "DraggableDialog.h"
 
+#include "EditorSettings.h"
+
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
 {
@@ -66,13 +68,10 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     propertyList = new PropertyList(propertyRect, this);
     AddControl(propertyList);
     
-    headerStates = new KeyedArchive();
 }
     
 NodesPropertyControl::~NodesPropertyControl()
 {
-    SafeRelease(headerStates);
-    
     SafeRelease(deletionList);
     SafeRelease(listHolder);
     SafeRelease(btnCancel);
@@ -98,7 +97,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     
     if(!createNodeProperties)
     {
-        propertyList->AddSection("General C++", headerStates->GetBool("General C++", true));
+        propertyList->AddSection("General C++", GetHeaderState("General C++", true));
         propertyList->AddIntProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
@@ -108,13 +107,13 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetStringPropertyValue("C++ Class Name", typeid(*sceneNode).name());
     }
 
-    propertyList->AddSection("Scene Node", headerStates->GetBool("Scene Node", true));
+    propertyList->AddSection("Scene Node", GetHeaderState("Scene Node", true));
     propertyList->AddStringProperty("Name", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetStringPropertyValue("Name", sceneNode->GetName());
 
     if(!createNodeProperties)
     {
-        propertyList->AddSection("Matrixes", headerStates->GetBool("Matrixes", false));
+        propertyList->AddSection("Matrixes", GetHeaderState("Matrixes", false));
         
         propertyList->AddMatrix4Property("Local Matrix", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddMatrix4Property("World Matrix", PropertyList::PROPERTY_IS_READ_ONLY);
@@ -126,7 +125,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     Camera *camera = dynamic_cast<Camera*> (sceneNode);
     if(camera)
     {
-        propertyList->AddSection("Camera", headerStates->GetBool("Camera", true));
+        propertyList->AddSection("Camera", GetHeaderState("Camera", true));
         
         propertyList->AddFloatProperty("Fov", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("zNear", PropertyList::PROPERTY_IS_EDITABLE);
@@ -160,7 +159,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
     if(mesh)
     {
-        propertyList->AddSection("Mesh Instance", headerStates->GetBool("Mesh Instance", true));
+        propertyList->AddSection("Mesh Instance", GetHeaderState("Mesh Instance", true));
         
         //BBOX
         AABBox3 bbox = mesh->GetBoundingBox();
@@ -197,7 +196,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
             PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
             
             String fieldName = Format("PolygonGroup #%d", i);
-            propertyList->AddSection(fieldName, headerStates->GetBool(fieldName, true));
+            propertyList->AddSection(fieldName, GetHeaderState(fieldName, true));
             
             int32 vertexFormat = pg->GetFormat();
             propertyList->AddBoolProperty("fmt.NORMAL", PropertyList::PROPERTY_IS_EDITABLE);
@@ -257,7 +256,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (sceneNode);
     if(landscape)
     {
-        propertyList->AddSection("Landscape", headerStates->GetBool("Landscape", true));
+        propertyList->AddSection("Landscape", GetHeaderState("Landscape", true));
         
         propertyList->AddFloatProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("Height", PropertyList::PROPERTY_IS_EDITABLE); 
@@ -335,7 +334,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
     if (cube)
     {
-        propertyList->AddSection("Cube", headerStates->GetBool("Cube", true));
+        propertyList->AddSection("Cube", GetHeaderState("Cube", true));
 
         propertyList->AddFloatProperty("Length", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("Width", PropertyList::PROPERTY_IS_EDITABLE); 
@@ -358,7 +357,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
     if(sphere)
     {
-        propertyList->AddSection("Sphere", headerStates->GetBool("Sphere", true));
+        propertyList->AddSection("Sphere", GetHeaderState("Sphere", true));
 
         propertyList->AddFloatProperty("Radius", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
@@ -377,7 +376,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     //must be last
     if(!createNodeProperties)
     {
-        propertyList->AddSection("Custom properties", headerStates->GetBool("Custom properties", true));
+        propertyList->AddSection("Custom properties", GetHeaderState("Custom properties", true));
         
         KeyedArchive *customProperties = sceneNode->GetCustomProperties();
         Map<String, VariantType> propsData = customProperties->GetArchieveData();
@@ -420,7 +419,7 @@ void NodesPropertyControl::ReadFrom(DataNode *dataNode)
     propertyList->ReleaseProperties();
     if(!createNodeProperties)
     {
-        propertyList->AddSection("General C++", headerStates->GetBool("General C++", true));
+        propertyList->AddSection("General C++", GetHeaderState("General C++", true));
         propertyList->AddIntProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
         propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
@@ -680,7 +679,7 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String 
 
 void NodesPropertyControl::OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded)
 {
-    headerStates->SetBool(forKey, isExpanded);
+    SetHeaderState(forKey, isExpanded);
 }
 
 
@@ -864,3 +863,17 @@ void NodesPropertyControl::UpdateFieldsForCurrentNode()
 {
     ReadFrom(currentNode);
 }
+
+bool NodesPropertyControl::GetHeaderState(const String & headerName, bool defaultValue)
+{
+    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
+    return settings->GetBool("NodesProperety." + headerName, defaultValue);
+}
+
+void NodesPropertyControl::SetHeaderState(const String & headerName, bool newState)
+{
+    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
+    settings->SetBool("NodesProperety." + headerName, newState);
+    EditorSettings::Instance()->Save();
+}
+

@@ -26,8 +26,6 @@ public:
 
 	virtual void Input(UIEvent *currentInput);
     
-    static String GetProjectPath();
-    
 protected:
     Vector2 originalPosition;
     Vector2 basePoint;

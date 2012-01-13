@@ -121,9 +121,6 @@ public:
     UIControl *pathTextContainer;
     UIButton *browseButton;
     UIFileSystemDialog *dialog;
-    
-private:
-    String GetCorrectPath();
 };
 
 class PropertyComboboxCell: public PropertyCell, public ComboBoxDelegate

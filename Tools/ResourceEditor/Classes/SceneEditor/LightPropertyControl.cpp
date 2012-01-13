@@ -19,7 +19,7 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
 	DVASSERT(light);
 
-    propertyList->AddSection("Light", headerStates->GetBool("Light", true));
+    propertyList->AddSection("Light", GetHeaderState("Light", true));
         
     propertyList->AddComboProperty("Type", types);
     propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);

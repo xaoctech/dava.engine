@@ -10,7 +10,7 @@
 #include "PropertyCell.h"
 #include "PropertyCellData.h"
 #include "ControlsFactory.h"
-#include "DraggableDialog.h"
+#include "EditorSettings.h"
 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
@@ -330,7 +330,7 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     FileSystem::SplitPath(property->GetString(), p, f);
     if(p.length() == 0)
     {
-        p = GetCorrectPath();
+        p = EditorSettings::Instance()->GetProjectPath() + "DataSource/3D/";
     }
     dialog->SetCurrentDir(p);
     
@@ -350,18 +350,6 @@ void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDial
     SafeRelease(dialog);
 }
 
-String PropertyFilepathCell::GetCorrectPath()
-{
-    String path = DraggableDialog::GetProjectPath();
-    if(path[path.length() - 1] != '/')
-    {
-        path += '/';
-    }
-    
-    path += "DataSource/3D/";
-    
-    return path;
-}
 
 //void PropertyFilepathCell::DidAppear()
 //{

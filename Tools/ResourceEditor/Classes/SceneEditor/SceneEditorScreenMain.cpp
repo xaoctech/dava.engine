@@ -9,6 +9,7 @@
 
 #include "LandscapeEditorControl.h"
 
+#include "EditorSettings.h"
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -21,8 +22,7 @@ void SceneEditorScreenMain::LoadResources()
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
     
-    keyedArchieve = new KeyedArchive();
-    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
+    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
     String path = keyedArchieve->GetString("LastSavedPath", "/");
     if(path.length())
     fileSystemDialog->SetCurrentDir(path);
@@ -89,8 +89,6 @@ void SceneEditorScreenMain::UnloadResources()
     ReleaseNodeDialogs();
     
     SafeRelease(menuPopup);
-    
-    SafeRelease(keyedArchieve);
     
     SafeRelease(propertiesButton);
     
@@ -221,8 +219,9 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             
         case DIALOG_OPERATION_MENU_PROJECT:
         {
+            KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
             keyedArchieve->SetString("LastSavedPath", pathToFile);
-            keyedArchieve->Save("~doc:/ResourceEditorOptions.archive");
+            EditorSettings::Instance()->Save();
             
             libraryControl->SetPath(pathToFile);
             break;
@@ -288,6 +287,10 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
     String path = iBody->bodyControl->GetFilePath();
+    if(String::npos == path.find("DataSource"))
+    {
+        return;
+    }
     path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
     
     String fileOnly;
