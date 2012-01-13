@@ -203,6 +203,19 @@ SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
     return NULL;
 }
 
+void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
+{
+	SceneNodeUserData * userData = (SceneNodeUserData*)curr->userData;
+	if (userData)
+		userData->bulletObject->SetUpdateFlag(value);
+	
+	for (int32 i = 0; i < curr->GetChildrenCount(); i++)
+	{
+		SetBulletUpdate(curr->GetChild(i), value);
+	}
+}
+
+
 void EditorScene::Draw()
 {
 //	DrawDebugNodes(this);
