@@ -80,7 +80,6 @@ protected:
     float32 radius;
 	Vector3 center;
     
-    float32 updateDelta;
 };
 	
 	
