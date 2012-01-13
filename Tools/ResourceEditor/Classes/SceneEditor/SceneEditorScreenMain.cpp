@@ -205,15 +205,20 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
     switch (fileSystemDialogOpMode) 
     {
         case DIALOG_OPERATION_MENU_OPEN:
-        {
-            BodyItem *iBody = FindCurrentBody();
-            iBody->bodyControl->OpenScene(pathToFile, false);
+        {//опен всегда загружает только уровень, но не отдельные части сцены
+            bodies[0]->bodyControl->OpenScene(pathToFile, true);
             
             break;
         }
             
         case DIALOG_OPERATION_MENU_SAVE:
         {
+            Scene * scene = FindCurrentBody()->bodyControl->GetScene();
+            
+            SceneFile2 * file = new SceneFile2();
+            file->EnableDebugLog(true);
+            file->SaveScene(pathToFile, scene);
+            SafeRelease(file);
             break;
         }
             
@@ -242,45 +247,27 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 
 void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 {
-//    if(!fileSystemDialog->GetParent())
-//    {
-//        fileSystemDialog->SetExtensionFilter(".sce");
-//        fileSystemDialog->Show(this);
-//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
-//    }
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".sc2");
+        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+    }
 
     
-    Scene * scene = bodies[0]->bodyControl->GetScene();
-    
-//    SceneFile2 * file = new SceneFile2();
-//    file->EnableDebugLog(true);
-//    file->LoadScene("scene.sc2", scene);
-//    SafeRelease(file);
-    SceneNode * rootNode = scene->GetRootNode("scene.sc2");
-    for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-    {
-        scene->AddNode(rootNode->GetChild(ci));
-    }
-    
-    bodies[0]->bodyControl->Refresh();
 }
 
 
 void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 {
-    Scene * scene = bodies[0]->bodyControl->GetScene();
-    
-    SceneFile2 * file = new SceneFile2();
-    file->EnableDebugLog(true);
-    file->SaveScene("scene.sc2", scene);
-    SafeRelease(file);
-    
-//    if(!fileSystemDialog->GetParent())
-//    {
-//        fileSystemDialog->SetExtensionFilter(".sc2");
-//        fileSystemDialog->Show(this);
-//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
-//    }
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".sc2");
+        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
+    }
 }
 
 void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)

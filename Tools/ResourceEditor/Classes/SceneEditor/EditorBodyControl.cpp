@@ -1072,24 +1072,48 @@ void EditorBodyControl::OnEnableDebugFlagsPressed(BaseObject * obj, void *, void
 
 void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
-    if(editScene)
-    {
-        SceneNode *rootNode = scene->GetRootNode(pathToFile);
-        mainFilePath = pathToFile;
-        rootNode->SetSolid(false);
-        scene->AddNode(rootNode);
-    }
-    else
-    {
-        SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
-        rootNode->SetSolid(true);
-        scene->AddNode(rootNode);
-    }
     
-    if (scene->GetCamera(0))
+    if (FileSystem::Instance()->GetExtension(pathToFile) == ".sce")
     {
-        scene->SetCurrentCamera(scene->GetCamera(0));
-        cameraController->SetCamera(scene->GetCamera(0));
+        if(editScene)
+        {
+            SceneNode *rootNode = scene->GetRootNode(pathToFile);
+            mainFilePath = pathToFile;
+            rootNode->SetSolid(false);
+            scene->AddNode(rootNode);
+        }
+        else
+        {
+            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            rootNode->SetSolid(true);
+            scene->AddNode(rootNode);
+        }
+        
+        if (scene->GetCamera(0))
+        {
+            scene->SetCurrentCamera(scene->GetCamera(0));
+            cameraController->SetCamera(scene->GetCamera(0));
+        }
+    }    
+    else if(FileSystem::Instance()->GetExtension(pathToFile) == ".sc2")
+    {
+        if(editScene)
+        {
+            SceneNode * rootNode = scene->GetRootNode(pathToFile);
+            for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+            {//рут нода это сама сцена в данном случае
+                scene->AddNode(rootNode->GetChild(ci));
+            }
+        }
+        else
+        {
+            SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
+            rootNode->SetSolid(true);
+            scene->AddNode(rootNode);
+        }
+
+        
+        Refresh();
     }
     sceneGraphTree->Refresh();
     RefreshDataGraph();
