@@ -143,7 +143,9 @@ void WASDCameraController::Update(float32 timeElapsed)
     
     CameraController::Update(timeElapsed);
 }
-    
+ 
+#define MAX_ANGLE 89
+	
 void WASDCameraController::Input(UIEvent * event)
 {
     if (!camera)return;
@@ -151,62 +153,6 @@ void WASDCameraController::Input(UIEvent * event)
     {   
         switch (event->tid) 
         {
-//            case DVKEY_UP:
-//            case DVKEY_W:
-//            {
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 direction = camera->GetDirection();
-//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-//                
-//                direction.Normalize();
-//                pos += direction * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
-//                
-//                //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
-//                break;
-//            }
-//
-//            case DVKEY_LEFT:
-//            case DVKEY_A:
-//            { 
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 dir = camera->GetDirection();
-//                Vector3 left = camera->GetLeft();
-//                
-//                pos -= left * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(dir);
-//                break;
-//            }
-//                
-//            case DVKEY_DOWN:
-//			case DVKEY_S:
-//            {
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 direction = camera->GetDirection();
-//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-//                
-//                pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
-//                //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-//                break;
-//            }
-//                
-//            case DVKEY_RIGHT:
-//            case DVKEY_D:
-//            {
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 dir = camera->GetDirection();
-//                Vector3 left = camera->GetLeft();
-//                
-//                pos += left * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(dir);
-//                break;
-//            }
-
             case DVKEY_Z:
             {
 				if (selection)
@@ -227,93 +173,30 @@ void WASDCameraController::Input(UIEvent * event)
 				}					
 				break;					
 			}
-
+            case DVKEY_T:
+            {
+				if (!camera)return;
+				
+				viewZAngle = 0;
+				viewYAngle = -MAX_ANGLE;
+				
+				Matrix4 mt, mt2;
+				mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
+				mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+				mt2 *= mt;
+				Vector3 vect = Vector3(0,0, 200);
+				
+				Vector3 position = vect - Vector3(0, 10, 0) * mt2;
+				
+				camera->SetTarget(position);
+				camera->SetPosition(vect);					
+				break;					
+			}
+				
                 
             default:
                 break;
         }
-        
-//        switch(event->keyChar)
-//        {
-//            case 'w':
-//            case 'W':
-//            {
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 direction = camera->GetDirection();
-//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-//
-//                direction.Normalize();
-//                pos += direction * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
-//                
-//                //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
-//            }
-//            break;
-//            
-//            case 'a':
-//            case 'A':
-//            { 
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 dir = camera->GetDirection();
-//                Vector3 left = camera->GetLeft();
-//                
-//                pos -= left * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(dir);
-//            }
-//            break;
-//                
-//            case 's':
-//            case 'S':
-//            {
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 direction = camera->GetDirection();
-//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-//
-//                pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
-//                //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-//            }
-//            break;
-//            
-//            case 'd':
-//            case 'D':
-//            {
-//                Vector3 pos = camera->GetPosition();
-//                Vector3 dir = camera->GetDirection();
-//                Vector3 left = camera->GetLeft();
-//                
-//                pos += left * speed * SystemTimer::Instance()->FrameDelta();
-//                camera->SetPosition(pos);
-//                camera->SetDirection(dir);
-//            }
-//            break;
-//
-//			case 'z':
-//			case 'Z':
-//			{
-//				if (selection)
-//				{
-//					AABBox3 box = selection->GetWTMaximumBoundingBox();						
-//					float32 boxSize = ((box.max - box.min).Length());
-//					
-//					const Vector3 & pos = camera->GetPosition();
-//					const Vector3 & targ = camera->GetTarget();
-//					
-//					Vector3 dir = targ - pos;
-//					dir.Normalize();
-//					
-//					const Vector3 & c = box.GetCenter();
-//					
-//					camera->SetTarget(c);
-//					camera->SetPosition(c - (dir * boxSize));
-//				}					
-//			}
-//				break;					
-//				
-//        };
     } 
 
 	if (event->tid == UIEvent::BUTTON_1)
@@ -327,19 +210,21 @@ void WASDCameraController::Input(UIEvent * event)
 			Vector2 dp = oldTouchPoint - event->point;
 			dp *= 8.f;
 			viewZAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
-			viewYAngle -= dp.y * SystemTimer::Instance()->FrameDelta();
+			viewYAngle += dp.y * SystemTimer::Instance()->FrameDelta();
+			
+			if(viewYAngle < -MAX_ANGLE)
+				viewYAngle = -MAX_ANGLE;
+			
+			if(viewYAngle > MAX_ANGLE)
+				viewYAngle = MAX_ANGLE;			
+			
 			oldTouchPoint = event->point;
-			Matrix4 aimUser;
-			aimUser.Identity();
 			Matrix4 mt, mt2;
-			mt.CreateTranslation(Vector3(0,10,0));
-			aimUser *= mt;
 			mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
 			mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 			mt2 *= mt;
-			aimUser *= mt2;
-			
-			Vector3 dir = Vector3() * aimUser;
+
+			Vector3 dir = Vector3(0, -10, 0) * mt2;
 			camera->SetDirection(dir);
 		}
 	}
@@ -354,19 +239,12 @@ void WASDCameraController::Input(UIEvent * event)
 			center = box.GetCenter();
 			radius = (center - pos).Length();
 		}
-		else if(UIEvent::PHASE_DRAG == event->phase)
+		else if(UIEvent::PHASE_DRAG == event->phase || UIEvent::PHASE_ENDED == event->phase)
 		{
 			startPt = stopPt;
 			stopPt = event->point;
 			UpdateCam();
-		}
-		else if(UIEvent::PHASE_ENDED == event->phase)
-		{
-			startPt = stopPt;
-			stopPt = event->point;
-			UpdateCam();
-		}
-		
+		}		
 	}
 	
 }
@@ -376,18 +254,14 @@ void WASDCameraController::Input(UIEvent * event)
 		if (!camera)return;
 		
 		viewZAngle += (stopPt.x - startPt.x);
-		viewYAngle += (stopPt.y - startPt.y);
+		viewYAngle -= (stopPt.y - startPt.y);
 		
 		
-		if(viewYAngle < -80)
-		{
-			viewYAngle = -80;
-		}
+		if(viewYAngle < -MAX_ANGLE)
+			viewYAngle = -MAX_ANGLE;
 		
-		if(80 < viewYAngle)
-		{
-			viewYAngle = 80;
-		}
+		if(viewYAngle > MAX_ANGLE)
+			viewYAngle = MAX_ANGLE;
 
 
 		Matrix4 mt, mt2;
@@ -395,13 +269,10 @@ void WASDCameraController::Input(UIEvent * event)
 		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 		mt2 *= mt;
 		
-		Vector3 position = center - Vector3(0, radius, 0) * mt2;
+		Vector3 position = center + Vector3(0, radius, 0) * mt2;
 		
-//		(Vector3(sinf(DegToRad(viewZAngle)), cosf(DegToRad(viewZAngle)), 0) + Vector3(0, sinf(DegToRad(viewYAngle)), cosf(DegToRad(viewYAngle))));		
-
 		camera->SetTarget(center);
 		camera->SetPosition(position);
-//		camera->SetDirection(position - center);
 	}
 	
 	

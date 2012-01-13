@@ -677,50 +677,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 scene->SetCurrentCamera(newCamera);
                 scene->SetClipCamera(scene->GetCamera(0));
             }
-
-            
-            
-//            if(event->tid == DVKEY_ESCAPE)
-//            {
-//                ResetSelection();
-//            }
-//            
-//            if (event->keyChar == '1')
-//                cameraController->SetSpeed(40);
-//            if (event->keyChar == '2')
-//                cameraController->SetSpeed(80);
-//            if (event->keyChar == '3')
-//                cameraController->SetSpeed(160);
-//            if (event->keyChar == '4')
-//                cameraController->SetSpeed(320);
-            
-//            Camera * newCamera = 0;
-//            if (event->keyChar == 'z')newCamera = scene->GetCamera(0);
-//            if (event->keyChar == 'x')newCamera = scene->GetCamera(1);
-//            if (event->keyChar == 'c')newCamera = scene->GetCamera(2);
-//            if (event->keyChar == 'v')newCamera = scene->GetCamera(3);
-//            if (event->keyChar == 'b')newCamera = scene->GetCamera(4);
-//            if (newCamera)
-//            {
-//                scene->SetCurrentCamera(newCamera);
-//                scene->SetClipCamera(scene->GetCamera(0));
-//            }
-            
-//            if (event->keyChar == 'w') modState = MOD_MOVE;
-//            if (event->keyChar == 'e') modState = MOD_ROTATE;
-//            if (event->keyChar == 'r') modState = MOD_SCALE;
-//            if (event->keyChar == '5') modAxis = AXIS_X;
-//            if (event->keyChar == '6') modAxis = AXIS_Y;
-//            if (event->keyChar == '7') modAxis = AXIS_Z;
-//            if (event->keyChar == '8') 
-//            {
-//                if (modAxis < AXIS_XY)
-//                    modAxis = AXIS_XY;
-//                else
-//                    modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
-//            }
-
-            UpdateModState();
+			UpdateModState();
         }
 	}   
 
