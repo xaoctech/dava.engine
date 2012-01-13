@@ -311,6 +311,8 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
             }
         }
     }
+    
+    libraryControl->RefreshTree();
 }
 
 
