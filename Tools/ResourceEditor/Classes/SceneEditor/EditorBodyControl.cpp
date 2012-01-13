@@ -165,7 +165,6 @@ void EditorBodyControl::CreateScene(bool withCameras)
     {
         Camera * cam = new Camera(scene);
         cam->SetName("editor.main-camera");
-        cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
         cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
@@ -181,7 +180,6 @@ void EditorBodyControl::CreateScene(bool withCameras)
         
         Camera * cam2 = new Camera(scene);
         cam2->SetName("editor.debug-camera");
-        cam2->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
         cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
         cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
@@ -266,11 +264,7 @@ void EditorBodyControl::OnModificationPopUpPressed(BaseObject * object, void * u
 	UIScreen * scr = UIScreenManager::Instance()->GetScreen();
 	if (modificationPopUp->GetParent() == 0)
 	{
-		SceneNode * selection = scene->GetSelection();
-		proxy = GetHighestProxy(selection);
-		if (proxy == 0)
-			proxy = selection;		
-		modificationPopUp->SetSelection(proxy);
+		modificationPopUp->SetSelection(scene->GetProxy());
 		scr->AddControl(modificationPopUp);
 	}
 	else
@@ -582,47 +576,33 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
     else
     {
-        if(nodesPropertyPanel)
-        if(nodesPropertyPanel->GetParent())
+        if(nodesPropertyPanel && nodesPropertyPanel->GetParent())
         {
             rightPanel->RemoveControl(nodesPropertyPanel);
         }
     }
 }
 
-SceneNode * EditorBodyControl::GetHighestProxy(SceneNode* curr)
-{
-	int32 cc = curr->GetChildrenCount();
-	if (cc == 0)
-		return GetHighestProxy(curr->GetParent());
-	if (cc > 1)
-		return 0;
-	if (cc == 1)
-    {
-        SceneNode * result = GetHighestProxy(curr->GetParent());
-	    if (result == 0)
-            return curr;
-        else return result;
-        
-    }
-	
-    return NULL;
-}
-
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {
-        if(UIControlSystem::Instance()->GetFocusedControl() == this || 
-           UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
+        UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+        if(!tf)
         {
-            
             Camera * newCamera = 0;
             switch(event->tid)
             {
                 case DVKEY_ESCAPE:
-                    ResetSelection();
+                {
+                    UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
+                    if(c == this || c == scene3dView)
+                    {
+                        ResetSelection();
+                    }
+                    
                     break;
+                }
 
                 case DVKEY_1:
                     cameraController->SetSpeed(40);
@@ -656,7 +636,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     newCamera = scene->GetCamera(4);
                     break;
 
-                case DVKEY_W:
+                case DVKEY_Q:
                     modState = MOD_MOVE;
                     break;
 
@@ -743,6 +723,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             UpdateModState();
         }
 	}   
+
+    SceneNode * selection = scene->GetProxy();
 	
 	//selection with second mouse button 
 	if (event->phase == UIEvent::PHASE_BEGAN && event->tid == UIEvent::BUTTON_2)
@@ -757,61 +739,33 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             to *= 1000.f;
             to += from;
             scene->TrySelection(from, to);
-            
-            SelectNodeAtTree(scene->GetSelection());
+
+            selection = scene->GetProxy();
+            SelectNodeAtTree(selection);
         }
 	}	
 	
-    SceneNode * selection = scene->GetSelection();
 	if (selection != 0 && event->tid == UIEvent::BUTTON_1)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
+			scene->SetBulletUpdate(selection, false);
+
 			inTouch = true;	
 			touchStart = event->point;
-			
-			proxy = GetHighestProxy(selection);
-			if (proxy == 0)
-				proxy = selection;
-			
-			startTransform = proxy->GetLocalTransform();
-			SceneNode * realSelection = scene->GetRealSelection();
-			rotationCenter = realSelection->GetWorldTransform().GetTranslationVector();
-			
+						
+			startTransform = selection->GetLocalTransform();			
 			Matrix4 invProxyWorldTransform;
-			
-			bool invExists = proxy->GetParent()->GetWorldTransform().GetInverse(invProxyWorldTransform);
-			
-			DVASSERT(invExists == true);
-			rotationCenter = rotationCenter * invProxyWorldTransform; // transform world coord to proxy coord system			
-			
-			
-			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-			if (userData)
-				userData->bulletObject->SetUpdateFlag(false);
-			
+						
 			//calculate koefficient for moving
 			Camera * cam = scene->GetCurrentCamera();
 			const Vector3 & camPos = cam->GetPosition();
-			const Matrix4 & wt = proxy->GetWorldTransform();
+			const Matrix4 & wt = selection->GetWorldTransform();
 			Vector3 objPos = Vector3(0,0,0) * wt;
-			
-			Matrix4 inv;
-			Matrix4 worldTransform = proxy->GetWorldTransform();
-			worldTransform._03 = 0.0f;
-			worldTransform._13 = 0.0f;
-			worldTransform._23 = 0.0f;
-			worldTransform._33 = 1.0f;
-			worldTransform._30 = 0.0f;
-			worldTransform._31 = 0.0f;
-			worldTransform._32 = 0.0f;
-			
-			//				bool res = worldTransform.GetInverse(inv);				
-			
 			
 			//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
 			Vector3 dir = objPos - camPos;
-			moveKf = dir.Length() * 0.003;
+			moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
 			
 			//				Logger::Debug(L"transformK = %f", transformK);			
 			//				Logger::Debug(L"moveKf = %f", moveKf);				
@@ -832,20 +786,17 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 //				else 
 //					Logger::Debug(L"Error matrix calculation");
             
-            Logger::Debug("shift(%f, %f)", event->point.x - touchStart.x, event->point.y - touchStart.y); 
+//            Logger::Debug("shift(%f, %f)", event->point.x - touchStart.x, event->point.y - touchStart.y); 
 				
             PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-            proxy->SetLocalTransform(currTransform);
-            
+            selection->SetLocalTransform(currTransform);
             nodesPropertyPanel->UpdateFieldsForCurrentNode();
             
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
 		{
-				inTouch = false;
-				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				if (userData)
-					userData->bulletObject->SetUpdateFlag(true);
+			inTouch = false;
+			scene->SetBulletUpdate(selection, true);
 		}
 	}
 	else
@@ -854,8 +805,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         
         if (event->phase == UIEvent::PHASE_KEYCHAR)
         {
-            if(UIControlSystem::Instance()->GetFocusedControl() == this || 
-               UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
+            UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+            if(!tf)
             {
                 cameraController->Input(event);
             }
@@ -907,11 +858,7 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 
 		translate1.CreateTranslation(-rotationCenter);
 		translate2.CreateTranslation(rotationCenter);
-		
-//        SceneNode * selection = scene->GetSelection();
-//		translate1.CreateTranslation(-selection->GetWorldTransform().GetTranslationVector());
-//		translate2.CreateTranslation(selection->GetWorldTransform().GetTranslationVector());
-		
+
 		switch (modAxis) 
 		{
 			case AXIS_X:
@@ -953,20 +900,16 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
-	SceneNode * selection = scene->GetRealSelection();
+	SceneNode * selection = scene->GetProxy();
 	if (selection)
 	{
-//		RenderHelper::SetClip();
-		
 		const Rect & rect = scene3dView->GetLastViewportRect();
-		Matrix4 wt = selection->GetWorldTransform();
-		Vector3 offs = wt.GetTranslationVector();
 		Camera * cam = scene->GetCurrentCamera(); 
-		Vector2 start = cam->GetOnScreenPosition(offs, rect);
+		Vector2 start = cam->GetOnScreenPosition(rotationCenter, rect);
 		Vector2 end;
 	
 		const Vector3 & vc = cam->GetPosition();
-		float32 kf = ((vc - offs).Length() - cam->GetZNear()) * 0.2;
+		float32 kf = ((vc - rotationCenter).Length() - cam->GetZNear()) * 0.2;
 		
 		for(int i = 0; i < 3; i++)
 		{
@@ -982,7 +925,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 				RenderManager::Instance()->SetColor(1.0f, 0, 0, 1.0f);	
 			}
 
-			Vector3 v = offs + vect[i] * kf;
+			Vector3 v = rotationCenter + vect[i] * kf;
 			end = cam->GetOnScreenPosition(v, rect);
 			RenderHelper::Instance()->DrawLine(start, end);
 
@@ -1009,7 +952,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
-	SceneNode * selection = scene->GetSelection();
+	SceneNode * selection = scene->GetProxy();
 	if (selection && modificationPanel->GetParent() == 0)
 	{
 		AddControl(modificationPanel);
@@ -1022,6 +965,15 @@ void EditorBodyControl::Update(float32 timeElapsed)
 			modificationPopUp->GetParent()->RemoveControl(modificationPopUp);
 	}
 	
+	if (selection)
+	{
+		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
+	}
+	
+    if(cameraController)
+    {
+        cameraController->Update(timeElapsed);
+    }
     UIControl::Update(timeElapsed);
 }
 

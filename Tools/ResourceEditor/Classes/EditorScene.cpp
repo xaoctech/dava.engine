@@ -18,8 +18,8 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
 { 
-	realSelection = 0;
 	selection = 0;
+	proxy = 0;
 //	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
 //	dynDispatcher = new	btCollisionDispatcher(dynCollisionConfiguration);
     btVector3 worldMin(-1000,-1000,-1000);
@@ -65,19 +65,6 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
 		data->bulletObject->UpdateCollisionObject();
 	}
-	else if (light && light->userData == 0)
-	{
-		SceneNodeUserData * data = new SceneNodeUserData();
-		curr->userData = data;
-		data->bulletObject = new BulletObject(this, collisionWorld, light, light->GetWorldTransform());
-	}
-	else if (light && light->userData)
-	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
-		data->bulletObject->UpdateCollisionObject();
-	}
-	
-	
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
@@ -178,18 +165,54 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
     }
     
-	realSelection = newSelection;
-
 	selection = newSelection;
-	if (realSelection)
+	if (selection)
 	{
-		SceneNode * solid = GetSolidParent(realSelection);
+		SceneNode * solid = GetSolidParent(selection);
 		if (solid)
 			selection = solid;
+		
+		proxy = GetHighestProxy(selection);
+		if (proxy == 0)
+			proxy = selection;
+	}
+	else
+	{
+		proxy = 0;
 	}
 
 	if(selection)
 		selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+}
+
+SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
+{
+	int32 cc = curr->GetChildrenCount();
+	if (cc == 0)
+		return GetHighestProxy(curr->GetParent());
+	if (cc > 1)
+		return 0;
+	if (cc == 1)
+    {
+        SceneNode * result = GetHighestProxy(curr->GetParent());
+	    if (result == 0)
+            return curr;
+        else return result;
+        
+    }
+    return NULL;
+}
+
+void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
+{
+	SceneNodeUserData * userData = (SceneNodeUserData*)curr->userData;
+	if (userData)
+		userData->bulletObject->SetUpdateFlag(value);
+	
+	for (int32 i = 0; i < curr->GetChildrenCount(); i++)
+	{
+		SetBulletUpdate(curr->GetChild(i), value);
+	}
 }
 
 
@@ -220,9 +243,10 @@ void EditorScene::DrawGrid()
 			RenderHelper::Instance()->DrawLine(v3, v4);		
 		}
 	}
-	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	RenderManager::Instance()->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
 	RenderHelper::Instance()->DrawLine(Vector3(-GRIDMAX, 0, 0), Vector3(GRIDMAX, 0, 0));
 	RenderHelper::Instance()->DrawLine(Vector3(0, -GRIDMAX, 0), Vector3(0, GRIDMAX, 0));
+	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	
 	RenderManager::Instance()->SetState(oldState);
 }
