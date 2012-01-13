@@ -84,6 +84,39 @@ namespace DAVA
         return T(val > 0 ? 1 : -1);
     }
 	
+#define EPSILON 0.000001
+
+	/*
+	 Function to get intersection point of 
+	 vector (start + dir) 
+	 with plane (plane normal + plane point)
+	 */
+	inline bool GetIntersectionVectorWithPlane(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePoint, Vector3 & result)
+	{	
+		Vector3 intersection;
+		float32 cosang, dist, lamda;
+		
+		float32 d = planeN.DotProduct(planePoint);
+		
+		cosang = dir.DotProduct(planeN);
+		if (cosang > -EPSILON && cosang < EPSILON)
+		{
+			//this is parallels
+			return false;
+		}
+		
+		dist = start.DotProduct(planeN);
+		
+		lamda = (d - dist)/cosang;
+		if (lamda < 0)
+		{
+			//this not intersect
+			return false;
+		}
+		result = start + dir * lamda;
+		return true;
+	}
+	
 } // end of namespace DAVA
 
 #endif 

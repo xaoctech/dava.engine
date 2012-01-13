@@ -703,21 +703,14 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	//selection with second mouse button 
 	if (event->phase == UIEvent::PHASE_BEGAN && event->tid == UIEvent::BUTTON_2)
 	{
-		Camera * cam = scene->GetCurrentCamera();
-        if (cam)
-        {
-            const Rect & rect = scene3dView->GetLastViewportRect();
-            Vector3 from = cam->GetPosition();
-            Vector3 to = cam->UnProject(event->point.x, event->point.y, 0, rect);
-            to -= from;
-            to *= 1000.f;
-            to += from;
-            scene->TrySelection(from, to);
+		Vector3 from, dir;
+		GetCursorVectors(&from, &dir, event->point);
+		Vector3 to = from + dir * 1000.0f;
+		scene->TrySelection(from, to);
 
-            selection = scene->GetProxy();
-            SelectNodeAtTree(selection);
-        }
-	}	
+		selection = scene->GetProxy();
+		SelectNodeAtTree(selection);
+  	}	
 	
 	if (selection != 0 && event->tid == UIEvent::BUTTON_1)
 	{
@@ -727,45 +720,26 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 
 			inTouch = true;	
 			touchStart = event->point;
-						
+
 			startTransform = selection->GetLocalTransform();			
 			Matrix4 invProxyWorldTransform;
-						
+
+			InitMoving(event->point);
+			
 			//calculate koefficient for moving
 			Camera * cam = scene->GetCurrentCamera();
 			const Vector3 & camPos = cam->GetPosition();
 			const Matrix4 & wt = selection->GetWorldTransform();
 			Vector3 objPos = Vector3(0,0,0) * wt;
 			
-			//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
 			Vector3 dir = objPos - camPos;
 			moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
-			
-			//				Logger::Debug(L"transformK = %f", transformK);			
-			//				Logger::Debug(L"moveKf = %f", moveKf);				
-			//				//moveKf /= transformK;
-			//				Logger::Debug(L"result = %f", moveKf);
-			//				Logger::Debug(L"inv = %d", res);
 		}	
 		if (event->phase == UIEvent::PHASE_DRAG)
 		{
-//				PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
-//				const Matrix4 & worldTransform = proxy->GetWorldTransform();
-//
-//				Matrix4 worldTransformInverse;
-//
-//				bool result = ((Matrix4&)worldTransform).GetInverse(worldTransformInverse);
-//				if (result)
-//					proxy->SetLocalTransform(worldTransform * currTransform * worldTransformInverse);				
-//				else 
-//					Logger::Debug(L"Error matrix calculation");
-            
-//            Logger::Debug("shift(%f, %f)", event->point.x - touchStart.x, event->point.y - touchStart.y); 
-				
-            PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
+            PrepareModMatrix(event->point);
             selection->SetLocalTransform(currTransform);
             nodesPropertyPanel->UpdateFieldsForCurrentNode();
-            
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
 		{
@@ -794,36 +768,106 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	UIControl::Input(event);
 }
 
+void EditorBodyControl::InitMoving(const Vector2 & point)
+{
+	//init planeNormal
+	switch (modAxis) 
+	{
+		case AXIS_X:
+		case AXIS_Y:
+		case AXIS_XY:
+			planeNormal = Vector3(0,0,1);
+			break;
+		case AXIS_Z:
+		case AXIS_YZ:
+			planeNormal = Vector3(1,0,0);
+			break;
+		case AXIS_XZ:
+			planeNormal = Vector3(0,1,0);
+			break;
+		default:
+			break;
+	}
+
+	Vector3 from, dir;
+	GetCursorVectors(&from, &dir, point);
+
+	bool result = GetIntersectionVectorWithPlane(from, dir, planeNormal, rotationCenter, startDragPoint);
+	
+	Logger::Debug("startDragPoint %f %f %f", startDragPoint.x, startDragPoint.y, startDragPoint.z);
+}	
+
+void EditorBodyControl::GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point)
+{
+	Camera * cam = scene->GetCurrentCamera();
+	if (cam)
+	{
+		const Rect & rect = scene3dView->GetLastViewportRect();
+		*from = cam->GetPosition();
+		Vector3 to = cam->UnProject(point.x, point.y, 0, rect);
+		to -= *from;
+		*dir = to;
+	}
+}
+
 static Vector3 vect[3] = {Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)};
 
-void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
-{	
+void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
+{
+	float32 winx = point.x - touchStart.x;
+	float32 winy = point.y - touchStart.y;
+	
 	Matrix4 modification;
 	modification.Identity();
 	
 	if (modState == MOD_MOVE)
 	{
-		switch (modAxis) 
+		Vector3 from, dir;
+		GetCursorVectors(&from, &dir, point);
+		
+		Vector3 currPoint;
+		bool result = GetIntersectionVectorWithPlane(from, dir, planeNormal, rotationCenter, currPoint);
+		
+		if (result)
 		{
-			case AXIS_X:
-			case AXIS_Y:
-				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis] * moveKf);
-				break;
-			case AXIS_Z:
-				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z] * moveKf);
-				break;
-			case AXIS_XY:
-				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]) * moveKf);
-				break;
-			case AXIS_YZ:
-				modification.CreateTranslation((vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
-				break;
-			case AXIS_XZ:
-				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
-				break;
-			default:
-				break;
+			switch (modAxis) 
+			{
+				case AXIS_X:
+					currPoint.y = startDragPoint.y;
+					currPoint.z = startDragPoint.z;
+					break;
+				case AXIS_Y:
+					currPoint.x = startDragPoint.x;
+					currPoint.z = startDragPoint.z;
+					break;
+				case AXIS_Z:
+					currPoint.x = startDragPoint.x;
+					currPoint.y = startDragPoint.y;
+					break;
+			}
+			modification.CreateTranslation(currPoint - startDragPoint);
 		}
+//		switch (modAxis) 
+//		{
+//			case AXIS_X:
+//			case AXIS_Y:
+//				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis] * moveKf);
+//				break;
+//			case AXIS_Z:
+//				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z] * moveKf);
+//				break;
+//			case AXIS_XY:
+//				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]) * moveKf);
+//				break;
+//			case AXIS_YZ:
+//				modification.CreateTranslation((vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
+//				break;
+//			case AXIS_XZ:
+//				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
+//				break;
+//			default:
+//				break;
+//		}
 	}
 	else if (modState == MOD_ROTATE)
 	{
@@ -867,7 +911,7 @@ void EditorBodyControl::PrepareModMatrix(float32 winx, float32 winy)
 //		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
 		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * (winx/100.0f));
 	}
-	currTransform =  startTransform * modification;
+	currTransform = startTransform * modification;
 }
 
 
