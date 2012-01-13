@@ -61,8 +61,6 @@ void ModificationPopUp::OnReset(BaseObject * object, void * userData, void * cal
 {
 	if (selection)
 	{
-		Matrix4 modification;
-		modification.Identity();		
-		selection->SetLocalTransform(modification);
+		selection->RestoreOriginalTransforms();
 	}
 }
