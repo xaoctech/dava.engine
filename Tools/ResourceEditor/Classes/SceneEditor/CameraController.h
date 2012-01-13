@@ -58,6 +58,7 @@ public:
     
     virtual void Input(UIEvent * event);
     void SetSpeed(float32 _speed);
+    inline float32 GetSpeed() { return speed; };
     inline void SetSelection(SceneNode * _selection)
 	{
 		selection = _selection;
