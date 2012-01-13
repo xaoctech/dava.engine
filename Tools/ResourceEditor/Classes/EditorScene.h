@@ -34,19 +34,22 @@ public:
 	{
 		return selection;
 	}
-	
-	inline SceneNode * GetRealSelection()
+
+	inline SceneNode * GetProxy()
 	{
-		return realSelection;
+		return proxy;
 	}
+	
 	
 	void SetSelection(SceneNode *newSelection);
     
 	virtual void Draw();
 	void DrawGrid();
+	void SetBulletUpdate(SceneNode* curr, bool value);
 
-	
 protected:
+
+	SceneNode * GetHighestProxy(SceneNode* curr);
 
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
@@ -54,7 +57,7 @@ protected:
     int depth;
 	
 	SceneNode * selection;
-	SceneNode * realSelection;
+	SceneNode * proxy;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	void DrawDebugNodes(SceneNode * curr);
