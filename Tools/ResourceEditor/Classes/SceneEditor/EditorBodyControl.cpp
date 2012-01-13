@@ -605,23 +605,40 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 }
 
                 case DVKEY_1:
-                    cameraController->SetSpeed(40);
+                    cameraController->SetSpeed(80);
                     break;
 
                 case DVKEY_2:
-                    cameraController->SetSpeed(80);
+                    cameraController->SetSpeed(160);
                     break;
                 
                 case DVKEY_3:
-                    cameraController->SetSpeed(160);
-                    break;
-
-                case DVKEY_4:
                     cameraController->SetSpeed(320);
                     break;
 
-                case DVKEY_X:
-                    newCamera = scene->GetCamera(1);
+                case DVKEY_4:
+                    cameraController->SetSpeed(640);
+                    break;
+                    
+                case DVKEY_LBRACKET:
+                {
+                    float32 speed = cameraController->GetSpeed();
+                    if (speed - 50 >= 0)
+                    {
+                        cameraController->SetSpeed(speed - 50);
+                    }
+                }
+                    break;
+
+                case DVKEY_RBRACKET:
+                {
+                    
+                    float32 speed = cameraController->GetSpeed();
+                    if (speed <= 1000)
+                    {
+                        cameraController->SetSpeed(speed + 50);
+                    }
+                }
                     break;
 
                 case DVKEY_C:

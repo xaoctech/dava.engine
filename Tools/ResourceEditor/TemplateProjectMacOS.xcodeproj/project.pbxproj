@@ -959,8 +959,8 @@
 		5C0E984014BC931C008188FE /* Properties */ = {
 			isa = PBXGroup;
 			children = (
-				FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */,
 				FEDDC9521428E59E0004BF1A /* EditMatrixControl.h */,
+				FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */,
 				5CFAF30F14A6334100355DCF /* UICheckBox.h */,
 				5CFAF30E14A6334100355DCF /* UICheckBox.cpp */,
 				478099BB14A370BA00BAA259 /* ComboBox.h */,
