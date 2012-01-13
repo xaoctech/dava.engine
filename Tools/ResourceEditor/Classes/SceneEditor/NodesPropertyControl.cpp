@@ -6,7 +6,7 @@
 
 #include "EditorSettings.h"
 
-#include "AppScreens.h"
+#include "../AppScreens.h"
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
