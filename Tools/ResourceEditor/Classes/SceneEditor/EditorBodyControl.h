@@ -187,7 +187,6 @@ protected:
 	Rect propertyPanelRect;
 	void RecreatePropertiesPanelForNode(SceneNode *node);
 	ModificationPopUp * modificationPopUp;
-	SceneNode * GetHighestProxy(SceneNode* curr);
 };
 
 
