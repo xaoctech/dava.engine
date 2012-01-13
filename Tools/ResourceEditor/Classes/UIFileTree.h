@@ -22,7 +22,7 @@ class UIFileTreeCell;
 class UIFileTreeDelegate
 {
 public:
-	//virtual UIFileTreeCell *CellAtIndex(UIFileTree * tree, int32 index) = 0;
+	virtual UIFileTreeCell *CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index) = 0;
 	//virtual int32 CellHeight(UIFileTree * tree, int32 index) = 0;
 	
     virtual int32 CellHeight(UIList *forList, int32 index) = 0;
