@@ -6,6 +6,8 @@
 
 #include "EditorSettings.h"
 
+#include "AppScreens.h"
+
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
     :   UIControl(rect)
 {
@@ -856,7 +858,7 @@ void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
 
 void NodesPropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    ((SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen())->ShowMaterialEditor();
+    ((SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN))->ShowMaterialEditor();
 }
 
 void NodesPropertyControl::UpdateFieldsForCurrentNode()
