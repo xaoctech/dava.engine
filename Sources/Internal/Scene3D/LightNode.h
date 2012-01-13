@@ -60,14 +60,13 @@ public:
     
     eType GetType() const;
     const Color & GetColor() const;    
-	float32 GetRadius(void);
+
+	virtual void Save(KeyedArchive * archive);
+	virtual void Load(KeyedArchive * archive);
     
 protected:
-    
     eType type;
     Color color;
-	float32 r;
-	
 };
 
 };
