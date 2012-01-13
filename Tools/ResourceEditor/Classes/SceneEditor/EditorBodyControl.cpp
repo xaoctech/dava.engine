@@ -749,21 +749,14 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
+			scene->SetBulletUpdate(selection, false);
+
 			inTouch = true;	
 			touchStart = event->point;
 						
 			startTransform = selection->GetLocalTransform();			
 			Matrix4 invProxyWorldTransform;
-			
-//			bool invExists = proxy->GetParent()->GetWorldTransform().GetInverse(invProxyWorldTransform);
-			
-//			DVASSERT(invExists == true);
-//			rotationCenter = rotationCenter * invProxyWorldTransform; // transform world coord to proxy coord system			
-			
-			SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-			if (userData)
-				userData->bulletObject->SetUpdateFlag(false);
-			
+						
 			//calculate koefficient for moving
 			Camera * cam = scene->GetCurrentCamera();
 			const Vector3 & camPos = cam->GetPosition();
@@ -772,7 +765,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			
 			//				float32 transformK = /*((Vector3(0,0,0) * inv) - */(Vector3(0,0,1) * worldTransform).Length();
 			Vector3 dir = objPos - camPos;
-			moveKf = dir.Length() * 0.003;
+			moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
 			
 			//				Logger::Debug(L"transformK = %f", transformK);			
 			//				Logger::Debug(L"moveKf = %f", moveKf);				
@@ -793,20 +786,17 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 //				else 
 //					Logger::Debug(L"Error matrix calculation");
             
-            Logger::Debug("shift(%f, %f)", event->point.x - touchStart.x, event->point.y - touchStart.y); 
+//            Logger::Debug("shift(%f, %f)", event->point.x - touchStart.x, event->point.y - touchStart.y); 
 				
             PrepareModMatrix(event->point.x - touchStart.x, event->point.y - touchStart.y);
             selection->SetLocalTransform(currTransform);
-            
             nodesPropertyPanel->UpdateFieldsForCurrentNode();
             
 		}
 		if (event->phase == UIEvent::PHASE_ENDED)
 		{
-				inTouch = false;
-				SceneNodeUserData * userData = (SceneNodeUserData*)selection->userData;
-				if (userData)
-					userData->bulletObject->SetUpdateFlag(true);
+			inTouch = false;
+			scene->SetBulletUpdate(selection, true);
 		}
 	}
 	else
