@@ -169,7 +169,6 @@ protected:
 	Matrix4 startTransform;
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
-	SceneNode * proxy;
 
 	float32 axisSign[3];
 	
