@@ -471,6 +471,8 @@ void SceneNode::Save(KeyedArchive * archive)
     archive->SetByteArray("localTransform", (uint8*)&localTransform, sizeof(Matrix4));
     archive->SetUInt32("flags", flags);
     archive->SetUInt32("debugFlags", debugFlags);
+    
+    archive->SetByteArrayFromArchive("customprops", customProperties);
 }
 
 String SceneNode::GetDebugDescription()
@@ -492,6 +494,11 @@ void SceneNode::Load(KeyedArchive * archive)
     flags = archive->GetUInt32("flags", 0);
     InvalidateLocalTransform();
     debugFlags = archive->GetUInt32("debugFlags", 0);
+    
+    SafeRelease(customProperties);
+    customProperties = archive->GetArchiveFromByteArray("customprops");
+    if (!customProperties)
+        customProperties = new KeyedArchive();
 }
 
 KeyedArchive * SceneNode::GetCustomProperties()

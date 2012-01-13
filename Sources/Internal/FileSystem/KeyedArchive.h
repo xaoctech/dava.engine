@@ -119,6 +119,7 @@ public:
     /**
         \brief Function to load data from byte array as keyed archive.
         Call to this function is equivalent to creation of KeyedArchive class. Object returned from this function should be released. 
+        If key is unavailable function returns 0
         \param[in] key string key
         \param[in] value we want to set for this key
 	 */

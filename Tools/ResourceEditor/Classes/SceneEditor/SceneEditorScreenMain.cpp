@@ -256,7 +256,12 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 //    file->EnableDebugLog(true);
 //    file->LoadScene("scene.sc2", scene);
 //    SafeRelease(file);
-    scene->AddNode(scene->GetRootNode("scene.sc2"));
+    SceneNode * rootNode = scene->GetRootNode("scene.sc2");
+    for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+    {
+        scene->AddNode(rootNode->GetChild(ci));
+    }
+    
     bodies[0]->bodyControl->Refresh();
 }
 
