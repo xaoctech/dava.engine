@@ -80,6 +80,7 @@ void WASDCameraController::Input(UIEvent * event)
         switch (event->tid) 
         {
             case DVKEY_UP:
+            case DVKEY_W:
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
@@ -95,6 +96,7 @@ void WASDCameraController::Input(UIEvent * event)
             }
 
             case DVKEY_LEFT:
+            case DVKEY_A:
             { 
                 Vector3 pos = camera->GetPosition();
                 Vector3 dir = camera->GetDirection();
@@ -107,6 +109,7 @@ void WASDCameraController::Input(UIEvent * event)
             }
                 
             case DVKEY_DOWN:
+			case DVKEY_S:
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
@@ -120,6 +123,7 @@ void WASDCameraController::Input(UIEvent * event)
             }
                 
             case DVKEY_RIGHT:
+            case DVKEY_D:
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 dir = camera->GetDirection();
