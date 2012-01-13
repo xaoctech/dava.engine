@@ -77,26 +77,24 @@ void WASDCameraController::Input(UIEvent * event)
     if (!camera)return;
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {   
-        switch(event->keyChar)
+        switch (event->tid) 
         {
-            case 'w':
-            case 'W':
+            case DVKEY_UP:
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
                 //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-
+                
                 direction.Normalize();
                 pos += direction * speed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 
                 //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
+                break;
             }
-            break;
-            
-            case 'a':
-            case 'A':
+
+            case DVKEY_LEFT:
             { 
                 Vector3 pos = camera->GetPosition();
                 Vector3 dir = camera->GetDirection();
@@ -105,25 +103,23 @@ void WASDCameraController::Input(UIEvent * event)
                 pos -= left * speed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(dir);
+                break;
             }
-            break;
                 
-            case 's':
-            case 'S':
+            case DVKEY_DOWN:
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 direction = camera->GetDirection();
                 //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
-
+                
                 pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
                 //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+                break;
             }
-            break;
-            
-            case 'd':
-            case 'D':
+                
+            case DVKEY_RIGHT:
             {
                 Vector3 pos = camera->GetPosition();
                 Vector3 dir = camera->GetDirection();
@@ -132,11 +128,11 @@ void WASDCameraController::Input(UIEvent * event)
                 pos += left * speed * SystemTimer::Instance()->FrameDelta();
                 camera->SetPosition(pos);
                 camera->SetDirection(dir);
+                break;
             }
-            break;
-			case 'z':
-			case 'Z':
-			{
+
+            case DVKEY_Z:
+            {
 				if (selection)
 				{
 					AABBox3 box = selection->GetWTMaximumBoundingBox();						
@@ -153,10 +149,95 @@ void WASDCameraController::Input(UIEvent * event)
 					camera->SetTarget(c);
 					camera->SetPosition(c - (dir * boxSize));
 				}					
-			}
 				break;					
-				
-        };
+			}
+
+                
+            default:
+                break;
+        }
+        
+//        switch(event->keyChar)
+//        {
+//            case 'w':
+//            case 'W':
+//            {
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 direction = camera->GetDirection();
+//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//
+//                direction.Normalize();
+//                pos += direction * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+//                
+//                //Logger::Debug("newpos: %f %f %f", pos.x, pos.y, pos.z);
+//            }
+//            break;
+//            
+//            case 'a':
+//            case 'A':
+//            { 
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 dir = camera->GetDirection();
+//                Vector3 left = camera->GetLeft();
+//                
+//                pos -= left * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(dir);
+//            }
+//            break;
+//                
+//            case 's':
+//            case 'S':
+//            {
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 direction = camera->GetDirection();
+//                //Logger::Debug("oldpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//
+//                pos -= direction * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(direction);    // right now required because camera rebuild direction to target, and if position & target is equal after set position it produce wrong results
+//                //Logger::Debug("newpos: %f %f %f olddir: %f %f %f", pos.x, pos.y, pos.z, direction.x, direction.y, direction.z);
+//            }
+//            break;
+//            
+//            case 'd':
+//            case 'D':
+//            {
+//                Vector3 pos = camera->GetPosition();
+//                Vector3 dir = camera->GetDirection();
+//                Vector3 left = camera->GetLeft();
+//                
+//                pos += left * speed * SystemTimer::Instance()->FrameDelta();
+//                camera->SetPosition(pos);
+//                camera->SetDirection(dir);
+//            }
+//            break;
+//
+//			case 'z':
+//			case 'Z':
+//			{
+//				if (selection)
+//				{
+//					AABBox3 box = selection->GetWTMaximumBoundingBox();						
+//					float32 boxSize = ((box.max - box.min).Length());
+//					
+//					const Vector3 & pos = camera->GetPosition();
+//					const Vector3 & targ = camera->GetTarget();
+//					
+//					Vector3 dir = targ - pos;
+//					dir.Normalize();
+//					
+//					const Vector3 & c = box.GetCenter();
+//					
+//					camera->SetTarget(c);
+//					camera->SetPosition(c - (dir * boxSize));
+//				}					
+//			}
+//				break;					
+//				
+//        };
     } 
 
 	if (event->tid == UIEvent::BUTTON_1)
@@ -272,10 +353,9 @@ void WASDCameraController::Input(UIEvent * event)
 		if (!camera)return;
 		if (event->phase == UIEvent::PHASE_KEYCHAR)
 		{   
-			switch(event->keyChar)
-			{
-				case 'z':
-				case 'Z':
+            switch (event->tid)
+            {
+                case DVKEY_Z:
 				{
 					if (selection)
 					{
@@ -293,9 +373,36 @@ void WASDCameraController::Input(UIEvent * event)
 						camera->SetTarget(c);
 						camera->SetPosition(c - (dir * boxSize));
 					}					
+                    break;		                    
 				}
-				break;					
-			};
+                default:
+                    break;
+            }
+            
+//			switch(event->keyChar)
+//			{
+//				case 'z':
+//				case 'Z':
+//				{
+//					if (selection)
+//					{
+//						AABBox3 box = selection->GetWTMaximumBoundingBox();
+//						float32 boxSize = ((box.max - box.min).Length());
+//						
+//					 	const Vector3 & pos = camera->GetPosition();
+//					 	const Vector3 & targ = camera->GetTarget();
+//						
+//						Vector3 dir = targ - pos;
+//						dir.Normalize();
+//						
+//						const Vector3 & c = box.GetCenter();
+//						
+//						camera->SetTarget(c);
+//						camera->SetPosition(c - (dir * boxSize));
+//					}					
+//				}
+//				break;					
+//			};
 		} 
 				
 		if (event->phase == UIEvent::PHASE_BEGAN) 

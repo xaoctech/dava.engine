@@ -2,6 +2,7 @@
 
 #include "ControlsFactory.h"
 
+#include "EditorSettings.h"
 
 //***************    PaintAreaControl    **********************
 PaintAreaControl::PaintAreaControl(const Rect & rect)
@@ -341,22 +342,14 @@ void LandscapeEditorControl::CreateLeftPanel()
     propertyList = new PropertyList(Rect(0, 0, leftRect.dx, leftRect.dy), this);
     leftPanel->AddControl(propertyList);
     
-    KeyedArchive * keyedArchieve = new KeyedArchive();
-    keyedArchieve->Load("~doc:/ResourceEditorOptions.archive");
-    String projectPath = keyedArchieve->GetString("LastSavedPath", "/");
-    if('/' != projectPath[projectPath.length() - 1])
-    {
-        projectPath += '/';
-    }
-    SafeRelease(keyedArchieve);
-    
     propertyList->AddIntProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetIntPropertyValue("Size", 1024);
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath);
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath, ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", "", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", "");
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "");
 
+    String projectPath = EditorSettings::Instance()->GetProjectPath();
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath + "Data/Landscape/tex3.png");
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png", PropertyList::PROPERTY_IS_EDITABLE);
