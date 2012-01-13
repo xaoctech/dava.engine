@@ -543,6 +543,30 @@ void ResourcePackerScreen::OnCellSelected(UIFileTree * tree, UIFileTreeCell *sel
 	}
 }
 
+UIFileTreeCell *ResourcePackerScreen::CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index)
+{
+    int32 width = tree->GetRect().dx;
+    
+	UIFileTreeCell *c = (UIFileTreeCell *)tree->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
+	if(!c)
+	{ //if cell of requested type isn't find in the store create new cell
+		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
+	}
+	//fill cell whith data
+	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
+
+	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
+    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
+	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+
+    c->SetSelected(false, false);
+	
+	return c;//returns cell
+}
+
+
+
 void ResourcePackerScreen::OpenSpriteEditor(const String & spriteName)
 {
 	if (spriteEditor->GetParent() == 0)
