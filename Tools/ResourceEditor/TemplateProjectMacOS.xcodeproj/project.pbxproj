@@ -203,6 +203,7 @@
 		FEC3CA811283557F00541220 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */; };
 		FEC3CA821283557F00541220 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA711283557F00541220 /* GameCore.cpp */; };
 		FED66BBF14BF6BDA00A39A03 /* EditorLightNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66BBE14BF6BDA00A39A03 /* EditorLightNode.cpp */; };
+		FED66BDD14C0416400A39A03 /* EditorSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66BDB14C0416400A39A03 /* EditorSettings.cpp */; };
 		FEDDC9541428E59E0004BF1A /* EditMatrixControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */; };
 		FEDDC9AB142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC98D142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp */; };
 		FEDDC9AC142A3DDB0004BF1A /* ColladaAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC98F142A3DDB0004BF1A /* ColladaAnimation.cpp */; };
@@ -774,6 +775,8 @@
 		FED66B3A14BF420600A39A03 /* EditorLightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightNode.cpp; sourceTree = "<group>"; };
 		FED66B3B14BF420600A39A03 /* EditorLightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightNode.h; sourceTree = "<group>"; };
 		FED66BBE14BF6BDA00A39A03 /* EditorLightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightNode.cpp; sourceTree = "<group>"; };
+		FED66BDB14C0416400A39A03 /* EditorSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorSettings.cpp; sourceTree = "<group>"; };
+		FED66BDC14C0416400A39A03 /* EditorSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorSettings.h; sourceTree = "<group>"; };
 		FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditMatrixControl.cpp; sourceTree = "<group>"; };
 		FEDDC9521428E59E0004BF1A /* EditMatrixControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditMatrixControl.h; sourceTree = "<group>"; };
 		FEDDC98D142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColladaAnimatedMesh.cpp; path = Classes/Collada/ColladaAnimatedMesh.cpp; sourceTree = "<group>"; };
@@ -1641,6 +1644,8 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				FED66BDB14C0416400A39A03 /* EditorSettings.cpp */,
+				FED66BDC14C0416400A39A03 /* EditorSettings.h */,
 				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
 				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
 				5C0E984114BC936F008188FE /* MainScreen */,
@@ -2085,6 +2090,7 @@
 				5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */,
 				D91B83CD14BF12F2002D07B7 /* ModificationPopUp.cpp in Sources */,
 				FED66BBF14BF6BDA00A39A03 /* EditorLightNode.cpp in Sources */,
+				FED66BDD14C0416400A39A03 /* EditorSettings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
