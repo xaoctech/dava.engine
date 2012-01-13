@@ -297,6 +297,8 @@ void UIFileSystemDialog::RefreshList()
         currentDir = "/";
     
     files = new FileList(currentDir);
+    files->Sort();
+    
     fileUnits.clear();
     int32 cnt = files->GetCount();
     int32 outCnt = 0;

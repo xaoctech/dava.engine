@@ -7,7 +7,7 @@ using namespace DAVA;
 class EditorLightNode : public SceneNode
 {
 public:
-	EditorLightNode(Scene * _scene);
+	EditorLightNode(Scene * _scene = 0);
 	virtual ~EditorLightNode();
 
 	virtual void Update(float32 timeElapsed);

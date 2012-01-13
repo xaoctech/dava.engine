@@ -469,6 +469,8 @@ void SceneNode::Save(KeyedArchive * archive)
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
     archive->SetByteArray("localTransform", (uint8*)&localTransform, sizeof(Matrix4));
+
+    
     archive->SetUInt32("flags", flags);
     archive->SetUInt32("debugFlags", debugFlags);
     
@@ -490,6 +492,7 @@ void SceneNode::Load(KeyedArchive * archive)
     int size = archive->GetByteArraySize("localTransform");
     if (size == sizeof(Matrix4))
         memcpy(&localTransform, archive->GetByteArray("localTransform"), size);
+    
 
     flags = archive->GetUInt32("flags", 0);
     InvalidateLocalTransform();

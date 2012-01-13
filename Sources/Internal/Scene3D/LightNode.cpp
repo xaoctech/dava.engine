@@ -38,11 +38,10 @@ namespace DAVA
 REGISTER_CLASS(LightNode);
 
 LightNode::LightNode(Scene * _scene)
-    :   SceneNode(_scene)
-    ,   type(TYPE_DIRECTIONAL)
-    ,   color(1.0f, 1.0f, 1.0f, 1.0f)
+:	SceneNode(_scene),
+	type(TYPE_DIRECTIONAL),
+	color(1.0f, 1.0f, 1.0f, 1.0f)
 {
-	r = 1.0f;
 }
     
 LightNode::~LightNode()
@@ -85,10 +84,28 @@ const Color & LightNode::GetColor() const
 {
     return color;
 }
-    
-float32 LightNode::GetRadius(void)
+
+void LightNode::Save(KeyedArchive * archive)
 {
-	return r;
-}
+	SceneNode::Save(archive);
 	
+	archive->SetInt32("type", type);
+	archive->SetFloat("color.r", color.r);
+	archive->SetFloat("color.g", color.g);
+	archive->SetFloat("color.b", color.b);
+	archive->SetFloat("color.a", color.a);
+}
+
+void LightNode::Load(KeyedArchive * archive)
+{
+	 SceneNode::Load(archive);
+
+	 type = (eType)archive->GetInt32("type");
+	 color.r = archive->GetFloat("color.r");
+	 color.g = archive->GetFloat("color.g");
+	 color.b = archive->GetFloat("color.b");
+	 color.a = archive->GetFloat("color.a");
+}
+
+
 };
