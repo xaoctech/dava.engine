@@ -735,7 +735,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             to *= 1000.f;
             to += from;
             scene->TrySelection(from, to);
-            
+
+            selection = scene->GetProxy();
             SelectNodeAtTree(selection);
         }
 	}	
