@@ -25,17 +25,33 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddSection("Light", GetHeaderState("Light", true));
         
     propertyList->AddComboProperty("Type", types);
-    propertyList->AddFloatProperty("r");
-    propertyList->AddFloatProperty("g");
-    propertyList->AddFloatProperty("b"); 
-    propertyList->AddFloatProperty("a"); 
-	//propertyList->AddFloatProperty("Intensity");
+	propertyList->SetComboPropertyIndex("Type", light->GetType());
 
-    propertyList->SetComboPropertyIndex("Type", light->GetType());
-    propertyList->SetFloatPropertyValue("r", light->GetColor().r);
-    propertyList->SetFloatPropertyValue("g", light->GetColor().g);
-    propertyList->SetFloatPropertyValue("b", light->GetColor().b);
-    propertyList->SetFloatPropertyValue("a", light->GetColor().a);
+    propertyList->AddFloatProperty("r");
+	propertyList->SetFloatPropertyValue("r", light->GetColor().r);
+
+    propertyList->AddFloatProperty("g");
+	propertyList->SetFloatPropertyValue("g", light->GetColor().g);
+
+    propertyList->AddFloatProperty("b"); 
+	propertyList->SetFloatPropertyValue("b", light->GetColor().b);
+	
+	propertyList->AddFloatProperty("a"); 
+	propertyList->SetFloatPropertyValue("a", light->GetColor().a);
+
+
+
+	propertyList->AddSection("Static light", GetHeaderState("Static light", true));
+
+	propertyList->AddBoolProperty("Enable");
+	propertyList->SetBoolPropertyValue("Enable", light->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
+
+	propertyList->AddBoolProperty("Cast shadows");
+	propertyList->SetBoolPropertyValue("Cast shadows", light->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
+
+	propertyList->AddFloatProperty("Intensity");
+	propertyList->SetFloatPropertyValue("Intensity", light->GetCustomProperties()->GetFloat("editor.intensity", 1.f));
+
 }
 
 void LightPropertyControl::WriteTo(SceneNode * sceneNode)
@@ -50,10 +66,17 @@ void LightPropertyControl::WriteTo(SceneNode * sceneNode)
 		propertyList->GetFloatPropertyValue("g"),
 		propertyList->GetFloatPropertyValue("b"),
 		propertyList->GetFloatPropertyValue("a"));
+	light->SetColor(color);
 
 	int32 type = propertyList->GetComboPropertyIndex("Type");
-
-	light->SetColor(color);
 	light->SetType((LightNode::eType)type);
 
+	bool enable = propertyList->GetBoolPropertyValue("Enable");
+	light->GetCustomProperties()->SetBool("editor.staticlight.enable", enable);
+
+	bool castShadows = propertyList->GetBoolPropertyValue("Cast shadows");
+	light->GetCustomProperties()->SetBool("editor.staticlight.castshadows", castShadows);
+
+	float32 intensity = propertyList->GetFloatPropertyValue("Intensity");
+	light->GetCustomProperties()->SetFloat("editor.intensity", intensity);
 }
