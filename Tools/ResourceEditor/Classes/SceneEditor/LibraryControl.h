@@ -3,7 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "../UIFileTree.h"
-#include "CameraController.h"
+//#include "CameraController.h"
 #include "../EditorScene.h"
 
 using namespace DAVA;
