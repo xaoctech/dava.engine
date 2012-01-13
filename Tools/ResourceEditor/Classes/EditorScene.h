@@ -34,11 +34,12 @@ public:
 	{
 		return selection;
 	}
-	
-	inline SceneNode * GetRealSelection()
+
+	inline SceneNode * GetProxy()
 	{
-		return realSelection;
+		return proxy;
 	}
+	
 	
 	void SetSelection(SceneNode *newSelection);
     
@@ -48,13 +49,15 @@ public:
 	
 protected:
 
+	SceneNode * GetHighestProxy(SceneNode* curr);
+
     btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
     int depth;
 	
 	SceneNode * selection;
-	SceneNode * realSelection;
+	SceneNode * proxy;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	void DrawDebugNodes(SceneNode * curr);
