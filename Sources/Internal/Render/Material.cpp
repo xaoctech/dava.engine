@@ -187,7 +187,7 @@ void Material::Load(KeyedArchive * keyedArchive)
         //if (textures[k].length())
         //{
         Texture::EnableMipmapGeneration();
-        textures[k] = Texture::CreateFromFile(names[k]);
+        textures[k] = Texture::CreateFromFile(pathBase + names[k]);
         if (textures[k])
         {
             textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);

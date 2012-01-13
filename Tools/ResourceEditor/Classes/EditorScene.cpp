@@ -66,19 +66,6 @@ void EditorScene::CheckNodes(SceneNode * curr)
 		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
 		data->bulletObject->UpdateCollisionObject();
 	}
-	else if (light && light->userData == 0)
-	{
-		SceneNodeUserData * data = new SceneNodeUserData();
-		curr->userData = data;
-		data->bulletObject = new BulletObject(this, collisionWorld, light, light->GetWorldTransform());
-	}
-	else if (light && light->userData)
-	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
-		data->bulletObject->UpdateCollisionObject();
-	}
-	
-	
 
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)

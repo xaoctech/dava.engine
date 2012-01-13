@@ -110,14 +110,14 @@ private:
     };
 
     
-    bool SaveHierarchy(DataNode * node, File * file, int32 level);
-    void LoadHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
+    bool SaveDataHierarchy(DataNode * node, File * file, int32 level);
+    void LoadDataHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
 
     bool SaveHierarchy(SceneNode * node, File * file, int32 level);
     void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
     bool isDebugLogEnabled;
-    String rootNodePath;
+    String rootNodePathName, rootNodePath, rootNodeName; 
 };
   
 }; // namespace DAVA

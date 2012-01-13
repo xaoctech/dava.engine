@@ -59,14 +59,27 @@ void SceneFile2::EnableDebugLog(bool _isDebugLogEnabled)
     isDebugLogEnabled = _isDebugLogEnabled;
 }
 
+static void replace(std::string & repString,const std::string & needle, const std::string & s)
+{
+    std::string::size_type lastpos = 0, thispos;
+    while ((thispos = repString.find(needle, lastpos)) != std::string::npos)
+    {
+        repString.replace(thispos, needle.length(), s);
+        lastpos = thispos + 1;
+    }
+}
+    
 bool SceneFile2::SaveScene(const String & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
     if (!file)
     {
-        Logger::Error("SceneFile2::SaveScene failed to create file: %s", filename);
+        Logger::Error("SceneFile2::SaveScene failed to create file: %s", filename.c_str());
         return false;
     }   
+    rootNodePathName = filename;
+    FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
+
     // save header
     Header header;
     header.signature[0] = 'S';
@@ -81,9 +94,24 @@ bool SceneFile2::SaveScene(const String & filename, DAVA::Scene *_scene)
     
     // save data objects
     Logger::Debug("+ save data objects");
+    
+    Logger::Debug("- save file path: %s", rootNodePath.c_str());
+    // Process file paths
+    for (int32 mi = 0; mi < _scene->GetMaterials()->GetChildrenCount(); ++mi)
+    {
+        Material * material = dynamic_cast<Material*>(_scene->GetMaterials()->GetChild(mi));
+        for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
+        {
+            if (material->names[k].length() > 0)
+            {
+                replace(material->names[k], rootNodePath, String(""));
+                Logger::Debug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
+            }
+        }   
+    }
 
-    SaveHierarchy(_scene->GetMaterials(), file, 1);
-    SaveHierarchy(_scene->GetStaticMeshes(), file, 1);
+    SaveDataHierarchy(_scene->GetMaterials(), file, 1);
+    SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
     
     // save hierarchy
     Logger::Debug("+ save hierarchy");
@@ -110,7 +138,9 @@ bool SceneFile2::LoadScene(const String & filename, Scene * _scene)
         Logger::Error("SceneFile2::LoadScene failed to create file: %s", filename.c_str());
         return false;
     }   
-    rootNodePath = filename;
+    rootNodePathName = filename;
+    FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
+
     Header header;
     file->Read(&header, sizeof(Header));
     int requiredVersion = 1;
@@ -128,23 +158,23 @@ bool SceneFile2::LoadScene(const String & filename, Scene * _scene)
     
     Logger::Debug("+ load data objects");
 
-    LoadHierarchy(_scene, _scene->GetMaterials(), file, 1);
-    LoadHierarchy(_scene, _scene->GetStaticMeshes(), file, 1);
+    LoadDataHierarchy(_scene, _scene->GetMaterials(), file, 1);
+    LoadDataHierarchy(_scene, _scene->GetStaticMeshes(), file, 1);
 
     Logger::Debug("+ load hierarchy");
     SceneNode * rootNode = new SceneNode(_scene);
-    rootNode->SetName(rootNodePath);
+    rootNode->SetName(rootNodeName);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
-    _scene->AddRootNode(rootNode, rootNodePath);
+    _scene->AddRootNode(rootNode, rootNodePathName);
     
     SafeRelease(file);
     return true;
 }
     
-bool SceneFile2::SaveHierarchy(DataNode * node, File * file, int32 level)
+bool SceneFile2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     node->Save(archive);    
@@ -158,18 +188,23 @@ bool SceneFile2::SaveHierarchy(DataNode * node, File * file, int32 level)
     for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
         DataNode * child = node->GetChild(ci);
-        SaveHierarchy(child, file, level + 1);
+        SaveDataHierarchy(child, file, level + 1);
     }
     
     SafeRelease(archive);
     return true;
 }
 
-void SceneFile2::LoadHierarchy(Scene * scene, DataNode * root, File * file, int32 level)
+void SceneFile2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
-    DataNode * node = dynamic_cast<DataNode*>(BaseObject::LoadFromArchive(archive));
+    
+    // DataNode * node = dynamic_cast<DataNode*>(BaseObject::LoadFromArchive(archive));
+    
+    String name = archive->GetString("##name");
+    DataNode * node = dynamic_cast<DataNode *>(ObjectFactory::Instance()->New(name));
+
     if (node)
     {
         if (node->GetClassName() == "DataNode")
@@ -178,6 +213,14 @@ void SceneFile2::LoadHierarchy(Scene * scene, DataNode * root, File * file, int3
             node = root;
         }   
         node->SetScene(scene);
+        //TODO: refactoring here ugly hack need saving options
+        Material * material = dynamic_cast<Material*>(node);
+        if (material)
+        {
+            material->pathBase = rootNodePath;
+        }
+        node->Load(archive);
+        
         if (node != root)
             root->AddNode(node);
         if (isDebugLogEnabled)
@@ -186,7 +229,7 @@ void SceneFile2::LoadHierarchy(Scene * scene, DataNode * root, File * file, int3
         int32 childrenCount = archive->GetInt32("#childrenCount", 0);
         for (int ci = 0; ci < childrenCount; ++ci)
         {
-            LoadHierarchy(scene, node, file, level + 1);
+            LoadDataHierarchy(scene, node, file, level + 1);
         }
     }
     

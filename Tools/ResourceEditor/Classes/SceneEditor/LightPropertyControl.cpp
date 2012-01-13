@@ -4,7 +4,10 @@
 LightPropertyControl::LightPropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
 {
-
+	types.push_back("Directional");
+	types.push_back("Spot");
+	types.push_back("Point");
+	types.push_back("Sky");
 }
 
 LightPropertyControl::~LightPropertyControl()
@@ -22,10 +25,11 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddSection("Light", GetHeaderState("Light", true));
         
     propertyList->AddComboProperty("Type", types);
-    propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("r");
+    propertyList->AddFloatProperty("g");
+    propertyList->AddFloatProperty("b"); 
+    propertyList->AddFloatProperty("a"); 
+	//propertyList->AddFloatProperty("Intensity");
 
     propertyList->SetComboPropertyIndex("Type", light->GetType());
     propertyList->SetFloatPropertyValue("r", light->GetColor().r);
@@ -51,4 +55,5 @@ void LightPropertyControl::WriteTo(SceneNode * sceneNode)
 
 	light->SetColor(color);
 	light->SetType((LightNode::eType)type);
+
 }

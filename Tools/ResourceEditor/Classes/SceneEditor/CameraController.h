@@ -43,6 +43,9 @@ public:
     
     virtual void SetCamera(Camera * camera);
     virtual void Input(UIEvent * event);
+    
+    virtual void Update(float32 timeElapsed) {};
+    
 protected:
     Camera * camera;
 };
@@ -59,6 +62,9 @@ public:
 	{
 		selection = _selection;
 	}
+    
+    virtual void Update(float32 timeElapsed);
+
 
 protected:
 	SceneNode * selection;
@@ -73,10 +79,12 @@ protected:
 	    
     float32 radius;
 	Vector3 center;
+    
+    float32 updateDelta;
 };
 	
 	
-	class Max3dCameraController : public CameraController
+class Max3dCameraController : public CameraController
 {
 public:
     Max3dCameraController();
