@@ -589,16 +589,22 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {
-        if(UIControlSystem::Instance()->GetFocusedControl() == this || 
-           UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
+        UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+        if(!tf)
         {
-            
             Camera * newCamera = 0;
             switch(event->tid)
             {
                 case DVKEY_ESCAPE:
-                    ResetSelection();
+                {
+                    UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
+                    if(c == this || c == scene3dView)
+                    {
+                        ResetSelection();
+                    }
+                    
                     break;
+                }
 
                 case DVKEY_1:
                     cameraController->SetSpeed(40);
@@ -811,8 +817,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         
         if (event->phase == UIEvent::PHASE_KEYCHAR)
         {
-            if(UIControlSystem::Instance()->GetFocusedControl() == this || 
-               UIControlSystem::Instance()->GetFocusedControl() == scene3dView)
+            UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+            if(!tf)
             {
                 cameraController->Input(event);
             }
