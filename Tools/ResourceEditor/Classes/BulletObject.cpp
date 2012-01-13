@@ -15,40 +15,11 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Mesh
 :collWorld(collisionWorld),
 collisionPartTransform(&((Matrix4&)pWorldTransform)),
 meshNode(_meshNode),
-lightNode(0),
-updateFlag(true)
+updateFlag(true),
+collisionObject(0)
 
 {    
 	CreateCollisionObject();
-}
-
-BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, LightNode *_lightNode, const Matrix4 &pWorldTransform)
-:collWorld(collisionWorld),
-collisionPartTransform(&((Matrix4&)pWorldTransform)),
-lightNode(_lightNode),
-meshNode(0),
-updateFlag(true),
-trimesh(0)
-{
-//    btTransform startTransform;
-//    startTransform.setIdentity();
-//    float start_x = 0;
-//    float start_y = 0;
-//    float start_z = 0;
-//	
-//    startTransform.setOrigin(btVector3(btScalar(start_x),
-//                                       btScalar(start_y),
-//                                       btScalar(start_z)));
-//    
-//    collisionObject = new btCollisionObject();
-//    collisionObject->setWorldTransform(startTransform);
-//	CreateLightShape(lightNode->GetRadius());
-//    collisionObject->setCollisionShape(shape);
-//    collisionWorld->addCollisionObject(collisionObject);	
-
-	
-	CreateLightObject(lightNode->GetRadius());
-	
 }
 
 
@@ -141,8 +112,6 @@ void BulletObject::UpdateCollisionObject()
 		DeleteCollisionObject();
 		if (meshNode)
 			CreateCollisionObject();
-		else if (lightNode)
-			CreateLightObject(lightNode->GetRadius());
 	}
 	
 //    btTransform btt;

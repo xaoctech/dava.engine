@@ -1,6 +1,8 @@
 #include "EditorLightNode.h"
 
 
+REGISTER_CLASS(EditorLightNode);
+
 EditorLightNode::EditorLightNode(Scene * _scene)
 :	SceneNode(_scene),
 	type(LightNode::TYPE_COUNT)
