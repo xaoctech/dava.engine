@@ -62,6 +62,7 @@ protected:
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	void DrawDebugNodes(SceneNode * curr);
 
+	SceneNode * lastSelectedPhysics;
 };
 
 #endif
