@@ -107,6 +107,7 @@ public:
     };
     Texture * textures[TEXTURE_COUNT];  
     String names[TEXTURE_COUNT];
+    String pathBase;
     
 
     void Save(KeyedArchive * keyedArchive);

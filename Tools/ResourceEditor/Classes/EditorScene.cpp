@@ -19,6 +19,7 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 EditorScene::EditorScene()
 { 
 	selection = 0;
+	lastSelectedPhysics = 0;
 	proxy = 0;
 //	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
 //	dynDispatcher = new	btCollisionDispatcher(dynCollisionConfiguration);
@@ -103,23 +104,23 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
     {
 		Logger::Debug("Has Hit");
 		int findedIndex = cb.m_collisionObjects.size() - 1;
-		if(selection)
+		if(lastSelectedPhysics)
 		{
-//			SceneNodeUserData * data = (SceneNodeUserData*)selection->userData;
-//			if (data)
-//			{
-//				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
-//				{					
-//					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
-//					{
-//						findedIndex = i;
-//						break;
-//					}
-//				}
-//				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
-//					findedIndex--;
-//				findedIndex = findedIndex % cb.m_collisionObjects.size();
-//			}
+			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->userData;
+			if (data)
+			{
+				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
+				{					
+					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+					{
+						findedIndex = i;
+						break;
+					}
+				}
+				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+					findedIndex--;
+				findedIndex = findedIndex % cb.m_collisionObjects.size();
+			}
 		}
 		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
@@ -127,7 +128,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 			findedIndex = cb.m_collisionObjects.size() - 1;
 		coll = cb.m_collisionObjects[findedIndex];
 		selection = FindSelected(this, coll);
-		
+		lastSelectedPhysics = selection;
 		SetSelection(selection);
 	}
 	else 
