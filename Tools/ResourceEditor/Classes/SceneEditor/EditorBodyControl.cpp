@@ -529,7 +529,9 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         if (node)
         {
             selectedSceneGraphNode = node;
-            scene->SetSelection(node);
+
+            scene->SetSelection(0);
+			scene->SetSelection(node);
             
             UpdatePropertyPanel();
             DebugInfo();
@@ -1329,8 +1331,8 @@ void EditorBodyControl::RefreshProperties()
 
 void EditorBodyControl::ResetSelection()
 {
-    scene->SetSelection(NULL);
-    SelectNodeAtTree(NULL);
+    scene->SetSelection(0);
+    SelectNodeAtTree(0);
 }
 
 void EditorBodyControl::RefreshDataGraph()
