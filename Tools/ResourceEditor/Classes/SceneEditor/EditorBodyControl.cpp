@@ -1015,6 +1015,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
         SceneNode * parentNode = selectedSceneGraphNode->GetParent();
         if (parentNode)
         {
+			scene->SetSelection(0);
             parentNode->RemoveNode(selectedSceneGraphNode);
             
             selectedSceneGraphNode = NULL;
