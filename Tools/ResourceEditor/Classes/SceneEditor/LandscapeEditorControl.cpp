@@ -349,7 +349,7 @@ void LandscapeEditorControl::CreateLeftPanel()
 //    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "", ".png", PropertyList::PROPERTY_IS_EDITABLE);
     //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "");
 
-    String projectPath = EditorSettings::Instance()->GetProjectPath();
+    String projectPath = EditorSettings::Instance()->GetDataSourcePath();
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath + "Data/Landscape/tex3.png");
     propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png", PropertyList::PROPERTY_IS_EDITABLE);

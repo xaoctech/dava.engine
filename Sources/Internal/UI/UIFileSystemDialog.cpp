@@ -212,8 +212,26 @@ void UIFileSystemDialog::Show(UIControl *parentControl)
 
 void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
 {
-    Logger::Info("Setting path: %s", newDirPath.c_str());
-    currentDir = newDirPath;
+
+    int32 ppos = newDirPath.rfind(".");
+    int32 spos = newDirPath.rfind("/");
+    if (ppos != newDirPath.npos && ppos > spos)
+    {
+        FileSystem::Instance()->SplitPath(newDirPath, currentDir, selectedFile);
+    }
+    else 
+    {
+        currentDir = newDirPath;
+        selectedFile = "";
+    }
+    
+    if (currentDir[currentDir.length()-1] == '/') 
+    {
+        currentDir.substr(0, currentDir.length()-1);
+    }
+
+    Logger::Info("Setting path: %s", currentDir.c_str());
+    Logger::Info("Setting file: %s", selectedFile.c_str());
     if (GetParent()) 
     {
         RefreshList();
@@ -349,6 +367,12 @@ void UIFileSystemDialog::RefreshList()
                 {
                     continue;
                 }
+                if (fu.name == selectedFile) 
+                {
+                    lastSelectedIndex = fileUnits.size();
+                    positiveButton->SetDisabled(false);
+                    textField->SetText(StringToWString(files->GetFilename(fu.indexInFileList)));
+                }
                 String ext = FileSystem::GetExtension(fu.name);
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
                 bool isPresent = false;
@@ -436,6 +460,7 @@ UIListCell *UIFileSystemDialog::CellAtIndex(UIList *forList, int32 index)
     else
     {
         c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+        lastSelected = c;
     }
 
     return c;//returns cell
