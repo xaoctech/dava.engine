@@ -76,27 +76,13 @@ protected:
 	Vector2 startPt;
     Vector2 stopPt;
 
-	void UpdateCam(void);
+	void UpdateCamAlt3But(void);
+	void UpdateCam3But(void);
+	void UpdateCam1But(void);
 	    
     float32 radius;
 	Vector3 center;
     
-};
-	
-	
-class Max3dCameraController : public CameraController
-{
-public:
-    Max3dCameraController();
-    ~Max3dCameraController();
-    
-    virtual void Input(UIEvent * event);
-    void SetSelection(SceneNode * selection);
-	
-protected:
-	SceneNode * selection;
-	float32 viewXAngle, viewYAngle;
-	Vector2 oldTouchPoint;
 };
 
 };

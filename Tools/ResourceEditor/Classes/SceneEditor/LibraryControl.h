@@ -38,10 +38,12 @@ public:
     
     virtual int32 CellHeight(UIList *forList, int32 index);
     virtual void OnCellSelected(UIFileTree * tree, UIFileTreeCell *selectedCell);
+	virtual UIFileTreeCell *CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index);
+
+    void RefreshTree();
 
 protected:
 
-    void RefreshTree();
     
     UIFileTree *fileTreeControl;
 

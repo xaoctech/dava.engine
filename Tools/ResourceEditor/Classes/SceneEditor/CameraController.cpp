@@ -199,57 +199,64 @@ void WASDCameraController::Input(UIEvent * event)
         }
     } 
 
-	if (event->tid == UIEvent::BUTTON_1)
+	bool altBut3 = (selection && event->tid == UIEvent::BUTTON_3 && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT));
+	
+	
+	if(UIEvent::PHASE_BEGAN == event->phase)
 	{
-		if (event->phase == UIEvent::PHASE_BEGAN) 
-		{
-			oldTouchPoint = event->point;
-		}
-		else if(event->phase == UIEvent::PHASE_DRAG || event->phase == UIEvent::PHASE_ENDED)
-		{
-			Vector2 dp = oldTouchPoint - event->point;
-			dp *= 8.f;
-			viewZAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
-			viewYAngle += dp.y * SystemTimer::Instance()->FrameDelta();
-			
-			if(viewYAngle < -MAX_ANGLE)
-				viewYAngle = -MAX_ANGLE;
-			
-			if(viewYAngle > MAX_ANGLE)
-				viewYAngle = MAX_ANGLE;			
-			
-			oldTouchPoint = event->point;
-			Matrix4 mt, mt2;
-			mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
-			mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
-			mt2 *= mt;
+		startPt = stopPt = event->point;			
 
-			Vector3 dir = Vector3(0, -10, 0) * mt2;
-			camera->SetDirection(dir);
-		}
-	}
-	else if (selection && event->tid == UIEvent::BUTTON_3)
-	{
-		if(UIEvent::PHASE_BEGAN == event->phase)
+		if (altBut3)
 		{
-			startPt = stopPt = event->point;
-
 			const Vector3 & pos = camera->GetPosition();
 			AABBox3 box = selection->GetWTMaximumBoundingBox();
 			center = box.GetCenter();
 			radius = (center - pos).Length();
 		}
-		else if(UIEvent::PHASE_DRAG == event->phase || UIEvent::PHASE_ENDED == event->phase)
+	}
+	else if(UIEvent::PHASE_DRAG == event->phase || UIEvent::PHASE_ENDED == event->phase)
+	{
+		startPt = stopPt;
+		stopPt = event->point;
+
+		if (event->tid == UIEvent::BUTTON_1)
 		{
-			startPt = stopPt;
-			stopPt = event->point;
-			UpdateCam();
-		}		
+			UpdateCam1But();
+		}
+		else if (altBut3)
+		{
+			UpdateCamAlt3But();			
+		}
+		else if (event->tid == UIEvent::BUTTON_3)
+		{
+			UpdateCam3But();
+		}
+	}	
+}
+
+	void WASDCameraController::UpdateCam1But(void)
+	{
+		Vector2 dp = startPt - stopPt;
+		dp *= 8.f;
+		viewZAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
+		viewYAngle += dp.y * SystemTimer::Instance()->FrameDelta();
+		
+		if(viewYAngle < -MAX_ANGLE)
+			viewYAngle = -MAX_ANGLE;
+		
+		if(viewYAngle > MAX_ANGLE)
+			viewYAngle = MAX_ANGLE;			
+		
+		Matrix4 mt, mt2;
+		mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
+		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+		mt2 *= mt;
+		
+		Vector3 dir = Vector3(0, -10, 0) * mt2;
+		camera->SetDirection(dir);		
 	}
 	
-}
-			
-	void WASDCameraController::UpdateCam(void)
+	void WASDCameraController::UpdateCamAlt3But(void)
 	{
 		if (!camera)return;
 		
@@ -274,112 +281,27 @@ void WASDCameraController::Input(UIEvent * event)
 		camera->SetTarget(center);
 		camera->SetPosition(position);
 	}
-	
-	
-	Max3dCameraController::Max3dCameraController()
-	: viewXAngle(0)
-    , viewYAngle(0)
-	, selection(0)
-	{
-		
-	}
 
-	
-	Max3dCameraController::~Max3dCameraController()
+	void WASDCameraController::UpdateCam3But(void)
 	{
+		if (!camera)return;		
+		Vector2 dp = (stopPt - startPt) * 0.1f;
+
+		Matrix4 mt, mt1, mt2, mt3;
+		mt.Identity();
+		mt1.CreateTranslation(Vector3(dp.x, 0, dp.y));
+		mt2.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
+		mt3.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 		
+		mt *= mt1;
+		mt *= mt2;
+		mt *= mt3;
+		
+		
+		Vector3 pos = camera->GetPosition() + (Vector3(0, 0, 0) * mt);
+		Vector3 dir = camera->GetDirection();
+		camera->SetPosition(pos);
+		camera->SetDirection(dir);
 	}
-    
-	void Max3dCameraController::SetSelection(SceneNode * _selection)
-	{
-		selection = _selection;
-	}
-	
-	void Max3dCameraController::Input(UIEvent * event)
-	{
-		if (!camera)return;
-		if (event->phase == UIEvent::PHASE_KEYCHAR)
-		{   
-            switch (event->tid)
-            {
-                case DVKEY_Z:
-				{
-					if (selection)
-					{
-						AABBox3 box = selection->GetWTMaximumBoundingBox();
-						float32 boxSize = ((box.max - box.min).Length());
-						
-					 	const Vector3 & pos = camera->GetPosition();
-					 	const Vector3 & targ = camera->GetTarget();
-						
-						Vector3 dir = targ - pos;
-						dir.Normalize();
-						
-						const Vector3 & c = box.GetCenter();
-						
-						camera->SetTarget(c);
-						camera->SetPosition(c - (dir * boxSize));
-					}					
-                    break;		                    
-				}
-                default:
-                    break;
-            }
-            
-//			switch(event->keyChar)
-//			{
-//				case 'z':
-//				case 'Z':
-//				{
-//					if (selection)
-//					{
-//						AABBox3 box = selection->GetWTMaximumBoundingBox();
-//						float32 boxSize = ((box.max - box.min).Length());
-//						
-//					 	const Vector3 & pos = camera->GetPosition();
-//					 	const Vector3 & targ = camera->GetTarget();
-//						
-//						Vector3 dir = targ - pos;
-//						dir.Normalize();
-//						
-//						const Vector3 & c = box.GetCenter();
-//						
-//						camera->SetTarget(c);
-//						camera->SetPosition(c - (dir * boxSize));
-//					}					
-//				}
-//				break;					
-//			};
-		} 
-				
-		if (event->phase == UIEvent::PHASE_BEGAN) 
-		{
-			oldTouchPoint = event->point;
-		}
-		else if(event->phase == UIEvent::PHASE_DRAG || event->phase == UIEvent::PHASE_ENDED)
-		{
-			Vector2 dp = oldTouchPoint - event->point;
-			dp *= 8.f;
-			viewXAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
-			viewYAngle -= dp.y * SystemTimer::Instance()->FrameDelta();
-			oldTouchPoint = event->point;
-			//ClampAngles();
-			//LOG_AS_FLOAT(viewXAngle);
-			//LOG_AS_FLOAT(viewYAngle);
-			Matrix4 aimUser;
-			aimUser.Identity();
-			Matrix4 mt, mt2;
-			mt.CreateTranslation(Vector3(0,10,0));
-			aimUser *= mt;
-			mt.CreateRotation(Vector3(0,0,1), DegToRad(viewXAngle));
-			mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
-			mt2 *= mt;
-			aimUser *= mt2;
-			
-			Vector3 dir = Vector3() * aimUser;
-			camera->SetDirection(dir);
-		}
-	}
-	
     
 };
