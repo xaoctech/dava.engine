@@ -107,6 +107,10 @@ protected:
     void CreateLeftPanel();
     void ReleaseLeftPanel();
     
+	void ReleaseHelpPanel();
+	void CreateHelpPanel();
+
+	
     UIControl *leftPanelSceneGraph;
     UIHierarchy * sceneGraphTree;
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
@@ -144,6 +148,9 @@ protected:
     void CreatePropertyPanel();
     void ReleasePropertyPanel();
     void UpdatePropertyPanel();
+	void ToggleHelp(void);
+	void AddHelpText(const wchar_t * text, float32 & y);
+
     UIControl *rightPanel;
     SceneNode * selectedSceneGraphNode;
     DataNode * selectedDataGraphNode;
@@ -176,6 +183,10 @@ protected:
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
 
+	DraggableDialog *helpDialog;
+
+	
+	
 	float32 axisSign[3];
 	
     //OutputPanelControl
