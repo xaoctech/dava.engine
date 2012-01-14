@@ -1015,6 +1015,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
         SceneNode * parentNode = selectedSceneGraphNode->GetParent();
         if (parentNode)
         {
+			scene->SetSelection(0);
             parentNode->RemoveNode(selectedSceneGraphNode);
             
             selectedSceneGraphNode = NULL;
@@ -1092,6 +1093,11 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 const String &EditorBodyControl::GetFilePath()
 {
     return mainFilePath;
+}
+
+void EditorBodyControl::SetFilePath(const String &newFilePath)
+{
+    mainFilePath = newFilePath;
 }
 
 void EditorBodyControl::WillAppear()
@@ -1202,7 +1208,7 @@ void EditorBodyControl::BeastProcessScene()
 {
 	beastManager = BeastProxy::Instance()->CreateManager();
 
-	String path = EditorSettings::Instance()->GetProjectPath() + "DataSource/3d/lightmaps/";
+	String path = EditorSettings::Instance()->GetDataSourcePath() + "lightmaps/";
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 
 	BeastProxy::Instance()->ParseScene(beastManager, scene);

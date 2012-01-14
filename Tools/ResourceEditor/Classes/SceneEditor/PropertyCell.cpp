@@ -326,13 +326,15 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     dialog->SetDelegate(this);
     dialog->SetTitle(keyName->GetText());
     dialog->SetExtensionFilter(property->GetExtensionFilter());
-    String p, f;
-    FileSystem::SplitPath(property->GetString(), p, f);
-    if(p.length() == 0)
+    if(property->GetString().length() >= 0)
     {
-        p = EditorSettings::Instance()->GetProjectPath() + "DataSource/3D/";
+        dialog->SetCurrentDir(property->GetString());
     }
-    dialog->SetCurrentDir(p);
+    else 
+    {
+        dialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+    }
+
     
     dialog->Show(UIScreenManager::Instance()->GetScreen());
 }
