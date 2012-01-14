@@ -124,6 +124,64 @@ void LibraryControl::OnRefreshPressed(DAVA::BaseObject *object, void *userData, 
     RefreshTree();
 }
 
+UIFileTreeCell *LibraryControl::CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index)
+{
+    int32 width = tree->GetRect().dx;
+    
+	UIFileTreeCell *c = (UIFileTreeCell *)tree->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
+	if(!c)
+	{ //if cell of requested type isn't find in the store create new cell
+		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
+	}
+	//fill cell whith data
+	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
+    
+	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
+    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
+	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    
+    c->SetSelected(false, false);
+
+
+    float32 shiftX = entry->GetLevel() * 10.0f;
+    Rect r = Rect(width - shiftX - 16, 2, 16, 16);
+    
+    UIControl *sceneFlagBox = SafeRetain(c->FindByName("sceneFlagBox"));
+    if(!sceneFlagBox)
+    {
+        sceneFlagBox = new UIControl();
+        sceneFlagBox->SetName("sceneFlagBox");
+        sceneFlagBox->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+        sceneFlagBox->SetSprite("~res:/Gfx/UI/chekBox", 1);
+        sceneFlagBox->SetInputEnabled(false);
+        c->AddControl(sceneFlagBox);
+    }
+    sceneFlagBox->SetVisible(false, false);
+    sceneFlagBox->SetRect(r);
+
+    
+    String path = entry->GetPathname();
+    if(     (String::npos != path.find("DataSource"))
+       &&   (".sce" == FileSystem::Instance()->GetExtension(path)))
+    {
+        path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
+        path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+
+        File *f = File::Create(path, File::OPEN | File::READ);
+        
+        sceneFlagBox->SetVisible(NULL != f, false);
+        
+        SafeRelease(f);
+    }
+    
+    
+    SafeRelease(sceneFlagBox);
+    
+	return c;//returns cell
+}
+
+
 void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell *selectedCell)
 {
     if(errorMessage->GetParent())

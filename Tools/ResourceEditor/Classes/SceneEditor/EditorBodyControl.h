@@ -94,7 +94,7 @@ protected:
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
 	void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
 	void UpdateModState(void);
-	void PrepareModMatrix(float32 a, float32 b);
+	void PrepareModMatrix(const Vector2 & point);
 
 	
     virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
@@ -113,7 +113,12 @@ protected:
     void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
     void OnRefreshSceneGraph(BaseObject * obj, void *, void *);
-
+	
+	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
+	void InitMoving(const Vector2 & point);
+	void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
+	
+	
     UIControl *leftPanelDataGraph;
     UIHierarchy * dataGraphTree;
     enum eDataNodesIDs
@@ -188,6 +193,18 @@ protected:
 	Rect propertyPanelRect;
 	void RecreatePropertiesPanelForNode(SceneNode *node);
 	ModificationPopUp * modificationPopUp;
+	
+
+	//for moving object
+	Vector3 startDragPoint;
+	Vector3 planeNormal;
+
+	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
+	//
+	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);
+	
+	
+	
 };
 
 
