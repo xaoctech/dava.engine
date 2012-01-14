@@ -17,20 +17,13 @@
 REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
+:Scene()
 { 
 	selection = 0;
 	lastSelectedPhysics = 0;
 	proxy = 0;
-//	dynCollisionConfiguration = new btDefaultCollisionConfiguration();
-//	dynDispatcher = new	btCollisionDispatcher(dynCollisionConfiguration);
     btVector3 worldMin(-1000,-1000,-1000);
 	btVector3 worldMax(1000,1000,1000);
-//	dynOverlappingPairCache = new btAxisSweep3(worldMin,worldMax);
-//	btSequentialImpulseConstraintSolver* sol = new btSequentialImpulseConstraintSolver;
-//	dynSolver = sol;
-//	dynamicsWorld = new btDiscreteDynamicsWorld(dynDispatcher, dynOverlappingPairCache, dynSolver
-//                                                , dynCollisionConfiguration);
-//	dynamicsWorld->setGravity(btVector3(0,0,-9.81));
         
     collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -40,7 +33,10 @@ EditorScene::EditorScene()
 
 EditorScene::~EditorScene()
 {
-
+	delete collisionWorld; collisionWorld = 0;
+	delete broadphase; broadphase = 0;
+	delete dispatcher; dispatcher = 0;
+	delete collisionConfiguration; collisionConfiguration = 0;
 }
 
 void EditorScene::Update(float32 timeElapsed)
@@ -52,7 +48,6 @@ void EditorScene::Update(float32 timeElapsed)
 
 void EditorScene::CheckNodes(SceneNode * curr)
 {
-	LightNode * light = dynamic_cast<LightNode *> (curr);
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
 	
 	if (mesh && mesh->userData == 0)
@@ -180,6 +175,7 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	else
 	{
 		proxy = 0;
+		lastSelectedPhysics = 0;
 	}
 
 	if(selection)
