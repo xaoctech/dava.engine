@@ -15,7 +15,8 @@ public:
     KeyedArchive *GetSettings();
     void Save();
 
-    String GetProjectPath();
+//    String GetProjectPath();
+    String GetDataSourcePath();
     
 protected:
 

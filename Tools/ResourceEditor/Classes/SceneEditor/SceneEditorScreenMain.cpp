@@ -23,7 +23,7 @@ void SceneEditorScreenMain::LoadResources()
     fileSystemDialog->SetDelegate(this);
     
     KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String path = keyedArchieve->GetString("LastSavedPath", "/");
+    String path = keyedArchieve->GetString("3dDataSourcePath", "/");
     if(path.length())
     fileSystemDialog->SetCurrentDir(path);
     
@@ -207,14 +207,17 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         case DIALOG_OPERATION_MENU_OPEN:
         {//опен всегда загружает только уровень, но не отдельные части сцены
             bodies[0]->bodyControl->OpenScene(pathToFile, true);
-            
+            bodies[0]->bodyControl->SetFilePath(pathToFile);
             break;
         }
             
         case DIALOG_OPERATION_MENU_SAVE:
         {
-            Scene * scene = FindCurrentBody()->bodyControl->GetScene();
-            
+            BodyItem *iBody = FindCurrentBody();
+            iBody->bodyControl->SetFilePath(pathToFile);
+            Scene * scene = iBody->bodyControl->GetScene();
+
+
             SceneFile2 * file = new SceneFile2();
             file->EnableDebugLog(true);
             file->SaveScene(pathToFile, scene);
@@ -225,10 +228,16 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         case DIALOG_OPERATION_MENU_PROJECT:
         {
             KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-            keyedArchieve->SetString("LastSavedPath", pathToFile);
+            String projectPath = pathToFile;
+            if('/' != projectPath[projectPath.length() - 1])
+            {
+                projectPath += '/';
+            }
+            keyedArchieve->SetString("ProjectPath", projectPath);
+            keyedArchieve->SetString("3dDataSourcePath", projectPath + "DataSource/3d/");
             EditorSettings::Instance()->Save();
             
-            libraryControl->SetPath(pathToFile);
+            libraryControl->SetPath(EditorSettings::Instance()->GetDataSourcePath());
             break;
         }
 
@@ -251,6 +260,21 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
     {
         fileSystemDialog->SetExtensionFilter(".sc2");
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
+        
+        BodyItem *iBody = FindCurrentBody();
+        String path = iBody->bodyControl->GetFilePath();
+        if (path.length() > 0) 
+        {
+            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+            fileSystemDialog->SetCurrentDir(path);
+        }
+        else 
+        {
+            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+        }
+
+
+
         fileSystemDialog->Show(this);
         fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
     }
@@ -265,6 +289,20 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
     {
         fileSystemDialog->SetExtensionFilter(".sc2");
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
+        
+        BodyItem *iBody = FindCurrentBody();
+        String path = iBody->bodyControl->GetFilePath();
+        if (path.length() > 0)
+        {
+            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+            fileSystemDialog->SetCurrentDir(path);
+        }
+        else 
+        {
+            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+        }
+
+
         fileSystemDialog->Show(this);
         fileSystemDialogOpMode = DIALOG_OPERATION_MENU_SAVE;
     }
@@ -287,6 +325,18 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
     Scene * scene = iBody->bodyControl->GetScene();
+    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    {
+        Material *m = scene->GetMaterial(i);
+        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+        {
+            if (m->names[n].length() > 0 && m->names[n].find("DataSource") != m->names[n].npos)
+            {
+                m->names[n].replace(m->names[n].find("DataSource"), strlen("DataSource"), "Data");
+            }
+        }
+    }
+    
     SceneFile2 * file = new SceneFile2();
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
@@ -311,6 +361,8 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
             }
         }
     }
+    
+    
 }
 
 
@@ -763,7 +815,7 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
     dialogBack = ControlsFactory::CreatePanelControl(rect);
     ControlsFactory::CustomizeDialogFreeSpace(dialogBack);
     
-//    String path = keyedArchieve->GetString("LastSavedPath", "/");
+//    String path = keyedArchieve->GetString("ProjectPath", "/");
 //    
     Rect r;
     r.dx = rect.dx / 2;

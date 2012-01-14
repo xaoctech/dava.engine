@@ -82,6 +82,7 @@ public:
     void RefreshProperties();
     
     const String &GetFilePath();
+    void SetFilePath(const String &newFilePath);
 
 protected:
 
