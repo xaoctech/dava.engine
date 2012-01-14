@@ -288,15 +288,11 @@ void WASDCameraController::Input(UIEvent * event)
 		Vector2 dp = (stopPt - startPt) * 0.1f;
 
 		Matrix4 mt, mt1, mt2, mt3;
-		mt.Identity();
 		mt1.CreateTranslation(Vector3(dp.x, 0, dp.y));
-		mt2.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
-		mt3.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+		mt3.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
 		
-		mt *= mt1;
-		mt *= mt2;
-		mt *= mt3;
-		
+		mt = mt1 * mt2 * mt3;
 		
 		Vector3 pos = camera->GetPosition() + (Vector3(0, 0, 0) * mt);
 		Vector3 dir = camera->GetDirection();
