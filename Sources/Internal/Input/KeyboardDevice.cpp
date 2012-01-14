@@ -47,6 +47,14 @@ KeyboardDevice::~KeyboardDevice()
     
 bool KeyboardDevice::IsKeyPressed(int32 keyCode)
 {
+#ifdef __DAVAENGINE_WIN32__
+	if(DVKEY_ALT == keyCode)
+	{
+		SHORT isAlt = GetAsyncKeyState(VK_MENU);
+		return isAlt != 0;
+	}
+#endif 
+
     DVASSERT(keyCode < DVKEY_COUNT);
     return keyStatus[keyCode];
 }
@@ -84,14 +92,12 @@ int32 KeyboardDevice::GetDavaKeyForSystemKey(int32 systemKeyCode)
 
 void KeyboardDevice::OnSystemKeyPressed(int32 systemKeyCode)
 {
-    Logger::Debug("System key pressed 0x%X", systemKeyCode);
     DVASSERT(systemKeyCode < MAX_KEYS);
     OnKeyPressed(keyTranslator[systemKeyCode]);
 }
 
 void KeyboardDevice::OnSystemKeyUnpressed(int32 systemKeyCode)
 {
-    Logger::Debug("System key unpressed 0x%X", systemKeyCode);
     DVASSERT(systemKeyCode < MAX_KEYS);
     OnKeyUnpressed(keyTranslator[systemKeyCode]);
 }
