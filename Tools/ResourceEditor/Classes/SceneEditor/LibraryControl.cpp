@@ -87,7 +87,7 @@ void LibraryControl::WillAppear()
 
 void LibraryControl::SetPath(const String &path)
 {
-    folderPath = path + "/DataSource/3d";
+    folderPath = path;
     fileTreeControl->SetPath(folderPath, ".dae;.sce");
 
     if(GetParent())
