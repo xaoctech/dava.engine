@@ -267,11 +267,16 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png", PropertyList::PROPERTY_IS_EDITABLE);
 
         
+        Vector3 size(445.0f, 445.0f, 50.f);
         AABBox3 bbox = landscape->GetBoundingBox();
-        AABBox3 transformedBox;
-        bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+        AABBox3 emptyBox;
+        if((emptyBox.min != bbox.min) && (emptyBox.max != bbox.max))
+        {
+            AABBox3 transformedBox;
+            bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+            size = transformedBox.max - transformedBox.min;
+        }
         
-        Vector3 size = transformedBox.max - transformedBox.min;
         propertyList->SetFloatPropertyValue("Size", size.x);
         propertyList->SetFloatPropertyValue("Height", size.z);
         
