@@ -170,6 +170,7 @@ protected:
     UIFileSystemDialogDelegate *delegate;
     Vector<String> extensionFilter;
     String currentDir;
+    String selectedFile;
     int32 cellH;
     
     UIList *fileListView;

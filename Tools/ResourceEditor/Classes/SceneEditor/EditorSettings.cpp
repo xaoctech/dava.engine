@@ -24,14 +24,18 @@ void EditorSettings::Save()
     settings->Save("~doc:/ResourceEditorOptions.archive");
 }
 
-
-String EditorSettings::GetProjectPath()
+String EditorSettings::GetDataSourcePath()
 {
-    String projectPath = settings->GetString("LastSavedPath", "/");
-    if('/' != projectPath[projectPath.length() - 1])
-    {
-        projectPath += '/';
-    }
- 
-    return projectPath;
+    return settings->GetString("3dDataSourcePath", "/");
 }
+
+//String EditorSettings::GetProjectPath()
+//{
+//    String projectPath = settings->GetString("ProjectPath", "/");
+//    if('/' != projectPath[projectPath.length() - 1])
+//    {
+//        projectPath += '/';
+//    }
+// 
+//    return projectPath;
+//}
