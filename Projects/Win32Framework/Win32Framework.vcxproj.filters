@@ -903,9 +903,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile2.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
@@ -929,6 +926,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Input\KeyboardDevice.h">
       <Filter>Internal\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h">
+      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1586,9 +1586,6 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIFileSystemDialog.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile2.cpp">
-      <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
@@ -1615,6 +1612,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Input\KeyboardDevice.cpp">
       <Filter>Internal\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
