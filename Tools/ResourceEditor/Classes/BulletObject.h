@@ -51,7 +51,6 @@ protected:
 	btCollisionObject *collisionObject;
     btTriangleMesh* trimesh;
 	btCollisionShape * shape;
-	Vector<Vector3> triangles;
 	Matrix4 createdWith;
 	MeshInstanceNode * meshNode;
 	bool updateFlag;

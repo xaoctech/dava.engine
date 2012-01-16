@@ -18,7 +18,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     selectedDataGraphNode = NULL;
     savedTreeCell = 0;
 	nodesPropertyPanel = 0;
-    
+	helpDialog = 0;
+
     for(int32 i = 0; i < EDNID_COUNT; ++i)
     {
         dataNodes[i] = NULL;
@@ -56,6 +57,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreatePropertyPanel();
 	
 	CreateModificationPanel();
+	
+	CreateHelpPanel();
 }
 
 
@@ -72,7 +75,45 @@ EditorBodyControl::~EditorBodyControl()
     SafeRelease(scene3dView);
 
     ReleaseLeftPanel();
+	
+	SafeRelease(helpDialog);
 }
+
+
+#define V_OFFSET 30
+#define H_OFFSET 10
+void EditorBodyControl::AddHelpText(const wchar_t * txt, float32 & y)
+{
+	UIStaticText *text;
+	text = new UIStaticText(Rect(H_OFFSET, 0, 500, y++ * V_OFFSET));
+	text->SetFont(ControlsFactory::GetFontLight());
+	text->SetText(txt);
+	text->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+	helpDialog->AddControl(text);	
+}
+
+void EditorBodyControl::CreateHelpPanel()
+{
+	float32 y = 1;
+
+	helpDialog = new DraggableDialog(Rect(100, 100, 510, 500));
+	ControlsFactory::CustomizeDialog(helpDialog);
+
+	AddHelpText(L"A W S D - fly camera", y);
+	AddHelpText(L"1, 2, 3, 4 - set camera speed", y);
+	AddHelpText(L"T - set camera to Top position", y);
+	AddHelpText(L"Left mouse button - camera angle", y);
+	AddHelpText(L"Right mouse button - selection", y);
+	AddHelpText(L"Z - zoom to selection", y);	
+	AddHelpText(L"Left mouse button (in selection) - object modification", y);
+	AddHelpText(L"Middle mouse button (in selection) - move in camera plan", y);
+	AddHelpText(L"Alt + Middle mouse button (in selection) rotate about selected objects", y);
+	AddHelpText(L"Q, E, R (in selection) - change active modification mode (move, translate, scale)", y);
+	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
+	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
+}
+
+
 
 void EditorBodyControl::CreateLeftPanel()
 {
@@ -529,7 +570,9 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
         if (node)
         {
             selectedSceneGraphNode = node;
-            scene->SetSelection(node);
+
+            scene->SetSelection(0);
+			scene->SetSelection(node);
             
             UpdatePropertyPanel();
             DebugInfo();
@@ -583,6 +626,19 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
 }
 
+void EditorBodyControl::ToggleHelp(void)
+{	
+	UIScreen * scr = UIScreenManager::Instance()->GetScreen();
+	if (helpDialog->GetParent() == 0)
+	{
+		scr->AddControl(helpDialog);
+	}
+	else
+	{
+		scr->RemoveControl(helpDialog);
+	}
+}
+
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
@@ -593,7 +649,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             Camera * newCamera = 0;
             switch(event->tid)
             {
-                case DVKEY_ESCAPE:
+                case DVKEY_F1:
+					ToggleHelp();
+					break;
+                
+				case DVKEY_ESCAPE:
                 {
                     UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
                     if(c == this || c == scene3dView)
@@ -1058,6 +1118,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
+            //SafeRelease(rootNode); //TODO: ??
         }
         
         if (scene->GetCamera(0))
@@ -1212,9 +1273,7 @@ void EditorBodyControl::BeastProcessScene()
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
-	BeastProxy::Instance()->CreateSkyLight(beastManager);
-	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());
-	BeastProxy::Instance()->WindowedRender(beastManager);
+	BeastProxy::Instance()->GenerateLightmaps(beastManager);
 }
 
 EditorScene * EditorBodyControl::GetScene()
@@ -1329,8 +1388,8 @@ void EditorBodyControl::RefreshProperties()
 
 void EditorBodyControl::ResetSelection()
 {
-    scene->SetSelection(NULL);
-    SelectNodeAtTree(NULL);
+    scene->SetSelection(0);
+    SelectNodeAtTree(0);
 }
 
 void EditorBodyControl::RefreshDataGraph()

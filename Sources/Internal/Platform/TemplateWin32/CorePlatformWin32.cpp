@@ -679,11 +679,13 @@ namespace DAVA
 		{
 		case WM_ERASEBKGND:
 				return 0;
+
 		case WM_KEYUP:
 			{
 				InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)wParam);
 			};
 			break;
+
 		case WM_KEYDOWN:
 			{
 				BYTE allKeys[256];
@@ -718,6 +720,7 @@ namespace DAVA
 				InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed((int32)wParam);
 			};
 			break;
+
 		case WM_CHAR:
 			{
 				if(wParam > 27) //TODO: remove this elegant check
@@ -799,125 +802,10 @@ namespace DAVA
 			//ShowCursor(false);
 			break;
 
-			//case WM_KEYDOWN:
-			//	{
-			//		event.Type = EET_KEYBOARDEVENT;
-			//		event.KeyboardEvent.Key = (Log::eKeyCode)wParam;
-			//		event.KeyboardEvent.Type = EKET_KEYDOWN;
-
-			//		BYTE allKeys[256];
-			//		WORD KeyAsc=0;
-			//		GetKeyboardState(allKeys);
-			//		ToAscii((UINT )wParam,(UINT )lParam,allKeys,&KeyAsc,0);
-
-			//		//event.KeyboardEvent.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
-			//		//event.KeyboardEvent.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
-			//		//event.KeyboardEvent.Char = KeyAsc; //KeyAsc >= 0 ? KeyAsc : 0;
-
-			//		if (Global::engineDevice)
-			//			((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-
-			//		return 0;
-			//	}
-			//case WM_KEYUP:
-			//	{
-			//		event.Type = EET_KEYBOARDEVENT;
-			//		event.KeyboardEvent.Key = (Log::eKeyCode)wParam;
-			//		event.KeyboardEvent.Type = EKET_KEYUP;
-
-			//		BYTE allKeys[256];
-			//		WORD KeyAsc=0;
-			//		GetKeyboardState(allKeys);
-			//		ToAscii((UINT )wParam,(UINT )lParam,allKeys,&KeyAsc,0);
-
-			//		//event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
-			//		//event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
-			//		//event.KeyInput.Char = KeyAsc; //KeyAsc >= 0 ? KeyAsc : 0;
-
-			//		if (Global::engineDevice)
-			//			((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-
-			//		return 0;
-			//	}
-
-			//case WM_MBUTTONDOWN:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_MBUTTONDOWN;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	
-			//	return 0;
-
-			//case WM_MBUTTONUP:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_MBUTTONUP;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	return 0;
-
-			//case WM_RBUTTONDOWN:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_RBUTTONDOWN;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	
-			//	return 0;
-
-			//case WM_RBUTTONUP:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_RBUTTONUP;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-			//	
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	return 0;
-
-			//case WM_LBUTTONDOWN:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_LBUTTONDOWN;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	
-			//	return 0;
-
-			//case WM_LBUTTONUP:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_LBUTTONUP;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-
-
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	return 0;
-			//	
-			//case WM_MOUSEMOVE:
-			//	event.Type = Log::EET_MOUSEEVENT;
-			//	event.MouseEvent.Type = Log::EMET_MOUSEMOVE;
-			//	event.MouseEvent.X = LOWORD(lParam);
-			//	event.MouseEvent.Y = HIWORD(lParam);
-			//	event.MouseEvent.RelativeX = event.MouseEvent.X - MousePreviousX;
-			//	event.MouseEvent.RelativeY = event.MouseEvent.Y - MousePreviousY;
-			//	
-			//	MousePreviousX = event.MouseEvent.X;
-			//	MousePreviousY = event.MouseEvent.Y;
-
-			//	if (Global::engineDevice)
-			//		((WindowsEngineSystem *)Global::engineDevice)->PostEventFromUser(event);
-			//	return 0;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
+
 		case WM_ACTIVATE:
 			{
 				ApplicationCore * core = Core::Instance()->GetApplicationCore();
