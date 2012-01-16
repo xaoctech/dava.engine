@@ -218,7 +218,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             Scene * scene = iBody->bodyControl->GetScene();
 
 
-            SceneFile2 * file = new SceneFile2();
+            SceneFileV2 * file = new SceneFileV2();
             file->EnableDebugLog(true);
             file->SaveScene(pathToFile, scene);
             SafeRelease(file);
@@ -337,7 +337,7 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
         }
     }
     
-    SceneFile2 * file = new SceneFile2();
+    SceneFileV2 * file = new SceneFileV2();
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
     SafeRelease(file);

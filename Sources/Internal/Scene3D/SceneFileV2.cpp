@@ -27,7 +27,7 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Scene3D/SceneFile2.h"
+#include "Scene3D/SceneFileV2.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Render/Texture.h"
@@ -41,20 +41,21 @@
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
+#include "Scene3D/SceneSavingOptions.h"
 
 namespace DAVA
 {
     
-SceneFile2::SceneFile2()
+SceneFileV2::SceneFileV2()
 {
     isDebugLogEnabled = false;
 }
 
-SceneFile2::~SceneFile2()
+SceneFileV2::~SceneFileV2()
 {
 }
     
-void SceneFile2::EnableDebugLog(bool _isDebugLogEnabled)
+void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;
 }
@@ -69,14 +70,15 @@ static void replace(std::string & repString,const std::string & needle, const st
     }
 }
     
-bool SceneFile2::SaveScene(const String & filename, DAVA::Scene *_scene)
+bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
     if (!file)
     {
-        Logger::Error("SceneFile2::SaveScene failed to create file: %s", filename.c_str());
+        Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.c_str());
         return false;
     }   
+    
     rootNodePathName = filename;
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
 
@@ -120,7 +122,7 @@ bool SceneFile2::SaveScene(const String & filename, DAVA::Scene *_scene)
     {
         if (!SaveHierarchy(_scene->GetChild(ci), file, 1))
         {
-            Logger::Error("SceneFile2::SaveScene failed to save hierarchy file: %s", filename.c_str());
+            Logger::Error("SceneFileV2::SaveScene failed to save hierarchy file: %s", filename.c_str());
             SafeRelease(file);
             return false;
         }
@@ -130,12 +132,12 @@ bool SceneFile2::SaveScene(const String & filename, DAVA::Scene *_scene)
     return true;
 };	
     
-bool SceneFile2::LoadScene(const String & filename, Scene * _scene)
+bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
 {
     File * file = File::Create(filename, File::OPEN | File::READ);
     if (!file)
     {
-        Logger::Error("SceneFile2::LoadScene failed to create file: %s", filename.c_str());
+        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.c_str());
         return false;
     }   
     rootNodePathName = filename;
@@ -150,7 +152,7 @@ bool SceneFile2::LoadScene(const String & filename, Scene * _scene)
         ||  (header.signature[2] != 'V') 
         ||  (header.signature[3] != '2'))
     {
-        Logger::Error("SceneFile2::LoadScene header version is wrong: %d, required: %d", header.version, requiredVersion);
+        Logger::Error("SceneFileV2::LoadScene header version is wrong: %d, required: %d", header.version, requiredVersion);
         
         SafeRelease(file);
         return false;
@@ -174,10 +176,10 @@ bool SceneFile2::LoadScene(const String & filename, Scene * _scene)
     return true;
 }
     
-bool SceneFile2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
+bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
-    node->Save(archive);    
+    node->Save(archive, this);    
     
     if (isDebugLogEnabled)
         Logger::Debug("%s %s(%s)", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str());
@@ -195,7 +197,7 @@ bool SceneFile2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
     return true;
 }
 
-void SceneFile2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file, int32 level)
+void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
@@ -219,7 +221,7 @@ void SceneFile2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file, 
         {
             material->pathBase = rootNodePath;
         }
-        node->Load(archive);
+        node->Load(archive, this);
         
         if (node != root)
             root->AddNode(node);
@@ -236,10 +238,10 @@ void SceneFile2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file, 
     SafeRelease(archive);
 }
     
-bool SceneFile2::SaveHierarchy(SceneNode * node, File * file, int32 level)
+bool SceneFileV2::SaveHierarchy(SceneNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
-    node->Save(archive);    
+    node->Save(archive, this);    
     
     archive->SetInt32("#childrenCount", node->GetChildrenCount());
 
@@ -258,7 +260,7 @@ bool SceneFile2::SaveHierarchy(SceneNode * node, File * file, int32 level)
     return true;
 }
 
-void SceneFile2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, int32 level)
+void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
@@ -269,7 +271,7 @@ void SceneFile2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, i
     if (node)
     {
         node->SetScene(scene);
-        node->Load(archive);
+        node->Load(archive, this);
         parent->AddNode(node);
         int32 childrenCount = archive->GetInt32("#childrenCount", 0);
 

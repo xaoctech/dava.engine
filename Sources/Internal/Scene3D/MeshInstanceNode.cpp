@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/SceneFileV2.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
@@ -403,9 +404,9 @@ AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
     
-void MeshInstanceNode::Save(KeyedArchive * archive)
+void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive);
+    SceneNode::Save(archive, sceneFile);
     archive->SetInt32("lodCount", (int32)lodLayers.size());
     
     int32 lodIdx = 0;
@@ -436,9 +437,9 @@ void MeshInstanceNode::Save(KeyedArchive * archive)
 	}
 }
 
-void MeshInstanceNode::Load(KeyedArchive * archive)
+void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive);
+    SceneNode::Load(archive, sceneFile);
 
     int32 lodCount = archive->GetInt32("lodCount", 0);
     

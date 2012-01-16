@@ -44,6 +44,7 @@ class Scene;
 class SceneNodeAnimation;
 class SceneNodeAnimationKey;
 class KeyedArchive;
+class SceneFileV2;
 /**
     \brief Root class of 3D scene hierarchy. 
  
@@ -201,12 +202,12 @@ public:
     /**
         \brief virtual function to save node to KeyedArchive
      */
-    virtual void Save(KeyedArchive * archive);
+    virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
     
     /**
         \brief virtual function to load node to KeyedArchive
      */
-	virtual void Load(KeyedArchive * archive);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
     
     /**
         \brief Function to get node description for debug printing

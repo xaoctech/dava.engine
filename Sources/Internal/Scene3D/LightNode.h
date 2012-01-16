@@ -35,6 +35,7 @@
 
 namespace DAVA 
 {
+class SceneFileV2;
 class LightNode : public SceneNode
 {
 public:
@@ -61,8 +62,8 @@ public:
     eType GetType() const;
     const Color & GetColor() const;    
 
-	virtual void Save(KeyedArchive * archive);
-	virtual void Load(KeyedArchive * archive);
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
 protected:
     eType type;
