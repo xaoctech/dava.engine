@@ -5,121 +5,12 @@
 #include "../UIScrollView.h"
 #include "PropertyList.h"
 
+#include "PaintAreaControl.h"
+
 using namespace DAVA;
 
-class PaintTool
-{
-public:
-
-    enum eBrushType
-    {
-        EBT_STANDART = 0,
-        EBT_SPIKE,
-        EBT_CIRCLE,
-        EBT_NOISE,
-        EBT_ERODE,
-        EBT_WATER_ERODE,
-        
-        EBT_COUNT
-    };
-    
-public:
-
-    PaintTool(eBrushType _type, const String & _spriteName, float32 _solidRadius)
-    {
-        brushType = _type;
-        spriteName = _spriteName;
-        
-        radius = 0.5f;
-        height = 0.5f;
-        zoom = 0.5f;
-        
-        solidRadius = _solidRadius;
-    }
-    
-    eBrushType brushType;
-    String spriteName;
-    
-    float32 radius;
-    float32 height;
-    float32 zoom;
-    float32 solidRadius;
-};
-
-class PaintAreaControl: public UIControl
-{
-public:
-    
-    enum eTextures
-    {
-        ET_TEXTURE0 = 0,
-        ET_TEXTURE1,
-        
-        ET_COUNT
-    };
-    
-public:
-    PaintAreaControl(const Rect & rect);
-    virtual ~PaintAreaControl();
-    
-    void SetPaintTool(PaintTool *tool);
-    
-    virtual void Input(UIEvent *currentInput);
-    
-    virtual void Draw(const UIGeometricData &geometricData);
-
-    
-    void SetTextureSideSize(const Vector2 & sideSize);
-    
-    void SetTexture(eTextures id, const String &path);
-
-protected:
-    
-    void DrawCursor();
-    void DrawRenderObject();
-    
-    void DrawShader();
-    void InitShader();
-    void ReleaseShader();
-    
-    
-    UIGeometricData savedGeometricData;
-    void UpdateMap();
-    void GeneratePreview();
-    
-    PaintTool *usedTool;
-    Sprite *spriteForDrawing;
-    Sprite *toolSprite;
-    
-    Vector2 startPoint;
-    Vector2 endPoint;
-    Vector2 currentMousePos;
-    
-    Vector2 prevDrawPos;
-    
-    eBlendMode srcBlendMode;
-    eBlendMode dstBlendMode;
-    Color paintColor;
-    
-    Vector2 textureSideSize;
-    
-    Texture *textures[ET_COUNT];
-    
-    //
-    Shader * blendedShader;
-    int32 uniformTexture0;
-    int32 uniformTexture1;
-    int32 uniformTextureMask;
-    
-    Vector<float32> verts;
-    Vector<float32> textureCoords;
-    RenderDataObject *renderData;
-    
-    void CreateMeshFromSprite(int32 frameToGen);
-};
-
-
-
+class PaintAreaControl;
+class PaintTool;
 class LandscapeEditorControl : public UIControl, public PropertyListDelegate
 {
     enum eConst
@@ -138,6 +29,7 @@ public:
         
     virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 
     
 protected:
