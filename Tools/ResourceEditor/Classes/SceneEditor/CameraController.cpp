@@ -219,9 +219,9 @@ void WASDCameraController::Input(UIEvent * event)
 		startPt = stopPt;
 		stopPt = event->point;
 
-		if (event->tid == UIEvent::BUTTON_1)
+		if (event->tid == UIEvent::BUTTON_2)
 		{
-			UpdateCam1But();
+			UpdateCam2But();
 		}
 		else if (altBut3)
 		{
@@ -234,7 +234,7 @@ void WASDCameraController::Input(UIEvent * event)
 	}	
 }
 
-	void WASDCameraController::UpdateCam1But(void)
+	void WASDCameraController::UpdateCam2But(void)
 	{
 		Vector2 dp = startPt - stopPt;
 		dp *= 8.f;
