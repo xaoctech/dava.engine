@@ -57,6 +57,9 @@ DAVA::String EditorLightNode::GetSceneFile()
 	case LightNode::TYPE_DIRECTIONAL:
 		return "~res:/3d/lights/directlight/directlight.sc2";
 		break;
+	case LightNode::TYPE_POINT:
+		return "~res:/3d/lights/pointlight/pointlight.sc2";
+		break;
 	default:
 		return String();
 	}
