@@ -360,11 +360,11 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
-    if(customProperties->IsKeyExists("editor.isSolid"))
+    const Map<String, VariantType> &customMap = customProperties->GetArchieveData();
+    for (Map<String, VariantType>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
     {
-        dstNode->SetSolid(GetSolid());
+        dstNode->customProperties->SetVariant(it->first, it->second);
     }
-//	dstNode->isSolidNode = isSolidNode;
 
 //    Logger::Debug("Node %s clonned", name.c_str());
     
