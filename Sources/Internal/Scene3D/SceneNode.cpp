@@ -35,6 +35,7 @@
 #include "Base/ObjectFactory.h"
 #include "Utils/StringFormat.h"
 #include "Render/RenderHelper.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
 {
@@ -461,7 +462,13 @@ AABBox3 SceneNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
     
-void SceneNode::Save(KeyedArchive * archive)
+String SceneNode::GetDebugDescription()
+{
+    return Format("children: %d ", GetChildrenCount());
+}
+
+    
+void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::Save(archive);
@@ -477,12 +484,7 @@ void SceneNode::Save(KeyedArchive * archive)
     archive->SetByteArrayFromArchive("customprops", customProperties);
 }
 
-String SceneNode::GetDebugDescription()
-{
-    return Format("children: %d ", GetChildrenCount());
-}
-
-void SceneNode::Load(KeyedArchive * archive)
+void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
     BaseObject::Load(archive);
         

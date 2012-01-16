@@ -41,7 +41,7 @@ namespace DAVA
 class UberShader;
 class Shader;
 class Texture;    
-    
+class SceneFileV2;
     
     
 // TODO: move Material to Scene3D
@@ -110,8 +110,8 @@ public:
     String pathBase;
     
 
-    void Save(KeyedArchive * keyedArchive);
-    void Load(KeyedArchive * keyedArchive);
+    void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
+    void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     
     int32 uniformTexture0;
     int32 uniformTexture1;

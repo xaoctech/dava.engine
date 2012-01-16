@@ -42,6 +42,7 @@ namespace DAVA
 /**
     
  */
+class SceneFileV2;
 class DataNode : public BaseObject
 {
 public:	
@@ -77,12 +78,12 @@ public:
     /**
         \brief virtual function to save node to KeyedArchive
      */
-    virtual void Save(KeyedArchive * archive);
+    virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
     /**
         \brief virtual function to load node to KeyedArchive
      */
-	virtual void Load(KeyedArchive * archive);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 protected:
     Scene * scene;
     String name;

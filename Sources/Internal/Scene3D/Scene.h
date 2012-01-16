@@ -50,6 +50,7 @@ class StaticMesh;
 class AnimatedMesh;
 class SceneNodeAnimationList;
 class DataNode;
+class SceneFileV2;
 	
 /** 
     \ingroup scene3d
@@ -174,8 +175,8 @@ public:
     inline float32 GetLodLayerNearSquare(int32 layerNum);
     inline float32 GetLodLayerFarSquare(int32 layerNum);
 
-    void Save(KeyedArchive * archive);
-    void Load(KeyedArchive * archive);
+    //void Save(KeyedArchive * archive);
+    //void Load(KeyedArchive * archive);
 
     
 private:	

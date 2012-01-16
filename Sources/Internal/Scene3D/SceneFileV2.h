@@ -27,8 +27,8 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_SCENEFILE2_H__
-#define __DAVAENGINE_SCENEFILE2_H__
+#ifndef __DAVAENGINE_SCENEFILEV2_H__
+#define __DAVAENGINE_SCENEFILEV2_H__
 
 #include "Base/BaseObject.h"
 #include "Base/BaseMath.h"
@@ -91,11 +91,11 @@ namespace DAVA
      scene->Load("filename
 */
 
-class SceneFile2 : public BaseObject
+class SceneFileV2 : public BaseObject
 {
 public: 
-    SceneFile2();
-    ~SceneFile2();
+    SceneFileV2();
+    ~SceneFileV2();
     
     bool SaveScene(const String & filename, Scene * _scene);
     bool LoadScene(const String & filename, Scene * _scene);
@@ -122,7 +122,7 @@ private:
   
 }; // namespace DAVA
 
-#endif // __DAVAENGINE_SCENEFILE2_H__
+#endif // __DAVAENGINE_SCENEFILEV2_H__
 
 
 

@@ -179,7 +179,7 @@
 
 // 3D core classes
 #include "Scene3D/SceneFile.h"
-#include "Scene3D/SceneFile2.h"
+#include "Scene3D/SceneFileV2.h"
 
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/PolygonGroup.h"
