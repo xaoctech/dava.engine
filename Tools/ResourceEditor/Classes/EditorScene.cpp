@@ -36,6 +36,10 @@ EditorScene::EditorScene()
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	broadphase = new btAxisSweep3(worldMin,worldMax);
 	collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfiguration);
+
+    RegisterLodLayer(0, 15);
+    RegisterLodLayer(12, 35);
+    RegisterLodLayer(31, 1000);
 }
 
 EditorScene::~EditorScene()
