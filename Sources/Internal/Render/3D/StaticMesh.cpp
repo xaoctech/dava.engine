@@ -34,6 +34,7 @@
 #include "Render/RenderManager.h"
 #include "FileSystem/Logger.h"
 #include "Render/Shader.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {

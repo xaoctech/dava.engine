@@ -120,14 +120,12 @@ void LibraryControl::OnConvertPressed(DAVA::BaseObject *object, void *userData, 
     // load sce to scene object
     String path = FileSystem::Instance()->ReplaceExtension(selectedFileName, ".sce");
     Scene * scene = new Scene();
-    SceneNode *rootNode = scene->GetRootNode(path)->Clone();
-    rootNode->SetSolid(true);
+    SceneNode *rootNode = scene->GetRootNode(path);
     scene->AddNode(rootNode);
-    SafeRelease(rootNode);
 
     // Export to *.sc2    
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-    SceneFile2 * file = new SceneFile2();
+    SceneFileV2 * file = new SceneFileV2();
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
     SafeRelease(file);

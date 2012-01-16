@@ -31,7 +31,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Render/RenderHelper.h"
 #include "Render/RenderManager.h"
-
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -201,9 +201,9 @@ void PolygonGroup::BuildVertexBuffer()
 };
 
     
-void PolygonGroup::Save(KeyedArchive * keyedArchive)
+void PolygonGroup::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
-    DataNode::Save(keyedArchive);
+    DataNode::Save(keyedArchive, sceneFile);
     
     keyedArchive->SetInt32("vertexFormat", vertexFormat);
     keyedArchive->SetInt32("vertexCount", vertexCount); 
@@ -217,9 +217,9 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive)
     keyedArchive->SetByteArray("indices", (uint8*)indexArray, indexCount * INDEX_FORMAT_SIZE[indexFormat]);
 }
 
-void PolygonGroup::Load(KeyedArchive * keyedArchive)
+void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
-    DataNode::Load(keyedArchive);
+    DataNode::Load(keyedArchive, sceneFile);
     
     vertexFormat = keyedArchive->GetInt32("vertexFormat");
     vertexStride = GetVertexSize(vertexFormat);

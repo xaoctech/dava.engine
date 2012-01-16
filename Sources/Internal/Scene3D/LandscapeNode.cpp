@@ -934,9 +934,9 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
 
-void LandscapeNode::Save(KeyedArchive * archive)
+void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive);
+    SceneNode::Save(archive, sceneFile);
     archive->SetString("hmap", heightMapPath);
     archive->SetInt32("renderingMode", renderingMode);
     archive->SetByteArrayAsType("bbox", box);
@@ -947,9 +947,9 @@ void LandscapeNode::Save(KeyedArchive * archive)
         
 }
     
-void LandscapeNode::Load(KeyedArchive * archive)
+void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive);
+    SceneNode::Load(archive, sceneFile);
     
     String path = archive->GetString("hmap");
     AABBox3 box;

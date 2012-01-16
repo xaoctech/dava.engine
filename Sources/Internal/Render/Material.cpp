@@ -35,6 +35,7 @@
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
 #include "Render/Shader.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -156,9 +157,9 @@ void Material::SetType(eType _type)
 
 }
     
-void Material::Save(KeyedArchive * keyedArchive)
+void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
-    DataNode::Save(keyedArchive);
+    DataNode::Save(keyedArchive, sceneFile);
     
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int k = 0; k < TEXTURE_COUNT; ++k)
@@ -176,9 +177,9 @@ void Material::Save(KeyedArchive * keyedArchive)
     keyedArchive->SetInt32("mat.type", type);
 }
     
-void Material::Load(KeyedArchive * keyedArchive)
+void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
-    DataNode::Load(keyedArchive);
+    DataNode::Load(keyedArchive, sceneFile);
 
     int texCount = keyedArchive->GetInt32("mat.texCount");
     for (int k = 0; k < texCount; ++k)

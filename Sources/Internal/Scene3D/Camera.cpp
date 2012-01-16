@@ -32,6 +32,7 @@
 #include "Core/Core.h"
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -530,9 +531,9 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
      uint32 flags;
 */
     
-void Camera::Save(KeyedArchive * archive)
+void Camera::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Save(archive);
+    SceneNode::Save(archive, sceneFile);
     
     archive->SetFloat("cam.xmin", xmin);
     archive->SetFloat("cam.xmax", xmax);
@@ -557,9 +558,9 @@ void Camera::Save(KeyedArchive * archive)
     archive->SetByteArrayAsType("cam.projMatrix", projMatrix);
 }
 
-void Camera::Load(KeyedArchive * archive)
+void Camera::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-    SceneNode::Load(archive);
+    SceneNode::Load(archive, sceneFile);
     
     // todo add default values
     xmin = archive->GetFloat("cam.xmin");
