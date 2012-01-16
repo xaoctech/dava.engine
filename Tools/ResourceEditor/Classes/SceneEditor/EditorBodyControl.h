@@ -74,6 +74,8 @@ public:
     EditorScene * GetScene();
     void AddNode(SceneNode *node);
     
+    SceneNode *GetSelectedSGNode(); //Scene Graph node
+    
     virtual void NodesPropertyChanged();
 
     void CreateScene(bool withCameras);

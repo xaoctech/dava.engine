@@ -80,7 +80,7 @@ public:
     // create node dialog
     virtual void DialogClosed(int32 retCode);
 
-    void ShowMaterialEditor();
+    void EditMaterial(Material *material);
 
 	BodyItem * FindCurrentBody();
     

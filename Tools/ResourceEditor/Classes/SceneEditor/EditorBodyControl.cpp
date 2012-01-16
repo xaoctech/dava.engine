@@ -1142,6 +1142,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
+            //SafeRelease(rootNode); //TODO: ??
         }
 
         
@@ -1286,6 +1287,11 @@ void EditorBodyControl::AddNode(SceneNode *node)
     scene->AddNode(node);
     sceneGraphTree->Refresh();
     RefreshDataGraph();
+}
+
+SceneNode * EditorBodyControl::GetSelectedSGNode()
+{
+    return selectedSceneGraphNode;
 }
 
 void EditorBodyControl::ChangeControlWidthRight(UIControl *c, float32 width)
