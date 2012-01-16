@@ -1340,7 +1340,7 @@ void EditorBodyControl::NodesPropertyChanged()
 {
     if(selectedSceneGraphNode)
     {
-        nodesPropertyPanel->WriteTo(selectedSceneGraphNode);
+//        nodesPropertyPanel->WriteTo(selectedSceneGraphNode);
         
         sceneGraphTree->Refresh();
     }
