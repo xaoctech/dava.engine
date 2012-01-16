@@ -399,6 +399,7 @@
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
     <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
+    <ClInclude Include="Classes\SceneEditor\PaintAreaControl.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
@@ -626,6 +627,7 @@
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PaintAreaControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
