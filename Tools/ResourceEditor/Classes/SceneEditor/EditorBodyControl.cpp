@@ -99,6 +99,7 @@ void EditorBodyControl::CreateHelpPanel()
 	helpDialog = new DraggableDialog(Rect(100, 100, 510, 500));
 	ControlsFactory::CustomizeDialog(helpDialog);
 
+	AddHelpText(L"F1/H - this help", y);
 	AddHelpText(L"A W S D - fly camera", y);
 	AddHelpText(L"1, 2, 3, 4 - set camera speed", y);
 	AddHelpText(L"T - set camera to Top position", y);
@@ -652,6 +653,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             switch(event->tid)
             {
                 case DVKEY_F1:
+                case DVKEY_H:
 					ToggleHelp();
 					break;
                 
