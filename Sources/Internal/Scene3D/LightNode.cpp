@@ -85,9 +85,9 @@ const Color & LightNode::GetColor() const
     return color;
 }
 
-void LightNode::Save(KeyedArchive * archive)
+void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-	SceneNode::Save(archive);
+	SceneNode::Save(archive, sceneFile);
 	
 	archive->SetInt32("type", type);
 	archive->SetFloat("color.r", color.r);
@@ -96,9 +96,9 @@ void LightNode::Save(KeyedArchive * archive)
 	archive->SetFloat("color.a", color.a);
 }
 
-void LightNode::Load(KeyedArchive * archive)
+void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-	 SceneNode::Load(archive);
+	 SceneNode::Load(archive, sceneFile);
 
 	 type = (eType)archive->GetInt32("type");
 	 color.r = archive->GetFloat("color.r");

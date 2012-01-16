@@ -240,8 +240,8 @@ public:
      */
     void Draw();
 
-    void Save(KeyedArchive * archive);
-    void Load(KeyedArchive * archive);
+    void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 
 public:
     enum

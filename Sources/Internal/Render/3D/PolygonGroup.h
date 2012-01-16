@@ -42,6 +42,8 @@ namespace DAVA
 	\ingroup render_3d
 	\brief Group of polygons with same data type & structure
  */
+    
+class SceneFileV2;    
 class PolygonGroup : public DataNode
 {
 public:
@@ -161,8 +163,8 @@ public:
     
     RenderDataObject * renderDataObject;
     
-    void Save(KeyedArchive * keyedArchive);
-    void Load(KeyedArchive * keyedArchive);
+    void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
+    void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
 
 private:	
     void    UpdateDataPointersAndStreams();
