@@ -65,10 +65,6 @@ protected:
     
     bool IsValidPath(const String &path);
 
-    Vector<String> types;
-    Vector<String> renderingModes;
-    Vector<Material*> materials;
-    Vector<String> materialNames;
 
     
     NodesPropertyDelegate *nodesDelegate;
@@ -85,7 +81,6 @@ protected:
     CreatePropertyControl *propControl;
     SceneNode *currentNode;
     
-    String GetCustomPropertyName(const String &keyName);
     Scene *workingScene;
 
     
@@ -93,9 +88,6 @@ protected:
     UIControl *listHolder;
     UIButton *btnCancel;
     void OnCancel(BaseObject * object, void * userData, void * callerData);
-    
-    
-    void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
 };
 
 

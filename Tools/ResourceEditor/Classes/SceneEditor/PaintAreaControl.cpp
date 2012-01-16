@@ -12,6 +12,8 @@ TextureRenderObject::TextureRenderObject()
     sprite = NULL;
 }
 
+Rect usedRect;
+
 TextureRenderObject::~TextureRenderObject()
 {
     SafeRelease(sprite);
@@ -46,10 +48,14 @@ void TextureRenderObject::Set(const String &texturepath)
 
 void TextureRenderObject::CreateMeshFromSprite(Sprite *spr, int32 frameToGen)
 {
-    float32 x0 = spr->GetRectOffsetValueForFrame(frameToGen, Sprite::X_OFFSET_TO_ACTIVE);
-    float32 y0 = spr->GetRectOffsetValueForFrame(frameToGen, Sprite::Y_OFFSET_TO_ACTIVE);
-    float32 x1 = x0 + spr->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_WIDTH);
-    float32 y1 = y0 + spr->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_HEIGHT);
+//    float32 x0 = spr->GetRectOffsetValueForFrame(frameToGen, Sprite::X_OFFSET_TO_ACTIVE);
+//    float32 y0 = spr->GetRectOffsetValueForFrame(frameToGen, Sprite::Y_OFFSET_TO_ACTIVE);
+//    float32 x1 = x0 + spr->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_WIDTH);
+//    float32 y1 = y0 + spr->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_HEIGHT);
+    float32 x0 = usedRect.x;
+    float32 y0 = usedRect.y;
+    float32 x1 = usedRect.dx;
+    float32 y1 = usedRect.dy;
     //    x0 *= sprScale.x;
     //    x1 *= sprScale.y;
     //    y0 *= sprScale.x;
@@ -102,6 +108,8 @@ void TextureRenderObject::Draw()
 PaintAreaControl::PaintAreaControl(const Rect & rect)
     :   UIControl(rect)
 {
+    usedRect = rect;
+    
     showResultSprite = false;
     
     srcBlendMode = BLEND_SRC_ALPHA;
@@ -122,17 +130,19 @@ PaintAreaControl::PaintAreaControl(const Rect & rect)
     {
         textureRenderObjects[i] = NULL;
     }
-
     
     InitShader();
     
     InitTextureRenderObjects();
     
+    renderData = NULL;
     SetTextureSideSize(Vector2(rect.dx, rect.dy));
 }
 
 PaintAreaControl::~PaintAreaControl()
 {
+    SafeRelease(renderData);
+    
     ReleaseTextureRenderObjects();
     
     ReleaseShader();
@@ -148,13 +158,6 @@ void PaintAreaControl::InitTextureRenderObjects()
     {
         textureRenderObjects[i] = new TextureRenderObject();
     }
-    
-    KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
-    String projectPath = settings->GetString("ProjectPath");
-    textureRenderObjects[ETROID_A8_ALPHA]->Set(projectPath+"Data/Landscape/hmp2.png");
-//    textureRenderObjects[ETROID_LIGHTMAP_RGB]->Set(projectPath+"Data/Landscape/rgb.png");
-    textureRenderObjects[ETROID_LIGHTMAP_RGB]->Set(projectPath+"Data/Landscape/lightmap.png");
-//    textureRenderObjects[ETROID_LIGHTMAP_RGB]->Set(projectPath+"Data/Landscape/lightmap-1.png");
 }
 
 void PaintAreaControl::ReleaseTextureRenderObjects()
@@ -164,6 +167,12 @@ void PaintAreaControl::ReleaseTextureRenderObjects()
         SafeRelease(textureRenderObjects[i]);
     }
 }
+
+void PaintAreaControl::Recreate()
+{
+    SetTextureSideSize(textureSideSize);
+}
+
 
 void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
 {
@@ -180,13 +189,58 @@ void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
     
     SafeRelease(spriteForResult);
     spriteForResult = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGBA8888);
-    RenderManager::Instance()->SetRenderTarget(spriteForResult);
-    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
-    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
-    RenderManager::Instance()->ResetColor();
-    RenderManager::Instance()->RestoreRenderTarget();
 
     ShowResultTexture(showResultSprite);
+    
+//=========    
+    vertexes.clear();
+    textureCoords.clear();
+    SafeRelease(renderData);
+
+    Rect r = GetRect();
+//    float32 x0 = r.x;
+//    float32 y0 = r.y;
+//    float32 x1 = r.x + r.dx;
+//    float32 y1 = r.y + r.dy;
+    float32 x0 = 0;
+    float32 y0 = 0;
+    float32 x1 = r.dx;
+    float32 y1 = r.dy;
+    
+    //triangle 1
+    //0, 0
+    vertexes.push_back(x0);
+    vertexes.push_back(y0);
+    vertexes.push_back(0);
+    textureCoords.push_back(0);
+    textureCoords.push_back(0);
+    
+    
+    //1, 0
+    vertexes.push_back(x1);
+    vertexes.push_back(y0);
+    vertexes.push_back(0);
+    textureCoords.push_back(1);
+    textureCoords.push_back(0);
+    
+    
+    //0, 1
+    vertexes.push_back(x0);
+    vertexes.push_back(y1);
+    vertexes.push_back(0);
+    textureCoords.push_back(0);
+    textureCoords.push_back(1);
+    
+    //1, 1
+    vertexes.push_back(x1);
+    vertexes.push_back(y1);
+    vertexes.push_back(0);
+    textureCoords.push_back(1);
+    textureCoords.push_back(1);
+
+    renderData = new RenderDataObject();
+    renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertexes.front());
+    renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &textureCoords.front());
 }
 
 
@@ -201,19 +255,20 @@ void PaintAreaControl::SetPaintTool(PaintTool *tool)
 void PaintAreaControl::ShowResultTexture(bool show)
 {
     showResultSprite = show;
-    if(showResultSprite)
-    {
-        SetSprite(spriteForResult, 0);
-    }
-    else
-    {
-        SetSprite(spriteForAlpha, 0);
-    }
+//    if(showResultSprite)
+//    {
+//        SetSprite(spriteForResult, 0);
+//    }
+//    else
+//    {
+//        SetSprite(spriteForAlpha, 0);
+//    }
 }
 
-void PaintAreaControl::SetTexture(eTextures id, const String &path)
+void PaintAreaControl::SetTexture(eTextureRenderObjectIDs id, const String &path)
 {
-    textureRenderObjects[id + ETROID_TEXTURE_TEXTURE0]->Set(path);
+    textureRenderObjects[id]->Set(path);
+    Recreate();
 }
 
 void PaintAreaControl::InitShader()
@@ -252,11 +307,25 @@ void PaintAreaControl::DrawShader()
     blendedShader->SetUniformValue(uniformTextureMask, 2);
     
     
+//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+//   
+//    RenderManager::Instance()->SetState(
+//                                        RenderStateBlock::STATE_TEXTURE0 
+//                                        | RenderStateBlock::STATE_TEXTURE1 
+//                                        | RenderStateBlock::STATE_TEXTURE2 
+//                                        | RenderStateBlock::STATE_BLEND 
+//                                        );
+
     
-    
+    RenderManager::Instance()->SetRenderData(renderData);
+    RenderManager::Instance()->FlushState();
+    RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
+
     
     RenderManager::Instance()->SetTexture(0, 1);
     RenderManager::Instance()->SetTexture(0, 2);
+
+    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 }
 
 
@@ -293,34 +362,35 @@ void PaintAreaControl::DrawLightmap()
     RenderManager::Instance()->SetState(
                                         RenderStateBlock::STATE_TEXTURE0 
                                         | RenderStateBlock::STATE_COLORMASK_RED 
-                                        | RenderStateBlock::STATE_COLORMASK_GREEN 
-                                        | RenderStateBlock::STATE_COLORMASK_BLUE 
+                                        // | RenderStateBlock::STATE_COLORMASK_GREEN 
+                                        //| RenderStateBlock::STATE_COLORMASK_BLUE 
                                         );
     
     textureRenderObjects[ETROID_LIGHTMAP_RGB]->Draw();
     
     RenderManager::Instance()->ResetColor();
     RenderManager::Instance()->RestoreRenderTarget();
+    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 }
 
 void PaintAreaControl::DrawA8()
 {
-    RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
-    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
-    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
-    
-    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-    
-    RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-    RenderManager::Instance()->SetState(
-                                        RenderStateBlock::STATE_TEXTURE0 
-                                        | RenderStateBlock::STATE_COLORMASK_ALPHA 
-                                        );
-    
-    textureRenderObjects[ETROID_A8_ALPHA]->Draw();
-    
-    RenderManager::Instance()->ResetColor();
-    RenderManager::Instance()->RestoreRenderTarget();
+//    RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
+//    
+//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+//    
+//    RenderManager::Instance()->SetState(
+//                                        RenderStateBlock::STATE_TEXTURE0 
+//                                        | RenderStateBlock::STATE_COLORMASK_ALPHA 
+//                                        );
+//    RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+//    
+//    RenderManager::Instance()->SetColor(0.0f, 0.0f, 0.0f, 0.0f);
+//    RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, 1024.0f, 1024.0f));
+//    //textureRenderObjects[ETROID_A8_ALPHA]->Draw();
+//
+//    RenderManager::Instance()->RestoreRenderTarget();
+//    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 }
 
 void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
@@ -331,17 +401,27 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
 
     RenderManager::Instance()->SetRenderTarget(spriteForResult);
     RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
-//    RenderManager::Instance()->SetColor(Color(1.f, 1.f, 1.f, 1.f));
-//    RenderManager::Instance()->SetColor(Color(0.7f, 0.7f, 0.7f, 0.7f));
     RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
     RenderManager::Instance()->ResetColor();
 
-    //DrawRenderObject();
+    DrawShader();
     
-    //DrawShader();
-
     RenderManager::Instance()->RestoreRenderTarget();
 
+    if(showResultSprite)
+    {
+        spriteForResult->SetPosition(0, 0);
+        spriteForResult->Draw();
+    }
+    else
+    {
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
+        spriteForAlpha->SetPosition(0, 0);
+        spriteForAlpha->Draw();
+    }
+    
+    
+    
     UIControl::Draw(geometricData);
 }
 

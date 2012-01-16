@@ -69,13 +69,16 @@ class PaintAreaControl: public UIControl
 {
 public:
     
-    enum eTextures
+    enum eTextureRenderObjectIDs
     {
-        ET_TEXTURE0 = 0,
-        ET_TEXTURE1,
+        ETROID_A8_ALPHA = 0,
+        ETROID_LIGHTMAP_RGB,
+        ETROID_TEXTURE_TEXTURE0,
+        ETROID_TEXTURE_TEXTURE1,
         
-        ET_COUNT
+        ETROID_COUNT
     };
+    
     
 public:
     PaintAreaControl(const Rect & rect);
@@ -90,11 +93,13 @@ public:
     
     void SetTextureSideSize(const Vector2 & sideSize);
     
-    void SetTexture(eTextures id, const String &path);
+    void SetTexture(eTextureRenderObjectIDs id, const String &path);
     
     void ShowResultTexture(bool show);
 
 protected:
+    
+    void Recreate();
     
     void DrawCursor();
 
@@ -134,20 +139,14 @@ protected:
     int32 uniformTexture1;
     int32 uniformTextureMask;
     
+    Vector<float32> vertexes;
+    Vector<float32> textureCoords;
+    RenderDataObject *renderData;
+
+    
     
     bool showResultSprite;
 //===============    
-    enum eTextureRenderObjectIDs
-    {
-        ETROID_A8_ALPHA = 0,
-        ETROID_LIGHTMAP_RGB,
-        ETROID_TEXTURE_TEXTURE0,
-        ETROID_TEXTURE_TEXTURE1,
-        
-        ETROID_COUNT
-    };
-
-    
     TextureRenderObject *textureRenderObjects[ETROID_COUNT];
     
     void InitTextureRenderObjects();
