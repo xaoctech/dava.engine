@@ -315,7 +315,7 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
             }
             else 
             {
-                materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], " ");
+                materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], "");
             }
 
             break;
@@ -356,7 +356,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
             }
             else 
             {
-                currentList->SetFilepathPropertyValue(textureNames[i], " ");
+                currentList->SetFilepathPropertyValue(textureNames[i], "");
             }
         }
     }

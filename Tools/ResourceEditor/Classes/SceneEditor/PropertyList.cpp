@@ -61,7 +61,7 @@ void PropertyList::AddFilepathProperty(const String &propertyName, const String 
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_FILEPATH;
-    p->SetString("/");
+    p->SetString("");
     p->SetExtensionFilter(extensionFilter);
     AddProperty(p, propertyName, propEditType);
 }
