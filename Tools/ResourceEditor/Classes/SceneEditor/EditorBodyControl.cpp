@@ -1110,7 +1110,6 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile);
             mainFilePath = pathToFile;
-            rootNode->SetSolid(false);
             scene->AddNode(rootNode);
         }
         else
@@ -1132,6 +1131,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
+            mainFilePath = pathToFile;
             for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
             {//рут нода это сама сцена в данном случае
                 scene->AddNode(rootNode->GetChild(ci));
