@@ -16,6 +16,7 @@ BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, Mesh
 collisionPartTransform(&((Matrix4&)pWorldTransform)),
 meshNode(_meshNode),
 updateFlag(true),
+shape(NULL),
 collisionObject(0)
 
 {    
@@ -86,10 +87,11 @@ void BulletObject::CreateCollisionObject()
 			}
 		}
 		shape = new btBvhTriangleMeshShape(trimesh, true, true);    
+
+        collisionObject->setCollisionShape(shape);
+        collWorld->addCollisionObject(collisionObject);
 	}
 	
-	collisionObject->setCollisionShape(shape);
-    collWorld->addCollisionObject(collisionObject);
 }
 
 void BulletObject::CreateLightObject(float32 radius)
