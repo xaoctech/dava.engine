@@ -127,7 +127,7 @@ void LibraryControl::OnConvertPressed(DAVA::BaseObject *object, void *userData, 
 
     // Export to *.sc2    
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-    SceneFile2 * file = new SceneFile2();
+    SceneFileV2 * file = new SceneFileV2();
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
     SafeRelease(file);

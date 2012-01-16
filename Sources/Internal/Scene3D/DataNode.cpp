@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Scene3D/DataNode.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA 
 {
@@ -148,14 +149,14 @@ int32  DataNode::GetNodeIndex()
     return index;
 }
     
-void DataNode::Load(KeyedArchive * archive)
+void DataNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     BaseObject::Load(archive);
     name = archive->GetString("name");
     index = archive->GetInt32("#index", -1);
 }
 
-void DataNode::Save(KeyedArchive * archive)
+void DataNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     BaseObject::Save(archive);
     archive->SetInt32("#index", index);

@@ -35,7 +35,7 @@
 #include "Render/3D/AnimatedMesh.h"
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
-#include "Scene3D/SceneFile2.h"
+#include "Scene3D/SceneFileV2.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
 #include "Platform/SystemTimer.h"
@@ -220,7 +220,7 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
     }
     else if(ext == ".sc2")
     {
-        SceneFile2 *file = new SceneFile2();
+        SceneFileV2 *file = new SceneFileV2();
         file->EnableDebugLog(true);
         file->LoadScene(rootNodePath.c_str(), this);
         SafeRelease(file);
@@ -454,7 +454,7 @@ int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
 }
     
     
-void Scene::Save(KeyedArchive * archive)
+/*void Scene::Save(KeyedArchive * archive)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     SceneNode::Save(archive);
@@ -468,7 +468,7 @@ void Scene::Save(KeyedArchive * archive)
 void Scene::Load(KeyedArchive * archive)
 {
     SceneNode::Load(archive);
-}
+}*/
     
 
 
