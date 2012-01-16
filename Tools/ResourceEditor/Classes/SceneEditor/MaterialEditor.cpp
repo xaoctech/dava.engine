@@ -31,7 +31,9 @@ MaterialEditor::MaterialEditor()
 //    ControlsFactory::CustomizePanelControl(this);
     ControlsFactory::CustomizeDialog(this);
     
+    workingSceneNode = NULL;
     workingScene = NULL;
+    workingNodeMaterials = NULL;
     
     materialsList = new UIList(Rect(0, 20, size.x * materialListPart, size.y - 20), UIList::ORIENTATION_VERTICAL);
     materialsList->SetDelegate(this);
@@ -122,18 +124,105 @@ MaterialEditor::MaterialEditor()
 
 MaterialEditor::~MaterialEditor()
 {
+    SafeRelease(workingNodeMaterials);
+    SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
     SafeRelease(materialsList);
 }
 
-void MaterialEditor::SetWorkingScene(Scene *newWorkingScene)
+void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
 {
-    if (newWorkingScene == workingScene) 
+    if(!node)
+    {
+        node = workingSceneNode;
+    }
+        
+    //add materials to list
+    MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(node);
+    if(mesh)
+    {
+        Vector<Material *> meshMaterials = mesh->GetMaterials();
+        for(int32 iMesh = 0; iMesh < meshMaterials.size(); ++iMesh)
+        {
+            bool found = false;
+            for(int32 child = 0; child < workingNodeMaterials->GetChildrenCount(); ++child)
+            {
+                DataNode *m = workingNodeMaterials->GetChild(child);
+                if(m == meshMaterials[iMesh])
+                {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if(!found)
+            {
+                workingNodeMaterials->AddNode(meshMaterials[iMesh]);
+            }
+        }
+    }
+    
+    if(node)
+    {
+        int32 count = node->GetChildrenCount();
+        for(int32 i = 0; i < count; ++i)
+        {
+            EnumerateNodeMaterials(node->GetChild(i));    
+        }
+        
+    }
+}
+
+void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *material)
+{
+    SafeRelease(workingNodeMaterials);
+    SafeRelease(workingSceneNode);
+    SafeRelease(workingScene);
+    
+    workingScene = SafeRetain(newWorkingScene);
+    workingNodeMaterials = new DataNode(workingScene);
+    workingNodeMaterials->AddNode(material);
+    
+    if (lastSelection) 
+    {
+        lastSelection->SetSelected(false, false);
+    }
+    lastSelection = NULL;
+    if (workingScene->GetMaterialCount() > 0)
+    {
+        selectedMaterial = 0;
+        for (int32 i = 0; i < workingScene->GetMaterialCount(); ++i) 
+        {
+            Material *mat = workingScene->GetMaterial(i);
+            if(mat == material)
+            {
+                selectedMaterial = i;
+            }
+        }
+        
+        SelectMaterial(selectedMaterial);
+    }
+    materialsList->Refresh();
+    materialsList->ResetScrollPosition();
+}
+
+
+void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *selectedSceneNode)
+{
+    if (newWorkingScene == workingScene && workingSceneNode == selectedSceneNode) 
     {
         return;
     }
+    
+    SafeRelease(workingNodeMaterials);
+    SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
+
     workingScene = SafeRetain(newWorkingScene);
+    workingSceneNode = SafeRetain(selectedSceneNode);
+    workingNodeMaterials = new DataNode(workingScene);
+    EnumerateNodeMaterials(NULL);
+    
     if (lastSelection) 
     {
         lastSelection->SetSelected(false, false);
@@ -311,7 +400,28 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     {
         c = new UIListCell(Rect(0, 0, size.x * materialListPart, 20), "Material name cell");
     }
-    ControlsFactory::CustomizeListCell(c, StringToWString(workingScene->GetMaterial(index)->GetName()));
+    
+    Material *mat = workingScene->GetMaterial(index);
+    
+    bool found = false;
+    for (int32 i = 0; i < workingNodeMaterials->GetChildrenCount(); ++i) 
+    {
+        if(workingNodeMaterials->GetChild(i) == mat)
+        {
+            found = true;
+            break;
+        }
+    }
+    
+    if(found)
+    {
+        ControlsFactory::CustomizeListCellAlternative(c, StringToWString(mat->GetName()));
+    }
+    else
+    {
+        ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()));
+    }
+    
     if (index == selectedMaterial) 
     {
         c->SetSelected(true, false);
