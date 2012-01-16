@@ -47,6 +47,14 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	propertyList->AddFloatProperty("Intensity");
 	propertyList->SetFloatPropertyValue("Intensity", light->GetCustomProperties()->GetFloat("editor.intensity", 1.f));
 
+	if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+	{
+		propertyList->AddFloatProperty("Shadow angle");
+		propertyList->SetFloatPropertyValue("Shadow angle", light->GetCustomProperties()->GetFloat("editor.shadowangle", 0.f));
+
+		propertyList->AddIntProperty("Shadow samples");
+		propertyList->SetIntPropertyValue("Shadow samples", light->GetCustomProperties()->GetInt32("editor.shadowsamples", 1));
+	}
 }
 
 void LightPropertyControl::WriteTo(SceneNode * sceneNode)
@@ -74,4 +82,13 @@ void LightPropertyControl::WriteTo(SceneNode * sceneNode)
 
 	float32 intensity = propertyList->GetFloatPropertyValue("Intensity");
 	light->GetCustomProperties()->SetFloat("editor.intensity", intensity);
+
+	if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+	{
+		float32 shadowAngle = propertyList->GetFloatPropertyValue("Shadow angle");
+		light->GetCustomProperties()->SetFloat("editor.shadowangle", shadowAngle);
+
+		int32 shadowSamples = propertyList->GetIntPropertyValue("Shadow samples");
+		light->GetCustomProperties()->SetInt32("editor.shadowsamples", shadowSamples);
+	}
 }

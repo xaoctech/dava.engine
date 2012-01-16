@@ -374,6 +374,14 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetFloatPropertyValue("b", sphere->GetColor().b);
         propertyList->SetFloatPropertyValue("a", sphere->GetColor().a);
     }
+
+	{ //static light
+		propertyList->AddSection("Static light", GetHeaderState("Static light", true));
+
+		propertyList->AddBoolProperty("Enable");
+		propertyList->SetBoolPropertyValue("Enable", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
+	}
+	
     
     //must be last
     if(!createNodeProperties)
@@ -580,40 +588,45 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
         sphere->SetColor(color);
         sphere->SetRadius(radius);
     }
+
+	{ //static light
+		bool enable = propertyList->GetBoolPropertyValue("Enable");
+		sceneNode->GetCustomProperties()->SetBool("editor.staticlight.enable", enable);
+	}
     
     //must be last
-    if(!createNodeProperties)
-    {
-        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
-        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
-        {
-            String name = it->first;
-            String propName = GetCustomPropertyName(name);
-            VariantType key = it->second;
-            switch (key.type) 
-            {
-                case VariantType::TYPE_BOOLEAN:
-                    customProperties->SetBool(name, propertyList->GetBoolPropertyValue(propName));
-                    break;
-                    
-                case VariantType::TYPE_STRING:
-                    customProperties->SetString(name, propertyList->GetStringPropertyValue(propName));
-                    break;
-                    
-                case VariantType::TYPE_INT32:
-                    customProperties->SetInt32(name, propertyList->GetIntPropertyValue(propName));
-                    break;
-                    
-                case VariantType::TYPE_FLOAT:
-                    customProperties->SetFloat(name, propertyList->GetFloatPropertyValue(propName));
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-    }
+	if(!createNodeProperties)
+	{
+		KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+		Map<String, VariantType> propsData = customProperties->GetArchieveData();
+		for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
+		{
+			String name = it->first;
+			String propName = GetCustomPropertyName(name);
+			VariantType key = it->second;
+			switch (key.type) 
+			{
+			case VariantType::TYPE_BOOLEAN:
+				customProperties->SetBool(name, propertyList->GetBoolPropertyValue(propName));
+				break;
+
+			case VariantType::TYPE_STRING:
+				customProperties->SetString(name, propertyList->GetStringPropertyValue(propName));
+				break;
+
+			case VariantType::TYPE_INT32:
+				customProperties->SetInt32(name, propertyList->GetIntPropertyValue(propName));
+				break;
+
+			case VariantType::TYPE_FLOAT:
+				customProperties->SetFloat(name, propertyList->GetFloatPropertyValue(propName));
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
 }
 
 bool NodesPropertyControl::IsValidPath(const String &path)
