@@ -121,6 +121,8 @@ void KeyboardDevice::PrepareKeyTranslator()
 	keyTranslator[VK_MENU] = DVKEY_ALT;
 	keyTranslator[VK_SHIFT] = DVKEY_SHIFT;
 	keyTranslator[VK_CAPITAL] = DVKEY_CAPSLOCK;
+
+	keyTranslator[VK_F1] = DVKEY_F1;
     
     // alpha keys
     for(int32 i = 0; i < 26; ++i)
