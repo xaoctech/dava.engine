@@ -6,7 +6,7 @@
 #include "../SceneNodeUserData.h"
 #include "PropertyControlCreator.h"
 #include "EditorSettings.h"
-
+#include "config.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -111,6 +111,8 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"Q, E, R (in selection) - change active modification mode (move, translate, scale)", y);
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
 	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
+
+	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }
 
 
