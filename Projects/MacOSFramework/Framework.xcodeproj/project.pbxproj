@@ -413,8 +413,6 @@
 		FED0476913B7455700A9A859 /* ShaderDX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED0476713B7455700A9A859 /* ShaderDX.cpp */; };
 		FED0476A13B7455700A9A859 /* ShaderGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED0476813B7455700A9A859 /* ShaderGL.cpp */; };
 		FED0479A13B7B89500A9A859 /* Matrix4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED0479913B7B89500A9A859 /* Matrix4.cpp */; };
-		FED66BFF14C46E0200A39A03 /* SceneSavingOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66BFD14C46E0100A39A03 /* SceneSavingOptions.cpp */; };
-		FED66C0014C46E0200A39A03 /* SceneSavingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = FED66BFE14C46E0100A39A03 /* SceneSavingOptions.h */; };
 		FED66C0314C46E8000A39A03 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66C0114C46E7F00A39A03 /* SceneManager.cpp */; };
 		FED66C0414C46E8000A39A03 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FED66C0214C46E7F00A39A03 /* SceneManager.h */; };
 		FED7B06913451C2F0032144E /* MD5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED7B06713451C2F0032144E /* MD5.cpp */; };
@@ -889,8 +887,6 @@
 		FED0476713B7455700A9A859 /* ShaderDX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderDX.cpp; sourceTree = "<group>"; };
 		FED0476813B7455700A9A859 /* ShaderGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderGL.cpp; sourceTree = "<group>"; };
 		FED0479913B7B89500A9A859 /* Matrix4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix4.cpp; sourceTree = "<group>"; };
-		FED66BFD14C46E0100A39A03 /* SceneSavingOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSavingOptions.cpp; sourceTree = "<group>"; };
-		FED66BFE14C46E0100A39A03 /* SceneSavingOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneSavingOptions.h; sourceTree = "<group>"; };
 		FED66C0114C46E7F00A39A03 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		FED66C0214C46E7F00A39A03 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		FED7B06713451C2F0032144E /* MD5.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD5.cpp; sourceTree = "<group>"; };
@@ -1478,8 +1474,6 @@
 			children = (
 				FED66C0114C46E7F00A39A03 /* SceneManager.cpp */,
 				FED66C0214C46E7F00A39A03 /* SceneManager.h */,
-				FED66BFD14C46E0100A39A03 /* SceneSavingOptions.cpp */,
-				FED66BFE14C46E0100A39A03 /* SceneSavingOptions.h */,
 				FE01C9BC14A8591A008675BD /* CubeNode.cpp */,
 				FE01C9BD14A8591A008675BD /* CubeNode.h */,
 				FE01C9C014A85924008675BD /* SphereNode.cpp */,
@@ -1899,7 +1893,6 @@
 				4780A32E14B5F4EB00BAA259 /* KeyboardDevice.h in Headers */,
 				FE08B5D114AF18A700912C99 /* DataNode.h in Headers */,
 				FE08B5E914B2444B00912C99 /* ProxyNode.h in Headers */,
-				FED66C0014C46E0200A39A03 /* SceneSavingOptions.h in Headers */,
 				FED66C0414C46E8000A39A03 /* SceneManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2181,7 +2174,6 @@
 				4780A32D14B5F4EB00BAA259 /* KeyboardDevice.cpp in Sources */,
 				FE08B5D314B1B0D900912C99 /* DataNode.cpp in Sources */,
 				FE08B5E814B2444B00912C99 /* ProxyNode.cpp in Sources */,
-				FED66BFF14C46E0200A39A03 /* SceneSavingOptions.cpp in Sources */,
 				FED66C0314C46E8000A39A03 /* SceneManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

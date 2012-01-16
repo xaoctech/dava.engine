@@ -41,7 +41,6 @@
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
-#include "Scene3D/SceneSavingOptions.h"
 
 namespace DAVA
 {
