@@ -1118,6 +1118,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
+            //SafeRelease(rootNode); //TODO: ??
         }
         
         if (scene->GetCamera(0))
@@ -1272,9 +1273,7 @@ void EditorBodyControl::BeastProcessScene()
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 
 	BeastProxy::Instance()->ParseScene(beastManager, scene);
-	BeastProxy::Instance()->CreateSkyLight(beastManager);
-	BeastProxy::Instance()->SetCamera(beastManager, scene->GetCurrentCamera());
-	BeastProxy::Instance()->WindowedRender(beastManager);
+	BeastProxy::Instance()->GenerateLightmaps(beastManager);
 }
 
 EditorScene * EditorBodyControl::GetScene()

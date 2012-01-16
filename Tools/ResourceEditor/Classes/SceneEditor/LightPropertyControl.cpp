@@ -35,11 +35,6 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 
     propertyList->AddFloatProperty("b"); 
 	propertyList->SetFloatPropertyValue("b", light->GetColor().b);
-	
-	propertyList->AddFloatProperty("a"); 
-	propertyList->SetFloatPropertyValue("a", light->GetColor().a);
-
-
 
 	propertyList->AddSection("Static light", GetHeaderState("Static light", true));
 
@@ -65,7 +60,7 @@ void LightPropertyControl::WriteTo(SceneNode * sceneNode)
 		propertyList->GetFloatPropertyValue("r"),
 		propertyList->GetFloatPropertyValue("g"),
 		propertyList->GetFloatPropertyValue("b"),
-		propertyList->GetFloatPropertyValue("a"));
+		1.f);
 	light->SetColor(color);
 
 	int32 type = propertyList->GetComboPropertyIndex("Type");
