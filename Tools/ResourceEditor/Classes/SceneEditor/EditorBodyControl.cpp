@@ -102,11 +102,11 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"A W S D - fly camera", y);
 	AddHelpText(L"1, 2, 3, 4 - set camera speed", y);
 	AddHelpText(L"T - set camera to Top position", y);
-	AddHelpText(L"Left mouse button - camera angle", y);
-	AddHelpText(L"Right mouse button - selection", y);
+	AddHelpText(L"Left mouse button - selection", y);
+	AddHelpText(L"Right mouse button - camera angle", y);
 	AddHelpText(L"Z - zoom to selection", y);	
 	AddHelpText(L"Left mouse button (in selection) - object modification", y);
-	AddHelpText(L"Middle mouse button (in selection) - move in camera plan", y);
+	AddHelpText(L"Middle mouse button (in selection) - move in camera plain", y);
 	AddHelpText(L"Alt + Middle mouse button (in selection) rotate about selected objects", y);
 	AddHelpText(L"Q, E, R (in selection) - change active modification mode (move, translate, scale)", y);
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
