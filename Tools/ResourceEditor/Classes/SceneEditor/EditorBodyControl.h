@@ -182,6 +182,7 @@ protected:
 	Matrix4 startTransform;
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
+	bool isDrag;
 
 	DraggableDialog *helpDialog;
 
@@ -213,7 +214,6 @@ protected:
 	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
 	//
 	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);
-	
 	
 	
 };
