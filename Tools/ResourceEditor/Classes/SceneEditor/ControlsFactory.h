@@ -54,6 +54,7 @@ public:
     static void CustomizeExpandButton(UIButton *btn);
 
     static void CustomizeListCell(UIListCell *c, const WideString &text);
+    static void CustomizeListCellAlternative(UIListCell *c, const WideString &text);
     static void CustomizeSceneGraphCell(UIHierarchyCell *c);
     
     static void CustomizeMenuPopupCell(UIListCell *c, const WideString &text);

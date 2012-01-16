@@ -371,7 +371,7 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
     BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
-        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene());
+        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene(), iBody->bodyControl->GetSelectedSGNode());
 
         AddControl(materialEditor);
     }
@@ -852,12 +852,12 @@ void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
     }
 }
 
-void SceneEditorScreenMain::ShowMaterialEditor()
+void SceneEditorScreenMain::EditMaterial(Material *material)
 {
     BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
-        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene());
+        materialEditor->EditMaterial(iBody->bodyControl->GetScene(), material);
         
         AddControl(materialEditor);
     }

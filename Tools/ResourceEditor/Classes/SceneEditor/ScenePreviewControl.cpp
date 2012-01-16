@@ -134,8 +134,8 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
     currentScenePath = "";
     rootNode = NULL;
     
-    scene = new EditorScene();
-    SetScene(scene);
+    editorScene = new EditorScene();
+    SetScene(editorScene);
 
     // Camera setup
     cameraController = new PreviewCameraController();
@@ -146,12 +146,12 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
 ScenePreviewControl::~ScenePreviewControl()
 {
     SafeRelease(cameraController);
-    if (rootNode && scene)
+    if (rootNode && editorScene)
     {
-        scene->RemoveNode(rootNode);
+        editorScene->RemoveNode(rootNode);
         rootNode = NULL;
     }
-    SafeRelease(scene);
+    SafeRelease(editorScene);
 }
 
 
@@ -162,26 +162,40 @@ void ScenePreviewControl::Input(DAVA::UIEvent *event)
     UIControl::Input(event);
 }
 
+void ScenePreviewControl::RecreateScene()
+{
+    if(editorScene)
+    {
+        SetScene(NULL);
+        SafeRelease(editorScene);
+    }
+    
+    editorScene = new EditorScene();
+    SetScene(editorScene);
+}
+
 bool ScenePreviewControl::OpenScene(const String &pathToFile)
 {
     if(currentScenePath.length())
     {
-        scene->ReleaseRootNode(currentScenePath);
-        scene->RemoveNode(rootNode);
+        editorScene->ReleaseRootNode(currentScenePath);
+        editorScene->RemoveNode(rootNode);
         rootNode = NULL;
     }
     
+    RecreateScene();
+    
     currentScenePath = pathToFile;
-    rootNode = scene->GetRootNode(pathToFile);
+    rootNode = editorScene->GetRootNode(pathToFile);
     if(rootNode)
     {
-        scene->AddNode(rootNode);
+        editorScene->AddNode(rootNode);
         
         needSetCamera = true;
-        Camera *cam = scene->GetCamera(0);
+        Camera *cam = editorScene->GetCamera(0);
         if(!cam)
         {
-            Camera * cam = new Camera(scene);
+            Camera * cam = new Camera(editorScene);
             cam->SetName("preview-camera");
             cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
             cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
@@ -190,9 +204,9 @@ bool ScenePreviewControl::OpenScene(const String &pathToFile)
             
             cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
             
-            scene->AddNode(cam);
-            scene->AddCamera(cam);
-            scene->SetCurrentCamera(cam);
+            editorScene->AddNode(cam);
+            editorScene->AddCamera(cam);
+            editorScene->SetCurrentCamera(cam);
             cameraController->SetCamera(cam);
             
             SafeRelease(cam);
@@ -230,7 +244,7 @@ void ScenePreviewControl::Update(float32 timeElapsed)
 
 void ScenePreviewControl::SetupCamera()
 {
-    Camera *camera = scene->GetCamera(0);
+    Camera *camera = editorScene->GetCamera(0);
     if (camera)
     {
         AABBox3 sceneBox = rootNode->GetWTMaximumBoundingBox();
@@ -244,8 +258,8 @@ void ScenePreviewControl::SetupCamera()
         }
         
         camera->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-        scene->SetCurrentCamera(camera);
-        scene->SetClipCamera(camera);
+        editorScene->SetCurrentCamera(camera);
+        editorScene->SetClipCamera(camera);
         
         cameraController->SetCamera(camera);
         cameraController->SetRadius(radius);

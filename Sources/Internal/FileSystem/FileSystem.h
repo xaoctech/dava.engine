@@ -117,6 +117,7 @@ public:
 	/**
 		\brief Function to compute CRC32 
 	 */
+    virtual bool IsDirectory(const String & pathToCheck);
 		
 	/**
 		\brief Return canonical path name of \a path.
