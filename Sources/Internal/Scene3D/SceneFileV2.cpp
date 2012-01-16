@@ -48,17 +48,23 @@ namespace DAVA
 SceneFileV2::SceneFileV2()
 {
     isDebugLogEnabled = false;
+    isSaveForGame = false;
 }
 
 SceneFileV2::~SceneFileV2()
 {
 }
     
-void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
+const String & SceneFileV2::GetScenePath()
 {
-    isDebugLogEnabled = _isDebugLogEnabled;
+    return rootNodePath;
 }
-
+    
+const String & SceneFileV2::GetSceneFilename()
+{
+    return rootNodeName;
+}
+    
 static void replace(std::string & repString,const std::string & needle, const std::string & s)
 {
     std::string::size_type lastpos = 0, thispos;
@@ -69,6 +75,39 @@ static void replace(std::string & repString,const std::string & needle, const st
     }
 }
     
+void SceneFileV2::EnableSaveForGame(bool _isSaveForGame)
+{
+    isSaveForGame = _isSaveForGame;
+}
+
+String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
+{
+    String result = absolutePathname;
+    
+    if (isSaveForGame)
+    {
+        size_t pos = result.find("DataSource");
+        if (pos != result.npos)
+        {
+            result.replace(pos, strlen("DataSource"), "Data");
+        }
+    }
+    replace(result, GetScenePath(), String(""));
+    return result;
+}
+    
+String SceneFileV2::RelativeToAbsolute(const String & relativePathname)
+{
+    String result;
+    result = GetScenePath() + relativePathname;
+    return result;
+}
+    
+void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
+{
+    isDebugLogEnabled = _isDebugLogEnabled;
+}
+
 bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
@@ -76,7 +115,7 @@ bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
     {
         Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.c_str());
         return false;
-    }   
+    }
     
     rootNodePathName = filename;
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
@@ -97,19 +136,20 @@ bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
     Logger::Debug("+ save data objects");
     
     Logger::Debug("- save file path: %s", rootNodePath.c_str());
-    // Process file paths
-    for (int32 mi = 0; mi < _scene->GetMaterials()->GetChildrenCount(); ++mi)
-    {
-        Material * material = dynamic_cast<Material*>(_scene->GetMaterials()->GetChild(mi));
-        for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
-        {
-            if (material->names[k].length() > 0)
-            {
-                replace(material->names[k], rootNodePath, String(""));
-                Logger::Debug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
-            }
-        }   
-    }
+    
+//    // Process file paths
+//    for (int32 mi = 0; mi < _scene->GetMaterials()->GetChildrenCount(); ++mi)
+//    {
+//        Material * material = dynamic_cast<Material*>(_scene->GetMaterials()->GetChild(mi));
+//        for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
+//        {
+//            if (material->names[k].length() > 0)
+//            {
+//                replace(material->names[k], rootNodePath, String(""));
+//                Logger::Debug("- preprocess mat path: %s rpn: %s", material->names[k].c_str(), material->textures[k]->relativePathname.c_str());
+//            }
+//        }   
+//    }
 
     SaveDataHierarchy(_scene->GetMaterials(), file, 1);
     SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
@@ -169,11 +209,97 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
+    ProcessLOD(_scene, rootNode);
     _scene->AddRootNode(rootNode, rootNodePathName);
     
     SafeRelease(file);
     return true;
 }
+    
+void SceneFileV2::ProcessLOD(Scene * scene, SceneNode *forRootNode)
+{
+    if (scene->GetLodLayersCount() <= 0) 
+    {
+        return;
+    }
+    
+    List<SceneNode*> lodNodes;
+    forRootNode->FindNodesByNamePart("_lod0", lodNodes);
+    if (isDebugLogEnabled) 
+    {
+        Logger::Debug("Find %d nodes with LOD", lodNodes.size());
+    }
+    for (List<SceneNode*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
+    {
+        String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
+        if (isDebugLogEnabled) 
+        {
+            Logger::Debug("Processing LODs for %s", nodeName.c_str());
+        }
+        bool isNeedInit = true;
+        SceneNode *newNode = new SceneNode(scene);
+        newNode->SetName(nodeName);
+        MeshInstanceNode *meshToAdd = new MeshInstanceNode(scene);
+        meshToAdd->SetName("instance_0");
+        newNode->AddNode(meshToAdd);
+        (*it)->GetParent()->AddNode(newNode);
+        for (int i = scene->GetLodLayersCount(); i >= 0; i--) 
+        {
+            SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
+            if (ln) 
+            {//if layer is not a dummy
+                MeshInstanceNode *mn = (MeshInstanceNode *)ln->FindByName("instance_0");
+                if (mn) 
+                {
+                    if (isDebugLogEnabled) 
+                    {
+                        Logger::Debug("      Add LOD layer %d", i);
+                    }
+                    if (isNeedInit)
+                    {//we should init our new node from the first appeared real(not a dummy) node
+                        isNeedInit = false;
+                        newNode->SetLocalTransform(ln->GetLocalTransform());
+                        SceneNode *hnode = mn;
+                        while (true)
+                        {
+                            if (hnode->GetParent() == ln) 
+                            {
+                                break;
+                            }
+                            hnode = hnode->GetParent();
+                        }
+                        meshToAdd->SetLocalTransform(mn->AccamulateLocalTransform(hnode));
+                    }
+                    for (int32 n = 0; n < (int32)mn->GetMeshes().size(); n++) 
+                    {
+                        meshToAdd->AddPolygonGroupForLayer(i, mn->GetMeshes()[n], mn->GetPolygonGroupIndexes()[n], mn->GetMaterials()[n]);
+                    }
+                }
+                
+                ln->GetParent()->RemoveNode(ln);
+            }
+            else 
+            {//if layer is dummy
+                SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
+                if (ln) 
+                {
+                    if (isDebugLogEnabled) 
+                    {
+                        Logger::Debug("      Add Dummy LOD layer %d", i);
+                    }
+                    meshToAdd->AddDummyLODLayer(i);
+                    
+                    ln->GetParent()->RemoveNode(ln);
+                }
+            }
+        }
+        
+        SafeRelease(newNode);
+        SafeRelease(meshToAdd);
+        
+    }
+}
+
     
 bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
@@ -216,10 +342,6 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         node->SetScene(scene);
         //TODO: refactoring here ugly hack need saving options
         Material * material = dynamic_cast<Material*>(node);
-        if (material)
-        {
-            material->pathBase = rootNodePath;
-        }
         node->Load(archive, this);
         
         if (node != root)

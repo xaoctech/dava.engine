@@ -101,9 +101,16 @@ public:
     bool LoadScene(const String & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
-    
+    void EnableSaveForGame(bool _isSaveForGame);
     
     const String & GetScenePath();
+    const String & GetSceneFilename();
+    
+    String AbsoluteToRelative(const String & absolutePathname);
+    String RelativeToAbsolute(const String & relativePathname);
+    
+    void ProcessLOD(Scene * scene, SceneNode *forRootNode);
+
 private:
     struct Header
     {
@@ -120,6 +127,7 @@ private:
     void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
 
     bool isDebugLogEnabled;
+    bool isSaveForGame;
     String rootNodePathName, rootNodePath, rootNodeName; 
 };
   

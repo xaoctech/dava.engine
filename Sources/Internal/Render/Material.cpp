@@ -164,7 +164,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int k = 0; k < TEXTURE_COUNT; ++k)
     {
-        keyedArchive->SetString(Format("mat.tex%d", k), names[k].c_str());
+        String filename = sceneFile->AbsoluteToRelative(names[k]);
+        keyedArchive->SetString(Format("mat.tex%d", k), filename);
+        Logger::Debug("save material texture: %s", filename.c_str());
     }
     
     keyedArchive->SetByteArrayAsType("mat.diffuse", diffuse);
@@ -184,11 +186,12 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     int texCount = keyedArchive->GetInt32("mat.texCount");
     for (int k = 0; k < texCount; ++k)
     {
-        names[k] = keyedArchive->GetString(Format("mat.tex%d", k));
-        //if (textures[k].length())
-        //{
+        String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
+        names[k] = sceneFile->RelativeToAbsolute(relativePathname);
+        Logger::Debug("load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
+        
         Texture::EnableMipmapGeneration();
-        textures[k] = Texture::CreateFromFile(pathBase + names[k]);
+        textures[k] = Texture::CreateFromFile(names[k]);
         if (textures[k])
         {
             textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
