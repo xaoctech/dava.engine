@@ -46,6 +46,7 @@ class Image;
 class Texture;
 class RenderDataObject;
 class Shader;
+class SceneFileV2;
 
     
 template<class T>
@@ -191,8 +192,8 @@ public:
 
     inline const eRenderingMode GetRenderingMode();
     
-    void Save(KeyedArchive * archive);
-    void Load(KeyedArchive * archive);
+    void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
 protected:	
     

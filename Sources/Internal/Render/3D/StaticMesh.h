@@ -38,6 +38,7 @@
 namespace DAVA
 {
 	
+class SceneFileV2;
 class StaticMesh : public DataNode
 {
 public:
