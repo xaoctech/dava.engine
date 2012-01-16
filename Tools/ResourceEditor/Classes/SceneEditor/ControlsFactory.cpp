@@ -190,9 +190,26 @@ void ControlsFactory::CustomizeListCell(UIListCell *c, const WideString &text)
     c->SetStateText(UIControl::STATE_SELECTED, text);
 
     
-//    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-//    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 0.0f);
+    c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
+}
+
+void ControlsFactory::CustomizeListCellAlternative(UIListCell *c, const WideString &text)
+{
+    Font *font = GetFontDark();
+    
+    c->SetStateFont(UIControl::STATE_NORMAL, font);
+    c->SetStateFont(UIControl::STATE_SELECTED, font);
+    
+    c->SetStateText(UIControl::STATE_NORMAL, text);
+    c->SetStateText(UIControl::STATE_SELECTED, text);
+    
+
+    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
+    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(0.4f, 0.8f, 0.4f, 1.0f);
     c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
 }
 

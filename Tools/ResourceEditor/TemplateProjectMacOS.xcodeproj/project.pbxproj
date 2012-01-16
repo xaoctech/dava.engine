@@ -750,6 +750,7 @@
 		D99311F01497B1BB00BB577D /* vecidx_aos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vecidx_aos.h; sourceTree = "<group>"; };
 		D99311F11497B1BB00BB577D /* vectormath_aos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vectormath_aos.h; sourceTree = "<group>"; };
 		D99311F21497B1BB00BB577D /* vmInclude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vmInclude.h; sourceTree = "<group>"; };
+		D9E3958D14C4727900975626 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = Classes/config.h; sourceTree = "<group>"; };
 		EA9D6B58149A86080012E1FB /* BeastProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeastProxy.cpp; path = Classes/BeastProxy.cpp; sourceTree = "<group>"; };
 		EA9D6B59149A86080012E1FB /* BeastProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastProxy.h; path = Classes/BeastProxy.h; sourceTree = "<group>"; };
 		FE1AE2E01455B51F00C6F712 /* VertexOctTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VertexOctTree.cpp; path = Classes/VertexOctTree.cpp; sourceTree = "<group>"; };
@@ -1634,6 +1635,7 @@
 				FEDDC95F1429FFEB0004BF1A /* ColladaExport */,
 				FE96BD8913B2347B009EB81D /* SceneEditor */,
 				FEF3FB441333580F0078054F /* TexturePacker */,
+				D9E3958D14C4727900975626 /* config.h */,
 			);
 			name = "User classes";
 			sourceTree = "<group>";

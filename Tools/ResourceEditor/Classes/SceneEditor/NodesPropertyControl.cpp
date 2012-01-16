@@ -245,7 +245,8 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
                     propertyList->SetComboPropertyIndex(comboName, 0);
                 }
                 
-                propertyList->AddMessageProperty("GoToMaterials", Message(this, &NodesPropertyControl::OnGo2Materials));
+                propertyList->AddMessageProperty("Edit Material", 
+                                                 Message(this, &NodesPropertyControl::OnGo2Materials, meshMaterials[i]));
             }
         }
     }
@@ -669,6 +670,7 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
     {
         nodesDelegate->NodesPropertyChanged();
     }
+    UpdateFieldsForCurrentNode();
 }
 
 void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4)
@@ -858,7 +860,9 @@ void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
 
 void NodesPropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    ((SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN))->ShowMaterialEditor();
+    Material *material = (Material *)userData;
+    SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
+    screen->EditMaterial(material);
 }
 
 void NodesPropertyControl::UpdateFieldsForCurrentNode()
