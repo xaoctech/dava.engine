@@ -52,10 +52,10 @@ DAVA::String EditorLightNode::GetSceneFile()
 	switch(type)
 	{
 	case LightNode::TYPE_SKY:
-		return "~res:/3d/lights/skylight/skylight.sce";
+		return "~res:/3d/lights/skylight/skylight.sc2";
 		break;
 	case LightNode::TYPE_DIRECTIONAL:
-		return "~res:/3d/lights/directlight/directlight.sce";
+		return "~res:/3d/lights/directlight/directlight.sc2";
 		break;
 	default:
 		return String();
