@@ -35,7 +35,8 @@ public:
     MaterialEditor();
     ~MaterialEditor();
     
-    void SetWorkingScene(Scene *newWorkingScene);
+    void SetWorkingScene(Scene *newWorkingScene, SceneNode *selectedSceneNode);
+    void EditMaterial(Scene *newWorkingScene, Material *material);
     
     void OnButton(BaseObject * object, void * userData, void * callerData);
     
@@ -62,7 +63,11 @@ protected:
     UIList *materialsList;
     ComboBox *materialTypes;
     PropertyList *materialProps[Material::MATERIAL_TYPES_COUNT];
+    
     Scene *workingScene;
+    SceneNode *workingSceneNode;
+    DataNode *workingNodeMaterials;
+    void EnumerateNodeMaterials(SceneNode *node);
     
     int selectedMaterial;
     UIListCell *lastSelection;
