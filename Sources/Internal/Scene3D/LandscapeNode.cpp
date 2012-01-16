@@ -37,6 +37,7 @@
 #include "Render/Shader.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/StringFormat.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
 {
@@ -942,7 +943,7 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        archive->SetString(Format("tex_%d", k), textureNames[k]);
+        archive->SetString(Format("tex_%d", k), sceneFile->AbsoluteToRelative(textureNames[k]));
     }
         
 }
@@ -962,9 +963,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         String textureName = archive->GetString(Format("tex_%d", k));
-        SetTexture((eTextureLevel)k, textureName);
+        SetTexture((eTextureLevel)k, sceneFile->RelativeToAbsolute(textureName));
     }
-
 }
 
     
