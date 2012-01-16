@@ -1118,6 +1118,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
+            //SafeRelease(rootNode); //TODO: ??
         }
         
         if (scene->GetCamera(0))

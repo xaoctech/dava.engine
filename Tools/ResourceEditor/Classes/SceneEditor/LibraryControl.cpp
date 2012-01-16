@@ -24,7 +24,7 @@ LibraryControl::LibraryControl(const Rect & rect)
 	fileTreeControl->SetFolderNavigation(false);
     fileTreeControl->EnableRootFolderChange(false);
     fileTreeControl->DisableRootFolderExpanding(true);
-	fileTreeControl->SetPath(folderPath, ".dae;.sce;");
+	fileTreeControl->SetPath(folderPath, ".dae;.sc2;.sce");
     AddControl(fileTreeControl);
 
     
@@ -88,7 +88,7 @@ void LibraryControl::WillAppear()
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path;
-    fileTreeControl->SetPath(folderPath, ".dae;.sce");
+    fileTreeControl->SetPath(folderPath, ".dae;.sc2;.sce");
 
     if(GetParent())
     {
@@ -116,6 +116,24 @@ void LibraryControl::OnEditPressed(DAVA::BaseObject *object, void *userData, voi
 void LibraryControl::OnConvertPressed(DAVA::BaseObject *object, void *userData, void *callerData)
 {
     ConvertDaeToSce(selectedFileName);
+
+    // load sce to scene object
+    String path = FileSystem::Instance()->ReplaceExtension(selectedFileName, ".sce");
+    Scene * scene = new Scene();
+    SceneNode *rootNode = scene->GetRootNode(path)->Clone();
+    rootNode->SetSolid(true);
+    scene->AddNode(rootNode);
+    SafeRelease(rootNode);
+
+    // Export to *.sc2    
+    path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+    SceneFile2 * file = new SceneFile2();
+    file->EnableDebugLog(true);
+    file->SaveScene(path.c_str(), scene);
+    SafeRelease(file);
+    
+    SafeRelease(scene);
+
     RefreshTree();
 }
 
@@ -163,10 +181,10 @@ UIFileTreeCell *LibraryControl::CellAtIndex(UIFileTree * tree, UITreeItemInfo *e
     
     String path = entry->GetPathname();
     if(     (String::npos != path.find("DataSource"))
-       &&   (".sce" == FileSystem::Instance()->GetExtension(path)))
+       &&   (".sc2" == FileSystem::Instance()->GetExtension(path)))
     {
         path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
-        path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+//        path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
         File *f = File::Create(path, File::OPEN | File::READ);
         
@@ -203,7 +221,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             AddControl(panelDAE);
         }
 	}
-    else if (0 == UIFileTree::CompareExtensions(extension, ".sce"))
+    else if ((0 == UIFileTree::CompareExtensions(extension, ".sc2")) || (0 == UIFileTree::CompareExtensions(extension, ".sce")))
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
