@@ -101,6 +101,9 @@ public:
     bool LoadScene(const String & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
+    
+    
+    const String & GetScenePath();
 private:
     struct Header
     {
