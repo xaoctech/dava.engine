@@ -761,50 +761,73 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
     SceneNode * selection = scene->GetProxy();
 	
 	//selection with second mouse button 
-	if (event->phase == UIEvent::PHASE_BEGAN && event->tid == UIEvent::BUTTON_2)
-	{
-		Vector3 from, dir;
-		GetCursorVectors(&from, &dir, event->point);
-		Vector3 to = from + dir * 1000.0f;
-		scene->TrySelection(from, to);
 
-		selection = scene->GetProxy();
-		SelectNodeAtTree(selection);
-  	}	
-	
-	if (selection != 0 && event->tid == UIEvent::BUTTON_1)
+	if (event->tid == UIEvent::BUTTON_1)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
 		{
-			scene->SetBulletUpdate(selection, false);
-
-			inTouch = true;	
+			isDrag = false;
+			inTouch = true;
 			touchStart = event->point;
-
-			startTransform = selection->GetLocalTransform();			
-			Matrix4 invProxyWorldTransform;
-
-			InitMoving(event->point);
-			
-			//calculate koefficient for moving
-			Camera * cam = scene->GetCurrentCamera();
-			const Vector3 & camPos = cam->GetPosition();
-			const Matrix4 & wt = selection->GetWorldTransform();
-			Vector3 objPos = Vector3(0,0,0) * wt;
-			
-			Vector3 dir = objPos - camPos;
-			moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
-		}	
-		if (event->phase == UIEvent::PHASE_DRAG)
-		{
-            PrepareModMatrix(event->point);
-            selection->SetLocalTransform(currTransform);
-            nodesPropertyPanel->UpdateFieldsForCurrentNode();
 		}
-		if (event->phase == UIEvent::PHASE_ENDED)
+		else if (event->phase == UIEvent::PHASE_DRAG)
+		{
+			if (!isDrag)
+			{
+				Vector2 d = event->point - touchStart;
+				if (d.Length() > 5)
+				{
+					isDrag = true;
+					if (selection)
+					{
+						scene->SetBulletUpdate(selection, false);
+						
+						inTouch = true;	
+						touchStart = event->point;
+						
+						startTransform = selection->GetLocalTransform();			
+						Matrix4 invProxyWorldTransform;
+						
+						InitMoving(event->point);
+						
+						//calculate koefficient for moving
+						Camera * cam = scene->GetCurrentCamera();
+						const Vector3 & camPos = cam->GetPosition();
+						const Matrix4 & wt = selection->GetWorldTransform();
+						Vector3 objPos = Vector3(0,0,0) * wt;
+						
+						Vector3 dir = objPos - camPos;
+						moveKf = (dir.Length() - cam->GetZNear()) * 0.003;					
+					}
+				}
+			}
+			else 
+			{
+				if (selection)
+				{
+					PrepareModMatrix(event->point);
+					selection->SetLocalTransform(currTransform);
+					nodesPropertyPanel->UpdateFieldsForCurrentNode();				
+				}
+			}
+		}
+		else if (event->phase == UIEvent::PHASE_ENDED)
 		{
 			inTouch = false;
-			scene->SetBulletUpdate(selection, true);
+			if (isDrag)
+			{
+				if (selection)
+					scene->SetBulletUpdate(selection, true);				
+			}
+			else
+			{
+				Vector3 from, dir;
+				GetCursorVectors(&from, &dir, event->point);
+				Vector3 to = from + dir * 1000.0f;
+				scene->TrySelection(from, to);				
+				selection = scene->GetProxy();
+				SelectNodeAtTree(selection);
+			}
 		}
 	}
 	else

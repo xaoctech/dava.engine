@@ -78,7 +78,7 @@ protected:
 
 	void UpdateCamAlt3But(void);
 	void UpdateCam3But(void);
-	void UpdateCam1But(void);
+	void UpdateCam2But(void);
 	    
     float32 radius;
 	Vector3 center;
