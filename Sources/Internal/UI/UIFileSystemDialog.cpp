@@ -213,9 +213,10 @@ void UIFileSystemDialog::Show(UIControl *parentControl)
 void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
 {
 
-    int32 ppos = newDirPath.rfind(".");
-    int32 spos = newDirPath.rfind("/");
-    if (ppos != newDirPath.npos && ppos > spos)
+    //int32 ppos = newDirPath.rfind(".");
+    //int32 spos = newDirPath.rfind("/");
+    //if (ppos != newDirPath.npos && ppos > spos)
+    if (!FileSystem::Instance()->IsDirectory(newDirPath))
     {
         FileSystem::Instance()->SplitPath(newDirPath, currentDir, selectedFile);
     }

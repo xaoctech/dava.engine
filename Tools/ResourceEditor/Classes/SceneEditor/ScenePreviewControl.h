@@ -54,10 +54,12 @@ public:
     
 protected:
 
+    void RecreateScene();
+    
     void SetupCamera();
     
     //scene controls
-    EditorScene * scene;
+    EditorScene * editorScene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
     PreviewCameraController * cameraController;

@@ -84,9 +84,6 @@ void BulletObject::CreateCollisionObject()
 				btVector3 vertex2(v.x, v.y, v.z);
 				
 				trimesh->addTriangle(vertex0,vertex1,vertex2, false);
-				triangles.push_back(Vector3(vertex0.x(),vertex0.y(),vertex0.z()));
-				triangles.push_back(Vector3(vertex1.x(),vertex1.y(),vertex1.z()));
-				triangles.push_back(Vector3(vertex2.x(),vertex2.y(),vertex2.z()));
 			}
 		}
 		shape = new btBvhTriangleMeshShape(trimesh, true, true);    
