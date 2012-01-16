@@ -152,7 +152,8 @@ const String & FileList::GetPathname(int32 index)
 		// create full name
 		fileList[index].pathName = path;
 
-		if (path.size() > 3)
+            //path.size() > 3 WTF?!!
+		if (path.size() > 3 && path[path.length()-1] != '/')
 			fileList[index].pathName.append("/");
 
 		fileList[index].pathName.append(fileList[index].name);
