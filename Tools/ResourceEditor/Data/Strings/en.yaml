@@ -1,0 +1,73 @@
+#dialog buttons
+dialog.ok: "Ok"
+dialog.cancel: "Cancel"
+dialog.create: "Create"
+
+#menu strings
+menu.open: "Open" 
+menu.save: "Save"
+menu.export: "Save to Game"
+menu.materials: "Materials"
+menu.createnode: "Create Node"
+menu.createnode.landscape: "Landscape"
+menu.createnode.light: "Light"
+menu.createnode.servicenode: "Service Node"
+menu.createnode.box: "Box"
+menu.createnode.sphere: "Sphere"
+menu.createnode.camera: "Camera"
+menu.new: "New Scene"
+menu.new.emptyscene: "Empty Scene"
+menu.new.scenewithcamera: "Scene+Camera"
+menu.openproject: "Open Project"
+menu.beast: "Beast"
+menu.landscape: "Landscape"
+
+#Panels
+panel.graph.scene: "Scene Graph"
+panel.graph.data: "Data Graph"
+panel.level: "Level"
+panel.properties: "Properties"
+panel.library: "Library"
+panel.refresh: "Refresh"
+
+#Output
+output.output: "Output"
+output.camera: "Camera"
+output.clear: "Clear"
+
+#Graph
+scenegraph.lookatobject: "Look at Object"
+scenegraph.removeobject: "Remove Object"
+scenegraph.debugflags: "Debug Flags"
+scenegraph.bakemetrics: "Bake Metrices"
+
+#Library
+library.refresh: "Refresh Library"
+library.convert: "Convert"
+library.add: "Add"
+library.edit: "Edit"
+library.errormessage.format: "Format is too old, reconvert .dae file."
+
+#Create Node Headers
+createnode.landscape: "Create landscape node"
+createnode.light: "Create light node"
+createnode.servicenode: "Create service node"
+createnode.box: "Create box node"
+createnode.sphere: "Create sphere node"
+createnode.camera: "Create camera"
+
+#Create Property Dialog
+createproperty.type: "Type:"
+createproperty.name: "Name:"
+
+#Landscape Editor
+landscapeeditor.zoom: "Zoom:"
+landscapeeditor.radius: "Radius:"
+landscapeeditor.height: "Height:"
+
+#Material Editor
+materialeditor.materials: "Materials:"
+materialeditor.materialtype: "Material type:"
+
+#Modification Panel
+modificationpanel.modification: "Modification:"

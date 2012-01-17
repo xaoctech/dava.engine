@@ -41,7 +41,7 @@ MaterialEditor::MaterialEditor()
     AddControl(materialsList);
     UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, 20));
     text->SetFont(ControlsFactory::GetFontLight());
-    text->SetText(L"Materials :");
+    text->SetText(LocalizedString(L"materialeditor.materials"));
     AddControl(text);
     SafeRelease(text);
     
@@ -63,7 +63,7 @@ MaterialEditor::MaterialEditor()
     
     text = new UIStaticText(Rect(size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20));
     text->SetFont(ControlsFactory::GetFontLight());
-    text->SetText(L"Material type :");
+    text->SetText(LocalizedString(L"materialeditor.materialtype"));
     text->SetAlign(ALIGN_RIGHT|ALIGN_VCENTER);
     AddControl(text);
     SafeRelease(text);

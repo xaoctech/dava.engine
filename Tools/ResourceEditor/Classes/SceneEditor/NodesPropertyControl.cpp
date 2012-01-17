@@ -52,7 +52,7 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
         btnCancel = ControlsFactory::CreateButton(
                                                 Rect(0, propertyRect.dy - ControlsFactory::BUTTON_HEIGHT, 
                                                 propertyRect.dx, ControlsFactory::BUTTON_HEIGHT), 
-                                                L"Cancel");
+                                                LocalizedString(L"dialog.cancel"));
         btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnCancel));
         listHolder->AddControl(btnCancel);
     }

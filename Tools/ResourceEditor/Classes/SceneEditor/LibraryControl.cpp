@@ -27,22 +27,21 @@ LibraryControl::LibraryControl(const Rect & rect)
 	fileTreeControl->SetPath(folderPath, ".dae;.sc2");
     AddControl(fileTreeControl);
 
-    
     //button
-    refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), L"Refresh Library");
+    refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), LocalizedString(L"library.refresh"));
     refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnRefreshPressed));
     AddControl(refreshButton);
     
     panelDAE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
-    btnConvert = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), L"Convert");
+    btnConvert = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), LocalizedString(L"library.convert"));
     btnConvert->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnConvertPressed));
     panelDAE->AddControl(btnConvert);
     
     int32 btnwidth = (rect.dx) / 2;
     panelSCE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
-    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, BUTTON_HEIGHT), L"Add");
+    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, BUTTON_HEIGHT), LocalizedString(L"library.add"));
     btnAdd->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnAddPressed));
-    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, BUTTON_HEIGHT), L"Edit");
+    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, BUTTON_HEIGHT), LocalizedString(L"library.edit"));
     btnEdit->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnEditPressed));
     preview = new ScenePreviewControl(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dx - BUTTON_HEIGHT));
     preview->SetDebugDraw(true);
@@ -239,7 +238,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
         }
         else
         {
-            errorMessage->SetText(L"Format is too old, reconvert .dae file.");
+            errorMessage->SetText(LocalizedString(L"library.errormessage.format"));
             AddControl(errorMessage);
         }
 

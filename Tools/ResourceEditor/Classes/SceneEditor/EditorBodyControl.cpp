@@ -143,24 +143,24 @@ void EditorBodyControl::CreateLeftPanel()
     int32 y = sceneGraphRect.dy;
     UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(
                                                                       0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                                                 L"Refresh");
+                                                                 LocalizedString(L"panel.refresh"));
     y += ControlsFactory::BUTTON_HEIGHT;
     
     UIButton * lookAtButton = ControlsFactory::CreateButton(Rect(
                                                                  0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                                            L"Look At Object");
+                                                            LocalizedString(L"scenegraph.lookatobject"));
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * removeNodeButton = ControlsFactory::CreateButton(Rect(
                                                                      0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                                                L"Remove Object");
+                                                                LocalizedString(L"scenegraph.removeobject"));
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
                                                                            0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                                                      L"Debug Flags");
+                                                                      LocalizedString(L"scenegraph.debugflags"));
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * bakeMatrices = ControlsFactory::CreateButton(Rect(
                                                                            0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                                                      L"Bake Matrices");
+                                                                      LocalizedString(L"scenegraph.bakemetrics"));
 
     
     
@@ -196,7 +196,7 @@ void EditorBodyControl::CreateLeftPanel()
     leftPanelDataGraph->AddControl(dataGraphTree);
     UIButton * refreshDataGraphButton = ControlsFactory::CreateButton(Rect(
                                                                       0, dataGraphRect.dy, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                                                 L"Refresh");
+                                                                 LocalizedString(L"panel.refresh"));
     refreshDataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshDataGraph));
     leftPanelDataGraph->AddControl(refreshDataGraphButton);
     SafeRelease(refreshDataGraphButton);
@@ -417,7 +417,7 @@ void EditorBodyControl::CreatePropertyPanel()
     refreshButton = ControlsFactory::CreateButton(Rect(
                                             0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT, 
                                             propertyPanelRect.dx, ControlsFactory::BUTTON_HEIGHT), 
-                                            L"Refresh");
+                                            LocalizedString(L"panel.refresh"));
     refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshPressed));
     
     rightPanel->AddControl(refreshButton);

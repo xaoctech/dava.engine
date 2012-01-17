@@ -29,12 +29,12 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     int32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
     int32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2) / 2;
     
-    UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), L"Cancel");
+    UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.cancel"));
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnCancel));
     AddControl(btnCancel);
     
     buttonX += ControlsFactory::BUTTON_WIDTH;
-    UIButton *btnOk = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), L"Ok");
+    UIButton *btnOk = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.ok"));
     btnOk->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnOk));
     AddControl(btnOk);
     
@@ -102,14 +102,14 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
     switch (nodeID) 
     {
         case ECNID_LANDSCAPE:
-            SetHeader(L"Create landscape node");
+            SetHeader(LocalizedString(L"createnode.landscape"));
             sceneNode = new LandscapeNode(scene);
             sceneNode->SetName("Landscape");
             break;
 
         case ECNID_LIGHT:
         {
-            SetHeader(L"Create light node");
+            SetHeader(LocalizedString(L"createnode.light"));
             
             sceneNode = EditorLightNode::CreateSceneAndEditorLight(scene);
             sceneNode->SetName("Light");
@@ -117,25 +117,25 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
         }
 
         case ECNID_SERVICENODE:
-            SetHeader(L"Create service node");
+            SetHeader(LocalizedString(L"createnode.servicenode"));
             sceneNode = new SceneNode(scene);
             sceneNode->SetName("Servicenode");
             break;
 
         case ECNID_BOX:
-            SetHeader(L"Create box node");
+            SetHeader(LocalizedString(L"createnode.box"));
             sceneNode = new CubeNode(scene);
             sceneNode->SetName("Cube");
             break;
 
         case ECNID_SPHERE:
-            SetHeader(L"Create sphere node");
+            SetHeader(LocalizedString(L"createnode.sphere"));
             sceneNode = new SphereNode(scene);
             sceneNode->SetName("Sphere");
             break;
 
         case ECNID_CAMERA:
-            SetHeader(L"Create camera");
+            SetHeader(LocalizedString(L"createnode.camera"));
             sceneNode = new Camera(scene);
             sceneNode->SetName("Camera");
             break;
