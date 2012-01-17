@@ -40,22 +40,22 @@ void LandscapeEditorControl::CreateLeftPanel()
     propertyList->AddIntProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetIntPropertyValue("Size", 1024);
     
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", "", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", "", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", "");
-//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "", ".png", true, PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", "");
-//    propertyList->AddFilepathProperty("LightMap", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+//    propertyList->AddFilepathProperty("LightMap", ".png", true, PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->SetFilepathPropertyValue("LightMap", "");
 
     String projectPath = "/Users/klesch/Work/WoT/TestResEditor/Data/Landscape/Test/";
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath + "tex0.png");
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath + "tex1.png");
 
-    propertyList->AddFilepathProperty("LightMap", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("LightMap", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("LightMap", projectPath + "lightmap_w.png");
-    propertyList->AddFilepathProperty("A8", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("A8", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("A8", projectPath + "a8_w.png");
 
     propertyList->AddBoolProperty("Show Result", PropertyList::PROPERTY_IS_EDITABLE);
