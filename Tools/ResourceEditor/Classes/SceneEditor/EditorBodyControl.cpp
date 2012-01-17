@@ -694,7 +694,13 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     
                     break;
                 }
-
+					
+				case DVKEY_BACKSPACE:
+                {
+					OnRemoveNodeButtonPressed(0,0,0);
+                    break;
+                }
+					
                 case DVKEY_1:
                     cameraController->SetSpeed(600);
                     break;
@@ -1043,7 +1049,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
 	SceneNode * selection = scene->GetProxy();
-	if (selection)
+	if (selection && isModeModification)
 	{
 		const Rect & rect = scene3dView->GetLastViewportRect();
 		Camera * cam = scene->GetCurrentCamera(); 
@@ -1095,6 +1101,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 void EditorBodyControl::Update(float32 timeElapsed)
 {
 	SceneNode * selection = scene->GetProxy();
+	modificationPopUp->SetSelection(selection);
 	if (isModeModification && selection && modificationPanel->GetParent() == 0)
 	{
 		AddControl(modificationPanel);
