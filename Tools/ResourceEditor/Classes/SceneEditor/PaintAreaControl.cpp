@@ -353,7 +353,8 @@ void PaintAreaControl::DrawCursor()
 void PaintAreaControl::DrawLightmap()
 {
     RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
-    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
+//    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
+    RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
 
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);

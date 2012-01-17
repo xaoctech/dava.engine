@@ -1,5 +1,5 @@
 #include "LandscapePropertyControl.h"
-
+#include "EditorSettings.h"
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -28,11 +28,11 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     propertyList->AddComboProperty("renderingMode", renderingModes);
     
-    propertyList->AddFilepathProperty("HeightMap", ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_BUMP", ".png", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("HeightMap", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_BUMP", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
     
     
     Vector3 size(445.0f, 445.0f, 50.f);
@@ -125,28 +125,28 @@ void LandscapePropertyControl::WriteTo(SceneNode * sceneNode)
     String textureBump = propertyList->GetFilepathPropertyValue("TEXTURE_BUMP");
     String textureUnmask = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTUREMASK");
     
-    if(IsValidPath(heightMap))
+    if(EditorSettings::IsValidPath(heightMap))
     {
         landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
     }
     
     Texture::EnableMipmapGeneration();
-    if(IsValidPath(texture0))
+    if(EditorSettings::IsValidPath(texture0))
     {
         landscape->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, texture0);
     }
     
-    if(IsValidPath(texture1))
+    if(EditorSettings::IsValidPath(texture1))
     {
         landscape->SetTexture(LandscapeNode::TEXTURE_DETAIL, texture1);
     }
     
-    if(IsValidPath(textureBump))
+    if(EditorSettings::IsValidPath(textureBump))
     {
         landscape->SetTexture(LandscapeNode::TEXTURE_BUMP, textureBump);
     }
     
-    if(IsValidPath(textureUnmask))
+    if(EditorSettings::IsValidPath(textureUnmask))
     {
         landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, textureUnmask);
     }
@@ -172,7 +172,7 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
         int32 renderingMode = propertyList->GetComboPropertyIndex("renderingMode");
         
         String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
-        if(IsValidPath(heightMap))
+        if(EditorSettings::IsValidPath(heightMap))
         {
             landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
         }
@@ -182,7 +182,7 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 
 void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
-    if(IsValidPath(newValue))
+    if(EditorSettings::IsValidPath(newValue))
     {
         LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
         if("HeightMap" == forKey)
@@ -246,7 +246,7 @@ void LandscapePropertyControl::OnComboIndexChanged(
         int32 renderingMode = propertyList->GetComboPropertyIndex("renderingMode");
         
         String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
-        if(IsValidPath(heightMap))
+        if(EditorSettings::IsValidPath(heightMap))
         {
             landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
         }

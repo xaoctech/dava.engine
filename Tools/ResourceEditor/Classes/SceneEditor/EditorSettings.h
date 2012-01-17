@@ -18,6 +18,8 @@ public:
 //    String GetProjectPath();
     String GetDataSourcePath();
     
+    static bool IsValidPath(const String &path);
+
 protected:
 
     KeyedArchive *settings;

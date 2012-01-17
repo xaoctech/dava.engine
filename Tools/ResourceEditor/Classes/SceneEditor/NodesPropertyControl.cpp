@@ -217,12 +217,6 @@ void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
     }
 }
 
-bool NodesPropertyControl::IsValidPath(const String &path)
-{
-    size_t pos = path.find(".png");
-    return (String::npos != pos);
-}
-
 void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 {
     nodesDelegate = delegate;
