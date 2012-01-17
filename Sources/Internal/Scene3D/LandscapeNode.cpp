@@ -408,12 +408,12 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     Texture * texture = Texture::CreateFromFile(textureName);
-    if (!texture)return;
-
-    textureNames[level] = textureName;
-    texture->GenerateMipmaps();
-    texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
+    if (texture)
+    {
+        textureNames[level] = textureName;
+        texture->GenerateMipmaps();
+        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+    }
     SafeRelease(textures[level]);
     textures[level] = texture;
 }
