@@ -203,6 +203,26 @@ void SceneNode::RestoreOriginalTransforms()
 	for (uint32 c = 0; c < size; ++c)
 		children[c]->RestoreOriginalTransforms();
 }
+    
+void SceneNode::BakeTransforms()
+{
+    uint32 size = (uint32)children.size();
+    if (size > 0) // propagate matrices
+    {
+        for (uint32 c = 0; c < size; ++c)
+        {
+            children[c]->SetLocalTransform(children[c]->GetLocalTransform() * localTransform);
+            children[c]->SetDefaultLocalTransform(children[c]->GetDefaultLocalTransform() * defaultLocalTransform);
+        }
+        SetLocalTransform(Matrix4::IDENTITY);
+        //worldTransform = Matrix4
+        Update(0.0f);
+        for (uint32 c = 0; c < size; ++c)
+        {
+            children[c]->BakeTransforms();
+        }
+    }
+}
 	
 void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 {

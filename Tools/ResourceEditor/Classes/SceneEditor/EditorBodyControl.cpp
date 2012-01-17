@@ -131,7 +131,7 @@ void EditorBodyControl::CreateLeftPanel()
     AddControl(leftPanelSceneGraph);
     
     Rect sceneGraphRect = leftRect;
-    sceneGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 4);
+    sceneGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 5);
     sceneGraphTree = new UIHierarchy(sceneGraphRect);
     ControlsFactory::CusomizeListControl(sceneGraphTree);
     ControlsFactory::SetScrollbar(sceneGraphTree);
@@ -157,21 +157,30 @@ void EditorBodyControl::CreateLeftPanel()
     UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
                                                                            0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
                                                                       L"Debug Flags");
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * bakeMatrices = ControlsFactory::CreateButton(Rect(
+                                                                           0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+                                                                      L"Bake Matrices");
+
+    
     
     refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshSceneGraph));
     lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
     removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
     enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
+    bakeMatrices->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnBakeMatricesPressed));
     
     leftPanelSceneGraph->AddControl(refreshSceneGraphButton);
     leftPanelSceneGraph->AddControl(lookAtButton);
     leftPanelSceneGraph->AddControl(removeNodeButton);
     leftPanelSceneGraph->AddControl(enableDebugFlagsButton);
+    leftPanelSceneGraph->AddControl(bakeMatrices);
     
     SafeRelease(refreshSceneGraphButton);
     SafeRelease(lookAtButton);
     SafeRelease(removeNodeButton);
     SafeRelease(enableDebugFlagsButton);
+    SafeRelease(bakeMatrices);
     
     
     
@@ -1140,7 +1149,13 @@ void EditorBodyControl::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
         scene->GetCurrentCamera()->SetTarget(center);
     }
 }
-
+void EditorBodyControl::OnBakeMatricesPressed(BaseObject * obj, void *, void *)
+{
+    if (selectedSceneGraphNode)
+    {
+        selectedSceneGraphNode->BakeTransforms();
+    }
+}
 void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *)
 {
     if (selectedSceneGraphNode)
