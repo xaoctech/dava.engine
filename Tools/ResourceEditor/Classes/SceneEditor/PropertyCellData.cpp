@@ -167,4 +167,16 @@ void PropertyCellData::SetMessage(const Message &newMessage)
     messageValue = newMessage;
 }
 
+bool PropertyCellData::GetClearDataEnabled()
+{
+    DVASSERT(valueType == PROP_VALUE_STRING);
+    return boolValue;
+}
+
+void PropertyCellData::SetClearDataEnabled(bool enabled)
+{
+    DVASSERT(valueType == PROP_VALUE_STRING);
+    boolValue = enabled;
+}
+
 
