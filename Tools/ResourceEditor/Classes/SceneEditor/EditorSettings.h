@@ -20,6 +20,9 @@ public:
     
     static bool IsValidPath(const String &path);
 
+    float32 GetCameraSpeed();
+    void SetCameraSpeedIndex(int32 camSpeedIndex);//0 - 4
+
 protected:
 
     KeyedArchive *settings;

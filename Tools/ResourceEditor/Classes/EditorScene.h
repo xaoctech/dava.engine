@@ -46,6 +46,7 @@ public:
 	virtual void Draw();
 	void DrawGrid();
 	void SetBulletUpdate(SceneNode* curr, bool value);
+	void ReleaseUserData(SceneNode * curr);
 
 protected:
 

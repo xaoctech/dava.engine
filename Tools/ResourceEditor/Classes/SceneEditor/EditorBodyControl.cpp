@@ -216,7 +216,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
 {
     scene = new EditorScene();
     // Camera setup
-    cameraController = new WASDCameraController(40);
+    cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
     
     if(withCameras)
     {
@@ -713,19 +713,23 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 }
 					
                 case DVKEY_1:
-                    cameraController->SetSpeed(60);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(0);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
 
                 case DVKEY_2:
-                    cameraController->SetSpeed(120);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(1);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
                 
                 case DVKEY_3:
-                    cameraController->SetSpeed(240);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(2);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
 
                 case DVKEY_4:
-                    cameraController->SetSpeed(480);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(3);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
                     
                 case DVKEY_9:
@@ -1163,6 +1167,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
         SceneNode * parentNode = selectedSceneGraphNode->GetParent();
         if (parentNode)
         {
+			scene->ReleaseUserData(selectedSceneGraphNode);
 			scene->SetSelection(0);
             parentNode->RemoveNode(selectedSceneGraphNode);
             
@@ -1265,7 +1270,8 @@ void EditorBodyControl::WillAppear()
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = NULL;
-    
+
+    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
     sceneGraphTree->Refresh();
     RefreshDataGraph();
 }

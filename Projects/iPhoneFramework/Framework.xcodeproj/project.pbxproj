@@ -23,14 +23,16 @@
 		4780A9F614BF413A00BAA259 /* LightNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A9E814BF413A00BAA259 /* LightNode.h */; };
 		4780A9F714BF413A00BAA259 /* ProxyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780A9E914BF413A00BAA259 /* ProxyNode.cpp */; };
 		4780A9F814BF413A00BAA259 /* ProxyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A9EA14BF413A00BAA259 /* ProxyNode.h */; };
-		4780A9F914BF413A00BAA259 /* SceneFile2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780A9EB14BF413A00BAA259 /* SceneFile2.cpp */; };
-		4780A9FA14BF413A00BAA259 /* SceneFile2.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A9EC14BF413A00BAA259 /* SceneFile2.h */; };
 		4780A9FB14BF413A00BAA259 /* SphereNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780A9ED14BF413A00BAA259 /* SphereNode.cpp */; };
 		4780A9FC14BF413A00BAA259 /* SphereNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A9EE14BF413A00BAA259 /* SphereNode.h */; };
 		4780AA0414BF423C00BAA259 /* InputSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AA0014BF423C00BAA259 /* InputSystem.cpp */; };
 		4780AA0514BF423C00BAA259 /* InputSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AA0114BF423C00BAA259 /* InputSystem.h */; };
 		4780AA0614BF423C00BAA259 /* KeyboardDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AA0214BF423C00BAA259 /* KeyboardDevice.cpp */; };
 		4780AA0714BF423C00BAA259 /* KeyboardDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AA0314BF423C00BAA259 /* KeyboardDevice.h */; };
+		4780AFCD14C499E600BAA259 /* SceneFileV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AFC914C499E600BAA259 /* SceneFileV2.cpp */; };
+		4780AFCE14C499E600BAA259 /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCA14C499E600BAA259 /* SceneFileV2.h */; };
+		4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AFCB14C499E600BAA259 /* SceneManager.cpp */; };
+		4780AFD014C499E600BAA259 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCC14C499E600BAA259 /* SceneManager.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
@@ -474,14 +476,16 @@
 		4780A9E814BF413A00BAA259 /* LightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightNode.h; sourceTree = "<group>"; };
 		4780A9E914BF413A00BAA259 /* ProxyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProxyNode.cpp; sourceTree = "<group>"; };
 		4780A9EA14BF413A00BAA259 /* ProxyNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyNode.h; sourceTree = "<group>"; };
-		4780A9EB14BF413A00BAA259 /* SceneFile2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFile2.cpp; sourceTree = "<group>"; };
-		4780A9EC14BF413A00BAA259 /* SceneFile2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFile2.h; sourceTree = "<group>"; };
 		4780A9ED14BF413A00BAA259 /* SphereNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SphereNode.cpp; sourceTree = "<group>"; };
 		4780A9EE14BF413A00BAA259 /* SphereNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphereNode.h; sourceTree = "<group>"; };
 		4780AA0014BF423C00BAA259 /* InputSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InputSystem.cpp; sourceTree = "<group>"; };
 		4780AA0114BF423C00BAA259 /* InputSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputSystem.h; sourceTree = "<group>"; };
 		4780AA0214BF423C00BAA259 /* KeyboardDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardDevice.cpp; sourceTree = "<group>"; };
 		4780AA0314BF423C00BAA259 /* KeyboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardDevice.h; sourceTree = "<group>"; };
+		4780AFC914C499E600BAA259 /* SceneFileV2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFileV2.cpp; sourceTree = "<group>"; };
+		4780AFCA14C499E600BAA259 /* SceneFileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileV2.h; sourceTree = "<group>"; };
+		4780AFCB14C499E600BAA259 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
+		4780AFCC14C499E600BAA259 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
@@ -1404,6 +1408,10 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				4780AFC914C499E600BAA259 /* SceneFileV2.cpp */,
+				4780AFCA14C499E600BAA259 /* SceneFileV2.h */,
+				4780AFCB14C499E600BAA259 /* SceneManager.cpp */,
+				4780AFCC14C499E600BAA259 /* SceneManager.h */,
 				4780A9E114BF413A00BAA259 /* BillboardNode.cpp */,
 				4780A9E214BF413A00BAA259 /* BillboardNode.h */,
 				4780A9E314BF413A00BAA259 /* CubeNode.cpp */,
@@ -1414,8 +1422,6 @@
 				4780A9E814BF413A00BAA259 /* LightNode.h */,
 				4780A9E914BF413A00BAA259 /* ProxyNode.cpp */,
 				4780A9EA14BF413A00BAA259 /* ProxyNode.h */,
-				4780A9EB14BF413A00BAA259 /* SceneFile2.cpp */,
-				4780A9EC14BF413A00BAA259 /* SceneFile2.h */,
 				4780A9ED14BF413A00BAA259 /* SphereNode.cpp */,
 				4780A9EE14BF413A00BAA259 /* SphereNode.h */,
 				FECFB41912E5904400C71562 /* BoneNode.cpp */,
@@ -1809,10 +1815,11 @@
 				4780A9F414BF413A00BAA259 /* DataNode.h in Headers */,
 				4780A9F614BF413A00BAA259 /* LightNode.h in Headers */,
 				4780A9F814BF413A00BAA259 /* ProxyNode.h in Headers */,
-				4780A9FA14BF413A00BAA259 /* SceneFile2.h in Headers */,
 				4780A9FC14BF413A00BAA259 /* SphereNode.h in Headers */,
 				4780AA0514BF423C00BAA259 /* InputSystem.h in Headers */,
 				4780AA0714BF423C00BAA259 /* KeyboardDevice.h in Headers */,
+				4780AFCE14C499E600BAA259 /* SceneFileV2.h in Headers */,
+				4780AFD014C499E600BAA259 /* SceneManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2085,10 +2092,11 @@
 				4780A9F314BF413A00BAA259 /* DataNode.cpp in Sources */,
 				4780A9F514BF413A00BAA259 /* LightNode.cpp in Sources */,
 				4780A9F714BF413A00BAA259 /* ProxyNode.cpp in Sources */,
-				4780A9F914BF413A00BAA259 /* SceneFile2.cpp in Sources */,
 				4780A9FB14BF413A00BAA259 /* SphereNode.cpp in Sources */,
 				4780AA0414BF423C00BAA259 /* InputSystem.cpp in Sources */,
 				4780AA0614BF423C00BAA259 /* KeyboardDevice.cpp in Sources */,
+				4780AFCD14C499E600BAA259 /* SceneFileV2.cpp in Sources */,
+				4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
