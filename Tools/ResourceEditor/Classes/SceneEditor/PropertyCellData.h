@@ -47,6 +47,7 @@ public:
     int32 GetIsSectionOpened(); 
     int32 GetSectionElementsCount();
     const Message & GetMessage();
+    bool GetClearDataEnabled();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
@@ -59,6 +60,7 @@ public:
     void SetIsSectionOpened(bool isSectionOpened);
     void SetSectionElementsCount(int32 sectionElementsCount);
     void SetMessage(const Message &newMessage);
+    void SetClearDataEnabled(bool enabled);
     
     int32 cellType;
     String key;

@@ -65,7 +65,7 @@ void UIList::InitAfterYaml()
 	oldPos = 0;
 	newPos = 0;
 	
-	mainTouch = 0;
+	mainTouch = -1;
 	
 	touchHoldSize = 15;
 
@@ -339,7 +339,9 @@ void UIList::Update(float32 timeElapsed)
                 off = (int32)scrollContainer->GetRect().y;
                 rPos = (int32)(fc->GetRect().y + fc->GetRect().dy + off);
             }
-            while(rPos < borderPos && fc->GetIndex() < delegate->ElementsCount(this) - 1)
+
+			int32 elementsCount = delegate->ElementsCount(this);
+            while(rPos < borderPos && fc->GetIndex() < elementsCount - 1)
             {
                 int32 i = fc->GetIndex() + 1;
                 fc = delegate->CellAtIndex(this, i);
@@ -450,7 +452,7 @@ void UIList::Input(UIEvent *currentInput)
 		case UIEvent::PHASE_ENDED:
 		{
 			lockTouch = FALSE;
-			mainTouch = 0;
+			mainTouch = -1;
 		}
 			break;
 	}
@@ -496,7 +498,7 @@ bool UIList::SystemInput(UIEvent *currentInput)
 		}
 		else if(currentInput->tid == mainTouch && currentInput->phase == UIEvent::PHASE_ENDED)
 		{
-			mainTouch = 0;
+			mainTouch = -1;
 			lockTouch = false;
 		}
 

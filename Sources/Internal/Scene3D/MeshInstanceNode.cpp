@@ -453,9 +453,13 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
             int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
             if ((materialIndex != -1) && (meshIndex != -1) && (pgIndex != -1))
             {
-                AddPolygonGroup(SafeRetain(dynamic_cast<StaticMesh*>(scene->GetStaticMeshes()->GetChild(meshIndex))), 
+                Material * material = sceneFile->GetMaterial(materialIndex);
+                StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
+                
+                
+                AddPolygonGroup(SafeRetain(mesh), 
                                 pgIndex,
-                                SafeRetain(dynamic_cast<Material*>(scene->GetMaterials()->GetChild(materialIndex))));
+                                SafeRetain(material));
             }
         }
         lodIdx++;

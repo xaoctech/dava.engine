@@ -52,7 +52,7 @@ public:
     void AddStringProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddIntProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddFloatProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
-    void AddFilepathProperty(const String &propertyName, const String &extensionFilter = ".*", editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddFilepathProperty(const String &propertyName, const String &extensionFilter = ".*", bool clearDataEnabled = true, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddBoolProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddComboProperty(const String &propertyName, const Vector<String> &strings, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);

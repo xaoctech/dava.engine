@@ -57,11 +57,12 @@ void PropertyList::AddFloatProperty(const String &propertyName, editableType pro
 }
 
 
-void PropertyList::AddFilepathProperty(const String &propertyName, const String &extensionFilter, editableType propEditType)
+void PropertyList::AddFilepathProperty(const String &propertyName, const String &extensionFilter, bool clearDataEnabled, editableType propEditType)
 {
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_STRING);
     p->cellType = PropertyCell::PROP_CELL_FILEPATH;
     p->SetString("");
+    p->SetClearDataEnabled(clearDataEnabled);
     p->SetExtensionFilter(extensionFilter);
     AddProperty(p, propertyName, propEditType);
 }

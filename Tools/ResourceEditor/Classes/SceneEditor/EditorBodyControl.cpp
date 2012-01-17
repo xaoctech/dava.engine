@@ -6,7 +6,7 @@
 #include "../SceneNodeUserData.h"
 #include "PropertyControlCreator.h"
 #include "EditorSettings.h"
-#include "config.h"
+#include "../config.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
