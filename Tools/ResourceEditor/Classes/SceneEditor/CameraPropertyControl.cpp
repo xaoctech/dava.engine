@@ -18,62 +18,68 @@ void CameraPropertyControl::ReadFrom(SceneNode * sceneNode)
     Camera *camera = dynamic_cast<Camera*> (sceneNode);
 	DVASSERT(camera);
 
-    propertyList->AddSection("Camera", GetHeaderState("Camera", true));
+    propertyList->AddSection("property.camera.camera", GetHeaderState("property.camera.camera", true));
         
-    propertyList->AddFloatProperty("Fov", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("zNear", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("zFar", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddBoolProperty("isOrtho", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.fov", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.znear", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.zfar", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddBoolProperty("property.camera.isortho", PropertyList::PROPERTY_IS_EDITABLE);
     
-    propertyList->AddFloatProperty("position.x", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("position.y", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("position.z", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.position.x", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.position.y", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.position.z", PropertyList::PROPERTY_IS_EDITABLE);
     
-    propertyList->AddFloatProperty("target.x", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("target.y", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("target.z", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.target.x", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.target.y", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.camera.target.z", PropertyList::PROPERTY_IS_EDITABLE);
     
-    propertyList->SetFloatPropertyValue("Fov", camera->GetFOV());
-    propertyList->SetFloatPropertyValue("zNear", camera->GetZNear());
-    propertyList->SetFloatPropertyValue("zFar", camera->GetZFar());
-    propertyList->SetBoolPropertyValue("isOrtho", camera->GetIsOrtho());
+    propertyList->SetFloatPropertyValue("property.camera.fov", camera->GetFOV());
+    propertyList->SetFloatPropertyValue("property.camera.znear", camera->GetZNear());
+    propertyList->SetFloatPropertyValue("property.camera.zfar", camera->GetZFar());
+    propertyList->SetBoolPropertyValue("property.camera.isortho", camera->GetIsOrtho());
     
     Vector3 pos = camera->GetPosition();
-    propertyList->SetFloatPropertyValue("position.x", pos.x);
-    propertyList->SetFloatPropertyValue("position.y", pos.y);
-    propertyList->SetFloatPropertyValue("position.z", pos.z);
+    propertyList->SetFloatPropertyValue("property.camera.position.x", pos.x);
+    propertyList->SetFloatPropertyValue("property.camera.position.y", pos.y);
+    propertyList->SetFloatPropertyValue("property.camera.position.z", pos.z);
     
     Vector3 target = camera->GetTarget();
-    propertyList->SetFloatPropertyValue("target.x", target.x);
-    propertyList->SetFloatPropertyValue("target.y", target.y);
-    propertyList->SetFloatPropertyValue("target.z", target.z);
+    propertyList->SetFloatPropertyValue("property.camera.target.x", target.x);
+    propertyList->SetFloatPropertyValue("property.camera.target.y", target.y);
+    propertyList->SetFloatPropertyValue("property.camera.target.z", target.z);
 }
 
 void CameraPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
     Camera *camera = dynamic_cast<Camera *> (currentNode);
-    if("Fov" == forKey || "zNear" == forKey || "zFar" == forKey)
+    if(     "property.camera.fov" == forKey 
+       ||   "property.camera.znear" == forKey 
+       ||   "property.camera.zfar" == forKey)
     {
         camera->Setup(
-                      propertyList->GetFloatPropertyValue("Fov"),
+                      propertyList->GetFloatPropertyValue("property.camera.fov"),
                       320.0f / 480.0f,
-                      propertyList->GetFloatPropertyValue("zNear"),
-                      propertyList->GetFloatPropertyValue("zFar"),
-                      propertyList->GetBoolPropertyValue("isOrtho"));
+                      propertyList->GetFloatPropertyValue("property.camera.znear"),
+                      propertyList->GetFloatPropertyValue("property.camera.zfar"),
+                      propertyList->GetBoolPropertyValue("property.camera.isortho"));
     }
-    else if("position.x" == forKey || "position.y" == forKey || "position.z" == forKey)
+    else if(    "property.camera.position.x" == forKey 
+            ||  "property.camera.position.y" == forKey 
+            ||  "property.camera.position.z" == forKey)
     {
         camera->SetPosition(Vector3(
-                                    propertyList->GetFloatPropertyValue("position.x"),
-                                    propertyList->GetFloatPropertyValue("position.y"),
-                                    propertyList->GetFloatPropertyValue("position.z")));
+                                    propertyList->GetFloatPropertyValue("property.camera.position.x"),
+                                    propertyList->GetFloatPropertyValue("property.camera.position.y"),
+                                    propertyList->GetFloatPropertyValue("property.camera.position.z")));
     }
-    else if("target.x" == forKey || "target.y" == forKey || "target.z" == forKey)
+    else if(    "property.camera.target.x" == forKey 
+            ||  "property.camera.target.y" == forKey 
+            ||  "property.camera.target.z" == forKey)
     {
         camera->SetTarget(Vector3(
-                                  propertyList->GetFloatPropertyValue("target.x"),
-                                  propertyList->GetFloatPropertyValue("target.y"),
-                                  propertyList->GetFloatPropertyValue("target.z")));
+                                  propertyList->GetFloatPropertyValue("property.camera.target.x"),
+                                  propertyList->GetFloatPropertyValue("property.camera.target.y"),
+                                  propertyList->GetFloatPropertyValue("property.camera.target.z")));
     }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
@@ -81,15 +87,15 @@ void CameraPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const 
 
 void CameraPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("isOrtho" == forKey)
+    if("property.camera.isortho" == forKey)
     {
         Camera *camera = dynamic_cast<Camera *> (currentNode);
         camera->Setup(
-                      propertyList->GetFloatPropertyValue("Fov"),
+                      propertyList->GetFloatPropertyValue("property.camera.fov"),
                       320.0f / 480.0f,
-                      propertyList->GetFloatPropertyValue("zNear"),
-                      propertyList->GetFloatPropertyValue("zFar"),
-                      propertyList->GetBoolPropertyValue("isOrtho"));
+                      propertyList->GetFloatPropertyValue("property.camera.znear"),
+                      propertyList->GetFloatPropertyValue("property.camera.zfar"),
+                      propertyList->GetBoolPropertyValue("property.camera.isortho"));
     }
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);

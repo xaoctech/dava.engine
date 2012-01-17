@@ -64,6 +64,11 @@ createproperty.name: "Name:"
 landscapeeditor.zoom: "Zoom:"
 landscapeeditor.radius: "Radius:"
 landscapeeditor.height: "Height:"
+landscapeeditor.size: "Size:"
+landscapeeditor.texture0: "Texture0:"
+landscapeeditor.texture1: "Texture1/Detail:"
+landscapeeditor.lightmap: "Light Map:"
+landscapeeditor.showresult: "Show Result:"
 
 #Material Editor
 materialeditor.materials: "Materials:"
@@ -71,3 +76,74 @@ materialeditor.materialtype: "Material type:"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
+
+#property list
+#SceneNode Section
+property.scenenode.generalc++: "General C++:"
+property.scenenode.retaincount: "Retain Count:"
+property.scenenode.classname: "Class Name:"
+property.scenenode.c++classname: "C++ Class Name:"
+property.scenenode.scenenode: "Scene Node"
+property.scenenode.name: "Name:"
+property.scenenode.matrixes: "Matrixes"
+property.scenenode.localmatrix: "Local Matrix:"
+property.scenenode.worldmatrix: "World Matrix:"
+property.scenenode.customproperties: "Custom properties"
+
+#LightNode Section
+property.lightnode.light: "Light"
+property.lightnode.type: "Type:"
+property.lightnode.r: "r:"
+property.lightnode.g: "g:"
+property.lightnode.b: "b:"
+property.lightnode.staticlight: "Static light"
+
+#CubeNode Section
+property.cubenode.cube: "Cube"
+property.cubenode.length: "Length:"
+property.cubenode.width: "Width:"
+property.cubenode.depth: "Depth:"
+property.cubenode.r: "r:"
+property.cubenode.g: "g:"
+property.cubenode.b: "b:"
+property.cubenode.a: "a:"
+
+#Mesh Instance Section
+property.meshinstance.meshinstance: "Mesh Instance"
+property.meshinstance.bboxmin: "BBox.min:"
+property.meshinstance.bboxmax: "BBox.max:"
+property.meshinstance.editmaterial: "Edit Material"
+
+#SphereNode Section
+property.spherenode.sphere: "Sphere"
+property.spherenode.radius: "Radius:"
+property.spherenode.r: "r:"
+property.spherenode.g: "g:"
+property.spherenode.b: "b:"
+property.spherenode.a: "a:"
+
+#Camera Section
+property.camera.camera: "Camera"
+property.camera.fov: "Fov:"
+property.camera.znear: "zNear:"
+property.camera.zfar: "zFar:"
+property.camera.isortho: "isOrtho:"
+property.camera.position.x: "position.x:"
+property.camera.position.y: "position.y:"
+property.camera.position.z: "position.z:"
+property.camera.target.x: "target.x:"
+property.camera.target.y: "target.y:"
+property.camera.target.z: "target.z:"
+
+#Landscape Section
+property.landscape.landscape: "Landscape"
+property.landscape.size: "Size:"
+property.landscape.height: "Height:"
+property.landscape.renderingmode: "Rendering Mode:"
+property.landscape.lightmap: "Light Map:"
+property.landscape.alphamask: "Alpha Mask:"
+property.landscape.heightmap: "Height Map:"
+property.landscape.texture0: "Texture0:"
+property.landscape.texture1: "Texture1/Detail:"
+property.landscape.texturebump: "Texture Bump:"
+property.landscape.texturemask: "Texture Mask:"
