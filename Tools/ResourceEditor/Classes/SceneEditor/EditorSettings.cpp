@@ -29,6 +29,13 @@ String EditorSettings::GetDataSourcePath()
     return settings->GetString("3dDataSourcePath", "/");
 }
 
+bool EditorSettings::IsValidPath(const String &path)
+{
+    size_t posPng = path.find(".png");
+    size_t posPvr = path.find(".pvr");
+    return ((String::npos != posPng) || (String::npos != posPvr));
+}
+
 //String EditorSettings::GetProjectPath()
 //{
 //    String projectPath = settings->GetString("ProjectPath", "/");

@@ -63,13 +63,6 @@ protected:
     bool GetHeaderState(const String & headerName, bool defaultValue = true);
     void SetHeaderState(const String & headerName, bool newState);
     
-    bool IsValidPath(const String &path);
-
-    Vector<String> types;
-    Vector<String> renderingModes;
-    Vector<Material*> materials;
-    Vector<String> materialNames;
-
     
     NodesPropertyDelegate *nodesDelegate;
     PropertyList *propertyList;
@@ -85,7 +78,6 @@ protected:
     CreatePropertyControl *propControl;
     SceneNode *currentNode;
     
-    String GetCustomPropertyName(const String &keyName);
     Scene *workingScene;
 
     
@@ -93,9 +85,6 @@ protected:
     UIControl *listHolder;
     UIButton *btnCancel;
     void OnCancel(BaseObject * object, void * userData, void * callerData);
-    
-    
-    void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
 };
 
 

@@ -13,6 +13,14 @@ public:
 
 	virtual void ReadFrom(SceneNode * sceneNode);
 	virtual void WriteTo(SceneNode * sceneNode);
+    
+    virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
+    virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
+    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+    
+protected:
+    Vector<String> types;
+
 };
 
 #endif //__LIGHT_PROPERTY_CONTROL_H__

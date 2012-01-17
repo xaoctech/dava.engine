@@ -92,3 +92,53 @@ void LightPropertyControl::WriteTo(SceneNode * sceneNode)
 		light->GetCustomProperties()->SetInt32("editor.shadowsamples", shadowSamples);
 	}
 }
+
+void LightPropertyControl::OnComboIndexChanged(
+                                    PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
+{
+    if("Type" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->SetType((LightNode::eType)newItemIndex);
+    }
+
+    NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
+}
+
+void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+{
+    if("Enable" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->GetCustomProperties()->SetBool("editor.staticlight.enable", newValue);
+    }
+    else if("Cast shadows" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->GetCustomProperties()->SetBool("editor.staticlight.castshadows", newValue);
+    }
+
+    NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
+}
+
+void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
+{
+    if("r" == forKey || "g" == forKey || "b" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        Color color(
+                    propertyList->GetFloatPropertyValue("r"),
+                    propertyList->GetFloatPropertyValue("g"),
+                    propertyList->GetFloatPropertyValue("b"),
+                    1.f);
+        light->SetColor(color);
+    }
+    else if("Intensity" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->GetCustomProperties()->SetFloat("editor.intensity", newValue);
+    }
+
+    NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
+}
+

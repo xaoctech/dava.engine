@@ -326,7 +326,7 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     dialog->SetDelegate(this);
     dialog->SetTitle(keyName->GetText());
     dialog->SetExtensionFilter(property->GetExtensionFilter());
-    if(property->GetString().length() >= 0)
+    if(property->GetString().length() > 0)
     {
         dialog->SetCurrentDir(property->GetString());
     }

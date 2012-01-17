@@ -75,23 +75,23 @@ MaterialEditor::MaterialEditor()
         materialProps[i] = new PropertyList(Rect(size.x * materialListPart, size.y * previewHeightPart + 25, size.x - size.x * materialListPart, size.y - size.y * previewHeightPart - 25), this);
         materialProps[i]->AddStringProperty("Name");
 
-        materialProps[i]->AddFilepathProperty(textureNames[ME_DIFFUSE], ".png");
+        materialProps[i]->AddFilepathProperty(textureNames[ME_DIFFUSE], ".png;.pvr");
         if (i == Material::MATERIAL_UNLIT_TEXTURE_DECAL
             || i == Material::MATERIAL_VERTEX_LIT_DECAL)
         {
-            materialProps[i]->AddFilepathProperty(textureNames[ME_DECAL], ".png");
+            materialProps[i]->AddFilepathProperty(textureNames[ME_DECAL], ".png;.pvr");
         }
 
         if (i == Material::MATERIAL_UNLIT_TEXTURE_DETAIL
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL)
         {
-            materialProps[i]->AddFilepathProperty(textureNames[ME_DETAIL], ".png");
+            materialProps[i]->AddFilepathProperty(textureNames[ME_DETAIL], ".png;.pvr");
         }
 
         if (i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
             || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
         {
-            materialProps[i]->AddFilepathProperty(textureNames[ME_NORMAL_MAP], ".png");
+            materialProps[i]->AddFilepathProperty(textureNames[ME_NORMAL_MAP], ".png;.pvr");
         }
         
         materialProps[i]->AddBoolProperty("Is Opaque");
@@ -315,7 +315,7 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
             }
             else 
             {
-                materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], " ");
+                materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], "");
             }
 
             break;
@@ -356,7 +356,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
             }
             else 
             {
-                currentList->SetFilepathPropertyValue(textureNames[i], " ");
+                currentList->SetFilepathPropertyValue(textureNames[i], "");
             }
         }
     }
