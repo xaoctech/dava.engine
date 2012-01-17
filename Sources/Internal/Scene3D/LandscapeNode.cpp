@@ -943,7 +943,11 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        archive->SetString(Format("tex_%d", k), sceneFile->AbsoluteToRelative(textureNames[k]));
+        String path = textureNames[k];
+        String relPath  = sceneFile->AbsoluteToRelative(path);
+        Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
+        
+        archive->SetString(Format("tex_%d", k), relPath);
     }
         
 }
@@ -963,7 +967,10 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         String textureName = archive->GetString(Format("tex_%d", k));
-        SetTexture((eTextureLevel)k, sceneFile->RelativeToAbsolute(textureName));
+        String absPath = sceneFile->RelativeToAbsolute(textureName);
+        Logger::Debug("landscape tex load: %s abs:%s", textureName.c_str(), absPath.c_str());
+
+        SetTexture((eTextureLevel)k, absPath);
     }
 }
 
