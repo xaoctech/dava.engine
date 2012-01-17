@@ -107,6 +107,16 @@ void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;
 }
+    
+Material * SceneFileV2::GetMaterial(int32 index)
+{
+    return materials[index];
+}
+    
+StaticMesh * SceneFileV2::GetStaticMesh(int32 index)
+{
+    return staticMeshes[index];
+}
 
 bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
 {
@@ -300,7 +310,6 @@ void SceneFileV2::ProcessLOD(Scene * scene, SceneNode *forRootNode)
     }
 }
 
-    
 bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
@@ -342,6 +351,12 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         node->SetScene(scene);
         //TODO: refactoring here ugly hack need saving options
         Material * material = dynamic_cast<Material*>(node);
+        if (material)
+            materials.push_back(material);
+        StaticMesh * staticMesh = dynamic_cast<StaticMesh*>(node);
+        if (staticMesh)
+            staticMeshes.push_back(staticMesh);
+        
         node->Load(archive, this);
         
         if (node != root)

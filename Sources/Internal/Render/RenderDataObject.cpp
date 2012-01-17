@@ -144,6 +144,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     RENDER_VERIFY(glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW_ARB));
 #else
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
+    Logger::Debug("glGenBuffers: %d", vboBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 #endif

@@ -408,12 +408,12 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     Texture * texture = Texture::CreateFromFile(textureName);
-    if (!texture)return;
-
-    textureNames[level] = textureName;
-    texture->GenerateMipmaps();
-    texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
-
+    if (texture)
+    {
+        textureNames[level] = textureName;
+        texture->GenerateMipmaps();
+        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+    }
     SafeRelease(textures[level]);
     textures[level] = texture;
 }
@@ -938,7 +938,7 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Save(archive, sceneFile);
-    archive->SetString("hmap", heightMapPath);
+    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightMapPath));
     archive->SetInt32("renderingMode", renderingMode);
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -957,6 +957,7 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     SceneNode::Load(archive, sceneFile);
     
     String path = archive->GetString("hmap");
+    path = sceneFile->RelativeToAbsolute(path);
     AABBox3 box;
     archive->GetByteArrayAsType("bbox", box);
     
