@@ -22,21 +22,21 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
 	DVASSERT(light);
 
-    propertyList->AddSection("Light", GetHeaderState("Light", true));
+    propertyList->AddSection("property.lightnode.light", GetHeaderState("property.lightnode.light", true));
         
-    propertyList->AddComboProperty("Type", types);
-	propertyList->SetComboPropertyIndex("Type", light->GetType());
+    propertyList->AddComboProperty("property.lightnode.type", types);
+	propertyList->SetComboPropertyIndex("property.lightnode.type", light->GetType());
 
-    propertyList->AddFloatProperty("r");
-	propertyList->SetFloatPropertyValue("r", light->GetColor().r);
+    propertyList->AddFloatProperty("property.lightnode.r");
+	propertyList->SetFloatPropertyValue("property.lightnode.r", light->GetColor().r);
 
-    propertyList->AddFloatProperty("g");
-	propertyList->SetFloatPropertyValue("g", light->GetColor().g);
+    propertyList->AddFloatProperty("property.lightnode.g");
+	propertyList->SetFloatPropertyValue("property.lightnode.g", light->GetColor().g);
 
-    propertyList->AddFloatProperty("b"); 
-	propertyList->SetFloatPropertyValue("b", light->GetColor().b);
+    propertyList->AddFloatProperty("property.lightnode.b"); 
+	propertyList->SetFloatPropertyValue("property.lightnode.b", light->GetColor().b);
 
-	propertyList->AddSection("Static light", GetHeaderState("Static light", true));
+	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
 	propertyList->AddBoolProperty("Enable");
 	propertyList->SetBoolPropertyValue("Enable", light->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
@@ -60,7 +60,7 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 void LightPropertyControl::OnComboIndexChanged(
                                     PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
-    if("Type" == forKey)
+    if("property.lightnode.type" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         light->SetType((LightNode::eType)newItemIndex);
@@ -93,13 +93,13 @@ void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
 
 void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if("r" == forKey || "g" == forKey || "b" == forKey)
+    if("property.lightnode.r" == forKey || "property.lightnode.g" == forKey || "property.lightnode.b" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         Color color(
-                    propertyList->GetFloatPropertyValue("r"),
-                    propertyList->GetFloatPropertyValue("g"),
-                    propertyList->GetFloatPropertyValue("b"),
+                    propertyList->GetFloatPropertyValue("property.lightnode.r"),
+                    propertyList->GetFloatPropertyValue("property.lightnode.g"),
+                    propertyList->GetFloatPropertyValue("property.lightnode.b"),
                     1.f);
         light->SetColor(color);
     }

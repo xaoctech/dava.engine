@@ -37,8 +37,8 @@ void LandscapeEditorControl::CreateLeftPanel()
     propertyList = new PropertyList(Rect(0, 0, leftRect.dx, leftRect.dy), this);
     leftPanel->AddControl(propertyList);
     
-    propertyList->AddIntProperty("Size", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetIntPropertyValue("Size", 1024);
+    propertyList->AddIntProperty("landscapeeditor.size", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetIntPropertyValue("landscapeeditor.size", 1024);
     
 //    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", "", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
 //    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", "");
@@ -48,18 +48,18 @@ void LandscapeEditorControl::CreateLeftPanel()
 //    propertyList->SetFilepathPropertyValue("LightMap", "");
 
     String projectPath = "/Users/klesch/Work/WoT/TestResEditor/Data/Landscape/Test/";
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE0", projectPath + "tex0.png");
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL", projectPath + "tex1.png");
+    propertyList->AddFilepathProperty("landscapeeditor.texture0", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("landscapeeditor.texture0", projectPath + "tex0.png");
+    propertyList->AddFilepathProperty("landscapeeditor.texture1", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("landscapeeditor.texture1", projectPath + "tex1.png");
 
-    propertyList->AddFilepathProperty("LightMap", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetFilepathPropertyValue("LightMap", projectPath + "lightmap_w.png");
+    propertyList->AddFilepathProperty("landscapeeditor.lightmap", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("landscapeeditor.lightmap", projectPath + "lightmap_w.png");
     propertyList->AddFilepathProperty("A8", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("A8", projectPath + "a8_w.png");
 
-    propertyList->AddBoolProperty("Show Result", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetBoolPropertyValue("Show Result", true);
+    propertyList->AddBoolProperty("landscapeeditor.showresult", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetBoolPropertyValue("landscapeeditor.showresult", true);
 }
 
 void LandscapeEditorControl::ReleaseLeftPanel()
@@ -206,12 +206,12 @@ void LandscapeEditorControl::WillAppear()
 {
     scrollView->SetScale(zoom->GetValue());
 
-    paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, propertyList->GetFilepathPropertyValue("LightMap"));
+    paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, propertyList->GetFilepathPropertyValue("landscapeeditor.lightmap"));
     paintArea->SetTexture(PaintAreaControl::ETROID_A8_ALPHA, propertyList->GetFilepathPropertyValue("A8"));
-    paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0"));
-    paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE1, propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL"));
+    paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, propertyList->GetFilepathPropertyValue("landscapeeditor.texture0"));
+    paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE1, propertyList->GetFilepathPropertyValue("landscapeeditor.texture1"));
 
-    paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue("Show Result"));
+    paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue("landscapeeditor.showresult"));
 
     
     if(!selectedTool)
@@ -290,7 +290,7 @@ void LandscapeEditorControl::OnFilepathPropertyChanged(PropertyList *forList, co
 {
     if(EditorSettings::IsValidPath(newValue))
     {
-        if("LightMap" == forKey)
+        if("landscapeeditor.lightmap" == forKey)
         {
             paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, newValue);
         }
@@ -298,11 +298,11 @@ void LandscapeEditorControl::OnFilepathPropertyChanged(PropertyList *forList, co
         {
             paintArea->SetTexture(PaintAreaControl::ETROID_A8_ALPHA, newValue);
         }
-        else if("TEXTURE_TEXTURE0" == forKey)
+        else if("landscapeeditor.texture0" == forKey)
         {
             paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, newValue);
         }
-        else if("TEXTURE_TEXTURE1/TEXTURE_DETAIL" == forKey)
+        else if("landscapeeditor.texture1" == forKey)
         {
             paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, newValue);
         }
@@ -311,7 +311,7 @@ void LandscapeEditorControl::OnFilepathPropertyChanged(PropertyList *forList, co
 
 void LandscapeEditorControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("Show Result" == forKey)
+    if("landscapeeditor.showresult" == forKey)
     {
         paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue(forKey));
     }

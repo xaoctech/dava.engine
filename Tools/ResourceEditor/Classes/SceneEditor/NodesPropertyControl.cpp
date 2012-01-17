@@ -89,36 +89,36 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     
     if(!createNodeProperties)
     {
-        propertyList->AddSection("General C++", GetHeaderState("General C++", true));
-        propertyList->AddIntProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
-        propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
-        propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddSection("property.scenenode.generalc++", GetHeaderState("property.scenenode.generalc++", true));
+        propertyList->AddIntProperty("property.scenenode.retaincount", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.classname", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.c++classname", PropertyList::PROPERTY_IS_READ_ONLY);
         
-        propertyList->SetIntPropertyValue("Retain Count", sceneNode->GetRetainCount());
-        propertyList->SetStringPropertyValue("Class Name", sceneNode->GetClassName());
-        propertyList->SetStringPropertyValue("C++ Class Name", typeid(*sceneNode).name());
+        propertyList->SetIntPropertyValue("property.scenenode.retaincount", sceneNode->GetRetainCount());
+        propertyList->SetStringPropertyValue("property.scenenode.classname", sceneNode->GetClassName());
+        propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*sceneNode).name());
     }
 
-    propertyList->AddSection("Scene Node", GetHeaderState("Scene Node", true));
-    propertyList->AddStringProperty("Name", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetStringPropertyValue("Name", sceneNode->GetName());
+    propertyList->AddSection("property.scenenode.scenenode", GetHeaderState("property.scenenode.scenenode", true));
+    propertyList->AddStringProperty("property.scenenode.name", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetStringPropertyValue("property.scenenode.name", sceneNode->GetName());
 
     if(!createNodeProperties)
     {
-        propertyList->AddSection("Matrixes", GetHeaderState("Matrixes", false));
+        propertyList->AddSection("property.scenenode.matrixes", GetHeaderState("property.scenenode.matrixes", false));
         
-        propertyList->AddMatrix4Property("Local Matrix", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddMatrix4Property("World Matrix", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddMatrix4Property("property.scenenode.localmatrix", PropertyList::PROPERTY_IS_EDITABLE);
+        propertyList->AddMatrix4Property("property.scenenode.worldmatrix", PropertyList::PROPERTY_IS_READ_ONLY);
 
-        propertyList->SetMatrix4PropertyValue("Local Matrix", sceneNode->GetLocalTransform());
-        propertyList->SetMatrix4PropertyValue("World Matrix", sceneNode->GetWorldTransform());
+        propertyList->SetMatrix4PropertyValue("property.scenenode.localmatrix", sceneNode->GetLocalTransform());
+        propertyList->SetMatrix4PropertyValue("property.scenenode.worldmatrix", sceneNode->GetWorldTransform());
     }
     
     
     //must be last
     if(!createNodeProperties)
     {
-        propertyList->AddSection("Custom properties", GetHeaderState("Custom properties", true));
+        propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
         
         KeyedArchive *customProperties = sceneNode->GetCustomProperties();
         Map<String, VariantType> propsData = customProperties->GetArchieveData();
@@ -160,14 +160,14 @@ void NodesPropertyControl::ReadFrom(DataNode *dataNode)
     propertyList->ReleaseProperties();
     if(!createNodeProperties)
     {
-        propertyList->AddSection("General C++", GetHeaderState("General C++", true));
-        propertyList->AddIntProperty("Retain Count", PropertyList::PROPERTY_IS_READ_ONLY);
-        propertyList->AddStringProperty("Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
-        propertyList->AddStringProperty("C++ Class Name", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddSection("property.scenenode.generalc++", GetHeaderState("property.scenenode.generalc++", true));
+        propertyList->AddIntProperty("property.scenenode.retaincount", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.classname", PropertyList::PROPERTY_IS_READ_ONLY);
+        propertyList->AddStringProperty("property.scenenode.c++classname", PropertyList::PROPERTY_IS_READ_ONLY);
         
-        propertyList->SetIntPropertyValue("Retain Count", dataNode->GetRetainCount());
-        propertyList->SetStringPropertyValue("Class Name", dataNode->GetClassName());
-        propertyList->SetStringPropertyValue("C++ Class Name", typeid(*dataNode).name());
+        propertyList->SetIntPropertyValue("property.scenenode.retaincount", dataNode->GetRetainCount());
+        propertyList->SetStringPropertyValue("property.scenenode.classname", dataNode->GetClassName());
+        propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*dataNode).name());
     }
 }
 
@@ -179,7 +179,7 @@ void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 
 void NodesPropertyControl::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
-    if(forKey == "Name") //SceneNode
+    if(forKey == "property.scenenode.name") //SceneNode
     {
         currentNode->SetName(newValue);
     }
@@ -267,7 +267,7 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
 
 void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4)
 {
-    if(forKey == "Local Matrix")
+    if(forKey == "property.scenenode.localmatrix")
     {
         currentNode->SetLocalTransform(matrix4);
     }
