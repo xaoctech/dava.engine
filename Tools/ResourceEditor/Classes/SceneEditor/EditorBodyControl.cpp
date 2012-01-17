@@ -107,6 +107,8 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"Left mouse button - selection", y);
 	AddHelpText(L"Right mouse button - camera angle", y);
 	AddHelpText(L"Z - zoom to selection", y);	
+	AddHelpText(L"BackSpace - remove selected object", y);
+	AddHelpText(L"Esc - drop selection", y);	
 	AddHelpText(L"Left mouse button (in selection) - object modification", y);
 	AddHelpText(L"Drag with left mouse button + SHIFT (create copy of object)", y);
 	AddHelpText(L"Middle mouse button (in selection) - move in camera plain", y);
