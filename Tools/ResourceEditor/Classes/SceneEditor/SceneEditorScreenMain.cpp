@@ -325,42 +325,44 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
     Scene * scene = iBody->bodyControl->GetScene();
-    for (int i = 0; i < scene->GetMaterialCount(); i++)
-    {
-        Material *m = scene->GetMaterial(i);
-        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-        {
-            if (m->names[n].length() > 0 && m->names[n].find("DataSource") != m->names[n].npos)
-            {
-                m->names[n].replace(m->names[n].find("DataSource"), strlen("DataSource"), "Data");
-            }
-        }
-    }
+
+//    for (int i = 0; i < scene->GetMaterialCount(); i++)
+//    {
+//        Material *m = scene->GetMaterial(i);
+//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+//        {
+//            if (m->names[n].length() > 0 && m->names[n].find("DataSource") != m->names[n].npos)
+//            {
+//                m->names[n].replace(m->names[n].find("DataSource"), strlen("DataSource"), "Data");
+//            }
+//        }
+//    }
     
     SceneFileV2 * file = new SceneFileV2();
+    file->EnableSaveForGame(true);
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
     SafeRelease(file);
 
-    for (int i = 0; i < scene->GetMaterialCount(); i++)
-    {
-        Material *m = scene->GetMaterial(i);
-        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-        {
-            if (m->textures[n])
-            {
-                path = m->textures[n]->relativePathname;
-                if (!path.empty()) 
-                {
-                    String pathTo = path;
-                    pathTo.replace(path.find("DataSource"), strlen("DataSource"), "Data");
-                    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-                    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-                    FileSystem::Instance()->CopyFile(path, pathTo);
-                }
-            }
-        }
-    }
+//    for (int i = 0; i < scene->GetMaterialCount(); i++)
+//    {
+//        Material *m = scene->GetMaterial(i);
+//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+//        {
+//            if (m->textures[n])
+//            {
+//                path = m->textures[n]->relativePathname;
+//                if (!path.empty()) 
+//                {
+//                    String pathTo = path;
+//                    pathTo.replace(path.find("DataSource"), strlen("DataSource"), "Data");
+//                    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+//                    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+//                    FileSystem::Instance()->CopyFile(path, pathTo);
+//                }
+//            }
+//        }
+//    }
     
     libraryControl->RefreshTree();
 }

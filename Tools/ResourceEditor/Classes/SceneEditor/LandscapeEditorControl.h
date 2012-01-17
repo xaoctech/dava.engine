@@ -43,8 +43,6 @@ protected:
     void CreatePaintAreaPanel();
     void ReleasePaintAreaPanel();
     
-    bool IsValidPath(const String &path);
-
 
     // left side
     UIControl *leftPanel;
