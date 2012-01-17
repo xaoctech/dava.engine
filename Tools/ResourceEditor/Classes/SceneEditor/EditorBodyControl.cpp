@@ -1192,9 +1192,14 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         else
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            
+            KeyedArchive * customProperties = rootNode->GetCustomProperties();
+            customProperties->SetString("editor.referenceToOwner", pathToFile);
+
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-            //SafeRelease(rootNode); //TODO: ??
+            
+            SafeRelease(rootNode);
         }
         
         if (scene->GetCamera(0))
@@ -1210,16 +1215,21 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
             mainFilePath = pathToFile;
             for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-            {//рут нода это сама сцена в данном случае
+            {   
+                //рут нода это сама сцена в данном случае
                 scene->AddNode(rootNode->GetChild(ci));
             }
         }
         else
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
+
+            KeyedArchive * customProperties = rootNode->GetCustomProperties();
+            customProperties->SetString("editor.referenceToOwner", pathToFile);
+
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-            //SafeRelease(rootNode); //TODO: ??
+            SafeRelease(rootNode); 
         }
 
         
