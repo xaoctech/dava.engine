@@ -28,11 +28,11 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     propertyList->AddComboProperty("renderingMode", renderingModes);
     
-    propertyList->AddFilepathProperty("HeightMap", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_BUMP", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png;.pvr", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("HeightMap", ".png;.pvr", false, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE0", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTURE1/TEXTURE_DETAIL", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_BUMP", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     
     
     Vector3 size(445.0f, 445.0f, 50.f);
@@ -127,7 +127,10 @@ void LandscapePropertyControl::WriteTo(SceneNode * sceneNode)
     
     if(EditorSettings::IsValidPath(heightMap))
     {
-        landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
+        if(heightMap.length())
+        {
+            landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
+        }
     }
     
     Texture::EnableMipmapGeneration();
@@ -172,7 +175,7 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
         int32 renderingMode = propertyList->GetComboPropertyIndex("renderingMode");
         
         String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
-        if(EditorSettings::IsValidPath(heightMap))
+        if(EditorSettings::IsValidPath(heightMap) && heightMap.length())
         {
             landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
         }
@@ -196,7 +199,10 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
             bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
             
             int32 renderingMode = propertyList->GetComboPropertyIndex("renderingMode");
-            landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, newValue, bbox);
+            if(newValue.length())
+            {
+                landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, newValue, bbox);
+            }
         }
         else if("TEXTURE_TEXTURE0" == forKey)
         {
@@ -246,7 +252,7 @@ void LandscapePropertyControl::OnComboIndexChanged(
         int32 renderingMode = propertyList->GetComboPropertyIndex("renderingMode");
         
         String heightMap = propertyList->GetFilepathPropertyValue("HeightMap");
-        if(EditorSettings::IsValidPath(heightMap))
+        if(EditorSettings::IsValidPath(heightMap) && heightMap.length())
         {
             landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
         }
