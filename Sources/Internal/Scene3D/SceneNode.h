@@ -187,8 +187,19 @@ public:
     void SetSolid(bool isSolid);
     bool GetSolid();
     
+	inline void SetUserData(BaseObject * newData)
+	{
+		SafeRelease(userData);
+		userData = newData;
+		SafeRetain(userData);
+	}
+
+	inline BaseObject * GetUserData(void)
+	{
+		return userData;
+	}
+	
 //	bool isSolidNode;
-	BaseObject * userData;
     
     //Returns maximum Bounding Box as WorlTransformedBox
 
@@ -222,7 +233,8 @@ protected:
     
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 	void SetParent(SceneNode * node);
-	
+	BaseObject * userData;
+
 	Scene * scene;
 	SceneNode * parent;
 	std::vector<SceneNode*> children;

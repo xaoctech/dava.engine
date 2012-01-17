@@ -107,6 +107,8 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"Left mouse button - selection", y);
 	AddHelpText(L"Right mouse button - camera angle", y);
 	AddHelpText(L"Z - zoom to selection", y);	
+	AddHelpText(L"BackSpace - remove selected object", y);
+	AddHelpText(L"Esc - drop selection", y);	
 	AddHelpText(L"Left mouse button (in selection) - object modification", y);
 	AddHelpText(L"Drag with left mouse button + SHIFT (create copy of object)", y);
 	AddHelpText(L"Middle mouse button (in selection) - move in camera plain", y);
@@ -694,7 +696,13 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     
                     break;
                 }
-
+					
+				case DVKEY_BACKSPACE:
+                {
+					OnRemoveNodeButtonPressed(0,0,0);
+                    break;
+                }
+					
                 case DVKEY_1:
                     cameraController->SetSpeed(60);
                     break;
@@ -1043,7 +1051,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
 	SceneNode * selection = scene->GetProxy();
-	if (selection)
+	if (selection && isModeModification)
 	{
 		const Rect & rect = scene3dView->GetLastViewportRect();
 		Camera * cam = scene->GetCurrentCamera(); 
@@ -1095,6 +1103,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 void EditorBodyControl::Update(float32 timeElapsed)
 {
 	SceneNode * selection = scene->GetProxy();
+	modificationPopUp->SetSelection(selection);
 	if (isModeModification && selection && modificationPanel->GetParent() == 0)
 	{
 		AddControl(modificationPanel);
@@ -1178,7 +1187,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         }
         else
         {
-            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();            
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
             //SafeRelease(rootNode); //TODO: ??
