@@ -34,6 +34,9 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddFilepathProperty("TEXTURE_BUMP", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("TEXTURE_TEXTUREMASK", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     
+    propertyList->AddFilepathProperty("LightMap", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("AlphaMask", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+    
     
     Vector3 size(445.0f, 445.0f, 50.f);
     AABBox3 bbox = landscape->GetBoundingBox();
@@ -99,6 +102,9 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     {
         propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", "");
     }
+    
+    propertyList->SetFilepathPropertyValue("LightMap", "");
+    propertyList->SetFilepathPropertyValue("AlphaMask", "");
 }
 
 void LandscapePropertyControl::WriteTo(SceneNode * sceneNode)
@@ -123,7 +129,7 @@ void LandscapePropertyControl::WriteTo(SceneNode * sceneNode)
     String texture0 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE0");
     String texture1 = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTURE1/TEXTURE_DETAIL");
     String textureBump = propertyList->GetFilepathPropertyValue("TEXTURE_BUMP");
-    String textureUnmask = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTUREMASK");
+    String textureMask = propertyList->GetFilepathPropertyValue("TEXTURE_TEXTUREMASK");
     
     if(EditorSettings::IsValidPath(heightMap))
     {
@@ -132,6 +138,7 @@ void LandscapePropertyControl::WriteTo(SceneNode * sceneNode)
             landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
         }
     }
+    
     
     Texture::EnableMipmapGeneration();
     if(EditorSettings::IsValidPath(texture0))
@@ -149,10 +156,22 @@ void LandscapePropertyControl::WriteTo(SceneNode * sceneNode)
         landscape->SetTexture(LandscapeNode::TEXTURE_BUMP, textureBump);
     }
     
-    if(EditorSettings::IsValidPath(textureUnmask))
+    if(EditorSettings::IsValidPath(textureMask))
     {
-        landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, textureUnmask);
+        if(textureMask.length())
+        {
+            landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, textureMask);
+        }
+        else
+        {
+            // before all
+            String lightMap = propertyList->GetFilepathPropertyValue("LightMap");
+            String alphaMask = propertyList->GetFilepathPropertyValue("AlphaMask");
+            
+            CreateMaskTexture(lightMap, alphaMask);
+        }
     }
+    
     Texture::DisableMipmapGeneration();
 }
 
@@ -228,6 +247,13 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
             landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, newValue);
             Texture::DisableMipmapGeneration();
         }
+        else if("LightMap" == forKey || "AlphaMask" == forKey)
+        {
+            String lightMap = propertyList->GetFilepathPropertyValue("LightMap");
+            String alphaMask = propertyList->GetFilepathPropertyValue("AlphaMask");
+            
+            CreateMaskTexture(lightMap, alphaMask);
+        }
     }
 
     NodesPropertyControl::OnFilepathPropertyChanged(forList, forKey, newValue);
@@ -259,5 +285,46 @@ void LandscapePropertyControl::OnComboIndexChanged(
     }
 
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
+}
+
+void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, const String &alphamaskPath)
+{
+    Image *lightMap = Image::CreateFromFile(lightmapPath);
+    Image *alphaMask = Image::CreateFromFile(alphamaskPath);
+    
+    if(lightMap && alphaMask)
+    {
+        if(     (lightMap->GetPixelFormat() == Image::FORMAT_RGBA8888)
+           &&   (alphaMask->GetPixelFormat() == Image::FORMAT_RGBA8888))
+        {
+            if(     (lightMap->GetHeight() == alphaMask->GetHeight()) 
+               &&   (lightMap->GetWidth() == alphaMask->GetWidth()) )
+            {
+                uint8 *lightMapData = lightMap->GetData();
+                uint8 *alphaMaskData = alphaMask->GetData();
+                
+                int32 dataSize = lightMap->GetHeight() * lightMap->GetWidth() * 4;
+                for(int32 i = 0; i < dataSize; i += 4)
+                {
+                    lightMapData[i + 3] = alphaMaskData[i];
+                }
+                
+                String extension = FileSystem::Instance()->GetExtension(lightmapPath);
+                String path, fileName;
+                FileSystem::Instance()->SplitPath(lightmapPath, path, fileName);
+                
+                String resultPath = path + "EditorMaskTexture" + extension;
+                lightMap->Save(resultPath);
+                
+                propertyList->SetFilepathPropertyValue("LightMap", "");
+                propertyList->SetFilepathPropertyValue("AlphaMask", "");
+
+                propertyList->SetFilepathPropertyValue("TEXTURE_TEXTUREMASK", resultPath);
+            }
+        }
+    }
+    
+    SafeRelease(lightMap);
+    SafeRelease(alphaMask);
 }
 
