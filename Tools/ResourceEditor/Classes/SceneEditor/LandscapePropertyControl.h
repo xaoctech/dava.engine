@@ -12,7 +12,6 @@ public:
 	virtual ~LandscapePropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-	virtual void WriteTo(SceneNode * sceneNode);
 
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);

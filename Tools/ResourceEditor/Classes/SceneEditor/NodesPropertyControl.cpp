@@ -172,51 +172,6 @@ void NodesPropertyControl::ReadFrom(DataNode *dataNode)
 }
 
 
-
-void NodesPropertyControl::WriteTo(SceneNode *sceneNode)
-{
-    sceneNode->SetName(propertyList->GetStringPropertyValue("Name"));
-        
-    if(!createNodeProperties)
-    {
-        sceneNode->SetLocalTransform(propertyList->GetMatrix4PropertyValue("Local Matrix"));
-    }
-    
-    
-    //must be last
-    if(!createNodeProperties)
-    {
-        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
-        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
-        {
-            String name = it->first;
-            VariantType key = it->second;
-            switch (key.type) 
-            {
-                case VariantType::TYPE_BOOLEAN:
-                    customProperties->SetBool(name, propertyList->GetBoolPropertyValue(name));
-                    break;
-                    
-                case VariantType::TYPE_STRING:
-                    customProperties->SetString(name, propertyList->GetStringPropertyValue(name));
-                    break;
-                    
-                case VariantType::TYPE_INT32:
-                    customProperties->SetInt32(name, propertyList->GetIntPropertyValue(name));
-                    break;
-                    
-                case VariantType::TYPE_FLOAT:
-                    customProperties->SetFloat(name, propertyList->GetFloatPropertyValue(name));
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-    }
-}
-
 void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 {
     nodesDelegate = delegate;
@@ -464,8 +419,6 @@ void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedC
     {
         if(i == index)
         {
-            WriteTo(currentNode);
-            
             customProperties->DeleteKey(it->first);
             
             OnCancel(NULL, NULL, NULL);

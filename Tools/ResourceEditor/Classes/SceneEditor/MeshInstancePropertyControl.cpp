@@ -116,42 +116,6 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
     }
 }
 
-void MeshInstancePropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	NodesPropertyControl::WriteTo(sceneNode);
-
-    MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
-	DVASSERT(mesh);
-    
-    Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-    Vector<Material*> meshMaterials = mesh->GetMaterials();
-    Vector<StaticMesh*> meshes = mesh->GetMeshes();
-    
-    int32 currentMaterial = 0;
-    for(int32 i = 0; i < meshes.size(); ++i)
-    {
-        //            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
-        
-        String keyPrefix = Format("#%d", i);
-        int32 vertexFormat = EVF_VERTEX;
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.NORMAL");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.COLOR");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD0");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD1");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD2");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD3");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TANGENT");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.BINORMAL");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT");
-        
-        //TODO: set it to pg
-        if(materials.size() && !createNodeProperties)
-        {
-            currentMaterial = propertyList->GetComboPropertyIndex(keyPrefix + ". Material");
-            mesh->ReplaceMaterial(materials[currentMaterial], i);
-        }
-    }
-}
 
 void MeshInstancePropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
 {

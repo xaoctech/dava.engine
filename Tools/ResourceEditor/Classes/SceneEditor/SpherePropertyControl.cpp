@@ -34,25 +34,6 @@ void SpherePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->SetFloatPropertyValue("a", sphere->GetColor().a);
 }
 
-void SpherePropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	MeshInstancePropertyControl::WriteTo(sceneNode);
-
-    SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
-	DVASSERT(sphere);
-
-    Color color(
-                propertyList->GetFloatPropertyValue("r"),
-                propertyList->GetFloatPropertyValue("g"),
-                propertyList->GetFloatPropertyValue("b"),
-                propertyList->GetFloatPropertyValue("a"));
-    
-    float32 radius = propertyList->GetFloatPropertyValue("Radius");
-    
-    sphere->SetColor(color);
-    sphere->SetRadius(radius);
-}
-
 void SpherePropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
     if("r" == forKey || "g" == forKey || "b" == forKey || "a" == forKey)
