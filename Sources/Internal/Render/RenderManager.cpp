@@ -72,7 +72,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 //	oldTextureEnabled = 0;
 	oldVertexArrayEnabled = 0;
     oldNormalArrayEnabled = 0;
-    oldTextureCoordArrayEnabled = 0;
+    for (uint32 idx = 0; idx < RenderStateBlock::MAX_TEXTURE_LEVELS; ++idx)
+        oldTextureCoordArrayEnabled[idx] = 0;
 	oldColorArrayEnabled = 0;
 
 //	oldBlendingEnabled = 0;

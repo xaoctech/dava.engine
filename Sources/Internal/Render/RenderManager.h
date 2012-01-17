@@ -254,7 +254,7 @@ public:
     
     void EnableVertexArray(bool isEnabled);
     void EnableNormalArray(bool isEnabled);
-	void EnableTextureCoordArray(bool isEnabled);
+	void EnableTextureCoordArray(bool isEnabled, int32 textureLevel);
 	void EnableColorArray(bool isEnabled);
 	
 	/*void EnableBlending(bool isEnabled);
@@ -535,7 +535,7 @@ protected:
 
     int oldVertexArrayEnabled;                      // state
     int oldNormalArrayEnabled;                      // state
-	int oldTextureCoordArrayEnabled;                // state
+	int oldTextureCoordArrayEnabled[RenderStateBlock::MAX_TEXTURE_LEVELS];                // state
 	int oldColorArrayEnabled;                       // state
 	int oldBlendingEnabled;                         // state
 
@@ -560,6 +560,7 @@ protected:
     
     uint32 pointerArraysCurrentState;
     uint32 pointerArraysRendererState;
+    uint32 gl20RendererState;
     int32 enabledAttribCount;
 
     

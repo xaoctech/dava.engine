@@ -409,10 +409,12 @@ void RenderManager::EnableNormalArray(bool isEnabled)
     }
 }
 
-void RenderManager::EnableTextureCoordArray(bool isEnabled)
+void RenderManager::EnableTextureCoordArray(bool isEnabled, int32 textureLevel)
 {
-    if(isEnabled != oldTextureCoordArrayEnabled)
+    if(isEnabled != oldTextureCoordArrayEnabled[textureLevel])
     {
+        glClientActiveTexture(GL_TEXTURE0 + textureLevel);
+
         if(isEnabled)
         {
             RENDER_VERIFY(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
@@ -421,7 +423,7 @@ void RenderManager::EnableTextureCoordArray(bool isEnabled)
         {
             RENDER_VERIFY(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
         }
-        oldTextureCoordArrayEnabled = isEnabled;
+        oldTextureCoordArrayEnabled[textureLevel] = isEnabled;
     }
 }
 
@@ -706,6 +708,8 @@ void RenderManager::AttachRenderData(Shader * shader)
 {
     if (!currentRenderData)return;
 
+    const int DEBUG = 0;
+    
     RenderManager::Instance()->LockNonMain();
     if (!shader)
     {
@@ -713,8 +717,10 @@ void RenderManager::AttachRenderData(Shader * shader)
 #if defined(__DAVAENGINE_OPENGL__)
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
         RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
+        if (DEBUG)Logger::Debug("!shader glBindBufferARB: %d", currentRenderData->vboBuffer);
 #else
         RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
+        if (DEBUG)Logger::Debug("!shader glBindBuffer: %d", currentRenderData->vboBuffer);
 #endif
 #elif defined(__DAVAENGINE_DIRECTX9__)
         DVASSERT(currentRenderData->vboBuffer == 0);
@@ -723,6 +729,7 @@ void RenderManager::AttachRenderData(Shader * shader)
         {
             for (int32 p = 0; p < enabledAttribCount; ++p)
             {
+                if (DEBUG)Logger::Debug("!shader glDisableVertexAttribArray: %d", p);
                 glDisableVertexAttribArray(p);
             }
             enabledAttribCount = 0;
@@ -737,19 +744,27 @@ void RenderManager::AttachRenderData(Shader * shader)
             switch(stream->formatMark)
             {
                 case EVF_VERTEX:
+                    if (DEBUG)Logger::Debug("!shader SetVertexPointer");
+
                     SetVertexPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_VERTEX;
                     break;
                 case EVF_NORMAL:
+                    if (DEBUG)Logger::Debug("!shader SetNormalPointer");
+
                     SetNormalPointer(stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_NORMAL;
                     break;
                 case EVF_TEXCOORD0:
+                    if (DEBUG)Logger::Debug("!shader SetTexCoordPointer 0");
+
                     glClientActiveTexture(GL_TEXTURE0);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_TEXCOORD0;
                     break;
                 case EVF_TEXCOORD1:
+                    if (DEBUG)Logger::Debug("!shader SetTexCoordPointer 1");
+
                     glClientActiveTexture(GL_TEXTURE1);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_TEXCOORD1;
@@ -763,21 +778,27 @@ void RenderManager::AttachRenderData(Shader * shader)
         
         if (difference & EVF_VERTEX)
         {
+            if (DEBUG)Logger::Debug("!shader EnableVertexArray: %d", (pointerArraysCurrentState & EVF_VERTEX) != 0);
+
             EnableVertexArray((pointerArraysCurrentState & EVF_VERTEX) != 0);
         }
         if (difference & EVF_NORMAL)
         {
+            if (DEBUG)Logger::Debug("!shader EnableNormalArray: %d", (pointerArraysCurrentState & EVF_NORMAL) != 0);
+
             EnableNormalArray((pointerArraysCurrentState & EVF_NORMAL) != 0);
         }
         if (difference & EVF_TEXCOORD0)
         {
-            glClientActiveTexture(GL_TEXTURE0);
-            EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
+            if (DEBUG)Logger::Debug("!shader EnableTextureCoordArray-0: %d", (pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
+
+            EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD0) != 0, 0);
         }
         if (difference & EVF_TEXCOORD1)
         {
-            glClientActiveTexture(GL_TEXTURE1);
-            EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
+            if (DEBUG)Logger::Debug("!shader EnableTextureCoordArray-1: %d", (pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
+
+            EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD1) != 0, 1);
         }
         pointerArraysRendererState = pointerArraysCurrentState;
         
@@ -787,29 +808,38 @@ void RenderManager::AttachRenderData(Shader * shader)
         if (GetRenderer() == Core::RENDERER_OPENGL)
         {
             if (oldVertexArrayEnabled)
-        {
-                EnableVertexArray(false);
-                pointerArraysRendererState = 0;
-            }
-            if (oldTextureCoordArrayEnabled)
             {
-                EnableTextureCoordArray(false);
-                pointerArraysRendererState = 0;
+                EnableVertexArray(false);
+            }
+            if (oldNormalArrayEnabled)
+            {
+                EnableNormalArray(false);
+            }
+            if (oldTextureCoordArrayEnabled[0])
+            {
+                EnableTextureCoordArray(false, 0);
+            }
+            if (oldTextureCoordArrayEnabled[1])
+            {
+                EnableTextureCoordArray(false, 1);
+            }
+            pointerArraysRendererState = 0;
         }
-    }
 
         int32 currentEnabledAttribCount = 0;
         //glDisableVertexAttribArray(0);
         //glDisableVertexAttribArray(1);
-        pointerArraysCurrentState = 0;
+        //pointerArraysCurrentState = 0;
         
         //if (currentRenderData->vboBuffer != 0)
         //{
 #if defined(__DAVAENGINE_OPENGL__)
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer);
+        if (DEBUG)Logger::Debug("shader glBindBufferARB: %d", currentRenderData->vboBuffer);
 #else
         glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
+        if (DEBUG)Logger::Debug("shader glBindBuffer: %d", currentRenderData->vboBuffer);
 #endif
 #endif 
         //}
@@ -824,49 +854,29 @@ void RenderManager::AttachRenderData(Shader * shader)
             if (attribIndex != -1)
             {
                 glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer);
-                
+                if (DEBUG)Logger::Debug("shader glVertexAttribPointer: %d", attribIndex);
+
                 if (attribIndex >= enabledAttribCount)  // enable only if it was not enabled on previous step
                 {
                     glEnableVertexAttribArray(attribIndex);
+                    if (DEBUG)Logger::Debug("shader glEnableVertexAttribArray: %d", attribIndex);
                 }
                 if (attribIndex + 1 > currentEnabledAttribCount)
                     currentEnabledAttribCount = attribIndex + 1;    // count of enabled attributes
                 
-                pointerArraysCurrentState |= stream->formatMark;
+                //pointerArraysCurrentState |= stream->formatMark;
             }
         };
         
         for (int32 p = currentEnabledAttribCount; p < enabledAttribCount; ++p)
         {
+            if (DEBUG)Logger::Debug("shader glDisableVertexAttribArray: %d", p);
+
             glDisableVertexAttribArray(p);
         }
         enabledAttribCount = currentEnabledAttribCount;
-        //        uint32 difference = pointerArraysCurrentState ^ pointerArraysRendererState;
-        //        
-        //        if (!(difference & EVF_VERTEX))
-        //        {
-        //            int32 attribIndex = shader->GetAttributeIndex(EVF_VERTEX);
-        //            RENDER_VERIFY(glDisableVertexAttribArray(attribIndex));
-        //        }
-        //        if (!(difference & EVF_TEXCOORD0))
-        //        {
-        //            int32 attribIndex = shader->GetAttributeIndex(EVF_TEXCOORD0);
-        //            RENDER_VERIFY(glDisableVertexAttribArray(attribIndex));
-        //        }
-        pointerArraysRendererState = pointerArraysCurrentState;
+        //pointerArraysRendererState = pointerArraysCurrentState;
     }
-    //    for (uint32 formatFlag = EVF_LOWER_BIT; formatFlag <= EVF_HIGHER_BIT; formatFlag >>= 1)
-    //    {
-    //        if (formatFlag & EVF_VERTEX)
-    //        {
-    //            
-    //        }
-    //        if (formatFlag & EVF_TEXCOORD0)
-    //        {
-    //            
-    //        }
-    //    }
-    //    pointerArraysRendererState = pointerArraysCurrentState;
     RenderManager::Instance()->UnlockNonMain();
 }
 
