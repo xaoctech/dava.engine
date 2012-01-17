@@ -30,8 +30,8 @@
 #ifndef __DAVAENGINE_OGLHELPERS_H__
 #define __DAVAENGINE_OGLHELPERS_H__
 
-#include <signal.h>
-#define DebugBreak() { kill( getpid(), SIGINT ) ; }
+//#include <signal.h>
+//#define DebugBreak() { kill( getpid(), SIGINT ) ; }
 
 #if defined(__DAVAENGINE_OPENGL__)
 namespace DAVA
