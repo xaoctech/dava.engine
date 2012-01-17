@@ -31,6 +31,9 @@ String EditorSettings::GetDataSourcePath()
 
 bool EditorSettings::IsValidPath(const String &path)
 {
+    if(path.length() == 0) //for texture resetting
+        return true;
+    
     size_t posPng = path.find(".png");
     size_t posPvr = path.find(".pvr");
     return ((String::npos != posPng) || (String::npos != posPvr));
