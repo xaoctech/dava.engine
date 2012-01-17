@@ -13,7 +13,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 	, beastManager(0)
 {
     scene = NULL;
-    
+	
+    isModeModification = false;
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = 0;
@@ -256,10 +257,11 @@ static const wchar_t * axises[3] = { L"X", L"Y", L"Z"};
 
 void EditorBodyControl::CreateModificationPanel(void)
 {
+	float offx = scene3dView->GetRect(true).x;
 	modState = MOD_MOVE;
 	modAxis = AXIS_X;
 	
-	modificationPanel = ControlsFactory::CreatePanelControl(Rect(scene3dView->GetRect(true).x, 5, 120, 45));
+	modificationPanel = ControlsFactory::CreatePanelControl(Rect(offx, 5, 120, 45));
     modificationPanel->GetBackground()->SetColor(Color(1.0, 1.0, 1.0, 0.2));
 
 	for (int i = 0; i < 3; i++)
@@ -289,6 +291,15 @@ void EditorBodyControl::CreateModificationPanel(void)
 	modificationPanel->AddControl(btnPopUp);
 	
 	modificationPopUp = new ModificationPopUp();
+	
+	btnModeSelection = ControlsFactory::CreateButton(Rect(offx + 150, 5, BUTTON_W, BUTTON_W), L"S");
+	btnModeSelection->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModePressed));
+	AddControl(btnModeSelection);
+
+	btnModeModification = ControlsFactory::CreateButton(Rect(offx + 175, 5, BUTTON_W, BUTTON_W), L"M");
+	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModePressed));
+	AddControl(btnModeModification);
+	OnModePressed(btnModeSelection, 0, 0);
 }
 
 void EditorBodyControl::ReleaseModificationPanel()
@@ -302,6 +313,21 @@ void EditorBodyControl::ReleaseModificationPanel()
 }
 
 
+void EditorBodyControl::OnModePressed(BaseObject * object, void * userData, void * callerData)
+{
+	isModeModification = (object == btnModeModification);
+	
+	if (isModeModification)
+	{
+		btnModeModification->SetState(UIControl::STATE_SELECTED);
+		btnModeSelection->SetState(UIControl::STATE_NORMAL);
+	}
+	else
+	{
+		btnModeModification->SetState(UIControl::STATE_NORMAL);
+		btnModeSelection->SetState(UIControl::STATE_SELECTED);
+	}
+}
 
 void EditorBodyControl::OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData)
 {
@@ -779,7 +805,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			if (!isDrag)
 			{
 				Vector2 d = event->point - touchStart;
-				if (d.Length() > 5)
+				if (d.Length() > 5 && isModeModification)
 				{
 					isDrag = true;
 					if (selection)
@@ -807,7 +833,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			}
 			else 
 			{
-				if (selection)
+				if (selection && isModeModification)
 				{
 					PrepareModMatrix(event->point);
 					selection->SetLocalTransform(currTransform);
@@ -1058,11 +1084,11 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 void EditorBodyControl::Update(float32 timeElapsed)
 {
 	SceneNode * selection = scene->GetProxy();
-	if (selection && modificationPanel->GetParent() == 0)
+	if (isModeModification && selection && modificationPanel->GetParent() == 0)
 	{
 		AddControl(modificationPanel);
 	}
-	else if (selection == 0 && modificationPanel->GetParent() != 0)
+	else if ((selection == 0 && modificationPanel->GetParent() != 0) || !isModeModification)
 	{
 		RemoveControl(modificationPanel);
 		modificationPopUp->SetSelection(0);
