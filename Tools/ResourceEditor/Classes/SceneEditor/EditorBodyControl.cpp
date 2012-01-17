@@ -108,6 +108,7 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"Right mouse button - camera angle", y);
 	AddHelpText(L"Z - zoom to selection", y);	
 	AddHelpText(L"Left mouse button (in selection) - object modification", y);
+	AddHelpText(L"Drag with left mouse button + SHIFT (create copy of object)", y);
 	AddHelpText(L"Middle mouse button (in selection) - move in camera plain", y);
 	AddHelpText(L"Alt + Middle mouse button (in selection) rotate about selected objects", y);
 	AddHelpText(L"Q, E, R (in selection) - change active modification mode (move, translate, scale)", y);
@@ -808,6 +809,16 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 				if (d.Length() > 5 && isModeModification)
 				{
 					isDrag = true;
+					if (selection && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+					{//copy object
+						SceneNode * clone = 0;
+						clone = selection->Clone(clone);
+						selection->GetParent()->AddNode(clone);
+						scene->SetSelection(clone);
+						selection = scene->GetProxy();
+						sceneGraphTree->Refresh();
+					}
+					
 					if (selection)
 					{
 						scene->SetBulletUpdate(selection, false);

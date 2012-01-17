@@ -155,23 +155,25 @@ void WASDCameraController::Input(UIEvent * event)
         {
             case DVKEY_Z:
             {
-				if (selection)
+				SceneNode * sel = selection;
+				if (sel == 0)
 				{
-					AABBox3 box = selection->GetWTMaximumBoundingBox();						
-					float32 boxSize = ((box.max - box.min).Length());
-					
-					const Vector3 & pos = camera->GetPosition();
-					const Vector3 & targ = camera->GetTarget();
-					
-					Vector3 dir = targ - pos;
-					dir.Normalize();
-					
-					const Vector3 & c = box.GetCenter();
-					
-					camera->SetTarget(c);
-					camera->SetPosition(c - (dir * boxSize));
-				}					
-				break;					
+					sel = camera->GetScene();
+				}
+				AABBox3 box = sel->GetWTMaximumBoundingBox();						
+				float32 boxSize = ((box.max - box.min).Length());
+				
+				const Vector3 & pos = camera->GetPosition();
+				const Vector3 & targ = camera->GetTarget();
+				
+				Vector3 dir = targ - pos;
+				dir.Normalize();
+				
+				const Vector3 & c = box.GetCenter();
+				
+				camera->SetTarget(c);
+				camera->SetPosition(c - (dir * boxSize));
+				break;
 			}
             case DVKEY_T:
             {
