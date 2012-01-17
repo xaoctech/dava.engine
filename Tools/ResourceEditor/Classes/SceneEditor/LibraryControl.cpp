@@ -24,7 +24,7 @@ LibraryControl::LibraryControl(const Rect & rect)
 	fileTreeControl->SetFolderNavigation(false);
     fileTreeControl->EnableRootFolderChange(false);
     fileTreeControl->DisableRootFolderExpanding(true);
-	fileTreeControl->SetPath(folderPath, ".dae;.sc2;.sce");
+	fileTreeControl->SetPath(folderPath, ".dae;.sc2");
     AddControl(fileTreeControl);
 
     
@@ -88,7 +88,7 @@ void LibraryControl::WillAppear()
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path;
-    fileTreeControl->SetPath(folderPath, ".dae;.sc2;.sce");
+    fileTreeControl->SetPath(folderPath, ".dae;.sc2");
 
     if(GetParent())
     {
@@ -219,7 +219,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             AddControl(panelDAE);
         }
 	}
-    else if ((0 == UIFileTree::CompareExtensions(extension, ".sc2")) || (0 == UIFileTree::CompareExtensions(extension, ".sce")))
+    else if (0 == UIFileTree::CompareExtensions(extension, ".sc2"))
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
