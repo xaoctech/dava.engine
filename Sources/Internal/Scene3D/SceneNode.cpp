@@ -64,7 +64,7 @@ SceneNode::SceneNode(Scene * _scene)
 SceneNode::~SceneNode()
 {
     RemoveAllChildren();
-	SafeDelete(userData);
+	SafeRelease(userData);
 
     SafeRelease(customProperties);
 }

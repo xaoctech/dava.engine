@@ -26,15 +26,9 @@ collisionObject(0)
 
 BulletObject::~BulletObject()
 {
-	if (collisionObject) 
-	{
-		collWorld->removeCollisionObject(collisionObject);
-		SafeDelete(collisionObject);
-    }
+	DeleteCollisionObject();
 	collWorld = 0;
 	collisionPartTransform = 0;
-	SafeDelete(shape);
-	SafeDelete(trimesh);
 }
 
 void BulletObject::DeleteCollisionObject()
