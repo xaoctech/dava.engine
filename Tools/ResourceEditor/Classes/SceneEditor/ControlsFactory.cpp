@@ -55,11 +55,32 @@ UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
 
 void ControlsFactory::CustomizeCloseWindowButton(UIButton *btn)
 {
+//    btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+//    btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
+//    
+//    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.7f, 0.0, 0.0, 1.f));
+//    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.25f, 0.0, 0.0, 1.f));
+    
+    
+    Font *font = GetFontDark();
+    
     btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     
-    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.7f, 0.0, 0.0, 1.f));
-    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.25f, 0.0, 0.0, 1.f));
+    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(1.0f, 0.0f, 0.0f, 0.5f));
+    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.8f, 0.0f, 0.0f, 0.5f));
+    
+    btn->SetStateFont(UIControl::STATE_PRESSED_INSIDE, font);
+    btn->SetStateFont(UIControl::STATE_DISABLED, font);
+    btn->SetStateFont(UIControl::STATE_NORMAL, font);
+    btn->SetStateFont(UIControl::STATE_SELECTED, font);
+    
+    btn->SetStateText(UIControl::STATE_PRESSED_INSIDE, L"X");
+    btn->SetStateText(UIControl::STATE_DISABLED, L"X");
+    btn->SetStateText(UIControl::STATE_NORMAL, L"X");
+    btn->SetStateText(UIControl::STATE_SELECTED, L"X");
+
+    AddBorder(btn);
 }
 
 
