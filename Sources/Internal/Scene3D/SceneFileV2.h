@@ -110,7 +110,10 @@ public:
     String RelativeToAbsolute(const String & relativePathname);
     
     void ProcessLOD(Scene * scene, SceneNode *forRootNode);
-
+    
+    Material * GetMaterial(int32 index);
+    StaticMesh * GetStaticMesh(int32 index);
+    
 private:
     struct Header
     {
@@ -118,7 +121,8 @@ private:
         int32   version;
         int32   nodeCount;
     };
-
+    Vector<Material*> materials;
+    Vector<StaticMesh*> staticMeshes;
     
     bool SaveDataHierarchy(DataNode * node, File * file, int32 level);
     void LoadDataHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
