@@ -24,6 +24,7 @@ TextureRenderObject::~TextureRenderObject()
 void TextureRenderObject::Set(const String &texturepath)
 {
     SafeRelease(renderData);
+    SafeRelease(texture);
     SafeRelease(sprite);
 
     textureCoords.clear();
@@ -352,13 +353,19 @@ void PaintAreaControl::DrawCursor()
 
 void PaintAreaControl::DrawLightmap()
 {
+    //save states
+    eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
+    eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
+    uint32 oldState = RenderManager::Instance()->GetState();
+    
+    //fill texture with initial color
     RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
-//    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
-    RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+    RenderManager::Instance()->SetColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
     RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
 
+    //draw rect with color mask
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-    
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     RenderManager::Instance()->SetState(
                                         RenderStateBlock::STATE_TEXTURE0 
@@ -366,32 +373,45 @@ void PaintAreaControl::DrawLightmap()
                                         // | RenderStateBlock::STATE_COLORMASK_GREEN 
                                         //| RenderStateBlock::STATE_COLORMASK_BLUE 
                                         );
+  
+    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+//    textureRenderObjects[ETROID_LIGHTMAP_RGB]->Draw();
     
-    textureRenderObjects[ETROID_LIGHTMAP_RGB]->Draw();
     
     RenderManager::Instance()->ResetColor();
     RenderManager::Instance()->RestoreRenderTarget();
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
+    
+    //restore states
+    RenderManager::Instance()->SetState(oldState);
+    RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
 }
 
 void PaintAreaControl::DrawA8()
 {
-//    RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
-//    
-//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-//    
-//    RenderManager::Instance()->SetState(
-//                                        RenderStateBlock::STATE_TEXTURE0 
-//                                        | RenderStateBlock::STATE_COLORMASK_ALPHA 
-//                                        );
-//    RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-//    
-//    RenderManager::Instance()->SetColor(0.0f, 0.0f, 0.0f, 0.0f);
-//    RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, 1024.0f, 1024.0f));
-//    //textureRenderObjects[ETROID_A8_ALPHA]->Draw();
-//
-//    RenderManager::Instance()->RestoreRenderTarget();
-//    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
+    //save states
+    eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
+    eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
+    uint32 oldState = RenderManager::Instance()->GetState();
+
+    RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
+    
+    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+    
+    RenderManager::Instance()->SetState(
+                                        RenderStateBlock::STATE_TEXTURE0 
+                                        | RenderStateBlock::STATE_COLORMASK_ALPHA 
+                                        );
+    RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+    
+    RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
+    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+    //textureRenderObjects[ETROID_A8_ALPHA]->Draw();
+
+    RenderManager::Instance()->RestoreRenderTarget();
+
+    //restore states
+    RenderManager::Instance()->SetState(oldState);
+    RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
 }
 
 void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
@@ -416,12 +436,25 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
     }
     else
     {
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
+        //save states
+        eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
+        eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
+        uint32 oldState = RenderManager::Instance()->GetState();
+        
+        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 0.4f);
+        RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+
+        
         spriteForAlpha->SetPosition(0, 0);
+        
+        RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
         spriteForAlpha->Draw();
+
+        
+        //restore states
+        RenderManager::Instance()->SetState(oldState);
+        RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
     }
-    
-    
     
     UIControl::Draw(geometricData);
 }

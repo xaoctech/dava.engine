@@ -114,12 +114,14 @@ public:
     virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
     void OnButton(BaseObject * object, void * userData, void * callerData);
+    void OnClear(BaseObject * object, void * userData, void * callerData);
 
 //    virtual void DidAppear();
     
     UIStaticText *pathText;
     UIControl *pathTextContainer;
     UIButton *browseButton;
+    UIButton *clearButton;
     UIFileSystemDialog *dialog;
 };
 
