@@ -38,28 +38,6 @@ void BoxPropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->SetFloatPropertyValue("a", cube->GetColor().a);
 }
 
-void BoxPropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	MeshInstancePropertyControl::WriteTo(sceneNode);
-
-    CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
-	DVASSERT(cube);
-
-    Color color(
-                propertyList->GetFloatPropertyValue("r"),
-                propertyList->GetFloatPropertyValue("g"),
-                propertyList->GetFloatPropertyValue("b"),
-                propertyList->GetFloatPropertyValue("a"));
-    
-    Vector3 size(
-                 propertyList->GetFloatPropertyValue("Length"),
-                 propertyList->GetFloatPropertyValue("Width"),
-                 propertyList->GetFloatPropertyValue("Depth"));
-    
-    cube->SetSize(size);
-    cube->SetColor(color);
-}
-
 void BoxPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
     if("r" == forKey || "g" == forKey || "b" == forKey || "a" == forKey)

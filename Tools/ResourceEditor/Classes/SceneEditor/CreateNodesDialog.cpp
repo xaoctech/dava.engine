@@ -68,8 +68,6 @@ void CreateNodesDialog::OnCancel(BaseObject * object, void * userData, void * ca
 
 void CreateNodesDialog::OnOk(BaseObject * object, void * userData, void * callerData)
 {    
-    propertyList->WriteTo(sceneNode);
-    
     if(dialogDelegate)
     {
         dialogDelegate->DialogClosed(RCODE_OK);

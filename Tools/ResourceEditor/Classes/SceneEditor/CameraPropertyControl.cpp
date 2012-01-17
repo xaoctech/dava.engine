@@ -49,30 +49,6 @@ void CameraPropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->SetFloatPropertyValue("target.z", target.z);
 }
 
-void CameraPropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	NodesPropertyControl::WriteTo(sceneNode);
-
-    Camera *camera = dynamic_cast<Camera*> (sceneNode);
-	DVASSERT(camera);
-
-    camera->Setup(
-                  propertyList->GetFloatPropertyValue("Fov"),
-                  320.0f / 480.0f,
-                  propertyList->GetFloatPropertyValue("zNear"),
-                  propertyList->GetFloatPropertyValue("zFar"),
-                  propertyList->GetBoolPropertyValue("isOrtho"));
-    
-    camera->SetPosition(Vector3(
-                                propertyList->GetFloatPropertyValue("position.x"),
-                                propertyList->GetFloatPropertyValue("position.y"),
-                                propertyList->GetFloatPropertyValue("position.z")));
-    camera->SetTarget(Vector3(
-                              propertyList->GetFloatPropertyValue("target.x"),
-                              propertyList->GetFloatPropertyValue("target.y"),
-                              propertyList->GetFloatPropertyValue("target.z")));
-}
-
 void CameraPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
     Camera *camera = dynamic_cast<Camera *> (currentNode);
