@@ -481,7 +481,7 @@ void Image::Resize(int32 newWidth, int32 newHeight)
 
 void Image::Save(const String & filename)
 {
-#if defined(__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 	DVASSERT(format == FORMAT_RGBA8888);
 	LibPngWrapper::WritePngFile(filename.c_str(), width, height, data);
 #else
