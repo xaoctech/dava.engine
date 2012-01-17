@@ -95,6 +95,7 @@ protected:
     void ReleaseModificationPanel();
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
 	void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
+	void OnModePressed(BaseObject * object, void * userData, void * callerData);
 	void UpdateModState(void);
 	void PrepareModMatrix(const Vector2 & point);
 
@@ -177,6 +178,8 @@ protected:
 	UIButton *btnMod[3];
 	UIButton *btnAxis[3];
 	UIButton *btnPopUp;
+	UIButton *btnModeSelection;
+	UIButton *btnModeModification;
 
 	UIControl *modificationPanel;
 	eModState modState;
@@ -185,7 +188,7 @@ protected:
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
 	bool isDrag;
-
+	bool isModeModification;
 	DraggableDialog *helpDialog;
 
 	
