@@ -215,6 +215,15 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArray("vertices", meshData, vertexCount * vertexStride);
     keyedArchive->SetInt32("indexFormat", indexFormat);
     keyedArchive->SetByteArray("indices", (uint8*)indexArray, indexCount * INDEX_FORMAT_SIZE[indexFormat]);
+
+//    for (int32 k = 0; k < GetVertexCount(); ++k)
+//    {
+//        Vector3 normal;
+//        GetNormal(k, normal);
+//        Logger::Debug("savenorm2: %f %f %f", normal.x, normal.y, normal.z);
+//    }
+    
+
 }
 
 void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -260,6 +269,14 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
     RecalcAABBox();
+    
+//    for (int32 k = 0; k < GetVertexCount(); ++k)
+//    {
+//        Vector3 normal;
+//        GetNormal(k, normal);
+//        Logger::Debug("loadnorm2: %f %f %f", normal.x, normal.y, normal.z);
+//    }
+
 }
 void PolygonGroup::RecalcAABBox()
 {

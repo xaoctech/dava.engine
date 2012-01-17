@@ -311,8 +311,8 @@ void MeshInstanceNode::Draw()
 //		{
 //			RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //			RenderHelper::Instance()->DrawCornerBox(bbox);
-//        }
-        if (debugFlags & DEBUG_DRAW_NORMALS)
+//      }
+        //if (debugFlags & DEBUG_DRAW_NORMALS)
         {
             
             const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
@@ -330,7 +330,7 @@ void MeshInstanceNode::Draw()
                     
                     //vertex = vertex;
                     //normal = normal * modelView;
-                    Vector3 vertex2 = vertex + normal * 1.0f;
+                    Vector3 vertex2 = vertex + normal * 10.0f;
                     Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
                     RenderManager::Instance()->SetColor(color);
                     RenderHelper::Instance()->DrawLine(vertex, vertex2);

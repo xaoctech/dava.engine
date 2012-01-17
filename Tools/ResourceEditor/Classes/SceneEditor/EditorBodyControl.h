@@ -119,6 +119,7 @@ protected:
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
     void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
+    void OnBakeMatricesPressed(BaseObject * obj, void *, void *);
     void OnRefreshSceneGraph(BaseObject * obj, void *, void *);
 	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
