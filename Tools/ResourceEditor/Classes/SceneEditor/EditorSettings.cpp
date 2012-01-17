@@ -39,6 +39,18 @@ bool EditorSettings::IsValidPath(const String &path)
     return ((String::npos != posPng) || (String::npos != posPvr));
 }
 
+float32 EditorSettings::GetCameraSpeed()
+{
+    static const float32 speedConst[] = {35, 100, 250, 400};
+    return speedConst[settings->GetInt32("CameraSpeed", 0)];
+}
+void EditorSettings::SetCameraSpeedIndex(int32 camSpeedIndex)
+{
+    DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
+    settings->SetInt32("CameraSpeed", camSpeedIndex);
+    Save();
+}
+
 //String EditorSettings::GetProjectPath()
 //{
 //    String projectPath = settings->GetString("ProjectPath", "/");
