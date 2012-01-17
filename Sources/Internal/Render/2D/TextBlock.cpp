@@ -250,9 +250,9 @@ void TextBlock::Prepare()
 		if(!isMultilineEnabled)
 		{
 			textSize = font->GetStringSize(text);
+            pointsStr.clear();
             if(fittingType & FITTING_POINTS)
             {
-                pointsStr.clear();
                 if(drawSize.x < textSize.dx)
                 {
                     Size2i textSizePoints;
@@ -269,6 +269,50 @@ void TextBlock::Prepare()
                         {
                             break;
                         }
+                    }
+                }
+            }
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx)) 
+            {
+                Size2i textSizePoints;
+                int32 length = (int32)text.length();
+                if(ALIGN_RIGHT & align)
+                {
+                    for(int32 i = 1; i < length - 1; ++i)
+                    {
+                        pointsStr.clear();
+                        pointsStr.append(text, i, length - i);
+                        
+                        textSize = font->GetStringSize(pointsStr);
+                        if(textSize.dx <= drawSize.x)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if(ALIGN_HCENTER & align)
+                {
+                    int32 endPos = length / 2;
+                    int32 startPos = endPos - 1;
+                    
+                    int32 count = endPos;
+                    WideString savedStr = L"";
+
+                    for(int32 i = 1; i < count; ++i)
+                    {
+                        pointsStr.clear();
+                        pointsStr.append(text, startPos, endPos - startPos);
+                        
+                        textSize = font->GetStringSize(pointsStr);
+                        if(drawSize.x <= textSize.dx)
+                        {
+                            break;
+                        }
+                        
+                        --startPos;
+                        ++endPos;
+                        
+                        savedStr = pointsStr;
                     }
                 }
             }
@@ -671,7 +715,9 @@ void TextBlock::DrawToBuffer(int16 *buf)
 	if(!isMultilineEnabled)
 	{
         WideString drawText = text;
-        if((fittingType & FITTING_POINTS) && pointsStr.length())
+        
+//        if((fittingType & FITTING_POINTS) && pointsStr.length())
+        if(pointsStr.length())
         {
             drawText = pointsStr;
         }

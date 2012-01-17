@@ -54,15 +54,16 @@ void EditorScene::CheckNodes(SceneNode * curr)
 {
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
 	
-	if (mesh && mesh->userData == 0)
+	if (mesh && mesh->GetUserData() == 0)
 	{
 		SceneNodeUserData * data = new SceneNodeUserData();
-		curr->userData = data;
+		curr->SetUserData(data);
 		data->bulletObject = new BulletObject(this, collisionWorld, mesh, mesh->GetWorldTransform());
+		SafeRelease(data);
 	}
-	else if (mesh && mesh->userData)
+	else if (mesh && mesh->GetUserData())
 	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		SceneNodeUserData * data = (SceneNodeUserData*)mesh->GetUserData();
 		data->bulletObject->UpdateCollisionObject();
 	}
 
@@ -105,7 +106,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(lastSelectedPhysics)
 		{
-			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->userData;
+			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->GetUserData();
 			if (data)
 			{
 				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
@@ -142,9 +143,9 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 	if (node == 0)
 		node = dynamic_cast<LightNode *> (curr);
 	
-	if (node && node->userData)
+	if (node && node->GetUserData())
 	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
 		if (data->bulletObject->GetCollisionObject() == coll)
 			return curr;
 	}
@@ -206,7 +207,7 @@ SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 
 void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 {
-	SceneNodeUserData * userData = (SceneNodeUserData*)curr->userData;
+	SceneNodeUserData * userData = (SceneNodeUserData*)curr->GetUserData();
 	if (userData)
 		userData->bulletObject->SetUpdateFlag(value);
 	
@@ -256,9 +257,9 @@ void EditorScene::DrawDebugNodes(SceneNode * curr)
 {
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
 	
-	if (mesh && mesh->userData)
+	if (mesh && mesh->GetUserData())
 	{
-		SceneNodeUserData * data = (SceneNodeUserData*)curr->userData;
+		SceneNodeUserData * data = (SceneNodeUserData*)curr->GetUserData();
 		data->bulletObject->Draw(mesh->GetWorldTransform(), mesh);
 	}
 
