@@ -141,9 +141,9 @@ void LandscapeEditorControl::CreatePaintAreaPanel()
     toolsPanel->AddControl(height);
     toolsPanel->AddControl(zoom);
     
-    AddSliderHeader(zoom, L"Zoom:");
-    AddSliderHeader(radius, L"Radius:");
-    AddSliderHeader(height, L"Height:");
+    AddSliderHeader(zoom, LocalizedString(L"landscapeeditor.zoom"));
+    AddSliderHeader(radius, LocalizedString(L"landscapeeditor.radius"));
+    AddSliderHeader(height, LocalizedString(L"landscapeeditor.height"));
     
 
     Rect paintRect = Rect(toolsRect.x, toolsRect.y + toolsRect.dy + OFFSET, 

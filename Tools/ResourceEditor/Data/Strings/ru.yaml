@@ -1,0 +1,73 @@
+#dialog buttons
+dialog.ok: "Ok"
+dialog.cancel: "Отмена"
+dialog.create: "Создать"
+
+#menu strings
+menu.open: "Открыть" 
+menu.save: "Сохранить"
+menu.export: "Save to Game"
+menu.materials: "Материалы"
+menu.createnode: "Создать Node"
+menu.createnode.landscape: "Ландшафт"
+menu.createnode.light: "Источник света"
+menu.createnode.servicenode: "Service Node"
+menu.createnode.box: "Куб"
+menu.createnode.sphere: "Сфера"
+menu.createnode.camera: "Камера"
+menu.new: "Новая сцена"
+menu.new.emptyscene: "Сцена"
+menu.new.scenewithcamera: "Сцена с камерами"
+menu.openproject: "Открыть проект"
+menu.beast: "Beast"
+menu.landscape: "Ландшафт"
+
+#Panels
+panel.graph.scene: "Scene Graph"
+panel.graph.data: "Data Graph"
+panel.level: "Уровень"
+panel.properties: "Свойства"
+panel.library: "Библиотека"
+panel.refresh: "Обновить"
+
+#Output
+output.output: "Лог"
+output.camera: "Камера"
+output.clear: "Очистить"
+
+#Graph
+scenegraph.lookatobject: "Look at Object"
+scenegraph.removeobject: "Удалить объект"
+scenegraph.debugflags: "Debug Flags"
+scenegraph.bakemetrics: "Bake Metrices"
+
+#Library
+library.refresh: "ОБновить библиотеку"
+library.convert: "Конвертировать"
+library.add: "Добавить"
+library.edit: "Редактировать"
+library.errormessage.format: "Старый формат. Переконвертируйте из .dae."
+
+#Create Node Headers
+createnode.landscape: "Создание landscape node"
+createnode.light: "Создание light node"
+createnode.servicenode: "Создание service node"
+createnode.box: "Создание box node"
+createnode.sphere: "Создание sphere node"
+createnode.camera: "Создание камеры"
+
+#Create Property Dialog
+createproperty.type: "Тип:"
+createproperty.name: "Имя:"
+
+#Landscape Editor
+landscapeeditor.zoom: "Увеличение:"
+landscapeeditor.radius: "Радиус:"
+landscapeeditor.height: "Высота:"
+
+#Material Editor
+materialeditor.materials: "Материалы:"
+materialeditor.materialtype: "Тип материала:"
+
+#Modification Panel
+modificationpanel.modification: "Modification:"

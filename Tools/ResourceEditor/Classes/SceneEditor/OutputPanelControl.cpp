@@ -49,12 +49,12 @@ void OutputPanelControl::CreateButtons()
 {
     Vector2 pos(0,0);
     int32 dx = ControlsFactory::BUTTON_WIDTH;
-    btnOutput = ControlsFactory::CreateButton(pos, L"Output");
+    btnOutput = ControlsFactory::CreateButton(pos, LocalizedString(L"output.output"));
     pos.x += dx;
-    btnCamera = ControlsFactory::CreateButton(pos, L"Camera");
+    btnCamera = ControlsFactory::CreateButton(pos, LocalizedString(L"output.camera"));
     pos.x += dx;
     
-    btnClear = ControlsFactory::CreateButton(Vector2(GetRect().dx - ControlsFactory::BUTTON_WIDTH, 0), L"Clear");
+    btnClear = ControlsFactory::CreateButton(Vector2(GetRect().dx - ControlsFactory::BUTTON_WIDTH, 0), LocalizedString(L"output.clear"));
 
     AddControl(btnOutput);
     AddControl(btnCamera);

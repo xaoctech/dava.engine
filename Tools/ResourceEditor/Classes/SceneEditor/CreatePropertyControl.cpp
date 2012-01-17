@@ -15,13 +15,13 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     types.push_back("Bool");
 
     Rect buttonRect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT, rect.dx / 2, ControlsFactory::BUTTON_HEIGHT);
-    UIButton *btnCancel = ControlsFactory::CreateButton(buttonRect, L"Cancel");
+    UIButton *btnCancel = ControlsFactory::CreateButton(buttonRect, LocalizedString(L"dialog.cancel"));
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreatePropertyControl::OnCancel));
     AddControl(btnCancel);
     SafeRelease(btnCancel);
 
     buttonRect.x = rect.dx - buttonRect.dx;
-    UIButton *btnCreate = ControlsFactory::CreateButton(buttonRect, L"Create");
+    UIButton *btnCreate = ControlsFactory::CreateButton(buttonRect, LocalizedString(L"dialog.create"));
     btnCreate->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreatePropertyControl::OnCreate));
     AddControl(btnCreate);
     SafeRelease(btnCreate);
@@ -31,7 +31,7 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     Rect controlRect(textRect.dx, 0, rect.dx - textRect.dx, textRect.dy);
 
     UIStaticText *t = new UIStaticText(textRect);
-    t->SetText(L"Type:");
+    t->SetText(LocalizedString(L"createproperty.type"));
     t->SetFont(ControlsFactory::GetFontLight());
     AddControl(t);
     
@@ -42,7 +42,7 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     controlRect.y = controlRect.dy;
     
     t = new UIStaticText(textRect);
-    t->SetText(L"Name:");
+    t->SetText(LocalizedString(L"createproperty.name"));
     t->SetFont(ControlsFactory::GetFontLight());
     AddControl(t);
     
