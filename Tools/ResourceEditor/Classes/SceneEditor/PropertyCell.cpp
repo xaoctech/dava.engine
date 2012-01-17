@@ -282,7 +282,10 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     
     Font * font = ControlsFactory::GetFontLight();
     
-    pathTextContainer = new UIControl(Rect(2, size.y/2, size.x - size.y/2 - 4, size.y/2));
+    bool clearDataEnabled = prop->GetClearDataEnabled();
+    float32 xOffset = (clearDataEnabled) ? (size.y/2 + 5.0f) : 0.0f;
+    
+    pathTextContainer = new UIControl(Rect(2, size.y/2, size.x - size.y/2 - 4 - xOffset, size.y/2));
     ControlsFactory::CustomizeEditablePropertyCell(pathTextContainer);
     pathText = new UIStaticText(Rect(0, 0, pathTextContainer->size.x, pathTextContainer->size.y));
     pathText->SetFont(font);
@@ -290,15 +293,28 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     pathTextContainer->AddControl(pathText);
     AddControl(pathTextContainer);
     
-    browseButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2, size.y/2, size.y/2, size.y/2), L"...");
+    browseButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2 - xOffset, size.y/2, size.y/2, size.y/2), L"...");
 	browseButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnButton));
     AddControl(browseButton);
+
+    if(clearDataEnabled)
+    {
+        clearButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2, size.y/2, size.y/2, size.y/2), L"X");
+        ControlsFactory::CustomizeCloseWindowButton(clearButton);
+        clearButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnClear));
+        AddControl(clearButton);
+    }
+    else
+    {
+        clearButton = NULL;
+    }
     
     SetData(prop);
 }
 
 PropertyFilepathCell::~PropertyFilepathCell()
 {
+    SafeRelease(clearButton);
     SafeRelease(browseButton);
     SafeRelease(pathText);
     SafeRelease(pathTextContainer);
@@ -338,6 +354,19 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     
     dialog->Show(UIScreenManager::Instance()->GetScreen());
 }
+
+void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * callerData)
+{
+    if(dialog) 
+    {
+        return;
+    }
+
+    property->SetString("");
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}
+
 
 void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
