@@ -328,7 +328,19 @@ float32 PropertyFilepathCell::GetHeightForWidth(float32 currentWidth)
 void PropertyFilepathCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
-    pathText->SetText(StringToWString(prop->GetString()));
+    
+    String fullpath = prop->GetString();
+    String datasourcePath = EditorSettings::Instance()->GetDataSourcePath();
+    int32 pos = fullpath.find(datasourcePath);
+    if(String::npos == pos)
+    {
+        pathText->SetText(StringToWString(prop->GetString()));
+    }
+    else
+    {
+        fullpath = fullpath.substr(datasourcePath.length());
+        pathText->SetText(StringToWString(fullpath));
+    }
 }
 
 void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void * callerData)
