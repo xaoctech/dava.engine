@@ -702,19 +702,19 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 }
 					
                 case DVKEY_1:
-                    cameraController->SetSpeed(600);
+                    cameraController->SetSpeed(60);
                     break;
 
                 case DVKEY_2:
-                    cameraController->SetSpeed(1200);
+                    cameraController->SetSpeed(120);
                     break;
                 
                 case DVKEY_3:
-                    cameraController->SetSpeed(2400);
+                    cameraController->SetSpeed(240);
                     break;
 
                 case DVKEY_4:
-                    cameraController->SetSpeed(4800);
+                    cameraController->SetSpeed(480);
                     break;
                     
                 case DVKEY_9:
