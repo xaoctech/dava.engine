@@ -63,9 +63,6 @@ protected:
     bool GetHeaderState(const String & headerName, bool defaultValue = true);
     void SetHeaderState(const String & headerName, bool newState);
     
-    bool IsValidPath(const String &path);
-
-
     
     NodesPropertyDelegate *nodesDelegate;
     PropertyList *propertyList;
