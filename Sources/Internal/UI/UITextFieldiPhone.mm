@@ -71,6 +71,7 @@
 									 , (rect.y - DAVA::Core::Instance()->GetVirtualScreenYMin()) * DAVA::Core::GetVirtualToPhysicalFactor()
 									 , rect.dx * DAVA::Core::GetVirtualToPhysicalFactor()
 									 , rect.dy * DAVA::Core::GetVirtualToPhysicalFactor());
+        
 		textField.delegate = self;
 		
 		[self addSubview:textField];
@@ -220,9 +221,10 @@ void UITextFieldiPhone::UpdateRect(const Rect & rect)
 void UITextFieldiPhone::SetText(std::wstring & string)
 {
 	UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
-	textFieldHolder->textField.text = [NSString stringWithCString:(const char*)string.c_str() encoding:NSUTF32StringEncoding];
-	
- 
+    textFieldHolder->textField.text = [[ [ NSString alloc ]  
+                         initWithBytes : (char*)string.data()   
+                         length : string.size() * sizeof(wchar_t)   
+                         encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ] autorelease]; 
 }
 	
 void UITextFieldiPhone::GetText(std::wstring & string)

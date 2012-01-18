@@ -121,6 +121,7 @@ void KeyboardDevice::PrepareKeyTranslator()
 	keyTranslator[VK_MENU] = DVKEY_ALT;
 	keyTranslator[VK_SHIFT] = DVKEY_SHIFT;
 	keyTranslator[VK_CAPITAL] = DVKEY_CAPSLOCK;
+    keyTranslator[VK_SPACE] = DVKEY_SPACE;
 
 	keyTranslator[VK_F1] = DVKEY_F1;
     
@@ -151,6 +152,7 @@ void KeyboardDevice::PrepareKeyTranslator()
     keyTranslator[DVMACOS_OPTION] = DVKEY_ALT;
     keyTranslator[DVMACOS_SHIFT] = DVKEY_SHIFT;
     keyTranslator[DVMACOS_CAPS_LOCK] = DVKEY_CAPSLOCK;
+    keyTranslator[0x31] = DVKEY_SPACE;
     
 
     keyTranslator[0x00] = DVKEY_A;

@@ -10,6 +10,7 @@
 #include "LandscapeEditorControl.h"
 
 #include "EditorSettings.h"
+#include "SettingsDialog.h"
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -31,6 +32,14 @@ void SceneEditorScreenMain::LoadResources()
     Rect fullRect = GetRect();
     AddLineControl(Rect(0, MENU_HEIGHT, fullRect.dx, LINE_HEIGHT));
     CreateTopMenu();
+    
+    //
+    settingsDialog = new SettingsDialog(fullRect);
+    UIButton *settingsButton = ControlsFactory::CreateImageButton(Rect(fullRect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), "~res:/Gfx/UI/settingsicon");
+
+    settingsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSettingsPressed));
+    AddControl(settingsButton);
+    SafeRelease(settingsButton);
     
     landscapeEditor = new LandscapeEditorControl(Rect(0, MENU_HEIGHT + 1, fullRect.dx, fullRect.dy - MENU_HEIGHT-1));
     
@@ -83,6 +92,8 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(settingsDialog);
+    
     SafeRelease(sceneGraphButton);
     SafeRelease(dataGraphButton);
     
@@ -864,3 +875,12 @@ void SceneEditorScreenMain::EditMaterial(Material *material)
         AddControl(materialEditor);
     }
 }
+
+void SceneEditorScreenMain::OnSettingsPressed(BaseObject * obj, void *, void *)
+{
+    if(!settingsDialog->GetParent())
+    {
+        AddControl(settingsDialog);
+    }
+}
+

@@ -117,6 +117,9 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
 	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
 
+    AddHelpText(L"Landscape Editor:", ++y);
+	AddHelpText(L"Press & hold \"Spacebar\" to scroll area", y);
+
 	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }
 
@@ -842,22 +845,24 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 					
 					if (selection)
 					{
+						Logger::Debug(L"init %f %f", event->point.x, event->point.y);
 						scene->SetBulletUpdate(selection, false);
 						
 						inTouch = true;	
 						touchStart = event->point;
 						
 						startTransform = selection->GetLocalTransform();			
-						Matrix4 invProxyWorldTransform;
 						
 						InitMoving(event->point);
+						
+						translate1.CreateTranslation(-rotationCenter);
+						translate2.CreateTranslation(rotationCenter);
 						
 						//calculate koefficient for moving
 						Camera * cam = scene->GetCurrentCamera();
 						const Vector3 & camPos = cam->GetPosition();
 						const Matrix4 & wt = selection->GetWorldTransform();
 						Vector3 objPos = Vector3(0,0,0) * wt;
-						
 						Vector3 dir = objPos - camPos;
 						moveKf = (dir.Length() - cam->GetZNear()) * 0.003;					
 					}
@@ -870,6 +875,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 					PrepareModMatrix(event->point);
 					selection->SetLocalTransform(currTransform);
 					nodesPropertyPanel->UpdateFieldsForCurrentNode();				
+					Logger::Debug(L"mod %f %f", event->point.x, event->point.y);
 				}
 			}
 		}
@@ -992,36 +998,10 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 			}
 			modification.CreateTranslation(currPoint - startDragPoint);
 		}
-//		switch (modAxis) 
-//		{
-//			case AXIS_X:
-//			case AXIS_Y:
-//				modification.CreateTranslation(vect[modAxis] * winx * axisSign[modAxis] * moveKf);
-//				break;
-//			case AXIS_Z:
-//				modification.CreateTranslation(vect[modAxis] * winy * axisSign[AXIS_Z] * moveKf);
-//				break;
-//			case AXIS_XY:
-//				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Y] * winy * axisSign[AXIS_Y]) * moveKf);
-//				break;
-//			case AXIS_YZ:
-//				modification.CreateTranslation((vect[AXIS_Y] * winx * axisSign[AXIS_Y] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
-//				break;
-//			case AXIS_XZ:
-//				modification.CreateTranslation((vect[AXIS_X] * winx * axisSign[AXIS_X] + vect[AXIS_Z] * winy * axisSign[AXIS_Z]) * moveKf);
-//				break;
-//			default:
-//				break;
-//		}
 	}
 	else if (modState == MOD_ROTATE)
 	{
 		Matrix4 d;
-		Matrix4 translate1, translate2;
-
-		translate1.CreateTranslation(-rotationCenter);
-		translate2.CreateTranslation(rotationCenter);
-
 		switch (modAxis) 
 		{
 			case AXIS_X:
@@ -1050,6 +1030,7 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 				break;
 		}
 		modification = (translate1 * modification) * translate2;
+		
 	}
 	else if (modState == MOD_SCALE)
 	{

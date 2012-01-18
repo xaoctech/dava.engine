@@ -29,7 +29,7 @@ public:
         spriteName = _spriteName;
         
         radius = 0.5f;
-        height = 0.5f;
+        intension = 0.5f;
         zoom = 0.5f;
         
         solidRadius = _solidRadius;
@@ -39,7 +39,7 @@ public:
     String spriteName;
     
     float32 radius;
-    float32 height;
+    float32 intension;
     float32 zoom;
     float32 solidRadius;
 };
@@ -69,16 +69,30 @@ class PaintAreaControl: public UIControl
 {
 public:
     
+    enum eConst
+    {
+        ZOOM_MULTIPLIER = 2,
+    };
+    
     enum eTextureRenderObjectIDs
     {
-        ETROID_A8_ALPHA = 0,
-        ETROID_LIGHTMAP_RGB,
+        ETROID_LIGHTMAP_RGB = 0,
         ETROID_TEXTURE_TEXTURE0,
         ETROID_TEXTURE_TEXTURE1,
         
         ETROID_COUNT
     };
     
+    
+    enum eDrawingMask
+    {
+        EDM_NONE = 0,
+        
+        EDM_RED = 1,
+        EDM_GREEN = 1 << 1,
+        EDM_BLUE = 1 << 2,
+        EDM_ALPHA = 1 << 3
+    };
     
 public:
     PaintAreaControl(const Rect & rect);
@@ -97,15 +111,17 @@ public:
     
     void ShowResultTexture(bool show);
 
+    int32 GetDrawingMask();
+    void SetDrawingMask(int32 newMask);
+    
+    void SaveMask(const String &pathToFile);
+    
 protected:
     
     void Recreate();
     
     void DrawCursor();
-
     void DrawLightmap();
-    void DrawA8();
-
     
     void DrawShader();
     void InitShader();
@@ -114,7 +130,6 @@ protected:
     
     UIGeometricData savedGeometricData;
     void UpdateMap();
-    void GeneratePreview();
     
     PaintTool *usedTool;
     Sprite *spriteForAlpha;
@@ -133,7 +148,6 @@ protected:
     
     Vector2 textureSideSize;
     
-    //
     Shader * blendedShader;
     int32 uniformTexture0;
     int32 uniformTexture1;
@@ -143,15 +157,12 @@ protected:
     Vector<float32> textureCoords;
     RenderDataObject *renderData;
 
-    
-    
+    int32 drawingMask;
     bool showResultSprite;
-//===============    
+
     TextureRenderObject *textureRenderObjects[ETROID_COUNT];
-    
     void InitTextureRenderObjects();
     void ReleaseTextureRenderObjects();
-//===============    
 };
 
 

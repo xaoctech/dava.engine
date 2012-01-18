@@ -15,6 +15,7 @@ using namespace DAVA;
 class LandscapeEditorControl;
 class EditorBodyControl;
 class MaterialEditor;
+class SettingsDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
 //    public MenuPopupDelegate, public CreateNodeDialogDelegeate
@@ -111,7 +112,9 @@ private:
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
 	void OnBeastPressed(BaseObject * obj, void *, void *);
 	void OnLandscapePressed(BaseObject * obj, void *, void *);
-        
+
+    
+
     //Body list
     struct BodyItem
     {
@@ -172,6 +175,9 @@ private:
     
     //Landscape
     LandscapeEditorControl *landscapeEditor;
+    
+    void OnSettingsPressed(BaseObject * obj, void *, void *);
+    SettingsDialog *settingsDialog;
     
     // general
     Font *font;
