@@ -23,6 +23,12 @@ public:
     float32 GetCameraSpeed();
     void SetCameraSpeedIndex(int32 camSpeedIndex);//0 - 4
 
+    int32 GetScreenWidth();
+    void SetScreenWidth(int32 width);
+    
+    int32 GetScreenHeight();
+    void SetScreenHeight(int32 height);
+    
 protected:
 
     KeyedArchive *settings;

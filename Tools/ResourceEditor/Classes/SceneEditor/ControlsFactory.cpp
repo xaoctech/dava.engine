@@ -46,6 +46,34 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     AddBorder(btn);
 }
 
+UIButton *ControlsFactory::CreateImageButton(const Rect & rect, const String &imagePath)
+{
+    UIButton *btn = new UIButton(rect);
+    CustomizeImageButton(btn, imagePath);
+    return btn;
+}
+
+void ControlsFactory::CustomizeImageButton(UIButton *btn, const String &imagePath)
+{
+    btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_SCALE_TO_RECT);
+    btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_SCALE_TO_RECT);
+    btn->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_SCALE_TO_RECT);
+    btn->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_SCALE_TO_RECT);
+
+    
+    btn->SetStateSprite(UIControl::STATE_PRESSED_INSIDE, imagePath);
+    btn->SetStateSprite(UIControl::STATE_DISABLED, imagePath);
+    btn->SetStateSprite(UIControl::STATE_NORMAL, imagePath);
+    btn->SetStateSprite(UIControl::STATE_SELECTED, imagePath);
+    
+    btn->SetStateFrame(UIControl::STATE_PRESSED_INSIDE, 0);
+    btn->SetStateFrame(UIControl::STATE_DISABLED, 0);
+    btn->SetStateFrame(UIControl::STATE_NORMAL, 0);
+    btn->SetStateFrame(UIControl::STATE_SELECTED, 0);
+}
+
+
+
 UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
 {
     UIButton *btn = new UIButton(rect);
@@ -55,13 +83,6 @@ UIButton * ControlsFactory::CreateCloseWindowButton(const Rect & rect)
 
 void ControlsFactory::CustomizeCloseWindowButton(UIButton *btn)
 {
-//    btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-//    btn->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-//    
-//    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.7f, 0.0, 0.0, 1.f));
-//    btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.25f, 0.0, 0.0, 1.f));
-    
-    
     Font *font = GetFontDark();
     
     btn->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);

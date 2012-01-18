@@ -49,7 +49,7 @@ void GameCore::OnAppStarted()
 #endif //__DAVAENGINE_BEAST__
 	
     new OutputManager();
-    new EditorSettings();
+//    new EditorSettings();
     
     
 	resourcePackerScreen = new ResourcePackerScreen();

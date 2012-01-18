@@ -61,3 +61,23 @@ void EditorSettings::SetCameraSpeedIndex(int32 camSpeedIndex)
 // 
 //    return projectPath;
 //}
+
+int32 EditorSettings::GetScreenWidth()
+{
+    return settings->GetInt32("ScreenWidth", 1024);
+}
+
+void EditorSettings::SetScreenWidth(int32 width)
+{
+    settings->SetInt32("ScreenWidth", width);
+}
+
+int32 EditorSettings::GetScreenHeight()
+{
+    return settings->GetInt32("ScreenHeight", 690);
+}
+
+void EditorSettings::SetScreenHeight(int32 height)
+{
+    settings->SetInt32("ScreenHeight", height);
+}
