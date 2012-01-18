@@ -23,7 +23,6 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	DVASSERT(light);
 
     propertyList->AddSection("property.lightnode.light", GetHeaderState("property.lightnode.light", true));
-	propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", false));
         
     propertyList->AddComboProperty("property.lightnode.type", types);
 	propertyList->SetComboPropertyIndex("property.lightnode.type", light->GetType());
@@ -51,15 +50,14 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	if(LightNode::TYPE_DIRECTIONAL == light->GetType())
 	{
 		propertyList->AddFloatProperty("Shadow angle");
-		propertyList->SetFloatPropertyValue("Shadow angle", light->GetCustomProperties()->GetFloat("editor.shadowangle", 0.f));
+		propertyList->SetFloatPropertyValue("Shadow angle", light->GetCustomProperties()->GetFloat("editor.staticlight.shadowangle", 0.f));
 
 		propertyList->AddIntProperty("Shadow samples");
-		propertyList->SetIntPropertyValue("Shadow samples", light->GetCustomProperties()->GetInt32("editor.shadowsamples", 1));
+		propertyList->SetIntPropertyValue("Shadow samples", light->GetCustomProperties()->GetInt32("editor.staticlight.shadowsamples", 1));
 	}
 }
 
-void LightPropertyControl::OnComboIndexChanged(
-                                    PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
+void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
     if("property.lightnode.type" == forKey)
     {
@@ -69,7 +67,7 @@ void LightPropertyControl::OnComboIndexChanged(
         if(LightNode::TYPE_DIRECTIONAL == light->GetType())
         {
             light->GetCustomProperties()->SetFloat("editor.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
-            light->GetCustomProperties()->SetInt32("editor.shadowsamples", propertyList->GetFloatPropertyValue("Shadow samples"));
+            light->GetCustomProperties()->SetInt32("editor.shadowsamples", propertyList->GetIntPropertyValue("Shadow samples"));
         }
     }
 
@@ -114,7 +112,7 @@ void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const S
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         if(LightNode::TYPE_DIRECTIONAL == light->GetType())
         {
-            light->GetCustomProperties()->SetFloat("editor.shadowangle", newValue);
+            light->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", newValue);
         }
     }
 
@@ -128,7 +126,7 @@ void LightPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         if(LightNode::TYPE_DIRECTIONAL == light->GetType())
         {
-            light->GetCustomProperties()->SetInt32("editor.shadowsamples", newValue);
+            light->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", newValue);
         }
     }
     
