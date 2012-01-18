@@ -188,7 +188,7 @@ public:
      \brief Function to receive pathname of heightmap object
      \returns pathname of heightmap
      */
-    inline const String & GetHeightMapPathname();
+    const String & GetHeightMapPathname();
 
     inline const eRenderingMode GetRenderingMode();
     
@@ -284,11 +284,6 @@ inline AABBox3 & LandscapeNode::GetBoundingBox()
     return box;
 }
     
-inline const String & LandscapeNode::GetHeightMapPathname()
-{
-    return heightMapPath;
-}
-
 inline const LandscapeNode::eRenderingMode LandscapeNode::GetRenderingMode()
 {
     return renderingMode;

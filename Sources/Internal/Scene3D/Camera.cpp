@@ -146,11 +146,27 @@ Vector2 Camera::GetOnScreenPosition(const Vector3 &forPoint, const Rect & viewpo
 //                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
 
 
-
-	Vector2 v (((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
-			   (1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y);
-
-	return v;
+	switch(Core::Instance()->GetScreenOrientation())
+	{
+		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+        {
+            return Vector2((viewport.dx * 0.5f) * (1.f + pv.y/pv.w) + viewport.x
+                            , (viewport.dy * 0.5f) * (1.f + pv.x/pv.w) + viewport.y);
+        }
+            break;
+		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+        {
+            DVASSERT(false);
+        }
+                //add code here
+			break;
+        default:
+            return Vector2(((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
+                       (1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y);
+            break;
+	}
+    DVASSERT(false);
+	return Vector2();
 }
 
 const Matrix4 &Camera::GetUniformProjModelMatrix()
