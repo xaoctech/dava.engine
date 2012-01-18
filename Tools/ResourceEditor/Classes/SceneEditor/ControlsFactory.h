@@ -27,6 +27,9 @@ public:
     static UIButton *CreateButton(const Rect & rect, const WideString &buttonText);
     static void CustomizeButton(UIButton *btn, const WideString &buttonText);
 
+    static UIButton *CreateImageButton(const Rect & rect, const String &imagePath);
+    static void CustomizeImageButton(UIButton *btn, const String &imagePath);
+    
     static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);
     

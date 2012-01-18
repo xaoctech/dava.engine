@@ -11,7 +11,7 @@ using namespace DAVA;
 
 class PaintAreaControl;
 class PaintTool;
-class LandscapeEditorControl : public UIControl, public PropertyListDelegate
+class LandscapeEditorControl : public UIControl, public PropertyListDelegate, public UIFileSystemDialogDelegate
 {
     enum eConst
     {
@@ -20,6 +20,13 @@ class LandscapeEditorControl : public UIControl, public PropertyListDelegate
         TOOL_BUTTON_SIDE = 32,
         SLIDER_WIDTH = 100,
     };
+    
+    enum DIALOG_OPERATION
+    {
+        DIALOG_OPERATION_NONE = 0,
+        DIALOG_OPERATION_SAVE,
+    };
+
     
 public:
     LandscapeEditorControl(const Rect & rect);
@@ -31,9 +38,14 @@ public:
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 
+    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
+    virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
+
     
 protected:
 
+    void SetDrawingMask(int32 flag, bool value);
+    
     void CreateLeftPanel();
     void ReleaseLeftPanel();
     
@@ -64,13 +76,20 @@ protected:
     
     
     UISlider *radius;
-    UISlider *height;
+    UISlider *intension;
     UISlider *zoom;
     UISlider * CreateSlider(const Rect & rect);
     void AddSliderHeader(UISlider *slider, const WideString &text);
 	void OnRadiusChanged(BaseObject * object, void * userData, void * callerData);
-	void OnHeightChanged(BaseObject * object, void * userData, void * callerData);
+	void OnIntensionChanged(BaseObject * object, void * userData, void * callerData);
 	void OnZoomChanged(BaseObject * object, void * userData, void * callerData);
+    
+    UIFileSystemDialog * fileSystemDialog;
+    uint32 fileSystemDialogOpMode;
+
+    
+    void OnSavePressed(BaseObject * object, void * userData, void * callerData);
+
 };
 
 
