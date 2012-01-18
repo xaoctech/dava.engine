@@ -128,6 +128,7 @@ public:
 	virtual void DidAppear();
 	virtual void WillDisappear();
 	
+    virtual void OnFocused();
     virtual void OnFocusLost(UIControl *newFocus);
 
 	void SetDelegate(UITextFieldDelegate * delegate);
