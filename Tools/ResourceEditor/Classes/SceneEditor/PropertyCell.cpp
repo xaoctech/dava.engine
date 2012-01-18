@@ -35,7 +35,8 @@ void PropertyCell::SetData(PropertyCellData *prop)
 {
     property = prop;
     property->currentCell = this;
-    keyName->SetText(StringToWString(prop->key) + L" : ");
+//    keyName->SetText(StringToWString(prop->key) + L" : ");
+    keyName->SetText(LocalizedString(StringToWString(prop->key)));
 }
 
 String PropertyCell::GetTypeName(int cellType)

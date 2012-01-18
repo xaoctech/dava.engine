@@ -18,55 +18,39 @@ void SpherePropertyControl::ReadFrom(SceneNode * sceneNode)
     SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
 	DVASSERT(sphere);
     
-    propertyList->AddSection("Sphere", GetHeaderState("Sphere", true));
+    propertyList->AddSection("property.spherenode.sphere", GetHeaderState("property.spherenode.sphere", true));
     
-    propertyList->AddFloatProperty("Radius", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("property.spherenode.radius", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.spherenode.r", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.spherenode.g", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.spherenode.b", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("property.spherenode.a", PropertyList::PROPERTY_IS_EDITABLE); 
     
     float32 radius = sphere->GetRadius();
-    propertyList->SetFloatPropertyValue("Radius", radius);
-    propertyList->SetFloatPropertyValue("r", sphere->GetColor().r);
-    propertyList->SetFloatPropertyValue("g", sphere->GetColor().g);
-    propertyList->SetFloatPropertyValue("b", sphere->GetColor().b);
-    propertyList->SetFloatPropertyValue("a", sphere->GetColor().a);
-}
-
-void SpherePropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	MeshInstancePropertyControl::WriteTo(sceneNode);
-
-    SphereNode *sphere = dynamic_cast<SphereNode *> (sceneNode);
-	DVASSERT(sphere);
-
-    Color color(
-                propertyList->GetFloatPropertyValue("r"),
-                propertyList->GetFloatPropertyValue("g"),
-                propertyList->GetFloatPropertyValue("b"),
-                propertyList->GetFloatPropertyValue("a"));
-    
-    float32 radius = propertyList->GetFloatPropertyValue("Radius");
-    
-    sphere->SetColor(color);
-    sphere->SetRadius(radius);
+    propertyList->SetFloatPropertyValue("property.spherenode.radius", radius);
+    propertyList->SetFloatPropertyValue("property.spherenode.r", sphere->GetColor().r);
+    propertyList->SetFloatPropertyValue("property.spherenode.g", sphere->GetColor().g);
+    propertyList->SetFloatPropertyValue("property.spherenode.b", sphere->GetColor().b);
+    propertyList->SetFloatPropertyValue("property.spherenode.a", sphere->GetColor().a);
 }
 
 void SpherePropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if("r" == forKey || "g" == forKey || "b" == forKey || "a" == forKey)
+    if(     "property.spherenode.r" == forKey 
+       ||   "property.spherenode.g" == forKey 
+       ||   "property.spherenode.b" == forKey 
+       ||   "property.spherenode.a" == forKey)
     {
         SphereNode *sphere = dynamic_cast<SphereNode *> (currentNode);
         Color color(
-                    propertyList->GetFloatPropertyValue("r"),
-                    propertyList->GetFloatPropertyValue("g"),
-                    propertyList->GetFloatPropertyValue("b"),
-                    propertyList->GetFloatPropertyValue("a"));
+                    propertyList->GetFloatPropertyValue("property.spherenode.r"),
+                    propertyList->GetFloatPropertyValue("property.spherenode.g"),
+                    propertyList->GetFloatPropertyValue("property.spherenode.b"),
+                    propertyList->GetFloatPropertyValue("property.spherenode.a"));
         
         sphere->SetColor(color);
     }
-    else if("Radius" == forKey)
+    else if("property.spherenode.radius" == forKey)
     {
         SphereNode *sphere = dynamic_cast<SphereNode *> (currentNode);
         sphere->SetRadius(newValue);

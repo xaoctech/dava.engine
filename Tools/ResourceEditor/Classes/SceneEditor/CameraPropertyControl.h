@@ -12,7 +12,6 @@ public:
 	virtual ~CameraPropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-	virtual void WriteTo(SceneNode * sceneNode);
     
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);

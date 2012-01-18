@@ -134,6 +134,10 @@ public:
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
     
+    /*
+        Go down by hierarchy and bake all transforms
+     */
+    virtual void BakeTransforms();
     
 	enum
     {

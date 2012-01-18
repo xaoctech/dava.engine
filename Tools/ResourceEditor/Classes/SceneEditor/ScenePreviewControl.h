@@ -3,7 +3,6 @@
 
 #include "DAVAEngine.h"
 #include "CameraController.h"
-#include "../EditorScene.h"
 
 using namespace DAVA;
 
@@ -59,7 +58,7 @@ protected:
     void SetupCamera();
     
     //scene controls
-    EditorScene * editorScene;
+    Scene * editorScene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
     PreviewCameraController * cameraController;

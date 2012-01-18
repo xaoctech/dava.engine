@@ -50,7 +50,7 @@ void SceneEditorScreenMain::LoadResources()
                                                        BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT, 
                                                        ControlsFactory::BUTTON_WIDTH, 
                                                        ControlsFactory::BUTTON_HEIGHT), 
-                        L"Library");
+                        LocalizedString(L"panel.library"));
     libraryButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLibraryPressed));
     AddControl(libraryButton);
     
@@ -63,18 +63,18 @@ void SceneEditorScreenMain::LoadResources()
     propertiesButton = ControlsFactory::CreateButton(
                             Vector2(fullRect.dx - (ControlsFactory::BUTTON_WIDTH*2), 
                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
-                        L"Properties");
+                        LocalizedString(L"panel.properties"));
     propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
     AddControl(propertiesButton);
     
     
     sceneGraphButton = ControlsFactory::CreateButton(
-                                        Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), L"Scene Graph");
+                                        Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.scene"));
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
     dataGraphButton = ControlsFactory::CreateButton(
-                                                     Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), L"Data Graph");
+                                                     Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.data"));
     dataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnDataGraphPressed));
     AddControl(dataGraphButton);
     
@@ -130,25 +130,25 @@ void SceneEditorScreenMain::CreateTopMenu()
     int32 y = 0;
     int32 dx = ControlsFactory::BUTTON_WIDTH;
     int32 dy = ControlsFactory::BUTTON_HEIGHT;
-    btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open");
+    btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.open"));
     x += dx;
-    btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save");
+    btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.save"));
     x += dx;
-    btnExport = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Save to Game");
+    btnExport = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.export"));
     x += dx;
-    btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Materials");
+    btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.materials"));
     x += dx;
-    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Create Node");
+    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.createnode"));
     x += dx;
-    btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"New");
+    btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.new"));
     x += dx;
-    btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Open Project");
+    btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.openproject"));
 #ifdef __DAVAENGINE_BEAST__
 	x += dx;
-	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Beast");
+	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast"));
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
-	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), L"Landscape");
+	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
     
     
 
@@ -413,7 +413,7 @@ void SceneEditorScreenMain::OnOpenProjectPressed(BaseObject * obj, void *, void 
 
 void SceneEditorScreenMain::InitializeBodyList()
 {
-    AddBodyItem(L"Level", false);
+    AddBodyItem(LocalizedString(L"panel.level"), false);
 }
 
 void SceneEditorScreenMain::ReleaseBodyList()
@@ -706,37 +706,37 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             {
                 case ECNID_LANDSCAPE:
                 {
-                    text = L"Landscape";
+                    text = LocalizedString(L"menu.createnode.landscape");
                     break;
                 }
                     
                 case ECNID_LIGHT:
                 {
-                    text = L"Light";
+                    text = LocalizedString(L"menu.createnode.light");
                     break;
                 }
                     
                 case ECNID_SERVICENODE:
                 {
-                    text = L"Service Node";
+                    text = LocalizedString(L"menu.createnode.servicenode");
                     break;
                 }
                     
                 case ECNID_BOX:
                 {
-                    text = L"Box";
+                    text = LocalizedString(L"menu.createnode.box");
                     break;
                 }
                     
                 case ECNID_SPHERE:
                 {
-                    text = L"Sphere";
+                    text = LocalizedString(L"menu.createnode.sphere");
                     break;
                 }
                     
                 case ECNID_CAMERA:
                 {
-                    text = L"Camera";
+                    text = LocalizedString(L"menu.createnode.camera");
                     break;
                 }
                     
@@ -753,11 +753,11 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             switch (itemID) 
             {
                 case ENMID_ENPTYSCENE:
-                    text = L"Empty Scene";
+                    text = LocalizedString(L"menu.new.emptyscene");
                     break;
                     
                 case ENMID_SCENE_WITH_CAMERA:
-                    text = L"Scene+camera";
+                    text = LocalizedString(L"menu.new.scenewithcamera");
                     break;
                     
                 default:

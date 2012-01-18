@@ -36,10 +36,12 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-    
-    
 	RenderManager::Instance()->SetFPS(30);
 
+    LocalizationSystem::Instance()->SetCurrentLocale("en");
+	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");
+
+    
 #ifdef __DAVAENGINE_BEAST__
 	new BeastProxyImpl();
 #else 
