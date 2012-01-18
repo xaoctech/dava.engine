@@ -89,6 +89,7 @@ property.scenenode.matrixes: "Матрицы"
 property.scenenode.localmatrix: "Local Matrix:"
 property.scenenode.worldmatrix: "World Matrix:"
 property.scenenode.customproperties: "Custom properties"
+property.scenenode.isVisible: "Видимый"
 
 #LightNode Section
 property.lightnode.light: "Источник света"

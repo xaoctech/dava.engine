@@ -110,6 +110,7 @@ public:
 	
 	// properties
 	inline void SetVisible(bool isVisible);
+	inline bool GetVisible(void);
 	inline SceneNode * GetParent();
 	
 	// extract data from current node to use it in animations
@@ -265,6 +266,11 @@ private:
 inline void SceneNode::SetVisible(bool isVisible)
 {
 	visible = isVisible;
+}
+	
+inline bool SceneNode::GetVisible(void)
+{
+	return visible;
 }
 	
 inline SceneNode * SceneNode::GetParent()
