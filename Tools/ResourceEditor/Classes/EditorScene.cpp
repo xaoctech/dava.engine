@@ -37,10 +37,11 @@ EditorScene::EditorScene()
 
 EditorScene::~EditorScene()
 {
-	delete collisionWorld; collisionWorld = 0;
-	delete broadphase; broadphase = 0;
-	delete dispatcher; dispatcher = 0;
-	delete collisionConfiguration; collisionConfiguration = 0;
+	ReleaseUserData(this);
+	SafeDelete(collisionWorld);
+	SafeDelete(broadphase);
+	SafeDelete(dispatcher);
+	SafeDelete(collisionConfiguration);
 }
 
 void EditorScene::Update(float32 timeElapsed)
