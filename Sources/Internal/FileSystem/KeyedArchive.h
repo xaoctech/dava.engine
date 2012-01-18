@@ -131,7 +131,7 @@ public:
         \returns object
      */
     template <class T>
-    void GetByteArrayAsType(const String & key, T & value);
+    void GetByteArrayAsType(const String & key, T & value, const T & defaultValue = T());
 	
 	
 	/**
@@ -268,7 +268,7 @@ private:
     
 // Implementation 
 template <class T>
-void KeyedArchive::GetByteArrayAsType(const String & key, T & value)
+void KeyedArchive::GetByteArrayAsType(const String & key, T & value, const T & defaultValue)
 {
     int size = GetByteArraySize(key);
     if (size != 0)
@@ -277,6 +277,9 @@ void KeyedArchive::GetByteArrayAsType(const String & key, T & value)
         
         const uint8 * arrayData = GetByteArray(key);
         memcpy(&value, arrayData, sizeof(T));
+    }else
+    {
+        value = defaultValue;
     }
 }
     
