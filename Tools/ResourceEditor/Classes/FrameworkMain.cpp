@@ -10,6 +10,9 @@
 #include "GameCore.h"
 #include "ResourcePackerScreen.h"
 #include "TexturePacker/CommandLineParser.h"
+
+#include "EditorSettings.h"
+
 using namespace DAVA;
 
 
@@ -90,10 +93,17 @@ void FrameworkDidLaunched()
 	KeyedArchive * appOptions = new KeyedArchive();
 //	appOptions->SetInt("width",	920);
 //	appOptions->SetInt("height", 690);
+    
+//    int32 width = 1024;
+//    int32 height = 690;
+    new EditorSettings();
+    int32 width = EditorSettings::Instance()->GetScreenWidth();
+    int32 height = EditorSettings::Instance()->GetScreenHeight();
 
+    
 	appOptions->SetString("title", "DAVA SDK - Studio");
-	appOptions->SetInt32("width",	1024);
-	appOptions->SetInt32("height", 690);
+	appOptions->SetInt32("width",	width);
+	appOptions->SetInt32("height", height);
 
 	//appOptions->SetInt("fullscreen.width",	1280);
 	//appOptions->SetInt("fullscreen.height", 800);
@@ -101,8 +111,8 @@ void FrameworkDidLaunched()
 	appOptions->SetInt32("fullscreen", 0);
 	appOptions->SetInt32("bpp", 32); 
 
-	DAVA::Core::Instance()->SetVirtualScreenSize(1024, 690);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(1024, 690, "XGfx");
+	DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "XGfx");
 #endif 
     
 	GameCore * core = new GameCore();

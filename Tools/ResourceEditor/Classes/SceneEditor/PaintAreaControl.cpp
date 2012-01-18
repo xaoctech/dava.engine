@@ -49,44 +49,30 @@ void TextureRenderObject::Set(const String &texturepath)
 
 void TextureRenderObject::CreateMeshFromSprite(Sprite *spr, int32 frameToGen)
 {
-//    float32 x0 = spr->GetRectOffsetValueForFrame(frameToGen, Sprite::X_OFFSET_TO_ACTIVE);
-//    float32 y0 = spr->GetRectOffsetValueForFrame(frameToGen, Sprite::Y_OFFSET_TO_ACTIVE);
-//    float32 x1 = x0 + spr->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_WIDTH);
-//    float32 y1 = y0 + spr->GetRectOffsetValueForFrame(frameToGen, Sprite::ACTIVE_HEIGHT);
     float32 x0 = usedRect.x;
     float32 y0 = usedRect.y;
     float32 x1 = usedRect.dx;
     float32 y1 = usedRect.dy;
-    //    x0 *= sprScale.x;
-    //    x1 *= sprScale.y;
-    //    y0 *= sprScale.x;
-    //    y1 *= sprScale.y;
-    
+
     //triangle 1
     //0, 0
-    float32 *pT = spr->GetTextureVerts(frameToGen);
-    
     vertexes.push_back(x0);
     vertexes.push_back(y0);
     vertexes.push_back(0);
-    
-    
     //1, 0
     vertexes.push_back(x1);
     vertexes.push_back(y0);
     vertexes.push_back(0);
-    
-    
     //0, 1
     vertexes.push_back(x0);
     vertexes.push_back(y1);
     vertexes.push_back(0);
-    
     //1, 1
     vertexes.push_back(x1);
     vertexes.push_back(y1);
     vertexes.push_back(0);
     
+    float32 *pT = spr->GetTextureVerts(frameToGen);
     for (int i = 0; i < 2*4; i++) 
     {
         textureCoords.push_back(*pT);
@@ -112,6 +98,8 @@ PaintAreaControl::PaintAreaControl(const Rect & rect)
     usedRect = rect;
     
     showResultSprite = false;
+    
+    drawingMask = EDM_NONE;
     
     srcBlendMode = BLEND_SRC_ALPHA;
     dstBlendMode = BLEND_ONE;
@@ -183,30 +171,21 @@ void PaintAreaControl::SetTextureSideSize(const Vector2 & sideSize)
     spriteForAlpha = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGBA8888);
     DrawLightmap();
 
-    //TODO: for test
-    DrawA8();
-    
-    
-    
     SafeRelease(spriteForResult);
     spriteForResult = Sprite::CreateAsRenderTarget(textureSideSize.x, textureSideSize.y, Texture::FORMAT_RGBA8888);
 
     ShowResultTexture(showResultSprite);
     
-//=========    
+    // Create renderdata for shsader
     vertexes.clear();
     textureCoords.clear();
     SafeRelease(renderData);
 
     Rect r = GetRect();
-//    float32 x0 = r.x;
-//    float32 y0 = r.y;
-//    float32 x1 = r.x + r.dx;
-//    float32 y1 = r.y + r.dy;
     float32 x0 = 0;
     float32 y0 = 0;
-    float32 x1 = r.dx;
-    float32 y1 = r.dy;
+    float32 x1 = textureSideSize.x;
+    float32 y1 = textureSideSize.y;
     
     //triangle 1
     //0, 0
@@ -256,14 +235,14 @@ void PaintAreaControl::SetPaintTool(PaintTool *tool)
 void PaintAreaControl::ShowResultTexture(bool show)
 {
     showResultSprite = show;
-//    if(showResultSprite)
-//    {
-//        SetSprite(spriteForResult, 0);
-//    }
-//    else
-//    {
-//        SetSprite(spriteForAlpha, 0);
-//    }
+    if(showResultSprite)
+    {
+        SetSprite(spriteForResult, 0);
+    }
+    else
+    {
+        SetSprite(spriteForAlpha, 0);
+    }
 }
 
 void PaintAreaControl::SetTexture(eTextureRenderObjectIDs id, const String &path)
@@ -307,26 +286,12 @@ void PaintAreaControl::DrawShader()
     blendedShader->SetUniformValue(uniformTexture1, 1);
     blendedShader->SetUniformValue(uniformTextureMask, 2);
     
-    
-//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-//   
-//    RenderManager::Instance()->SetState(
-//                                        RenderStateBlock::STATE_TEXTURE0 
-//                                        | RenderStateBlock::STATE_TEXTURE1 
-//                                        | RenderStateBlock::STATE_TEXTURE2 
-//                                        | RenderStateBlock::STATE_BLEND 
-//                                        );
-
-    
     RenderManager::Instance()->SetRenderData(renderData);
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-
     
     RenderManager::Instance()->SetTexture(0, 1);
     RenderManager::Instance()->SetTexture(0, 2);
-
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 }
 
 
@@ -361,54 +326,26 @@ void PaintAreaControl::DrawLightmap()
     //fill texture with initial color
     RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
     RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-    RenderManager::Instance()->SetColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
+    RenderManager::Instance()->SetColor(Color(0.0f, 0.0f, 0.0f, 1.0f));
     RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
 
     //draw rect with color mask
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     RenderManager::Instance()->SetState(
-                                        RenderStateBlock::STATE_TEXTURE0 
-                                        | RenderStateBlock::STATE_COLORMASK_RED 
-                                        // | RenderStateBlock::STATE_COLORMASK_GREEN 
-                                        //| RenderStateBlock::STATE_COLORMASK_BLUE 
+                                        RenderStateBlock::STATE_COLORMASK_RED 
+                                        | RenderStateBlock::STATE_COLORMASK_GREEN 
+                                        | RenderStateBlock::STATE_COLORMASK_BLUE 
                                         );
-  
-    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
-//    textureRenderObjects[ETROID_LIGHTMAP_RGB]->Draw();
-    
+
+    if(textureRenderObjects[ETROID_LIGHTMAP_RGB]->sprite)
+    {
+        textureRenderObjects[ETROID_LIGHTMAP_RGB]->Draw();
+    }
     
     RenderManager::Instance()->ResetColor();
     RenderManager::Instance()->RestoreRenderTarget();
     
-    //restore states
-    RenderManager::Instance()->SetState(oldState);
-    RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
-}
-
-void PaintAreaControl::DrawA8()
-{
-    //save states
-    eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
-    eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
-    uint32 oldState = RenderManager::Instance()->GetState();
-
-    RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
-    
-    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-    
-    RenderManager::Instance()->SetState(
-                                        RenderStateBlock::STATE_TEXTURE0 
-                                        | RenderStateBlock::STATE_COLORMASK_ALPHA 
-                                        );
-    RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-    
-    RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
-    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
-    //textureRenderObjects[ETROID_A8_ALPHA]->Draw();
-
-    RenderManager::Instance()->RestoreRenderTarget();
-
     //restore states
     RenderManager::Instance()->SetState(oldState);
     RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
@@ -420,7 +357,13 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
     
     DrawCursor();
 
+    //save states
+    eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
+    eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
+    uint32 oldState = RenderManager::Instance()->GetState();
+
     RenderManager::Instance()->SetRenderTarget(spriteForResult);
+    RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
     RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
     RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
     RenderManager::Instance()->ResetColor();
@@ -429,33 +372,10 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
     
     RenderManager::Instance()->RestoreRenderTarget();
 
-    if(showResultSprite)
-    {
-        spriteForResult->SetPosition(0, 0);
-        spriteForResult->Draw();
-    }
-    else
-    {
-        //save states
-        eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
-        eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
-        uint32 oldState = RenderManager::Instance()->GetState();
-        
-        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 0.4f);
-        RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
+    //restore states
+    RenderManager::Instance()->SetState(oldState);
+    RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
 
-        
-        spriteForAlpha->SetPosition(0, 0);
-        
-        RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE);
-        spriteForAlpha->Draw();
-
-        
-        //restore states
-        RenderManager::Instance()->SetState(oldState);
-        RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
-    }
-    
     UIControl::Draw(geometricData);
 }
 
@@ -463,6 +383,9 @@ void PaintAreaControl::Draw(const DAVA::UIGeometricData &geometricData)
 
 void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
 {
+    bool spaceIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SPACE);
+    if(spaceIsPressed) return;
+    
     UIControl::Input(currentInput);
     
     if(UIEvent::BUTTON_1 == currentInput->tid)
@@ -497,86 +420,83 @@ void PaintAreaControl::Input(DAVA::UIEvent *currentInput)
         endPoint = currentInput->point;
         UpdateMap();
         prevDrawPos = Vector2(-100, -100);
-        
-        GeneratePreview();
     }
 }
 
 void PaintAreaControl::UpdateMap()
 {
-//    if(usedTool && toolSprite && usedTool->zoom)
-//    {
-//        float32 scaleSize = toolSprite->GetWidth() * usedTool->radius * 4 / usedTool->zoom;
-////        float32 radiusSize = scaleSize * usedTool->solidRadius;
-//
-//        Vector2 deltaPos = endPoint - startPoint;
-////        if(radiusSize/4 <  deltaPos.Length() || !deltaPos.Length())
-//        {
-//            RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
-//            
-//            eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-//            eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-//            RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
-//
-//            toolSprite->SetScaleSize(scaleSize, scaleSize);
-//            
-//            Vector2 pos = (startPoint - savedGeometricData.position)/usedTool->zoom - Vector2(scaleSize, scaleSize)/2;
-//            if(pos != prevDrawPos)
-//            {
-//                toolSprite->SetPosition(pos);
-//                
-//                paintColor.a = usedTool->height;
-//                RenderManager::Instance()->SetColor(paintColor);
-//                toolSprite->Draw();
-//                RenderManager::Instance()->ResetColor();
-//                
-//                prevDrawPos = pos;
-//            }
-//            
-//            RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
-//            RenderManager::Instance()->RestoreRenderTarget();
-//            
-//            startPoint = endPoint;
-//        }
-//    }
+    if(usedTool && toolSprite && usedTool->zoom)
+    {
+        float32 scaleSize = toolSprite->GetWidth() * usedTool->radius * 4 / (usedTool->zoom * PaintAreaControl::ZOOM_MULTIPLIER);
+        Vector2 deltaPos = endPoint - startPoint;
+        {
+            Vector2 pos = (startPoint - savedGeometricData.position)/(usedTool->zoom * PaintAreaControl::ZOOM_MULTIPLIER)- Vector2(scaleSize, scaleSize)/2;
+            if(pos != prevDrawPos)
+            {
+                //save states
+                eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
+                eBlendMode dstMode = RenderManager::Instance()->GetDestBlend();
+                uint32 oldState = RenderManager::Instance()->GetState();
+                
+                RenderManager::Instance()->SetRenderTarget(spriteForAlpha);
+                
+                int32 drawState =  RenderStateBlock::STATE_BLEND;
+                if(drawingMask & EDM_RED)
+                    drawState |= RenderStateBlock::STATE_COLORMASK_RED;
+                if(drawingMask & EDM_GREEN)
+                    drawState |= RenderStateBlock::STATE_COLORMASK_GREEN;
+                if(drawingMask & EDM_BLUE)
+                    drawState |= RenderStateBlock::STATE_COLORMASK_BLUE;
+                if(drawingMask & EDM_ALPHA)
+                    drawState |= RenderStateBlock::STATE_COLORMASK_ALPHA;
+                
+                
+                RenderManager::Instance()->SetState(drawState);
+                RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
+                
+                paintColor.a = usedTool->intension;
+                RenderManager::Instance()->SetColor(paintColor);
+
+                //set tool sprite
+                toolSprite->SetScaleSize(scaleSize, scaleSize);
+                toolSprite->SetPosition(pos);
+                
+                toolSprite->Draw();
+                prevDrawPos = pos;
+                
+                
+                RenderManager::Instance()->RestoreRenderTarget();
+                
+                //restore states
+                RenderManager::Instance()->SetState(oldState);
+                RenderManager::Instance()->SetBlendMode(srcMode, dstMode);
+            }
+            
+            startPoint = endPoint;
+        }
+    }
 }
 
-void PaintAreaControl::GeneratePreview()
+int32 PaintAreaControl::GetDrawingMask()
 {
-//    RenderManager::Instance()->SetRenderTarget(spriteForResult);
-//    RenderManager::Instance()->SetColor(Color(0.f, 0.f, 0.f, 0.f));
-//    RenderHelper::Instance()->FillRect(Rect(0, 0, textureSideSize.x, textureSideSize.y));
-//    RenderManager::Instance()->ResetColor();
-//
-//    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-//    
-//    RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-//    RenderManager::Instance()->SetState(
-//                                        RenderStateBlock::STATE_BLEND | 
-//                                        RenderStateBlock::STATE_TEXTURE0 | 
-//                                        RenderStateBlock::STATE_COLORMASK_RED | 
-//                                        RenderStateBlock::STATE_COLORMASK_GREEN | 
-//                                        RenderStateBlock::STATE_COLORMASK_BLUE | 
-//                                        RenderStateBlock::STATE_CULL);
-//    
-//
-//    RenderManager::Instance()->SetTexture(textures[ET_TEXTURE0], 0);
-//    
-////
-//    RenderManager::Instance()->SetState(
-//                                        RenderStateBlock::STATE_BLEND | 
-//                                        RenderStateBlock::STATE_TEXTURE1 | 
-//                                        RenderStateBlock::STATE_COLORMASK_ALPHA | 
-//                                        RenderStateBlock::STATE_CULL);
-//
-//    RenderManager::Instance()->SetTexture(spriteForAlpha->GetTexture(), 0);
-//    
-//    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-//
-//    RenderManager::Instance()->RestoreRenderTarget();
-//    
-//    SetSprite(spriteForResult, 0);
-//    SetSprite(textureRenderObjects[ETROID_LIGHTMAP_RGB]->sprite, 0);
+    return drawingMask;
+}
+
+void PaintAreaControl::SetDrawingMask(int32 newMask)
+{
+    drawingMask = newMask;
+}
+
+void PaintAreaControl::SaveMask(const String &pathToFile)
+{
+    if(spriteForAlpha)
+    {
+        Image *im = spriteForAlpha->GetTexture()->CreateImageFromMemory();   
+        if(im)
+        {
+            im->Save(pathToFile);
+        }
+    }
 }
 
 

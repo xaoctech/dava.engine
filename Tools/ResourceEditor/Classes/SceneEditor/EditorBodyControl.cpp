@@ -117,6 +117,9 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
 	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
 
+    AddHelpText(L"Landscape Editor:", ++y);
+	AddHelpText(L"Press & hold \"Spacebar\" to scroll area", y);
+
 	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }
 
