@@ -22,6 +22,8 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
 	DVASSERT(light);
 
+	propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", false));
+
     propertyList->AddSection("Light", GetHeaderState("Light", true));
         
     propertyList->AddComboProperty("Type", types);

@@ -113,6 +113,13 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetMatrix4PropertyValue("Local Matrix", sceneNode->GetLocalTransform());
         propertyList->SetMatrix4PropertyValue("World Matrix", sceneNode->GetWorldTransform());
     }
+
+	{ //static light
+		 propertyList->AddSection("Used in static lighting", GetHeaderState("Used in static lighting", true));
+
+		 propertyList->AddBoolProperty("Used in static lighting");
+		 propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
+	}
     
     
     //must be last
@@ -279,9 +286,15 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
 }
 void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
+	KeyedArchive *customProperties = currentNode->GetCustomProperties();
+
+	if("Used in static lighting" == forKey)
+	{
+		customProperties->SetBool("editor.staticlight.used", newValue);
+	}
+
     if(!createNodeProperties)
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
         if(customProperties->IsKeyExists(forKey))
         {
             customProperties->SetBool(forKey, newValue);
@@ -349,11 +362,11 @@ void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * 
     KeyedArchive *customProperties = currentNode->GetCustomProperties();
     Map<String, VariantType> propsData = customProperties->GetArchieveData();
 
-    float32 size = propsData.size();
+    int32 size = propsData.size();
     if(size)
     {
         Rect r = listHolder->GetRect();
-        r.dy = Min(r.dy, size * CellHeight(NULL, 0));
+        r.dy = Min(r.dy, (float32)size * CellHeight(NULL, 0));
         r.y = listHolder->GetRect().dy - r.dy - ControlsFactory::BUTTON_HEIGHT;
         
         deletionList = new UIList(r, UIList::ORIENTATION_VERTICAL);
