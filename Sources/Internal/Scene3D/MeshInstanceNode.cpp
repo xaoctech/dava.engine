@@ -186,6 +186,7 @@ void MeshInstanceNode::AddDummyLODLayer(int32 layer)
     
 void MeshInstanceNode::Update(float32 timeElapsed)
 {
+#define LOD_DEBUG
     bool needUpdateTransformBox = false;
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
@@ -198,6 +199,9 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     
     if (lodPresents && visible)
     {
+#ifdef LOD_DEBUG
+        int32 cl = currentLod->layer;
+#endif
         lastLodUpdateFrame++;
         if (lastLodUpdateFrame > 3)
         {
@@ -209,6 +213,12 @@ void MeshInstanceNode::Update(float32 timeElapsed)
                     if (scene->GetForceLodLayer() == it->layer)
                     {
                         currentLod = &(*it);
+#ifdef LOD_DEBUG
+                        if (cl != currentLod->layer) 
+                        {
+                            Logger::Info("Switch lod to %d", currentLod->layer);
+                        }
+#endif
                         return;
                     }
                 }
@@ -227,13 +237,24 @@ void MeshInstanceNode::Update(float32 timeElapsed)
                         }
                         else 
                         {
+#ifdef LOD_DEBUG
+                            if (cl != currentLod->layer) 
+                            {
+                                Logger::Info("Switch lod to %d", currentLod->layer);
+                            }
+#endif
                                 //                        Logger::Info("Draw selected LOD %d", currentLod->layer);
                             return;
                         }
                     }
                 }
             }
-
+#ifdef LOD_DEBUG
+            if (cl != currentLod->layer) 
+            {
+                Logger::Info("Switch lod to %d", currentLod->layer);
+            }
+#endif
         }
 //        Logger::Info("Draw selected LOD %d", currentLod->layer);
     }
@@ -457,12 +478,12 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
                 StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
                 
                 
-                AddPolygonGroup(SafeRetain(mesh), 
+                AddPolygonGroupForLayer(lodIdx,
+                                SafeRetain(mesh), 
                                 pgIndex,
                                 SafeRetain(material));
             }
         }
-        lodIdx++;
     }
 
 	int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);

@@ -12,6 +12,6 @@ void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
 	varTexCoordOrig = inTexCoord0;
-	varTexCoord0 = inTexCoord0 * 10.0;
-	varTexCoord1 = inTexCoord0 * 20.0;
+	varTexCoord0 = inTexCoord0 * 50.0;
+	varTexCoord1 = inTexCoord0 * 60.0;
 }

@@ -69,4 +69,13 @@ BaseObject * ObjectFactory::New(const String & name)
 	}
 	return 0;
 }
+    
+void ObjectFactory::Dump()
+{
+    Map<String, CreateObjectFunc>::iterator it = creatorMap.begin();
+    for (; it != creatorMap.end(); ++it)
+    {
+        Logger::Debug("Class: %s", it->first.c_str());
+    }
+}
 }
