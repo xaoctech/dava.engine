@@ -157,6 +157,24 @@ void UISlider::SetMinSprite(const String & spriteName, int32 frame)
 	bgMin->SetSprite(spriteName, frame);
 }
 	
+void UISlider::SetMinDrawType(UIControlBackground::eDrawType drawType)
+{
+    if (!bgMin) 
+    {
+        bgMin = new UIControlBackground();
+    }
+    bgMin->SetDrawType(drawType);
+}
+    
+void UISlider::SetMinLeftRightStretchCap(float32 stretchCap)
+{
+    if (!bgMin) 
+    {
+        bgMin = new UIControlBackground();
+    }
+    bgMin->SetLeftRightStretchCap(stretchCap);
+}
+    
 void UISlider::SetMaxSprite(Sprite * sprite, int32 frame)
 {
     if (!bgMax)
@@ -174,7 +192,25 @@ void UISlider::SetMaxSprite(const String & spriteName, int32 frame)
     }
 	bgMax->SetSprite(spriteName, frame);
 }
-	
+    
+void UISlider::SetMaxDrawType(UIControlBackground::eDrawType drawType)
+{
+    if (!bgMax) 
+    {
+        bgMax = new UIControlBackground();
+    }
+    bgMax->SetDrawType(drawType);
+}
+
+void UISlider::SetMaxLeftRightStretchCap(float32 stretchCap)
+{
+    if (!bgMax) 
+    {
+        bgMax = new UIControlBackground();
+    }
+    bgMax->SetLeftRightStretchCap(stretchCap);
+}
+
 void UISlider::RecalcButtonPos()
 {
 	thumbButton->relativePosition.x = Interpolation::Linear((float32)leftInactivePart, size.x - rightInactivePart, minValue, currentValue, maxValue);
