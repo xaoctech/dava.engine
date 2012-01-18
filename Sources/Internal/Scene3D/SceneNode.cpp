@@ -330,6 +330,8 @@ void SceneNode::Update(float32 timeElapsed)
 
 void SceneNode::Draw()
 {
+	if (!visible)return;
+
 	//uint32 size = (uint32)children.size();
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
@@ -338,7 +340,6 @@ void SceneNode::Draw()
         scene->nodeCounter++;
 
 	
-	if (!visible)return;
 	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
 	{
 //		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 

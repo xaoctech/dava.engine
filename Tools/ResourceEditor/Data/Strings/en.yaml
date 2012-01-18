@@ -89,6 +89,8 @@ property.scenenode.matrixes: "Matrixes"
 property.scenenode.localmatrix: "Local Matrix:"
 property.scenenode.worldmatrix: "World Matrix:"
 property.scenenode.customproperties: "Custom properties"
+property.scenenode.isVisible: "Visible"
+
 
 #LightNode Section
 property.lightnode.light: "Light"
