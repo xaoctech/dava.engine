@@ -428,6 +428,7 @@ bool SceneFile::ReadStaticMesh()
             {
                 sceneFP->Read(&normal, sizeof(Vector3));
                 polygonGroup->SetNormal(v, normal);
+                //Logger::Debug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
             }
             
 			if (polygonGroup->GetFormat() & EVF_TEXCOORD0)

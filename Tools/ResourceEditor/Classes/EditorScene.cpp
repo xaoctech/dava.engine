@@ -74,6 +74,18 @@ void EditorScene::CheckNodes(SceneNode * curr)
 	}
 }
 
+void EditorScene::ReleaseUserData(SceneNode * curr)
+{
+	if (curr)
+		curr->SetUserData(0);
+
+	int size = curr->GetChildrenCount();
+	for (int i = 0; i < size; i++)
+	{
+		ReleaseUserData(curr->GetChild(i));
+	}
+}
+
 SceneNode * GetSolidParent(SceneNode* curr)
 {
 	if (curr->GetSolid())

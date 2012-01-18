@@ -18,68 +18,51 @@ void BoxPropertyControl::ReadFrom(SceneNode * sceneNode)
     CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
 	DVASSERT(cube);
 
-    propertyList->AddSection("Cube", GetHeaderState("Cube", true));
+    propertyList->AddSection("property.cubenode.cube", GetHeaderState("property.cubenode.cube", true));
     
-    propertyList->AddFloatProperty("Length", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("Width", PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("Depth", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("r", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("g", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFloatProperty("b", PropertyList::PROPERTY_IS_EDITABLE); 
-    propertyList->AddFloatProperty("a", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("property.cubenode.length", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.cubenode.width", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("property.cubenode.depth", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.cubenode.r", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.cubenode.g", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("property.cubenode.b", PropertyList::PROPERTY_IS_EDITABLE); 
+    propertyList->AddFloatProperty("property.cubenode.a", PropertyList::PROPERTY_IS_EDITABLE); 
     
     Vector3 size = cube->GetSize();
-    propertyList->SetFloatPropertyValue("Length", size.x);
-    propertyList->SetFloatPropertyValue("Width", size.y); 
-    propertyList->SetFloatPropertyValue("Depth", size.z);
-    propertyList->SetFloatPropertyValue("r", cube->GetColor().r);
-    propertyList->SetFloatPropertyValue("g", cube->GetColor().g);
-    propertyList->SetFloatPropertyValue("b", cube->GetColor().b);
-    propertyList->SetFloatPropertyValue("a", cube->GetColor().a);
-}
-
-void BoxPropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	MeshInstancePropertyControl::WriteTo(sceneNode);
-
-    CubeNode *cube = dynamic_cast<CubeNode *> (sceneNode);
-	DVASSERT(cube);
-
-    Color color(
-                propertyList->GetFloatPropertyValue("r"),
-                propertyList->GetFloatPropertyValue("g"),
-                propertyList->GetFloatPropertyValue("b"),
-                propertyList->GetFloatPropertyValue("a"));
-    
-    Vector3 size(
-                 propertyList->GetFloatPropertyValue("Length"),
-                 propertyList->GetFloatPropertyValue("Width"),
-                 propertyList->GetFloatPropertyValue("Depth"));
-    
-    cube->SetSize(size);
-    cube->SetColor(color);
+    propertyList->SetFloatPropertyValue("property.cubenode.length", size.x);
+    propertyList->SetFloatPropertyValue("property.cubenode.width", size.y); 
+    propertyList->SetFloatPropertyValue("property.cubenode.depth", size.z);
+    propertyList->SetFloatPropertyValue("property.cubenode.r", cube->GetColor().r);
+    propertyList->SetFloatPropertyValue("property.cubenode.g", cube->GetColor().g);
+    propertyList->SetFloatPropertyValue("property.cubenode.b", cube->GetColor().b);
+    propertyList->SetFloatPropertyValue("property.cubenode.a", cube->GetColor().a);
 }
 
 void BoxPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if("r" == forKey || "g" == forKey || "b" == forKey || "a" == forKey)
+    if(     "property.cubenode.r" == forKey 
+       ||   "property.cubenode.g" == forKey 
+       ||   "property.cubenode.b" == forKey 
+       ||   "property.cubenode.a" == forKey)
     {
         CubeNode *cube = dynamic_cast<CubeNode *> (currentNode);
         Color color(
-                    propertyList->GetFloatPropertyValue("r"),
-                    propertyList->GetFloatPropertyValue("g"),
-                    propertyList->GetFloatPropertyValue("b"),
-                    propertyList->GetFloatPropertyValue("a"));
+                    propertyList->GetFloatPropertyValue("property.cubenode.r"),
+                    propertyList->GetFloatPropertyValue("property.cubenode.g"),
+                    propertyList->GetFloatPropertyValue("property.cubenode.b"),
+                    propertyList->GetFloatPropertyValue("property.cubenode.a"));
 
         cube->SetColor(color);
     }
-    else if("Length" == forKey || "Width" == forKey || "Depth" == forKey)
+    else if(    "property.cubenode.length" == forKey 
+            ||  "property.cubenode.width" == forKey 
+            ||  "property.cubenode.depth" == forKey)
     {
         CubeNode *cube = dynamic_cast<CubeNode *> (currentNode);
         Vector3 size(
-                     propertyList->GetFloatPropertyValue("Length"),
-                     propertyList->GetFloatPropertyValue("Width"),
-                     propertyList->GetFloatPropertyValue("Depth"));
+                     propertyList->GetFloatPropertyValue("property.cubenode.length"),
+                     propertyList->GetFloatPropertyValue("property.cubenode.width"),
+                     propertyList->GetFloatPropertyValue("property.cubenode.depth"));
         
         cube->SetSize(size);
     }

@@ -473,6 +473,7 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
             {
                 v.normal.Normalize();
                 fwrite(&v.normal, sizeof(Vector3), 1, sceneFP);
+                //Logger::Debug("normal: %f %f %f", v.normal.x, v.normal.y, v.normal.z);
 			}
             if (vertexFormat & EVF_TEXCOORD0)
             {
@@ -584,11 +585,7 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 	int nodeId = globalNodeId;
 	char name[64];
 	strcpy(name, node->originalNode->GetDaeId().c_str());
-	
-	//for (int k = 0; k < level + 1; ++k)
-	//	DAVA::Logger::Debug("-");
-	DAVA::Logger::Debug(GetIndentString('-', level + 1));
-	
+		
 	
 	fwrite(&nodeId, sizeof(int32), 1, sceneFP);
 	fwrite(name, strlen(name) + 1, 1, sceneFP);
@@ -610,7 +607,7 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 		}		
 	}
 
-	DAVA::Logger::Debug("Write scene node: %s childCount: %d isJoint: %d\n", name, def.childCount, (int)node->isJoint);
+	DAVA::Logger::Debug("%s Write scene node: %s childCount: %d isJoint: %d\n", GetIndentString('-', level + 1), name, def.childCount, (int)node->isJoint);
 	
 	fwrite(&def, sizeof(def), 1, sceneFP);
 	
@@ -649,11 +646,8 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
 	fwrite(&nodeId, sizeof(int), 1, sceneFP);
 	fwrite(name, strlen(name) + 1, 1, sceneFP);
 	
-	for (int k = 0; k < level + 1; ++k)
-		DAVA::Logger::Debug("-");
-	DAVA::Logger::Debug(" ");
 	
-	DAVA::Logger::Debug("Write mesh instance node: %s\n", name);
+	DAVA::Logger::Debug("%s Write mesh instance node: %s\n", GetIndentString('-', level + 1),  name);
 	
 	// write node information
 	SceneFile::SceneNodeDef def;
@@ -689,12 +683,8 @@ void ColladaDocument::WriteMeshNode(ColladaMeshInstance * node, int32 & globalNo
 			DAVA::Logger::Debug("*** Error: failed to find poly group index\n");
 		}
 		
-		
-		for (int k = 0; k < level + 1; ++k)
-			DAVA::Logger::Debug("-");
-		DAVA::Logger::Debug(" ");
-		
-		DAVA::Logger::Debug("Write poly instance node: %d materialIdx: %d meshIndex: %d polygroupIndex: %d\n", pgi, materialIndex, meshIndex, polyGroupIndex);
+				
+		DAVA::Logger::Debug("%s Write poly instance node: %d materialIdx: %d meshIndex: %d polygroupIndex: %d\n",GetIndentString('-', level + 1), pgi, materialIndex, meshIndex, polyGroupIndex);
 		fwrite(&meshIndex, sizeof(int32), 1, sceneFP);
 		fwrite(&polyGroupIndex, sizeof(int32), 1, sceneFP);
 		fwrite(&materialIndex, sizeof(int32), 1, sceneFP);
@@ -716,12 +706,8 @@ void ColladaDocument::WriteCameraNode(ColladaCamera * node, int32 & globalNodeId
 	
 	fwrite(&nodeId, sizeof(int), 1, sceneFP);
 	fwrite(name, strlen(name) + 1, 1, sceneFP);
-	
-	for (int k = 0; k < level + 1; ++k)
-		DAVA::Logger::Debug("-");
-	DAVA::Logger::Debug(" ");
-	
-	DAVA::Logger::Debug("Write camera node: %s\n", name);
+		
+	DAVA::Logger::Debug("%s Write camera node: %s\n", GetIndentString('-', level + 1), name);
 	
 	// write node information
 	SceneFile::SceneNodeDef def;

@@ -134,7 +134,7 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
     currentScenePath = "";
     rootNode = NULL;
     
-    editorScene = new EditorScene();
+    editorScene = new Scene();
     SetScene(editorScene);
 
     // Camera setup
@@ -170,7 +170,7 @@ void ScenePreviewControl::RecreateScene()
         SafeRelease(editorScene);
     }
     
-    editorScene = new EditorScene();
+    editorScene = new Scene();
     SetScene(editorScene);
 }
 

@@ -12,8 +12,6 @@ public:
 	virtual ~SpherePropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-	virtual void WriteTo(SceneNode * sceneNode);
-    
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
 };
 

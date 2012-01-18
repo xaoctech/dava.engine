@@ -20,19 +20,19 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
 	DVASSERT(mesh);
 
-    propertyList->AddSection("Mesh Instance", GetHeaderState("Mesh Instance", true));
+    propertyList->AddSection("property.meshinstance.meshinstance", GetHeaderState("property.meshinstance.meshinstance", true));
         
     //BBOX
     AABBox3 bbox = mesh->GetBoundingBox();
     AABBox3 transformedBox;
     bbox.GetTransformedBox(mesh->GetWorldTransform(), transformedBox);
     
-    propertyList->AddStringProperty("BBox.min", PropertyList::PROPERTY_IS_READ_ONLY);
-    propertyList->AddStringProperty("BBox.max", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("property.meshinstance.bboxmin", PropertyList::PROPERTY_IS_READ_ONLY);
+    propertyList->AddStringProperty("property.meshinstance.bboxmax", PropertyList::PROPERTY_IS_READ_ONLY);
     
-    propertyList->SetStringPropertyValue("BBox.min", Format("%0.2f, %0.2f, %0.2f", 
+    propertyList->SetStringPropertyValue("property.meshinstance.bboxmin", Format("%0.2f, %0.2f, %0.2f", 
                                                             transformedBox.min.x, transformedBox.min.y, transformedBox.min.z));
-    propertyList->SetStringPropertyValue("BBox.max", Format("%0.2f, %0.2f, %0.2f", 
+    propertyList->SetStringPropertyValue("property.meshinstance.bboxmax", Format("%0.2f, %0.2f, %0.2f", 
                                                             transformedBox.max.x, transformedBox.max.y, transformedBox.max.z));
     
     materials.clear();
@@ -110,48 +110,12 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
                 propertyList->SetComboPropertyIndex(comboName, 0);
             }
             
-            propertyList->AddMessageProperty("Edit Material", 
+            propertyList->AddMessageProperty("property.meshinstance.editmaterial", 
                                              Message(this, &MeshInstancePropertyControl::OnGo2Materials, meshMaterials[i]));
         }
     }
 }
 
-void MeshInstancePropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	NodesPropertyControl::WriteTo(sceneNode);
-
-    MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);
-	DVASSERT(mesh);
-    
-    Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-    Vector<Material*> meshMaterials = mesh->GetMaterials();
-    Vector<StaticMesh*> meshes = mesh->GetMeshes();
-    
-    int32 currentMaterial = 0;
-    for(int32 i = 0; i < meshes.size(); ++i)
-    {
-        //            PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
-        
-        String keyPrefix = Format("#%d", i);
-        int32 vertexFormat = EVF_VERTEX;
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.NORMAL");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.COLOR");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD0");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD1");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD2");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD3");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TANGENT");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.BINORMAL");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT");
-        
-        //TODO: set it to pg
-        if(materials.size() && !createNodeProperties)
-        {
-            currentMaterial = propertyList->GetComboPropertyIndex(keyPrefix + ". Material");
-            mesh->ReplaceMaterial(materials[currentMaterial], i);
-        }
-    }
-}
 
 void MeshInstancePropertyControl::OnGo2Materials(DAVA::BaseObject *object, void *userData, void *callerData)
 {

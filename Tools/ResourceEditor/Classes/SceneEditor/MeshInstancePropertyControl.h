@@ -12,8 +12,6 @@ public:
 	virtual ~MeshInstancePropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-	virtual void WriteTo(SceneNode * sceneNode);
-    
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     

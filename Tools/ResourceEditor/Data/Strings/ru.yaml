@@ -1,0 +1,149 @@
+#dialog buttons
+dialog.ok: "Ok"
+dialog.cancel: "Отмена"
+dialog.create: "Создать"
+
+#menu strings
+menu.open: "Открыть" 
+menu.save: "Сохранить"
+menu.export: "Save to Game"
+menu.materials: "Материалы"
+menu.createnode: "Создать Node"
+menu.createnode.landscape: "Ландшафт"
+menu.createnode.light: "Источник света"
+menu.createnode.servicenode: "Service Node"
+menu.createnode.box: "Куб"
+menu.createnode.sphere: "Сфера"
+menu.createnode.camera: "Камера"
+menu.new: "Новая сцена"
+menu.new.emptyscene: "Сцена"
+menu.new.scenewithcamera: "Сцена с камерами"
+menu.openproject: "Открыть проект"
+menu.beast: "Beast"
+menu.landscape: "Ландшафт"
+
+#Panels
+panel.graph.scene: "Scene Graph"
+panel.graph.data: "Data Graph"
+panel.level: "Уровень"
+panel.properties: "Свойства"
+panel.library: "Библиотека"
+panel.refresh: "Обновить"
+
+#Output
+output.output: "Лог"
+output.camera: "Камера"
+output.clear: "Очистить"
+
+#Graph
+scenegraph.lookatobject: "Look at Object"
+scenegraph.removeobject: "Удалить объект"
+scenegraph.debugflags: "Debug Flags"
+scenegraph.bakemetrics: "Bake Metrices"
+
+#Library
+library.refresh: "ОБновить библиотеку"
+library.convert: "Конвертировать"
+library.add: "Добавить"
+library.edit: "Редактировать"
+library.errormessage.format: "Старый формат. Переконвертируйте из .dae."
+
+#Create Node Headers
+createnode.landscape: "Создание landscape node"
+createnode.light: "Создание light node"
+createnode.servicenode: "Создание service node"
+createnode.box: "Создание box node"
+createnode.sphere: "Создание sphere node"
+createnode.camera: "Создание камеры"
+
+#Create Property Dialog
+createproperty.type: "Тип:"
+createproperty.name: "Имя:"
+
+#Landscape Editor
+landscapeeditor.zoom: "Увеличение:"
+landscapeeditor.radius: "Радиус:"
+landscapeeditor.height: "Высота:"
+landscapeeditor.size: "Размер:"
+landscapeeditor.texture0: "Texture0:"
+landscapeeditor.texture1: "Texture1/Detail:"
+landscapeeditor.lightmap: "Light Map:"
+landscapeeditor.showresult: "Показывать результат:"
+
+#Material Editor
+materialeditor.materials: "Материалы:"
+materialeditor.materialtype: "Тип материала:"
+
+#Modification Panel
+modificationpanel.modification: "Modification:"
+
+#property list
+#SceneNode Section
+property.scenenode.generalc++: "General C++:"
+property.scenenode.retaincount: "Retain Count:"
+property.scenenode.classname: "Class Name:"
+property.scenenode.c++classname: "C++ Class Name:"
+property.scenenode.scenenode: "Scene Node"
+property.scenenode.name: "Название:"
+property.scenenode.matrixes: "Матрицы"
+property.scenenode.localmatrix: "Local Matrix:"
+property.scenenode.worldmatrix: "World Matrix:"
+property.scenenode.customproperties: "Custom properties"
+
+#LightNode Section
+property.lightnode.light: "Источник света"
+property.lightnode.type: "Тип:"
+property.lightnode.r: "r:"
+property.lightnode.g: "g:"
+property.lightnode.b: "b:"
+property.lightnode.staticlight: "Static light"
+
+#CubeNode Section
+property.cubenode.cube: "Cube"
+property.cubenode.length: "Длина:"
+property.cubenode.width: "Ширина:"
+property.cubenode.depth: "Глубина:"
+property.cubenode.r: "r:"
+property.cubenode.g: "g:"
+property.cubenode.b: "b:"
+property.cubenode.a: "a:"
+
+#Mesh Instance Section
+property.meshinstance.meshinstance: "Mesh Instance"
+property.meshinstance.bboxmin: "BBox.min:"
+property.meshinstance.bboxmax: "BBox.max:"
+property.meshinstance.editmaterial: "Редактировать материал"
+
+#SphereNode Section
+property.spherenode.sphere: "Сфера"
+property.spherenode.radius: "Радиус:"
+property.spherenode.r: "r:"
+property.spherenode.g: "g:"
+property.spherenode.b: "b:"
+property.spherenode.a: "a:"
+
+#Camera Section
+property.camera.camera: "Камера"
+property.camera.fov: "Fov:"
+property.camera.znear: "zNear:"
+property.camera.zfar: "zFar:"
+property.camera.isortho: "isOrtho:"
+property.camera.position.x: "position.x:"
+property.camera.position.y: "position.y:"
+property.camera.position.z: "position.z:"
+property.camera.target.x: "target.x:"
+property.camera.target.y: "target.y:"
+property.camera.target.z: "target.z:"
+
+#Landscape Section
+property.landscape.landscape: "Ландшафт"
+property.landscape.size: "Size:"
+property.landscape.height: "Высота:"
+property.landscape.renderingmode: "Rendering Mode:"
+property.landscape.lightmap: "Light Map:"
+property.landscape.alphamask: "Alpha Mask:"
+property.landscape.heightmap: "Height Map:"
+property.landscape.texture0: "Texture0:"
+property.landscape.texture1: "Texture1/Detail:"
+property.landscape.texturebump: "Texture Bump:"
+property.landscape.texturemask: "Texture Mask:"

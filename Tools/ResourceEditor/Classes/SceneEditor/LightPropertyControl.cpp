@@ -22,23 +22,22 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	LightNode * light = dynamic_cast<LightNode *>(sceneNode);
 	DVASSERT(light);
 
+    propertyList->AddSection("property.lightnode.light", GetHeaderState("property.lightnode.light", true));
 	propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", false));
-
-    propertyList->AddSection("Light", GetHeaderState("Light", true));
         
-    propertyList->AddComboProperty("Type", types);
-	propertyList->SetComboPropertyIndex("Type", light->GetType());
+    propertyList->AddComboProperty("property.lightnode.type", types);
+	propertyList->SetComboPropertyIndex("property.lightnode.type", light->GetType());
 
-    propertyList->AddFloatProperty("r");
-	propertyList->SetFloatPropertyValue("r", light->GetColor().r);
+    propertyList->AddFloatProperty("property.lightnode.r");
+	propertyList->SetFloatPropertyValue("property.lightnode.r", light->GetColor().r);
 
-    propertyList->AddFloatProperty("g");
-	propertyList->SetFloatPropertyValue("g", light->GetColor().g);
+    propertyList->AddFloatProperty("property.lightnode.g");
+	propertyList->SetFloatPropertyValue("property.lightnode.g", light->GetColor().g);
 
-    propertyList->AddFloatProperty("b"); 
-	propertyList->SetFloatPropertyValue("b", light->GetColor().b);
+    propertyList->AddFloatProperty("property.lightnode.b"); 
+	propertyList->SetFloatPropertyValue("property.lightnode.b", light->GetColor().b);
 
-	propertyList->AddSection("Static light", GetHeaderState("Static light", true));
+	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
 	propertyList->AddBoolProperty("Enable");
 	propertyList->SetBoolPropertyValue("Enable", light->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
@@ -59,49 +58,19 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	}
 }
 
-void LightPropertyControl::WriteTo(SceneNode * sceneNode)
-{
-	NodesPropertyControl::WriteTo(sceneNode);
-
-	LightNode *light = dynamic_cast<LightNode *>(sceneNode);
-	DVASSERT(light);
-
-	Color color(
-		propertyList->GetFloatPropertyValue("r"),
-		propertyList->GetFloatPropertyValue("g"),
-		propertyList->GetFloatPropertyValue("b"),
-		1.f);
-	light->SetColor(color);
-
-	int32 type = propertyList->GetComboPropertyIndex("Type");
-	light->SetType((LightNode::eType)type);
-
-	bool enable = propertyList->GetBoolPropertyValue("Enable");
-	light->GetCustomProperties()->SetBool("editor.staticlight.enable", enable);
-
-	bool castShadows = propertyList->GetBoolPropertyValue("Cast shadows");
-	light->GetCustomProperties()->SetBool("editor.staticlight.castshadows", castShadows);
-
-	float32 intensity = propertyList->GetFloatPropertyValue("Intensity");
-	light->GetCustomProperties()->SetFloat("editor.intensity", intensity);
-
-	if(LightNode::TYPE_DIRECTIONAL == light->GetType())
-	{
-		float32 shadowAngle = propertyList->GetFloatPropertyValue("Shadow angle");
-		light->GetCustomProperties()->SetFloat("editor.shadowangle", shadowAngle);
-
-		int32 shadowSamples = propertyList->GetIntPropertyValue("Shadow samples");
-		light->GetCustomProperties()->SetInt32("editor.shadowsamples", shadowSamples);
-	}
-}
-
 void LightPropertyControl::OnComboIndexChanged(
                                     PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
-    if("Type" == forKey)
+    if("property.lightnode.type" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         light->SetType((LightNode::eType)newItemIndex);
+        
+        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+        {
+            light->GetCustomProperties()->SetFloat("editor.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
+            light->GetCustomProperties()->SetInt32("editor.shadowsamples", propertyList->GetFloatPropertyValue("Shadow samples"));
+        }
     }
 
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
@@ -125,13 +94,13 @@ void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
 
 void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if("r" == forKey || "g" == forKey || "b" == forKey)
+    if("property.lightnode.r" == forKey || "property.lightnode.g" == forKey || "property.lightnode.b" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         Color color(
-                    propertyList->GetFloatPropertyValue("r"),
-                    propertyList->GetFloatPropertyValue("g"),
-                    propertyList->GetFloatPropertyValue("b"),
+                    propertyList->GetFloatPropertyValue("property.lightnode.r"),
+                    propertyList->GetFloatPropertyValue("property.lightnode.g"),
+                    propertyList->GetFloatPropertyValue("property.lightnode.b"),
                     1.f);
         light->SetColor(color);
     }
@@ -140,7 +109,29 @@ void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const S
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         light->GetCustomProperties()->SetFloat("editor.intensity", newValue);
     }
+    else if("Shadow angle" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+        {
+            light->GetCustomProperties()->SetFloat("editor.shadowangle", newValue);
+        }
+    }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
+}
+
+void LightPropertyControl::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+{
+    if("Shadow samples" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        if(LightNode::TYPE_DIRECTIONAL == light->GetType())
+        {
+            light->GetCustomProperties()->SetInt32("editor.shadowsamples", newValue);
+        }
+    }
+    
+    NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
 }
 

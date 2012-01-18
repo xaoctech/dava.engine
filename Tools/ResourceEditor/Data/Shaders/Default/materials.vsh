@@ -53,7 +53,7 @@ void main()
 #if defined(VERTEX_LIT)
     vec4 ecPosition = modelViewMatrix * inPosition;
     vec3 ecPosition3 = vec3(ecPosition);
-    vec3 normal = normalMatrix * inNormal; // normal in eye coordinates
+    vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     vec3 VP = lightPosition0 - ecPosition3;
     
     VP = normalize(VP);

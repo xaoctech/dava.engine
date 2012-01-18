@@ -131,7 +131,7 @@ void EditorBodyControl::CreateLeftPanel()
     AddControl(leftPanelSceneGraph);
     
     Rect sceneGraphRect = leftRect;
-    sceneGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 4);
+    sceneGraphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 5);
     sceneGraphTree = new UIHierarchy(sceneGraphRect);
     ControlsFactory::CusomizeListControl(sceneGraphTree);
     ControlsFactory::SetScrollbar(sceneGraphTree);
@@ -143,35 +143,44 @@ void EditorBodyControl::CreateLeftPanel()
     int32 y = sceneGraphRect.dy;
     UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(
                                                                       0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                                                 L"Refresh");
+                                                                 LocalizedString(L"panel.refresh"));
     y += ControlsFactory::BUTTON_HEIGHT;
     
     UIButton * lookAtButton = ControlsFactory::CreateButton(Rect(
                                                                  0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                                            L"Look At Object");
+                                                            LocalizedString(L"scenegraph.lookatobject"));
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * removeNodeButton = ControlsFactory::CreateButton(Rect(
                                                                      0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                                                L"Remove Object");
+                                                                LocalizedString(L"scenegraph.removeobject"));
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
                                                                            0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
-                                                                      L"Debug Flags");
+                                                                      LocalizedString(L"scenegraph.debugflags"));
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * bakeMatrices = ControlsFactory::CreateButton(Rect(
+                                                                           0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+                                                                      LocalizedString(L"scenegraph.bakemetrics"));
+
+    
     
     refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshSceneGraph));
     lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnLookAtButtonPressed));
     removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRemoveNodeButtonPressed));
     enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnEnableDebugFlagsPressed));
+    bakeMatrices->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnBakeMatricesPressed));
     
     leftPanelSceneGraph->AddControl(refreshSceneGraphButton);
     leftPanelSceneGraph->AddControl(lookAtButton);
     leftPanelSceneGraph->AddControl(removeNodeButton);
     leftPanelSceneGraph->AddControl(enableDebugFlagsButton);
+    leftPanelSceneGraph->AddControl(bakeMatrices);
     
     SafeRelease(refreshSceneGraphButton);
     SafeRelease(lookAtButton);
     SafeRelease(removeNodeButton);
     SafeRelease(enableDebugFlagsButton);
+    SafeRelease(bakeMatrices);
     
     
     
@@ -187,7 +196,7 @@ void EditorBodyControl::CreateLeftPanel()
     leftPanelDataGraph->AddControl(dataGraphTree);
     UIButton * refreshDataGraphButton = ControlsFactory::CreateButton(Rect(
                                                                       0, dataGraphRect.dy, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
-                                                                 L"Refresh");
+                                                                 LocalizedString(L"panel.refresh"));
     refreshDataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshDataGraph));
     leftPanelDataGraph->AddControl(refreshDataGraphButton);
     SafeRelease(refreshDataGraphButton);
@@ -207,7 +216,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
 {
     scene = new EditorScene();
     // Camera setup
-    cameraController = new WASDCameraController(40);
+    cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
     
     if(withCameras)
     {
@@ -408,7 +417,7 @@ void EditorBodyControl::CreatePropertyPanel()
     refreshButton = ControlsFactory::CreateButton(Rect(
                                             0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT, 
                                             propertyPanelRect.dx, ControlsFactory::BUTTON_HEIGHT), 
-                                            L"Refresh");
+                                            LocalizedString(L"panel.refresh"));
     refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshPressed));
     
     rightPanel->AddControl(refreshButton);
@@ -704,19 +713,23 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 }
 					
                 case DVKEY_1:
-                    cameraController->SetSpeed(60);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(0);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
 
                 case DVKEY_2:
-                    cameraController->SetSpeed(120);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(1);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
                 
                 case DVKEY_3:
-                    cameraController->SetSpeed(240);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(2);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
 
                 case DVKEY_4:
-                    cameraController->SetSpeed(480);
+                    EditorSettings::Instance()->SetCameraSpeedIndex(3);
+                    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
                     break;
                     
                 case DVKEY_9:
@@ -1140,7 +1153,13 @@ void EditorBodyControl::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
         scene->GetCurrentCamera()->SetTarget(center);
     }
 }
-
+void EditorBodyControl::OnBakeMatricesPressed(BaseObject * obj, void *, void *)
+{
+    if (selectedSceneGraphNode)
+    {
+        selectedSceneGraphNode->BakeTransforms();
+    }
+}
 void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *)
 {
     if (selectedSceneGraphNode)
@@ -1148,6 +1167,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
         SceneNode * parentNode = selectedSceneGraphNode->GetParent();
         if (parentNode)
         {
+			scene->ReleaseUserData(selectedSceneGraphNode);
 			scene->SetSelection(0);
             parentNode->RemoveNode(selectedSceneGraphNode);
             
@@ -1187,10 +1207,15 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         }
         else
         {
-            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();            
+            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            
+            KeyedArchive * customProperties = rootNode->GetCustomProperties();
+            customProperties->SetString("editor.referenceToOwner", pathToFile);
+
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-            //SafeRelease(rootNode); //TODO: ??
+            
+            SafeRelease(rootNode);
         }
         
         if (scene->GetCamera(0))
@@ -1206,16 +1231,21 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
             mainFilePath = pathToFile;
             for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-            {//рут нода это сама сцена в данном случае
+            {   
+                //рут нода это сама сцена в данном случае
                 scene->AddNode(rootNode->GetChild(ci));
             }
         }
         else
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
+
+            KeyedArchive * customProperties = rootNode->GetCustomProperties();
+            customProperties->SetString("editor.referenceToOwner", pathToFile);
+
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-            //SafeRelease(rootNode); //TODO: ??
+            SafeRelease(rootNode); 
         }
 
         
@@ -1240,7 +1270,8 @@ void EditorBodyControl::WillAppear()
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
     savedTreeCell = NULL;
-    
+
+    cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
     sceneGraphTree->Refresh();
     RefreshDataGraph();
 }
@@ -1386,8 +1417,6 @@ void EditorBodyControl::NodesPropertyChanged()
 {
     if(selectedSceneGraphNode)
     {
-//        nodesPropertyPanel->WriteTo(selectedSceneGraphNode);
-        
         sceneGraphTree->Refresh();
     }
 }

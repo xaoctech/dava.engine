@@ -12,11 +12,10 @@ public:
 	virtual ~LightPropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-	virtual void WriteTo(SceneNode * sceneNode);
-    
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+    virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     
 protected:
     Vector<String> types;
