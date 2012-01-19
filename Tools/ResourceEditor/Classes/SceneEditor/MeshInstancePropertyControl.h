@@ -13,11 +13,12 @@ public:
 
 	virtual void ReadFrom(SceneNode * sceneNode);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     
 protected:
 
-    int32 GetIndexFromKey(int32 pos, const String &forKey);
+	int32 GetIndexFromKey(const String &forKey);
     void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
 
     Vector<Material*> materials;

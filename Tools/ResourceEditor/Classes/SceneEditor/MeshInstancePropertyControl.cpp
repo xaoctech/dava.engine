@@ -87,6 +87,9 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.JOINTWEIGHT", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
+
+		propertyList->AddIntProperty(keyPrefix + ".lightmap.size");
+		propertyList->SetIntPropertyValue(keyPrefix + ".lightmap.size", currentNode->GetCustomProperties()->GetInt32(keyPrefix + ".lightmap.size", 128));
         
         if(matCount && !createNodeProperties)
         {
@@ -126,10 +129,9 @@ void MeshInstancePropertyControl::OnGo2Materials(DAVA::BaseObject *object, void 
 
 void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    int32 pos = forKey.find("fmt.");
-    if(String::npos != pos)
+    if(forKey[0] == '#')
     {
-        int32 index = GetIndexFromKey(pos, forKey);
+        int32 index = GetIndexFromKey(forKey);
         
         String keyPrefix = Format("#%d", index);
         int32 vertexFormat = EVF_VERTEX;
@@ -147,13 +149,25 @@ void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, c
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
 
+void MeshInstancePropertyControl::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+{
+	if(forKey[0] == '#')
+	{
+		int32 index = GetIndexFromKey(forKey);
+
+		String keyPrefix = Format("#%d", index);
+		currentNode->GetCustomProperties()->SetInt32(keyPrefix + ".lightmap.size", newValue);
+	}
+
+	NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
+}
+
 void MeshInstancePropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, 
                                                int32 newItemIndex, const String &newItemKey)
 {
-    int32 pos = forKey.find(". Material");
-    if(String::npos != pos)
+	if(forKey[0] == '#')
     {
-        int32 index = GetIndexFromKey(pos, forKey);
+        int32 index = GetIndexFromKey(forKey);
 
         MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (currentNode);
         mesh->ReplaceMaterial(materials[newItemIndex], index);
@@ -164,14 +178,10 @@ void MeshInstancePropertyControl::OnComboIndexChanged(PropertyList *forList, con
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
 }
 
-int32 MeshInstancePropertyControl::GetIndexFromKey(int32 pos, const String &forKey)
+int32 MeshInstancePropertyControl::GetIndexFromKey(const String &forKey)
 {
-    String num = forKey.substr(0, pos);
-    num = forKey.substr(1);
-    
-    int32 retNum = atoi(forKey.c_str());
+	String num = forKey.substr(1);
+    int32 retNum = atoi(num.c_str());
     
     return retNum;
 }
-
-
