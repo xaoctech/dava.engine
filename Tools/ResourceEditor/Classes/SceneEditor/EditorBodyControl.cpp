@@ -1314,12 +1314,18 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     scene->ReleaseRootNode(pathToFile);
     
     ReloadNode(scene, pathToFile);
+    
     for (int i = 0; i < nodesToAdd.size(); i++) 
     {
-        nodesToAdd[i].parent->AddNode(nodesToAdd[i].node);
-        SafeRelease(nodesToAdd[i].node);
+        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
+        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
+        SafeRelease(nodesToAdd[i].nodeToAdd);
     }
     nodesToAdd.clear();
+
+    Refresh();
+    sceneGraphTree->Refresh();
+    RefreshDataGraph();
 }
 
 void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
@@ -1330,18 +1336,20 @@ void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
         SceneNode *newNode = scene->GetRootNode(pathToFile)->Clone();
         newNode->SetLocalTransform(node->GetLocalTransform());
         newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile);
+        newNode->SetSolid(true);
         
         SceneNode *parent = node->GetParent();
-        parent->RemoveNode(node);
         AddedNode addN;
-        addN.node = newNode;
+        addN.nodeToAdd = newNode;
+        addN.nodeToRemove = node;
         addN.parent = parent;
 
         nodesToAdd.push_back(addN);
         return;
     }
     
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    int32 csz = node->GetChildrenCount();
+    for (int ci = 0; ci < csz; ++ci)
     {
         SceneNode * child = node->GetChild(ci);
         ReloadNode(child, pathToFile);
