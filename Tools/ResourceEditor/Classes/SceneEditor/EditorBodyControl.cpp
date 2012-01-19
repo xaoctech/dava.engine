@@ -80,6 +80,9 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 	CreateModificationPanel();
 	
 	CreateHelpPanel();
+	mainCam = 0;
+	debugCam = 0;
+
 }
 
 
@@ -254,13 +257,13 @@ void EditorBodyControl::CreateScene(bool withCameras)
         scene->AddNode(cam);
         scene->AddCamera(cam);
         scene->SetCurrentCamera(cam);
-        cameraController->SetCamera(cam);
+        cameraController->SetScene(scene);
         
         SafeRelease(cam);
         
         Camera * cam2 = new Camera(scene);
         cam2->SetName("editor.debug-camera");
-        cam2->SetUp(Vector3(1.0f, 0.0f, 0.0f));
+        cam2->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));
         cam2->SetTarget(Vector3(0.0f, 250.0f, 0.0f));
         
@@ -273,6 +276,42 @@ void EditorBodyControl::CreateScene(bool withCameras)
     }
     
     scene3dView->SetScene(scene);
+}
+
+void EditorBodyControl::PushDebugCamera()
+{
+	mainCam = scene->FindByName("editor.main-camera");
+	if (mainCam)
+	{
+		SafeRetain(mainCam);
+		scene->RemoveNode(mainCam);
+	}
+	
+	debugCam = scene->FindByName("editor.debug-camera");
+	if (debugCam)
+	{
+		SafeRetain(debugCam);
+		scene->RemoveNode(debugCam);
+	}
+}
+
+
+void EditorBodyControl::PopDebugCamera()
+{
+	if (mainCam)
+	{
+		scene->AddNode(mainCam);
+		SafeRelease(mainCam);
+	}
+	
+	if (debugCam)
+	{
+		scene->AddNode(debugCam);
+		SafeRelease(debugCam);
+	}
+	
+	mainCam = 0;
+	debugCam = 0;
 }
 
 void EditorBodyControl::ReleaseScene()
@@ -640,6 +679,20 @@ void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCel
             
             UpdatePropertyPanel();
             DebugInfo();
+			
+			Camera * cam = dynamic_cast<Camera*>(node);
+			if (cam)
+			{
+				if (InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT))
+				{
+					scene->SetClipCamera(cam);
+				}
+				else 
+				{
+					scene->SetCurrentCamera(cam);
+					cameraController->SetScene(scene);
+				}
+			}
         }
     }
     else if(forHierarchy == dataGraphTree)
@@ -1222,7 +1275,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if (scene->GetCamera(0))
         {
             scene->SetCurrentCamera(scene->GetCamera(0));
-            cameraController->SetCamera(scene->GetCamera(0));
+            cameraController->SetScene(scene);
         }
     }    
     else if(FileSystem::Instance()->GetExtension(pathToFile) == ".sc2")
