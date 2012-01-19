@@ -53,6 +53,7 @@ library.convert: "Convert"
 library.add: "Add"
 library.edit: "Edit"
 library.errormessage.format: "Format is too old, reconvert .dae file."
+library.reload: "Reload"
 
 #Create Node Headers
 createnode.landscape: "Create landscape node"
@@ -84,6 +85,7 @@ landscapeeditor.savemask: "Save Mask"
 #Material Editor
 materialeditor.materials: "Materials:"
 materialeditor.materialtype: "Material type:"
+materialeditor.twosided: "Two-Sided:"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
