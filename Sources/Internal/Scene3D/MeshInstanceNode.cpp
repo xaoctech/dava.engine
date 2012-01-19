@@ -476,13 +476,18 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
             {
                 Material * material = sceneFile->GetMaterial(materialIndex);
                 StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
-                
+                Logger::Debug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
                 
                 AddPolygonGroupForLayer(lodIdx,
-                                SafeRetain(mesh), 
+                                mesh, 
                                 pgIndex,
-                                SafeRetain(material));
+                                material);
             }
+            else
+            {
+                DVASSERT(0 && "Negative element")
+            }
+            
         }
     }
 
