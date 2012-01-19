@@ -13,6 +13,7 @@ class LibraryControlDelegate
 public:
 	virtual void OnEditSCE(const String &pathName, const String &name) = 0;
 	virtual void OnAddSCE(const String &pathName) = 0;
+	virtual void OnReloadSCE(const String &pathName) = 0;
 };
 
 class ScenePreviewControl;
