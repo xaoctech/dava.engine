@@ -295,4 +295,8 @@ int32 LibraryControl::CellHeight(UIList *forList, int32 index)
 
 void LibraryControl::OnReloadPressed(DAVA::BaseObject *object, void *userData, void *callerData)
 {
+    if(controlDelegate)
+    {
+        controlDelegate->OnReloadSCE(selectedFileName);
+    }
 }

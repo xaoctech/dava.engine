@@ -1309,6 +1309,47 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     RefreshDataGraph();
 }
 
+void EditorBodyControl::ReloadRootScene(const String &pathToFile)
+{
+    scene->ReleaseRootNode(pathToFile);
+    
+    ReloadNode(scene, pathToFile);
+    for (int i = 0; i < nodesToAdd.size(); i++) 
+    {
+        nodesToAdd[i].parent->AddNode(nodesToAdd[i].node);
+        SafeRelease(nodesToAdd[i].node);
+    }
+    nodesToAdd.clear();
+}
+
+void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
+{//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
+    KeyedArchive *customProperties = node->GetCustomProperties();
+    if (customProperties->GetString("editor.referenceToOwner", "") == pathToFile) 
+    {
+        SceneNode *newNode = scene->GetRootNode(pathToFile)->Clone();
+        newNode->SetLocalTransform(node->GetLocalTransform());
+        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", pathToFile);
+        
+        SceneNode *parent = node->GetParent();
+        parent->RemoveNode(node);
+        AddedNode addN;
+        addN.node = newNode;
+        addN.parent = parent;
+
+        nodesToAdd.push_back(addN);
+        return;
+    }
+    
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+        ReloadNode(child, pathToFile);
+    }
+}
+
+
+
 const String &EditorBodyControl::GetFilePath()
 {
     return mainFilePath;
