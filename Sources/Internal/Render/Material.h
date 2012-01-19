@@ -81,6 +81,9 @@ public:
     void SetType(eType _type);
     void SetOpaque(bool isOpaque);
     bool GetOpaque();
+
+    void SetTwoSided(bool isTwoSided);
+    bool GetTwoSided();
     
     void Bind();
     
@@ -123,7 +126,8 @@ public:
 private:
     void RebuildShader();
     
-    bool    isOpaque;    
+    bool    isOpaque;  
+    bool    isTwoSided;
     
     Shader  * shader;
     static UberShader * uberShader;
