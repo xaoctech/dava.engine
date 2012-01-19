@@ -239,9 +239,8 @@ void WASDCameraController::Input(UIEvent * event)
 	void WASDCameraController::UpdateCam2But(void)
 	{
 		Vector2 dp = startPt - stopPt;
-		dp *= 8.f;
-		viewZAngle -= dp.x * SystemTimer::Instance()->FrameDelta() * 1.5f;
-		viewYAngle += dp.y * SystemTimer::Instance()->FrameDelta();
+		viewZAngle -= dp.x/7*1.5f;
+		viewYAngle += dp.y/7.f;
 		
 		if(viewYAngle < -MAX_ANGLE)
 			viewYAngle = -MAX_ANGLE;
