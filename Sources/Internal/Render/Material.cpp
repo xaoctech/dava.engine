@@ -51,6 +51,7 @@ Material::Material(Scene * _scene)
     ,   ambient(1.0f, 1.0f, 1.0f, 1.0f)
     ,   emission(1.0f, 1.0f, 1.0f, 1.0f)
     ,   isOpaque(false)
+    ,   isTwoSided(false)
 {
     if (scene)
     {
@@ -114,12 +115,8 @@ void Material::RebuildShader()
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
-    if (isOpaque)
+    switch (type) 
     {
-        shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
-    }
-    
-    switch (type) {
         case MATERIAL_UNLIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
@@ -137,6 +134,12 @@ void Material::RebuildShader()
         default:
             break;
     };
+    if (isOpaque)
+    {
+        shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
+    }
+    
+
     
     // Get shader if combo unavailable compile it
     shader = uberShader->GetShader(shaderCombileCombo);
@@ -186,7 +189,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.specular", specular);
     keyedArchive->SetByteArrayAsType("mat.emission", emission);
     keyedArchive->SetBool("mat.isOpaque", isOpaque);
-    
+    keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
     
     keyedArchive->SetInt32("mat.type", type);
 }
@@ -222,6 +225,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->GetByteArrayAsType("mat.emission", emission);
     
     isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
+    isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
@@ -237,7 +241,16 @@ bool Material::GetOpaque()
 {
     return isOpaque;
 }
+void Material::SetTwoSided(bool _isTwoSided)
+{
+    isTwoSided = _isTwoSided;
+}
     
+bool Material::GetTwoSided()
+{
+    return isTwoSided;
+}
+
 void Material::Bind()
 {
     RenderManager::Instance()->SetShader(shader);
@@ -252,10 +265,12 @@ void Material::Bind()
         RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
     }
         
-    if (isOpaque)
+    if (isOpaque || isTwoSided)
     {
-        RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
+    }else
+    {
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
     }
     
     // render
