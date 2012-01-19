@@ -275,10 +275,11 @@ void WASDCameraController::Input(UIEvent * event)
 }
 
 	void WASDCameraController::UpdateCam2But(Camera * camera)
-	{
-		Vector2 dp = startPt - stopPt;
-		viewZAngle -= dp.x/7*1.5f;
-		viewYAngle += dp.y/7.f;
+	{		
+		if (!camera)return;
+		Vector2 dp = stopPt - startPt;
+		viewZAngle += dp.x * 0.07f;
+		viewYAngle += dp.y * 0.07;
 		
 		if(viewYAngle < -MAX_ANGLE)
 			viewYAngle = -MAX_ANGLE;
@@ -323,10 +324,10 @@ void WASDCameraController::Input(UIEvent * event)
 	void WASDCameraController::UpdateCam3But(Camera * camera)
 	{
 		if (!camera)return;
-		Vector2 dp = (stopPt - startPt) * 0.1f;
+		Vector2 dp = stopPt - startPt;
 
 		Matrix4 mt, mt1, mt2, mt3;
-		mt1.CreateTranslation(Vector3(-dp.x, 0, dp.y));
+		mt1.CreateTranslation(Vector3(-dp.x * 0.07f, 0, dp.y * 0.07));
 		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 		mt3.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
 		
