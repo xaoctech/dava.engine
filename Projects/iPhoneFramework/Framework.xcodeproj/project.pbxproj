@@ -34,6 +34,7 @@
 		4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AFCB14C499E600BAA259 /* SceneManager.cpp */; };
 		4780AFD014C499E600BAA259 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCC14C499E600BAA259 /* SceneManager.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
+		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
@@ -487,6 +488,7 @@
 		4780AFCB14C499E600BAA259 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		4780AFCC14C499E600BAA259 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
+		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -902,6 +904,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */,
 				FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */,
 				EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */,
 			);
@@ -921,6 +924,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				5C77ABBE14C7703800E92D28 /* libpng_ios.a */,
 				FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */,
 				FECFB1D912E5904400C71562 /* External */,
 				FECFB32D12E5904400C71562 /* Internal */,
@@ -2121,7 +2125,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2134,6 +2138,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
@@ -2147,7 +2152,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2160,6 +2165,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
@@ -2169,10 +2175,7 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2192,7 +2195,7 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Libs/freetype/include,
-					./../../Libs/libpng/include,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "";
@@ -2206,6 +2209,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 i386";
 				WARNING_CFLAGS = "";
 			};
 			name = Debug;
@@ -2213,10 +2217,7 @@
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2235,7 +2236,7 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Libs/freetype/include,
-					./../../Libs/libpng/include,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "";
@@ -2249,6 +2250,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 i386";
 				WARNING_CFLAGS = "";
 			};
 			name = Release;
@@ -2256,10 +2258,7 @@
 		785662DF109B65FE00DAF688 /* AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DDARWIN_NO_CARBON,
@@ -2277,7 +2276,7 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Libs/freetype/include,
-					./../../Libs/libpng/include,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "";
@@ -2291,6 +2290,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 i386";
 				WARNING_CFLAGS = "";
 			};
 			name = AdHoc;
@@ -2302,7 +2302,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2315,6 +2315,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
@@ -2324,10 +2325,7 @@
 		FEFB031611CA5F1B00B65B8B /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DDARWIN_NO_CARBON,
@@ -2345,7 +2343,7 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Libs/freetype/include,
-					./../../Libs/libpng/include,
+					./../../Libs/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "";
@@ -2359,6 +2357,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = "armv6 armv7 i386";
 				WARNING_CFLAGS = "";
 			};
 			name = Distribution;
@@ -2370,7 +2369,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2383,6 +2382,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
+					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;

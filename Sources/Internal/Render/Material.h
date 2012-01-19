@@ -79,6 +79,13 @@ public:
     static const char * GetTypeName();
     
     void SetType(eType _type);
+    void SetOpaque(bool isOpaque);
+    bool GetOpaque();
+
+    void SetTwoSided(bool isTwoSided);
+    bool GetTwoSided();
+    
+    void Bind();
     
     eType   type;
 
@@ -116,7 +123,11 @@ public:
     int32 uniformTexture1;
     int32 uniformLightPosition0;
     
-    bool    isOpaque;    
+private:
+    void RebuildShader();
+    
+    bool    isOpaque;  
+    bool    isTwoSided;
     
     Shader  * shader;
     static UberShader * uberShader;

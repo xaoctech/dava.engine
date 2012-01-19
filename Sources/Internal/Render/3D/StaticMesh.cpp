@@ -118,71 +118,10 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
     PolygonGroup * group = reinterpret_cast<PolygonGroup*>(children[index]);
     
     RenderManager::Instance()->SetRenderData(group->renderDataObject);
-#if 0 // old material code
-    if (material)
-	{
-
-		if (material->textures[Material::TEXTURE_DIFFUSE])
-		{
-			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DIFFUSE]);
-        }
-        
-//        if (material->hasOpacity)
-//        {
-//            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
-//            //RenderManager::Instance()->EnableCulling(false);
-//            RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
-//        }
-	}
-#else 
-    if (material)
-	{
-        RenderManager::Instance()->SetShader(material->shader);
-
-		if (material->textures[Material::TEXTURE_DIFFUSE])
-		{
-			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DIFFUSE], 0);
-        }
-
-        if (material->textures[Material::TEXTURE_DECAL])
-        {
-			RenderManager::Instance()->SetTexture(material->textures[Material::TEXTURE_DECAL], 1);
-        }
-        
-        if (material->isOpaque)
-        {
-            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
-            RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
-        }
-	}
-
-#endif
-
-	
-    // render
-	RenderManager::Instance()->FlushState();
-    
-
-    if (material->textures[Material::TEXTURE_DECAL])
-    {
-        material->shader->SetUniformValue(material->uniformTexture0, 0);
-        material->shader->SetUniformValue(material->uniformTexture1, 1);
-        
-    }
-    if (material->uniformLightPosition0 != -1)
-    {
-        Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
-        const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
-        lightPosition0 = lightPosition0 * matrix;
-        
-        material->shader->SetUniformValue(material->uniformLightPosition0, lightPosition0); 
-    }        
-
+    material->Bind();
     RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
     
-    
-    RenderManager::Instance()->SetTexture(0, 1); // clear texture block 1
-    //RenderManager::Instance()->EnableCulling(true);
+    RenderManager::Instance()->SetTexture(0, 1); 
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 }
 
