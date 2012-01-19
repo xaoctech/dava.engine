@@ -410,9 +410,9 @@ Image * Image::CreateFromFile(const String & pathName)
 
 			//if (a != 0)
 			{
-				r = r * a / 255;
-				g = g * a / 255;
-				b = b * a / 255;
+				//r = r * a / 255;
+				//g = g * a / 255;
+				//b = b * a / 255;
 			}
 			*inOutPixel32 = ((a) << 24) | (r << 16) | (g << 8) | b;
 			inOutPixel32++;

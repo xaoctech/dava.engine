@@ -88,6 +88,8 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(dataGraphButton);
     
     InitializeBodyList();
+    
+    SetupAnimation();
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -160,6 +162,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
 	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
+	x += dx;
+	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
     
     
 
@@ -174,6 +178,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 	AddControl(btnBeast);
 #endif
     AddControl(btnLandscape);
+    AddControl(btnViewPortSize);
     
 
     btnOpen->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenPressed));
@@ -187,6 +192,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 	btnBeast->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
 #endif// #ifdef __DAVAENGINE_BEAST__
 	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapePressed));
+	btnViewPortSize->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnViewPortSize));
 }
 
 void SceneEditorScreenMain::ReleaseTopMenu()
@@ -202,6 +208,7 @@ void SceneEditorScreenMain::ReleaseTopMenu()
 	SafeRelease(btnBeast);
 #endif// #ifdef __DAVAENGINE_BEAST__
     SafeRelease(btnLandscape);
+    SafeRelease(btnViewPortSize);
 }
 
 void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
@@ -352,36 +359,75 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 //        }
 //    }
     
+
+    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    {
+        Material *m = scene->GetMaterial(i);
+        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+        {
+            if (m->textures[n])
+            {
+                if (!m->textures[n]->relativePathname.empty()) 
+                {
+                    ExportTexture(m->textures[n]->relativePathname);
+                }
+            }
+        }
+    }
+    
+    NodeExportPreparation(scene);
+    
     SceneFileV2 * file = new SceneFileV2();
     file->EnableSaveForGame(true);
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
     SafeRelease(file);
 
-//    for (int i = 0; i < scene->GetMaterialCount(); i++)
-//    {
-//        Material *m = scene->GetMaterial(i);
-//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-//        {
-//            if (m->textures[n])
-//            {
-//                path = m->textures[n]->relativePathname;
-//                if (!path.empty()) 
-//                {
-//                    String pathTo = path;
-//                    pathTo.replace(path.find("DataSource"), strlen("DataSource"), "Data");
-//                    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-//                    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-//                    FileSystem::Instance()->CopyFile(path, pathTo);
-//                }
-//            }
-//        }
-//    }
     
 	iBody->bodyControl->PopDebugCamera();
 
 	
     libraryControl->RefreshTree();
+}
+
+void SceneEditorScreenMain::NodeExportPreparation(SceneNode *node)
+{
+    LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+    if (land) 
+    {
+        ExportTexture(land->GetHeightMapPathname());
+        for (int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+        {
+            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+            if (t) 
+            {
+                ExportTexture(t->relativePathname);
+            }
+        }
+    }
+
+
+    
+    
+    
+    
+    
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+        NodeExportPreparation(child);
+    }
+}
+
+void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
+{
+    String fileOnly;
+    String pathOnly;
+    String pathTo = textureDataSourcePath;
+    pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
+    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+    FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
 }
 
 
@@ -582,18 +628,21 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
 
 void SceneEditorScreenMain::OnLibraryPressed(DAVA::BaseObject *obj, void *, void *)
 {
-    if(libraryControl->GetParent())
-    {
-        RemoveControl(libraryControl);
-    }
-    else
-    {
-        AddControl(libraryControl);
-    }
-
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ShowProperties(false);
-    iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
+    if(!iBody->bodyControl->ControlsAreLocked())
+    {
+        if(libraryControl->GetParent())
+        {
+            RemoveControl(libraryControl);
+        }
+        else
+        {
+            AddControl(libraryControl);
+        }
+        
+        iBody->bodyControl->ShowProperties(false);
+        iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
+    }
 }
 
 SceneEditorScreenMain::BodyItem * SceneEditorScreenMain::FindCurrentBody()
@@ -705,6 +754,21 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_VIEWPORT:
+        {
+            BodyItem *iBody = FindCurrentBody();
+            
+            if(libraryControl->GetParent())
+            {
+                RemoveControl(libraryControl);
+            }
+            
+            iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
+            
+            iBody->bodyControl->SetViewPortSize(itemID);
+            break;
+        }
+            
             
         default:
             break;
@@ -784,6 +848,32 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_VIEWPORT:
+        {
+            switch (itemID)
+            {
+                case EditorBodyControl::EVPID_IPHONE:
+                    text = LocalizedString("menu.viewport.iphone");
+                    break;
+
+                case EditorBodyControl::EVPID_RETINA:
+                    text = LocalizedString("menu.viewport.retina");
+                    break;
+
+                case EditorBodyControl::EVPID_IPAD:
+                    text = LocalizedString("menu.viewport.ipad");
+                    break;
+
+                case EditorBodyControl::EVPID_DEFAULT:
+                    text = LocalizedString("menu.viewport.default");
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+        }
+            
         default:
             break;
     }
@@ -808,6 +898,10 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
             retCount = ENMID_COUNT;
             break;
         }
+            
+        case MENUID_VIEWPORT:
+            retCount = EditorBodyControl::EVPID_COUNT;
+            break;
             
         default:
             break;
@@ -890,3 +984,34 @@ void SceneEditorScreenMain::OnSettingsPressed(BaseObject * obj, void *, void *)
     }
 }
 
+void SceneEditorScreenMain::AutoSaveLevel(BaseObject * obj, void *, void *)
+{
+    time_t now = time(0);
+    tm* utcTime = localtime(&now);
+    
+    String pathToFile = EditorSettings::Instance()->GetDataSourcePath();
+    pathToFile += Format("AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+                                                                utcTime->tm_hour, utcTime->tm_min);
+    
+    BodyItem *iBody = bodies[0];
+    Scene * scene = iBody->bodyControl->GetScene();
+    SceneFileV2 * file = new SceneFileV2();
+    file->EnableDebugLog(false);
+    file->SaveScene(pathToFile, scene);
+    SafeRelease(file);
+    
+    SetupAnimation();
+}
+
+void SceneEditorScreenMain::SetupAnimation()
+{
+    float32 minutes = EditorSettings::Instance()->GetAutosaveTime();
+    Animation * anim = WaitAnimation(minutes * 60.f); 
+    anim->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SceneEditorScreenMain::AutoSaveLevel));
+}
+
+void SceneEditorScreenMain::OnViewPortSize(DAVA::BaseObject *obj, void *, void *)
+{
+    menuPopup->InitControl(MENUID_VIEWPORT, btnViewPortSize->GetRect());
+    AddControl(menuPopup);
+}

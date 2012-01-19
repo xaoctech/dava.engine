@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		47A1423A12CBD3EC003E267E /* StaticTextScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47A1423812CBD3EC003E267E /* StaticTextScreen.cpp */; };
+		5C77AB9C14C767EA00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB9B14C767EA00E92D28 /* libpng_macos.a */; };
+		5C77ABAF14C76EED00E92D28 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABAE14C76EED00E92D28 /* libz.dylib */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		EAA3DF0C1446FA3B009132AA /* LandscapeTestScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA3DF0A1446FA3B009132AA /* LandscapeTestScreen.cpp */; };
 		FE044F75140EEC6D002A6D27 /* ImageUsageScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE044F73140EEC6D002A6D27 /* ImageUsageScreen.cpp */; };
@@ -63,6 +65,8 @@
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
 		47A1423812CBD3EC003E267E /* StaticTextScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StaticTextScreen.cpp; path = Classes/StaticTextScreen.cpp; sourceTree = "<group>"; };
 		47A1423912CBD3EC003E267E /* StaticTextScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StaticTextScreen.h; path = Classes/StaticTextScreen.h; sourceTree = "<group>"; };
+		5C77AB9B14C767EA00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
+		5C77ABAE14C76EED00E92D28 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAA3DF0A1446FA3B009132AA /* LandscapeTestScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeTestScreen.cpp; path = Classes/LandscapeTestScreen.cpp; sourceTree = "<group>"; };
 		EAA3DF0B1446FA3B009132AA /* LandscapeTestScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeTestScreen.h; path = Classes/LandscapeTestScreen.h; sourceTree = "<group>"; };
@@ -119,6 +123,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C77ABAF14C76EED00E92D28 /* libz.dylib in Frameworks */,
+				5C77AB9C14C767EA00E92D28 /* libpng_macos.a in Frameworks */,
 				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */,
@@ -160,6 +166,8 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				5C77ABAE14C76EED00E92D28 /* libz.dylib */,
+				5C77AB9B14C767EA00E92D28 /* libpng_macos.a */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
 				FE98930B11638F3C00500198 /* Framework.xcodeproj */,
 				FE445A961153C27800F5EFD6 /* User classes */,
@@ -432,6 +440,10 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/libs\"",
+				);
 				PRODUCT_NAME = TemplateProjectMacOS;
 			};
 			name = Debug;
@@ -447,6 +459,10 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Libs/libs\"",
+				);
 				PRODUCT_NAME = TemplateProjectMacOS;
 			};
 			name = Release;

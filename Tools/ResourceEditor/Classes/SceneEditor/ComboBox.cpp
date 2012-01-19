@@ -192,3 +192,8 @@ void ComboBox::OnCellSelected(UIList *forList, UIListCell *selectedCell)
     comboButton->SetSelected(false);
     list->GetParent()->RemoveControl(list);
 }
+
+void ComboBox::WillDisappear()
+{
+    Cancel();
+}

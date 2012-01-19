@@ -51,6 +51,7 @@ Material::Material(Scene * _scene)
     ,   ambient(1.0f, 1.0f, 1.0f, 1.0f)
     ,   emission(1.0f, 1.0f, 1.0f, 1.0f)
     ,   isOpaque(false)
+    ,   isTwoSided(false)
 {
     if (scene)
     {
@@ -106,15 +107,16 @@ Material::~Material()
 {
 }
     
-void Material::SetType(eType _type)
+void Material::RebuildShader()
 {
     uniformTexture0 = -1;
     uniformTexture1 = -1;
     uniformLightPosition0 = -1;
     
-    type = _type;
     String shaderCombileCombo = "MATERIAL_TEXTURE";
-    switch (type) {
+    
+    switch (type) 
+    {
         case MATERIAL_UNLIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
@@ -132,8 +134,16 @@ void Material::SetType(eType _type)
         default:
             break;
     };
-    shader = uberShader->GetShader(shaderCombileCombo);
+    if (isOpaque)
+    {
+        shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
+    }
+    
 
+    
+    // Get shader if combo unavailable compile it
+    shader = uberShader->GetShader(shaderCombileCombo);
+    
     switch (type) {
         case MATERIAL_UNLIT_TEXTURE:
             break;
@@ -149,12 +159,17 @@ void Material::SetType(eType _type)
             //
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
             uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-    
+            
             break;
         default:
             break;
     };
-
+}
+    
+void Material::SetType(eType _type)
+{
+    type = _type;
+    RebuildShader();
 }
     
 void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -174,7 +189,7 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetByteArrayAsType("mat.specular", specular);
     keyedArchive->SetByteArrayAsType("mat.emission", emission);
     keyedArchive->SetBool("mat.isOpaque", isOpaque);
-    
+    keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
     
     keyedArchive->SetInt32("mat.type", type);
 }
@@ -210,9 +225,72 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->GetByteArrayAsType("mat.emission", emission);
     
     isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
+    isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
+}
+
+void Material::SetOpaque(bool _isOpaque)
+{
+    isOpaque = _isOpaque;
+    RebuildShader();
+}
+
+bool Material::GetOpaque()
+{
+    return isOpaque;
+}
+void Material::SetTwoSided(bool _isTwoSided)
+{
+    isTwoSided = _isTwoSided;
+}
+    
+bool Material::GetTwoSided()
+{
+    return isTwoSided;
+}
+
+void Material::Bind()
+{
+    RenderManager::Instance()->SetShader(shader);
+        
+    if (textures[Material::TEXTURE_DIFFUSE])
+    {
+        RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
+    }
+        
+    if (textures[Material::TEXTURE_DECAL])
+    {
+        RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
+    }
+        
+    if (isOpaque || isTwoSided)
+    {
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
+    }else
+    {
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+    }
+    
+    // render
+    RenderManager::Instance()->FlushState();
+    
+    
+    if (textures[Material::TEXTURE_DECAL])
+    {
+        shader->SetUniformValue(uniformTexture0, 0);
+        shader->SetUniformValue(uniformTexture1, 1);
+        
+    }
+    if (uniformLightPosition0 != -1)
+    {
+        Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
+        const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
+        lightPosition0 = lightPosition0 * matrix;
+        
+        shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
+    }
 }
 
 

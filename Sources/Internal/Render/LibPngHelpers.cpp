@@ -39,7 +39,7 @@
 #include <stdarg.h>
 #include <iostream>
 
-#include <png.h>
+#include <libpng/png.h>
 #include "Render/RenderManager.h"
 #include "Render/2D/Sprite.h"
 #include "Render/Texture.h"

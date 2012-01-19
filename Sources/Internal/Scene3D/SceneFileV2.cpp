@@ -222,6 +222,19 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     ProcessLOD(_scene, rootNode);
     _scene->AddRootNode(rootNode, rootNodePathName);
     
+    
+    for (size_t mi = 0; mi < materials.size(); ++mi)
+    {
+        SafeRelease(materials[mi]);
+    }
+    materials.clear();
+    
+    for (size_t mi = 0; mi < staticMeshes.size(); ++mi)
+    {
+        SafeRelease(staticMeshes[mi]);
+    }
+    staticMeshes.clear();
+    
     SafeRelease(file);
     return true;
 }
@@ -346,16 +359,21 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         if (node->GetClassName() == "DataNode")
         {
             SafeRelease(node);
-            node = root;
+            node = SafeRetain(root); // retain root here because we release it at the end
         }   
         node->SetScene(scene);
-        //TODO: refactoring here ugly hack need saving options
+        
+        // TODO: Rethink here
         Material * material = dynamic_cast<Material*>(node);
         if (material)
-            materials.push_back(material);
+        {
+            materials.push_back(SafeRetain(material));
+        }
         StaticMesh * staticMesh = dynamic_cast<StaticMesh*>(node);
         if (staticMesh)
-            staticMeshes.push_back(staticMesh);
+        {
+            staticMeshes.push_back(SafeRetain(staticMesh));
+        }
         
         node->Load(archive, this);
         
@@ -369,6 +387,7 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         {
             LoadDataHierarchy(scene, node, file, level + 1);
         }
+        SafeRelease(node);
     }
     
     SafeRelease(archive);

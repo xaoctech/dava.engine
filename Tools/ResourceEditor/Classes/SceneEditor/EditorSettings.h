@@ -29,6 +29,15 @@ public:
     int32 GetScreenHeight();
     void SetScreenHeight(int32 height);
     
+    float32 GetAutosaveTime();
+    void SetAutosaveTime(float32 time);
+    
+    String GetLanguage();
+    void SetLanguage(const String &language);
+    
+    bool GetShowOutput();
+    void SetShowOuput(bool showOutput);
+    
 protected:
 
     KeyedArchive *settings;
