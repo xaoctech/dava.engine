@@ -453,7 +453,9 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	Vector<LightmapData>::iterator lighmapsEnd = lightmaps.end();
 	for(Vector<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
 	{
-		archive->SetString(Format("lightmap%d", lightmapIndex), (*lightmapsIterator).lightmapName.c_str());
+		String filename = sceneFile->AbsoluteToRelative((*lightmapsIterator).lightmapName);
+
+		archive->SetString(Format("lightmap%d", lightmapIndex), filename.c_str());
 		lightmapIndex++;
 	}
 }
@@ -490,7 +492,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	for(int32 i = 0; i < lightmapsCount; ++i)
 	{
 		String lightmapName = archive->GetString(Format("lightmap%d", i), "");
-		AddLightmap(lightmapName);
+		AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
 	}
     
     currentLod = &(*lodLayers.begin());
@@ -524,7 +526,7 @@ void MeshInstanceNode::ReplaceMaterial(DAVA::Material *material, int32 index)
 
 Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
 {
-	if(index < lightmaps.size())
+	if(index < (int32)lightmaps.size())
 	{
 		return lightmaps[index].lightmap;
 	}
