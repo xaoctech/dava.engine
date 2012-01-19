@@ -52,6 +52,8 @@ public:
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
     
     
+    virtual void WillDisappear();
+    
 protected:
     int32 IndexByKey(const String &key);
 
