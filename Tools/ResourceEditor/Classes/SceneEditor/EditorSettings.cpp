@@ -81,3 +81,33 @@ void EditorSettings::SetScreenHeight(int32 height)
 {
     settings->SetInt32("ScreenHeight", height);
 }
+
+float32 EditorSettings::GetAutosaveTime()
+{
+    return settings->GetFloat("AutoSaveTime", 5.0f);
+}
+void EditorSettings::SetAutosaveTime(float32 time)
+{
+    settings->SetFloat("AutoSaveTime", time);
+}
+
+String EditorSettings::GetLanguage()
+{
+    return settings->GetString("Language", "en");
+}
+
+void EditorSettings::SetLanguage(const String &language)
+{
+    settings->SetString("Language", language);
+}
+
+bool EditorSettings::GetShowOutput()
+{
+    return settings->GetBool("ShowOutput", true);
+}
+
+void EditorSettings::SetShowOuput(bool showOutput)
+{
+    settings->SetBool("ShowOutput", showOutput);
+}
+
