@@ -22,6 +22,11 @@ menu.new.scenewithcamera: "Scene+Camera"
 menu.openproject: "Open Project"
 menu.beast: "Beast"
 menu.landscape: "Landscape"
+menu.viewport: "View Port"
+menu.viewport.iphone: "iPhone"
+menu.viewport.retina: "Retina"
+menu.viewport.ipad: "iPad"
+menu.viewport.default: "Default"
 
 #Panels
 panel.graph.scene: "Scene Graph"
@@ -160,3 +165,8 @@ property.landscape.texturemask: "Texture Mask:"
 settings.header: "Settings"
 settingsdialog.screenwidth: "Width:"
 settingsdialog.screenheight: "Height:"
+
+settingsdialog.autosave: "AutoSave(min):"
+
+settingsdialog.language: "Language:"
+settingsdialog.output: "Show output:"

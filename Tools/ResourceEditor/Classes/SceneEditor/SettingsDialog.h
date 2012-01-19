@@ -20,6 +20,7 @@ public:
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
     virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+    virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
 
 
 protected:
@@ -30,6 +31,8 @@ protected:
     
     DraggableDialog *dialogPanel;
     PropertyList *propertyList;
+    
+    Vector<String> languages;
 };
 
 
