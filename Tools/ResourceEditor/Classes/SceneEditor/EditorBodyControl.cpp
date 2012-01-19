@@ -278,6 +278,23 @@ void EditorBodyControl::CreateScene(bool withCameras)
     scene3dView->SetScene(scene);
 }
 
+void RemoveDeepCamera(SceneNode * curr)
+{
+	SceneNode * cam = curr->FindByName("editor.main-camera");
+	if (cam)
+		curr->RemoveNode(cam);
+	
+	
+	cam = curr->FindByName("editor.debug-camera");
+	if (cam)
+		curr->RemoveNode(cam);
+	
+	for (int i = 0; i < curr->GetChildrenCount(); i++)
+	{
+		RemoveDeepCamera(curr->GetChild(i));
+	}
+}
+
 void EditorBodyControl::PushDebugCamera()
 {
 	mainCam = scene->FindByName("editor.main-camera");
@@ -293,8 +310,9 @@ void EditorBodyControl::PushDebugCamera()
 		SafeRetain(debugCam);
 		scene->RemoveNode(debugCam);
 	}
+	
+	RemoveDeepCamera(scene);
 }
-
 
 void EditorBodyControl::PopDebugCamera()
 {

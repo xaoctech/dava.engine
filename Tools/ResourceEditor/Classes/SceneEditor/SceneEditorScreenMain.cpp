@@ -233,6 +233,9 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         {
             BodyItem *iBody = FindCurrentBody();
             iBody->bodyControl->SetFilePath(pathToFile);
+			
+			iBody->bodyControl->PushDebugCamera();
+
             Scene * scene = iBody->bodyControl->GetScene();
 
 
@@ -240,6 +243,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             file->EnableDebugLog(true);
             file->SaveScene(pathToFile, scene);
             SafeRelease(file);
+			iBody->bodyControl->PopDebugCamera();			
             break;
         }
             
