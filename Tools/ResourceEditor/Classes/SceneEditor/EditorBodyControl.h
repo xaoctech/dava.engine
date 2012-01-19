@@ -248,7 +248,8 @@ protected:
     
     struct AddedNode
     {
-        SceneNode *node;
+        SceneNode *nodeToAdd;
+        SceneNode *nodeToRemove;
         SceneNode *parent;
     };
     Vector<AddedNode> nodesToAdd;
