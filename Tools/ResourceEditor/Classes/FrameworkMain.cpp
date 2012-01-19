@@ -11,7 +11,7 @@
 #include "ResourcePackerScreen.h"
 #include "TexturePacker/CommandLineParser.h"
 
-#include "EditorSettings.h"
+#include "SceneEditor/EditorSettings.h"
 
 using namespace DAVA;
 

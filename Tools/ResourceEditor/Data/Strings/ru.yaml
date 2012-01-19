@@ -22,6 +22,11 @@ menu.new.scenewithcamera: "Сцена с камерами"
 menu.openproject: "Открыть проект"
 menu.beast: "Beast"
 menu.landscape: "Ландшафт"
+menu.viewport: "View Port"
+menu.viewport.iphone: "iPhone"
+menu.viewport.retina: "Retina"
+menu.viewport.ipad: "iPad"
+menu.viewport.default: "По умолчанию"
 
 #Panels
 panel.graph.scene: "Scene Graph"
@@ -159,3 +164,9 @@ property.landscape.texturemask: "Texture Mask:"
 settings.header: "Настройки"
 settingsdialog.screenwidth: "Ширина"
 settingsdialog.screenheight: "Высота"
+
+settingsdialog.autosave: "Авто сохранение(мин):"
+
+settingsdialog.language: "Язык:"
+settingsdialog.output: "Показывать лог:"
+

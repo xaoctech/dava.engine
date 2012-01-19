@@ -11,11 +11,11 @@
 
 SceneNodeUserData::SceneNodeUserData()
 { 
-
+	bulletObject = 0;
 }
 
 SceneNodeUserData::~SceneNodeUserData()
 {
-	SafeDelete(bulletObject);
+	SafeRelease(bulletObject);
 }
 

@@ -293,7 +293,7 @@ void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &
     if(forKey == "Is Opaque")
     {
         Material *mat = workingScene->GetMaterial(selectedMaterial);
-        mat->isOpaque = newValue;
+        mat->SetOpaque(newValue);
     }
 }
 
@@ -307,14 +307,17 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
             if (mat->textures[textureTypes[i]])
             {
                 SafeRelease(mat->textures[textureTypes[i]]);
+                mat->names[textureTypes[i]] = "";
             }
             Texture *tx = Texture::CreateFromFile(newValue);
             if (tx) 
             {
                 mat->textures[textureTypes[i]] = tx;
+                mat->names[textureTypes[i]] = newValue;
             }
             else 
             {
+                //mat->names[textureTypes[i]] = newValue;
                 materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], "");
             }
 
@@ -362,7 +365,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
     }
     
     
-    currentList->SetBoolPropertyValue("Is Opaque", mat->isOpaque);
+    currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
 
     
     if (currentList->IsPropertyAvaliable("Diffuse color R"))
