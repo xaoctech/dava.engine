@@ -134,6 +134,10 @@ public:
 	*/
 	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo);
 	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, const String & alias);
+
+
+    void Dump();
+
 private:
 	Map<String, CreateObjectFunc> creatorMap;
     Map<String, String> nameMap;

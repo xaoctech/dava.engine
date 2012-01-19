@@ -37,6 +37,7 @@
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
 
+
 namespace DAVA
 {
 /**
@@ -45,6 +46,7 @@ namespace DAVA
 	This class support the following formats: RGBA8888, RGB565, RGBA4444, A8 on all platforms. 
 	For iOS it also support compressed PVR formats. (PVR2 and PVR4)
  */
+class Image;
 class Texture : public RenderResource
 {
 public:
@@ -184,6 +186,8 @@ public:
         \returns pathname of texture
      */
     inline const String & GetPathname();
+    
+    Image * CreateImageFromMemory();
 
 public:							// properties for fast access
 
@@ -231,6 +235,8 @@ private:
 	static bool	isMipmapGenerationEnabled;
 	Texture();
 	virtual ~Texture();
+    
+    Image * ReadDataToImage();
 };
     
 // Implementation of inline functions

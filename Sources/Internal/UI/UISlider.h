@@ -52,9 +52,13 @@ public:
 	
 	virtual void SetMinSprite(Sprite * sprite, int32 frame);
 	virtual void SetMinSprite(const String & spriteName, int32 frame);
+    virtual void SetMinDrawType(UIControlBackground::eDrawType drawType);
+    virtual void SetMinLeftRightStretchCap(float32 stretchCap);
 
 	virtual void SetMaxSprite(Sprite * sprite, int32 frame);
 	virtual void SetMaxSprite(const String & spriteName, int32 frame);
+    virtual void SetMaxDrawType(UIControlBackground::eDrawType drawType);
+    virtual void SetMaxLeftRightStretchCap(float32 stretchCap);
 	
 	inline float32 GetMinValue();
 	inline float32 GetMaxValue();

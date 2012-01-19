@@ -2,6 +2,7 @@
 dialog.ok: "Ok"
 dialog.cancel: "Отмена"
 dialog.create: "Создать"
+dialog.close: "Закрыть"
 
 #menu strings
 menu.open: "Открыть" 
@@ -63,12 +64,17 @@ createproperty.name: "Имя:"
 #Landscape Editor
 landscapeeditor.zoom: "Увеличение:"
 landscapeeditor.radius: "Радиус:"
-landscapeeditor.height: "Высота:"
+landscapeeditor.intension: "Интенсивность:"
 landscapeeditor.size: "Размер:"
 landscapeeditor.texture0: "Texture0:"
 landscapeeditor.texture1: "Texture1/Detail:"
 landscapeeditor.lightmap: "Light Map:"
 landscapeeditor.showresult: "Показывать результат:"
+landscapeeditor.maskred: "Маска Red:"
+landscapeeditor.maskgreen: "Маска Green:"
+landscapeeditor.maskblue: "Маска Blue:"
+landscapeeditor.maskalpha: "Маска Alpha:"
+landscapeeditor.savemask: "Сохранить маску"
 
 #Material Editor
 materialeditor.materials: "Материалы:"
@@ -89,6 +95,7 @@ property.scenenode.matrixes: "Матрицы"
 property.scenenode.localmatrix: "Local Matrix:"
 property.scenenode.worldmatrix: "World Matrix:"
 property.scenenode.customproperties: "Custom properties"
+property.scenenode.isVisible: "Видимый"
 
 #LightNode Section
 property.lightnode.light: "Источник света"
@@ -147,3 +154,8 @@ property.landscape.texture0: "Texture0:"
 property.landscape.texture1: "Texture1/Detail:"
 property.landscape.texturebump: "Texture Bump:"
 property.landscape.texturemask: "Texture Mask:"
+
+#Settings Dialog
+settings.header: "Настройки"
+settingsdialog.screenwidth: "Ширина"
+settingsdialog.screenheight: "Высота"

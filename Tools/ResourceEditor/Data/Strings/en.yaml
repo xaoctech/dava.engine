@@ -2,6 +2,7 @@
 dialog.ok: "Ok"
 dialog.cancel: "Cancel"
 dialog.create: "Create"
+dialog.close: "Close"
 
 #menu strings
 menu.open: "Open" 
@@ -63,12 +64,17 @@ createproperty.name: "Name:"
 #Landscape Editor
 landscapeeditor.zoom: "Zoom:"
 landscapeeditor.radius: "Radius:"
-landscapeeditor.height: "Height:"
+landscapeeditor.intension: "Intension"
 landscapeeditor.size: "Size:"
 landscapeeditor.texture0: "Texture0:"
 landscapeeditor.texture1: "Texture1/Detail:"
 landscapeeditor.lightmap: "Light Map:"
 landscapeeditor.showresult: "Show Result:"
+landscapeeditor.maskred: "Mask Red:"
+landscapeeditor.maskgreen: "Mask Green:"
+landscapeeditor.maskblue: "Mask Blue:"
+landscapeeditor.maskalpha: "Mask Alpha:"
+landscapeeditor.savemask: "Save Mask"
 
 #Material Editor
 materialeditor.materials: "Materials:"
@@ -89,6 +95,8 @@ property.scenenode.matrixes: "Matrixes"
 property.scenenode.localmatrix: "Local Matrix:"
 property.scenenode.worldmatrix: "World Matrix:"
 property.scenenode.customproperties: "Custom properties"
+property.scenenode.isVisible: "Visible"
+
 
 #LightNode Section
 property.lightnode.light: "Light"
@@ -147,3 +155,8 @@ property.landscape.texture0: "Texture0:"
 property.landscape.texture1: "Texture1/Detail:"
 property.landscape.texturebump: "Texture Bump:"
 property.landscape.texturemask: "Texture Mask:"
+
+#Settings Dialog
+settings.header: "Settings"
+settingsdialog.screenwidth: "Width:"
+settingsdialog.screenheight: "Height:"

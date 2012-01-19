@@ -196,8 +196,18 @@ void UITextField::WillDisappear()
 #endif
 }
     
+void UITextField::OnFocused()
+{
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->OpenKeyboard();
+#endif
+}
+    
 void UITextField::OnFocusLost(UIControl *newFocus)
 {
+#ifdef __DAVAENGINE_IPHONE__
+	textFieldiPhone->CloseKeyboard();
+#endif    
     if (delegate) 
     {
         delegate->TextFieldLostFocus(this);

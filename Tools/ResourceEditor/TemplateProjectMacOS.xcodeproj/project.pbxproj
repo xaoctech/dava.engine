@@ -27,6 +27,7 @@
 		5C87C49914C34A3500E2C63B /* PaintAreaControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
+		5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD509BB14C6CB250089067E /* SettingsDialog.cpp */; };
 		5CD6295F14BB1ABF00795FCA /* CreatePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */; };
 		5CE1674F14C4CF9500D2F1D4 /* BoxPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */; };
 		5CE1675214C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675014C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp */; };
@@ -336,6 +337,8 @@
 		5CA721A814B73A64000D2851 /* NodesPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodesPropertyControl.h; sourceTree = "<group>"; };
 		5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateNodesDialog.cpp; sourceTree = "<group>"; };
 		5CA721D514B760D9000D2851 /* CreateNodesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNodesDialog.h; sourceTree = "<group>"; };
+		5CD509BB14C6CB250089067E /* SettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsDialog.cpp; sourceTree = "<group>"; };
+		5CD509BC14C6CB250089067E /* SettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDialog.h; sourceTree = "<group>"; };
 		5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreatePropertyControl.cpp; sourceTree = "<group>"; };
 		5CD6295E14BB1ABF00795FCA /* CreatePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePropertyControl.h; sourceTree = "<group>"; };
 		5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxPropertyControl.cpp; sourceTree = "<group>"; };
@@ -999,6 +1002,8 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5CD509BB14C6CB250089067E /* SettingsDialog.cpp */,
+				5CD509BC14C6CB250089067E /* SettingsDialog.h */,
 				5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */,
 				5C006F7314A0DBA8005035C1 /* MenuPopupControl.h */,
 				FED66B3A14BF420600A39A03 /* EditorLightNode.cpp */,
@@ -2129,6 +2134,7 @@
 				5CE1675514C4D48C00D2F1D4 /* SpherePropertyControl.cpp in Sources */,
 				5CE1675814C4D56000D2F1D4 /* CameraPropertyControl.cpp in Sources */,
 				5CE1675B14C4D65300D2F1D4 /* LandscapePropertyControl.cpp in Sources */,
+				5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

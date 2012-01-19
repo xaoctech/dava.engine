@@ -935,6 +935,11 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
 
+const String & LandscapeNode::GetHeightMapPathname()
+{
+    return heightMapPath;
+}
+    
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Save(archive, sceneFile);

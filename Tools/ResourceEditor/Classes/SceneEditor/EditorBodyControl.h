@@ -216,6 +216,9 @@ protected:
 	//for moving object
 	Vector3 startDragPoint;
 	Vector3 planeNormal;
+	
+	Matrix4 translate1, translate2;
+
 
 	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
 	//

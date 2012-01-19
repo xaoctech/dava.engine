@@ -330,6 +330,8 @@ void SceneNode::Update(float32 timeElapsed)
 
 void SceneNode::Draw()
 {
+	if (!visible)return;
+
 	//uint32 size = (uint32)children.size();
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
@@ -338,7 +340,6 @@ void SceneNode::Draw()
         scene->nodeCounter++;
 
 	
-	if (!visible)return;
 	if (debugFlags & DEBUG_DRAW_AABOX_CORNERS)
 	{
 //		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
@@ -495,8 +496,8 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
-    archive->SetByteArray("localTransform", (uint8*)&localTransform, sizeof(Matrix4));
-
+    archive->SetByteArrayAsType("localTransform", localTransform);
+    archive->SetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
     
     archive->SetUInt32("flags", flags);
     archive->SetUInt32("debugFlags", debugFlags);
@@ -510,11 +511,8 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         
     name = archive->GetString("name", "");
     tag = archive->GetInt32("tag", 0);
-    
-    int size = archive->GetByteArraySize("localTransform");
-    if (size == sizeof(Matrix4))
-        memcpy(&localTransform, archive->GetByteArray("localTransform"), size);
-    
+    archive->GetByteArrayAsType("localTransform", localTransform, localTransform);
+    archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform, defaultLocalTransform);
 
     flags = archive->GetUInt32("flags", 0);
     InvalidateLocalTransform();
