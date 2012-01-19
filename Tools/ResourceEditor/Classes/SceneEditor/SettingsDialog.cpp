@@ -35,6 +35,11 @@ SettingsDialog::SettingsDialog(const Rect & rect)
     
     propertyList->AddIntProperty("settingsdialog.screenwidth", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddIntProperty("settingsdialog.screenheight", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("settingsdialog.autosave", PropertyList::PROPERTY_IS_EDITABLE);
+    languages.push_back("en");
+    languages.push_back("ru");
+    propertyList->AddComboProperty("settingsdialog.language", languages);
+    propertyList->AddBoolProperty("settingsdialog.output", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -52,6 +57,20 @@ void SettingsDialog::WillAppear()
 {
     propertyList->SetIntPropertyValue("settingsdialog.screenwidth", EditorSettings::Instance()->GetScreenWidth());
     propertyList->SetIntPropertyValue("settingsdialog.screenheight", EditorSettings::Instance()->GetScreenHeight());
+    propertyList->SetFloatPropertyValue("settingsdialog.autosave", EditorSettings::Instance()->GetAutosaveTime());
+    
+    String language = EditorSettings::Instance()->GetLanguage();
+    int32 index = 0;
+    for(int32 i = 0; i < languages.size(); ++i)
+    {
+        if(language == languages[i])
+        {
+            index = i;
+            break;
+        }
+    }
+    propertyList->SetComboPropertyIndex("settingsdialog.language", index);
+    propertyList->SetBoolPropertyValue("settingsdialog.output", EditorSettings::Instance()->GetShowOutput());
 }
 
 void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -61,7 +80,11 @@ void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String
 
 void SettingsDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    
+    if ("settingsdialog.autosave" == forKey) 
+    {
+        EditorSettings::Instance()->SetAutosaveTime(newValue);
+        EditorSettings::Instance()->Save();
+    }
 }
 
 void SettingsDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
@@ -80,6 +103,19 @@ void SettingsDialog::OnIntPropertyChanged(PropertyList *forList, const String &f
 
 void SettingsDialog::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    
+    if("settingsdialog.output" == forKey)
+    {
+        EditorSettings::Instance()->SetShowOuput(newValue);
+        EditorSettings::Instance()->Save();
+    }
+}
+
+void SettingsDialog::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
+{
+    if("settingsdialog.language" == forKey)
+    {
+        EditorSettings::Instance()->SetLanguage(newItemKey);
+        EditorSettings::Instance()->Save();
+    }
 }
 
