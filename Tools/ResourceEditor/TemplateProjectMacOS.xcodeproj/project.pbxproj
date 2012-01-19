@@ -2229,6 +2229,7 @@
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 					./Classes/bullet,
+					./../../Libs/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"./../../Libs/ImageMagick-6.6.9/lib/",
@@ -2266,6 +2267,7 @@
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 					./Classes/bullet,
+					./../../Libs/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"./../../Libs/ImageMagick-6.6.9/lib/",
