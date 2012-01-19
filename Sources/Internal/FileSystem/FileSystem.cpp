@@ -568,6 +568,109 @@ int32 FileSystem::Spawn(const String& command)
 #endif
 }
 
+    
+String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &filePathname)
+{
+    String filePath;
+    String fileName;
+    FileSystem::SplitPath(filePathname, filePath, fileName);
+    
+    Vector<String> folders = Split(folderPathname, "/");
+    Vector<String> fileFolders = Split(filePath, "/");
+    
+    int32 equalCount = 0;
+    for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
+    {
+        if(folders[equalCount] != fileFolders[equalCount])
+        {
+            break;
+        }
+    }
+    
+    String retPath = "/";
+    for(int32 i = equalCount; i < folders.size(); ++i)
+    {
+        retPath += "../";
+    }
+    
+    for(int32 i = equalCount; i < fileFolders.size(); ++i)
+    {
+        retPath += fileFolders[i] + "/";
+    }
+    
+    retPath += fileName;
+    
+    return retPath;
+}
+    
+String FileSystem::RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname)
+{
+    String filePath;
+    String fileName;
+    FileSystem::SplitPath(relativePathname, filePath, fileName);
+    
+    Vector<String> folders = Split(folderPathname, "/");
+    Vector<String> fileFolders = Split(filePath, "/");
+    
+    int32 equalCount = 0;
+    for(; equalCount < fileFolders.size(); ++equalCount)
+    {
+        if(".." != fileFolders[equalCount])
+        {
+            break;
+        }
+    }
+    
+    String retPath = "/";
+    for(int32 i = 0; i < folders.size() - equalCount; ++i)
+    {
+        retPath += folders[i] + "/";
+    }
+    
+    for(int32 i = equalCount; i < fileFolders.size(); ++i)
+    {
+        retPath += fileFolders[i] + "/";
+    }
+    
+    retPath += fileName;
+    return retPath;
+}
+
+    
+    
+Vector<String> FileSystem::Split(const String &srcString, const String &splitter)
+{
+    Vector<String> ret;
+    
+    String path = srcString;
+    
+    size_t pos = path.find(splitter);
+    while(String::npos != pos)
+    {
+        if(!pos)
+        {
+            path = path.substr(splitter.length());
+            pos = path.find(splitter);
+            continue;
+        }
+        
+        String substr = path.substr(0, pos);
+        ret.push_back(substr);
+
+        path = path.substr(pos + splitter.length());
+        pos = path.find(splitter);
+    }
+
+    if(path.length())
+    {
+        ret.push_back(path);
+    }
+    
+    return ret;
+}
+
+
+    
 }
 
 
