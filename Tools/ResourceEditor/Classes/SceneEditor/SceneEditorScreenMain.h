@@ -72,6 +72,7 @@ public:
 
 	virtual void OnEditSCE(const String &pathName, const String &name);
 	virtual void OnAddSCE(const String &pathName);
+	virtual void OnReloadSCE(const String &pathName);
 
     //menu
     virtual void MenuCanceled();
