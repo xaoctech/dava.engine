@@ -195,8 +195,16 @@ public:
 	 */
 	int32 Spawn(const String& command);
     
+    
+    static String AbsoluteToRelativePath(const String &folderPathname, const String &filePathname);
+    static String RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname);
+    
 private:
-	String tempRetPath;
+
+    static Vector<String> Split(const String &srcString, const String &splitter);
+
+    
+    String tempRetPath;
 	String currentWorkingDirectory;
 
 	struct ResourceArchiveItem
