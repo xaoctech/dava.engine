@@ -45,7 +45,20 @@ class EditorBodyControl :
 		AXIS_COUNT
 	};
 	
+public:
 	
+    enum eViewPortIDs
+    {
+        EVPID_IPHONE = 0,
+        EVPID_RETINA,
+        EVPID_IPAD,
+        EVPID_DEFAULT,
+
+        EVPID_COUNT
+    };
+
+    
+    
 public:
     EditorBodyControl(const Rect & rect);
     virtual ~EditorBodyControl();
@@ -85,6 +98,9 @@ public:
     
     const String &GetFilePath();
     void SetFilePath(const String &newFilePath);
+    
+    void SetViewPortSize(int32 viewportID);
+    bool ControlsAreLocked();
 
 protected:
 
@@ -223,8 +239,9 @@ protected:
 	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
 	//
 	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);
+
 	
-	
+    eViewPortIDs currentViewPortID;
 };
 
 

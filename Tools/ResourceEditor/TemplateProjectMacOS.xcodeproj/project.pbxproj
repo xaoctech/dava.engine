@@ -24,6 +24,7 @@
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C4E87B014B3AE7C006C5191 /* LandscapeEditorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */; };
+		5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C6BF78514C85A62009297F7 /* libz.dylib */; };
 		5C87C49914C34A3500E2C63B /* PaintAreaControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
@@ -40,7 +41,6 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D91B83CD14BF12F2002D07B7 /* ModificationPopUp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */; };
 		D92D797D1498BC5D002F58FB /* EditorScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D92D797B1498BC5D002F58FB /* EditorScene.cpp */; };
-		D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D944B3E11497E265005297A8 /* libpng-static.a */; };
 		D979C678149A133200FA98C0 /* SceneNodeUserData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */; };
 		D979C67B149A138300FA98C0 /* BulletObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C67A149A138300FA98C0 /* BulletObject.cpp */; };
 		D979C7AC149A31EC00FA98C0 /* DebugNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */; };
@@ -200,7 +200,6 @@
 		FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */; };
 		FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */; };
 		FE54EBC013A1193400912810 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FE54EBBF13A1193400912810 /* libbz2.dylib */; };
-		FE54EBC213A1193400912810 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FE54EBC113A1193400912810 /* libz.dylib */; };
 		FE94203A1332599A00515418 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE9420391332597D00515418 /* libFramework.a */; };
 		FE94203F13325A0B00515418 /* ResourcePackerScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE94203D13325A0B00515418 /* ResourcePackerScreen.cpp */; };
 		FE9892E511638EF700500198 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E111638EF700500198 /* InfoPlist.strings */; };
@@ -331,6 +330,7 @@
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
 		5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorControl.cpp; sourceTree = "<group>"; };
 		5C4E87AF14B3AE7C006C5191 /* LandscapeEditorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorControl.h; sourceTree = "<group>"; };
+		5C6BF78514C85A62009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PaintAreaControl.cpp; sourceTree = "<group>"; };
 		5C87C49814C34A3500E2C63B /* PaintAreaControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaintAreaControl.h; sourceTree = "<group>"; };
 		5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NodesPropertyControl.cpp; sourceTree = "<group>"; };
@@ -364,7 +364,6 @@
 		D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModificationPopUp.h; sourceTree = "<group>"; };
 		D92D797B1498BC5D002F58FB /* EditorScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorScene.cpp; path = Classes/EditorScene.cpp; sourceTree = SOURCE_ROOT; };
 		D92D797C1498BC5D002F58FB /* EditorScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorScene.h; path = Classes/EditorScene.h; sourceTree = SOURCE_ROOT; };
-		D944B3E11497E265005297A8 /* libpng-static.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpng-static.a"; path = "../../Libs/ImageMagick-6.6.9/delegates/lib/libpng-static.a"; sourceTree = SOURCE_ROOT; };
 		D979C676149A133200FA98C0 /* SceneNodeUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneNodeUserData.h; path = Classes/SceneNodeUserData.h; sourceTree = SOURCE_ROOT; };
 		D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneNodeUserData.cpp; path = Classes/SceneNodeUserData.cpp; sourceTree = SOURCE_ROOT; };
 		D979C679149A138300FA98C0 /* BulletObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BulletObject.h; path = Classes/BulletObject.h; sourceTree = SOURCE_ROOT; };
@@ -857,14 +856,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */,
 				FEE41F68142A4DAE00C16755 /* libFColladaS.a in Frameworks */,
 				FE94203A1332599A00515418 /* libFramework.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */,
 				FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */,
 				FE54EBC013A1193400912810 /* libbz2.dylib in Frameworks */,
-				FE54EBC213A1193400912810 /* libz.dylib in Frameworks */,
-				D944B3E21497E265005297A8 /* libpng-static.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -904,7 +902,7 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
-				D944B3E11497E265005297A8 /* libpng-static.a */,
+				5C6BF78514C85A62009297F7 /* libz.dylib */,
 				FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */,
 				FE9420291332597D00515418 /* Framework.xcodeproj */,
 				FEFCD5E712AE50860060A1A1 /* Data */,

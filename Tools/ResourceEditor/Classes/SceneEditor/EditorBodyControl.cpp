@@ -12,6 +12,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
 {
+    currentViewPortID = EVPID_DEFAULT;
+    
     scene = NULL;
 	
     isModeModification = false;
@@ -31,12 +33,24 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 
     CreateLeftPanel();
     
+    bool showOutput = EditorSettings::Instance()->GetShowOutput();
+    if(showOutput)
+    {
+        scene3dView = new UI3DView(Rect(
+                                        ControlsFactory::LEFT_SIDE_WIDTH + SCENE_OFFSET, 
+                                        SCENE_OFFSET, 
+                                        rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
+                                        rect.dy - 2 * SCENE_OFFSET - OUTPUT_PANEL_HEIGHT));
+    }
+    else
+    {
+        scene3dView = new UI3DView(Rect(
+                                        ControlsFactory::LEFT_SIDE_WIDTH + SCENE_OFFSET, 
+                                        SCENE_OFFSET, 
+                                        rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
+                                        rect.dy - 2 * SCENE_OFFSET));
+    }
 
-    scene3dView = new UI3DView(Rect(
-                            ControlsFactory::LEFT_SIDE_WIDTH + SCENE_OFFSET, 
-                            SCENE_OFFSET, 
-                            rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
-                            rect.dy - 2 * SCENE_OFFSET - OUTPUT_PANEL_HEIGHT));
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
@@ -45,14 +59,20 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     CreateScene(true);
 
-    outputPanel = new OutputPanelControl(scene, Rect(
-                                              ControlsFactory::LEFT_SIDE_WIDTH, 
-                                              rect.dy - OUTPUT_PANEL_HEIGHT, 
-                                              rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH, 
-                                              OUTPUT_PANEL_HEIGHT));
-    ControlsFactory::CustomizePanelControl(outputPanel, false);
-    AddControl(outputPanel);
-
+    if(showOutput)
+    {
+        outputPanel = new OutputPanelControl(scene, Rect(
+                                                         ControlsFactory::LEFT_SIDE_WIDTH, 
+                                                         rect.dy - OUTPUT_PANEL_HEIGHT, 
+                                                         rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH, 
+                                                         OUTPUT_PANEL_HEIGHT));
+        ControlsFactory::CustomizePanelControl(outputPanel, false);
+        AddControl(outputPanel);
+    }
+    else
+    {
+        outputPanel = NULL;
+    }
     
     
     CreatePropertyPanel();
@@ -1261,17 +1281,26 @@ void EditorBodyControl::ShowProperties(bool show)
 {
     if(show && !rightPanel->GetParent())
     {
-        AddControl(rightPanel);
-        
-        ChangeControlWidthRight(scene3dView, -ControlsFactory::RIGHT_SIDE_WIDTH);
-        ChangeControlWidthRight(outputPanel, -ControlsFactory::RIGHT_SIDE_WIDTH);
+        if(!ControlsAreLocked())
+        {
+            AddControl(rightPanel);
+            
+            ChangeControlWidthRight(scene3dView, -ControlsFactory::RIGHT_SIDE_WIDTH);
+            if(outputPanel)
+            {
+                ChangeControlWidthRight(outputPanel, -ControlsFactory::RIGHT_SIDE_WIDTH);   
+            }
+        }
     }
     else if(!show && rightPanel->GetParent())
     {
         RemoveControl(rightPanel);
         
         ChangeControlWidthRight(scene3dView, ControlsFactory::RIGHT_SIDE_WIDTH);
-        ChangeControlWidthRight(outputPanel, ControlsFactory::RIGHT_SIDE_WIDTH);
+        if(outputPanel)
+        {
+            ChangeControlWidthRight(outputPanel, ControlsFactory::RIGHT_SIDE_WIDTH);
+        }
     }
 }
 
@@ -1286,19 +1315,28 @@ void EditorBodyControl::ShowSceneGraph(bool show)
     
     if(show && !leftPanelSceneGraph->GetParent())
     {
-        AddControl(leftPanelSceneGraph);
-
-        ChangeControlWidthLeft(scene3dView, ControlsFactory::LEFT_SIDE_WIDTH);
-        ChangeControlWidthLeft(outputPanel, ControlsFactory::LEFT_SIDE_WIDTH);
-        
-        sceneGraphTree->Refresh();
+        if(!ControlsAreLocked())
+        {
+            AddControl(leftPanelSceneGraph);
+            
+            ChangeControlWidthLeft(scene3dView, ControlsFactory::LEFT_SIDE_WIDTH);
+            if(outputPanel)
+            {
+                ChangeControlWidthLeft(outputPanel, ControlsFactory::LEFT_SIDE_WIDTH);
+            }
+            
+            sceneGraphTree->Refresh();
+        }
     }
     else if(!show && leftPanelSceneGraph->GetParent())
     {
         RemoveControl(leftPanelSceneGraph);
         
         ChangeControlWidthLeft(scene3dView, -ControlsFactory::LEFT_SIDE_WIDTH);
-        ChangeControlWidthLeft(outputPanel, -ControlsFactory::LEFT_SIDE_WIDTH);
+        if(outputPanel)
+        {
+            ChangeControlWidthLeft(outputPanel, -ControlsFactory::LEFT_SIDE_WIDTH);
+        }
     }
 }
 
@@ -1313,19 +1351,28 @@ void EditorBodyControl::ShowDataGraph(bool show)
 
     if(show && !leftPanelDataGraph->GetParent())
     {
-        AddControl(leftPanelDataGraph);
-        
-        ChangeControlWidthLeft(scene3dView, ControlsFactory::LEFT_SIDE_WIDTH);
-        ChangeControlWidthLeft(outputPanel, ControlsFactory::LEFT_SIDE_WIDTH);
-        
-        RefreshDataGraph();
+        if(!ControlsAreLocked())
+        {
+            AddControl(leftPanelDataGraph);
+            
+            ChangeControlWidthLeft(scene3dView, ControlsFactory::LEFT_SIDE_WIDTH);
+            if(outputPanel)
+            {
+                ChangeControlWidthLeft(outputPanel, ControlsFactory::LEFT_SIDE_WIDTH);
+            }
+            
+            RefreshDataGraph();
+        }
     }
     else if(!show && leftPanelDataGraph->GetParent())
     {
         RemoveControl(leftPanelDataGraph);
         
         ChangeControlWidthLeft(scene3dView, -ControlsFactory::LEFT_SIDE_WIDTH);
-        ChangeControlWidthLeft(outputPanel, -ControlsFactory::LEFT_SIDE_WIDTH);
+        if(outputPanel)
+        {
+            ChangeControlWidthLeft(outputPanel, -ControlsFactory::LEFT_SIDE_WIDTH);
+        }
     }
 }
 
@@ -1342,12 +1389,18 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
         ShowProperties(false);
         
         ChangeControlWidthRight(scene3dView, -width);
-        ChangeControlWidthRight(outputPanel, -width);
+        if(outputPanel)
+        {
+            ChangeControlWidthRight(outputPanel, -width);
+        }
     }
     else
     {
         ChangeControlWidthRight(scene3dView, ControlsFactory::RIGHT_SIDE_WIDTH);
-        ChangeControlWidthRight(outputPanel, ControlsFactory::RIGHT_SIDE_WIDTH);
+        if(outputPanel)
+        {
+            ChangeControlWidthRight(outputPanel, ControlsFactory::RIGHT_SIDE_WIDTH);
+        }
     }
 }
 
@@ -1511,4 +1564,59 @@ void EditorBodyControl::RecreatePropertiesPanelForNode(SceneNode * node)
 	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
 	nodesPropertyPanel->SetDelegate(this);
 	nodesPropertyPanel->SetWorkingScene(scene);
+}
+
+
+void EditorBodyControl::SetViewPortSize(int32 viewportID)
+{
+    if(currentViewPortID == viewportID)
+        return;
+    
+    currentViewPortID = (eViewPortIDs)viewportID;
+    
+    ShowSceneGraph(false);
+    ShowDataGraph(false);
+    ShowProperties(false);
+    
+    Rect fullRect = GetRect();
+    Rect viewRect = Rect(SCENE_OFFSET, SCENE_OFFSET, fullRect.dx - 2 * SCENE_OFFSET, fullRect.dy - 2 * SCENE_OFFSET);
+    if(outputPanel)
+    {
+        viewRect.dy -= outputPanel->GetRect().dy;
+    }
+    
+    Rect newRect = viewRect;
+    switch (viewportID)
+    {
+        case EVPID_IPHONE:
+            newRect = Rect(SCENE_OFFSET, SCENE_OFFSET, 480, 320);
+            break;
+
+        case EVPID_RETINA:
+            newRect = Rect(SCENE_OFFSET, SCENE_OFFSET, 960, 640);
+            break;
+
+        case EVPID_IPAD:
+            newRect = Rect(SCENE_OFFSET, SCENE_OFFSET, 1024, 768);
+            break;
+
+        default:
+            break;
+    }
+    
+    if((newRect.dx <= viewRect.dx) && (newRect.dy <= viewRect.dy))
+    {
+        viewRect = newRect;
+    }
+    else
+    {
+        currentViewPortID = EVPID_DEFAULT;
+    }
+    
+    scene3dView->SetRect(viewRect);
+}
+
+bool EditorBodyControl::ControlsAreLocked()
+{
+    return (EVPID_DEFAULT != currentViewPortID);
 }
