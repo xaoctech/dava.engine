@@ -106,14 +106,19 @@ Material::~Material()
 {
 }
     
-void Material::SetType(eType _type)
+void Material::RebuildShader()
 {
     uniformTexture0 = -1;
     uniformTexture1 = -1;
     uniformLightPosition0 = -1;
     
-    type = _type;
     String shaderCombileCombo = "MATERIAL_TEXTURE";
+    
+    if (isOpaque)
+    {
+        shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
+    }
+    
     switch (type) {
         case MATERIAL_UNLIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE";
@@ -132,8 +137,10 @@ void Material::SetType(eType _type)
         default:
             break;
     };
+    
+    // Get shader if combo unavailable compile it
     shader = uberShader->GetShader(shaderCombileCombo);
-
+    
     switch (type) {
         case MATERIAL_UNLIT_TEXTURE:
             break;
@@ -149,12 +156,17 @@ void Material::SetType(eType _type)
             //
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
             uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-    
+            
             break;
         default:
             break;
     };
-
+}
+    
+void Material::SetType(eType _type)
+{
+    type = _type;
+    RebuildShader();
 }
     
 void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -213,6 +225,57 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
+}
+
+void Material::SetOpaque(bool _isOpaque)
+{
+    isOpaque = _isOpaque;
+    RebuildShader();
+}
+
+bool Material::GetOpaque()
+{
+    return isOpaque;
+}
+    
+void Material::Bind()
+{
+    RenderManager::Instance()->SetShader(shader);
+        
+    if (textures[Material::TEXTURE_DIFFUSE])
+    {
+        RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
+    }
+        
+    if (textures[Material::TEXTURE_DECAL])
+    {
+        RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
+    }
+        
+    if (isOpaque)
+    {
+        RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE | RenderStateBlock::STATE_CULL);
+    }
+    
+    // render
+    RenderManager::Instance()->FlushState();
+    
+    
+    if (textures[Material::TEXTURE_DECAL])
+    {
+        shader->SetUniformValue(uniformTexture0, 0);
+        shader->SetUniformValue(uniformTexture1, 1);
+        
+    }
+    if (uniformLightPosition0 != -1)
+    {
+        Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
+        const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
+        lightPosition0 = lightPosition0 * matrix;
+        
+        shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
+    }
 }
 
 

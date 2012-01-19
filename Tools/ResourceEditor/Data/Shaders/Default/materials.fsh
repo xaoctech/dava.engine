@@ -25,6 +25,9 @@ void main()
 {
     // FETCH PHASE
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
+#if defined(OPAQUE)
+    if (textureColor0.a < 0.9)discard;
+#endif
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
     lowp vec4 textureColor1 = texture2D(texture1, varTexCoord1);

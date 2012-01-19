@@ -79,6 +79,10 @@ public:
     static const char * GetTypeName();
     
     void SetType(eType _type);
+    void SetOpaque(bool isOpaque);
+    bool GetOpaque();
+    
+    void Bind();
     
     eType   type;
 
@@ -115,6 +119,9 @@ public:
     int32 uniformTexture0;
     int32 uniformTexture1;
     int32 uniformLightPosition0;
+    
+private:
+    void RebuildShader();
     
     bool    isOpaque;    
     
