@@ -48,6 +48,7 @@ public MenuPopupDelegate, public CreateNodesDialogDelegeate
     {
         MENUID_CREATENODE = 100,
         MENUID_NEW = 200,
+        MENUID_VIEWPORT = 300,
     };
     
     enum eNewMenuIDS
@@ -87,6 +88,9 @@ public:
     
 private:
     
+    void AutoSaveLevel(BaseObject * obj, void *, void *);
+    void SetupAnimation();
+    
     void AddLineControl(Rect r);
     
     //menu
@@ -102,6 +106,8 @@ private:
     UIButton * btnProject;
 	UIButton * btnBeast;
 	UIButton * btnLandscape;
+	UIButton * btnViewPortSize;
+
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
     void OnSavePressed(BaseObject * obj, void *, void *);
@@ -112,7 +118,7 @@ private:
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
 	void OnBeastPressed(BaseObject * obj, void *, void *);
 	void OnLandscapePressed(BaseObject * obj, void *, void *);
-
+    void OnViewPortSize(BaseObject * obj, void *, void *);
     
 
     //Body list

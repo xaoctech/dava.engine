@@ -105,6 +105,9 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     propertyList->SetFilepathPropertyValue("property.landscape.lightmap", "");
     propertyList->SetFilepathPropertyValue("property.landscape.alphamask", "");
+
+	propertyList->AddIntProperty("lightmap.size");
+	propertyList->SetIntPropertyValue("lightmap.size", currentNode->GetCustomProperties()->GetInt32("lightmap.size", 1024));
 }
 
 
@@ -132,6 +135,17 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
         }
     }
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
+}
+
+
+void LandscapePropertyControl::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+{
+	if("lightmap.size" == forKey)
+	{
+		currentNode->GetCustomProperties()->SetInt32("lightmap.size", newValue);
+	}
+
+	NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
 }
 
 void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -260,4 +274,5 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
     SafeRelease(lightMap);
     SafeRelease(alphaMask);
 }
+
 

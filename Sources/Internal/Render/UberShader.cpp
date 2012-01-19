@@ -109,6 +109,15 @@ Shader * UberShader::GetShader(const String & combination)
         CompiledShader * c = it->second;
         return c->shader;
     }
+    
+    CompileShaderCombination(combination);
+                             
+    it = compiledShadersMap.find(combination);
+    if (it != compiledShadersMap.end())
+    {
+         CompiledShader * c = it->second;
+         return c->shader;
+    }    
     return 0;
 }
 

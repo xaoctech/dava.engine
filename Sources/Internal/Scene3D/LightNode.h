@@ -33,6 +33,7 @@
 
 #include "Scene3D/SceneNode.h"
 
+//default direction (with identity matrix) is -y
 namespace DAVA 
 {
 class SceneFileV2;
