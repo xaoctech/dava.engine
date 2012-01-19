@@ -43,10 +43,14 @@ LibraryControl::LibraryControl(const Rect & rect)
     btnAdd->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnAddPressed));
     btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, BUTTON_HEIGHT), LocalizedString(L"library.edit"));
     btnEdit->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnEditPressed));
-    preview = new ScenePreviewControl(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dx - BUTTON_HEIGHT));
+    btnReload = ControlsFactory::CreateButton(Rect(0, BUTTON_HEIGHT, rect.dx, BUTTON_HEIGHT), LocalizedString(L"library.reload"));
+    btnReload->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnReloadPressed));
+
+    preview = new ScenePreviewControl(Rect(0, BUTTON_HEIGHT * 2, rect.dx, rect.dx - BUTTON_HEIGHT * 2));
     preview->SetDebugDraw(true);
     panelSCE->AddControl(btnAdd);
     panelSCE->AddControl(btnEdit);
+    panelSCE->AddControl(btnReload);
     panelSCE->AddControl(preview);
     
     errorMessage = new UIStaticText(panelSCE->GetRect());
@@ -62,6 +66,7 @@ LibraryControl::~LibraryControl()
     SafeRelease(btnAdd);
     SafeRelease(btnConvert);
     SafeRelease(btnEdit);
+    SafeRelease(btnReload);
     SafeRelease(preview);
     
     SafeRelease(panelDAE);
@@ -286,4 +291,8 @@ void LibraryControl::SetDelegate(LibraryControlDelegate *delegate)
 int32 LibraryControl::CellHeight(UIList *forList, int32 index)
 {
     return CELL_HEIGHT;
+}
+
+void LibraryControl::OnReloadPressed(DAVA::BaseObject *object, void *userData, void *callerData)
+{
 }
