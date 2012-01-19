@@ -335,6 +335,9 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     FileSystem::Instance()->CreateDirectory(pathOnly, true);
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
+	
+	iBody->bodyControl->PushDebugCamera();
+	
     Scene * scene = iBody->bodyControl->GetScene();
 
 //    for (int i = 0; i < scene->GetMaterialCount(); i++)
@@ -375,6 +378,9 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 //        }
 //    }
     
+	iBody->bodyControl->PopDebugCamera();
+
+	
     libraryControl->RefreshTree();
 }
 
