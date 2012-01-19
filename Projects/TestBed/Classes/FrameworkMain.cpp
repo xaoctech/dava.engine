@@ -48,8 +48,8 @@ void FrameworkDidLaunched()
 //	appOptions->SetInt("width",	920);
 //	appOptions->SetInt("height", 690);
 
-	appOptions->SetInt("width",	920);
-	appOptions->SetInt("height", 690);
+	appOptions->SetInt32("width",	920);
+	appOptions->SetInt32("height", 690);
 //	appOptions->SetInt("width",	1280);
 //	appOptions->SetInt("height", 800);
     
@@ -59,8 +59,8 @@ void FrameworkDidLaunched()
 //	appOptions->SetInt("fullscreen.height", 768);
 
     
-	appOptions->SetInt("fullscreen", 0);
-	appOptions->SetInt("bpp", 32); 
+	appOptions->SetInt32("fullscreen", 0);
+	appOptions->SetInt32("bpp", 32); 
 
 	DAVA::Core::Instance()->SetVirtualScreenSize(920, 690);
 //	DAVA::Core::Instance()->SetVirtualScreenSize(1280, 800);
@@ -70,7 +70,7 @@ void FrameworkDidLaunched()
 
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
-	DAVA::Core::SetOptions(appOptions);
+	DAVA::Core::Instance()->SetOptions(appOptions);
 }
 
 
