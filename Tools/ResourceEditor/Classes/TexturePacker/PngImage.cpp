@@ -20,7 +20,7 @@
 #include <stdarg.h>
 #include <iostream>
 
-#include <png.h>
+#include <libpng/png.h>
 
 #define PNG_DEBUG 3
 
