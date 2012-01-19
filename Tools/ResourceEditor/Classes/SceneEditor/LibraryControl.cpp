@@ -119,6 +119,14 @@ void LibraryControl::OnConvertPressed(DAVA::BaseObject *object, void *userData, 
     // load sce to scene object
     String path = FileSystem::Instance()->ReplaceExtension(selectedFileName, ".sce");
     Scene * scene = new Scene();
+    scene->RegisterLodLayer(0, 1);
+    scene->RegisterLodLayer(1, 2);
+    scene->RegisterLodLayer(2, 3);
+    scene->RegisterLodLayer(3, 4);
+    scene->RegisterLodLayer(4, 5);
+    scene->RegisterLodLayer(5, 6);
+    scene->RegisterLodLayer(6, 7);
+    scene->RegisterLodLayer(7, 8);
     SceneNode *rootNode = scene->GetRootNode(path);
     scene->AddNode(rootNode);
 

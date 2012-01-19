@@ -1094,7 +1094,109 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 	debugInfo = _debugInfo;	
 #endif
 }
+    
+Image * Texture::ReadDataToImage()
+{
+    Image::PixelFormat imageFormat = Image::FORMAT_RGBA8888;
+    switch (format) {
+        case FORMAT_RGBA8888:
+            imageFormat = Image::FORMAT_RGBA8888;
+            break;
+        case FORMAT_RGB565:
+            imageFormat = Image::FORMAT_RGB565;
+            break;
+        case FORMAT_RGBA4444:
+            imageFormat = Image::FORMAT_RGBA4444;
+            break;
+        case FORMAT_A8:
+            imageFormat = Image::FORMAT_A8;
+            break;
+            
+        default:
+            return NULL;
+    }
+    
+    Image *image = Image::Create(width, height, imageFormat);
+    uint8 *imageData = image->GetData();
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    
+    RenderManager::Instance()->LockNonMain();
+    
+    int saveFBO = 0;
+#if defined(__DAVAENGINE_IPHONE__)
+    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
+#else //Non ES platforms
+    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO));
+#endif //PLATFORMS
+    
+    int32 saveId = 0;
+    RENDER_VERIFY(glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId));
+    RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, id))
+    
+    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
+    switch(format) 
+    {
+        case Texture::FORMAT_RGBA8888:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
+            break;
+        case Texture::FORMAT_RGB565:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)imageData));
+            break;
+        case Texture::FORMAT_A8:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
+            break;
+        case Texture::FORMAT_RGBA4444:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)imageData));
+            break;
+    }
+    
+#if defined(__DAVAENGINE_IPHONE__)
+    RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, saveFBO));	// Unbind the FBO for now
+#else //Non ES platforms
+    RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, saveFBO));	// Unbind the FBO for now
+#endif //PLATFORMS
+    
+    if (saveId != 0)
+    {
+        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, saveId))
+    }
+    
+    RenderManager::Instance()->UnlockNonMain();
+    
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+    
+    return image; 
+}
 
+Image * Texture::CreateImageFromMemory()
+{
+    Image *image = NULL;
+    if(isRenderTarget)
+    {
+        Sprite *renderTarget = Sprite::CreateFromTexture(this, 0, 0, width, height);
+        RenderManager::Instance()->SetRenderTarget(renderTarget);
+        
+        image = ReadDataToImage();
+            
+        RenderManager::Instance()->RestoreRenderTarget();
+    }
+    else
+    {
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget(width, height, Texture::FORMAT_RGBA8888);
+        RenderManager::Instance()->SetRenderTarget(renderTarget);
+
+        Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, width, height);
+        drawTexture->SetPosition(0, 0);
+        drawTexture->Draw();
+
+        RenderManager::Instance()->RestoreRenderTarget();
+        
+        image = renderTarget->GetTexture()->CreateImageFromMemory();
+    }
+        
+    return image;
+}
 	
 };
 

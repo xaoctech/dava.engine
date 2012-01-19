@@ -105,8 +105,10 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
     if(!createNodeProperties)
     {
+        propertyList->AddBoolProperty("property.scenenode.isVisible", PropertyList::PROPERTY_IS_EDITABLE);
+		propertyList->SetBoolPropertyValue("property.scenenode.isVisible", sceneNode->GetVisible());
+		
         propertyList->AddSection("property.scenenode.matrixes", GetHeaderState("property.scenenode.matrixes", false));
-        
         propertyList->AddMatrix4Property("property.scenenode.localmatrix", PropertyList::PROPERTY_IS_EDITABLE);
         propertyList->AddMatrix4Property("property.scenenode.worldmatrix", PropertyList::PROPERTY_IS_READ_ONLY);
 
@@ -250,6 +252,12 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
 
     if(!createNodeProperties)
     {
+        KeyedArchive *customProperties = currentNode->GetCustomProperties();
+		if (forKey == "property.scenenode.isVisible")
+		{
+			currentNode->SetVisible(newValue);
+		}
+		
         if(customProperties->IsKeyExists(forKey))
         {
             customProperties->SetBool(forKey, newValue);
