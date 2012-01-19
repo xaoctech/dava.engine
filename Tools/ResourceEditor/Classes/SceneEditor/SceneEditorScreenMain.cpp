@@ -342,6 +342,9 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     FileSystem::Instance()->CreateDirectory(pathOnly, true);
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
+	
+	iBody->bodyControl->PushDebugCamera();
+	
     Scene * scene = iBody->bodyControl->GetScene();
 
 //    for (int i = 0; i < scene->GetMaterialCount(); i++)
@@ -356,33 +359,75 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 //        }
 //    }
     
+
+    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    {
+        Material *m = scene->GetMaterial(i);
+        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+        {
+            if (m->textures[n])
+            {
+                if (!m->textures[n]->relativePathname.empty()) 
+                {
+                    ExportTexture(m->textures[n]->relativePathname);
+                }
+            }
+        }
+    }
+    
+    NodeExportPreparation(scene);
+    
     SceneFileV2 * file = new SceneFileV2();
     file->EnableSaveForGame(true);
     file->EnableDebugLog(true);
     file->SaveScene(path.c_str(), scene);
     SafeRelease(file);
 
-//    for (int i = 0; i < scene->GetMaterialCount(); i++)
-//    {
-//        Material *m = scene->GetMaterial(i);
-//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-//        {
-//            if (m->textures[n])
-//            {
-//                path = m->textures[n]->relativePathname;
-//                if (!path.empty()) 
-//                {
-//                    String pathTo = path;
-//                    pathTo.replace(path.find("DataSource"), strlen("DataSource"), "Data");
-//                    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-//                    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-//                    FileSystem::Instance()->CopyFile(path, pathTo);
-//                }
-//            }
-//        }
-//    }
     
+	iBody->bodyControl->PopDebugCamera();
+
+	
     libraryControl->RefreshTree();
+}
+
+void SceneEditorScreenMain::NodeExportPreparation(SceneNode *node)
+{
+    LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+    if (land) 
+    {
+        ExportTexture(land->GetHeightMapPathname());
+        for (int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+        {
+            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+            if (t) 
+            {
+                ExportTexture(t->relativePathname);
+            }
+        }
+    }
+
+
+    
+    
+    
+    
+    
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+        NodeExportPreparation(child);
+    }
+}
+
+void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
+{
+    String fileOnly;
+    String pathOnly;
+    String pathTo = textureDataSourcePath;
+    pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
+    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+    FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
 }
 
 

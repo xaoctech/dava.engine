@@ -102,6 +102,10 @@ public:
     void SetViewPortSize(int32 viewportID);
     bool ControlsAreLocked();
 
+	void PushDebugCamera();
+	void PopDebugCamera();
+
+	
 protected:
 
     void ResetSelection();
@@ -170,6 +174,8 @@ protected:
     void UpdatePropertyPanel();
 	void ToggleHelp(void);
 	void AddHelpText(const wchar_t * text, float32 & y);
+	
+	
 
     UIControl *rightPanel;
     SceneNode * selectedSceneGraphNode;
@@ -235,7 +241,9 @@ protected:
 	
 	Matrix4 translate1, translate2;
 
-
+	SceneNode * mainCam;
+	SceneNode * debugCam;
+	
 	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
 	//
 	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);

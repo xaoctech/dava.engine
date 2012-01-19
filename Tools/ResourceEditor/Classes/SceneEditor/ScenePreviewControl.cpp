@@ -21,9 +21,9 @@ PreviewCameraController::PreviewCameraController()
     controlHeight = 100;
 }
 
-void PreviewCameraController::SetCamera(DAVA::Camera *camera)
+void PreviewCameraController::SetScene(DAVA::Scene *scene)
 {
-    CameraController::SetCamera(camera);
+    CameraController::SetScene(scene);
 
     angleVertical = 0.f;
     angleHorizontal = 0.f;
@@ -45,6 +45,9 @@ void PreviewCameraController::SetRadius(float32 _radius)
 
 void PreviewCameraController::Input(DAVA::UIEvent *event)
 {
+	if (currScene == 0)
+		return;
+	Camera * camera = currScene->GetCurrentCamera();
     if (!camera)return;
 
     CameraController::Input(event);
@@ -96,6 +99,10 @@ void PreviewCameraController::SetControlHeight(int32 height)
 
 void PreviewCameraController::UpdateCamera()
 {
+	if (currScene == 0)
+		return;
+	Camera * camera = currScene->GetCurrentCamera();
+	
     Vector2 zoom = zoomStopPt - zoomStartPt;
     if(Vector2(0, 0) != zoom)
     {
@@ -215,7 +222,7 @@ bool ScenePreviewControl::OpenScene(const String &pathToFile)
             editorScene->AddNode(cam);
             editorScene->AddCamera(cam);
             editorScene->SetCurrentCamera(cam);
-            cameraController->SetCamera(cam);
+            cameraController->SetScene(editorScene);
             
             SafeRelease(cam);
             
@@ -269,7 +276,7 @@ void ScenePreviewControl::SetupCamera()
         editorScene->SetCurrentCamera(camera);
         editorScene->SetClipCamera(camera);
         
-        cameraController->SetCamera(camera);
+		cameraController->SetScene(editorScene);
         cameraController->SetRadius(radius);
         cameraController->UpdateCamera();
     }

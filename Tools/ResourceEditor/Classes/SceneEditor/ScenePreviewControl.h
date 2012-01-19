@@ -13,8 +13,7 @@ public:
     PreviewCameraController();
     
     virtual void Input(UIEvent * event);
-    virtual void SetCamera(Camera * camera);
-    
+    virtual void SetScene(Scene *scene);
     void SetRadius(float32 _radius);
     void UpdateCamera();
     

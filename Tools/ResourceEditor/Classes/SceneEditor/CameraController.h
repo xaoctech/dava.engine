@@ -41,13 +41,13 @@ public:
     CameraController();
     ~CameraController();
     
-    virtual void SetCamera(Camera * camera);
+    virtual void SetScene(Scene *scene);
     virtual void Input(UIEvent * event);
     
     virtual void Update(float32 timeElapsed) {};
     
 protected:
-    Camera * camera;
+    Scene * currScene;
 };
     
 class WASDCameraController : public CameraController
@@ -65,6 +65,7 @@ public:
 	}
     
     virtual void Update(float32 timeElapsed);
+	virtual void SetScene(Scene *_scene);
 
 
 protected:
@@ -76,9 +77,9 @@ protected:
 	Vector2 startPt;
     Vector2 stopPt;
 
-	void UpdateCamAlt3But(void);
-	void UpdateCam3But(void);
-	void UpdateCam2But(void);
+	void UpdateCamAlt3But(Camera * camera);
+	void UpdateCam3But(Camera * camera);
+	void UpdateCam2But(Camera * camera);
 	    
     float32 radius;
 	Vector3 center;
