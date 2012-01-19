@@ -685,6 +685,12 @@ void SceneEditorScreenMain::OnEditSCE(const String &pathName, const String &name
     iBody->bodyControl->OpenScene(pathName, true);
 }
 
+void SceneEditorScreenMain::OnReloadSCE(const String &pathName)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ReloadRootScene(pathName);
+}
+
 void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 {
     BodyItem *iBody = FindCurrentBody();

@@ -68,6 +68,8 @@ public:
     virtual void Input(UIEvent * touch);
 
     void OpenScene(const String &pathToFile, bool editScene);
+    void ReloadRootScene(const String &pathToFile);
+    void ReloadNode(SceneNode *node, const String &pathToFile);
     
     void ShowProperties(bool show);
     bool PropertiesAreShown();
@@ -243,6 +245,14 @@ protected:
 
 	SceneNode * mainCam;
 	SceneNode * debugCam;
+    
+    struct AddedNode
+    {
+        SceneNode *nodeToAdd;
+        SceneNode *nodeToRemove;
+        SceneNode *parent;
+    };
+    Vector<AddedNode> nodesToAdd;
 	
 	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
 	//
