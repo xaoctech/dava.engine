@@ -34,19 +34,19 @@ namespace DAVA
 {
 
 CameraController::CameraController()
-    : camera(0)
+    : currScene(0)
 {
 
 }
 CameraController::~CameraController()
 {
-    SafeRelease(camera);
+    SafeRelease(currScene);
 }
 
-void CameraController::SetCamera(Camera * _camera)
+void CameraController::SetScene(Scene *_scene)
 {
-    SafeRelease(camera);
-    camera = SafeRetain(_camera);
+    SafeRelease(currScene);
+    currScene = SafeRetain(_scene);
 }
 
 void CameraController::Input(UIEvent * event)
@@ -74,8 +74,11 @@ WASDCameraController::~WASDCameraController()
     
 void WASDCameraController::Update(float32 timeElapsed)
 {
+    if (currScene == 0)
+		return;
     UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
-    if(!tf && camera)
+	Camera * camera = currScene->GetCurrentCamera();
+	if(!tf && camera)
     {
         float32 moveSpeed = speed * timeElapsed;        
 
@@ -143,11 +146,44 @@ void WASDCameraController::Update(float32 timeElapsed)
     
     CameraController::Update(timeElapsed);
 }
- 
+
 #define MAX_ANGLE 89
+
+void WASDCameraController::SetScene(Scene *_scene)
+{
+	CameraController::SetScene(_scene);
+
+	if (currScene == 0)
+		return;
+	Camera * camera = currScene->GetCurrentCamera();	
+    if (!camera)return;
+	
+	Vector3 dir = camera->GetDirection();
+	
+	Vector2 dirXY(dir.x, dir.y);
+	Vector2 dirYZ(dir.y, dir.z);	
+	dirXY.Normalize();
+	dirYZ.Normalize();
+	
+	viewYAngle = -RadToDeg(dirYZ.Angle());
+
+	if(viewYAngle > MAX_ANGLE)
+		viewYAngle -= 360;
+
+	if(viewYAngle < -MAX_ANGLE)
+		viewYAngle += 360;
+
+	
+	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0);
+}
+	
+	
 	
 void WASDCameraController::Input(UIEvent * event)
 {
+	if (currScene == 0)
+		return;
+	Camera * camera = currScene->GetCurrentCamera();	
     if (!camera)return;
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {   
@@ -158,8 +194,10 @@ void WASDCameraController::Input(UIEvent * event)
 				SceneNode * sel = selection;
 				if (sel == 0)
 				{
-					sel = camera->GetScene();
+					sel = currScene;
 				}
+				if (dynamic_cast<Camera*>(sel))
+					break;				
 				AABBox3 box = sel->GetWTMaximumBoundingBox();						
 				float32 boxSize = ((box.max - box.min).Length());
 				
@@ -180,7 +218,7 @@ void WASDCameraController::Input(UIEvent * event)
 				if (!camera)return;
 				
 				viewZAngle = 0;
-				viewYAngle = -MAX_ANGLE;
+				viewYAngle = MAX_ANGLE;
 				
 				Matrix4 mt, mt2;
 				mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
@@ -188,7 +226,7 @@ void WASDCameraController::Input(UIEvent * event)
 				mt2 *= mt;
 				Vector3 vect = Vector3(0,0, 200);
 				
-				Vector3 position = vect - Vector3(0, 10, 0) * mt2;
+				Vector3 position = vect + Vector3(0, 10, 0) * mt2;
 				
 				camera->SetTarget(position);
 				camera->SetPosition(vect);					
@@ -223,24 +261,25 @@ void WASDCameraController::Input(UIEvent * event)
 
 		if (event->tid == UIEvent::BUTTON_2)
 		{
-			UpdateCam2But();
+			UpdateCam2But(camera);
 		}
 		else if (altBut3)
 		{
-			UpdateCamAlt3But();			
+			UpdateCamAlt3But(camera);			
 		}
 		else if (event->tid == UIEvent::BUTTON_3)
 		{
-			UpdateCam3But();
+			UpdateCam3But(camera);
 		}
 	}	
 }
 
-	void WASDCameraController::UpdateCam2But(void)
-	{
-		Vector2 dp = startPt - stopPt;
-		viewZAngle -= dp.x/7*1.5f;
-		viewYAngle += dp.y/7.f;
+	void WASDCameraController::UpdateCam2But(Camera * camera)
+	{		
+		if (!camera)return;
+		Vector2 dp = stopPt - startPt;
+		viewZAngle += dp.x * 0.07f;
+		viewYAngle += dp.y * 0.07;
 		
 		if(viewYAngle < -MAX_ANGLE)
 			viewYAngle = -MAX_ANGLE;
@@ -253,14 +292,13 @@ void WASDCameraController::Input(UIEvent * event)
 		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 		mt2 *= mt;
 		
-		Vector3 dir = Vector3(0, -10, 0) * mt2;
+		Vector3 dir = Vector3(0, 10, 0) * mt2;
 		camera->SetDirection(dir);		
 	}
 	
-	void WASDCameraController::UpdateCamAlt3But(void)
-	{
+	void WASDCameraController::UpdateCamAlt3But(Camera * camera)
+	{		
 		if (!camera)return;
-		
 		viewZAngle += (stopPt.x - startPt.x);
 		viewYAngle -= (stopPt.y - startPt.y);
 		
@@ -283,13 +321,13 @@ void WASDCameraController::Input(UIEvent * event)
 		camera->SetPosition(position);
 	}
 
-	void WASDCameraController::UpdateCam3But(void)
+	void WASDCameraController::UpdateCam3But(Camera * camera)
 	{
-		if (!camera)return;		
-		Vector2 dp = (stopPt - startPt) * 0.1f;
+		if (!camera)return;
+		Vector2 dp = stopPt - startPt;
 
 		Matrix4 mt, mt1, mt2, mt3;
-		mt1.CreateTranslation(Vector3(dp.x, 0, dp.y));
+		mt1.CreateTranslation(Vector3(-dp.x * 0.07f, 0, dp.y * 0.07));
 		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 		mt3.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
 		

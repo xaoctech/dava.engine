@@ -68,6 +68,8 @@ public:
     virtual void Input(UIEvent * touch);
 
     void OpenScene(const String &pathToFile, bool editScene);
+    void ReloadRootScene(const String &pathToFile);
+    void ReloadNode(SceneNode *node, const String &pathToFile);
     
     void ShowProperties(bool show);
     bool PropertiesAreShown();
@@ -102,6 +104,10 @@ public:
     void SetViewPortSize(int32 viewportID);
     bool ControlsAreLocked();
 
+	void PushDebugCamera();
+	void PopDebugCamera();
+
+	
 protected:
 
     void ResetSelection();
@@ -170,6 +176,8 @@ protected:
     void UpdatePropertyPanel();
 	void ToggleHelp(void);
 	void AddHelpText(const wchar_t * text, float32 & y);
+	
+	
 
     UIControl *rightPanel;
     SceneNode * selectedSceneGraphNode;
@@ -235,7 +243,16 @@ protected:
 	
 	Matrix4 translate1, translate2;
 
-
+	SceneNode * mainCam;
+	SceneNode * debugCam;
+    
+    struct AddedNode
+    {
+        SceneNode *node;
+        SceneNode *parent;
+    };
+    Vector<AddedNode> nodesToAdd;
+	
 	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
 	//
 	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);

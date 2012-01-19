@@ -95,6 +95,7 @@ MaterialEditor::MaterialEditor()
         }
         
         materialProps[i]->AddBoolProperty("Is Opaque");
+        materialProps[i]->AddBoolProperty("materialeditor.twosided");
         
         if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
             || i == Material::MATERIAL_VERTEX_LIT_DECAL
@@ -295,6 +296,11 @@ void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &
         Material *mat = workingScene->GetMaterial(selectedMaterial);
         mat->SetOpaque(newValue);
     }
+    else if("materialeditor.twosided" == forKey)
+    {
+        Material *mat = workingScene->GetMaterial(selectedMaterial);
+        mat->SetTwoSided(newValue);
+    }
 }
 
 void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -366,6 +372,8 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
     
     
     currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
+    currentList->SetBoolPropertyValue("materialeditor.twosided", mat->GetTwoSided());
+
 
     
     if (currentList->IsPropertyAvaliable("Diffuse color R"))
