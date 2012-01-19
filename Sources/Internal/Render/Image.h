@@ -64,6 +64,9 @@ public:
 	Image();
 	virtual ~Image();
 	
+    static bool IsAlphaPremultiplicationEnabled(); 
+    static void EnableAlphaPremultiplication(bool isEnabled); 
+    
 	static Image * Create(int32 width, int32 height, PixelFormat format);
     // \todo Change function name to Image::Create for consistency
 	static Image * CreateFromFile(const String & pathName);
@@ -103,6 +106,8 @@ public:
 	int32	height;
 	PixelFormat format;
 	bool	isAlphaPremultiplied;
+private:
+    static bool    isAlphaPremultiplicationEnabled;
 };
 	
 // Implementation of inline functions

@@ -44,6 +44,19 @@
 
 namespace DAVA 
 {
+    
+bool Image::isAlphaPremultiplicationEnabled = true;
+bool Image::IsAlphaPremultiplicationEnabled()
+{
+    return isAlphaPremultiplicationEnabled; 
+}
+
+void Image::EnableAlphaPremultiplication(bool isEnabled)
+{
+    isAlphaPremultiplicationEnabled = isEnabled;
+}
+
+
 uint32 Image::GetFormatSize(Image::PixelFormat format)
 {
 	switch(format)
@@ -109,7 +122,7 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 	return image;
 }
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if 0
 Vector2 Image::GetImageSize(const String & pathName)
 {
 	
@@ -383,7 +396,8 @@ Image * Image::CreateFromFile(const String & pathName)
 	davaImage->format = pixelFormat;
 	return davaImage;
 }
-#elif defined(__DAVAENGINE_WIN32__)
+#endif 
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 
 
 Image * Image::CreateFromFile(const String & pathName)
@@ -394,33 +408,35 @@ Image * Image::CreateFromFile(const String & pathName)
 		SafeRelease(davaImage);
 		return 0;
 	}
+    if (isAlphaPremultiplicationEnabled)
+    {
+        if(davaImage->format == Image::FORMAT_RGBA8888) 
+        {
+            unsigned int * inOutPixel32 = (unsigned int*)davaImage->data;
+            for(int i = 0; i < davaImage->width * davaImage->height; ++i)
+            {
+                unsigned int pixel = *inOutPixel32;
 
-	if(davaImage->format == Image::FORMAT_RGBA8888) 
-	{
-		unsigned int * inOutPixel32 = (unsigned int*)davaImage->data;
-		for(int i = 0; i < davaImage->width * davaImage->height; ++i)
-		{
-			unsigned int pixel = *inOutPixel32;
-			//pixel = pixel & (0xFFFFFFFF);
+                unsigned int a = (pixel >> 24) & 0xFF;
+                unsigned int r = (pixel >> 16) & 0xFF;
+                unsigned int g = (pixel >> 8) & 0xFF;
+                unsigned int b = pixel & 0xFF;
 
-			unsigned int a = (pixel >> 24) & 0xFF;
-			unsigned int r = (pixel >> 16) & 0xFF;
-			unsigned int g = (pixel >> 8) & 0xFF;
-			unsigned int b = pixel & 0xFF;
+                {
+                    r = r * a / 255;
+                    g = g * a / 255;
+                    b = b * a / 255;
+                }
 
-			//if (a != 0)
-			{
-				//r = r * a / 255;
-				//g = g * a / 255;
-				//b = b * a / 255;
-			}
-			*inOutPixel32 = ((a) << 24) | (r << 16) | (g << 8) | b;
-			inOutPixel32++;
-			//	*inOutPixel32 = ((*inAlphaData) << 24) | pixel;
-			//	unsigned int a = *inAlphaData;
-			//	inAlphaData++;
-		}
-	}
+                *inOutPixel32 = ((a) << 24) | (r << 16) | (g << 8) | b;
+                inOutPixel32++;
+                //	*inOutPixel32 = ((*inAlphaData) << 24) | pixel;
+                //	unsigned int a = *inAlphaData;
+                //	inAlphaData++;
+            }
+            davaImage->isAlphaPremultiplied = true;
+        }
+    }
 	return davaImage;
 };
 
@@ -473,7 +489,7 @@ void Image::Resize(int32 newWidth, int32 newHeight)
             // resized data
             width = newWidth;
             height = newHeight;
-            SafeDelete(data);
+            SafeDelete(data); // TODO: Need to change to SaveDeleteArray
             data = newData;
         }
     }
@@ -481,13 +497,8 @@ void Image::Resize(int32 newWidth, int32 newHeight)
 
 void Image::Save(const String & filename)
 {
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 	DVASSERT(format == FORMAT_RGBA8888);
 	LibPngWrapper::WritePngFile(filename.c_str(), width, height, data);
-#else
-	
-	
-#endif
 }
 
 
