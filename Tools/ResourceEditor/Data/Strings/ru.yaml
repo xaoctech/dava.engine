@@ -84,6 +84,7 @@ landscapeeditor.savemask: "Сохранить маску"
 #Material Editor
 materialeditor.materials: "Материалы:"
 materialeditor.materialtype: "Тип материала:"
+materialeditor.twosided: "Двусторонний:"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
