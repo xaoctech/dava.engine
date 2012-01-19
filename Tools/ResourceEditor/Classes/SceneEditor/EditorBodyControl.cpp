@@ -1333,14 +1333,19 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     
     ReloadNode(scene, pathToFile);
     
+    scene->SetSelection(0);
     for (int i = 0; i < nodesToAdd.size(); i++) 
     {
+        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
         SafeRelease(nodesToAdd[i].nodeToAdd);
     }
     nodesToAdd.clear();
 
+    selectedSceneGraphNode = NULL;
+    savedTreeCell = NULL;
+    UpdatePropertyPanel();
     Refresh();
     sceneGraphTree->Refresh();
     RefreshDataGraph();
