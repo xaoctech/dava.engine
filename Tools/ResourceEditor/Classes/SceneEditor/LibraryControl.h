@@ -55,9 +55,12 @@ protected:
     UIControl *panelSCE;
     UIButton *btnEdit;
     UIButton *btnAdd;
+    UIButton *btnReload;
+    
     ScenePreviewControl *preview;
     void OnAddPressed(BaseObject * object, void * userData, void * callerData);
     void OnEditPressed(BaseObject * object, void * userData, void * callerData);
+    void OnReloadPressed(BaseObject * object, void * userData, void * callerData);
     
     // general
     Font *fontLight;

@@ -53,6 +53,7 @@ library.convert: "Конвертировать"
 library.add: "Добавить"
 library.edit: "Редактировать"
 library.errormessage.format: "Старый формат. Переконвертируйте из .dae."
+library.reload: "Перезагрузить"
 
 #Create Node Headers
 createnode.landscape: "Создание landscape node"
@@ -84,6 +85,7 @@ landscapeeditor.savemask: "Сохранить маску"
 #Material Editor
 materialeditor.materials: "Материалы:"
 materialeditor.materialtype: "Тип материала:"
+materialeditor.twosided: "Двусторонний:"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
