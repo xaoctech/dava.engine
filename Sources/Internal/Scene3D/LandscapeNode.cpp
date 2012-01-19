@@ -407,6 +407,8 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
+    Image::EnableAlphaPremultiplication(false);
+    
     Texture * texture = Texture::CreateFromFile(textureName);
     if (texture)
     {
@@ -416,6 +418,8 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     }
     SafeRelease(textures[level]);
     textures[level] = texture;
+
+    Image::EnableAlphaPremultiplication(true);
 }
     
 Texture * LandscapeNode::GetTexture(eTextureLevel level)

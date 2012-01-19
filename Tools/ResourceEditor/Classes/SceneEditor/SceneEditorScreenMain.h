@@ -72,6 +72,7 @@ public:
 
 	virtual void OnEditSCE(const String &pathName, const String &name);
 	virtual void OnAddSCE(const String &pathName);
+	virtual void OnReloadSCE(const String &pathName);
 
     //menu
     virtual void MenuCanceled();
@@ -164,6 +165,9 @@ private:
     void OnPropertiesPressed(BaseObject * obj, void *, void *);
     
 
+    void NodeExportPreparation(SceneNode *node);//expand this methods if you need to expand export functionality
+    void ExportTexture(const String &textureDataSourcePath);
+    
     // menu
     MenuPopupControl *menuPopup;
 
