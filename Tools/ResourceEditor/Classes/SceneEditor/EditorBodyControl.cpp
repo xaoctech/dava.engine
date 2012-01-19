@@ -60,6 +60,9 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 	CreateModificationPanel();
 	
 	CreateHelpPanel();
+	mainCam = 0;
+	debugCam = 0;
+
 }
 
 
@@ -253,6 +256,42 @@ void EditorBodyControl::CreateScene(bool withCameras)
     }
     
     scene3dView->SetScene(scene);
+}
+
+void EditorBodyControl::PushDebugCamera()
+{
+	mainCam = scene->FindByName("editor.main-camera");
+	if (mainCam)
+	{
+		SafeRetain(mainCam);
+		scene->RemoveNode(mainCam);
+	}
+	
+	debugCam = scene->FindByName("editor.debug-camera");
+	if (debugCam)
+	{
+		SafeRetain(debugCam);
+		scene->RemoveNode(debugCam);
+	}
+}
+
+
+void EditorBodyControl::PopDebugCamera()
+{
+	if (mainCam)
+	{
+		scene->AddNode(mainCam);
+		SafeRelease(mainCam);
+	}
+	
+	if (debugCam)
+	{
+		scene->AddNode(debugCam);
+		SafeRelease(debugCam);
+	}
+	
+	mainCam = 0;
+	debugCam = 0;
 }
 
 void EditorBodyControl::ReleaseScene()
