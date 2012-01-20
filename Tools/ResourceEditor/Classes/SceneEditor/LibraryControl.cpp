@@ -181,7 +181,7 @@ UIFileTreeCell *LibraryControl::CellAtIndex(UIFileTree * tree, UITreeItemInfo *e
         sceneFlagBox = new UIControl();
         sceneFlagBox->SetName("sceneFlagBox");
         sceneFlagBox->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
-        sceneFlagBox->SetSprite("~res:/Gfx/UI/chekBox", 1);
+        sceneFlagBox->SetSprite("~res:/Gfx/UI/marker", 0);
         sceneFlagBox->SetInputEnabled(false);
         c->AddControl(sceneFlagBox);
     }
