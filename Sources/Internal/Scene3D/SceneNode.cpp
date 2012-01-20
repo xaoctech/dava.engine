@@ -36,6 +36,8 @@
 #include "Utils/StringFormat.h"
 #include "Render/RenderHelper.h"
 #include "Scene3D/SceneFileV2.h"
+#include "FileSystem/FileSystem.h"
+
 
 namespace DAVA
 {
@@ -494,6 +496,15 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
     BaseObject::Save(archive);
     
+    String savedPath = "";
+    if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+    {
+        savedPath = customProperties->GetString("editor.referenceToOwner");
+        String newPath = FileSystem::AbsoluteToRelativePath(sceneFileV2->GetScenePath(), savedPath);
+        customProperties->SetString("editor.referenceToOwner", newPath);
+    }
+    
+    
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
     archive->SetByteArrayAsType("localTransform", localTransform);
@@ -503,6 +514,11 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     archive->SetUInt32("debugFlags", debugFlags);
     
     archive->SetByteArrayFromArchive("customprops", customProperties);
+    
+    if(customProperties && savedPath.length())
+    {
+        customProperties->SetString("editor.referenceToOwner", savedPath);
+    }
 }
 
 void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
@@ -521,7 +537,18 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     SafeRelease(customProperties);
     customProperties = archive->GetArchiveFromByteArray("customprops");
     if (!customProperties)
+    {
         customProperties = new KeyedArchive();
+    }
+    else
+    {
+        if(customProperties->IsKeyExists("editor.referenceToOwner"))
+        {
+            String savedPath = customProperties->GetString("editor.referenceToOwner");
+            String newPath = FileSystem::RelativeToAbsolutePath(sceneFileV2->GetScenePath(), savedPath);
+            customProperties->SetString("editor.referenceToOwner", newPath);
+        }
+    }
 }
 
 KeyedArchive * SceneNode::GetCustomProperties()
