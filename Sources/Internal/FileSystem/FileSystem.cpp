@@ -672,7 +672,7 @@ String FileSystem::RelativeToAbsolutePath(const String &folderPathname, const St
 String FileSystem::GetDiskName(const String &pathname)
 {
     String diskPath = "";
-    size_t diskPos = pathname.find(":\\");
+    String::size_type diskPos = pathname.find(":\\");
     if(String::npos != diskPos)
     {
         diskPath = pathname.substr(0, diskPos + 2);
@@ -757,7 +757,7 @@ Vector<String> FileSystem::Split(const String &srcString, const String &splitter
     
     String path = srcString;
     
-    size_t pos = path.find(splitter);
+    String::size_type pos = path.find(splitter);
     while(String::npos != pos)
     {
         if(!pos)
