@@ -280,19 +280,21 @@ void EditorBodyControl::CreateScene(bool withCameras)
 
 void RemoveDeepCamera(SceneNode * curr)
 {
-	SceneNode * cam = curr->FindByName("editor.main-camera");
-	if (cam)
-		curr->RemoveNode(cam);
+	SceneNode * cam;
 	
+	cam = curr->FindByName("editor.main-camera");
+	while (cam)
+	{
+		cam->GetParent()->RemoveNode(cam);
+		cam = curr->FindByName("editor.main-camera");
+	}
 	
 	cam = curr->FindByName("editor.debug-camera");
-	if (cam)
-		curr->RemoveNode(cam);
-	
-	for (int i = 0; i < curr->GetChildrenCount(); i++)
+	while (cam)
 	{
-		RemoveDeepCamera(curr->GetChild(i));
-	}
+		cam->GetParent()->RemoveNode(cam);
+		cam = curr->FindByName("editor.debug-camera");
+	}	
 }
 
 void EditorBodyControl::PushDebugCamera()
