@@ -278,6 +278,25 @@ void EditorBodyControl::CreateScene(bool withCameras)
     scene3dView->SetScene(scene);
 }
 
+void RemoveDeepCamera(SceneNode * curr)
+{
+	SceneNode * cam;
+	
+	cam = curr->FindByName("editor.main-camera");
+	while (cam)
+	{
+		cam->GetParent()->RemoveNode(cam);
+		cam = curr->FindByName("editor.main-camera");
+	}
+	
+	cam = curr->FindByName("editor.debug-camera");
+	while (cam)
+	{
+		cam->GetParent()->RemoveNode(cam);
+		cam = curr->FindByName("editor.debug-camera");
+	}	
+}
+
 void EditorBodyControl::PushDebugCamera()
 {
 	mainCam = scene->FindByName("editor.main-camera");
@@ -293,8 +312,9 @@ void EditorBodyControl::PushDebugCamera()
 		SafeRetain(debugCam);
 		scene->RemoveNode(debugCam);
 	}
+	
+	RemoveDeepCamera(scene);
 }
-
 
 void EditorBodyControl::PopDebugCamera()
 {
@@ -1109,6 +1129,7 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 	{
 //		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
 		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * (winx/100.0f));
+		modification = (translate1 * modification) * translate2;
 	}
 	currTransform = startTransform * modification;
 }
