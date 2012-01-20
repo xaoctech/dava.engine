@@ -363,13 +363,16 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     for (int i = 0; i < scene->GetMaterialCount(); i++)
     {
         Material *m = scene->GetMaterial(i);
-        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+        if (m->GetName().find("editor.") == String::npos)
         {
-            if (m->textures[n])
+            for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
             {
-                if (!m->textures[n]->relativePathname.empty()) 
+                if (m->textures[n])
                 {
-                    ExportTexture(m->textures[n]->relativePathname);
+                    if (!m->textures[n]->relativePathname.empty()) 
+                    {
+                        ExportTexture(m->textures[n]->relativePathname);
+                    }
                 }
             }
         }
