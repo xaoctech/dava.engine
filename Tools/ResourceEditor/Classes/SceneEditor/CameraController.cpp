@@ -30,6 +30,8 @@
 
 #include "CameraController.h"
 
+#include "EditorSettings.h"
+
 namespace DAVA 
 {
 
@@ -232,7 +234,44 @@ void WASDCameraController::Input(UIEvent * event)
 				camera->SetPosition(vect);					
 				break;					
 			}
-				
+                
+            case DVKEY_1:
+                EditorSettings::Instance()->SetCameraSpeedIndex(0);
+                SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+                break;
+                
+            case DVKEY_2:
+                EditorSettings::Instance()->SetCameraSpeedIndex(1);
+                SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+                break;
+                
+            case DVKEY_3:
+                EditorSettings::Instance()->SetCameraSpeedIndex(2);
+                SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+                break;
+                
+            case DVKEY_4:
+                EditorSettings::Instance()->SetCameraSpeedIndex(3);
+                SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+                break;
+                
+            case DVKEY_9:
+            {
+                if (speed - 50 >= 0)
+                {
+                    speed -= 50;
+                }
+                break;
+            }
+                
+            case DVKEY_0:
+            {                
+                if (speed + 50 <= 5000)
+                {
+                    speed += 50;
+                }
+                break;
+            }
                 
             default:
                 break;
