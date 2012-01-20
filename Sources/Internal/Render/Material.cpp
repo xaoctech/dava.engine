@@ -157,7 +157,6 @@ void Material::RebuildShader()
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
             //
-            shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
             uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
             
             break;
@@ -179,9 +178,12 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     keyedArchive->SetInt32("mat.texCount", TEXTURE_COUNT);
     for (int k = 0; k < TEXTURE_COUNT; ++k)
     {
-        String filename = sceneFile->AbsoluteToRelative(names[k]);
-        keyedArchive->SetString(Format("mat.tex%d", k), filename);
-        Logger::Debug("save material texture: %s", filename.c_str());
+        if (names[k].length() > 0)
+        {
+            String filename = sceneFile->AbsoluteToRelative(names[k]);
+            keyedArchive->SetString(Format("mat.tex%d", k), filename);
+            Logger::Debug("--- save material texture: %s", filename.c_str());
+        }
     }
     
     keyedArchive->SetByteArrayAsType("mat.diffuse", diffuse);
@@ -202,16 +204,19 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     for (int k = 0; k < texCount; ++k)
     {
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
-        names[k] = sceneFile->RelativeToAbsolute(relativePathname);
-        Logger::Debug("load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
-        
-        Texture::EnableMipmapGeneration();
-        textures[k] = Texture::CreateFromFile(names[k]);
-        if (textures[k])
+        if (relativePathname.length() > 0)
         {
-            textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+            names[k] = sceneFile->RelativeToAbsolute(relativePathname);
+            Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
+            
+            Texture::EnableMipmapGeneration();
+            textures[k] = Texture::CreateFromFile(names[k]);
+            if (textures[k])
+            {
+                textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+            }
+            Texture::DisableMipmapGeneration();
         }
-        Texture::DisableMipmapGeneration();
         
 //        if (names[k].size())
 //        {
