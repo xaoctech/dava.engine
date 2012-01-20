@@ -66,7 +66,7 @@ protected:
     
     Scene *workingScene;
     SceneNode *workingSceneNode;
-    DataNode *workingNodeMaterials;
+    Vector<Material*> workingNodeMaterials;
     void EnumerateNodeMaterials(SceneNode *node);
     
     int selectedMaterial;
