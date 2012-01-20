@@ -33,7 +33,6 @@ MaterialEditor::MaterialEditor()
     
     workingSceneNode = NULL;
     workingScene = NULL;
-    workingNodeMaterials = NULL;
     
     materialsList = new UIList(Rect(0, 20, size.x * materialListPart, size.y - 20), UIList::ORIENTATION_VERTICAL);
     materialsList->SetDelegate(this);
@@ -125,7 +124,6 @@ MaterialEditor::MaterialEditor()
 
 MaterialEditor::~MaterialEditor()
 {
-    SafeRelease(workingNodeMaterials);
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
     SafeRelease(materialsList);
@@ -146,10 +144,9 @@ void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
         for(int32 iMesh = 0; iMesh < meshMaterials.size(); ++iMesh)
         {
             bool found = false;
-            for(int32 child = 0; child < workingNodeMaterials->GetChildrenCount(); ++child)
+            for(int32 child = 0; child < workingNodeMaterials.size(); ++child)
             {
-                DataNode *m = workingNodeMaterials->GetChild(child);
-                if(m == meshMaterials[iMesh])
+                if(workingNodeMaterials[child] == meshMaterials[iMesh])
                 {
                     found = true;
                     break;
@@ -158,7 +155,7 @@ void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
             
             if(!found)
             {
-                workingNodeMaterials->AddNode(meshMaterials[iMesh]);
+                workingNodeMaterials.push_back(meshMaterials[iMesh]);
             }
         }
     }
@@ -176,13 +173,12 @@ void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
 
 void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *material)
 {
-    SafeRelease(workingNodeMaterials);
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
     
     workingScene = SafeRetain(newWorkingScene);
-    workingNodeMaterials = new DataNode(workingScene);
-    workingNodeMaterials->AddNode(material);
+    workingNodeMaterials.clear();
+    workingNodeMaterials.push_back(material);
     
     if (lastSelection) 
     {
@@ -215,13 +211,12 @@ void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *selected
         return;
     }
     
-    SafeRelease(workingNodeMaterials);
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
 
     workingScene = SafeRetain(newWorkingScene);
     workingSceneNode = SafeRetain(selectedSceneNode);
-    workingNodeMaterials = new DataNode(workingScene);
+    workingNodeMaterials.clear();
     EnumerateNodeMaterials(NULL);
     
     if (lastSelection) 
@@ -415,9 +410,9 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     Material *mat = workingScene->GetMaterial(index);
     
     bool found = false;
-    for (int32 i = 0; i < workingNodeMaterials->GetChildrenCount(); ++i) 
+    for (int32 i = 0; i < workingNodeMaterials.size(); ++i) 
     {
-        if(workingNodeMaterials->GetChild(i) == mat)
+        if(workingNodeMaterials[i] == mat)
         {
             found = true;
             break;
