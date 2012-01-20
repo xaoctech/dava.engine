@@ -279,7 +279,7 @@ void WASDCameraController::Input(UIEvent * event)
 		if (!camera)return;
 		Vector2 dp = stopPt - startPt;
 		viewZAngle += dp.x * 0.15f;
-		viewYAngle += dp.y * 0.1;
+		viewYAngle += dp.y * 0.15;
 		
 		if(viewYAngle < -MAX_ANGLE)
 			viewYAngle = -MAX_ANGLE;
@@ -300,7 +300,7 @@ void WASDCameraController::Input(UIEvent * event)
 	{		
 		if (!camera)return;
 		viewZAngle += (stopPt.x - startPt.x);
-		viewYAngle -= (stopPt.y - startPt.y);
+		viewYAngle += (stopPt.y - startPt.y);
 		
 		
 		if(viewYAngle < -MAX_ANGLE)
@@ -315,7 +315,7 @@ void WASDCameraController::Input(UIEvent * event)
 		mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
 		mt2 *= mt;
 		
-		Vector3 position = center + Vector3(0, radius, 0) * mt2;
+		Vector3 position = center - Vector3(0, radius, 0) * mt2;
 		
 		camera->SetTarget(center);
 		camera->SetPosition(position);
