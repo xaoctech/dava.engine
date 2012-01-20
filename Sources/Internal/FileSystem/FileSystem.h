@@ -196,13 +196,29 @@ public:
 	int32 Spawn(const String& command);
     
     
+	/**
+	 \brief Creates the relative path for filePathname
+	 \param[in] path of the source folder
+	 \param[in] path name of the file 
+	 \returns relative path
+	 */
     static String AbsoluteToRelativePath(const String &folderPathname, const String &filePathname);
+
+	/**
+	 \brief Creates the absolute path to file
+	 \param[in] path of the destination folder
+	 \param[in] relative path to file
+	 \returns absolute path
+	 */
     static String RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname);
     
 private:
 
     static Vector<String> Split(const String &srcString, const String &splitter);
-
+#if defined(__DAVAENGINE_WIN32__) 
+    static String GetDiskName(const String &pathname);
+#endif //#if defined(__DAVAENGINE_WIN32__) 
+    
     
     String tempRetPath;
 	String currentWorkingDirectory;
