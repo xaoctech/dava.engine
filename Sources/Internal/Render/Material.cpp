@@ -206,7 +206,13 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
         if (relativePathname.length() > 0)
         {
-            names[k] = sceneFile->RelativeToAbsolute(relativePathname);
+			String absolutePathname = relativePathname;
+			if(!absolutePathname.empty() && absolutePathname[0] != '~') //not path like ~res:/Gfx...
+			{
+				absolutePathname = sceneFile->RelativeToAbsolute(relativePathname);
+			}
+
+            names[k] = absolutePathname;
             Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
             Texture::EnableMipmapGeneration();
