@@ -83,8 +83,6 @@ namespace DAVA
         }
         return T(val > 0 ? 1 : -1);
     }
-	
-#define EPSILON 0.000001
 
 	/*
 	 Function to get intersection point of 
