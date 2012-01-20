@@ -173,4 +173,8 @@ settingsdialog.autosave: "Авто сохранение(мин):"
 
 settingsdialog.language: "Язык:"
 settingsdialog.output: "Показывать лог:"
+settingsdialog.cameraspeed1: "1-ая скорость камеры:"
+settingsdialog.cameraspeed2: "2-ая скорость камеры:"
+settingsdialog.cameraspeed3: "3-ая скорость камеры:"
+settingsdialog.cameraspeed4: "4-ая скорость камеры:"
 

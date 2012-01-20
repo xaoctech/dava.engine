@@ -41,15 +41,32 @@ bool EditorSettings::IsValidPath(const String &path)
 
 float32 EditorSettings::GetCameraSpeed()
 {
-    static const float32 speedConst[] = {35, 100, 250, 400};
-    return speedConst[settings->GetInt32("CameraSpeed", 0)];
+    int32 index = settings->GetInt32("CameraSpeedIndex", 0);
+    return GetCameraSpeed(index);
 }
+
 void EditorSettings::SetCameraSpeedIndex(int32 camSpeedIndex)
 {
     DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
-    settings->SetInt32("CameraSpeed", camSpeedIndex);
+
+    settings->SetInt32("CameraSpeedIndex", camSpeedIndex);
     Save();
 }
+
+void EditorSettings::SetCameraSpeed(int32 camSpeedIndex, float32 speed)
+{
+    DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
+    settings->SetFloat("CameraSpeedValue" + camSpeedIndex, speed);
+}
+
+float32 EditorSettings::GetCameraSpeed(int32 camSpeedIndex)
+{
+    DVASSERT(camSpeedIndex >= 0 && camSpeedIndex < 4);
+    
+    static const float32 speedConst[] = {35, 100, 250, 400};
+    return settings->GetFloat("CameraSpeedValue" + camSpeedIndex, speedConst[camSpeedIndex]);
+}
+
 
 //String EditorSettings::GetProjectPath()
 //{

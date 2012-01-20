@@ -40,6 +40,12 @@ SettingsDialog::SettingsDialog(const Rect & rect)
     languages.push_back("ru");
     propertyList->AddComboProperty("settingsdialog.language", languages);
     propertyList->AddBoolProperty("settingsdialog.output", PropertyList::PROPERTY_IS_EDITABLE);
+    
+    
+    propertyList->AddFloatProperty("settingsdialog.cameraspeed1", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("settingsdialog.cameraspeed2", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("settingsdialog.cameraspeed3", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFloatProperty("settingsdialog.cameraspeed4", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -71,6 +77,11 @@ void SettingsDialog::WillAppear()
     }
     propertyList->SetComboPropertyIndex("settingsdialog.language", index);
     propertyList->SetBoolPropertyValue("settingsdialog.output", EditorSettings::Instance()->GetShowOutput());
+    
+    propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed1", EditorSettings::Instance()->GetCameraSpeed(0));
+    propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed2", EditorSettings::Instance()->GetCameraSpeed(1));
+    propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed3", EditorSettings::Instance()->GetCameraSpeed(2));
+    propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed4", EditorSettings::Instance()->GetCameraSpeed(3));
 }
 
 void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -83,6 +94,26 @@ void SettingsDialog::OnFloatPropertyChanged(PropertyList *forList, const String 
     if ("settingsdialog.autosave" == forKey) 
     {
         EditorSettings::Instance()->SetAutosaveTime(newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.cameraspeed1" == forKey)
+    {
+        EditorSettings::Instance()->SetCameraSpeed(0, newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.cameraspeed2" == forKey)
+    {
+        EditorSettings::Instance()->SetCameraSpeed(1, newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.cameraspeed3" == forKey)
+    {
+        EditorSettings::Instance()->SetCameraSpeed(2, newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.cameraspeed4" == forKey)
+    {
+        EditorSettings::Instance()->SetCameraSpeed(3, newValue);
         EditorSettings::Instance()->Save();
     }
 }
