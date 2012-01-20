@@ -681,7 +681,7 @@ String FileSystem::GetDiskName(const String &pathname)
 }
     
     
-#elif defined(__DAVAENGINE_MACOS__) || (__DAVAENGINE_IPHONE__)
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &filePathname)
 {
     String filePath;
