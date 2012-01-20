@@ -86,6 +86,8 @@ landscapeeditor.savemask: "Save Mask"
 materialeditor.materials: "Materials:"
 materialeditor.materialtype: "Material type:"
 materialeditor.twosided: "Two-Sided:"
+materialeditor.selected: "Selected"
+materialeditor.all: "All"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"

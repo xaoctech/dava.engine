@@ -28,17 +28,30 @@ MaterialEditor::MaterialEditor()
 : DraggableDialog(Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3))
 {//todo: create draggable dealog
     
-//    ControlsFactory::CustomizePanelControl(this);
     ControlsFactory::CustomizeDialog(this);
+    displayMode = EDM_ALL;
     
     workingSceneNode = NULL;
     workingScene = NULL;
+    float32 materialListWidth = size.x * materialListPart;
     
-    materialsList = new UIList(Rect(0, 20, size.x * materialListPart, size.y - 20), UIList::ORIENTATION_VERTICAL);
+    btnAll = ControlsFactory::CreateButton(Rect(0, ControlsFactory::BUTTON_HEIGHT, materialListWidth/2, ControlsFactory::BUTTON_HEIGHT), 
+                                           LocalizedString(L"materialeditor.all"));
+    btnAll->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnAllPressed));
+    
+    btnSelected = ControlsFactory::CreateButton(Rect(materialListWidth/2, ControlsFactory::BUTTON_HEIGHT, 
+                                                     materialListWidth/2, ControlsFactory::BUTTON_HEIGHT), 
+                                                LocalizedString(L"materialeditor.selected"));
+    btnSelected->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSelectedPressed));
+
+    
+    materialsList = new UIList(Rect(0, ControlsFactory::BUTTON_HEIGHT * 2, 
+                                    materialListWidth, size.y - ControlsFactory::BUTTON_HEIGHT * 2), 
+                               UIList::ORIENTATION_VERTICAL);
     materialsList->SetDelegate(this);
     ControlsFactory::CusomizeListControl(materialsList);
     AddControl(materialsList);
-    UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, 20));
+    UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, ControlsFactory::BUTTON_HEIGHT));
     text->SetFont(ControlsFactory::GetFontLight());
     text->SetText(LocalizedString(L"materialeditor.materials"));
     AddControl(text);
@@ -124,6 +137,9 @@ MaterialEditor::MaterialEditor()
 
 MaterialEditor::~MaterialEditor()
 {
+    SafeRelease(btnSelected);
+    SafeRelease(btnAll);
+    
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
     SafeRelease(materialsList);
@@ -179,28 +195,17 @@ void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *material)
     workingScene = SafeRetain(newWorkingScene);
     workingNodeMaterials.clear();
     workingNodeMaterials.push_back(material);
-    
+
+    UdpateButtons(true);
+
     if (lastSelection) 
     {
         lastSelection->SetSelected(false, false);
+        lastSelection = NULL;
     }
-    lastSelection = NULL;
-    if (workingScene->GetMaterialCount() > 0)
-    {
-        selectedMaterial = 0;
-        for (int32 i = 0; i < workingScene->GetMaterialCount(); ++i) 
-        {
-            Material *mat = workingScene->GetMaterial(i);
-            if(mat == material)
-            {
-                selectedMaterial = i;
-            }
-        }
-        
-        SelectMaterial(selectedMaterial);
-    }
-    materialsList->Refresh();
-    materialsList->ResetScrollPosition();
+    
+    SelectMaterial(0);
+    RefreshList();
 }
 
 
@@ -219,18 +224,21 @@ void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *selected
     workingNodeMaterials.clear();
     EnumerateNodeMaterials(NULL);
     
+    UdpateButtons(NULL != selectedSceneNode);
+    
     if (lastSelection) 
     {
         lastSelection->SetSelected(false, false);
+        lastSelection = NULL;
     }
-    lastSelection = NULL;
+    
     if (workingScene->GetMaterialCount() > 0)
     {
         selectedMaterial = 0;
         SelectMaterial(0);
     }
-    materialsList->Refresh();
-    materialsList->ResetScrollPosition();
+    
+    RefreshList();
 }
 
 void MaterialEditor::OnButton(BaseObject * object, void * userData, void * callerData)
@@ -241,7 +249,8 @@ void MaterialEditor::OnItemSelected(ComboBox *forComboBox, const String &itemKey
 {
     if (forComboBox == materialTypes) 
     {
-        Material *mat = workingScene->GetMaterial(selectedMaterial);
+//        Material *mat = workingScene->GetMaterial(selectedMaterial);
+        Material *mat = GetMaterial(selectedMaterial);
         mat->SetType((Material::eType)itemIndex);
         PreparePropertiesForMaterialType(mat->type);
     }
@@ -252,15 +261,17 @@ void MaterialEditor::OnStringPropertyChanged(PropertyList *forList, const String
 {
     if (forKey == "Name") 
     {
-        workingScene->GetMaterial(selectedMaterial)->SetName(newValue);
+//        workingScene->GetMaterial(selectedMaterial)->SetName(newValue);
+        Material *mat = GetMaterial(selectedMaterial);
+        mat->SetName(newValue);
         materialsList->Refresh();
     }
 }
 
 void MaterialEditor::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    Material *mat = workingScene->GetMaterial(selectedMaterial);
-    
+//    Material *mat = workingScene->GetMaterial(selectedMaterial);
+    Material *mat = GetMaterial(selectedMaterial);
 
     if (forList->IsPropertyAvaliable("Diffuse color R"))
     {
@@ -288,12 +299,14 @@ void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &
 {
     if(forKey == "Is Opaque")
     {
-        Material *mat = workingScene->GetMaterial(selectedMaterial);
+//        Material *mat = workingScene->GetMaterial(selectedMaterial);
+        Material *mat = GetMaterial(selectedMaterial);
         mat->SetOpaque(newValue);
     }
     else if("materialeditor.twosided" == forKey)
     {
-        Material *mat = workingScene->GetMaterial(selectedMaterial);
+//        Material *mat = workingScene->GetMaterial(selectedMaterial);
+        Material *mat = GetMaterial(selectedMaterial);
         mat->SetTwoSided(newValue);
     }
 }
@@ -304,7 +317,8 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
     {
         if (forKey == textureNames[i]) 
         {
-            Material *mat = workingScene->GetMaterial(selectedMaterial);
+//            Material *mat = workingScene->GetMaterial(selectedMaterial);
+            Material *mat = GetMaterial(selectedMaterial);
             if (mat->textures[textureTypes[i]])
             {
                 SafeRelease(mat->textures[textureTypes[i]]);
@@ -330,9 +344,13 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
 
 void MaterialEditor::SelectMaterial(int materialIndex)
 {
-    Material *mat = workingScene->GetMaterial(materialIndex);
-    PreparePropertiesForMaterialType(mat->type);
-    materialTypes->SetSelectedIndex(mat->type, false);
+//    Material *mat = workingScene->GetMaterial(materialIndex);
+    Material *mat = GetMaterial(materialIndex);
+    if(mat)
+    {
+        PreparePropertiesForMaterialType(mat->type);
+        materialTypes->SetSelectedIndex(mat->type, false);
+    }
 }
 
 void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
@@ -348,53 +366,63 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
     
     PropertyList *currentList = materialProps[materialType];
     
-    Material *mat = workingScene->GetMaterial(selectedMaterial);
-    currentList->SetStringPropertyValue("Name", mat->GetName());
-    for (int i = 0; i < ME_TEX_COUNT; i++) 
+//    Material *mat = workingScene->GetMaterial(selectedMaterial);
+    Material *mat = GetMaterial(selectedMaterial);
+    if(mat)
     {
-        if (currentList->IsPropertyAvaliable(textureNames[i]))
+        currentList->SetStringPropertyValue("Name", mat->GetName());
+        for (int i = 0; i < ME_TEX_COUNT; i++) 
         {
-            if (mat->textures[textureTypes[i]])
+            if (currentList->IsPropertyAvaliable(textureNames[i]))
             {
-                currentList->SetFilepathPropertyValue(textureNames[i], mat->textures[textureTypes[i]]->relativePathname);
-            }
-            else 
-            {
-                currentList->SetFilepathPropertyValue(textureNames[i], "");
+                if (mat->textures[textureTypes[i]])
+                {
+                    currentList->SetFilepathPropertyValue(textureNames[i], mat->textures[textureTypes[i]]->relativePathname);
+                }
+                else 
+                {
+                    currentList->SetFilepathPropertyValue(textureNames[i], "");
+                }
             }
         }
-    }
-    
-    
-    currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
-    currentList->SetBoolPropertyValue("materialeditor.twosided", mat->GetTwoSided());
-
-
-    
-    if (currentList->IsPropertyAvaliable("Diffuse color R"))
-    {
-        currentList->SetFloatPropertyValue("Diffuse color R", mat->diffuse.x);
-        currentList->SetFloatPropertyValue("Diffuse color G", mat->diffuse.y);
-        currentList->SetFloatPropertyValue("Diffuse color B", mat->diffuse.z);
-        currentList->SetFloatPropertyValue("Diffuse color A", mat->diffuse.w);
-    }
-    
-    if (currentList->IsPropertyAvaliable("Specular color R"))
-    {
-        currentList->SetFloatPropertyValue("Specular color R", mat->specular.x);
-        currentList->SetFloatPropertyValue("Specular color G", mat->specular.y);
-        currentList->SetFloatPropertyValue("Specular color B", mat->specular.z);
-        currentList->SetFloatPropertyValue("Specular color A", mat->specular.w);
-    }
-    
+        
+        
+        currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
+        currentList->SetBoolPropertyValue("materialeditor.twosided", mat->GetTwoSided());
+        
+        
+        
+        if (currentList->IsPropertyAvaliable("Diffuse color R"))
+        {
+            currentList->SetFloatPropertyValue("Diffuse color R", mat->diffuse.x);
+            currentList->SetFloatPropertyValue("Diffuse color G", mat->diffuse.y);
+            currentList->SetFloatPropertyValue("Diffuse color B", mat->diffuse.z);
+            currentList->SetFloatPropertyValue("Diffuse color A", mat->diffuse.w);
+        }
+        
+        if (currentList->IsPropertyAvaliable("Specular color R"))
+        {
+            currentList->SetFloatPropertyValue("Specular color R", mat->specular.x);
+            currentList->SetFloatPropertyValue("Specular color G", mat->specular.y);
+            currentList->SetFloatPropertyValue("Specular color B", mat->specular.z);
+            currentList->SetFloatPropertyValue("Specular color A", mat->specular.w);
+        }
+    }    
 }
 
 
 int32 MaterialEditor::ElementsCount(UIList *forList)
 {
-    if (workingScene) 
+    if(EDM_ALL == displayMode)
     {
-        return workingScene->GetMaterialCount();
+        if (workingScene) 
+        {
+            return workingScene->GetMaterialCount();
+        }
+    }
+    else
+    {
+        return workingNodeMaterials.size();
     }
     return 0;
 }
@@ -406,27 +434,46 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     {
         c = new UIListCell(Rect(0, 0, size.x * materialListPart, 20), "Material name cell");
     }
+
     
-    Material *mat = workingScene->GetMaterial(index);
-    
-    bool found = false;
-    for (int32 i = 0; i < workingNodeMaterials.size(); ++i) 
+    UIControl *sceneFlagBox = SafeRetain(c->FindByName("flagBox"));
+    if(!sceneFlagBox)
     {
-        if(workingNodeMaterials[i] == mat)
-        {
-            found = true;
-            break;
-        }
+        int32 height = 16;
+        int32 width = 16;
+        float32 y = (CellHeight(forList, index) - height) / 2;
+        float32 x = forList->GetRect().dx - width;
+        
+        Rect r = Rect(x, y, width, height);
+        sceneFlagBox = new UIControl(r);
+        sceneFlagBox->SetName("flagBox");
+        sceneFlagBox->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+        sceneFlagBox->SetSprite("~res:/Gfx/UI/marker", 1);
+        sceneFlagBox->SetInputEnabled(false);
+        c->AddControl(sceneFlagBox);
     }
     
-    if(found)
+//    Material *mat = NULL;
+    Material *mat = GetMaterial(index);
+    bool found = false;
+    if(EDM_ALL == displayMode)
     {
-        ControlsFactory::CustomizeListCellAlternative(c, StringToWString(mat->GetName()));
+        for (int32 i = 0; i < workingNodeMaterials.size(); ++i) 
+        {
+            if(workingNodeMaterials[i] == mat)
+            {
+                found = true;
+                break;
+            }
+        }
     }
     else
     {
-        ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()));
+        found = true;
     }
+    
+    ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()));
+    sceneFlagBox->SetVisible(found, false);
     
     if (index == selectedMaterial) 
     {
@@ -455,4 +502,88 @@ void MaterialEditor::OnCellSelected(UIList *forList, UIListCell *selectedCell)
         lastSelection = selectedCell;
         SelectMaterial(selectedMaterial);
     }    
+}
+
+
+void MaterialEditor::OnAllPressed(BaseObject * object, void * userData, void * callerData)
+{
+    displayMode = EDM_ALL;
+    btnAll->SetSelected(true, false);
+    btnSelected->SetSelected(false, false);
+
+    if (lastSelection) 
+    {
+        lastSelection->SetSelected(false, false);
+        lastSelection = NULL;
+    }
+    selectedMaterial = 0;
+    SelectMaterial(0);
+
+    RefreshList();
+}
+
+void MaterialEditor::OnSelectedPressed(BaseObject * object, void * userData, void * callerData)
+{
+    displayMode = EDM_SELECTED;
+
+    btnAll->SetSelected(false, false);
+    btnSelected->SetSelected(true, false);
+
+    
+    if (lastSelection) 
+    {
+        lastSelection->SetSelected(false, false);
+        lastSelection = NULL;
+    }
+    selectedMaterial = 0;
+    SelectMaterial(0);
+
+    RefreshList();
+}
+
+void MaterialEditor::UdpateButtons(bool showButtons)
+{
+    displayMode = EDM_ALL;
+    if(showButtons)
+    {
+//        displayMode = EDM_SELECTED;
+        if(!btnAll->GetParent()) AddControl(btnAll);
+        if(!btnSelected->GetParent()) AddControl(btnSelected);
+        
+        btnAll->SetSelected(false, false);
+        btnSelected->SetSelected(false, false);
+    }
+    else
+    {
+//        displayMode = EDM_ALL;
+        if(btnAll->GetParent()) RemoveControl(btnAll);
+        if(btnSelected->GetParent()) RemoveControl(btnSelected);
+
+        btnAll->SetSelected(false, false);
+        btnSelected->SetSelected(false, false);
+    }
+}
+
+void MaterialEditor::RefreshList()
+{
+    materialsList->Refresh();
+    materialsList->ResetScrollPosition();
+}
+
+Material * MaterialEditor::GetMaterial(int32 index)
+{
+//    Material *mat = workingScene->GetMaterial(selectedMaterial);
+    Material *mat = NULL;
+    if(EDM_ALL == displayMode)
+    {
+        mat = workingScene->GetMaterial(index);
+    }
+    else
+    {
+        if(index < workingNodeMaterials.size())
+        {
+            mat = workingNodeMaterials[index];
+        }
+    }
+    return mat;
 }

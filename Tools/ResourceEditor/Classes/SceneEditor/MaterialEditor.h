@@ -71,6 +71,25 @@ protected:
     
     int selectedMaterial;
     UIListCell *lastSelection;
+    
+    
+    //===============
+    enum eDisplayMode
+    {
+        EDM_ALL = 0,
+        EDM_SELECTED
+    };
+    eDisplayMode displayMode;
+    
+    UIButton *btnAll;
+    UIButton *btnSelected;
+    
+    void OnAllPressed(BaseObject * object, void * userData, void * callerData);
+    void OnSelectedPressed(BaseObject * object, void * userData, void * callerData);
+    
+    void UdpateButtons(bool showButtons);
+    void RefreshList();
+    Material *GetMaterial(int32 index);
 };
 
 #endif
