@@ -22,7 +22,9 @@ public:
 
     float32 GetCameraSpeed();
     void SetCameraSpeedIndex(int32 camSpeedIndex);//0 - 4
-
+    void SetCameraSpeed(int32 camSpeedIndex, float32 speed);
+    float32 GetCameraSpeed(int32 camSpeedIndex);
+    
     int32 GetScreenWidth();
     void SetScreenWidth(int32 width);
     
