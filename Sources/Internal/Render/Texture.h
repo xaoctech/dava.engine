@@ -157,6 +157,8 @@ public:
 	virtual int32 Release();
 
 	static void	DumpTextures();
+	static int32 AllocatedMemorySize();
+	static int32 TexturesCount();
 
 	inline int32 GetWidth() { return width; }
 	inline int32 GetHeight() { return height; }
