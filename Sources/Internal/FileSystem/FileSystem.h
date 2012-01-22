@@ -202,7 +202,7 @@ public:
 	 \param[in] path name of the file 
 	 \returns relative path
 	 */
-    static String AbsoluteToRelativePath(const String &folderPathname, const String &filePathname);
+    static String AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname);
 
 	/**
 	 \brief Creates the absolute path to file
@@ -215,9 +215,7 @@ public:
 private:
 
     static Vector<String> Split(const String &srcString, const String &splitter);
-#if defined(__DAVAENGINE_WIN32__) 
     static String GetDiskName(const String &pathname);
-#endif //#if defined(__DAVAENGINE_WIN32__) 
     
     
     String tempRetPath;
