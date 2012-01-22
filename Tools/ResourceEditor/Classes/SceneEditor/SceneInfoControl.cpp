@@ -22,23 +22,11 @@ SceneInfoControl::~SceneInfoControl()
 
 void SceneInfoControl::WillAppear()
 {
-    UpdateInfo();
+    UpdateInfo(NULL, NULL, NULL);
 }
 
-void SceneInfoControl::Update(float32 timeElapsed)
+void SceneInfoControl::UpdateInfo(BaseObject * owner, void * userData, void * callerData)
 {
-    updateTimer -= timeElapsed;
-    if(updateTimer <= 0)
-    {
-        UpdateInfo();
-    }
-    
-    UIControl::Update(timeElapsed);
-}
-
-void SceneInfoControl::UpdateInfo()
-{
-    updateTimer = 1.f;
     if(workingScene)
     {
         SetIntInfoValue("Text.Count", Texture::TexturesCount());
@@ -54,6 +42,9 @@ void SceneInfoControl::UpdateInfo()
             ControlsFactory::CusomizeTransparentControl(cell, 0.1f);
         }
     }
+    
+    Animation * anim = WaitAnimation(10.f); //every 10 seconds
+    anim->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SceneInfoControl::UpdateInfo));
 }
 
 void SceneInfoControl::SetIntInfoValue(const String &key, int32 newValue)
