@@ -13,9 +13,6 @@ public:
     virtual ~SceneInfoControl();
     
 	virtual void WillAppear();
-    
-	virtual void Update(float32 timeElapsed);
-    
     void SetWorkingScene(Scene *scene);
 
 protected:
@@ -23,9 +20,7 @@ protected:
     void SetIntInfoValue(const String &key, int32 newValue);
     void SetFloatInfoValue(const String &key, float32 newValue);
     
-    void UpdateInfo();
-    
-    float32 updateTimer;
+    void UpdateInfo(BaseObject * owner, void * userData, void * callerData);
     
     PropertyList *sceneInfo;
     Scene *workingScene;
