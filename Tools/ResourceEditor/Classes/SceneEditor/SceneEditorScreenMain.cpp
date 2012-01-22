@@ -70,11 +70,20 @@ void SceneEditorScreenMain::LoadResources()
 
     //properties
     propertiesButton = ControlsFactory::CreateButton(
-                            Vector2(fullRect.dx - (ControlsFactory::BUTTON_WIDTH*2), 
+                            Vector2(libraryButton->GetRect().x - ControlsFactory::BUTTON_WIDTH, 
                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
                         LocalizedString(L"panel.properties"));
     propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
     AddControl(propertiesButton);
+    
+    
+    //scene ingo
+    sceneInfoButton = ControlsFactory::CreateButton(
+                            Vector2(propertiesButton->GetRect().x - ControlsFactory::BUTTON_WIDTH, 
+                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
+                            LocalizedString(L"panel.sceneinfo"));
+    sceneInfoButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneInfoPressed));
+    AddControl(sceneInfoButton);
     
     
     sceneGraphButton = ControlsFactory::CreateButton(
@@ -94,6 +103,8 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(sceneInfoButton);
+    
     SafeRelease(settingsDialog);
     
     SafeRelease(sceneGraphButton);
@@ -1027,4 +1038,10 @@ void SceneEditorScreenMain::OnViewPortSize(DAVA::BaseObject *obj, void *, void *
 {
     menuPopup->InitControl(MENUID_VIEWPORT, btnViewPortSize->GetRect());
     AddControl(menuPopup);
+}
+
+void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *obj, void *, void *)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ToggleSceneInfo();
 }

@@ -21,6 +21,7 @@
 		5C07AA6214A8DF5400802097 /* OutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AA6014A8DF5400802097 /* OutputControl.cpp */; };
 		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
 		5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8914A926CA005DDB16 /* OutputManager.cpp */; };
+		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C4E87B014B3AE7C006C5191 /* LandscapeEditorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */; };
@@ -324,6 +325,8 @@
 		5C170B8714A916B0005DDB16 /* CameraOutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOutputControl.h; sourceTree = "<group>"; };
 		5C170B8914A926CA005DDB16 /* OutputManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputManager.cpp; sourceTree = "<group>"; };
 		5C170B8A14A926CA005DDB16 /* OutputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputManager.h; sourceTree = "<group>"; };
+		5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfoControl.cpp; sourceTree = "<group>"; };
+		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
@@ -1000,6 +1003,8 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */,
+				5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */,
 				5CD509BB14C6CB250089067E /* SettingsDialog.cpp */,
 				5CD509BC14C6CB250089067E /* SettingsDialog.h */,
 				5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */,
@@ -2133,6 +2138,7 @@
 				5CE1675814C4D56000D2F1D4 /* CameraPropertyControl.cpp in Sources */,
 				5CE1675B14C4D65300D2F1D4 /* LandscapePropertyControl.cpp in Sources */,
 				5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */,
+				5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

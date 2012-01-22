@@ -180,6 +180,14 @@ void ControlsFactory::CusomizeBottomLevelControl(UIControl *c)
     c->GetBackground()->SetColor(Color(0.5f, 0.5f, 0.5f, 1.0f));
 }
 
+void ControlsFactory::CusomizeTransparentControl(UIControl *c, float32 transparentLevel)
+{
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    c->GetBackground()->SetColor(Color(0.0f, 0.0f, 0.0f, transparentLevel));
+}
+
+
+
 void ControlsFactory::CusomizeTopLevelControl(UIControl *c)
 {
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);

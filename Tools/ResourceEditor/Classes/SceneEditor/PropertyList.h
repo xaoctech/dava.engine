@@ -91,6 +91,9 @@ public:
 
     void ReleaseProperties();
     
+    const List<UIControl*> &GetVisibleCells();
+
+    
 protected:
     
 //    PropertyCellData *GetDataForIndex(int32 index);

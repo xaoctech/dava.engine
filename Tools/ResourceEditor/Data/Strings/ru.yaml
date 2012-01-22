@@ -35,6 +35,7 @@ panel.level: "Уровень"
 panel.properties: "Свойства"
 panel.library: "Библиотека"
 panel.refresh: "Обновить"
+panel.sceneinfo: "Информация"
 
 #Output
 output.output: "Лог"
