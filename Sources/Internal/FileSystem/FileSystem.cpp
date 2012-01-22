@@ -568,14 +568,15 @@ int32 FileSystem::Spawn(const String& command)
 #endif
 }
 
-#if defined(__DAVAENGINE_WIN32__) 
-String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &filePathname)
+
+String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname)
 {
     String folderDisk = GetDiskName(folderPathname);
-    String fileDisk = GetDiskName(filePathname);
+    String fileDisk = GetDiskName(absolutePathname);
+    DVASSERT(folderDisk == fileDisk);
 
-    String workingFolderPath = folderPathname.substr(folderDisk.length());
-    String workingFilePath = filePathname.substr(fileDisk.length());
+    String workingFolderPath = folderPathname;
+    String workingFilePath = absolutePathname;
     
     std::replace(workingFolderPath.begin(),workingFolderPath.end(),'\\','/');
     std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
@@ -599,33 +600,18 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
         }
     }
     
-    String retPath = "";
-    if(folderDisk == fileDisk)
+    String retPath = (folderDisk.length() && !equalCount) ? "": "/";
+    for(int32 i = equalCount; i < folders.size(); ++i)
     {
-        retPath = (equalCount) ? "\\" : folderDisk;
-        for(int32 i = equalCount; i < folders.size(); ++i)
-        {
-            retPath += "..\\";
-        }
+        retPath += "../";
     }
-    else
-    {
-        retPath = "..\\";
-        for(int32 i = equalCount; i < folders.size(); ++i)
-        {
-            retPath += "..\\";
-        }
-        
-        retPath += fileDisk;
-    }
+
     for(int32 i = equalCount; i < fileFolders.size(); ++i)
     {
-        retPath += fileFolders[i] + "\\";
+        retPath += fileFolders[i] + "/";
     }
     
-    retPath += fileName;
-    
-    return retPath;
+    return (retPath + fileName);
 }
 
 String FileSystem::RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname)
@@ -645,110 +631,41 @@ String FileSystem::RelativeToAbsolutePath(const String &folderPathname, const St
     Vector<String> folders = Split(workingFolderPath, "/");
     Vector<String> fileFolders = Split(filePath, "/");
     
-    int32 equalCount = 0;
-    for(; equalCount < fileFolders.size(); ++equalCount)
+    int32 stepsDownCount = 0;
+    for(; stepsDownCount < fileFolders.size(); ++stepsDownCount)
     {
-        if(".." != fileFolders[equalCount])
+        if(".." != fileFolders[stepsDownCount])
         {
             break;
         }
     }
     
-    String retPath = folderDisk;
-    for(int32 i = 0; i < folders.size() - equalCount; ++i)
+    DVASSERT(stepsDownCount <= folders.size());
+    
+    String retPath = folderDisk + "/";
+    for(int32 i = 0; i < folders.size() - stepsDownCount; ++i)
     {
-        retPath += folders[i] + "\\";
+        retPath += folders[i] + "/";
     }
     
-    for(int32 i = equalCount; i < fileFolders.size(); ++i)
+    for(int32 i = stepsDownCount; i < fileFolders.size(); ++i)
     {
-        retPath += fileFolders[i] + "\\";
+        retPath += fileFolders[i] + "/";
     }
     
-    retPath += fileName;
-    return retPath;
+    return (retPath + fileName);
 }
     
 String FileSystem::GetDiskName(const String &pathname)
 {
     String diskPath = "";
-    String::size_type diskPos = pathname.find(":\\");
-    if(String::npos != diskPos)
+    String::size_type diskPos = pathname.find(":");
+    if(1 == diskPos)
     {
-        diskPath = pathname.substr(0, diskPos + 2);
+        diskPath = pathname.substr(0, 2);
     }
     return diskPath;
 }
-    
-    
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
-String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &filePathname)
-{
-    String filePath;
-    String fileName;
-    FileSystem::SplitPath(filePathname, filePath, fileName);
-    
-    Vector<String> folders = Split(folderPathname, "/");
-    Vector<String> fileFolders = Split(filePath, "/");
-    
-    int32 equalCount = 0;
-    for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
-    {
-        if(folders[equalCount] != fileFolders[equalCount])
-        {
-            break;
-        }
-    }
-    
-    String retPath = "/";
-    for(int32 i = equalCount; i < folders.size(); ++i)
-    {
-        retPath += "../";
-    }
-    
-    for(int32 i = equalCount; i < fileFolders.size(); ++i)
-    {
-        retPath += fileFolders[i] + "/";
-    }
-    
-    retPath += fileName;
-    
-    return retPath;
-}
-
-String FileSystem::RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname)
-{
-    String filePath;
-    String fileName;
-    FileSystem::SplitPath(relativePathname, filePath, fileName);
-    
-    Vector<String> folders = Split(folderPathname, "/");
-    Vector<String> fileFolders = Split(filePath, "/");
-    
-    int32 equalCount = 0;
-    for(; equalCount < fileFolders.size(); ++equalCount)
-    {
-        if(".." != fileFolders[equalCount])
-        {
-            break;
-        }
-    }
-    
-    String retPath = "/";
-    for(int32 i = 0; i < folders.size() - equalCount; ++i)
-    {
-        retPath += folders[i] + "/";
-    }
-    
-    for(int32 i = equalCount; i < fileFolders.size(); ++i)
-    {
-        retPath += fileFolders[i] + "/";
-    }
-    
-    retPath += fileName;
-    return retPath;
-}
-#endif //PLATFORMS
     
     
 Vector<String> FileSystem::Split(const String &srcString, const String &splitter)
