@@ -498,4 +498,10 @@ void PropertyList::SetMessagePropertyValue(const String &propertyName, const Mes
     }
 }
 
+const List<UIControl*> & PropertyList::GetVisibleCells()
+{
+    return propsList->GetVisibleCells();
+}
+
+
 

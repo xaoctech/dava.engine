@@ -12,6 +12,8 @@
 
 using namespace DAVA;
 
+class SceneInfoControl;
+
 class BeastManager;
 class OutputPanelControl;
 class EditorBodyControl : 
@@ -107,6 +109,7 @@ public:
 	void PushDebugCamera();
 	void PopDebugCamera();
 
+    void ToggleSceneInfo();
 	
 protected:
 
@@ -260,6 +263,8 @@ protected:
 
 	
     eViewPortIDs currentViewPortID;
+    
+    SceneInfoControl *sceneInfoControl;
 };
 
 

@@ -8,6 +8,8 @@
 #include "EditorSettings.h"
 #include "../config.h"
 
+#include "SceneInfoControl.h"
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
@@ -56,6 +58,10 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     AddControl(scene3dView);
     
     
+
+    sceneInfoControl = new SceneInfoControl(Rect(rect.dx - ControlsFactory::RIGHT_SIDE_WIDTH * 2 , 0, 
+                                                 ControlsFactory::RIGHT_SIDE_WIDTH, ControlsFactory::RIGHT_SIDE_WIDTH));
+    AddControl(sceneInfoControl);
     
     CreateScene(true);
 
@@ -82,12 +88,13 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 	CreateHelpPanel();
 	mainCam = 0;
 	debugCam = 0;
-
 }
 
 
 EditorBodyControl::~EditorBodyControl()
 {
+    SafeRelease(sceneInfoControl);
+    
     ReleaseModificationPanel();
     
     ReleasePropertyPanel();
@@ -276,6 +283,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
     }
     
     scene3dView->SetScene(scene);
+    sceneInfoControl->SetWorkingScene(scene);
 }
 
 void RemoveDeepCamera(SceneNode * curr)
@@ -1707,4 +1715,16 @@ void EditorBodyControl::SetViewPortSize(int32 viewportID)
 bool EditorBodyControl::ControlsAreLocked()
 {
     return (EVPID_DEFAULT != currentViewPortID);
+}
+
+void EditorBodyControl::ToggleSceneInfo()
+{
+    if(sceneInfoControl->GetParent())
+    {
+        RemoveControl(sceneInfoControl);
+    }
+    else
+    {
+        AddControl(sceneInfoControl);
+    }
 }

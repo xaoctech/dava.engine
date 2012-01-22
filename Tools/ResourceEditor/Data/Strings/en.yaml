@@ -35,6 +35,7 @@ panel.level: "Level"
 panel.properties: "Properties"
 panel.library: "Library"
 panel.refresh: "Refresh"
+panel.sceneinfo: "Scene Info"
 
 #Output
 output.output: "Output"

@@ -163,6 +163,9 @@ private:
 
     UIButton *propertiesButton;
     void OnPropertiesPressed(BaseObject * obj, void *, void *);
+
+    UIButton *sceneInfoButton;
+    void OnSceneInfoPressed(BaseObject * obj, void *, void *);
     
 
     void NodeExportPreparation(SceneNode *node);//expand this methods if you need to expand export functionality

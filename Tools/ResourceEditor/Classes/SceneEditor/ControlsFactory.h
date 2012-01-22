@@ -51,6 +51,9 @@ public:
 
     static void CusomizeListControl(UIControl *c);
     
+    static void CusomizeTransparentControl(UIControl *c, float32 transparentLevel);
+    
+    
     static UIControl *CreatePanelControl(const Rect & rect, bool addBorder = true);
     static void CustomizePanelControl(UIControl *c, bool addBorder = true);
     
