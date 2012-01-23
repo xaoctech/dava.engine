@@ -933,6 +933,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1620,6 +1623,9 @@
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
