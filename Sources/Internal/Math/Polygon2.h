@@ -72,7 +72,7 @@ public:
 	
 	//! Get point array
 	inline Vector2 * GetPoints();
-	inline int32 GetPointCount();
+    inline int32 GetPointCount() const;
 	
 	//! Remove segment with index
 	void RemoveSegmentAtIndex(int32 index);
@@ -171,7 +171,7 @@ inline Vector2 * Polygon2::GetPoints()
 {
 	return &points.front();
 }
-inline int32 Polygon2::GetPointCount()
+inline int32 Polygon2::GetPointCount() const
 {
 	return pointCount;
 }
