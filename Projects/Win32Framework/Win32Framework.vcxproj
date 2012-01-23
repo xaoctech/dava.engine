@@ -313,6 +313,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
@@ -552,6 +553,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
