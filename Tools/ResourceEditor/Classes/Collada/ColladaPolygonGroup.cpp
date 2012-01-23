@@ -211,12 +211,15 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 		//printf("*** ERROR: Index count is different for different sources\n");
 	}
 
-	
 
 	for (int v = 0; v < vertexIndexCount; ++v)
 	{
 		ColladaVertex tv;
 		int vertexIndex = vertexIndeces[v];
+		int normalIndex = vertexIndex;
+		int tex0Index = vertexIndex;
+		int tex1Index = vertexIndex;
+
 		float * p = 0;
 		
 		if (pVertexSource)
@@ -229,17 +232,17 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 		
 		if (pNormalSource)
 		{
-			int normalIndex = normalIndeces[v];
+			normalIndex = normalIndeces[v];
 			p = &pNormalSource->GetData()[normalIndex * 3];
 			tv.normal.x=p[0]; tv.normal.y=p[1]; tv.normal.z=p[2];
 		}
 	
 		if (pTexCoordSource0)
 		{
-			int texIndex = texIndices0[v];
+			tex0Index = texIndices0[v];
 			int stride = pTexCoordSource0->GetStride();
 
-			p = &pTexCoordSource0->GetData()[texIndex * stride];
+			p = &pTexCoordSource0->GetData()[tex0Index * stride];
 			tv.texCoords[0].x = p[0]; 
 			tv.texCoords[0].y = p[1]; 
 			//if (stride == 3)tv.texCoords[0].z=p[2];
@@ -247,10 +250,10 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
         
         if (pTexCoordSource1)
 		{
-			int texIndex = texIndices1[v];
+			tex1Index = texIndices1[v];
 			int stride = pTexCoordSource1->GetStride();
             
-			p = &pTexCoordSource1->GetData()[texIndex * stride];
+			p = &pTexCoordSource1->GetData()[tex1Index * stride];
 			tv.texCoords[1].x = p[0]; 
 			tv.texCoords[1].y = p[1]; 
 			//if (stride == 3)tv.texCoords[0].z=p[2];
@@ -266,18 +269,40 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 			}
 			//printf("ind: %d, ", vertexIndex);
 		}
+		if ((vertexIndex != normalIndex || vertexIndex != tex0Index || vertexIndex != tex1Index))
+		{
+			int fuckingMax = 0;
+		}
 
 		unoptimizedVerteces[v] = tv;
 		bbox.AddPoint(tv.position);
 	}
 
+	bool invertIndices = false;
+
 	indexArray.resize(triangleCount * 3);
-	for (int i = 0; i < triangleCount; ++i)
+
+
+	if(invertIndices)
 	{
-		indexArray[i * 3 + 0] = i * 3 + 0;
-		indexArray[i * 3 + 1] = i * 3 + 1;
-		indexArray[i * 3 + 2] = i * 3 + 2;
+		for (int i = 0; i < triangleCount; ++i)
+		{
+			indexArray[i * 3 + 0] = i * 3 + 2;
+			indexArray[i * 3 + 1] = i * 3 + 1;
+			indexArray[i * 3 + 2] = i * 3 + 0;
+		}
 	}
+	else
+	{
+		for (int i = 0; i < triangleCount; ++i)
+		{
+			indexArray[i * 3 + 0] = i * 3 + 0;
+			indexArray[i * 3 + 1] = i * 3 + 1;
+			indexArray[i * 3 + 2] = i * 3 + 2;
+		}
+	}
+
+	
 	
  	int vertexCountBeforeOptimization = vertexIndexCount;
 	
@@ -437,6 +462,61 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 			indexArray[index] = oIndex;
 		
 	}
+
+
+/*	for (int i = 0; i < triangleCount; ++i)
+	{ 
+		// cw/ccw check
+		// ColladaVertex cv = unoptimizedVerteces[0];
+		Vector3 p0 = optVertexArray[indexArray[i * 3 + 0]].position;
+		Vector3 p1 = optVertexArray[indexArray[i * 3 + 1]].position;
+		Vector3 p2 = optVertexArray[indexArray[i * 3 + 2]].position;
+
+		Vector3 n0 = optVertexArray[indexArray[i * 3 + 0]].normal;
+		Vector3 n1 = optVertexArray[indexArray[i * 3 + 1]].normal;
+		Vector3 n2 = optVertexArray[indexArray[i * 3 + 2]].normal;
+
+		float sumXY = 0.5f * ((p0.x * p1.y - p1.x * p0.y) + (p1.x * p2.y - p2.x * p1.y) + (p2.x * p0.y - p0.x * p2.y));
+		float sumXZ = 0.5f * ((p0.x * p1.z - p1.x * p0.z) + (p1.x * p2.z - p2.x * p1.z) + (p2.x * p0.z - p0.x * p2.z));
+		float sumYZ = 0.5f * ((p0.y * p1.z - p1.y * p0.z) + (p1.y * p2.z - p2.y * p1.z) + (p2.y * p0.z - p0.y * p2.z));
+
+		int pos = 0;
+		int neg = 0;
+		if (sumXY > 0)pos++;
+		if (sumXY < 0)neg++;
+
+		if (sumYZ > 0)pos++;
+		if (sumYZ < 0)neg++;
+
+		if (sumXZ > 0)pos++;
+		if (sumXZ < 0)neg++;
+
+		Vector3 v1, v2;
+		if (pos >= neg)
+		{
+			v1 = p2 - p0;
+			v2 = p1 - p0;
+		}else 
+		{
+			v1 = p1 - p0;
+			v2 = p2 - p0;
+		}
+		
+		Vector3 normal = CrossProduct(v1, v2);
+		normal.Normalize();
+		Vector3 cvNormal = n0 + n1 + n2;
+		cvNormal.Normalize();
+
+		if(normal.DotProduct(cvNormal) < 0)
+		{
+			int tmp = indexArray[i * 3 + 0];
+			indexArray[i * 3 + 0] = indexArray[i * 3 + 2];
+			indexArray[i * 3 + 2] = tmp;
+		}
+	}
+	*/
+
+
 	
 	vertexIndexCount = optVertexArray.size();
 	unoptimizedVerteces.clear();
