@@ -548,7 +548,7 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
             
 #if defined(__DAVAENGINE_WIN32__) 
             String::size_type diskPos = savedPath.find(":\\");
-            bool isRelative = (String::npos == diskPos)
+            bool isRelative = (String::npos == diskPos);
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
             String::size_type diskPos = savedPath.find("/Users");
             bool isRelative = (0 != diskPos);
