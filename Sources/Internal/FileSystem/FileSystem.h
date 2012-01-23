@@ -203,19 +203,10 @@ public:
 	 \returns relative path
 	 */
     static String AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname);
-
-	/**
-	 \brief Creates the absolute path to file
-	 \param[in] path of the destination folder
-	 \param[in] relative path to file
-	 \returns absolute path
-	 */
-    static String RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname);
     
 private:
 
     static Vector<String> Split(const String &srcString, const String &splitter);
-    static String GetDiskName(const String &pathname);
     
     
     String tempRetPath;
