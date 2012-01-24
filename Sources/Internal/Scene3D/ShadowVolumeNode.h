@@ -29,6 +29,7 @@
 #define __DAVAENGINE_SHADOW_VOLUME_NODE_H__
 
 #include "MeshInstanceNode.h"
+#include "Render/Shader.h"
 
 namespace DAVA
 {
@@ -36,8 +37,17 @@ namespace DAVA
 class ShadowVolumeNode : public MeshInstanceNode
 {
 public:
+	ShadowVolumeNode();
+	virtual ~ShadowVolumeNode();
 
 	virtual void Draw();
+
+	void DrawShadow();
+
+	void CopyGeometryFrom(MeshInstanceNode * meshInstance);
+
+private:
+	Shader * shader;
 };
 
 }

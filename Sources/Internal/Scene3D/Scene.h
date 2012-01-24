@@ -51,6 +51,7 @@ class AnimatedMesh;
 class SceneNodeAnimationList;
 class DataNode;
 class SceneFileV2;
+class ShadowVolumeNode;
 	
 /** 
     \ingroup scene3d
@@ -178,6 +179,8 @@ public:
     //void Save(KeyedArchive * archive);
     //void Load(KeyedArchive * archive);
 
+	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
+
     
 private:	
     DataNode * materials;
@@ -204,6 +207,8 @@ private:
     
     Camera * currentCamera;
     Camera * clipCamera;
+
+	Vector<ShadowVolumeNode*> shadowVolumes;
 
     friend class SceneNode;
 };
