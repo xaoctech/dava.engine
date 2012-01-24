@@ -11,6 +11,7 @@
 
 #include "PropertyCell.h"
 
+#include "ControlsFactory.h"
 
 PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate)
 :UIControl(rect)
@@ -20,6 +21,7 @@ PropertyList::PropertyList(const Rect &rect, PropertyListDelegate *propertiesDel
     background->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
 
     propsList = new UIList(Rect(0,0, size.x, size.y), UIList::ORIENTATION_VERTICAL);
+    ControlsFactory::SetScrollbar(propsList);
     propsList->SetDelegate(this);
     AddControl(propsList);
     currentSection = NULL;
@@ -226,6 +228,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
             delegate->OnSectionExpanded(this, changedProperty->key, changedProperty->GetIsSectionOpened());
             propsList->Refresh();
             break;
+        case PropertyCellData::PROP_VALUE_COLOR:
+            delegate->OnColorPropertyChanged(this, changedProperty->key, changedProperty->GetColor());
+            break;
     }
 }
 
@@ -312,6 +317,8 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
             case PropertyCell::PROP_CELL_BUTTON:
                 c = new PropertyButtonCell(this, props[index], size.x);
                 break;
+            case PropertyCell::PROP_CELL_COLOR:
+                c = new PropertyColorCell(this, props[index], size.x);
         }
     }
     else 
@@ -350,6 +357,8 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
         case PropertyCell::PROP_CELL_BUTTON:
             return PropertyButtonCell::GetHeightForWidth(size.x);
             break;
+        case PropertyCell::PROP_CELL_COLOR:
+            return PropertyColorCell::GetHeightForWidth(size.x);
     }
     return 50;//todo: rework
 }
@@ -503,5 +512,28 @@ const List<UIControl*> & PropertyList::GetVisibleCells()
     return propsList->GetVisibleCells();
 }
 
+void PropertyList::AddColorProperty(const String &propertyName)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_COLOR);
+    p->cellType = PropertyCell::PROP_CELL_COLOR;
+    p->SetColor(Color());
+    AddProperty(p, propertyName, PROPERTY_IS_EDITABLE);
+}
+
+void PropertyList::SetColorPropertyValue(const String &propertyName, const Color &newColor)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetColor(newColor);
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+const Color & PropertyList::GetColorPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetColor();
+}
 
 
