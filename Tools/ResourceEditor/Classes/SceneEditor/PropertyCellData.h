@@ -27,6 +27,7 @@ public:
         PROP_VALUE_COMBO_BOX,
         PROP_VALUE_SECTION,
         PROP_VALUE_MESSAGE,
+        PROP_VALUE_COLOR,
         
         PROP_VALUE_COUNT
     };
@@ -48,6 +49,7 @@ public:
     int32 GetSectionElementsCount();
     const Message & GetMessage();
     bool GetClearDataEnabled();
+    const Color &GetColor();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
@@ -61,6 +63,7 @@ public:
     void SetSectionElementsCount(int32 sectionElementsCount);
     void SetMessage(const Message &newMessage);
     void SetClearDataEnabled(bool enabled);
+    void SetColor(const Color& newColor);
     
     int32 cellType;
     String key;
@@ -83,6 +86,8 @@ protected:
     Matrix4 matrix4;
     
     Message messageValue;
+    
+    Color color;
 };
 
 #endif
