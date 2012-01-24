@@ -550,6 +550,7 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 		GL_UNSIGNED_INT,
 	};
 	
+    //RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
 	RENDER_VERIFY(glDrawElements(mode, count, indexTypes[indexFormat], indices));
     stats.drawElementsCalls++;
     switch(type)
@@ -718,9 +719,12 @@ void RenderManager::AttachRenderData(Shader * shader)
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
         RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
         if (DEBUG)Logger::Debug("!shader glBindBufferARB: %d", currentRenderData->vboBuffer);
+        RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
 #else
         RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
         if (DEBUG)Logger::Debug("!shader glBindBuffer: %d", currentRenderData->vboBuffer);
+        uint32 indexBuffer = currentRenderData->indexBuffer;
+        RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
 #endif
 #elif defined(__DAVAENGINE_DIRECTX9__)
         DVASSERT(currentRenderData->vboBuffer == 0);
@@ -835,11 +839,13 @@ void RenderManager::AttachRenderData(Shader * shader)
         //{
 #if defined(__DAVAENGINE_OPENGL__)
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer);
+        RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
         if (DEBUG)Logger::Debug("shader glBindBufferARB: %d", currentRenderData->vboBuffer);
+        RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
 #else
-        glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
+        RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
         if (DEBUG)Logger::Debug("shader glBindBuffer: %d", currentRenderData->vboBuffer);
+        RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
 #endif
 #endif 
         //}

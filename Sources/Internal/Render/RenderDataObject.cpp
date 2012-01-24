@@ -60,6 +60,12 @@ RenderDataObject::RenderDataObject()
 {
     resultVertexFormat = 0;
     vboBuffer = 0;
+    
+    indexFormat = EIF_16;
+    indices = 0;
+    indexBuffer = 0;
+    indexCount = 0;
+
 }
 
 RenderDataObject::~RenderDataObject()
@@ -166,5 +172,41 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
 //#endif // #if !defined(__DAVAENGINE_MACOS__)
     RenderManager::Instance()->UnlockNonMain();
 } 
+    
+void RenderDataObject::SetIndices(eIndexFormat _format, uint8 * _indices, int32 _count)
+{
+    indexFormat = _format;
+    indices = _indices;
+    indexCount = _count;
+}
+
+void RenderDataObject::BuildIndexBuffer()
+{
+    RenderManager::Instance()->LockNonMain();
+    
+#if defined (__DAVAENGINE_OPENGL__)
+
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+    RENDER_VERIFY(glGenBuffersARB(1, &indexBuffer));
+    RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer));
+    RENDER_VERIFY(glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW_ARB));
+#else
+    RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
+    Logger::Debug("glGenBuffers index: %d", indexBuffer);
+    RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
+    RENDER_VERIFY(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW));
+#endif
+    
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+    RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0));
+#else
+    RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+#endif
+    
+#endif // #if defined (__DAVAENGINE_OPENGL__)
+  
+    RenderManager::Instance()->UnlockNonMain();
+}
+
 
 }
