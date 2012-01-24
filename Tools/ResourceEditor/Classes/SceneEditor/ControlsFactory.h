@@ -16,6 +16,8 @@ public:
         
         LEFT_SIDE_WIDTH = 200,
         RIGHT_SIDE_WIDTH = 200,
+        
+        OFFSET = 10,
     };
     
     

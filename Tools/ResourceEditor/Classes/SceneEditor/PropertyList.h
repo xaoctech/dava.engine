@@ -28,6 +28,7 @@ public:
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey){};
     virtual void OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4){};
     virtual void OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded){};
+    virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor){};
 };
 
 
@@ -58,6 +59,7 @@ public:
     void AddMatrix4Property(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
     void AddSection(const String &sectionName, bool expanded = true);
     void AddMessageProperty(const String &propertyName, const Message &newMessage);
+    void AddColorProperty(const String &propertyName);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
@@ -69,6 +71,7 @@ public:
     void SetMatrix4PropertyValue(const String &propertyName, const Matrix4 &currentMatrix);
     void SetSectionIsOpened(const String &sectionName, bool isOpened);
     void SetMessagePropertyValue(const String &propertyName, const Message &newMessage);
+    void SetColorPropertyValue(const String &propertyName, const Color &newColor);
     
     const String &GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
@@ -79,6 +82,7 @@ public:
     const int32 GetComboPropertyIndex(const String &propertyName);
     const Matrix4 & GetMatrix4PropertyValue(const String &propertyName);
     bool GetSectionIsOpened(const String &sectrionName);
+    const Color &GetColorPropertyValue(const String &sectrionName);
 
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
