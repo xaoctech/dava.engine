@@ -409,6 +409,7 @@
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyList.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
@@ -643,6 +644,7 @@
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
