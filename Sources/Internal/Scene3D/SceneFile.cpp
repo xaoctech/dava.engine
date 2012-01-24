@@ -444,8 +444,6 @@ bool SceneFile::ReadStaticMesh()
             }
 		}
 		
-        polygonGroup->BuildVertexBuffer();
-
 		int * indices = new int[indexCount];
 		sceneFP->Read(indices, sizeof(int) * indexCount);
 		for (uint32 i = 0; i < indexCount; ++i)
@@ -453,6 +451,7 @@ bool SceneFile::ReadStaticMesh()
 			polygonGroup->SetIndex(i, indices[i]);
         }
         delete [] indices;
+        polygonGroup->BuildBuffers();
         
         SafeRelease(polygonGroup);
 	}
@@ -515,8 +514,6 @@ bool SceneFile::ReadAnimatedMesh()
 			polygonGroup->SetJointCount(v, jointCount);
 		}
         
-        polygonGroup->BuildVertexBuffer();
-		
 		int32 * indices = new int32[indexCount];
 		sceneFP->Read(indices, indexCount *  sizeof(int32));
 		for (int i = 0; i < indexCount; ++i)
@@ -524,6 +521,8 @@ bool SceneFile::ReadAnimatedMesh()
 			polygonGroup->SetIndex(i, indices[i]);
         }
         delete [] indices;
+		
+        polygonGroup->BuildBuffers();
 		
 		polygonGroup->CreateBaseVertexArray();
         
