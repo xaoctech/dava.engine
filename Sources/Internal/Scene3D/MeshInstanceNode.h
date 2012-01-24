@@ -120,6 +120,9 @@ public:
 	 \brief Replace material for polygon group. 
 	 */
     void ReplaceMaterial(Material *material, int32 index);
+
+	void CreateDynamicShadowNode();
+	void DeleteDynamicShadowNode();
     
 
 protected:

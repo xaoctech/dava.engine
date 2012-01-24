@@ -409,7 +409,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     Image::EnableAlphaPremultiplication(false);
     
-    Texture * texture = Texture::CreateFromFile(textureName);
+    Texture * texture = Texture::CreateFromFile(textureName); 
     if (texture)
     {
         textureNames[level] = textureName;
