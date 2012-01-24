@@ -156,7 +156,7 @@ public:
     
     
     
-    void    BuildVertexBuffer();
+    void    BuildBuffers();
     
     void    DebugDraw();
     

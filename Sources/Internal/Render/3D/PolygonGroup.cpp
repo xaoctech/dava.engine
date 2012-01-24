@@ -195,9 +195,11 @@ void PolygonGroup::ReleaseData()
     SafeDeleteArray(textureCoordArray);
 }
 	
-void PolygonGroup::BuildVertexBuffer()
+void PolygonGroup::BuildBuffers()
 {
     renderDataObject->BuildVertexBuffer(vertexCount);
+    renderDataObject->SetIndices((eIndexFormat)indexFormat, (uint8*)indexArray, indexCount);
+    renderDataObject->BuildIndexBuffer();
 };
 
     
@@ -270,14 +272,9 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     UpdateDataPointersAndStreams();
     RecalcAABBox();
     
-//    for (int32 k = 0; k < GetVertexCount(); ++k)
-//    {
-//        Vector3 normal;
-//        GetNormal(k, normal);
-//        Logger::Debug("loadnorm2: %f %f %f", normal.x, normal.y, normal.z);
-//    }
-
+    BuildBuffers();
 }
+    
 void PolygonGroup::RecalcAABBox()
 {
     // recalc aabbox

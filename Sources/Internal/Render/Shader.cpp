@@ -279,21 +279,21 @@ bool Shader::Recompile()
     
 void Shader::SetUniformValue(int32 uniformLocation, int32 value)
 {
-    glUniform1i(uniformLocation, value);
+    RENDER_VERIFY(glUniform1i(uniformLocation, value));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector3 & vector)
 {
-    glUniform3fv(uniformLocation, 1, &vector.x);
+    RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &vector.x));
 }
 void Shader::SetUniformValue(int32 uniformLocation, const Vector4 & vector)
 {
-    glUniform4fv(uniformLocation, 1, &vector.x);
+    RENDER_VERIFY(glUniform4fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Matrix4 & matrix)
 {
-    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, matrix.data);
+    RENDER_VERIFY(glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, matrix.data));
 }
     
 int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
@@ -418,24 +418,24 @@ void Shader::Bind()
         case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
             {    
                 const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-                glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelViewProj.data);
+                RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelViewProj.data));
                 break;
             }
         case UNIFORM_MODEL_VIEW_MATRIX:
             {    
                 const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelView.data);
+                RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelView.data));
                 break;
             }
         case UNIFORM_NORMAL_MATRIX:
             {
                 const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
-                glUniformMatrix3fv(uniformLocations[k], 1, GL_FALSE, normalMatrix.data);
+                RENDER_VERIFY(glUniformMatrix3fv(uniformLocations[k], 1, GL_FALSE, normalMatrix.data));
             }
         case UNIFORM_COLOR:
             {
                 const Color & c = RenderManager::Instance()->GetColor();
-                glUniform4fv(uniformLocations[k], 1, &c.r);
+                RENDER_VERIFY(glUniform4fv(uniformLocations[k], 1, &c.r));
                 break;
             }  
         default:
