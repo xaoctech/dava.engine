@@ -92,7 +92,9 @@ String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
             result.replace(pos, strlen("DataSource"), "Data");
         }
     }
-    replace(result, GetScenePath(), String(""));
+
+//    replace(result, GetScenePath(), String(""));
+    result = FileSystem::AbsoluteToRelativePath(GetScenePath(), result);
     return result;
 }
     

@@ -571,15 +571,14 @@ int32 FileSystem::Spawn(const String& command)
 
 String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname)
 {
-    String folderDisk = GetDiskName(folderPathname);
-    String fileDisk = GetDiskName(absolutePathname);
-    DVASSERT(folderDisk == fileDisk);
-
     String workingFolderPath = folderPathname;
     String workingFilePath = absolutePathname;
     
     std::replace(workingFolderPath.begin(),workingFolderPath.end(),'\\','/');
     std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
+    
+    if('/' != absolutePathname[0])
+        return absolutePathname;
 
     String filePath;
     String fileName;
@@ -589,18 +588,15 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     Vector<String> fileFolders = Split(filePath, "/");
     
     int32 equalCount = 0;
-    if(folderDisk == fileDisk)
+    for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
     {
-        for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
+        if(folders[equalCount] != fileFolders[equalCount])
         {
-            if(folders[equalCount] != fileFolders[equalCount])
-            {
-                break;
-            }
+            break;
         }
     }
     
-    String retPath = (folderDisk.length() && !equalCount) ? "": "/";
+    String retPath = "";
     for(int32 i = equalCount; i < folders.size(); ++i)
     {
         retPath += "../";
@@ -614,59 +610,6 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     return (retPath + fileName);
 }
 
-String FileSystem::RelativeToAbsolutePath(const String &folderPathname, const String &relativePathname)
-{
-    String folderDisk = GetDiskName(folderPathname);
-    
-    String workingFolderPath = folderPathname.substr(folderDisk.length());
-    String workingFilePath = relativePathname;
-    
-    std::replace(workingFolderPath.begin(),workingFolderPath.end(),'\\','/');
-    std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
-    
-    String filePath;
-    String fileName;
-    FileSystem::SplitPath(relativePathname, filePath, fileName);
-    
-    Vector<String> folders = Split(workingFolderPath, "/");
-    Vector<String> fileFolders = Split(filePath, "/");
-    
-    int32 stepsDownCount = 0;
-    for(; stepsDownCount < fileFolders.size(); ++stepsDownCount)
-    {
-        if(".." != fileFolders[stepsDownCount])
-        {
-            break;
-        }
-    }
-    
-    DVASSERT(stepsDownCount <= folders.size());
-    
-    String retPath = folderDisk + "/";
-    for(int32 i = 0; i < folders.size() - stepsDownCount; ++i)
-    {
-        retPath += folders[i] + "/";
-    }
-    
-    for(int32 i = stepsDownCount; i < fileFolders.size(); ++i)
-    {
-        retPath += fileFolders[i] + "/";
-    }
-    
-    return (retPath + fileName);
-}
-    
-String FileSystem::GetDiskName(const String &pathname)
-{
-    String diskPath = "";
-    String::size_type diskPos = pathname.find(":");
-    if(1 == diskPos)
-    {
-        diskPath = pathname.substr(0, 2);
-    }
-    return diskPath;
-}
-    
     
 Vector<String> FileSystem::Split(const String &srcString, const String &splitter)
 {

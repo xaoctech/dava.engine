@@ -500,10 +500,9 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
     {
         savedPath = customProperties->GetString("editor.referenceToOwner");
-        String newPath = FileSystem::AbsoluteToRelativePath(sceneFileV2->GetScenePath(), savedPath);
+        String newPath = sceneFileV2->AbsoluteToRelative(savedPath);
         customProperties->SetString("editor.referenceToOwner", newPath);
     }
-    
     
     archive->SetString("name", name);
     archive->SetInt32("tag", tag);
@@ -544,23 +543,8 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     {
         if(customProperties->IsKeyExists("editor.referenceToOwner"))
         {
-            String savedPath = customProperties->GetString("editor.referenceToOwner");
-            
-#if defined(__DAVAENGINE_WIN32__) 
-            String::size_type diskPos = savedPath.find(":\\");
-            bool isRelative = (String::npos == diskPos);
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
-            String::size_type diskPos = savedPath.find("/Users");
-            bool isRelative = (0 != diskPos);
-#else //PLATFORMS            
-            bool isRelative = true;
-#endif //PLATFORMS
-            
-            if(isRelative)
-            {
-                String newPath = FileSystem::RelativeToAbsolutePath(sceneFileV2->GetScenePath(), savedPath);
-                customProperties->SetString("editor.referenceToOwner", newPath);
-            }
+            String newPath = sceneFileV2->RelativeToAbsolute(customProperties->GetString("editor.referenceToOwner"));
+            customProperties->SetString("editor.referenceToOwner", newPath);
         }
     }
 }
