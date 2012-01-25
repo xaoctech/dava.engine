@@ -219,7 +219,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 
     UITreeItemInfo * itemInfo = selectedCell->GetItemInfo();
 	String extension = FileSystem::GetExtension(itemInfo->GetName());
-	if (0 == UIFileTree::CompareExtensions(extension, ".dae"))
+	if (0 == CompareStrings(extension, ".dae"))
 	{
         selectedFileName = itemInfo->GetPathname();
         if(panelSCE->GetParent())
@@ -231,7 +231,7 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             AddControl(panelDAE);
         }
 	}
-    else if (0 == UIFileTree::CompareExtensions(extension, ".sc2"))
+    else if (0 == CompareStrings(extension, ".sc2"))
     {
         selectedFileName = itemInfo->GetPathname();
         selectedFileNameShort = itemInfo->GetName();
