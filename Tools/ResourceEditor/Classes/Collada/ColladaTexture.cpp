@@ -4,6 +4,9 @@
 #include "FileSystem/Logger.h"
 #include <Magick++.h>
 #include "Render/Image.h"
+#include "FileSystem/FileSystem.h"
+#include "Utils/Utils.h"
+#include "../SceneEditor/PVRConverter.h"
 
 ///*
 // INCLUDE DevIL
@@ -68,6 +71,24 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 	texturePathName =  nstring;
     
     String fileName = nstring;
+
+    //convert pvr to png
+    String extension = FileSystem::GetExtension(fileName);
+    if(0 == CompareStrings(extension, ".pvr"))
+    {
+        PVRConverter::ConvertPvrToPng(fileName);
+    }
+    else if(0 == CompareStrings(extension, ".png"))
+    {
+        String pvrFileName = FileSystem::ReplaceExtension(fileName, ".pvr");
+        File *f = File::Create(pvrFileName, File::READ|File::OPEN);
+        if(f)
+        {
+            SafeRelease(f);
+            PVRConverter::ConvertPvrToPng(pvrFileName);
+        }
+    }
+    
     
     Image * image = Image::CreateFromFile(fileName);
     if (image)
