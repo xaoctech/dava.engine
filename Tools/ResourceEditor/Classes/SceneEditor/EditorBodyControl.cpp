@@ -391,14 +391,14 @@ void EditorBodyControl::CreateModificationPanel(void)
     modificationPanel->AddControl(st);
 
 	
-	btnPlaceOn = ControlsFactory::CreateButton(Rect(110, 0, BUTTON_W, BUTTON_W), L"P");
+	btnPlaceOn = ControlsFactory::CreateButton(Rect(115, 0, BUTTON_W, BUTTON_W), L"P");
 	btnPlaceOn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
 	modificationPanel->AddControl(btnPlaceOn);
 	
 	
 	UpdateModState();
 	
-	btnPopUp = ControlsFactory::CreateButton(Rect(135, 0, BUTTON_W, BUTTON_W), L"#");
+	btnPopUp = ControlsFactory::CreateButton(Rect(140, 0, BUTTON_W, BUTTON_W), L"#");
 	btnPopUp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPopUpPressed));
 	modificationPanel->AddControl(btnPopUp);
 	
