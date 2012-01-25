@@ -137,9 +137,9 @@ void ColorMapControl::SetColor(const Color &color)
     
     hue = RGBToH(color);
     
-    float32 dx = GetRect().dx / 101.f;
-    float32 dy = GetRect().dy / 101.f;
-    float32 y = 0.f;
+    int32 dx = GetRect().dx / 101.f;
+    int32 dy = GetRect().dy / 101.f;
+    int32 y = 0.f;
     for(float32 brightness = 1.0f; brightness >= 0.0f; brightness -= 0.01f)
     {
         float32 x = 0.0f;
