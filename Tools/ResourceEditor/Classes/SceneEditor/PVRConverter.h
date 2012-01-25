@@ -3,13 +3,11 @@
 
 #include "DAVAEngine.h"
 
-using namespace DAVA;
-
 class PVRConverter
 {
     
 public:
-    static void ConvertPvrToPng(const String & fileToConvert);
+    static void ConvertPvrToPng(const DAVA::String & fileToConvert);
 };
 
 
