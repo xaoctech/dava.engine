@@ -905,10 +905,14 @@ Texture * Texture::CreateFromFile(const String & pathName)
 
 	if (extension == String(".png"))
 		return CreateFromPNG(pathName);
-#if defined(__DAVAENGINE_IPHONE__)
 	else if (extension == String(".pvr"))
+    {
+#if defined(__DAVAENGINE_IPHONE__)
 		return CreateFromPVR(pathName);
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
+        return CreateFromPNG(pathName + ".png");
 #endif
+    }
 	return 0;
 }
 	
