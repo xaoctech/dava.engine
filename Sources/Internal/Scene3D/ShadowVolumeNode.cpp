@@ -50,8 +50,8 @@ DAVA::ShadowVolumeNode::~ShadowVolumeNode()
 
 void DAVA::ShadowVolumeNode::Draw()
 {
-	//scene->AddDrawTimeShadowVolume(this);
-	DrawShadow();
+	scene->AddDrawTimeShadowVolume(this);
+	//DrawShadow();
 }
 
 void DAVA::ShadowVolumeNode::DrawShadow()
@@ -60,12 +60,21 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
-	RenderManager::Instance()->SetShader(shader);
-	
 	PolygonGroup * group = currentLod->meshes[0]->GetPolygonGroup(currentLod->polygonGroupIndexes[0]);
 
+	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(group->renderDataObject);
 	RenderManager::Instance()->FlushState();
+
+	int32 uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
+	if (uniformLightPosition0 != -1)
+	{
+		Vector3 lightPosition0(100.f, 100.0f, 100.0f);
+		const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
+		lightPosition0 = lightPosition0 * matrix;
+
+		shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
+	}
 
 	if (group->renderDataObject->GetIndexBufferID() != 0)
 	{
