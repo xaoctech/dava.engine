@@ -22,7 +22,6 @@ class LibraryControl : public UIControl, public UIFileTreeDelegate
     enum eConst
     {
         CELL_HEIGHT = 20,
-        BUTTON_HEIGHT = 20,
     };
     
 public:

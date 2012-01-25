@@ -17,7 +17,9 @@ LibraryControl::LibraryControl(const Rect & rect)
 
     ControlsFactory::CustomizePanelControl(this);
     
-    fileTreeControl = new UIFileTree(Rect(0, BUTTON_HEIGHT, rect.dx, rect.dy - BUTTON_HEIGHT - rect.dx));
+    int32 panelHeight = ControlsFactory::OUTPUT_PANEL_HEIGHT;
+    fileTreeControl = new UIFileTree(Rect(0, ControlsFactory::BUTTON_HEIGHT, 
+                                          rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT - panelHeight));
     ControlsFactory::CusomizeListControl(fileTreeControl);
     ControlsFactory::SetScrollbar(fileTreeControl);
 	fileTreeControl->SetDelegate(this);
@@ -28,25 +30,31 @@ LibraryControl::LibraryControl(const Rect & rect)
     AddControl(fileTreeControl);
 
     //button
-    refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), LocalizedString(L"library.refresh"));
+    refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT), 
+                                                  LocalizedString(L"library.refresh"));
     refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnRefreshPressed));
     AddControl(refreshButton);
-    
-    panelDAE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
-    btnConvert = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, BUTTON_HEIGHT), LocalizedString(L"library.convert"));
+
+    panelDAE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - panelHeight, rect.dx, panelHeight));
+    btnConvert = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT), 
+                                               LocalizedString(L"library.convert"));
     btnConvert->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnConvertPressed));
     panelDAE->AddControl(btnConvert);
     
     int32 btnwidth = (rect.dx) / 2;
-    panelSCE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - rect.dx, rect.dx, rect.dx));
-    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, BUTTON_HEIGHT), LocalizedString(L"library.add"));
+    panelSCE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - panelHeight, rect.dx, panelHeight));
+    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, ControlsFactory::BUTTON_HEIGHT), 
+                                           LocalizedString(L"library.add"));
     btnAdd->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnAddPressed));
-    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, BUTTON_HEIGHT), LocalizedString(L"library.edit"));
+    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, ControlsFactory::BUTTON_HEIGHT), 
+                                            LocalizedString(L"library.edit"));
     btnEdit->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnEditPressed));
-    btnReload = ControlsFactory::CreateButton(Rect(0, BUTTON_HEIGHT, rect.dx, BUTTON_HEIGHT), LocalizedString(L"library.reload"));
+    btnReload = ControlsFactory::CreateButton(Rect(0, ControlsFactory::BUTTON_HEIGHT, rect.dx, ControlsFactory::BUTTON_HEIGHT), 
+                                              LocalizedString(L"library.reload"));
     btnReload->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnReloadPressed));
 
-    preview = new ScenePreviewControl(Rect(0, BUTTON_HEIGHT * 2, rect.dx, rect.dx - BUTTON_HEIGHT * 2));
+    preview = new ScenePreviewControl(Rect(0, ControlsFactory::BUTTON_HEIGHT * 2, 
+                                           rect.dx, panelHeight - ControlsFactory::BUTTON_HEIGHT * 2));
     preview->SetDebugDraw(true);
     panelSCE->AddControl(btnAdd);
     panelSCE->AddControl(btnEdit);

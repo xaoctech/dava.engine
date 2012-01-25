@@ -40,6 +40,12 @@ public:
     bool GetShowOutput();
     void SetShowOuput(bool showOutput);
     
+    int32 GetLeftPanelWidth();
+    void SetLeftPanelWidth(int32 width);
+
+    int32 GetRightPanelWidth();
+    void SetRightPanelWidth(int32 width);
+
 protected:
 
     KeyedArchive *settings;
