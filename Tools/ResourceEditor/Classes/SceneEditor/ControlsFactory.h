@@ -22,7 +22,7 @@ public:
     
     enum eColorPickerSizes
     {
-        COLOR_MAP_SIDE = 200,
+        COLOR_MAP_SIDE = 202,
         COLOR_SELECTOR_WIDTH = 20,
         COLOR_PREVIEW_SIDE = 80,
     };
