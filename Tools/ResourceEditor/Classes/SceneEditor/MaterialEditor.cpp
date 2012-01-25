@@ -115,10 +115,10 @@ MaterialEditor::MaterialEditor()
             || i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
             || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
         {
-            materialProps[i]->AddFloatProperty("Diffuse color R");
-            materialProps[i]->AddFloatProperty("Diffuse color G");
-            materialProps[i]->AddFloatProperty("Diffuse color B");
-            materialProps[i]->AddFloatProperty("Diffuse color A");
+			materialProps[i]->AddFloatProperty("Diffuse color R");
+			materialProps[i]->AddFloatProperty("Diffuse color G");
+			materialProps[i]->AddFloatProperty("Diffuse color B");
+			materialProps[i]->AddFloatProperty("Diffuse color A");
         }
 
         if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE

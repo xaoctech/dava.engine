@@ -36,8 +36,10 @@
 		5CE1675514C4D48C00D2F1D4 /* SpherePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675314C4D48B00D2F1D4 /* SpherePropertyControl.cpp */; };
 		5CE1675814C4D56000D2F1D4 /* CameraPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675614C4D56000D2F1D4 /* CameraPropertyControl.cpp */; };
 		5CE1675B14C4D65300D2F1D4 /* LandscapePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675914C4D65200D2F1D4 /* LandscapePropertyControl.cpp */; };
+		5CE32BA314CD8B06003B3FD3 /* ColorPicker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE32BA114CD8B06003B3FD3 /* ColorPicker.cpp */; };
 		5CE5A40214BF3164008A1B3F /* LightPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */; };
 		5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */; };
+		5CE81F3A14CEBA0A0066C7E1 /* ExtendedDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */; };
 		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D91B83CD14BF12F2002D07B7 /* ModificationPopUp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */; };
@@ -354,12 +356,17 @@
 		5CE1675714C4D56000D2F1D4 /* CameraPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraPropertyControl.h; sourceTree = "<group>"; };
 		5CE1675914C4D65200D2F1D4 /* LandscapePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapePropertyControl.cpp; sourceTree = "<group>"; };
 		5CE1675A14C4D65200D2F1D4 /* LandscapePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapePropertyControl.h; sourceTree = "<group>"; };
+		5CE32BA114CD8B06003B3FD3 /* ColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorPicker.cpp; sourceTree = "<group>"; };
+		5CE32BA214CD8B06003B3FD3 /* ColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPicker.h; sourceTree = "<group>"; };
 		5CE5A40014BF3163008A1B3F /* LightPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightPropertyControl.cpp; sourceTree = "<group>"; };
 		5CE5A40114BF3164008A1B3F /* LightPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LightPropertyControl.h; sourceTree = "<group>"; };
 		5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyControlCreator.cpp; sourceTree = "<group>"; };
 		5CE5A40414BF3171008A1B3F /* PropertyControlCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyControlCreator.h; sourceTree = "<group>"; };
 		5CE5A40714BF48A0008A1B3F /* EditorLightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightNode.h; sourceTree = "<group>"; };
 		5CE6F5DA14AB48DA006BBEE2 /* SceneNodeIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeIDs.h; sourceTree = "<group>"; };
+		5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtendedDialog.cpp; sourceTree = "<group>"; };
+		5CE81F3914CEBA0A0066C7E1 /* ExtendedDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtendedDialog.h; sourceTree = "<group>"; };
+		5CE81F3B14CEE8660066C7E1 /* ColorPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerDelegate.h; sourceTree = "<group>"; };
 		5CFAF30E14A6334100355DCF /* UICheckBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UICheckBox.cpp; sourceTree = "<group>"; };
 		5CFAF30F14A6334100355DCF /* UICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBox.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1003,6 +1010,11 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */,
+				5CE81F3914CEBA0A0066C7E1 /* ExtendedDialog.h */,
+				5CE32BA114CD8B06003B3FD3 /* ColorPicker.cpp */,
+				5CE32BA214CD8B06003B3FD3 /* ColorPicker.h */,
+				5CE81F3B14CEE8660066C7E1 /* ColorPickerDelegate.h */,
 				5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */,
 				5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */,
 				5CD509BB14C6CB250089067E /* SettingsDialog.cpp */,
@@ -2139,6 +2151,8 @@
 				5CE1675B14C4D65300D2F1D4 /* LandscapePropertyControl.cpp in Sources */,
 				5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */,
 				5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */,
+				5CE32BA314CD8B06003B3FD3 /* ColorPicker.cpp in Sources */,
+				5CE81F3A14CEBA0A0066C7E1 /* ExtendedDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

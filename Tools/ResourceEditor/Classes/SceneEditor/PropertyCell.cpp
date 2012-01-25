@@ -11,6 +11,7 @@
 #include "PropertyCellData.h"
 #include "ControlsFactory.h"
 #include "EditorSettings.h"
+#include "ColorPicker.h"
 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
@@ -545,3 +546,57 @@ void PropertyButtonCell::SetData(PropertyCellData *prop)
     buttonEvent = prop->GetMessage(); 
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
 }
+
+//*************** PropertyColorCell **************
+PropertyColorCell::PropertyColorCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+:   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width/2;
+ 
+    colorPicker = new ColorPicker(this);
+    
+    colorPreview = new UIControl(Rect(keyName->size.x, 0, GetHeightForWidth(width), GetHeightForWidth(width)));
+    colorPreview->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    AddControl(colorPreview);
+    
+    UIButton *colorButton = ControlsFactory::CreateButton(Rect(keyName->size.x + GetHeightForWidth(width), 0,
+                                                               keyName->size.x - GetHeightForWidth(width), GetHeightForWidth(width))
+                                                          , LocalizedString(L"property.changecolor"));
+    colorButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyColorCell::OnButtonPressed));
+    AddControl(colorButton);
+    SafeRelease(colorButton);
+    
+    SetData(prop);
+}
+
+PropertyColorCell::~PropertyColorCell()
+{
+    SafeRelease(colorPreview);
+    SafeRelease(colorPreview);
+}
+
+float32 PropertyColorCell::GetHeightForWidth(float32 currentWidth)
+{
+    return ControlsFactory::BUTTON_HEIGHT;
+}
+
+void PropertyColorCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    Color c = prop->GetColor();
+    colorPreview->GetBackground()->SetColor(Color(c.r, c.g, c.b, 1.0f));
+}
+
+void PropertyColorCell::OnButtonPressed(BaseObject * owner, void * userData, void * callerData)
+{
+    colorPicker->SetColor(property->GetColor());
+    colorPicker->Show();
+}
+
+void PropertyColorCell::ColorPickerDone(const Color &newColor)
+{
+    property->SetColor(newColor);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}
+

@@ -27,14 +27,8 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddComboProperty("property.lightnode.type", types);
 	propertyList->SetComboPropertyIndex("property.lightnode.type", light->GetType());
 
-    propertyList->AddFloatProperty("property.lightnode.r");
-	propertyList->SetFloatPropertyValue("property.lightnode.r", light->GetColor().r);
-
-    propertyList->AddFloatProperty("property.lightnode.g");
-	propertyList->SetFloatPropertyValue("property.lightnode.g", light->GetColor().g);
-
-    propertyList->AddFloatProperty("property.lightnode.b"); 
-	propertyList->SetFloatPropertyValue("property.lightnode.b", light->GetColor().b);
+    propertyList->AddColorProperty("property.lightnode.color");
+	propertyList->SetColorPropertyValue("property.lightnode.color", light->GetColor());
 
 	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
@@ -92,17 +86,7 @@ void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
 
 void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if("property.lightnode.r" == forKey || "property.lightnode.g" == forKey || "property.lightnode.b" == forKey)
-    {
-        LightNode *light = dynamic_cast<LightNode *>(currentNode);
-        Color color(
-                    propertyList->GetFloatPropertyValue("property.lightnode.r"),
-                    propertyList->GetFloatPropertyValue("property.lightnode.g"),
-                    propertyList->GetFloatPropertyValue("property.lightnode.b"),
-                    1.f);
-        light->SetColor(color);
-    }
-    else if("Intensity" == forKey)
+    if("Intensity" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
         light->GetCustomProperties()->SetFloat("editor.intensity", newValue);
@@ -131,5 +115,14 @@ void LightPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
     }
     
     NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
+}
+
+void LightPropertyControl::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
+{
+    if("property.lightnode.color" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->SetColor(newColor);
+    }
 }
 

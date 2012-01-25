@@ -117,6 +117,11 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
                                              Message(this, &MeshInstancePropertyControl::OnGo2Materials, meshMaterials[i]));
         }
     }
+
+	propertyList->AddSection("property.meshinstance.dynamicshadow", GetHeaderState("property.meshinstance.dynamicshadow", true));
+	
+	propertyList->AddBoolProperty("property.meshinstance.dynamicshadow.enable");
+	propertyList->SetBoolPropertyValue("property.meshinstance.dynamicshadow.enable", currentNode->GetCustomProperties()->GetBool("property.meshinstance.dynamicshadow.enable", false));
 }
 
 
@@ -145,6 +150,19 @@ void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, c
         vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.BINORMAL");
         vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT");
     }
+
+	if(forKey == "property.meshinstance.dynamicshadow.enable")
+	{
+		currentNode->GetCustomProperties()->SetBool(forKey, newValue);
+		if(newValue)
+		{
+			((MeshInstanceNode*)currentNode)->CreateDynamicShadowNode();
+		}
+		else
+		{
+			((MeshInstanceNode*)currentNode)->DeleteDynamicShadowNode();
+		}
+	}
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
