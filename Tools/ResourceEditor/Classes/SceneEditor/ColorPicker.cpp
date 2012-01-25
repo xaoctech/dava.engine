@@ -23,9 +23,12 @@ void ColorDetailControl::Input(UIEvent *currentInput)
 	{
         Vector2 touchPoint = currentInput->point - GetPosition(true);
         touchPoint.x = Min(touchPoint.x, GetRect().dx);
-        touchPoint.y = Min(touchPoint.y, GetRect().dy);
+        touchPoint.y = Min(touchPoint.y, GetRect().dy - 1);
         
-        ColorSelected(touchPoint);
+        if(0 <= touchPoint.y)
+        {
+            ColorSelected(touchPoint);
+        }
 	}
 }
 
@@ -83,7 +86,7 @@ void ColorSelectorControl::SetInitialColors()
 
 void ColorSelectorControl::ColorSelected(const Vector2 &point)
 {
-    int32 sectionHeight = GetRect().dy / 6.f;
+    float32 sectionHeight = GetRect().dy / 6.f;
     float32 colorDelta = 1.0f / (sectionHeight);
 
     int32 sectionId = point.y / sectionHeight;
@@ -115,10 +118,6 @@ void ColorSelectorControl::ColorSelected(const Vector2 &point)
             break;
     }
     
-    DVASSERT(selectedColor.r >= 0);
-    DVASSERT(selectedColor.g >= 0);
-    DVASSERT(selectedColor.b >= 0);
-
     this->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
 }
 
@@ -141,12 +140,12 @@ void ColorMapControl::SetColor(const Color &color)
     float32 dx = GetRect().dx / 101.f;
     float32 dy = GetRect().dy / 101.f;
     float32 y = 0.f;
-    for(int32 brightness = 100; brightness >= 0; --brightness)
+    for(float32 brightness = 1.0f; brightness >= 0.0f; brightness -= 0.01f)
     {
-        float32 x = 0.f;
-        for(int32 saturation = 0; saturation <= 100; ++saturation)
+        float32 x = 0.0f;
+        for(float32 saturation = 0.0f; saturation <= 1.0f; saturation += 0.01f)
         {
-            Color cellColor = HSBToRgb(saturation / 100.f, brightness / 100.f);
+            Color cellColor = HSBToRgb(saturation, brightness);
             RenderManager::Instance()->SetColor(cellColor);
             RenderHelper::Instance()->FillRect(Rect(x, y, dx, dy));
             x += dx;
@@ -169,7 +168,7 @@ Color ColorMapControl::HSBToRgb(float32 s, float32 b)
     else 
     {
         float32 h = hue/ 60.f;
-        int32 i = floorf(h);
+        int32 i = h;
         float32 f = h - i;
         float32 p = b * (1.0f - s);
         float32 q = b * (1.0f - s * f);
@@ -266,19 +265,17 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     :   ExtendedDialog()
     ,   delegate(newDelegate)
 {
-    ControlsFactory::CustomizeDialog(this);
+    draggableDialog->SetRect(DialogRect());
     
-    Rect rect = DialogRect();
-    
-    float32 mapWidth = rect.dx / 2 - (ControlsFactory::OFFSET * 2);
-    float32 mapHeight = rect.dy - (ControlsFactory::OFFSET * 3) - ControlsFactory::BUTTON_HEIGHT * 2;
-
-    colorMapControl = new ColorMapControl(Rect(ControlsFactory::OFFSET, ControlsFactory::OFFSET, mapWidth, mapHeight));
+    colorMapControl = new ColorMapControl(Rect(ControlsFactory::OFFSET, ControlsFactory::OFFSET, 
+                                               ControlsFactory::COLOR_MAP_SIDE, ControlsFactory::COLOR_MAP_SIDE));
     colorMapControl->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &ColorPicker::OnMapColorChanged));
     draggableDialog->AddControl(colorMapControl);
     
-    alphaValue = new UISlider(Rect(colorMapControl->GetRect().x, rect.dy - ControlsFactory::BUTTON_HEIGHT * 2 - ControlsFactory::OFFSET, 
-                                   colorMapControl->GetRect().dx, ControlsFactory::BUTTON_HEIGHT));
+    Rect alphaRect(colorMapControl->GetRect());
+    alphaRect.y += alphaRect.dy + ControlsFactory::OFFSET;
+    alphaRect.dy = ControlsFactory::BUTTON_HEIGHT;
+    alphaValue = new UISlider(alphaRect);
     alphaValue->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &ColorPicker::OnAlphaChanged));
     alphaValue->SetMinMaxValue(0.f, 1.0f);
     alphaValue->SetValue(1.0f);
@@ -291,13 +288,19 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     alphaValue->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
     draggableDialog->AddControl(alphaValue);
 
-    float32 selectorWidth = rect.dx / 4 - (ControlsFactory::OFFSET * 2);
-    colorSelectorControl = new ColorSelectorControl(Rect(rect.dx / 2 + ControlsFactory::OFFSET, 
-                                                         ControlsFactory::OFFSET, selectorWidth, mapHeight));
+    Rect selectorRect(colorMapControl->GetRect());
+    selectorRect.x += selectorRect.dx + ControlsFactory::OFFSET;
+    selectorRect.dx = ControlsFactory::COLOR_SELECTOR_WIDTH;
+    colorSelectorControl = new ColorSelectorControl(selectorRect);
     colorSelectorControl->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &ColorPicker::OnSelectorColorChanged));
     draggableDialog->AddControl(colorSelectorControl);
     
-    colorPreviewCurrent = new UIControl(Rect(rect.dx *3 / 4 + ControlsFactory::OFFSET, ControlsFactory::OFFSET, selectorWidth, selectorWidth/2));
+    Rect colorPreviewRect;
+    colorPreviewRect.x = selectorRect.x + selectorRect.dx + ControlsFactory::OFFSET;
+    colorPreviewRect.y = ControlsFactory::OFFSET;
+    colorPreviewRect.dx = ControlsFactory::COLOR_PREVIEW_SIDE;
+    colorPreviewRect.dy = ControlsFactory::COLOR_PREVIEW_SIDE/2;
+    colorPreviewCurrent = new UIControl(colorPreviewRect);
     colorPreviewCurrent->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     draggableDialog->AddControl(colorPreviewCurrent);
 
@@ -307,7 +310,12 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     colorPreviewPrev->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     draggableDialog->AddControl(colorPreviewPrev);
     
-    colorList = new PropertyList(Rect(prevRect.x, prevRect.y + prevRect.dy + ControlsFactory::OFFSET, prevRect.dx, 80), this);
+    Rect colorListRect;
+    colorListRect.x = prevRect.x;
+    colorListRect.y = prevRect.y + prevRect.dy + ControlsFactory::OFFSET;
+    colorListRect.dx = prevRect.dx;
+    colorListRect.dy = 80;
+    colorList = new PropertyList(colorListRect, this);
     ControlsFactory::CusomizeTransparentControl(colorList, 0.0f);
     colorList->AddIntProperty("colorpicker.r", PropertyList::PROPERTY_IS_EDITABLE);
     colorList->AddIntProperty("colorpicker.g", PropertyList::PROPERTY_IS_EDITABLE);
@@ -315,6 +323,7 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     colorList->AddIntProperty("colorpicker.a", PropertyList::PROPERTY_IS_EDITABLE);
     draggableDialog->AddControl(colorList);
     
+    Rect rect = DialogRect();
     float32 buttonX = rect.dx /2 - ControlsFactory::BUTTON_WIDTH;
     float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
     UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.cancel"));
@@ -426,17 +435,6 @@ void ColorPicker::Close()
     }
 }
 
-//void ColorPicker::DidAppear()
-//{
-//    //Set cells background
-//    List<UIControl*> cells = colorList->GetVisibleCells();
-//    for(List<UIControl*>::iterator it = cells.begin(); it != cells.end(); ++it)
-//    {
-//        UIControl *cell = (*it);
-//        ControlsFactory::CusomizeTransparentControl(cell, 0.0f);
-//    }
-//}
-
 void ColorPicker::OnAlphaChanged(BaseObject * owner, void * userData, void * callerData)
 {
     currentColor.a = alphaValue->GetValue();
@@ -450,3 +448,21 @@ void ColorPicker::Show()
         UIScreenManager::Instance()->GetScreen()->AddControl(this);
     }
 }
+
+const Rect ColorPicker::DialogRect()
+{
+    Rect dialogRect;
+    dialogRect.dx = ControlsFactory::COLOR_MAP_SIDE + 
+                    ControlsFactory::COLOR_SELECTOR_WIDTH + 
+                    ControlsFactory::COLOR_PREVIEW_SIDE + 
+                    ControlsFactory::OFFSET * 4;
+
+    dialogRect.dy = ControlsFactory::COLOR_MAP_SIDE + 
+                    ControlsFactory::BUTTON_HEIGHT*2 + 
+                    ControlsFactory::OFFSET * 3;
+
+    dialogRect.x = (GetRect().dx - dialogRect.dx) / 2;
+    dialogRect.y = (GetRect().dy - dialogRect.dy) / 2;
+    return dialogRect;
+}
+
