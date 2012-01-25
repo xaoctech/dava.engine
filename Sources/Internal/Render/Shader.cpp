@@ -83,6 +83,7 @@ const char * uniformStrings[Shader::UNIFORM_COUNT] =
         "none",
         "modelViewProjectionMatrix",
         "modelViewMatrix",
+		"projectionMatrix",
         "normalMatrix",
         "flatColor",
     };
@@ -427,6 +428,12 @@ void Shader::Bind()
                 RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, modelView.data));
                 break;
             }
+		case UNIFORM_PROJECTION_MATRIX:
+			{
+				const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
+                RENDER_VERIFY(glUniformMatrix4fv(uniformLocations[k], 1, GL_FALSE, proj.data));
+				break;
+			}
         case UNIFORM_NORMAL_MATRIX:
             {
                 const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();

@@ -25,8 +25,6 @@ class EditorBodyControl :
     {
         SCENE_OFFSET = 10, 
         CELL_HEIGHT = 20,
-        MATRIX_HEIGHT = 100,
-        OUTPUT_PANEL_HEIGHT = 200,
     };
 
 	enum eModState
@@ -138,6 +136,7 @@ protected:
 	void ReleaseHelpPanel();
 	void CreateHelpPanel();
 
+	void PlaceOnLandscape();
 	
     UIControl *leftPanelSceneGraph;
     UIHierarchy * sceneGraphTree;
@@ -208,7 +207,8 @@ protected:
 	UIButton *btnPopUp;
 	UIButton *btnModeSelection;
 	UIButton *btnModeModification;
-
+	UIButton *btnPlaceOn;
+	
 	UIControl *modificationPanel;
 	eModState modState;
 	eModAxis modAxis;

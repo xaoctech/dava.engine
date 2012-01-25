@@ -12,6 +12,8 @@
 #include "ControlsFactory.h"
 #include "EditorSettings.h"
 #include "ColorPicker.h"
+#include "PVRConverter.h"
+
 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
@@ -381,9 +383,14 @@ void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * 
     propertyDelegate->OnPropertyChanged(property);
 }
 
-
 void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
+    String extension = FileSystem::GetExtension(pathToFile);
+    if(0 == CompareStrings(".pvr", extension))
+    {
+        PVRConverter::ConvertPvrToPng(pathToFile);
+    }
+    
     property->SetString(pathToFile);
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);

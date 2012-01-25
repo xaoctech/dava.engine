@@ -153,6 +153,25 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
+{
+    LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+	
+    if (land) 
+    {
+		return land;
+    }
+    
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+		LandscapeNode * result = GetLandScape(child);
+		if (result)
+			return result;
+    }
+	return 0;
+}
+
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
 	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);

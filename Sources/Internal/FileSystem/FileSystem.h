@@ -205,9 +205,6 @@ public:
     static String AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname);
     
 private:
-
-    static Vector<String> Split(const String &srcString, const String &splitter);
-    
     
     String tempRetPath;
 	String currentWorkingDirectory;

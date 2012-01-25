@@ -55,6 +55,29 @@ void Split(const String & inputString, const String & delims, Vector<String> & t
 		pos     = inputString.find_first_of(delims, lastPos);
 	}	
 }
+    
+int32 CompareStrings(const String &str1, const String &str2)
+{
+    String newStr1 = "";
+    newStr1.resize(str1.length());
+    std::transform(str1.begin(), str1.end(), newStr1.begin(), ::tolower);
+    
+    String newStr2 = "";
+    newStr2.resize(str2.length());
+    std::transform(str2.begin(), str2.end(), newStr2.begin(), ::tolower);
+    
+    if(newStr1 == newStr2)
+    {
+        return 0;   
+    }
+    else if(newStr1 < newStr2)
+    {
+        return -1;
+    }
+    
+    return 1;
+}
+
 
 	
 }; // end of namespace DAVA
