@@ -674,6 +674,15 @@
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1653,6 +1662,18 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ColorPicker.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>

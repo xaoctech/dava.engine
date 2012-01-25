@@ -382,6 +382,8 @@
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
     <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\ColorPicker.h" />
+    <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h" />
     <ClInclude Include="Classes\SceneEditor\ComboBox.h" />
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
     <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h" />
@@ -391,6 +393,7 @@
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorLightNode.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
+    <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
@@ -408,6 +411,7 @@
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyList.h" />
+    <ClInclude Include="Classes\SceneEditor\PVRConverter.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
@@ -617,6 +621,7 @@
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp" />
     <ClCompile Include="Classes\SceneEditor\ComboBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp" />
@@ -626,6 +631,7 @@
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
@@ -643,6 +649,7 @@
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
