@@ -50,11 +50,11 @@ public:
     
     virtual void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex);
 
-    virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
-    virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
-    virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
-    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
-    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+	virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+	virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
+	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
+	virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+	virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     
     void SelectMaterial(int materialIndex);
     void PreparePropertiesForMaterialType(int materialType);

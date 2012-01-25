@@ -40,6 +40,7 @@
 #include "Scene3D/ProxyNode.h"
 #include "Platform/SystemTimer.h"
 #include "FileSystem/FileSystem.h"
+#include "Scene3D/ShadowVolumeNode.h"
 
 namespace DAVA 
 {
@@ -357,6 +358,8 @@ void Scene::Draw()
    //currentCamera->GetFrustum()->DebugDraw();
     nodeCounter = 0;
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
+	shadowVolumes.clear();
     
     RenderManager::Instance()->SetCullMode(CULL_BACK);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
@@ -372,6 +375,12 @@ void Scene::Draw()
         currentCamera->Set();
     }
 	SceneNode::Draw();
+
+	Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
+	for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
+	{
+		(*it)->DrawShadow();
+	}
 	
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
     
@@ -452,7 +461,11 @@ int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
     lodLayers.push_back(newLevel);
     return i;
 }
-    
+
+void Scene::AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume)
+{
+	shadowVolumes.push_back(shadowVolume);
+}
     
 /*void Scene::Save(KeyedArchive * archive)
 {
