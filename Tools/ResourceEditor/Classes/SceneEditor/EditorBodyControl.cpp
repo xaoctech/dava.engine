@@ -24,6 +24,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     savedTreeCell = 0;
 	nodesPropertyPanel = 0;
 	helpDialog = 0;
+	btnPlaceOn = 0;
+
 
     for(int32 i = 0; i < EDNID_COUNT; ++i)
     {
@@ -146,6 +148,7 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"Q, E, R (in selection) - change active modification mode (move, translate, scale)", y);
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
 	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
+	AddHelpText(L"P (in selection) - place node on landscape", y);
 
     AddHelpText(L"Landscape Editor:", ++y);
 	AddHelpText(L"Press & hold \"Spacebar\" to scroll area", y);
@@ -363,10 +366,11 @@ void EditorBodyControl::CreateModificationPanel(void)
 	modState = MOD_MOVE;
 	modAxis = AXIS_X;
 	
-	modificationPanel = ControlsFactory::CreatePanelControl(Rect(offx, 5, 120, 45));
+	modificationPanel = ControlsFactory::CreatePanelControl(Rect(offx, 5, 160, 45));
     modificationPanel->GetBackground()->SetColor(Color(1.0, 1.0, 1.0, 0.2));
-
-	for (int i = 0; i < 3; i++)
+	int i;
+	
+	for (i = 0; i < 3; i++)
 	{
 		btnMod[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, 0, BUTTON_W, BUTTON_W), mods[i]);
 		btnMod[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
@@ -376,7 +380,7 @@ void EditorBodyControl::CreateModificationPanel(void)
 		btnAxis[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
 		modificationPanel->AddControl(btnAxis[i]);
 	}
-	UIStaticText * st = new UIStaticText(Rect(55, 0, 80, BUTTON_W));
+	UIStaticText * st = new UIStaticText(Rect(55, 0, 70, BUTTON_W));
     st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"w, e, r");
     modificationPanel->AddControl(st);
@@ -385,20 +389,26 @@ void EditorBodyControl::CreateModificationPanel(void)
     st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"5, 6, 7, 8");
     modificationPanel->AddControl(st);
+
+	
+	btnPlaceOn = ControlsFactory::CreateButton(Rect(110, 0, BUTTON_W, BUTTON_W), L"P");
+	btnPlaceOn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
+	modificationPanel->AddControl(btnPlaceOn);
+	
 	
 	UpdateModState();
 	
-	btnPopUp = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * 5, 0, BUTTON_W, BUTTON_W), L"#");
+	btnPopUp = ControlsFactory::CreateButton(Rect(135, 0, BUTTON_W, BUTTON_W), L"#");
 	btnPopUp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPopUpPressed));
 	modificationPanel->AddControl(btnPopUp);
 	
 	modificationPopUp = new ModificationPopUp();
 	
-	btnModeSelection = ControlsFactory::CreateButton(Rect(offx + 150, 5, BUTTON_W, BUTTON_W), L"S");
+	btnModeSelection = ControlsFactory::CreateButton(Rect(offx + 170, 5, BUTTON_W, BUTTON_W), L"S");
 	btnModeSelection->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModePressed));
 	AddControl(btnModeSelection);
 
-	btnModeModification = ControlsFactory::CreateButton(Rect(offx + 175, 5, BUTTON_W, BUTTON_W), L"M");
+	btnModeModification = ControlsFactory::CreateButton(Rect(offx + 195, 5, BUTTON_W, BUTTON_W), L"M");
 	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModePressed));
 	AddControl(btnModeModification);
 	OnModePressed(btnModeSelection, 0, 0);
@@ -448,6 +458,12 @@ void EditorBodyControl::OnModificationPopUpPressed(BaseObject * object, void * u
 
 void EditorBodyControl::OnModificationPressed(BaseObject * object, void * userData, void * callerData)
 {
+	if (object == btnPlaceOn)
+	{
+		PlaceOnLandscape();
+		return;
+	}
+		
 	for (int i = 0; i < 3; i++)
 	{
 		if (object == btnMod[i])
@@ -784,6 +800,31 @@ void EditorBodyControl::ToggleHelp(void)
 	}
 }
 
+void EditorBodyControl::PlaceOnLandscape()
+{
+	SceneNode * selection = scene->GetProxy();
+
+	if (selection && isModeModification)
+	{
+		Vector3 result;
+		LandscapeNode * ls = scene->GetLandScape(scene);
+		if (ls)
+		{
+			const Matrix4 & itemWT = selection->GetWorldTransform();
+			Vector3 p = Vector3(0,0,0) * itemWT;
+			bool res = ls->PlacePoint(p, result);
+			if (res)
+			{
+				Vector3 offs = result - p;
+				Matrix4 invItem;
+				Matrix4 mod;
+				mod.CreateTranslation(offs);
+				selection->SetLocalTransform(selection->GetLocalTransform() * mod);
+			}						
+		}
+	}
+}
+
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if (event->phase == UIEvent::PHASE_KEYCHAR)
@@ -861,6 +902,13 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     break;
                 }
 
+                case DVKEY_P:
+                {
+					PlaceOnLandscape();
+					break;
+                }
+					
+					
                 default:
                     break;
             }
@@ -872,10 +920,9 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
             }
 			UpdateModState();
         }
-	}   
-
-    SceneNode * selection = scene->GetProxy();
+	}
 	
+	SceneNode * selection = scene->GetProxy();
 	//selection with second mouse button 
 
 	if (event->tid == UIEvent::BUTTON_1)

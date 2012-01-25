@@ -115,6 +115,28 @@ namespace DAVA
 		return true;
 	}
 	
+	
+	/*
+	 ================
+	 SquareRootFloat
+	 ================
+	 */
+	inline float32 SquareRootFloat(float32 number) 
+	{
+		long i;
+		float32 x, y;
+		const float32 f = 1.5f;
+		
+		x = number * 0.5f;
+		y  = number;
+		i  = * ( long * ) &y;
+		i  = 0x5f3759df - ( i >> 1 );
+		y  = * ( float * ) &i;
+		y  = y * ( f - ( x * y * y ) );
+		y  = y * ( f - ( x * y * y ) );
+		return number * y;
+	}
+	
 } // end of namespace DAVA
 
 #endif 

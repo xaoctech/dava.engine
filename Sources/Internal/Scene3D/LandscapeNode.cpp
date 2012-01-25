@@ -232,6 +232,36 @@ Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint8 height)
     return res;
 };
 
+bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
+{
+	if (point.x > box.max.x ||
+		point.x < box.min.x ||
+		point.y > box.max.y ||
+		point.y < box.min.y ||
+		point.z < box.min.z)		
+	{
+		return false;
+	}
+	float32 ww = (float32)(heightmap->GetWidth() - 1);
+	float32 hh = (float32)(heightmap->GetHeight() - 1);
+	
+	int32 x = (int32)((point.x - box.min.x) * ww / (box.max.x - box.min.x));
+	int32 y = (int32)((point.y - box.min.y) * hh / (box.max.x - box.min.x));
+	
+	uint8 * data = heightmap->GetData();
+	int32 imW = heightmap->GetWidth();
+	
+	int32 summ = data[y * imW + x] + data[y * imW + x + 1] + data[(y + 1) * imW + x] + data[(y + 1) * imW + x + 1];
+	
+	result.x = point.x;
+	result.y = point.y;
+	result.z = (box.min.z + ((float32)summ / (255.0f * 4.0f)) * (box.max.z - box.min.z));
+
+	return true;
+};
+	
+	
+	
 void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels)
 {
     allocatedMemoryForQuads += sizeof(QuadTreeNode<LandscapeQuad>);

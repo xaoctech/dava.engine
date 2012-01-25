@@ -47,7 +47,8 @@ public:
 	void DrawGrid();
 	void SetBulletUpdate(SceneNode* curr, bool value);
 	void ReleaseUserData(SceneNode * curr);
-
+	LandscapeNode * GetLandScape(SceneNode *node);
+	
 protected:
 
 	SceneNode * GetHighestProxy(SceneNode* curr);
