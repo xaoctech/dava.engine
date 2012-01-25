@@ -577,7 +577,7 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     std::replace(workingFolderPath.begin(),workingFolderPath.end(),'\\','/');
     std::replace(workingFilePath.begin(),workingFilePath.end(),'\\','/');
     
-    if('/' != absolutePathname[0])
+    if((0 == absolutePathname.length()) || ('/' != absolutePathname[0]))
         return absolutePathname;
 
     String filePath;
