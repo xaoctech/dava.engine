@@ -26,8 +26,64 @@
 =====================================================================================*/
 
 #include "ShadowVolumeNode.h"
+#include "Render/RenderManager.h"
+#include "Render/3d/StaticMesh.h"
+#include "Scene3D/Scene.h"
+#include "Render/3D/StaticMesh.h"
+
+namespace DAVA
+{
+
+REGISTER_CLASS(ShadowVolumeNode);
+
+DAVA::ShadowVolumeNode::ShadowVolumeNode()
+{
+	shader = new Shader();
+	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume_debug.shader");
+	shader->Recompile();
+}
+
+DAVA::ShadowVolumeNode::~ShadowVolumeNode()
+{
+	SafeRelease(shader);
+}
 
 void DAVA::ShadowVolumeNode::Draw()
 {
-
+	//scene->AddDrawTimeShadowVolume(this);
+	DrawShadow();
 }
+
+void DAVA::ShadowVolumeNode::DrawShadow()
+{
+	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
+
+	RenderManager::Instance()->SetShader(shader);
+	
+	PolygonGroup * group = currentLod->meshes[0]->GetPolygonGroup(currentLod->polygonGroupIndexes[0]);
+
+	RenderManager::Instance()->SetRenderData(group->renderDataObject);
+	RenderManager::Instance()->FlushState();
+
+	if (group->renderDataObject->GetIndexBufferID() != 0)
+	{
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+	}
+	else
+	{
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+	}
+
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+}
+
+
+void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
+{
+	//TODO: copy only geometry
+	AddPolygonGroup(meshInstance->GetMeshes()[0], meshInstance->GetPolygonGroupIndexes()[0], meshInstance->GetMaterials()[0]);
+}
+
+};

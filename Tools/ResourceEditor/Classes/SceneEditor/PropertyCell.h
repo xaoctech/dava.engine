@@ -14,6 +14,7 @@
 #include "UICheckBox.h"
 #include "ComboBox.h"
 #include "EditMatrixControl.h"
+#include "ColorPickerDelegate.h"
 
 using namespace DAVA;
 
@@ -48,6 +49,7 @@ public:
         PROP_CELL_MATRIX4,
         PROP_CELL_SECTION,
         PROP_CELL_BUTTON,
+        PROP_CELL_COLOR,
         
         PROP_CELL_COUNT
     };
@@ -187,6 +189,26 @@ public:
 private:
     
     Message buttonEvent;
+};
+
+class ColorPicker;
+class PropertyColorCell: public PropertyCell, public ColorPickerDelegate
+{
+public:
+    
+    PropertyColorCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyColorCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+    
+    virtual void ColorPickerDone(const Color &newColor);
+
+private:
+
+    void OnButtonPressed(BaseObject * owner, void * userData, void * callerData);
+    UIControl *colorPreview;
+    ColorPicker *colorPicker;
 };
 
 

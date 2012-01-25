@@ -2,8 +2,9 @@
 #define __SPHERE_PROPERTY_CONTROL_H__
 
 #include "DAVAEngine.h"
-using namespace DAVA;
 #include "MeshInstancePropertyControl.h"
+
+using namespace DAVA;
 
 class SpherePropertyControl : public MeshInstancePropertyControl
 {
@@ -13,6 +14,7 @@ public:
 
 	virtual void ReadFrom(SceneNode * sceneNode);
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
+    virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor); 
 };
 
 #endif //__SPHERE_PROPERTY_CONTROL_H__

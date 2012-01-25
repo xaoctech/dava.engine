@@ -179,4 +179,14 @@ void PropertyCellData::SetClearDataEnabled(bool enabled)
     boolValue = enabled;
 }
 
+const Color & PropertyCellData::GetColor()
+{
+    DVASSERT(valueType == PROP_VALUE_COLOR);
+    return color;
+}
 
+void PropertyCellData::SetColor(const Color& newColor)
+{
+    DVASSERT(valueType == PROP_VALUE_COLOR);
+    color = newColor;
+}
