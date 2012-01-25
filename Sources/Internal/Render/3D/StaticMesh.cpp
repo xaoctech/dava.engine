@@ -115,20 +115,20 @@ void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
 //    LOG_AS_MATRIX4(glModelView);
     
     
-    PolygonGroup * group = reinterpret_cast<PolygonGroup*>(children[index]);
-    
-    RenderManager::Instance()->SetRenderData(group->renderDataObject);
-    material->Bind();
-    if (group->renderDataObject->GetIndexBufferID() != 0)
-    {
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
-    }else
-    {
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
-    }
-    
-    RenderManager::Instance()->SetTexture(0, 1); 
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+	PolygonGroup * group = reinterpret_cast<PolygonGroup*>(children[index]);
+
+	RenderManager::Instance()->SetRenderData(group->renderDataObject);
+	material->Bind();
+	if (group->renderDataObject->GetIndexBufferID() != 0)
+	{
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+	}else
+	{
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+	}
+
+	RenderManager::Instance()->SetTexture(0, 1); 
+	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 }
 
 

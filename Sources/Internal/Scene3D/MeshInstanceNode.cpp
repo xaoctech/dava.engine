@@ -34,6 +34,7 @@
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Utils/StringFormat.h"
+#include "Scene3D/ShadowVolumeNode.h"
 
 namespace DAVA 
 {
@@ -365,9 +366,9 @@ void MeshInstanceNode::Draw()
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	//glPopMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 
-    SceneNode::Draw();
+	SceneNode::Draw();
 }
 
 
@@ -539,6 +540,24 @@ Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
 	{
 		return 0;
 	}
+}
+
+void MeshInstanceNode::CreateDynamicShadowNode()
+{
+	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();
+	shadowVolume->SetScene(GetScene());
+	shadowVolume->SetName("dynamicshadow.shadowvolume");
+
+	shadowVolume->CopyGeometryFrom(this);
+
+	AddNode(shadowVolume);
+	SafeRelease(shadowVolume);
+}
+
+void MeshInstanceNode::DeleteDynamicShadowNode()
+{
+	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName("dynamicshadow.shadowvolume");
+	RemoveNode(shadowVolume);
 }
 
 

@@ -94,6 +94,8 @@ materialeditor.all: "All"
 modificationpanel.modification: "Modification:"
 
 #property list
+property.changecolor: "Change Color"
+
 #SceneNode Section
 property.scenenode.generalc++: "General C++:"
 property.scenenode.retaincount: "Retain Count:"
@@ -111,9 +113,7 @@ property.scenenode.isVisible: "Visible"
 #LightNode Section
 property.lightnode.light: "Light"
 property.lightnode.type: "Type:"
-property.lightnode.r: "r:"
-property.lightnode.g: "g:"
-property.lightnode.b: "b:"
+property.lightnode.color: "Color:"
 property.lightnode.staticlight: "Static light"
 
 #CubeNode Section
@@ -121,10 +121,7 @@ property.cubenode.cube: "Cube"
 property.cubenode.length: "Length:"
 property.cubenode.width: "Width:"
 property.cubenode.depth: "Depth:"
-property.cubenode.r: "r:"
-property.cubenode.g: "g:"
-property.cubenode.b: "b:"
-property.cubenode.a: "a:"
+property.cubenode.color: "Color:"
 
 #Mesh Instance Section
 property.meshinstance.meshinstance: "Mesh Instance"
@@ -135,10 +132,7 @@ property.meshinstance.editmaterial: "Edit Material"
 #SphereNode Section
 property.spherenode.sphere: "Sphere"
 property.spherenode.radius: "Radius:"
-property.spherenode.r: "r:"
-property.spherenode.g: "g:"
-property.spherenode.b: "b:"
-property.spherenode.a: "a:"
+property.spherenode.color: "Color:"
 
 #Camera Section
 property.camera.camera: "Camera"
@@ -179,3 +173,9 @@ settingsdialog.cameraspeed1: "1-st Camera Speed:"
 settingsdialog.cameraspeed2: "2-nd Camera Speed:"
 settingsdialog.cameraspeed3: "3-rd Camera Speed:"
 settingsdialog.cameraspeed4: "4-th Camera Speed:"
+
+#Color Picker
+colorpicker.r: "Red:"
+colorpicker.g: "Green:"
+colorpicker.b: "Blue:"
+colorpicker.a: "Alpha:"
