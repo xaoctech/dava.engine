@@ -207,7 +207,7 @@ void UIFileTree::RecursiveTreeWalk(const String & path, UITreeItemInfo * current
 				String ext = FileSystem::GetExtension(fileList->GetFilename(fi));
 				for (size_t ei = 0; ei < extsSize; ++ei)
                 {
-                    if(0 == CompareExtensions(extensions[ei], ext))
+                    if(0 == CompareStrings(extensions[ei], ext))
 					{
 						addElement = true;
 						break;
@@ -367,28 +367,6 @@ void UIFileTree::SetFolderNavigation(bool isEnabled)
 	isFolderNavigationEnabled = isEnabled;
 }
 				
-int32 UIFileTree::CompareExtensions(const String &ext1, const String &ext2)
-{
-    String newExt1 = "";
-    newExt1.resize(ext1.length());
-    std::transform(ext1.begin(), ext1.end(), newExt1.begin(), ::tolower);
-
-    String newExt2 = "";
-    newExt2.resize(ext2.length());
-    std::transform(ext2.begin(), ext2.end(), newExt2.begin(), ::tolower);
-
-    if(newExt1 == newExt2)
-    {
-        return 0;   
-    }
-    else if(newExt1 < newExt2)
-    {
-        return -1;
-    }
-    
-    return 1;
-}
-
 void UIFileTree::Refresh()
 {
     UIList::Refresh();

@@ -115,15 +115,6 @@ public:
 	 */
     void DisableRootFolderExpanding(bool isDisabled);    
 
-	/**
-     \brief Function to compare file extensions without letter case
-     \param[in] ext1 - first file extension. 
-     \param[in] ext2 - second file extension 
-     \param[out] result of comparision 
-	 */
-    static int32 CompareExtensions(const String &ext1, const String &ext2);
-
-    
     virtual void Refresh();
     
 private:
