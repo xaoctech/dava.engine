@@ -61,6 +61,14 @@ void Split(const String & inputString, const String & delims, Vector<String> & t
 
 void ReplaceBundleName(const String &newBundlePath);
 	
+/**
+ \brief Function to compare strings without letter case
+ \param[in] ext1 - first string 
+ \param[in] ext2 - second string 
+ \param[out] result of comparision 
+ */
+int32 CompareStrings(const String &str1, const String &str2);
+
 //implementation
 
 inline WideString StringToWString(const String& s)
