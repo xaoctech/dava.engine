@@ -132,6 +132,7 @@ public:
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
     inline void SetLocalTransform(const Matrix4 & newMatrix);
+    inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
     
@@ -314,7 +315,12 @@ inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
     localTransform = newMatrix;
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
 }
-    
+
+inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
+{
+    worldTransform = newMatrix;
+}
+
 inline void SceneNode::InvalidateLocalTransform()
 {
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;

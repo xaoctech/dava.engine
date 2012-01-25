@@ -113,7 +113,7 @@ void MeshInstanceNode::AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, i
         {
             if (it->layer == layer) 
             {
-                ld = &(*lodLayers.begin());
+                ld = &(*it);
                 isFind = true;
                 break;
             }
