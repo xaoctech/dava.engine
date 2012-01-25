@@ -859,12 +859,12 @@ void RenderManager::AttachRenderData(Shader * shader)
             int32 attribIndex = shader->GetAttributeIndex(stream->formatMark);
             if (attribIndex != -1)
             {
-                glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer);
+                RENDER_VERIFY(glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer));
                 if (DEBUG)Logger::Debug("shader glVertexAttribPointer: %d", attribIndex);
 
                 if (attribIndex >= enabledAttribCount)  // enable only if it was not enabled on previous step
                 {
-                    glEnableVertexAttribArray(attribIndex);
+                    RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
                     if (DEBUG)Logger::Debug("shader glEnableVertexAttribArray: %d", attribIndex);
                 }
                 if (attribIndex + 1 > currentEnabledAttribCount)
@@ -878,7 +878,7 @@ void RenderManager::AttachRenderData(Shader * shader)
         {
             if (DEBUG)Logger::Debug("shader glDisableVertexAttribArray: %d", p);
 
-            glDisableVertexAttribArray(p);
+            RENDER_VERIFY(glDisableVertexAttribArray(p));
         }
         enabledAttribCount = currentEnabledAttribCount;
         //pointerArraysRendererState = pointerArraysCurrentState;

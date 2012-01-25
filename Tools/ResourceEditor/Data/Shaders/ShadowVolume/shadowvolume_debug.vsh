@@ -14,7 +14,7 @@ void main()
 {
 	vec3 inn = vec3(0.0, 0.0, 0.0);
 
-	varColor = inn;
+	varColor = inNormal;
 
 //	vec3 normal = normalize(normalMatrix * inPosition.xyz);
 //	vec4 PosView = modelViewMatrix * inPosition;
