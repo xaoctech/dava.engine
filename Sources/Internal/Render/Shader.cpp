@@ -270,7 +270,7 @@ bool Shader::Recompile()
         uniformNames[k] = attributeName;
         uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
         uniformIDs[k] = uniform;
-        Logger::Debug("shader known uniform: %s size: %d type: %s", uniformNames[k].c_str(), size, VertexTypeStringFromEnum(type).c_str());
+        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
     
     RenderManager::Instance()->UnlockNonMain();
@@ -431,6 +431,7 @@ void Shader::Bind()
             {
                 const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
                 RENDER_VERIFY(glUniformMatrix3fv(uniformLocations[k], 1, GL_FALSE, normalMatrix.data));
+                break;
             }
         case UNIFORM_COLOR:
             {
