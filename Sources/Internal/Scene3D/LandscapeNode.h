@@ -195,6 +195,9 @@ public:
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
+	bool PlacePoint(const Vector3 & point, Vector3 & result);
+
+	
 protected:	
     
     class LandscapeQuad

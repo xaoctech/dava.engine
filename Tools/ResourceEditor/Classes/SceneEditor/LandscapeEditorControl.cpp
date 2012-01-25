@@ -43,7 +43,8 @@ void LandscapeEditorControl::CreateLeftPanel()
 {
     Rect fullRect = GetRect();
     
-    Rect leftRect = Rect(0, 0, ControlsFactory::LEFT_SIDE_WIDTH, fullRect.dy);
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+    Rect leftRect = Rect(0, 0, leftSideWidth, fullRect.dy);
     leftPanel = ControlsFactory::CreatePanelControl(leftRect);
     AddControl(leftPanel);
     
@@ -96,7 +97,8 @@ void LandscapeEditorControl::CreateRightPanel()
 {
     Rect fullRect = GetRect();
     
-    Rect rightRect = Rect(fullRect.dx - ControlsFactory::RIGHT_SIDE_WIDTH, 0, ControlsFactory::RIGHT_SIDE_WIDTH, fullRect.dy);
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    Rect rightRect = Rect(fullRect.dx - rightSideWidth, 0, rightSideWidth, fullRect.dy);
     rightPanel = ControlsFactory::CreatePanelControl(rightRect);
     AddControl(rightPanel);
 }
@@ -110,8 +112,10 @@ void LandscapeEditorControl::CreatePaintAreaPanel()
 {
     Rect fullRect = GetRect();
     
-    Rect toolsRect = Rect(ControlsFactory::LEFT_SIDE_WIDTH + OFFSET, 0, 
-                          fullRect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH - OFFSET*2, TOOLS_HEIGHT);
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    Rect toolsRect = Rect(leftSideWidth + OFFSET, 0, 
+                          fullRect.dx - leftSideWidth - rightSideWidth - OFFSET*2, TOOLS_HEIGHT);
     toolsPanel = ControlsFactory::CreatePanelControl(toolsRect);
     AddControl(toolsPanel);
     

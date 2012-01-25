@@ -27,7 +27,7 @@ SettingsDialog::SettingsDialog(const Rect & rect)
     
     
     int32 buttonY = dialogRect.dy - ControlsFactory::BUTTON_HEIGHT;
-    int32 buttonX = (dialogRect.dx - ControlsFactory::BUTTON_WIDTH * 2) / 2;
+    int32 buttonX = (dialogRect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
     UIButton *btnClose = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.close"));
     btnClose->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SettingsDialog::OnClose));
     dialogPanel->AddControl(btnClose);
@@ -46,6 +46,9 @@ SettingsDialog::SettingsDialog(const Rect & rect)
     propertyList->AddFloatProperty("settingsdialog.cameraspeed2", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("settingsdialog.cameraspeed3", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("settingsdialog.cameraspeed4", PropertyList::PROPERTY_IS_EDITABLE);
+    
+    propertyList->AddIntProperty("settingsdialog.leftpanelwidth", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddIntProperty("settingsdialog.rightpanelwidth", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -82,6 +85,9 @@ void SettingsDialog::WillAppear()
     propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed2", EditorSettings::Instance()->GetCameraSpeed(1));
     propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed3", EditorSettings::Instance()->GetCameraSpeed(2));
     propertyList->SetFloatPropertyValue("settingsdialog.cameraspeed4", EditorSettings::Instance()->GetCameraSpeed(3));
+    
+    propertyList->SetIntPropertyValue("settingsdialog.leftpanelwidth", EditorSettings::Instance()->GetLeftPanelWidth());
+    propertyList->SetIntPropertyValue("settingsdialog.rightpanelwidth", EditorSettings::Instance()->GetRightPanelWidth());
 }
 
 void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -128,6 +134,16 @@ void SettingsDialog::OnIntPropertyChanged(PropertyList *forList, const String &f
     else if("settingsdialog.screenheight" == forKey)
     {
         EditorSettings::Instance()->SetScreenHeight(newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.leftpanelwidth" == forKey)
+    {
+        EditorSettings::Instance()->SetLeftPanelWidth(newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.rightpanelwidth" == forKey)
+    {
+        EditorSettings::Instance()->SetRightPanelWidth(newValue);
         EditorSettings::Instance()->Save();
     }
 }

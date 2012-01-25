@@ -568,7 +568,6 @@ int32 FileSystem::Spawn(const String& command)
 #endif
 }
 
-
 String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname)
 {
     String workingFolderPath = folderPathname;
@@ -584,9 +583,11 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     String fileName;
     FileSystem::SplitPath(workingFilePath, filePath, fileName);
     
-    Vector<String> folders = Split(workingFolderPath, "/");
-    Vector<String> fileFolders = Split(filePath, "/");
-    
+    Vector<String> folders;
+    Split(workingFolderPath, "/", folders);
+    Vector<String> fileFolders;
+    Split(filePath, "/", fileFolders);
+
     int32 equalCount = 0;
     for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
     {
@@ -609,39 +610,6 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     
     return (retPath + fileName);
 }
-
-    
-Vector<String> FileSystem::Split(const String &srcString, const String &splitter)
-{
-    Vector<String> ret;
-    
-    String path = srcString;
-    
-    String::size_type pos = path.find(splitter);
-    while(String::npos != pos)
-    {
-        if(!pos)
-        {
-            path = path.substr(splitter.length());
-            pos = path.find(splitter);
-            continue;
-        }
-        
-        String substr = path.substr(0, pos);
-        ret.push_back(substr);
-
-        path = path.substr(pos + splitter.length());
-        pos = path.find(splitter);
-    }
-
-    if(path.length())
-    {
-        ret.push_back(path);
-    }
-    
-    return ret;
-}
-
 
     
 }

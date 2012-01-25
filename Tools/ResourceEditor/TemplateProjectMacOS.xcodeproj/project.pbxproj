@@ -26,6 +26,7 @@
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C4E87B014B3AE7C006C5191 /* LandscapeEditorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */; };
 		5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C6BF78514C85A62009297F7 /* libz.dylib */; };
+		5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C81C29D14D0480700580500 /* PVRConverter.cpp */; };
 		5C87C49914C34A3500E2C63B /* PaintAreaControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
@@ -336,6 +337,8 @@
 		5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorControl.cpp; sourceTree = "<group>"; };
 		5C4E87AF14B3AE7C006C5191 /* LandscapeEditorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorControl.h; sourceTree = "<group>"; };
 		5C6BF78514C85A62009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5C81C29D14D0480700580500 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
+		5C81C29E14D0480700580500 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PaintAreaControl.cpp; sourceTree = "<group>"; };
 		5C87C49814C34A3500E2C63B /* PaintAreaControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaintAreaControl.h; sourceTree = "<group>"; };
 		5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NodesPropertyControl.cpp; sourceTree = "<group>"; };
@@ -1010,6 +1013,8 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5C81C29D14D0480700580500 /* PVRConverter.cpp */,
+				5C81C29E14D0480700580500 /* PVRConverter.h */,
 				5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */,
 				5CE81F3914CEBA0A0066C7E1 /* ExtendedDialog.h */,
 				5CE32BA114CD8B06003B3FD3 /* ColorPicker.cpp */,
@@ -2153,6 +2158,7 @@
 				5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */,
 				5CE32BA314CD8B06003B3FD3 /* ColorPicker.cpp in Sources */,
 				5CE81F3A14CEBA0A0066C7E1 /* ExtendedDialog.cpp in Sources */,
+				5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
