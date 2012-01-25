@@ -138,6 +138,7 @@ protected:
 	void ReleaseHelpPanel();
 	void CreateHelpPanel();
 
+	void PlaceOnLandscape();
 	
     UIControl *leftPanelSceneGraph;
     UIHierarchy * sceneGraphTree;
@@ -208,7 +209,8 @@ protected:
 	UIButton *btnPopUp;
 	UIButton *btnModeSelection;
 	UIButton *btnModeModification;
-
+	UIButton *btnPlaceOn;
+	
 	UIControl *modificationPanel;
 	eModState modState;
 	eModAxis modAxis;

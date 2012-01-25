@@ -72,7 +72,7 @@ struct Matrix3
 	inline void	BuildTranslation(float32 x, float32 y);
 	inline void	BuildTranslation(const Vector2 & vec);
 	inline void	BuildScale(const Vector2 & vec);
-	inline bool GetInverse(Matrix3 & out, float32 fTolerance = 1e-06);
+	inline bool GetInverse(Matrix3 & out, float32 fTolerance = 1e-06) const;
 
 	inline Matrix3& operator *= (const Matrix3 & arg);
 	inline Matrix3 operator *	(const Matrix3 & arg) const;
@@ -252,9 +252,9 @@ inline Vector3 operator * (const Vector3 & _v, const Matrix3 & _m)
 
 	 */
 
-inline bool Matrix3::GetInverse(Matrix3 & out, float32 fTolerance)
+inline bool Matrix3::GetInverse(Matrix3 & out, float32 fTolerance) const
 {
-	Matrix3 &m = *this;
+	const Matrix3 &m = *this;
 	out._00 = m._data[1][1]*m._data[2][2] - m._data[1][2]*m._data[2][1];
 	out._01 = m._data[0][2]*m._data[2][1] - m._data[0][1]*m._data[2][2];
 	out._02 = m._data[0][1]*m._data[1][2] - m._data[0][2]*m._data[1][1];
