@@ -14,9 +14,10 @@ public:
         BUTTON_HEIGHT = 20,
         BUTTON_WIDTH = 80,
         
-        LEFT_SIDE_WIDTH = 200,
-        RIGHT_SIDE_WIDTH = 200,
-        
+        LEFT_PANEL_WIDTH = 200,
+        RIGHT_PANEL_WIDTH = 200,
+        OUTPUT_PANEL_HEIGHT = 200,
+       
         OFFSET = 10,
     };
     

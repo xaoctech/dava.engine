@@ -30,7 +30,7 @@ void SceneEditorScreenMain::LoadResources()
     
     // add line after menu
     Rect fullRect = GetRect();
-    AddLineControl(Rect(0, MENU_HEIGHT, fullRect.dx, LINE_HEIGHT));
+    AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
     CreateTopMenu();
     
     //
@@ -41,9 +41,10 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(settingsButton);
     SafeRelease(settingsButton);
     
-    landscapeEditor = new LandscapeEditorControl(Rect(0, MENU_HEIGHT + 1, fullRect.dx, fullRect.dy - MENU_HEIGHT-1));
+    landscapeEditor = new LandscapeEditorControl(Rect(0, ControlsFactory::BUTTON_HEIGHT + 1, 
+                                                      fullRect.dx, fullRect.dy - ControlsFactory::BUTTON_HEIGHT-1));
     
-    menuPopup = new MenuPopupControl(fullRect, ControlsFactory::BUTTON_WIDTH, MENU_HEIGHT + LINE_HEIGHT);
+    menuPopup = new MenuPopupControl(fullRect, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
     InitializeNodeDialogs();    
@@ -63,8 +64,9 @@ void SceneEditorScreenMain::LoadResources()
     libraryButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLibraryPressed));
     AddControl(libraryButton);
     
+    int32 libraryWidth = EditorSettings::Instance()->GetRightPanelWidth();
     libraryControl = new LibraryControl(
-                            Rect(fullRect.dx - LIBRARY_WIDTH, BODY_Y_OFFSET + 1, LIBRARY_WIDTH, fullRect.dy - BODY_Y_OFFSET - 1)); 
+                            Rect(fullRect.dx - libraryWidth, BODY_Y_OFFSET + 1, libraryWidth, fullRect.dy - BODY_Y_OFFSET - 1)); 
     libraryControl->SetDelegate(this);
     libraryControl->SetPath(path);
 
