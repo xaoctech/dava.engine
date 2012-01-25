@@ -68,6 +68,8 @@ public:
     
 protected:
 
+    virtual const Rect DialogRect();
+
     void SetColor(const Color & newColor, bool updateColorMap);
 
     void OnOk(BaseObject * owner, void * userData, void * callerData);
