@@ -19,6 +19,8 @@ public:
         OUTPUT_PANEL_HEIGHT = 200,
        
         OFFSET = 10,
+        
+        ERROR_MESSAGE_HEIGHT = 30,
     };
     
     enum eColorPickerSizes
