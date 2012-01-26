@@ -1263,6 +1263,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
 
             sceneGraphTree->Refresh();
         }
+        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 
@@ -1345,6 +1346,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     }
     sceneGraphTree->Refresh();
     RefreshDataGraph();
+    SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
 void EditorBodyControl::ReloadRootScene(const String &pathToFile)

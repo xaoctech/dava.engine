@@ -12,6 +12,9 @@
 #include "EditorSettings.h"
 #include "SettingsDialog.h"
 
+#include "SceneValidator.h"
+
+
 void SceneEditorScreenMain::LoadResources()
 {
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
@@ -465,6 +468,7 @@ void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
         RemoveControl(materialEditor);
         
         iBody->bodyControl->RefreshProperties();
+        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 

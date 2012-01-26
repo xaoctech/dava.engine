@@ -1,15 +1,21 @@
 #include "SceneValidator.h"
 #include "ErrorDialog.h"
 #include "EditorSettings.h"
+#include "SceneInfoControl.h"
 
 SceneValidator::SceneValidator()
 {
+    sceneTextureCount = 0;
+    sceneTextureMemory = 0;
+
     errorDialog = NULL;
+    infoControl = NULL;
 }
 
 SceneValidator::~SceneValidator()
 {
     SafeRelease(errorDialog);
+    SafeRelease(infoControl);
 }
 
 void SceneValidator::ValidateScene(Scene *scene)
@@ -18,12 +24,6 @@ void SceneValidator::ValidateScene(Scene *scene)
 
     errorMessages.clear();
 
-//    int32 materialCount = scene->GetMaterialCount();
-//    for(int32 iMat = 0; iMat < materialCount; ++iMat)
-//    {
-//        ValidateMaterialInternal(scene->GetMaterial(iMat));
-//    }
-    
     ValidateSceneNodeInternal(scene);
     
     if(errorMessages.size())
@@ -167,3 +167,40 @@ void SceneValidator::ValidateMaterialInternal(DAVA::Material *material)
     }
 }
 
+void SceneValidator::EnumerateSceneTextures()
+{
+    sceneTextureCount = 0;
+    sceneTextureMemory = 0;
+    
+    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
+    KeyedArchive *settings = EditorSettings::Instance()->GetSettings(); 
+    String projectPath = settings->GetString("ProjectPath");
+	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+	{
+		Texture *t = it->second;
+        if(String::npos != t->relativePathname.find(projectPath))
+        {
+            sceneTextureMemory += t->GetDataSize();
+            ++sceneTextureCount;
+        }
+	}
+    
+    if(infoControl)
+    {
+        infoControl->InvalidateTexturesInfo(sceneTextureCount, sceneTextureMemory);
+    }
+}
+
+void SceneValidator::SetInfoControl(SceneInfoControl *newInfoControl)
+{
+    SafeRelease(infoControl);
+    infoControl = SafeRetain(newInfoControl);
+    
+    sceneStats.Clear();
+}
+
+void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
+{
+    sceneStats = newStats;
+    infoControl->SetRenderStats(sceneStats);
+}
