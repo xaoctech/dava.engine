@@ -20,6 +20,7 @@
 
 #include "SceneEditor/OutputManager.h"
 #include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/SceneValidator.h"
 
 
 using namespace DAVA;
@@ -50,7 +51,7 @@ void GameCore::OnAppStarted()
 	
     new OutputManager();
 //    new EditorSettings();
-    
+    new SceneValidator();
     
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
@@ -65,7 +66,7 @@ void GameCore::OnAppFinished()
 {
     EditorSettings::Instance()->Release();
     OutputManager::Instance()->Release();
-
+    SceneValidator::Instance()->Release();
     
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);

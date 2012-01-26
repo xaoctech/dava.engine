@@ -9,6 +9,7 @@
 #include "../config.h"
 
 #include "SceneInfoControl.h"
+#include "SceneValidator.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -38,20 +39,18 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     CreateLeftPanel();
     
     bool showOutput = EditorSettings::Instance()->GetShowOutput();
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
     if(showOutput)
     {
-        scene3dView = new UI3DView(Rect(
-                                        ControlsFactory::LEFT_SIDE_WIDTH + SCENE_OFFSET, 
-                                        SCENE_OFFSET, 
-                                        rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
-                                        rect.dy - 2 * SCENE_OFFSET - OUTPUT_PANEL_HEIGHT));
+        scene3dView = new UI3DView(Rect(leftSideWidth + SCENE_OFFSET, SCENE_OFFSET, 
+                                        rect.dx - leftSideWidth - rightSideWidth - 2 * SCENE_OFFSET, 
+                                        rect.dy - 2 * SCENE_OFFSET - ControlsFactory::OUTPUT_PANEL_HEIGHT));
     }
     else
     {
-        scene3dView = new UI3DView(Rect(
-                                        ControlsFactory::LEFT_SIDE_WIDTH + SCENE_OFFSET, 
-                                        SCENE_OFFSET, 
-                                        rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH - 2 * SCENE_OFFSET, 
+        scene3dView = new UI3DView(Rect(leftSideWidth + SCENE_OFFSET, SCENE_OFFSET, 
+                                        rect.dx - leftSideWidth - rightSideWidth - 2 * SCENE_OFFSET, 
                                         rect.dy - 2 * SCENE_OFFSET));
     }
 
@@ -61,19 +60,16 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     
 
-    sceneInfoControl = new SceneInfoControl(Rect(rect.dx - ControlsFactory::RIGHT_SIDE_WIDTH * 2 , 0, 
-                                                 ControlsFactory::RIGHT_SIDE_WIDTH, ControlsFactory::RIGHT_SIDE_WIDTH));
+    sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
     AddControl(sceneInfoControl);
     
     CreateScene(true);
 
     if(showOutput)
     {
-        outputPanel = new OutputPanelControl(scene, Rect(
-                                                         ControlsFactory::LEFT_SIDE_WIDTH, 
-                                                         rect.dy - OUTPUT_PANEL_HEIGHT, 
-                                                         rect.dx - ControlsFactory::LEFT_SIDE_WIDTH - ControlsFactory::RIGHT_SIDE_WIDTH, 
-                                                         OUTPUT_PANEL_HEIGHT));
+        outputPanel = new OutputPanelControl(scene, Rect(leftSideWidth, rect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT, 
+                                                         rect.dx - leftSideWidth - rightSideWidth, 
+                                                         ControlsFactory::OUTPUT_PANEL_HEIGHT));
         ControlsFactory::CustomizePanelControl(outputPanel, false);
         AddControl(outputPanel);
     }
@@ -162,7 +158,8 @@ void EditorBodyControl::CreateLeftPanel()
 {
     Rect fullRect = GetRect();
     
-    Rect leftRect = Rect(0, 0, ControlsFactory::LEFT_SIDE_WIDTH, fullRect.dy);
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+    Rect leftRect = Rect(0, 0, leftSideWidth, fullRect.dy);
     leftPanelSceneGraph = ControlsFactory::CreatePanelControl(leftRect);
     AddControl(leftPanelSceneGraph);
     
@@ -177,25 +174,20 @@ void EditorBodyControl::CreateLeftPanel()
     leftPanelSceneGraph->AddControl(sceneGraphTree);
     
     int32 y = sceneGraphRect.dy;
-    UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(
-                                                                      0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+    UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth,ControlsFactory::BUTTON_HEIGHT), 
                                                                  LocalizedString(L"panel.refresh"));
     y += ControlsFactory::BUTTON_HEIGHT;
     
-    UIButton * lookAtButton = ControlsFactory::CreateButton(Rect(
-                                                                 0, y, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+    UIButton * lookAtButton = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth,ControlsFactory::BUTTON_HEIGHT), 
                                                             LocalizedString(L"scenegraph.lookatobject"));
     y += ControlsFactory::BUTTON_HEIGHT;
-    UIButton * removeNodeButton = ControlsFactory::CreateButton(Rect(
-                                                                     0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+    UIButton * removeNodeButton = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
                                                                 LocalizedString(L"scenegraph.removeobject"));
     y += ControlsFactory::BUTTON_HEIGHT;
-    UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(
-                                                                           0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+    UIButton * enableDebugFlagsButton = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
                                                                       LocalizedString(L"scenegraph.debugflags"));
     y += ControlsFactory::BUTTON_HEIGHT;
-    UIButton * bakeMatrices = ControlsFactory::CreateButton(Rect(
-                                                                           0, y, ControlsFactory::LEFT_SIDE_WIDTH, ControlsFactory::BUTTON_HEIGHT), 
+    UIButton * bakeMatrices = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
                                                                       LocalizedString(L"scenegraph.bakemetrics"));
 
     
@@ -230,8 +222,8 @@ void EditorBodyControl::CreateLeftPanel()
     dataGraphTree->SetDelegate(this);
     dataGraphTree->SetClipContents(true);
     leftPanelDataGraph->AddControl(dataGraphTree);
-    UIButton * refreshDataGraphButton = ControlsFactory::CreateButton(Rect(
-                                                                      0, dataGraphRect.dy, ControlsFactory::LEFT_SIDE_WIDTH,ControlsFactory::BUTTON_HEIGHT), 
+    UIButton * refreshDataGraphButton = ControlsFactory::CreateButton(Rect(0, dataGraphRect.dy, 
+                                                                           leftSideWidth,ControlsFactory::BUTTON_HEIGHT), 
                                                                  LocalizedString(L"panel.refresh"));
     refreshDataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnRefreshDataGraph));
     leftPanelDataGraph->AddControl(refreshDataGraphButton);
@@ -516,7 +508,9 @@ void EditorBodyControl::UpdateModState(void)
 void EditorBodyControl::CreatePropertyPanel()
 {
     Rect fullRect = GetRect();
-    propertyPanelRect = Rect(fullRect.dx - ControlsFactory::RIGHT_SIDE_WIDTH, 0, ControlsFactory::RIGHT_SIDE_WIDTH, size.y);
+
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    propertyPanelRect = Rect(fullRect.dx - rightSideWidth, 0, rightSideWidth, size.y);
     rightPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
     AddControl(rightPanel);
 
@@ -663,7 +657,8 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         c = forHierarchy->GetReusableCell("SceneGraph cell"); //try to get cell from the reusable cells store
         if(!c)
         { //if cell of requested type isn't find in the store create new cell
-            c = new UIHierarchyCell(Rect(0, 0, ControlsFactory::LEFT_SIDE_WIDTH, CELL_HEIGHT), "SceneGraph cell");
+            int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+            c = new UIHierarchyCell(Rect(0, 0, leftSideWidth, CELL_HEIGHT), "SceneGraph cell");
         }
         
         //fill cell whith data
@@ -684,7 +679,8 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         c = forHierarchy->GetReusableCell("DataGraph cell"); //try to get cell from the reusable cells store
         if(!c)
         { //if cell of requested type isn't find in the store create new cell
-            c = new UIHierarchyCell(Rect(0, 0, ControlsFactory::LEFT_SIDE_WIDTH, CELL_HEIGHT), "DataGraph cell");
+            int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+            c = new UIHierarchyCell(Rect(0, 0, leftSideWidth, CELL_HEIGHT), "DataGraph cell");
         }
         
         //fill cell whith data
@@ -1267,6 +1263,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
 
             sceneGraphTree->Refresh();
         }
+        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 
@@ -1292,12 +1289,15 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile);
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
+            
             mainFilePath = pathToFile;
             scene->AddNode(rootNode);
         }
         else
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
             
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
@@ -1319,6 +1319,8 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
+
             mainFilePath = pathToFile;
             for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
             {   
@@ -1329,6 +1331,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         else
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
 
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
@@ -1343,6 +1346,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     }
     sceneGraphTree->Refresh();
     RefreshDataGraph();
+    SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
 void EditorBodyControl::ReloadRootScene(const String &pathToFile)
@@ -1422,16 +1426,17 @@ void EditorBodyControl::WillAppear()
 
 void EditorBodyControl::ShowProperties(bool show)
 {
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
     if(show && !rightPanel->GetParent())
     {
         if(!ControlsAreLocked())
         {
             AddControl(rightPanel);
             
-            ChangeControlWidthRight(scene3dView, -ControlsFactory::RIGHT_SIDE_WIDTH);
+            ChangeControlWidthRight(scene3dView, -rightSideWidth);
             if(outputPanel)
             {
-                ChangeControlWidthRight(outputPanel, -ControlsFactory::RIGHT_SIDE_WIDTH);   
+                ChangeControlWidthRight(outputPanel, -rightSideWidth);   
             }
         }
     }
@@ -1439,10 +1444,10 @@ void EditorBodyControl::ShowProperties(bool show)
     {
         RemoveControl(rightPanel);
         
-        ChangeControlWidthRight(scene3dView, ControlsFactory::RIGHT_SIDE_WIDTH);
+        ChangeControlWidthRight(scene3dView, rightSideWidth);
         if(outputPanel)
         {
-            ChangeControlWidthRight(outputPanel, ControlsFactory::RIGHT_SIDE_WIDTH);
+            ChangeControlWidthRight(outputPanel, rightSideWidth);
         }
     }
 }
@@ -1456,16 +1461,17 @@ void EditorBodyControl::ShowSceneGraph(bool show)
 {
     ResetSelection();
     
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     if(show && !leftPanelSceneGraph->GetParent())
     {
         if(!ControlsAreLocked())
         {
             AddControl(leftPanelSceneGraph);
             
-            ChangeControlWidthLeft(scene3dView, ControlsFactory::LEFT_SIDE_WIDTH);
+            ChangeControlWidthLeft(scene3dView, leftSideWidth);
             if(outputPanel)
             {
-                ChangeControlWidthLeft(outputPanel, ControlsFactory::LEFT_SIDE_WIDTH);
+                ChangeControlWidthLeft(outputPanel, leftSideWidth);
             }
             
             sceneGraphTree->Refresh();
@@ -1475,10 +1481,10 @@ void EditorBodyControl::ShowSceneGraph(bool show)
     {
         RemoveControl(leftPanelSceneGraph);
         
-        ChangeControlWidthLeft(scene3dView, -ControlsFactory::LEFT_SIDE_WIDTH);
+        ChangeControlWidthLeft(scene3dView, -leftSideWidth);
         if(outputPanel)
         {
-            ChangeControlWidthLeft(outputPanel, -ControlsFactory::LEFT_SIDE_WIDTH);
+            ChangeControlWidthLeft(outputPanel, -leftSideWidth);
         }
     }
 }
@@ -1492,16 +1498,17 @@ void EditorBodyControl::ShowDataGraph(bool show)
 {
     ResetSelection();
 
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     if(show && !leftPanelDataGraph->GetParent())
     {
         if(!ControlsAreLocked())
         {
             AddControl(leftPanelDataGraph);
             
-            ChangeControlWidthLeft(scene3dView, ControlsFactory::LEFT_SIDE_WIDTH);
+            ChangeControlWidthLeft(scene3dView, leftSideWidth);
             if(outputPanel)
             {
-                ChangeControlWidthLeft(outputPanel, ControlsFactory::LEFT_SIDE_WIDTH);
+                ChangeControlWidthLeft(outputPanel, leftSideWidth);
             }
             
             RefreshDataGraph();
@@ -1511,10 +1518,10 @@ void EditorBodyControl::ShowDataGraph(bool show)
     {
         RemoveControl(leftPanelDataGraph);
         
-        ChangeControlWidthLeft(scene3dView, -ControlsFactory::LEFT_SIDE_WIDTH);
+        ChangeControlWidthLeft(scene3dView, -leftSideWidth);
         if(outputPanel)
         {
-            ChangeControlWidthLeft(outputPanel, -ControlsFactory::LEFT_SIDE_WIDTH);
+            ChangeControlWidthLeft(outputPanel, -leftSideWidth);
         }
     }
 }
@@ -1539,10 +1546,11 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
     }
     else
     {
-        ChangeControlWidthRight(scene3dView, ControlsFactory::RIGHT_SIDE_WIDTH);
+        int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+        ChangeControlWidthRight(scene3dView, rightSideWidth);
         if(outputPanel)
         {
-            ChangeControlWidthRight(outputPanel, ControlsFactory::RIGHT_SIDE_WIDTH);
+            ChangeControlWidthRight(outputPanel, rightSideWidth);
         }
     }
 }

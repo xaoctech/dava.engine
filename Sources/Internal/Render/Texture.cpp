@@ -1079,38 +1079,6 @@ void Texture::DumpTextures()
 	Logger::Info("============================================================");
 }
 	
-int32 Texture::AllocatedMemorySize()
-{
-    int32 allocSize = 0;
-	for(Map<String, Texture *>::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
-	{
-		Texture *t = it->second;
-		switch (t->format) 
-		{
-			case FORMAT_RGBA8888:
-				allocSize += t->width * t->height * 4;
-				break;
-			case FORMAT_RGBA4444:
-				allocSize += t->width * t->height * 2;
-				break;
-			case FORMAT_RGB565:
-				allocSize += t->width * t->height * 2;
-				break;
-			case FORMAT_A8:
-				allocSize += t->width * t->height;
-				break;
-			default:
-				break;
-		}
-	}
-    return allocSize;
-}
-    
-int32 Texture::TexturesCount()
-{
-    return textureMap.size();
-}
-	
 Texture::PixelFormat Texture::defaultRGBAFormat = Texture::FORMAT_RGBA8888;
 
 void Texture::SetDefaultRGBAFormat(PixelFormat format)
@@ -1233,6 +1201,35 @@ Image * Texture::CreateImageFromMemory()
     return image;
 }
 	
+const Map<String, Texture*> & Texture::GetTextureMap()
+{
+    return textureMap;
+}
+
+int32 Texture::GetDataSize()
+{
+    int32 allocSize = 0;
+    switch (format) 
+    {
+        case FORMAT_RGBA8888:
+            allocSize = width * height * 4;
+            break;
+        case FORMAT_RGBA4444:
+            allocSize = width * height * 2;
+            break;
+        case FORMAT_RGB565:
+            allocSize = width * height * 2;
+            break;
+        case FORMAT_A8:
+            allocSize = width * height;
+            break;
+        default:
+            break;
+    }
+    
+    return allocSize;
+}
+    
 };
 
 

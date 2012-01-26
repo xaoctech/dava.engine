@@ -628,6 +628,11 @@ const RenderManager::Stats & RenderManager::GetStats()
     return stats;
 }
     
+void RenderManager::ClearStats()
+{
+    stats.Clear();
+}
+    
 void RenderManager::RectFromRenderOrientationToViewport(Rect & rect)
 {
     switch(renderOrientation)

@@ -1,5 +1,6 @@
 #include "LandscapePropertyControl.h"
 #include "EditorSettings.h"
+#include "SceneValidator.h"
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -173,24 +174,28 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
         {
             Texture::EnableMipmapGeneration();
             landscape->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, newValue);
+            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE0));
             Texture::DisableMipmapGeneration();
         }
         else if("property.landscape.texture1" == forKey)
         {
             Texture::EnableMipmapGeneration();
             landscape->SetTexture(LandscapeNode::TEXTURE_DETAIL, newValue);
+            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_DETAIL));
             Texture::DisableMipmapGeneration();
         }
         else if("property.landscape.texturebump" == forKey)
         {
             Texture::EnableMipmapGeneration();
             landscape->SetTexture(LandscapeNode::TEXTURE_BUMP, newValue);
+            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_BUMP));
             Texture::DisableMipmapGeneration();
         }
         else if("property.landscape.texturemask" == forKey)
         {
             Texture::EnableMipmapGeneration();
             landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, newValue);
+            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TEXTUREMASK));
             Texture::DisableMipmapGeneration();
         }
         else if(    "property.landscape.lightmap" == forKey 

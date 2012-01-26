@@ -125,6 +125,9 @@ public:
 	void DeleteDynamicShadowNode();
     
 
+    Texture * GetLightmapForIndex(int32 index);
+    int32 GetLightmapCount();
+    
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
@@ -152,7 +155,6 @@ protected:
 		String lightmapName;
 	};
 	Vector<LightmapData> lightmaps;
-	Texture * GetLightmapForIndex(int32 index);
 
 };
 	

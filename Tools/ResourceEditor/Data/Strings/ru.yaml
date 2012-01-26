@@ -172,6 +172,8 @@ settingsdialog.cameraspeed1: "1-ая скорость камеры:"
 settingsdialog.cameraspeed2: "2-ая скорость камеры:"
 settingsdialog.cameraspeed3: "3-ая скорость камеры:"
 settingsdialog.cameraspeed4: "4-ая скорость камеры:"
+settingsdialog.leftpanelwidth: "Ширина левой панели:"
+settingsdialog.rightpanelwidth: "Ширина правой панели:"
 
 #Color Picker
 colorpicker.r: "Red:"

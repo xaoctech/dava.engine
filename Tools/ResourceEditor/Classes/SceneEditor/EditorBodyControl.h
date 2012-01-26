@@ -25,8 +25,6 @@ class EditorBodyControl :
     {
         SCENE_OFFSET = 10, 
         CELL_HEIGHT = 20,
-        MATRIX_HEIGHT = 100,
-        OUTPUT_PANEL_HEIGHT = 200,
     };
 
 	enum eModState
