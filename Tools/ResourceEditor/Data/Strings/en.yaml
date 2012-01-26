@@ -173,6 +173,8 @@ settingsdialog.cameraspeed1: "1-st Camera Speed:"
 settingsdialog.cameraspeed2: "2-nd Camera Speed:"
 settingsdialog.cameraspeed3: "3-rd Camera Speed:"
 settingsdialog.cameraspeed4: "4-th Camera Speed:"
+settingsdialog.leftpanelwidth: "Left Panel Width:"
+settingsdialog.rightpanelwidth: "Right Panel Width:"
 
 #Color Picker
 colorpicker.r: "Red:"

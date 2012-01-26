@@ -3,6 +3,7 @@
 #include "ControlsFactory.h"
 
 #include "EditorSettings.h"
+#include "SceneValidator.h"
 
 //***************** TextureRenderObject *********************
 TextureRenderObject::TextureRenderObject()
@@ -248,6 +249,8 @@ void PaintAreaControl::ShowResultTexture(bool show)
 void PaintAreaControl::SetTexture(eTextureRenderObjectIDs id, const String &path)
 {
     textureRenderObjects[id]->Set(path);
+    SceneValidator::Instance()->ValidateTexture(textureRenderObjects[id]->texture);
+    
     Recreate();
 }
 

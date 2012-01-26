@@ -1,5 +1,7 @@
 #include "EditorSettings.h"
 
+#include "ControlsFactory.h"
+
 EditorSettings::EditorSettings()
 {
     settings = new KeyedArchive();
@@ -127,4 +129,24 @@ void EditorSettings::SetShowOuput(bool showOutput)
 {
     settings->SetBool("ShowOutput", showOutput);
 }
+
+int32 EditorSettings::GetLeftPanelWidth()
+{
+    return settings->GetInt32("LeftPanelWidth", ControlsFactory::LEFT_PANEL_WIDTH);
+}
+
+void EditorSettings::SetLeftPanelWidth(int32 width)
+{
+    settings->SetInt32("LeftPanelWidth", width);
+}
+
+int32 EditorSettings::GetRightPanelWidth()
+{
+    return settings->GetInt32("RightPanelWidth", ControlsFactory::RIGHT_PANEL_WIDTH);
+}
+void EditorSettings::SetRightPanelWidth(int32 width)
+{
+    settings->SetInt32("RightPanelWidth", width);
+}
+
 
