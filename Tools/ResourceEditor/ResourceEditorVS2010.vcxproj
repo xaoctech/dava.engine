@@ -393,6 +393,7 @@
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorLightNode.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
+    <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
@@ -416,6 +417,7 @@
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneValidator.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
@@ -631,6 +633,7 @@
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
@@ -653,6 +656,7 @@
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
