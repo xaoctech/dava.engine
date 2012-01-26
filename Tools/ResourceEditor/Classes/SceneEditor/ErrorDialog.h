@@ -16,14 +16,14 @@ public:
 	virtual UIListCell *CellAtIndex(UIList *list, int32 index);
 	virtual int32 CellHeight(UIList * list, int32 index);
 
-    void Show(const Vector<String> &newErrorMessages);
+    void Show(const Set<String> &newErrorMessages);
     
 protected:
 
     virtual const Rect DialogRect();
     void OnCancel(BaseObject * owner, void * userData, void * callerData);
 
-    Vector<String> errorMessages;
+    Set<String> errorMessages;
     UIButton *closeButton;
     UIList *errorList;
 };
