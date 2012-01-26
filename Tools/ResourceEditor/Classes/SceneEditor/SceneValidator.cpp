@@ -138,6 +138,12 @@ void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)
     {
         ValidateMaterialInternal(materials[iMat]);
     }
+    
+    int32 lightmapCont = meshNode->GetLightmapCount();
+    for(int32 iLight = 0; iLight < lightmapCont; ++iLight)
+    {
+        ValidateTextureInternal(meshNode->GetLightmapForIndex(iLight));
+    }
 }
 
 
