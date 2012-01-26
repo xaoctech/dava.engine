@@ -54,7 +54,6 @@ UIListCell *ErrorDialog::CellAtIndex(UIList *list, int32 index)
         }
     }
     
-
     return c;
 }
 
