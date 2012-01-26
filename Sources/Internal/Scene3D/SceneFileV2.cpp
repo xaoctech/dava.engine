@@ -221,6 +221,7 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
+    rootNode->SceneDidLoaded();
 //    ProcessLOD(_scene, rootNode);
     _scene->AddRootNode(rootNode, rootNodePathName);
     
