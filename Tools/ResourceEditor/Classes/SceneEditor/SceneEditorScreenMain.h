@@ -25,12 +25,9 @@ public MenuPopupDelegate, public CreateNodesDialogDelegeate
 
     enum eConst
     {        
-        MENU_HEIGHT = 20,
         LINE_HEIGHT = 1,
 
         BODY_Y_OFFSET = 50,
-        
-        LIBRARY_WIDTH = 200,
         
         TAB_BUTTONS_OFFSET = 200,
     };

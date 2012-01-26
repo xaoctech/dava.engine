@@ -86,6 +86,9 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
         {
             SafeRelease(f);
             PVRConverter::ConvertPvrToPng(pvrFileName);
+            
+            texturePathName = FUStringConversion::ToFString(pvrFileName.c_str());
+            fileName = pvrFileName + ".png";
         }
     }
     

@@ -683,6 +683,12 @@
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1674,6 +1680,12 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ErrorDialog.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneValidator.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
