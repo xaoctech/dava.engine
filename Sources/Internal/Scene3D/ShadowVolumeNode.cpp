@@ -51,7 +51,6 @@ DAVA::ShadowVolumeNode::~ShadowVolumeNode()
 void DAVA::ShadowVolumeNode::Draw()
 {
 	scene->AddDrawTimeShadowVolume(this);
-	//DrawShadow();
 }
 
 void DAVA::ShadowVolumeNode::DrawShadow()
