@@ -17,18 +17,21 @@ public:
     void ValidateTexture(Texture *texture);
     void ValidateLandscape(LandscapeNode *landscape);
     void ValidateSceneNode(SceneNode *sceneNode);
+    void ValidateMaterial(Material *material);
     
 protected:
 
     bool IsntPower2(int32 num);
     
-    void ValidateTexture(Texture *texture, bool singleMessage);
-    void ValidateLandscape(LandscapeNode *landscape, bool singleMessage);
-    void ValidateSceneNode(SceneNode *sceneNode, bool singleMessage);
+    void ValidateTextureInternal(Texture *texture);
+    void ValidateLandscapeInternal(LandscapeNode *landscape);
+    void ValidateSceneNodeInternal(SceneNode *sceneNode);
+    void ValidateMeshInstanceInternal(MeshInstanceNode *meshNode);
+    void ValidateMaterialInternal(Material *material);
     
     void ShowErrors();
     
-    Vector<String> errorMessages;
+    Set<String> errorMessages;
     ErrorDialog *errorDialog;
     
 };

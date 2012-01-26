@@ -43,7 +43,17 @@ UIListCell *ErrorDialog::CellAtIndex(UIList *list, int32 index)
     Font *font = ControlsFactory::GetFontError();
     
     c->SetStateFont(UIControl::STATE_NORMAL, font);
-    c->SetStateText(UIControl::STATE_NORMAL, StringToWString(errorMessages[index]));
+    
+    int32 i = 0;
+    for(Set<String>::const_iterator it = errorMessages.begin(); it != errorMessages.end(); ++it, ++i)
+    {
+        if(i == index)
+        {
+            c->SetStateText(UIControl::STATE_NORMAL, StringToWString(*it));
+            break;
+        }
+    }
+    
 
     return c;
 }
@@ -53,7 +63,7 @@ int32 ErrorDialog::CellHeight(UIList * list, int32 index)
     return ControlsFactory::ERROR_MESSAGE_HEIGHT;
 }
 
-void ErrorDialog::Show(const Vector<String> &newErrorMessages)
+void ErrorDialog::Show(const Set<String> &newErrorMessages)
 {
     if(!GetParent())
     {
@@ -61,6 +71,8 @@ void ErrorDialog::Show(const Vector<String> &newErrorMessages)
         errorList->Refresh();
         
         Rect r = DialogRect();
+        draggableDialog->SetRect(r);
+        
         Vector2 pos = closeButton->GetPosition();
         pos.y = r.dy - ControlsFactory::BUTTON_HEIGHT;
         closeButton->SetPosition(pos);
@@ -80,7 +92,6 @@ const Rect ErrorDialog::DialogRect()
         baseRect.dy = height + ControlsFactory::BUTTON_HEIGHT;
         baseRect.y = (GetRect().dy - baseRect.dy) / 2;
     }
-    
     
     return baseRect;
 }

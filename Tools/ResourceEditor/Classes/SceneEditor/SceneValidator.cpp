@@ -18,17 +18,13 @@ void SceneValidator::ValidateScene(Scene *scene)
 
     errorMessages.clear();
 
-    int32 materialCount = scene->GetMaterialCount();
-    for(int32 iMat = 0; iMat < materialCount; ++iMat)
-    {
-        Material *m = scene->GetMaterial(iMat);
-        for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
-        {
-            ValidateTexture(m->textures[iTex], false);
-        }
-    }
+//    int32 materialCount = scene->GetMaterialCount();
+//    for(int32 iMat = 0; iMat < materialCount; ++iMat)
+//    {
+//        ValidateMaterialInternal(scene->GetMaterial(iMat));
+//    }
     
-    ValidateSceneNode(scene, false);
+    ValidateSceneNodeInternal(scene);
     
     if(errorMessages.size())
     {
@@ -38,10 +34,17 @@ void SceneValidator::ValidateScene(Scene *scene)
 
 void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
 {
-    ValidateSceneNode(sceneNode, true);
+    errorMessages.clear();
+
+    ValidateSceneNodeInternal(sceneNode);
+    
+    if(errorMessages.size())
+    {
+        ShowErrors();
+    }
 }
 
-void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode, bool singleMessage)
+void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
 {
     if(!sceneNode) return;
     
@@ -49,64 +52,68 @@ void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode, bool singleMe
     for(int32 i = 0; i < count; ++i)
     {
         SceneNode *node = sceneNode->GetChild(i);
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*>(node);
-        if (landscape) 
+        MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode*>(node);
+        if(mesh)
         {
-            ValidateLandscape(landscape, false);
+            ValidateMeshInstanceInternal(mesh);
         }
-        
-        ValidateSceneNode(node, false);
+        else 
+        {
+            LandscapeNode *landscape = dynamic_cast<LandscapeNode*>(node);
+            if (landscape) 
+            {
+                ValidateLandscapeInternal(landscape);
+            }
+            else
+            {
+                ValidateSceneNodeInternal(node);
+            }
+        }
     }
 }
 
 void SceneValidator::ValidateTexture(Texture *texture)
 {
-    ValidateTexture(texture, true);
+    errorMessages.clear();
+
+    ValidateTextureInternal(texture);
+
+    if(errorMessages.size())
+    {
+        ShowErrors();
+    }
 }
 
-void SceneValidator::ValidateTexture(Texture *texture, bool singleMessage)
+void SceneValidator::ValidateTextureInternal(Texture *texture)
 {
     if(!texture) return;
     
-    if(singleMessage)
-    {
-        errorMessages.clear();
-    }
-
     if(IsntPower2(texture->GetWidth()) || IsntPower2(texture->GetHeight()))
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
-        errorMessages.push_back("Wrongsize of " + path);
-    }
-    
-    if(singleMessage && errorMessages.size())
-    {
-        ShowErrors();
+        errorMessages.insert("Wrongsize of " + path);
     }
 }
 
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape)
 {
-    ValidateLandscape(landscape, true);
+    errorMessages.clear();
+    
+    ValidateLandscapeInternal(landscape);
+    
+    if(errorMessages.size())
+    {
+        ShowErrors();
+    }
 }
 
-void SceneValidator::ValidateLandscape(LandscapeNode *landscape, bool singleMessage)
+void SceneValidator::ValidateLandscapeInternal(LandscapeNode *landscape)
 {
     if(!landscape) return;
     
-    if(singleMessage)
-    {
-        errorMessages.clear();
-    }
-
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
-        ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), false);
-    }
-    
-    if(singleMessage && errorMessages.size())
-    {
-        ShowErrors();
+        ValidateTextureInternal(landscape->GetTexture((LandscapeNode::eTextureLevel)i));
     }
 }
 
@@ -123,3 +130,34 @@ void SceneValidator::ShowErrors()
     }
     errorDialog->Show(errorMessages);
 }
+
+void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)
+{
+    Vector<Material *>materials = meshNode->GetMaterials();
+    for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+    {
+        ValidateMaterialInternal(materials[iMat]);
+    }
+}
+
+
+void SceneValidator::ValidateMaterial(DAVA::Material *material)
+{
+    errorMessages.clear();
+
+    ValidateMaterialInternal(material);
+
+    if(errorMessages.size())
+    {
+        ShowErrors();
+    }
+}
+
+void SceneValidator::ValidateMaterialInternal(DAVA::Material *material)
+{
+    for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
+    {
+        ValidateTextureInternal(material->textures[iTex]);
+    }
+}
+
