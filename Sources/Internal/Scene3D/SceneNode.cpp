@@ -48,7 +48,6 @@ REGISTER_CLASS(SceneNode);
 SceneNode::SceneNode(Scene * _scene)
 	: scene(_scene)
 	, parent(0)
-    , visible(true)
     , inUpdate(false)
     , tag(0)
 {
@@ -57,7 +56,7 @@ SceneNode::SceneNode(Scene * _scene)
     defaultLocalTransform.Identity();
 	//animation = 0;
     debugFlags = DEBUG_DRAW_NONE;
-    flags = 0;
+    flags = NODE_VISIBLE | NODE_UPDATABLE;
 	userData = 0;
     
     customProperties = new KeyedArchive();
@@ -239,6 +238,8 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
     
 void SceneNode::Update(float32 timeElapsed)
 {
+    if (!(flags & NODE_UPDATABLE))return;
+
     inUpdate = true;
 	// TODO - move node update to render because any of objects can change params of other objects
 	if (nodeAnimations.size() != 0)
@@ -332,7 +333,7 @@ void SceneNode::Update(float32 timeElapsed)
 
 void SceneNode::Draw()
 {
-	if (!visible)return;
+	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE))return;
 
 	//uint32 size = (uint32)children.size();
     const Vector<SceneNode*>::iterator & itEnd = children.end();
@@ -360,6 +361,13 @@ void SceneNode::Draw()
 }
 
     
+void SceneNode::SceneDidLoaded()
+{
+    const Vector<SceneNode*>::const_iterator & itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+		(*it)->SceneDidLoaded();
+}
+
 Matrix4 SceneNode::AccamulateLocalTransform(SceneNode *fromParent)
 {
     if (fromParent == this) 
@@ -376,7 +384,6 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     {
         dstNode = new SceneNode(scene);
     }
-    dstNode->visible = visible;
     dstNode->defaultLocalTransform = defaultLocalTransform;
     
     dstNode->localTransform = localTransform;
@@ -384,6 +391,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->name = name;
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
+    dstNode->flags = flags;
     const Map<String, VariantType> &customMap = customProperties->GetArchieveData();
     for (Map<String, VariantType>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
     {
@@ -530,6 +538,7 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform, defaultLocalTransform);
 
     flags = archive->GetUInt32("flags", 0);
+    flags |= NODE_UPDATABLE;
     InvalidateLocalTransform();
     debugFlags = archive->GetUInt32("debugFlags", 0);
     
