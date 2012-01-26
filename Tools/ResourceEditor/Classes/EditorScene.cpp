@@ -261,8 +261,7 @@ void EditorScene::Draw()
     
     RenderManager::Instance()->ClearStats();
 	Scene::Draw();
-    RenderManager::Stats renderStats = RenderManager::Instance()->GetStats();
-    SceneValidator::Instance()->CollectSceneStats(renderStats);
+    SceneValidator::Instance()->CollectSceneStats(RenderManager::Instance()->GetStats());
     
 	DrawGrid();
 }
