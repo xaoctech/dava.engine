@@ -9,7 +9,7 @@
 
 #include "EditorScene.h"
 #include "SceneNodeUserData.h"
-#include "SceneValidator.h"
+#include "SceneEditor/SceneValidator.h"
 
 
 /*
