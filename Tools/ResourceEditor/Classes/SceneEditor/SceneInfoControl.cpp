@@ -1,6 +1,9 @@
 #include "SceneInfoControl.h"
 #include "ControlsFactory.h"
 #include "PropertyList.h"
+#include "EditorSettings.h"
+#include "SceneValidator.h"
+
 
 SceneInfoControl::SceneInfoControl(const Rect &rect)
     :   UIControl(rect)
@@ -22,6 +25,8 @@ SceneInfoControl::~SceneInfoControl()
 
 void SceneInfoControl::WillAppear()
 {
+    SceneValidator::Instance()->SetInfoControl(this);
+    
     UpdateInfo(NULL, NULL, NULL);
 }
 
@@ -29,21 +34,10 @@ void SceneInfoControl::UpdateInfo(BaseObject * owner, void * userData, void * ca
 {
     if(workingScene)
     {
-        SetIntInfoValue("Text.Count", Texture::TexturesCount());
-        SetIntInfoValue("Text.Memory", Texture::AllocatedMemorySize());
-
-        SetFloatInfoValue("Float Example", 1.3f);
-        
-        //Set cells background
-        List<UIControl*> cells = sceneInfo->GetVisibleCells();
-        for(List<UIControl*>::iterator it = cells.begin(); it != cells.end(); ++it)
-        {
-            UIControl *cell = (*it);
-            ControlsFactory::CusomizeTransparentControl(cell, 0.1f);
-        }
+        InvalidateRenderStats();
     }
     
-    Animation * anim = WaitAnimation(10.f); //every 10 seconds
+    Animation * anim = WaitAnimation(2.f); //every 2 seconds
     anim->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SceneInfoControl::UpdateInfo));
 }
 
@@ -71,4 +65,50 @@ void SceneInfoControl::SetFloatInfoValue(const String &key, float32 newValue)
 void SceneInfoControl::SetWorkingScene(Scene *scene)
 {
     workingScene = scene;
+    renderStats.Clear();
+}
+
+void SceneInfoControl::InvalidateTexturesInfo(int32 count, int32 size)
+{
+    SetIntInfoValue("Text.Count", count);
+    SetIntInfoValue("Text.Memory", size);
+
+    if(workingScene)
+    {
+        SetIntInfoValue("Mat.Count", workingScene->GetMaterialCount());
+    }
+    
+    RedrawCells();
+}
+
+void SceneInfoControl::SetRenderStats(const RenderManager::Stats & newRenderStats)
+{
+    renderStats = newRenderStats;
+}
+
+void SceneInfoControl::InvalidateRenderStats()
+{
+    SetIntInfoValue("ArraysCalls", renderStats.drawArraysCalls);
+    SetIntInfoValue("ElementsCalls", renderStats.drawElementsCalls);
+
+    SetIntInfoValue("PointsList", renderStats.primitiveCount[PRIMITIVETYPE_POINTLIST]);
+    SetIntInfoValue("LineList", renderStats.primitiveCount[PRIMITIVETYPE_LINELIST]);
+    SetIntInfoValue("LineStrip", renderStats.primitiveCount[PRIMITIVETYPE_LINESTRIP]);
+    SetIntInfoValue("TriangleList", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLELIST]);
+    SetIntInfoValue("TriangleStrip", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLESTRIP]);
+    SetIntInfoValue("TriangleFan", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLEFAN]);
+    
+    RedrawCells();
+}
+
+
+void SceneInfoControl::RedrawCells()
+{
+    //Set cells background
+    List<UIControl*> cells = sceneInfo->GetVisibleCells();
+    for(List<UIControl*>::iterator it = cells.begin(); it != cells.end(); ++it)
+    {
+        UIControl *cell = (*it);
+        ControlsFactory::CusomizeTransparentControl(cell, 0.1f);
+    }
 }

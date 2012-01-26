@@ -9,6 +9,8 @@
 
 #include "EditorScene.h"
 #include "SceneNodeUserData.h"
+#include "SceneValidator.h"
+
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -256,7 +258,12 @@ void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 void EditorScene::Draw()
 {
 //	DrawDebugNodes(this);
+    
+    RenderManager::Instance()->ClearStats();
 	Scene::Draw();
+    RenderManager::Stats renderStats = RenderManager::Instance()->GetStats();
+    SceneValidator::Instance()->CollectSceneStats(renderStats);
+    
 	DrawGrid();
 }
 
