@@ -9,6 +9,8 @@
 
 #include "MaterialEditor.h"
 #include "ControlsFactory.h"
+#include "SceneValidator.h"
+
 static const float32 materialListPart = 0.33;
 static const float32 previewHeightPart = 0.5;
 
@@ -329,6 +331,8 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
             {
                 mat->textures[textureTypes[i]] = tx;
                 mat->names[textureTypes[i]] = newValue;
+                
+                SceneValidator::Instance()->ValidateTexture(tx);
             }
             else 
             {

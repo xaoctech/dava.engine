@@ -30,6 +30,8 @@
 		5C87C49914C34A3500E2C63B /* PaintAreaControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
+		5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */; };
+		5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */; };
 		5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD509BB14C6CB250089067E /* SettingsDialog.cpp */; };
 		5CD6295F14BB1ABF00795FCA /* CreatePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */; };
 		5CE1674F14C4CF9500D2F1D4 /* BoxPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */; };
@@ -345,6 +347,10 @@
 		5CA721A814B73A64000D2851 /* NodesPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodesPropertyControl.h; sourceTree = "<group>"; };
 		5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateNodesDialog.cpp; sourceTree = "<group>"; };
 		5CA721D514B760D9000D2851 /* CreateNodesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNodesDialog.h; sourceTree = "<group>"; };
+		5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneValidator.cpp; sourceTree = "<group>"; };
+		5CD1A27114D0ACE9005E76B5 /* SceneValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneValidator.h; sourceTree = "<group>"; };
+		5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ErrorDialog.cpp; sourceTree = "<group>"; };
+		5CD1A27414D0AEE8005E76B5 /* ErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorDialog.h; sourceTree = "<group>"; };
 		5CD509BB14C6CB250089067E /* SettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsDialog.cpp; sourceTree = "<group>"; };
 		5CD509BC14C6CB250089067E /* SettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsDialog.h; sourceTree = "<group>"; };
 		5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreatePropertyControl.cpp; sourceTree = "<group>"; };
@@ -1013,8 +1019,14 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
-				5C81C29D14D0480700580500 /* PVRConverter.cpp */,
-				5C81C29E14D0480700580500 /* PVRConverter.h */,
+				5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */,
+				5CD1A27414D0AEE8005E76B5 /* ErrorDialog.h */,
+				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
+				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
+				47809C6F14A4037E00BAA259 /* DraggableDialog.h */,
+				47809C7014A4037E00BAA259 /* DraggableDialog.cpp */,
+				5C439EB5149ABEA900326566 /* ControlsFactory.cpp */,
+				5C439EB6149ABEA900326566 /* ControlsFactory.h */,
 				5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */,
 				5CE81F3914CEBA0A0066C7E1 /* ExtendedDialog.h */,
 				5CE32BA114CD8B06003B3FD3 /* ColorPicker.cpp */,
@@ -1038,6 +1050,19 @@
 				5C25BB82149D384B00776F0C /* ScenePreviewControl.h */,
 			);
 			name = MainScreen;
+			sourceTree = "<group>";
+		};
+		5CD1A26F14D0ACC6005E76B5 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */,
+				5CD1A27114D0ACE9005E76B5 /* SceneValidator.h */,
+				FED66BDB14C0416400A39A03 /* EditorSettings.cpp */,
+				FED66BDC14C0416400A39A03 /* EditorSettings.h */,
+				5C81C29D14D0480700580500 /* PVRConverter.cpp */,
+				5C81C29E14D0480700580500 /* PVRConverter.h */,
+			);
+			name = Utils;
 			sourceTree = "<group>";
 		};
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
@@ -1701,18 +1726,13 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
-				FED66BDB14C0416400A39A03 /* EditorSettings.cpp */,
-				FED66BDC14C0416400A39A03 /* EditorSettings.h */,
-				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
-				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
+				5CD1A26F14D0ACC6005E76B5 /* Utils */,
 				5C0E984114BC936F008188FE /* MainScreen */,
 				5C0E984014BC931C008188FE /* Properties */,
 				5C0E983F14BC92FD008188FE /* LandscapeEditor */,
 				5C07AA5F14A8DDA600802097 /* OutputPanel */,
 				5CFC480514A35DF2009A0C9F /* CreateNode */,
 				4780999714A2463900BAA259 /* MaterialEditor */,
-				5C439EB5149ABEA900326566 /* ControlsFactory.cpp */,
-				5C439EB6149ABEA900326566 /* ControlsFactory.h */,
 				D979C7AA149A31EC00FA98C0 /* DebugNode.h */,
 				D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */,
 				D979C679149A138300FA98C0 /* BulletObject.h */,
@@ -1723,8 +1743,6 @@
 				D92D797C1498BC5D002F58FB /* EditorScene.h */,
 				FE1B7D5013DF052300BA032C /* CameraController.cpp */,
 				FE1B7D4F13DF04B600BA032C /* CameraController.h */,
-				47809C6F14A4037E00BAA259 /* DraggableDialog.h */,
-				47809C7014A4037E00BAA259 /* DraggableDialog.cpp */,
 			);
 			name = SceneEditor;
 			path = Classes/SceneEditor;
@@ -2159,6 +2177,8 @@
 				5CE32BA314CD8B06003B3FD3 /* ColorPicker.cpp in Sources */,
 				5CE81F3A14CEBA0A0066C7E1 /* ExtendedDialog.cpp in Sources */,
 				5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */,
+				5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */,
+				5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

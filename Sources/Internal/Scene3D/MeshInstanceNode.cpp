@@ -542,6 +542,11 @@ Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
 	}
 }
 
+int32 MeshInstanceNode::GetLightmapCount()
+{
+    return lightmaps.size();
+}
+    
 void MeshInstanceNode::CreateDynamicShadowNode()
 {
 	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();

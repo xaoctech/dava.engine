@@ -15,15 +15,22 @@ public:
 	virtual void WillAppear();
     void SetWorkingScene(Scene *scene);
 
+    void InvalidateTexturesInfo(int32 count, int32 size);
+    void SetRenderStats(const RenderManager::Stats & newRenderStats);
+    
 protected:
 
+    void InvalidateRenderStats();
     void SetIntInfoValue(const String &key, int32 newValue);
     void SetFloatInfoValue(const String &key, float32 newValue);
     
     void UpdateInfo(BaseObject * owner, void * userData, void * callerData);
+    void RedrawCells();
     
     PropertyList *sceneInfo;
     Scene *workingScene;
+    
+    RenderManager::Stats renderStats;
 };
 
 
