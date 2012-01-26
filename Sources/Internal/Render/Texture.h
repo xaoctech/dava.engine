@@ -157,8 +157,6 @@ public:
 	virtual int32 Release();
 
 	static void	DumpTextures();
-	static int32 AllocatedMemorySize();
-	static int32 TexturesCount();
 
 	inline int32 GetWidth() { return width; }
 	inline int32 GetHeight() { return height; }
@@ -222,10 +220,13 @@ public:							// properties for fast access
 	bool		isRenderTarget;
 
 	void SetDebugInfo(const String & _debugInfo);
-	
-	//TODO: move to private
-	static Map<String, Texture*> textureMap;	
+
+	static const Map<String, Texture*> & GetTextureMap();
+    
+    int32 GetDataSize();
+    
 private:
+	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
 	static Texture * CreateFromPNG(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
 	static Texture * CreateFromPVR(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
