@@ -114,6 +114,8 @@ public:
 	inline SceneNode * GetParent();
 	inline void SetUpdatable(bool isUpdatable);
 	inline bool GetUpdatable(void);
+	inline bool IsLodPart(void);
+    virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
 	
 	// extract data from current node to use it in animations
 	void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & resultKey);
@@ -150,8 +152,14 @@ public:
         NODE_WORLD_MATRIX_ACTUAL = 1, // if this flag set this means we do not need to rebuild worldMatrix
         NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
         NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
+        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
     };
 	
+    inline void AddFlag(int32 flagToAdd);
+    inline void RemoveFlag(int32 flagToRemove);
+    void AddFlagRecursive(int32 flagToAdd);
+    void RemoveFlagRecursive(int32 flagToRemove);
+    
 	// animations 
 	void ExecuteAnimation(SceneNodeAnimation * animation);	
 	void DetachAnimation(SceneNodeAnimation * animation);
@@ -272,11 +280,11 @@ inline void SceneNode::SetVisible(bool isVisible)
 {
     if (isVisible) 
     {
-        flags |= NODE_VISIBLE;
+        AddFlag(NODE_VISIBLE);
     }
     else 
     {
-        flags &= ~NODE_VISIBLE;
+        RemoveFlag(NODE_VISIBLE);
     }
 }
 	
@@ -289,17 +297,33 @@ inline void SceneNode::SetUpdatable(bool isUpdatable)
 {
     if (isUpdatable) 
     {
-        flags |= NODE_UPDATABLE;
+        AddFlag(NODE_UPDATABLE);
     }
     else 
     {
-        flags &= ~NODE_UPDATABLE;
+        RemoveFlag(NODE_UPDATABLE);
     }
 }
     
 inline bool SceneNode::GetUpdatable(void)
 {
 	return (flags & NODE_UPDATABLE) != 0;
+}
+    
+inline bool SceneNode::IsLodPart(void)
+{
+	return (flags & NODE_IS_LOD_PART) != 0;
+}
+
+
+inline void SceneNode::AddFlag(int32 flagToAdd)
+{
+    flags |= flagToAdd;
+}
+    
+inline void SceneNode::RemoveFlag(int32 flagToRemove)
+{
+    flags &= ~flagToRemove;
 }
 
 inline SceneNode * SceneNode::GetParent()
