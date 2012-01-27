@@ -33,11 +33,6 @@
 namespace DAVA
 {
 
-
-EdgeAdjacency::Adjacency::Adjacency()
-{
-}
-
 bool EdgeAdjacency::Edge::IsEqual(const Edge & otherEdge)
 {
 	if(IsPointsEqual(points[0], otherEdge.points[0]) && IsPointsEqual(points[1], otherEdge.points[1]))
@@ -68,15 +63,13 @@ bool EdgeAdjacency::Edge::IsPointsEqual(const Vector3 & p0, const Vector3 & p1)
 
 void EdgeAdjacency::InitFromPolygonGroup(PolygonGroup * _polygonGroup)
 {
+	polygonGroup = _polygonGroup;
+
 	ePrimitiveType primitiveType = polygonGroup->GetPrimitiveType();
 	DVASSERT(PRIMITIVETYPE_TRIANGLELIST == primitiveType);
 
-	polygonGroup = _polygonGroup;
-
-
 	int32 indexCount = polygonGroup->GetIndexCount();
-	int32 trianglesCount = indexCount/3;
-	for(int32 i = 0; i < trianglesCount; ++i)
+	for(int32 i = 0; i < indexCount; i += 3)
 	{
 		CreateTriangle(i);
 	}
@@ -103,7 +96,13 @@ void EdgeAdjacency::CreateTriangle(int32 startingVertex)
 	triangle.edgeIndices[1] = edgeIndex1;
 	triangle.edgeIndices[2] = edgeIndex2;
 
+	int32 triangleIndex = triangles.size();
 	triangles.push_back(triangle);
+
+	
+	edges[edgeIndex0].sharedTriangles.push_back(triangleIndex);
+	edges[edgeIndex1].sharedTriangles.push_back(triangleIndex);
+	edges[edgeIndex2].sharedTriangles.push_back(triangleIndex);
 }
 
 void EdgeAdjacency::FillEdge(Edge & edge, int32 point0, int32 point1)
@@ -134,6 +133,27 @@ int32 EdgeAdjacency::GetEdgeIndex(Edge & edge)
 	edges.push_back(edge);
 
 	return edgesCount;
+}
+
+const Vector<EdgeAdjacency::Edge> & EdgeAdjacency::GetEdges()
+{
+	return edges;
+}
+
+int32 EdgeAdjacency::GetEdgesWithTwoTrianglesCount()
+{
+	int32 ret = 0;
+
+	int32 size = edges.size();
+	for(int32 i = 0; i < size; ++i)
+	{
+		if(edges[i].sharedTriangles.size() == 2)
+		{
+			ret++;
+		}
+	}
+
+	return ret;
 }
 
 };
