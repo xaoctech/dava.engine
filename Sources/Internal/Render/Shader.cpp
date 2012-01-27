@@ -250,7 +250,7 @@ bool Shader::Recompile()
         attributeNames[k] = attributeName;
         
         int32 flagIndex = GetAttributeIndexByName(attributeName);
-        vertexFormatAttribIndeces[flagIndex] = k;
+        vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
         Logger::Debug("shader attr: %s size: %d type: %s flagIndex: %d", attributeName, size, VertexTypeStringFromEnum(type).c_str(), flagIndex);
         //if (vertexFormatAttribIndeces[k] != -1)
         //    Logger::Debug("shader attr matched: 0x%08x", (1 << flagIndex));

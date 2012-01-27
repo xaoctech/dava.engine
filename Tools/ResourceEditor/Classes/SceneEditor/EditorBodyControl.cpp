@@ -9,6 +9,7 @@
 #include "../config.h"
 
 #include "SceneInfoControl.h"
+#include "SceneValidator.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -1262,6 +1263,7 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
 
             sceneGraphTree->Refresh();
         }
+        SceneValidator::Instance()->EnumerateSceneTextures();
     }
 }
 
@@ -1287,12 +1289,15 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile);
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
+            
             mainFilePath = pathToFile;
             scene->AddNode(rootNode);
         }
         else
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
             
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
@@ -1314,6 +1319,8 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
+
             mainFilePath = pathToFile;
             for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
             {   
@@ -1324,6 +1331,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         else
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
+            SceneValidator::Instance()->ValidateSceneNode(rootNode);
 
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
@@ -1338,6 +1346,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     }
     sceneGraphTree->Refresh();
     RefreshDataGraph();
+    SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
 void EditorBodyControl::ReloadRootScene(const String &pathToFile)

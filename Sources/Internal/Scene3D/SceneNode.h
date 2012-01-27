@@ -113,6 +113,10 @@ public:
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible(void);
 	inline SceneNode * GetParent();
+	inline void SetUpdatable(bool isUpdatable);
+	inline bool GetUpdatable(void);
+	inline bool IsLodPart(void);
+    virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
 	
 	// extract data from current node to use it in animations
 	void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & resultKey);
@@ -133,6 +137,7 @@ public:
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
     inline void SetLocalTransform(const Matrix4 & newMatrix);
+    inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
     
@@ -145,9 +150,17 @@ public:
     {
         // NODE_STATIC = 0x1,  // this flag means that node is always static and we do not need to update it's worldTransform
         // NODE_DYNAMIC = 0x2, // node automatically become dynamic when we update it's local matrix
-        NODE_WORLD_MATRIX_ACTUAL = 0x4, // if this flag set this means we do not need to rebuild worldMatrix
+        NODE_WORLD_MATRIX_ACTUAL = 1, // if this flag set this means we do not need to rebuild worldMatrix
+        NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
+        NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
+        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
     };
 	
+    inline void AddFlag(int32 flagToAdd);
+    inline void RemoveFlag(int32 flagToRemove);
+    void AddFlagRecursive(int32 flagToAdd);
+    void RemoveFlagRecursive(int32 flagToRemove);
+    
 	// animations 
 	void ExecuteAnimation(SceneNodeAnimation * animation);	
 	void DetachAnimation(SceneNodeAnimation * animation);
@@ -245,6 +258,7 @@ public:
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
     
+    virtual void SceneDidLoaded();
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
@@ -257,7 +271,6 @@ protected:
 	SceneNode * parent;
 	std::vector<SceneNode*> children;
 	std::deque<SceneNode*> removedCache;
-	bool visible;
     bool inUpdate;
 
 	String	name;
@@ -278,14 +291,54 @@ private:
 
 inline void SceneNode::SetVisible(bool isVisible)
 {
-	visible = isVisible;
+    if (isVisible) 
+    {
+        AddFlag(NODE_VISIBLE);
+    }
+    else 
+    {
+        RemoveFlag(NODE_VISIBLE);
+    }
 }
 	
 inline bool SceneNode::GetVisible(void)
 {
-	return visible;
+	return (flags & NODE_VISIBLE) != 0;
 }
 	
+inline void SceneNode::SetUpdatable(bool isUpdatable)
+{
+    if (isUpdatable) 
+    {
+        AddFlag(NODE_UPDATABLE);
+    }
+    else 
+    {
+        RemoveFlag(NODE_UPDATABLE);
+    }
+}
+    
+inline bool SceneNode::GetUpdatable(void)
+{
+	return (flags & NODE_UPDATABLE) != 0;
+}
+    
+inline bool SceneNode::IsLodPart(void)
+{
+	return (flags & NODE_IS_LOD_PART) != 0;
+}
+
+
+inline void SceneNode::AddFlag(int32 flagToAdd)
+{
+    flags |= flagToAdd;
+}
+    
+inline void SceneNode::RemoveFlag(int32 flagToRemove)
+{
+    flags &= ~flagToRemove;
+}
+
 inline SceneNode * SceneNode::GetParent()
 {
 	return parent;
@@ -327,7 +380,12 @@ inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
     localTransform = newMatrix;
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
 }
-    
+
+inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
+{
+    worldTransform = newMatrix;
+}
+
 inline void SceneNode::InvalidateLocalTransform()
 {
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
