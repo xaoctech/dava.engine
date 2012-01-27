@@ -80,9 +80,9 @@ public:
 	
 	void		ClearScene();
     
-    DataNode * GetMaterials();
-	Material * GetMaterial(int32 index);
-	int32	GetMaterialCount();
+//  DataNode * GetMaterials();
+//	Material * GetMaterial(int32 index);
+//	int32	GetMaterialCount();
 	
     DataNode * GetStaticMeshes();
 	StaticMesh * GetStaticMesh(int32 index);
@@ -180,7 +180,6 @@ public:
     //void Load(KeyedArchive * archive);
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
-
     
 private:	
     DataNode * materials;

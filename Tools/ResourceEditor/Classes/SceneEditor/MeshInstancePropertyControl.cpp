@@ -38,12 +38,13 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
     materials.clear();
     materialNames.clear();
     
-    int32 matCount = workingScene->GetMaterialCount();
-    for(int32 i = 0; i < matCount; ++i)
+    //Vector<Material*> materials;
+    workingScene->GetDataNodes(materials);
+    int32 matCount = (int32)materials.size();
+    for(int32 i = 0; i < materials.size(); ++i)
     {
-        Material *mat = workingScene->GetMaterial(i);
+        Material *mat = materials[i];
         materialNames.push_back(mat->GetName());
-        materials.push_back(mat);
     }
     
     
