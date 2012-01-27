@@ -27,8 +27,8 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_MESH_INSTANCE_H__
-#define __DAVAENGINE_MESH_INSTANCE_H__
+#ifndef __DAVAENGINE_LOD_NODE_H__
+#define __DAVAENGINE_LOD_NODE_H__
 
 #include "Scene3D/SceneNode.h"
 
@@ -40,51 +40,36 @@ class Material;
 class Texture;
 class SceneFileV2;
     
-class MeshInstanceNode : public SceneNode
+class LodNode : public SceneNode
 {
 public:	
-	MeshInstanceNode(Scene * _scene = 0);
-	~MeshInstanceNode();
+    
+    struct LodData
+    {
+        LodData()
+        :layer(-1)
+        ,isDummy(false)
+        {
+        }
+        Vector<SceneNode*> nodes;
+        Vector<int32> indexes;
+        int layer;
+        bool isDummy;
+    };
+    
+	LodNode(Scene * _scene = 0);
+	~LodNode();
 	
-	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
-    void AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
-    void AddDummyLODLayer(int32 layer);
-
+    
+    virtual void	AddNodeInLayer(SceneNode * node, int32 layer);//adds new node and registers this node as a LOD layer
+    virtual void	RegisterNodeInLayer(SceneNode * node, int32 layer);//register existing node as a layer
+	virtual void	RemoveNode(SceneNode * node);
+	virtual void	RemoveAllChildren();
+    
     virtual void Update(float32 timeElapsed);
-	virtual void Draw();
-	
-	inline void SetVisible(bool isVisible);
-	inline bool GetVisible();
-	
-	inline AABBox3 & GetBoundingBox();
-	
-	Vector<StaticMesh*> & GetMeshes()
-	{
-		return lodLayers.begin()->meshes;
-	}
-
-	Vector<int32> & GetPolygonGroupIndexes()
-	{
-		return lodLayers.begin()->polygonGroupIndexes;
-	}
-
-    Vector<Material*> & GetMaterials()
-	{
-		return lodLayers.begin()->materials;
-	}
-        
-//	Vector<StaticMesh*> & GetMeshes(int32 lodLayer)
-//	{
-//		return lodLayers.begin()->meshes;
-//	}
+    void SimpleUpdate(float32 timeElapsed);
 	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-//    virtual SceneNode* Clone();
-    
-    //Returns maximum Bounding Box as WorlTransformedBox
-    virtual AABBox3 GetWTMaximumBoundingBox();
-
-	
     /**
         \brief virtual function to save node to KeyedArchive
      */
@@ -94,77 +79,30 @@ public:
         \brief virtual function to load node to KeyedArchive
      */
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
-
-	/**
-	 \brief Add lightmap texture.
-	 Consequent calls of this function will add lightmaps to consequent PolygonGroups of this MeshInstance.
-	 Normal usage (pseudocode):
-	 \code
-		ClearLightmaps();
-		for(each polygon group)
-		{
-			AddLightmap(...);
-		}
-	 \endcode
-
-	 \param[in] lightmapName path to texture
-	 */
-	void AddLightmap(const String & lightmapName);
-
-	/**
-	 \brief Delete all lightmaps for this MeshInstance. 
-	 */
-	void ClearLightmaps();
     
-	/**
-	 \brief Replace material for polygon group. 
-	 */
-    void ReplaceMaterial(Material *material, int32 index);
+    void SetCurrentLod(LodData *newLod);
 
-	void CreateDynamicShadowNode();
-	void DeleteDynamicShadowNode();
+    virtual void SceneDidLoaded();
     
-    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+    virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
 
 
-    Texture * GetLightmapForIndex(int32 index);
-    int32 GetLightmapCount();
-    
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
-    struct LodData
-    {
-        Vector<StaticMesh*> meshes;
-        Vector<int32> polygonGroupIndexes;
-        Vector<Material*> materials;
-        int layer;
-    };
+    virtual void	RegisterIndexInLayer(int32 nodeIndex, int32 layer);
+    virtual LodData	*CreateNewLayer(int32 layer);
+
+    void RecheckLod();
     
     LodData *currentLod;
     List<LodData> lodLayers;
     
     
-	AABBox3 bbox;
-    AABBox3 transformedBox;
-    
-    bool lodPresents;
     int lastLodUpdateFrame;
-
-	struct LightmapData
-	{
-		Texture * lightmap;
-		String lightmapName;
-	};
-	Vector<LightmapData> lightmaps;
 
 };
 	
-inline AABBox3 & MeshInstanceNode::GetBoundingBox()
-{
-	return bbox;
-}
-
 };
 
 #endif // __DAVAENGINE_MESH_INSTANCE_H__

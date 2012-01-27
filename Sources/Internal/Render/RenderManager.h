@@ -133,6 +133,7 @@ public:
 	const RenderManager::Caps & GetCaps();
     
     const RenderManager::Stats & GetStats();
+    void ClearStats();
     void EnableOutputDebugStatsEveryNFrame(int32 frameToShowDebugStats);
     void ProcessStats();
     

@@ -69,7 +69,7 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	int32 uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
 	if (uniformLightPosition0 != -1)
 	{
-		Vector3 lightPosition0(100.f, 100.0f, 100.0f);
+		Vector3 lightPosition0(100.f, 100.f, 100.0f);
 		const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
 		lightPosition0 = lightPosition0 * matrix;
 

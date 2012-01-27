@@ -17,6 +17,8 @@
 		4780A32C14B5F4EB00BAA259 /* InputSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A32814B5F4EB00BAA259 /* InputSystem.h */; };
 		4780A32D14B5F4EB00BAA259 /* KeyboardDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780A32914B5F4EB00BAA259 /* KeyboardDevice.cpp */; };
 		4780A32E14B5F4EB00BAA259 /* KeyboardDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780A32A14B5F4EB00BAA259 /* KeyboardDevice.h */; };
+		47C138AE14D05BBA00525771 /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C138AC14D05BBA00525771 /* LodNode.h */; };
+		47C138AF14D05BBA00525771 /* LodNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C138AD14D05BBA00525771 /* LodNode.cpp */; };
 		47DF9D3012F753590034D79F /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9D2E12F753590034D79F /* Box2DGameObject.h */; };
 		47DF9D3112F753590034D79F /* Box2DGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47DF9D2F12F753590034D79F /* Box2DGameObject.cpp */; };
 		47DF9D8B12F76BB90034D79F /* Box2DHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9D8912F76BB90034D79F /* Box2DHelper.h */; };
@@ -491,6 +493,8 @@
 		4780A32814B5F4EB00BAA259 /* InputSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputSystem.h; sourceTree = "<group>"; };
 		4780A32914B5F4EB00BAA259 /* KeyboardDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardDevice.cpp; sourceTree = "<group>"; };
 		4780A32A14B5F4EB00BAA259 /* KeyboardDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardDevice.h; sourceTree = "<group>"; };
+		47C138AC14D05BBA00525771 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
+		47C138AD14D05BBA00525771 /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
 		47DF9D2E12F753590034D79F /* Box2DGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DGameObject.h; sourceTree = "<group>"; };
 		47DF9D2F12F753590034D79F /* Box2DGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DGameObject.cpp; sourceTree = "<group>"; };
 		47DF9D8912F76BB90034D79F /* Box2DHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DHelper.h; sourceTree = "<group>"; };
@@ -1533,6 +1537,8 @@
 				FE4A005313EBDC24006E924D /* LandscapeNode.h */,
 				FE707B1B147588B60082008F /* BillboardNode.cpp */,
 				FE707B1C147588B60082008F /* BillboardNode.h */,
+				47C138AC14D05BBA00525771 /* LodNode.h */,
+				47C138AD14D05BBA00525771 /* LodNode.cpp */,
 			);
 			path = Scene3D;
 			sourceTree = "<group>";
@@ -1907,6 +1913,7 @@
 				FE08B5E914B2444B00912C99 /* ProxyNode.h in Headers */,
 				FED66C0414C46E8000A39A03 /* SceneManager.h in Headers */,
 				5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */,
+				47C138AE14D05BBA00525771 /* LodNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2189,6 +2196,7 @@
 				FE08B5E814B2444B00912C99 /* ProxyNode.cpp in Sources */,
 				FED66C0314C46E8000A39A03 /* SceneManager.cpp in Sources */,
 				5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */,
+				47C138AF14D05BBA00525771 /* LodNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

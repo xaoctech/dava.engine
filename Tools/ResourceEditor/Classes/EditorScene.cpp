@@ -9,6 +9,8 @@
 
 #include "EditorScene.h"
 #include "SceneNodeUserData.h"
+#include "SceneEditor/SceneValidator.h"
+#include "Scene3D/LodNode.h"
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -58,7 +60,7 @@ void EditorScene::CheckNodes(SceneNode * curr)
 {
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
 	
-	if (mesh && mesh->GetUserData() == 0)
+	if (mesh && mesh->GetUserData() == 0 && mesh->IsLodMain(0))
 	{
 		SceneNodeUserData * data = new SceneNodeUserData();
 		curr->SetUserData(data);
@@ -104,6 +106,24 @@ SceneNode * GetSolidParent(SceneNode* curr)
 		return GetSolidParent(parent);
 	}
 }
+
+SceneNode * GetLodParent(SceneNode * curr)
+{
+	LodNode * node = dynamic_cast<LodNode*> (curr);
+	if (node)
+	{
+		return node;
+	}
+	else 
+	{
+		SceneNode * parent = curr->GetParent();
+		if (parent == 0)
+			return 0;
+		return GetLodParent(parent);
+	}
+}
+
+
 
 void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 {
@@ -205,8 +225,11 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
+		if (solid == 0)
+			solid = GetLodParent(selection);
 		if (solid)
 			selection = solid;
+			
 		
 		proxy = GetHighestProxy(selection);
 		if (proxy == 0)
@@ -256,7 +279,11 @@ void EditorScene::SetBulletUpdate(SceneNode* curr, bool value)
 void EditorScene::Draw()
 {
 //	DrawDebugNodes(this);
+    
+    RenderManager::Instance()->ClearStats();
 	Scene::Draw();
+    SceneValidator::Instance()->CollectSceneStats(RenderManager::Instance()->GetStats());
+    
 	DrawGrid();
 }
 

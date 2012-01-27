@@ -255,7 +255,8 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
-    //ProcessLOD(_scene, rootNode);
+    rootNode->AddFlagRecursive(SceneNode::NODE_VISIBLE);
+	rootNode->SceneDidLoaded();
     _scene->AddRootNode(rootNode, rootNodePathName);
     
     
@@ -280,7 +281,7 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     SafeRelease(file);
     return true;
 }
-    
+
 bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
 {
     KeyedArchive * archive = new KeyedArchive();
@@ -340,7 +341,7 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
     }
     SafeRelease(archive);
 }
-    
+
 bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
