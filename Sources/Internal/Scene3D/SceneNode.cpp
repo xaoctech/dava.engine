@@ -526,8 +526,8 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
         
     name = archive->GetString("name", "");
     tag = archive->GetInt32("tag", 0);
-    archive->GetByteArrayAsType("localTransform", localTransform, localTransform);
-    archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform, defaultLocalTransform);
+    localTransform = archive->GetByteArrayAsType("localTransform", localTransform);
+    defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
     flags = archive->GetUInt32("flags", 0);
     InvalidateLocalTransform();
@@ -565,7 +565,16 @@ bool SceneNode::GetSolid()
 //    return isSolidNode;
     return customProperties->GetBool("editor.isSolid", false);
 }
-    
+
+void SceneNode::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+    uint32 size = (uint32)children.size();
+    for (uint32 c = 0; c < size; ++c)
+    {
+        children[c]->GetDataNodes(dataNodes);
+    }
+}
+
     
     
 };

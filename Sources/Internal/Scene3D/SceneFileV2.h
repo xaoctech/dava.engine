@@ -108,24 +108,32 @@ public:
     
     String AbsoluteToRelative(const String & absolutePathname);
     String RelativeToAbsolute(const String & relativePathname);
-    
-    void ProcessLOD(Scene * scene, SceneNode *forRootNode);
-    
+        
     Material * GetMaterial(int32 index);
     StaticMesh * GetStaticMesh(int32 index);
     
+    DataNode * GetNodeByPointer(uint64 pointer);
+    
+    int32 GetVersion();
+    
 private:
+    void AddToNodeMap(DataNode * node);
+
     struct Header
     {
         char    signature[4];
         int32   version;
         int32   nodeCount;
     };
+    Header header;
+    Map<uint64, DataNode*> dataNodes;
     Vector<Material*> materials;
     Vector<StaticMesh*> staticMeshes;
     
     bool SaveDataHierarchy(DataNode * node, File * file, int32 level);
     void LoadDataHierarchy(Scene * scene, DataNode * node, File * file, int32 level);
+    bool SaveDataNode(DataNode * node, File * file);
+    void LoadDataNode(DataNode * parent, File * file);
 
     bool SaveHierarchy(SceneNode * node, File * file, int32 level);
     void LoadHierarchy(Scene * scene, SceneNode * node, File * file, int32 level);
@@ -133,6 +141,7 @@ private:
     bool isDebugLogEnabled;
     bool isSaveForGame;
     String rootNodePathName, rootNodePath, rootNodeName; 
+    Scene * scene;
 };
   
 }; // namespace DAVA

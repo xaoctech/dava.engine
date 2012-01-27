@@ -42,7 +42,7 @@ namespace DAVA
     
 REGISTER_CLASS(MeshInstanceNode);
     
-
+    
 MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 :	SceneNode(_scene)
 ,   lodPresents(false)
@@ -442,9 +442,15 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
         for (size_t idx = 0; idx < size; ++idx)
         {
-            archive->SetInt32(Format("l%d_%d_mat", lodIdx, idx), ld.materials[idx]->GetNodeIndex());
-            archive->SetInt32(Format("l%d_%d_ms", lodIdx, idx), ld.meshes[idx]->GetNodeIndex());
-            archive->SetInt32(Format("l%d_%d_pg", lodIdx, idx), ld.polygonGroupIndexes[idx]);
+            Material * material = ld.materials[idx];
+            StaticMesh * mesh = ld.meshes[idx];
+            int32 pgIndex = ld.polygonGroupIndexes[idx];
+            
+            archive->SetByteArrayAsType(Format("l%d_%d_matptr", lodIdx, idx), (uint64)material);
+            archive->SetByteArrayAsType(Format("l%d_%d_meshptr", lodIdx, idx), (uint64)mesh);
+            archive->SetInt32(Format("l%d_%d_pg", lodIdx, idx), pgIndex);
+            
+            //DVASSERT(meshIndex != -1 && materialIndex != -1 && pgIndex != -1)
         }
         lodIdx++;
     }
@@ -472,23 +478,48 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);
         for (size_t idx = 0; idx < size; ++idx)
         {
-            int32 materialIndex = archive->GetInt32(Format("l%d_%d_mat", lodIdx, idx), -1);
-            int32 meshIndex = archive->GetInt32(Format("l%d_%d_ms", lodIdx, idx), -1);
-            int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
-            if ((materialIndex != -1) && (meshIndex != -1) && (pgIndex != -1))
+            if (sceneFile->GetVersion() == 2)
             {
-                Material * material = sceneFile->GetMaterial(materialIndex);
-                StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
-                Logger::Debug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
-                
-                AddPolygonGroupForLayer(lodIdx,
-                                mesh, 
-                                pgIndex,
-                                material);
+                uint64 matPtr = archive->GetByteArrayAsType(Format("l%d_%d_matptr", lodIdx, idx), (uint64)0);
+                Material * material = dynamic_cast<Material*>(sceneFile->GetNodeByPointer(matPtr));
+                uint64 meshPtr = archive->GetByteArrayAsType(Format("l%d_%d_meshptr", lodIdx, idx), (uint64)0);
+                StaticMesh * mesh = dynamic_cast<StaticMesh*>(sceneFile->GetNodeByPointer(meshPtr));
+                int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
+
+                if (material && mesh)
+                {
+                    Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                    
+                    AddPolygonGroupForLayer(lodIdx,
+                                            mesh, 
+                                            pgIndex,
+                                            material);
+                }
             }
-            else
+
+            if (sceneFile->GetVersion() == 1)
             {
-                DVASSERT(0 && "Negative element")
+                int32 materialIndex = archive->GetInt32(Format("l%d_%d_mat", lodIdx, idx), -1);
+                int32 meshIndex = archive->GetInt32(Format("l%d_%d_ms", lodIdx, idx), -1);
+                int32 pgIndex = archive->GetInt32(Format("l%d_%d_pg", lodIdx, idx), -1);
+            
+            
+            
+                if ((materialIndex != -1) && (meshIndex != -1) && (pgIndex != -1))
+                {
+                    Material * material = sceneFile->GetMaterial(materialIndex);
+                    StaticMesh * mesh = sceneFile->GetStaticMesh(meshIndex);
+                    Logger::Debug("+ assign material: %s index: %d", material->GetName().c_str(), materialIndex);
+                    
+                    AddPolygonGroupForLayer(lodIdx,
+                                    mesh, 
+                                    pgIndex,
+                                    material);
+                }
+                else
+                {
+                    DVASSERT(0 && "Negative element")
+                }
             }
             
         }
@@ -559,6 +590,30 @@ void MeshInstanceNode::DeleteDynamicShadowNode()
 	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName("dynamicshadow.shadowvolume");
 	RemoveNode(shadowVolume);
 }
+
+void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+    const List<LodData>::iterator & end = lodLayers.end();
+    for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+    {
+        LodData & ld = *it;
+//        for (int k = 0; k < ld.meshes.size(); ++k)
+//        {
+//            dataNodes.push_back(ld.meshes[k]->GetPolygonGroup(ld.polygonGroupIndexes[k]));
+//        }
+        for (int k = 0; k < ld.meshes.size(); ++k)
+        {
+            dataNodes.insert(ld.meshes[k]);
+        }
+        for (int k = 0; k < ld.materials.size(); ++k)
+        {
+            dataNodes.insert(ld.materials[k]);
+        }
+    }
+    SceneNode::GetDataNodes(dataNodes);
+}
+    
+    
 
 
 //String MeshInstanceNode::GetDebugDescription()

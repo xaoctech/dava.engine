@@ -48,6 +48,8 @@ class DataNode : public BaseObject
 public:	
 	DataNode(Scene * _scene = 0);
 	virtual ~DataNode();
+    virtual int32 Release();
+
     
     /**
      */
@@ -74,6 +76,7 @@ public:
 
     //DataNode * FindByAddress();
     int32  GetNodeIndex();
+    uint64 GetPreviousPointer(); 
     
     /**
         \brief virtual function to save node to KeyedArchive
@@ -85,6 +88,7 @@ public:
      */
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 protected:
+    uint64 pointer;
     Scene * scene;
     String name;
     std::vector<DataNode*> children;

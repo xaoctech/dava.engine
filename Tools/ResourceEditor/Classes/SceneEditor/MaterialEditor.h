@@ -40,7 +40,10 @@ public:
     
     void OnButton(BaseObject * object, void * userData, void * callerData);
     
-    
+    virtual void WillAppear();
+    virtual void WillDisappear();
+    virtual void UpdateInternalMaterialsVector();
+
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
 	virtual int32 CellWidth(UIList *forList, int32 index)//calls only for horizontal orientation
@@ -60,6 +63,8 @@ public:
     void PreparePropertiesForMaterialType(int materialType);
     
 protected:
+    Vector<Material*> materials;
+    
     UIList *materialsList;
     ComboBox *materialTypes;
     PropertyList *materialProps[Material::MATERIAL_TYPES_COUNT];
