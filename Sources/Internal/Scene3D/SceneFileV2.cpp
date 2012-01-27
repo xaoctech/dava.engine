@@ -221,7 +221,8 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
-    ProcessLOD(_scene, rootNode);
+    rootNode->SceneDidLoaded();
+//    ProcessLOD(_scene, rootNode);
     _scene->AddRootNode(rootNode, rootNodePathName);
     
     
@@ -240,7 +241,7 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     SafeRelease(file);
     return true;
 }
-    
+/*    
 void SceneFileV2::ProcessLOD(Scene * scene, SceneNode *forRootNode)
 {
     if (scene->GetLodLayersCount() <= 0) 
@@ -324,6 +325,7 @@ void SceneFileV2::ProcessLOD(Scene * scene, SceneNode *forRootNode)
         
     }
 }
+*/
 
 bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {

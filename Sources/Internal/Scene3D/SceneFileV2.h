@@ -109,7 +109,7 @@ public:
     String AbsoluteToRelative(const String & absolutePathname);
     String RelativeToAbsolute(const String & relativePathname);
     
-    void ProcessLOD(Scene * scene, SceneNode *forRootNode);
+//    void ProcessLOD(Scene * scene, SceneNode *forRootNode);
     
     Material * GetMaterial(int32 index);
     StaticMesh * GetStaticMesh(int32 index);

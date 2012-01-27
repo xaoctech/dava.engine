@@ -112,6 +112,8 @@ public:
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible(void);
 	inline SceneNode * GetParent();
+	inline void SetUpdatable(bool isUpdatable);
+	inline bool GetUpdatable(void);
 	
 	// extract data from current node to use it in animations
 	void ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & resultKey);
@@ -132,6 +134,7 @@ public:
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
     inline void SetLocalTransform(const Matrix4 & newMatrix);
+    inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
     
@@ -144,7 +147,9 @@ public:
     {
         // NODE_STATIC = 0x1,  // this flag means that node is always static and we do not need to update it's worldTransform
         // NODE_DYNAMIC = 0x2, // node automatically become dynamic when we update it's local matrix
-        NODE_WORLD_MATRIX_ACTUAL = 0x4, // if this flag set this means we do not need to rebuild worldMatrix
+        NODE_WORLD_MATRIX_ACTUAL = 1, // if this flag set this means we do not need to rebuild worldMatrix
+        NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
+        NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
     };
 	
 	// animations 
@@ -231,7 +236,8 @@ public:
     virtual String GetDebugDescription();
     
     KeyedArchive *GetCustomProperties();
-    
+
+    virtual void SceneDidLoaded();
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
@@ -244,7 +250,6 @@ protected:
 	SceneNode * parent;
 	std::vector<SceneNode*> children;
 	std::deque<SceneNode*> removedCache;
-	bool visible;
     bool inUpdate;
 
 	String	name;
@@ -265,14 +270,38 @@ private:
 
 inline void SceneNode::SetVisible(bool isVisible)
 {
-	visible = isVisible;
+    if (isVisible) 
+    {
+        flags |= NODE_VISIBLE;
+    }
+    else 
+    {
+        flags &= ~NODE_VISIBLE;
+    }
 }
 	
 inline bool SceneNode::GetVisible(void)
 {
-	return visible;
+	return (flags & NODE_VISIBLE) != 0;
 }
 	
+inline void SceneNode::SetUpdatable(bool isUpdatable)
+{
+    if (isUpdatable) 
+    {
+        flags |= NODE_UPDATABLE;
+    }
+    else 
+    {
+        flags &= ~NODE_UPDATABLE;
+    }
+}
+    
+inline bool SceneNode::GetUpdatable(void)
+{
+	return (flags & NODE_UPDATABLE) != 0;
+}
+
 inline SceneNode * SceneNode::GetParent()
 {
 	return parent;
@@ -314,7 +343,12 @@ inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
     localTransform = newMatrix;
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
 }
-    
+
+inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
+{
+    worldTransform = newMatrix;
+}
+
 inline void SceneNode::InvalidateLocalTransform()
 {
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
