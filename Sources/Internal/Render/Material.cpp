@@ -53,11 +53,11 @@ Material::Material(Scene * _scene)
     ,   isOpaque(false)
     ,   isTwoSided(false)
 {
-    if (scene)
-    {
-        DataNode * materialsNode = scene->GetMaterials();
-        materialsNode->AddNode(this);
-    }
+//    if (scene)
+//    {
+//        DataNode * materialsNode = scene->GetMaterials();
+//        materialsNode->AddNode(this);
+//    }
     
     if (!uberShader)
     {
@@ -84,22 +84,22 @@ void Material::SetScene(Scene * _scene)
 {
     DVASSERT(scene == 0);
     scene = _scene;
-    if (scene)
-    {
-        DataNode * materialsNode = scene->GetMaterials();
-        materialsNode->AddNode(this);
-    }
+//    if (scene)
+//    {
+//        DataNode * materialsNode = scene->GetMaterials();
+//        materialsNode->AddNode(this);
+//    }
 }
 
 
 int32 Material::Release()
 {
     int32 retainCount = BaseObject::Release();
-    if (retainCount == 1)
-    {
-        DataNode * materialsNode = scene->GetMaterials();
-        materialsNode->RemoveNode(this);
-    }
+//    if (retainCount == 1)
+//    {
+//        DataNode * materialsNode = scene->GetMaterials();
+//        materialsNode->RemoveNode(this);
+//    }
     return retainCount;
 }
 
@@ -230,10 +230,10 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 //        } 
     }
     
-    keyedArchive->GetByteArrayAsType("mat.diffuse", diffuse);
-    keyedArchive->GetByteArrayAsType("mat.ambient", ambient);
-    keyedArchive->GetByteArrayAsType("mat.specular", specular);
-    keyedArchive->GetByteArrayAsType("mat.emission", emission);
+    diffuse = keyedArchive->GetByteArrayAsType("mat.diffuse", diffuse);
+    ambient = keyedArchive->GetByteArrayAsType("mat.ambient", ambient);
+    specular = keyedArchive->GetByteArrayAsType("mat.specular", specular);
+    emission = keyedArchive->GetByteArrayAsType("mat.emission", emission);
     
     isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
     isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
@@ -296,11 +296,14 @@ void Material::Bind()
     }
     if (uniformLightPosition0 != -1)
     {
-        Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
-        const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
-        lightPosition0 = lightPosition0 * matrix;
-        
-        shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
+        if (scene->GetCurrentCamera())
+        {
+            Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
+            const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
+            lightPosition0 = lightPosition0 * matrix;
+            
+            shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
+        }
     }
 }
 
