@@ -576,6 +576,37 @@ bool SceneNode::GetSolid()
 }
     
     
+void SceneNode::AddFlagRecursive(int32 flagToAdd)
+{
+    AddFlag(flagToAdd);
+    const Vector<SceneNode*>::iterator &itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+    {
+        (*it)->AddFlagRecursive(flagToAdd);
+    }
+}
+
+void SceneNode::RemoveFlagRecursive(int32 flagToRemove)
+{
+    RemoveFlag(flagToRemove);
+    const Vector<SceneNode*>::iterator &itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+    {
+        (*it)->RemoveFlagRecursive(flagToRemove);
+    }
+}
+
+bool SceneNode::IsLodMain(SceneNode *childToCheck)
+{
+    if (!parent || !IsLodPart()) 
+    {
+        return true;
+    }
+    
+    return parent->IsLodMain(this);
+}
+
+    
     
 };
 
