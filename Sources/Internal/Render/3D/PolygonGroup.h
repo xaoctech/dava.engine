@@ -133,6 +133,7 @@ public:
 	void		CreateBaseVertexArray();
 	Vector3		* baseVertexArray;
 	
+	//meshFormat is EVF_VERTEX etc.
 	void    AllocateData( int32 meshFormat, int32 vertexCount, int32 indexCount);
 	void	ReleaseData();
     void    RecalcAABBox();

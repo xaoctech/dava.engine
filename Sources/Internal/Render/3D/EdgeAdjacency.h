@@ -43,7 +43,7 @@ public:
 	struct Edge
 	{
 		Vector3 points[2];
-		int32 sharedTriangles[2];
+		Vector<int32> sharedTriangles;
 
 		bool IsEqual(const Edge & otherEdge);
 
@@ -55,12 +55,11 @@ public:
 		int32 edgeIndices[3];
 	};
 
-	struct Adjacency
-	{
-		Adjacency();
-	};
-
 	void InitFromPolygonGroup(PolygonGroup * polygonGroup);
+
+	const Vector<Edge> & GetEdges();
+
+	int32 GetEdgesWithTwoTrianglesCount();
 
 private:
 	PolygonGroup * polygonGroup;
