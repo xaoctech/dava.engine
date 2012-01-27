@@ -41,6 +41,8 @@
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
+		D934443A14D2EF000081BDCD /* LodNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D934443814D2EF000081BDCD /* LodNode.cpp */; };
+		D934443B14D2EF000081BDCD /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = D934443914D2EF000081BDCD /* LodNode.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA6D63114753FF0000898F8 /* TextGameObject.cpp */; };
 		EDA6D63414753FF0000898F8 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA6D63214753FF0000898F8 /* TextGameObject.h */; };
@@ -500,6 +502,8 @@
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D934443814D2EF000081BDCD /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
+		D934443914D2EF000081BDCD /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EDA6D63114753FF0000898F8 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
