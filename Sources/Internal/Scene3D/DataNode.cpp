@@ -36,17 +36,26 @@ namespace DAVA
 
 REGISTER_CLASS(DataNode);
     
+    
 DataNode::DataNode(Scene * _scene)
 :   scene(_scene)
 ,   index(-1)
+,   pointer(0)
 {
     
 }
 
 DataNode::~DataNode()
 {
-    
+    RemoveAllChildren();
 }
+    
+int32 DataNode::Release()
+{
+    int32 retainCount = BaseObject::Release();
+    return retainCount;
+}
+
     
 void DataNode::SetScene(Scene * _scene)
 {
@@ -148,12 +157,19 @@ int32  DataNode::GetNodeIndex()
 {
     return index;
 }
+
+uint64 DataNode::GetPreviousPointer()
+{
+    return pointer;
+}
+
     
 void DataNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     BaseObject::Load(archive);
     name = archive->GetString("name");
     index = archive->GetInt32("#index", -1);
+    pointer = archive->GetByteArrayAsType("#id", (uint64)0);
 }
 
 void DataNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -161,6 +177,8 @@ void DataNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     BaseObject::Save(archive);
     archive->SetInt32("#index", index);
     archive->SetString("name", name);
+    pointer = (uint64)this;
+    archive->SetByteArrayAsType("#id", pointer);
 }
 
 

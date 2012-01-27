@@ -72,7 +72,7 @@ public:
 	{
 		return lodLayers.begin()->materials;
 	}
-    
+        
 //	Vector<StaticMesh*> & GetMeshes(int32 lodLayer)
 //	{
 //		return lodLayers.begin()->meshes;
@@ -124,6 +124,8 @@ public:
 	void CreateDynamicShadowNode();
 	void DeleteDynamicShadowNode();
     
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
 
     Texture * GetLightmapForIndex(int32 index);
     int32 GetLightmapCount();

@@ -45,6 +45,7 @@ class SceneNodeAnimation;
 class SceneNodeAnimationKey;
 class KeyedArchive;
 class SceneFileV2;
+class DataNode;
 /**
     \brief Root class of 3D scene hierarchy. 
  
@@ -243,8 +244,20 @@ public:
      */
     virtual String GetDebugDescription();
     
+    /**
+        \brief Function returns keyed archive of custom properties for this object. 
+        Custom properties can be set for each node in editor, and used in the game later to implement game logic.
+     */
     KeyedArchive *GetCustomProperties();
-
+    
+    /*
+        \brief This function should be implemented in each node that have data nodes inside it.
+     */
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+    
+    template<template <typename> class Container, class T>
+	void GetDataNodes(Container<T> & container);
+    
     virtual void SceneDidLoaded();
 protected:
 
@@ -397,6 +410,25 @@ inline uint32 SceneNode::GetDebugFlags() const
 inline Scene *SceneNode::GetScene() const
 {
     return scene;
+}
+    
+template<template <typename> class Container, class T>
+void SceneNode::GetDataNodes(Container<T> & container)
+{
+    container.clear();
+    
+    Set<DataNode*> objects;
+    GetDataNodes(objects);
+    
+    Set<DataNode*>::const_iterator end = objects.end();
+    for (Set<DataNode*>::iterator t = objects.begin(); t != end; ++t)
+    {
+        DataNode* obj = *t;
+        
+        T res = dynamic_cast<T> (obj);
+        if (res)
+            container.push_back(res);
+    }	
 }
 
 
