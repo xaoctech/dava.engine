@@ -113,7 +113,7 @@ void MeshInstanceNode::AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, i
         {
             if (it->layer == layer) 
             {
-                ld = &(*lodLayers.begin());
+                ld = &(*it);
                 isFind = true;
                 break;
             }
@@ -198,7 +198,7 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     if (needUpdateTransformBox)
         bbox.GetTransformedBox(worldTransform, transformedBox);
     
-    if (lodPresents && visible)
+    if (lodPresents && (flags&SceneNode::NODE_VISIBLE))
     {
 #ifdef LOD_DEBUG
         int32 cl = currentLod->layer;
@@ -264,7 +264,7 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     
 void MeshInstanceNode::Draw()
 {
-	if (!visible)return;
+	if (!(flags&SceneNode::NODE_VISIBLE))return;
         
 //    if (GetFullName() == String("MaxScene->node-Cylinder01->VisualSceneNode14->instance_0"))
 //    {

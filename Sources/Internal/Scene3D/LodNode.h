@@ -27,26 +27,73 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_LOD_NODE_H__
+#define __DAVAENGINE_LOD_NODE_H__
 
-/*
-	__DAVAENGINE_IPHONE__ this define must be set in preprocessor macros for all projects that compiled using DAVAEngine for iPhone
- */
+#include "Scene3D/SceneNode.h"
 
-#ifndef __DAVAENGINE_CONFIG_H__
-#define __DAVAENGINE_CONFIG_H__
+namespace DAVA 
+{
+class Scene;
+class StaticMesh;
+class Material;
+class Texture;
+class SceneFileV2;
+    
+class LodNode : public SceneNode
+{
+public:	
+    
+    struct LodData
+    {
+        Vector<SceneNode*> nodes;
+        Vector<int32> indexes;
+        int layer;
+    };
+    
+	LodNode(Scene * _scene = 0);
+	~LodNode();
+	
+    
+    virtual void	AddNodeInLayer(SceneNode * node, int32 layer);//adds new node and registers this node as a LOD layer
+    virtual void	RegisterNodeInLayer(SceneNode * node, int32 layer);//register existing node as a layer
+	virtual void	RemoveNode(SceneNode * node);
+	virtual void	RemoveAllChildren();
+    
+    virtual void Update(float32 timeElapsed);
+    void SimpleUpdate(float32 timeElapsed);
+	
+    virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+    /**
+        \brief virtual function to save node to KeyedArchive
+     */
+    virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    
+    /**
+        \brief virtual function to load node to KeyedArchive
+     */
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+    
+    void SetCurrentLod(LodData *newLod);
 
-//#define ENABLE_MEMORY_MANAGER
-//#define CHECK_MEMORY_OVERRUNS 1 // number of 4 byte blocks used to check memory overrun
+    virtual void SceneDidLoaded();
 
-//#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
+protected:
+//    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
-//#define ENABLE_CONTROL_EDIT //allows to drug'n'drop controls for position editing
+    virtual void	RegisterIndexInLayer(int32 nodeIndex, int32 layer);
+    virtual LodData	*CreateNewLayer(int32 layer);
 
-#define SHOW_FRAME_TIME	// shows milliseconds per fame
+    void RecheckLod();
+    
+    LodData *currentLod;
+    List<LodData> lodLayers;
+    
+    
+    int lastLodUpdateFrame;
 
-//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
-//#define __DAVAENGINE_DIRECTX9__
-#define __DAVAENGINE_OPENGL__
+};
+	
+};
 
-#endif // __DAVAENGINE_CONFIG_H__
-
+#endif // __DAVAENGINE_MESH_INSTANCE_H__

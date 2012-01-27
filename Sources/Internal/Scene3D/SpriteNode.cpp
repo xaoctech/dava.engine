@@ -155,7 +155,7 @@ SpriteNode::eType SpriteNode::GetType()
 
 void SpriteNode::Draw()
 {
-	if (!visible)return;
+	if (!(flags&SceneNode::NODE_VISIBLE))return;
     
     // Get current modelview matrix, and in this case it's always a camera matrix
 	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
