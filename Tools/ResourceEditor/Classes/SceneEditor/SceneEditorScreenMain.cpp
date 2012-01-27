@@ -379,10 +379,11 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 //        }
 //    }
     
-
-    for (int i = 0; i < scene->GetMaterialCount(); i++)
+    Vector<Material*> materials;
+    scene->GetDataNodes(materials);
+    for (int i = 0; i < (int)materials.size(); i++)
     {
-        Material *m = scene->GetMaterial(i);
+        Material *m = materials[i];
         if (m->GetName().find("editor.") == String::npos)
         {
             for (int n = 0; n < Material::TEXTURE_COUNT; n++) 

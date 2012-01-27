@@ -998,7 +998,7 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     String path = archive->GetString("hmap");
     path = sceneFile->RelativeToAbsolute(path);
     AABBox3 box;
-    archive->GetByteArrayAsType("bbox", box);
+    box = archive->GetByteArrayAsType("bbox", box);
     
     renderingMode = (eRenderingMode)archive->GetInt32("renderingMode", RENDERING_MODE_TEXTURE);
     
