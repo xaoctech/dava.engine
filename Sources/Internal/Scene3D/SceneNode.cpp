@@ -238,7 +238,7 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
     
 void SceneNode::Update(float32 timeElapsed)
 {
-    if (!(flags & NODE_UPDATABLE))return;
+//    if (!(flags & NODE_UPDATABLE))return;
 
     inUpdate = true;
 	// TODO - move node update to render because any of objects can change params of other objects
