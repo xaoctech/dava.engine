@@ -35,11 +35,11 @@ namespace DAVA
 
 bool EdgeAdjacency::Edge::IsEqual(const Edge & otherEdge)
 {
-	if(IsPointsEqual(points[0], otherEdge.points[0]) && IsPointsEqual(points[1], otherEdge.points[1]))
+	if(EdgeAdjacency::IsPointsEqual(points[0], otherEdge.points[0]) && EdgeAdjacency::IsPointsEqual(points[1], otherEdge.points[1]))
 	{
 		return true;
 	}
-	else if(IsPointsEqual(points[0], otherEdge.points[1]) && IsPointsEqual(points[1], otherEdge.points[0]))
+	else if(EdgeAdjacency::IsPointsEqual(points[0], otherEdge.points[1]) && EdgeAdjacency::IsPointsEqual(points[1], otherEdge.points[0]))
 	{
 		return true;
 	}
@@ -49,7 +49,7 @@ bool EdgeAdjacency::Edge::IsEqual(const Edge & otherEdge)
 	}
 }
 
-bool EdgeAdjacency::Edge::IsPointsEqual(const Vector3 & p0, const Vector3 & p1)
+bool EdgeAdjacency::IsPointsEqual(const Vector3 & p0, const Vector3 & p1)
 {
 	if(FLOAT_EQUAL(p0.x, p1.x) && FLOAT_EQUAL(p0.y, p1.y) && FLOAT_EQUAL(p0.z, p1.z))
 	{
@@ -75,20 +75,34 @@ void EdgeAdjacency::InitFromPolygonGroup(PolygonGroup * _polygonGroup)
 	}
 }
 
-void EdgeAdjacency::CreateTriangle(int32 startingVertex)
+void EdgeAdjacency::CreateTriangle(int32 startingI)
 {
-	int32 i = startingVertex;
+	int32 i = startingI;
+
+	int32 i0, i1, i2;
+	polygonGroup->GetIndex(i, i0);
+	polygonGroup->GetIndex(i+1, i1);
+	polygonGroup->GetIndex(i+2, i2);
+	Logger::Debug("i %d %d %d", i0, i1, i2);
+
+	Vector3 p0, p1, p2;
+	polygonGroup->GetCoord(i0, p0);
+	polygonGroup->GetCoord(i1, p1);
+	polygonGroup->GetCoord(i2, p2);
+	Logger::Debug("p0 %f %f %f", p0.x, p0.y, p0.z);
+	Logger::Debug("p1 %f %f %f", p1.x, p1.y, p1.z);
+	Logger::Debug("p2 %f %f %f", p2.x, p2.y, p2.z);
 
 	Edge edge0;
-	FillEdge(edge0, i, i+1);
+	FillEdge(edge0, i0, i1);
 	int32 edgeIndex0 = GetEdgeIndex(edge0);
 
 	Edge edge1;
-	FillEdge(edge1, i+1, i+2);
+	FillEdge(edge1, i1, i2);
 	int32 edgeIndex1 = GetEdgeIndex(edge1);
 
 	Edge edge2;
-	FillEdge(edge2, i+2, i);
+	FillEdge(edge2, i2, i0);
 	int32 edgeIndex2 = GetEdgeIndex(edge2);
 
 	Triangle triangle;
@@ -99,23 +113,24 @@ void EdgeAdjacency::CreateTriangle(int32 startingVertex)
 	int32 triangleIndex = triangles.size();
 	triangles.push_back(triangle);
 
-	
-	edges[edgeIndex0].sharedTriangles.push_back(triangleIndex);
-	edges[edgeIndex1].sharedTriangles.push_back(triangleIndex);
-	edges[edgeIndex2].sharedTriangles.push_back(triangleIndex);
+	TriangleData triangleData;
+	triangleData.i0 = i0;
+	triangleData.i1 = i1;
+	triangleData.i2 = i2;
+
+	edges[edgeIndex0].sharedTriangles.push_back(triangleData);
+	edges[edgeIndex1].sharedTriangles.push_back(triangleData);
+	edges[edgeIndex2].sharedTriangles.push_back(triangleData);
 }
 
-void EdgeAdjacency::FillEdge(Edge & edge, int32 point0, int32 point1)
+void EdgeAdjacency::FillEdge(Edge & edge, int32 index0, int32 index1)
 {
-	int32 index;
 	Vector3 position;
 
-	polygonGroup->GetIndex(point0, index);
-	polygonGroup->GetCoord(index, position);
+	polygonGroup->GetCoord(index0, position);
 	edge.points[0] = position;
 
-	polygonGroup->GetIndex(point1, index);
-	polygonGroup->GetCoord(index, position);
+	polygonGroup->GetCoord(index1, position);
 	edge.points[1] = position;
 }
 
@@ -154,6 +169,11 @@ int32 EdgeAdjacency::GetEdgesWithTwoTrianglesCount()
 	}
 
 	return ret;
+}
+
+const EdgeAdjacency::Triangle & EdgeAdjacency::GetTriangle(int32 index)
+{
+	return triangles[index];
 }
 
 };

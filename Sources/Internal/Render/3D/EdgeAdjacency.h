@@ -40,14 +40,20 @@ class EdgeAdjacency
 {
 public:
 
+	struct TriangleData
+	{
+		int32 i0;
+		int32 i1;
+		int32 i2;
+	};
+
 	struct Edge
 	{
 		Vector3 points[2];
-		Vector<int32> sharedTriangles;
+
+		Vector<TriangleData> sharedTriangles;
 
 		bool IsEqual(const Edge & otherEdge);
-
-		bool IsPointsEqual(const Vector3 & p0, const Vector3 & p1);
 	};
 
 	struct Triangle
@@ -58,8 +64,11 @@ public:
 	void InitFromPolygonGroup(PolygonGroup * polygonGroup);
 
 	const Vector<Edge> & GetEdges();
+	const Triangle & GetTriangle(int32 index);
 
 	int32 GetEdgesWithTwoTrianglesCount();
+
+	static bool IsPointsEqual(const Vector3 & p0, const Vector3 & p1);
 
 private:
 	PolygonGroup * polygonGroup;
@@ -71,7 +80,7 @@ private:
 
 	void AddEdge(Edge & edge);
 
-	void FillEdge(Edge & edge, int32 point0, int32 point1);
+	void FillEdge(Edge & edge, int32 index0, int32 index1);
 	int32 GetEdgeIndex(Edge & edge);
 
 	void CreateTriangle(int32 startingVertex);
