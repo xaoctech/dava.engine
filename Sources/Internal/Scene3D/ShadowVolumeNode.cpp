@@ -29,7 +29,8 @@
 #include "Render/RenderManager.h"
 #include "Render/3D/StaticMesh.h"
 #include "Scene3D/Scene.h"
-#include "Render/3D/StaticMesh.h"
+#include "Render/3D/EdgeAdjacency.h"
+
 
 namespace DAVA
 {
@@ -92,6 +93,9 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 {
 	//TODO: copy only geometry
 	AddPolygonGroup(meshInstance->GetMeshes()[0], meshInstance->GetPolygonGroupIndexes()[0], meshInstance->GetMaterials()[0]);
+
+	EdgeAdjacency adjacency;
+	adjacency.InitFromPolygonGroup((PolygonGroup*)children[0]);
 }
 
 };
