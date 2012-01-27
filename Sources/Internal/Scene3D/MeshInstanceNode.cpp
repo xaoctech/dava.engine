@@ -618,8 +618,14 @@ void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
     SceneNode::GetDataNodes(dataNodes);
 }
     
+void MeshInstanceNode::BakeTransforms()
+{
     
-
+    
+    
+    
+    
+}
 
 //String MeshInstanceNode::GetDebugDescription()
 //{
