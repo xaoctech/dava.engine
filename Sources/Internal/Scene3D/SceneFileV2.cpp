@@ -236,8 +236,10 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     {
         DataNode * materialsTemp = new DataNode;
         LoadDataHierarchy(_scene, materialsTemp, file, 1);
-        LoadDataHierarchy(_scene, _scene->GetStaticMeshes(), file, 1);
         SafeRelease(materialsTemp);
+        DataNode * staticMeshes = new DataNode;
+        LoadDataHierarchy(_scene, staticMeshes, file, 1);
+        SafeRelease(staticMeshes);
     }else if (GetVersion() == 2)
     {
         int32 dataNodeCount = 0;
