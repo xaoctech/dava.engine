@@ -30,7 +30,7 @@
 #ifndef __DAVAENGINE_OGLHELPERS_H__
 #define __DAVAENGINE_OGLHELPERS_H__
 
-#define __ENABLE_OGL_DEBUG_BREAK__
+//#define __ENABLE_OGL_DEBUG_BREAK__
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
 #include <signal.h>
 #define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
