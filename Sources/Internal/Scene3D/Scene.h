@@ -52,6 +52,7 @@ class SceneNodeAnimationList;
 class DataNode;
 class SceneFileV2;
 class ShadowVolumeNode;
+class ProxyNode;
 	
 /** 
     \ingroup scene3d
@@ -84,12 +85,12 @@ public:
 //	Material * GetMaterial(int32 index);
 //	int32	GetMaterialCount();
 	
-    DataNode * GetStaticMeshes();
-	StaticMesh * GetStaticMesh(int32 index);
-	int32	GetStaticMeshCount();
+//    DataNode * GetStaticMeshes();
+//	StaticMesh * GetStaticMesh(int32 index);
+//	int32	GetStaticMeshCount();
     
     
-    DataNode * GetScenes();
+//    DataNode * GetScenes();
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -182,8 +183,6 @@ public:
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
 private:	
-    DataNode * materials;
-    DataNode * staticMeshes;
     DataNode * scenes;
     
     
@@ -196,7 +195,7 @@ private:
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
-    //Map<String, SceneNode*> rootNodes;
+    Map<String, ProxyNode*> rootNodes;
 
     // Vector<SceneNode*> alphaObjectQueue;
     
