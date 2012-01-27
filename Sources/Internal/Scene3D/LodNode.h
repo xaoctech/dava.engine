@@ -25,7 +25,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Alexey Prosin 
 =====================================================================================*/
 #ifndef __DAVAENGINE_LOD_NODE_H__
 #define __DAVAENGINE_LOD_NODE_H__

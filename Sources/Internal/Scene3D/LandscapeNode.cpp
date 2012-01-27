@@ -61,6 +61,10 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     singleTextureShader = 0;
     detailShader = 0;
     blendedShader = 0;
+    
+    uniformTexture = -1;
+    uniformDetailTexture = -1;
+    uniformCameraPosition = -1;
 }
 
 LandscapeNode::~LandscapeNode()
@@ -102,6 +106,7 @@ void LandscapeNode::InitShaders()
             uniformTexture0 = blendedShader->FindUniformLocationByName("texture0");
             uniformTexture1 = blendedShader->FindUniformLocationByName("texture1");
             uniformTextureMask = blendedShader->FindUniformLocationByName("textureMask");
+            uniformCameraPosition = blendedShader->FindUniformLocationByName("cameraPosition");
             
             activeShader = blendedShader;
             break;
