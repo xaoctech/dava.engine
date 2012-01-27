@@ -590,15 +590,15 @@ void Camera::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     ortho = archive->GetBool("cam.isOrtho");
     flags = archive->GetInt32("cam.flags");
     
-    archive->GetByteArrayAsType("cam.position", position);
-    archive->GetByteArrayAsType("cam.target", target);
-    archive->GetByteArrayAsType("cam.up", up);
-    archive->GetByteArrayAsType("cam.left", left);
-    archive->GetByteArrayAsType("cam.direction", direction);
+    position = archive->GetByteArrayAsType("cam.position", position);
+    target = archive->GetByteArrayAsType("cam.target", target);
+    up = archive->GetByteArrayAsType("cam.up", up);
+    left = archive->GetByteArrayAsType("cam.left", left);
+    direction = archive->GetByteArrayAsType("cam.direction", direction);
 
-    archive->GetByteArrayAsType("cam.cameraTransform", cameraTransform);
-    archive->GetByteArrayAsType("cam.modelMatrix", modelMatrix);
-    archive->GetByteArrayAsType("cam.projMatrix", projMatrix);
+    cameraTransform = archive->GetByteArrayAsType("cam.cameraTransform", cameraTransform);
+    modelMatrix = archive->GetByteArrayAsType("cam.modelMatrix", modelMatrix);
+    projMatrix = archive->GetByteArrayAsType("cam.projMatrix", projMatrix);
 }
 
 	

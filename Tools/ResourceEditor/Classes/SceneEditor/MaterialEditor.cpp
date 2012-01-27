@@ -147,6 +147,38 @@ MaterialEditor::~MaterialEditor()
     SafeRelease(materialsList);
 }
 
+void MaterialEditor::UpdateInternalMaterialsVector()
+{
+    for (int32 k = 0; k < (int32)materials.size(); ++k)
+    {
+        SafeRelease(materials[k]);
+    }
+    materials.clear();
+    
+    workingScene->GetDataNodes(materials);
+    
+    for (int32 k = 0; k < (int32)materials.size(); ++k)
+    {
+        materials[k]->Retain();
+    }
+}
+
+void MaterialEditor::WillAppear()
+{
+    UpdateInternalMaterialsVector();
+}
+
+void MaterialEditor::WillDisappear()
+{
+    for (int32 k = 0; k < (int32)materials.size(); ++k)
+    {
+        SafeRelease(materials[k]);
+    }
+    materials.clear();
+    selectedMaterial = -1;
+}
+
+
 void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
 {
     if(!node)
@@ -234,7 +266,7 @@ void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *selected
         lastSelection = NULL;
     }
     
-    if (workingScene->GetMaterialCount() > 0)
+    if (materials.size() > 0)
     {
         selectedMaterial = 0;
         SelectMaterial(0);
@@ -421,7 +453,7 @@ int32 MaterialEditor::ElementsCount(UIList *forList)
     {
         if (workingScene) 
         {
-            return workingScene->GetMaterialCount();
+            return (int32)materials.size();
         }
     }
     else
@@ -577,10 +609,14 @@ void MaterialEditor::RefreshList()
 Material * MaterialEditor::GetMaterial(int32 index)
 {
 //    Material *mat = workingScene->GetMaterial(selectedMaterial);
+    //if (materials.size() == 0)
+    //    UpdateInternalMaterialsVector();
+    
+    
     Material *mat = NULL;
     if(EDM_ALL == displayMode)
     {
-        mat = workingScene->GetMaterial(index);
+        mat = materials[index];
     }
     else
     {

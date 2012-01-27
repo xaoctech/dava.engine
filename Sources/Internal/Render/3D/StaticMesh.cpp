@@ -44,37 +44,38 @@ REGISTER_CLASS(StaticMesh);
 StaticMesh::StaticMesh(Scene * _scene)
 	: DataNode(_scene)
 {
-    if (scene)
-    {
-        DataNode * staticMeshes = scene->GetStaticMeshes();
-        staticMeshes->AddNode(this);
-    }
+//    if (scene)
+//    {
+//        DataNode * staticMeshes = scene->GetStaticMeshes();
+//        staticMeshes->AddNode(this);
+//    }
 }
     
 void StaticMesh::SetScene(Scene * _scene)
 {
     DVASSERT(scene == 0);
     scene = _scene;
-    if (scene)
-    {
-        DataNode * staticMeshes = scene->GetStaticMeshes();
-        staticMeshes->AddNode(this);
-    }
+//    if (scene)
+//    {
+//        DataNode * staticMeshes = scene->GetStaticMeshes();
+//        staticMeshes->AddNode(this);
+//    }
 }
     
 int32 StaticMesh::Release()
 {
     int32 retainCount = BaseObject::Release();
-    if (retainCount == 1)
-    {
-        DataNode * staticMeshes = scene->GetStaticMeshes();
-        staticMeshes->RemoveNode(this);
-    }
+//    if (retainCount == 1)
+//    {
+//        DataNode * staticMeshes = scene->GetStaticMeshes();
+//        staticMeshes->RemoveNode(this);
+//    }
     return retainCount;
 }
 	
 StaticMesh::~StaticMesh()
 {
+    
 }   
     
 void StaticMesh::AddNode(DataNode * node)

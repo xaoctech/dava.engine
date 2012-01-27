@@ -90,10 +90,10 @@ Scene::~Scene()
     SafeRelease(scenes);
 }
 
-DataNode * Scene::GetMaterials()
-{
-    return materials;
-}
+//DataNode * Scene::GetMaterials()
+//{
+//    return materials;
+//}
     
 DataNode * Scene::GetStaticMeshes()
 {
@@ -105,17 +105,27 @@ DataNode * Scene::GetScenes()
     return scenes;
 }
     
-int32 Scene::GetMaterialCount()
-{
-    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-    return (int32)materials->GetChildrenCount();
-}
-
-Material * Scene::GetMaterial(int32 index)
-{
-    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-	return dynamic_cast<Material*>(materials->GetChild(index));
-}
+//int32 Scene::GetMaterialCount()
+//{
+//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+//    List<DataNode*> dataNodes;
+//    GetDataNodes(dataNodes);
+//    
+//    int32 matCount = 0;
+//    const List<DataNode*>::iterator & end = dataNodes.end(); 
+//    for (List<DataNode*>::iterator it = dataNodes.begin(); it != end; ++it)
+//    {
+//        if (dynamic_cast<Material*>(*it))
+//            matCount++;
+//    }
+//    return matCount;
+//}
+//
+//Material * Scene::GetMaterial(int32 index)
+//{
+//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+//	return dynamic_cast<Material*>(materials->GetChild(index));
+//}
 
 int32 Scene::GetStaticMeshCount()
 {
