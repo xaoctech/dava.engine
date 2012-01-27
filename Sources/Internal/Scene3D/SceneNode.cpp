@@ -238,7 +238,7 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
     
 void SceneNode::Update(float32 timeElapsed)
 {
-    if (!(flags & NODE_UPDATABLE))return;
+//    if (!(flags & NODE_UPDATABLE))return;
 
     inUpdate = true;
 	// TODO - move node update to render because any of objects can change params of other objects
@@ -575,6 +575,37 @@ bool SceneNode::GetSolid()
     return customProperties->GetBool("editor.isSolid", false);
 }
     
+    
+void SceneNode::AddFlagRecursive(int32 flagToAdd)
+{
+    AddFlag(flagToAdd);
+    const Vector<SceneNode*>::iterator &itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+    {
+        (*it)->AddFlagRecursive(flagToAdd);
+    }
+}
+
+void SceneNode::RemoveFlagRecursive(int32 flagToRemove)
+{
+    RemoveFlag(flagToRemove);
+    const Vector<SceneNode*>::iterator &itEnd = children.end();
+	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+    {
+        (*it)->RemoveFlagRecursive(flagToRemove);
+    }
+}
+
+bool SceneNode::IsLodMain(SceneNode *childToCheck)
+{
+    if (!parent || !IsLodPart()) 
+    {
+        return true;
+    }
+    
+    return parent->IsLodMain(this);
+}
+
     
     
 };

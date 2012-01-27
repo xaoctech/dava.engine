@@ -120,7 +120,20 @@ LodNode::LodData	*LodNode::CreateNewLayer(int32 layer)
 void LodNode::RegisterNodeInLayer(SceneNode * node, int32 layer)
 {
     LodData *ld = CreateNewLayer(layer);
+    if (node->GetName().find("dummy") != String::npos) 
+    {
+        if (ld->nodes.empty()) 
+        {
+            ld->isDummy = true;
+        }
+    }
+    else 
+    {
+        ld->isDummy = false;
+    }
+
     ld->nodes.push_back(node);
+    node->AddFlagRecursive(SceneNode::NODE_IS_LOD_PART);
     if (ld != currentLod) 
     {
         node->SetUpdatable(false);
@@ -138,7 +151,7 @@ void LodNode::RegisterIndexInLayer(int32 nodeIndex, int32 layer)
 void LodNode::RemoveNode(SceneNode * node)
 {
     SceneNode::RemoveNode(node);
-    List<LodData>::const_iterator ei = lodLayers.end();
+    List<LodData>::iterator ei = lodLayers.end();
     for (List<LodData>::iterator i = lodLayers.begin(); i != ei; i++) 
     {
         Vector<SceneNode*>::iterator eit = i->nodes.end();
@@ -146,6 +159,7 @@ void LodNode::RemoveNode(SceneNode * node)
         {
             if (*it == node) 
             {
+                node->RemoveFlagRecursive(SceneNode::NODE_IS_LOD_PART);
                 i->nodes.erase(it);
                 return;
             }
@@ -156,9 +170,42 @@ void LodNode::RemoveNode(SceneNode * node)
 void LodNode::RemoveAllChildren()
 {
     SceneNode::RemoveAllChildren();
+    RemoveFlagRecursive(SceneNode::NODE_IS_LOD_PART);
     lodLayers.clear();
     currentLod = NULL;
 }
+    
+bool LodNode::IsLodMain(SceneNode *childToCheck)
+{
+    if (!childToCheck) 
+    {
+        return true;
+    }
+    if (childToCheck->GetName().find("dummy") != String::npos) 
+    {
+        return true;
+    }
+    
+    List<LodData>::iterator ei = lodLayers.end();
+    for (List<LodData>::iterator i = lodLayers.begin(); i != ei; i++) 
+    {
+        if(i->isDummy) 
+        {
+            continue;
+        }
+        Vector<SceneNode*>::iterator eit = i->nodes.end();
+        for (Vector<SceneNode*>::iterator it = i->nodes.begin(); it != eit; it++) 
+        {
+            if (*it == childToCheck) 
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    return false;
+}
+
     
 void LodNode::RecheckLod()
 {

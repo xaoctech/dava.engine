@@ -46,9 +46,15 @@ public:
     
     struct LodData
     {
+        LodData()
+        :layer(-1)
+        ,isDummy(false)
+        {
+        }
         Vector<SceneNode*> nodes;
         Vector<int32> indexes;
         int layer;
+        bool isDummy;
     };
     
 	LodNode(Scene * _scene = 0);
@@ -77,6 +83,9 @@ public:
     void SetCurrentLod(LodData *newLod);
 
     virtual void SceneDidLoaded();
+    
+    virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
+
 
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
