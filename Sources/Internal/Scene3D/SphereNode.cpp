@@ -132,8 +132,8 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
         for ( float32 b = 0.f; b < bf; n++, b += db)
         {
             // Координаты проекции в экваториальной плоскости
-            float32 x = xz * sin(b);
-            float32 z = xz * cos(b); 
+            float32 x = xz * sinf(b);
+            float32 z = xz * cosf(b); 
     
             //====== Вершина, нормаль и цвет 
             sphere->SetCoord(n, Vector3(x, y, z));
@@ -254,8 +254,8 @@ void SphereNode::SetRadius(float32 _radius)
         for ( float32 b = 0.f; b < bf; n++, b += db)
         {
             // Координаты проекции в экваториальной плоскости
-            float32 x = xz * sin(b);
-            float32 z = xz * cos(b); 
+            float32 x = xz * sinf(b);
+            float32 z = xz * cosf(b); 
             
             //====== Вершина, нормаль и цвет 
             sphere->SetCoord(n, Vector3(x, y, z));
