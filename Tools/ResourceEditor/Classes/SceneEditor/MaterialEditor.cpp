@@ -450,7 +450,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
             {
                 if (mat->textures[textureTypes[i]])
                 {
-                    currentList->SetFilepathPropertyValue(textureNames[i], mat->textures[textureTypes[i]]->relativePathname);
+                    currentList->SetFilepathPropertyValue(textureNames[i], mat->names[i]);
                 }
                 else 
                 {
