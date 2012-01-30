@@ -388,7 +388,7 @@ void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const S
     String extension = FileSystem::GetExtension(pathToFile);
     if(0 == CompareStrings(".pvr", extension))
     {
-        PVRConverter::ConvertPvrToPng(pathToFile);
+        PVRConverter::Instance()->ConvertPvrToPng(pathToFile);
     }
     
     property->SetString(pathToFile);
