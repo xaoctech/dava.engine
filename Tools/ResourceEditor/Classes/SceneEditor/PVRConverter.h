@@ -3,11 +3,18 @@
 
 #include "DAVAEngine.h"
 
-class PVRConverter
-{
-    
+class PVRConverter: public DAVA::Singleton<PVRConverter>
+{    
 public:
-    static void ConvertPvrToPng(const DAVA::String & fileToConvert);
+ 
+	PVRConverter();
+	virtual ~PVRConverter();
+
+	void ConvertPvrToPng(const DAVA::String & fileToConvert);
+
+protected:
+
+	DAVA::String dataFolderPath;
 };
 
 

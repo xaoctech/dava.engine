@@ -497,6 +497,8 @@
 		5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
+		5CA07ADD14D292F7004B93F8 /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
+		5CA07ADE14D292F7004B93F8 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1420,8 +1422,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
-				47C13A5214D2F6E300525771 /* LodNode.cpp */,
-				47C13A5314D2F6E300525771 /* LodNode.h */,
+				5CA07ADD14D292F7004B93F8 /* LodNode.cpp */,
+				5CA07ADE14D292F7004B93F8 /* LodNode.h */,
 				5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */,
 				5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */,
 				4780AFC914C499E600BAA259 /* SceneFileV2.cpp */,

@@ -21,7 +21,7 @@
 #include "SceneEditor/OutputManager.h"
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
-
+#include "SceneEditor/PVRConverter.h"
 
 using namespace DAVA;
 
@@ -52,6 +52,7 @@ void GameCore::OnAppStarted()
     new OutputManager();
 //    new EditorSettings();
     new SceneValidator();
+	new PVRConverter();
     
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
@@ -64,6 +65,7 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
+	PVRConverter::Instance()->Release();
     EditorSettings::Instance()->Release();
     OutputManager::Instance()->Release();
     SceneValidator::Instance()->Release();

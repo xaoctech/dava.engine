@@ -76,7 +76,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
     String extension = FileSystem::GetExtension(fileName);
     if(0 == CompareStrings(extension, ".pvr"))
     {
-        PVRConverter::ConvertPvrToPng(fileName);
+        PVRConverter::Instance()->ConvertPvrToPng(fileName);
     }
     else if(0 == CompareStrings(extension, ".png"))
     {
@@ -85,7 +85,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
         if(f)
         {
             SafeRelease(f);
-            PVRConverter::ConvertPvrToPng(pvrFileName);
+            PVRConverter::Instance()->ConvertPvrToPng(pvrFileName);
             
             texturePathName = FUStringConversion::ToFString(pvrFileName.c_str());
             fileName = pvrFileName + ".png";
