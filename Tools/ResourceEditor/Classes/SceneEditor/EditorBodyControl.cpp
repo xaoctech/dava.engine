@@ -1687,9 +1687,9 @@ void EditorBodyControl::ResetSelection()
 
 void EditorBodyControl::RefreshDataGraph()
 {
-    dataNodes[EDNID_MATERIAL] = scene->GetMaterials();
-    dataNodes[EDNID_MESH] = scene->GetStaticMeshes();
-    dataNodes[EDNID_SCENE] = scene->GetScenes();
+    //dataNodes[EDNID_MATERIAL] = scene->GetMaterials();
+    dataNodes[EDNID_MESH] = 0; // scene->GetStaticMeshes();
+    dataNodes[EDNID_SCENE] = 0; //scene->GetScenes();
     
     dataGraphTree->Refresh();
 }

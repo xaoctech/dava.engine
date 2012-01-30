@@ -30,8 +30,13 @@
 #ifndef __DAVAENGINE_OGLHELPERS_H__
 #define __DAVAENGINE_OGLHELPERS_H__
 
-//#include <signal.h>
-//#define DebugBreak() { kill( getpid(), SIGINT ) ; }
+//#define __ENABLE_OGL_DEBUG_BREAK__
+#if defined(__ENABLE_OGL_DEBUG_BREAK__)
+#include <signal.h>
+#define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
+#else
+#define OGLDebugBreak()
+#endif
 
 #if defined(__DAVAENGINE_OPENGL__)
 namespace DAVA
@@ -49,6 +54,7 @@ namespace DAVA
 	if (err != GL_NO_ERROR)\
     {  \
         Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
+        OGLDebugBreak(); \
     }\
 }
 #else

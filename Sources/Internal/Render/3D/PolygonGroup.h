@@ -100,7 +100,6 @@ public:
     
     inline void SetPrimitiveType(ePrimitiveType type);
     
-    
 	
 	int32	vertexCount;
 	int32	indexCount;
@@ -133,11 +132,19 @@ public:
 	void		CreateBaseVertexArray();
 	Vector3		* baseVertexArray;
 	
+	//meshFormat is EVF_VERTEX etc.
 	void    AllocateData( int32 meshFormat, int32 vertexCount, int32 indexCount);
 	void	ReleaseData();
     void    RecalcAABBox();
     
     
+    /*
+        Apply matrix to polygon group. If polygon group is used with vertex buffers 
+        you should call BuildBuffers to refresh buffers in memory. 
+        TODO: refresh buffers function??? 
+     */
+    void    ApplyMatrix(const Matrix4 & matrix);
+
     /*
         If you want you can build tangents for your submesh
         This function rebuild the polygroup from ground with binormal  

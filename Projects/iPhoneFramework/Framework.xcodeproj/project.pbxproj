@@ -33,6 +33,8 @@
 		4780AFCE14C499E600BAA259 /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCA14C499E600BAA259 /* SceneFileV2.h */; };
 		4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4780AFCB14C499E600BAA259 /* SceneManager.cpp */; };
 		4780AFD014C499E600BAA259 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4780AFCC14C499E600BAA259 /* SceneManager.h */; };
+		47C13A5414D2F6E300525771 /* LodNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C13A5214D2F6E300525771 /* LodNode.cpp */; };
+		47C13A5514D2F6E300525771 /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C13A5314D2F6E300525771 /* LodNode.h */; };
 		47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F00E7E140FE6C10014D904 /* SpriteNode.cpp */; };
 		5C5EC7A214D156DD009AF0ED /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */; };
 		5C5EC7A314D156DD009AF0ED /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */; };
@@ -489,10 +491,14 @@
 		4780AFCA14C499E600BAA259 /* SceneFileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileV2.h; sourceTree = "<group>"; };
 		4780AFCB14C499E600BAA259 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		4780AFCC14C499E600BAA259 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
+		47C13A5214D2F6E300525771 /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
+		47C13A5314D2F6E300525771 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		47F00E7E140FE6C10014D904 /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
+		5CA07ADD14D292F7004B93F8 /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
+		5CA07ADE14D292F7004B93F8 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1416,6 +1422,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CA07ADD14D292F7004B93F8 /* LodNode.cpp */,
+				5CA07ADE14D292F7004B93F8 /* LodNode.h */,
 				5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */,
 				5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */,
 				4780AFC914C499E600BAA259 /* SceneFileV2.cpp */,
@@ -1831,6 +1839,7 @@
 				4780AFCE14C499E600BAA259 /* SceneFileV2.h in Headers */,
 				4780AFD014C499E600BAA259 /* SceneManager.h in Headers */,
 				5C5EC7A314D156DD009AF0ED /* ShadowVolumeNode.h in Headers */,
+				47C13A5514D2F6E300525771 /* LodNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2109,6 +2118,7 @@
 				4780AFCD14C499E600BAA259 /* SceneFileV2.cpp in Sources */,
 				4780AFCF14C499E600BAA259 /* SceneManager.cpp in Sources */,
 				5C5EC7A214D156DD009AF0ED /* ShadowVolumeNode.cpp in Sources */,
+				47C13A5414D2F6E300525771 /* LodNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

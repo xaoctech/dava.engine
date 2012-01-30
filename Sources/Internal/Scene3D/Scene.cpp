@@ -53,17 +53,6 @@ Scene::Scene()
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
 {   
-    materials = new DataNode();
-    materials->SetName("materials");
-    //AddNode(materials);
-    
-    staticMeshes = new DataNode();
-    staticMeshes->SetName("staticMeshes");
-    //AddNode(staticMeshes);
-
-    scenes = new DataNode();
-    //scenes->SetName("scenes");
-    //AddNode(scenes);
 }
 
 Scene::~Scene()
@@ -85,47 +74,44 @@ Scene::~Scene()
     SafeRelease(currentCamera);
     SafeRelease(clipCamera);
     
-    SafeRelease(materials);
-    SafeRelease(staticMeshes);
-    SafeRelease(scenes);
+    for (Map<String, ProxyNode*>::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
+    {
+        SafeRelease(it->second);
+    }
+    rootNodes.clear();
 }
 
-DataNode * Scene::GetMaterials()
-{
-    return materials;
-}
-    
-DataNode * Scene::GetStaticMeshes()
-{
-    return staticMeshes;
-}
-    
-DataNode * Scene::GetScenes()
-{
-    return scenes;
-}
-    
-int32 Scene::GetMaterialCount()
-{
-    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-    return (int32)materials->GetChildrenCount();
-}
+//int32 Scene::GetMaterialCount()
+//{
+//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+//    List<DataNode*> dataNodes;
+//    GetDataNodes(dataNodes);
+//    
+//    int32 matCount = 0;
+//    const List<DataNode*>::iterator & end = dataNodes.end(); 
+//    for (List<DataNode*>::iterator it = dataNodes.begin(); it != end; ++it)
+//    {
+//        if (dynamic_cast<Material*>(*it))
+//            matCount++;
+//    }
+//    return matCount;
+//}
+//
+//Material * Scene::GetMaterial(int32 index)
+//{
+//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
+//	return dynamic_cast<Material*>(materials->GetChild(index));
+//}
 
-Material * Scene::GetMaterial(int32 index)
-{
-    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-	return dynamic_cast<Material*>(materials->GetChild(index));
-}
-
-int32 Scene::GetStaticMeshCount()
-{
-    return (int32)staticMeshes->GetChildrenCount();
-}
-
-StaticMesh * Scene::GetStaticMesh(int32 index)
-{
-	return dynamic_cast<StaticMesh*>(staticMeshes->GetChild(index));
-}
+//int32 Scene::GetStaticMeshCount()
+//{
+//    return (int32)staticMeshes->GetChildrenCount();
+//}
+//
+//StaticMesh * Scene::GetStaticMesh(int32 index)
+//{
+//	return dynamic_cast<StaticMesh*>(staticMeshes->GetChild(index));
+//}
     
 void Scene::AddAnimatedMesh(AnimatedMesh * mesh)
 {
@@ -197,19 +183,48 @@ void Scene::AddRootNode(SceneNode *node, const String &rootNodePath)
     ProxyNode * proxyNode = new ProxyNode(this);
     proxyNode->SetNode(node);
     
-    scenes->AddNode(proxyNode);
+    rootNodes[rootNodePath] = proxyNode;
     proxyNode->SetName(rootNodePath);
-    
-    SafeRelease(proxyNode);
 }
 
 SceneNode *Scene::GetRootNode(const String &rootNodePath)
 {
-    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
-    if (proxyNode)
-    {
-        return proxyNode->GetNode();
-    }
+//    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
+//    if (proxyNode)
+//    {
+//        return proxyNode->GetNode();
+//    }
+//    
+//    String ext = FileSystem::Instance()->GetExtension(rootNodePath);
+//    if(ext == ".sce")
+//    {
+//        SceneFile *file = new SceneFile();
+//        file->SetDebugLog(true);
+//        file->LoadScene(rootNodePath, this);
+//        SafeRelease(file);
+//    }
+//    else if(ext == ".sc2")
+//    {
+//        SceneFileV2 *file = new SceneFileV2();
+//        file->EnableDebugLog(true);
+//        file->LoadScene(rootNodePath.c_str(), this);
+//        SafeRelease(file);
+//    }
+//
+//    proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
+//    if (proxyNode)
+//    {
+//        return proxyNode->GetNode();
+//    }
+//    return 0;
+    
+	Map<String, ProxyNode*>::const_iterator it;
+	it = rootNodes.find(rootNodePath);
+	if (it != rootNodes.end())
+	{
+        ProxyNode * node = it->second;
+		return node->GetNode();
+	}
     
     String ext = FileSystem::Instance()->GetExtension(rootNodePath);
     if(ext == ".sce")
@@ -226,42 +241,25 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
         file->LoadScene(rootNodePath.c_str(), this);
         SafeRelease(file);
     }
-
-    proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
-    if (proxyNode)
-    {
-        return proxyNode->GetNode();
-    }
-    return 0;
     
-//	Map<String, SceneNode*>::const_iterator it;
-//	it = rootNodes.find(rootNodePath);
-//	if (it != rootNodes.end())
-//	{
-//		return it->second;
-//	}
-//	SceneFile * file = new SceneFile();
-//	file->SetDebugLog(true);
-//	file->LoadScene(rootNodePath.c_str(), this);
-//	SafeRelease(file);
-//
-//	it = rootNodes.find(rootNodePath);
-//	if (it != rootNodes.end())
-//	{
-//		return it->second;
-//	}
-//    return rootNodes[rootNodePath];
+	it = rootNodes.find(rootNodePath);
+	if (it != rootNodes.end())
+	{
+        ProxyNode * node = it->second;
+		return node->GetNode();
+	}
+    return 0;
 }
 
 void Scene::ReleaseRootNode(const String &rootNodePath)
 {
-//	Map<String, SceneNode*>::iterator it;
-//	it = rootNodes.find(rootNodePath);
-//	if (it != rootNodes.end())
-//	{
-//        it->second->Release();
-//        rootNodes.erase(it);
-//	}
+	Map<String, ProxyNode*>::iterator it;
+	it = rootNodes.find(rootNodePath);
+	if (it != rootNodes.end())
+	{
+        it->second->Release();
+        rootNodes.erase(it);
+	}
 }
     
 void Scene::ReleaseRootNode(SceneNode *nodeToRelease)

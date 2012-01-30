@@ -184,6 +184,17 @@ void PolygonGroup::CreateBaseVertexArray()
 		GetCoord(v, baseVertexArray[v]);
 	}
 }
+    
+void PolygonGroup::ApplyMatrix(const Matrix4 & matrix)
+{
+    for (int32 vi = 0; vi < vertexCount; ++vi)
+    {
+        Vector3 vertex;
+        GetCoord(vi, vertex);
+        vertex = vertex * matrix;
+        SetCoord(vi, vertex);
+    }    
+}
 	
 void PolygonGroup::ReleaseData()
 {
