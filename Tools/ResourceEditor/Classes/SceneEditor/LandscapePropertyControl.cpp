@@ -64,10 +64,11 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
         propertyList->SetFilepathPropertyValue("property.landscape.heightmap", "");
     }
     
+    
     Texture *t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE0);
     if(t)
     {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture0", t->GetPathname());
+        propertyList->SetFilepathPropertyValue("property.landscape.texture0", landscape->GetTextureName(LandscapeNode::TEXTURE_TEXTURE0));
     }
     else
     {
@@ -77,7 +78,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE1);
     if(t)
     {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture1", t->GetPathname());
+        propertyList->SetFilepathPropertyValue("property.landscape.texture1", landscape->GetTextureName(LandscapeNode::TEXTURE_TEXTURE1));
     }
     else
     {
@@ -87,7 +88,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     t = landscape->GetTexture(LandscapeNode::TEXTURE_BUMP);
     if(t)
     {
-        propertyList->SetFilepathPropertyValue("property.landscape.texturebump", t->GetPathname());
+        propertyList->SetFilepathPropertyValue("property.landscape.texturebump", landscape->GetTextureName(LandscapeNode::TEXTURE_BUMP));
     }
     else
     {
@@ -97,7 +98,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     t = landscape->GetTexture(LandscapeNode::TEXTURE_TEXTUREMASK);
     if(t)
     {
-        propertyList->SetFilepathPropertyValue("property.landscape.texturemask",t->GetPathname());
+        propertyList->SetFilepathPropertyValue("property.landscape.texturemask", landscape->GetTextureName(LandscapeNode::TEXTURE_TEXTUREMASK));
     }
     else
     {
@@ -180,8 +181,8 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
         else if("property.landscape.texture1" == forKey)
         {
             Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_DETAIL, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_DETAIL));
+            landscape->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, newValue);
+            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TEXTURE1));
             Texture::DisableMipmapGeneration();
         }
         else if("property.landscape.texturebump" == forKey)

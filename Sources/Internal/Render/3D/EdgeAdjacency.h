@@ -25,44 +25,67 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SHADOW_VOLUME_NODE_H__
-#define __DAVAENGINE_SHADOW_VOLUME_NODE_H__
+#ifndef __DAVAENGINE_EDGE_ADJACENCY_H__
+#define __DAVAENGINE_EDGE_ADJACENCY_H__
 
-#include "MeshInstanceNode.h"
-#include "Render/Shader.h"
-#include "Render/3D/EdgeAdjacency.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
 
 class PolygonGroup;
 
-class ShadowVolumeNode : public MeshInstanceNode
+class EdgeAdjacency
 {
 public:
-	ShadowVolumeNode();
-	virtual ~ShadowVolumeNode();
 
-	virtual void Draw();
+	struct TriangleData
+	{
+		int32 i0;
+		int32 i1;
+		int32 i2;
+	};
 
-	void DrawShadow();
+	struct Edge
+	{
+		Vector3 points[2];
 
-	void CopyGeometryFrom(MeshInstanceNode * meshInstance);
+		Vector<TriangleData> sharedTriangles;
+
+		bool IsEqual(const Edge & otherEdge);
+	};
+
+	struct Triangle
+	{
+		int32 edgeIndices[3];
+	};
+
+	void InitFromPolygonGroup(PolygonGroup * polygonGroup);
+
+	const Vector<Edge> & GetEdges();
+	const Triangle & GetTriangle(int32 index);
+
+	int32 GetEdgesWithTwoTrianglesCount();
+
+	static bool IsPointsEqual(const Vector3 & p0, const Vector3 & p1);
 
 private:
-	Shader * shader;
+	PolygonGroup * polygonGroup;
+	
+	
+	Vector<Edge> edges;
 
+	Vector<Triangle> triangles;
 
-	//shadow mesh generation
-	PolygonGroup * shadowPolygonGroup;
-	int32 newIndexCount;
-	int32 newVertexCount;
+	void AddEdge(Edge & edge);
 
-	int32 FindIndexInTriangleForPointInEdge(int32 * triangleStartIndex, int32 pointInEdge, const EdgeAdjacency::Edge & edge);
-	int32 DuplicateVertexAndSetNormalAtIndex(const Vector3 & normal, int32 index);
-	Vector3 CalculateNormalForVertex(int32 * originalTriangleVertices);
+	void FillEdge(Edge & edge, int32 index0, int32 index1);
+	int32 GetEdgeIndex(Edge & edge);
+
+	void CreateTriangle(int32 startingVertex);
 };
 
-}
+};
 
-#endif //__DAVAENGINE_SHADOW_VOLUME_NODE_H__
+#endif //__DAVAENGINE_EDGE_ADJACENCY_H__

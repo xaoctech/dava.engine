@@ -37,4 +37,7 @@ void main()
 		gl_Position = modelViewProjectionMatrix * inPosition;
 		varColor = vec3(0.0, 0.0, 1.0);
 	}
+	
+//	gl_Position = modelViewProjectionMatrix * inPosition;
+	varColor = inNormal;
 }
