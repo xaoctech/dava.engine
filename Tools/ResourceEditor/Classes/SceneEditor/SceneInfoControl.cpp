@@ -75,7 +75,7 @@ void SceneInfoControl::InvalidateTexturesInfo(int32 count, int32 size)
 
     if(workingScene)
     {
-        SetIntInfoValue("Mat.Count", workingScene->GetMaterialCount());
+        SetIntInfoValue("Mat.Count", -1);
     }
     
     RedrawCells();

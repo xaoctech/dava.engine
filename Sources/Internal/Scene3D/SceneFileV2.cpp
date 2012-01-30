@@ -120,6 +120,21 @@ StaticMesh * SceneFileV2::GetStaticMesh(int32 index)
     return staticMeshes[index];
 }
 
+DataNode * SceneFileV2::GetNodeByPointer(uint64 pointer)
+{
+    Map<uint64, DataNode*>::iterator it = dataNodes.find(pointer);
+    if (it != dataNodes.end())
+    {
+        return it->second;
+    }
+    return 0;
+}
+
+int32 SceneFileV2::GetVersion()
+{
+    return header.version;
+}
+
 bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
@@ -133,20 +148,18 @@ bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
 
     // save header
-    Header header;
     header.signature[0] = 'S';
     header.signature[1] = 'F';
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 1;
+    header.version = 2;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
     
     // save data objects
     Logger::Debug("+ save data objects");
-    
     Logger::Debug("- save file path: %s", rootNodePath.c_str());
     
 //    // Process file paths
@@ -162,9 +175,16 @@ bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
 //            }
 //        }   
 //    }
+    
+//    SaveDataHierarchy(_scene->GetMaterials(), file, 1);
+//    SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
 
-    SaveDataHierarchy(_scene->GetMaterials(), file, 1);
-    SaveDataHierarchy(_scene->GetStaticMeshes(), file, 1);
+    List<DataNode*> nodes;
+    _scene->GetDataNodes(nodes);
+    int32 dataNodesCount = (int32)nodes.size();
+    file->Write(&dataNodesCount, sizeof(int32));
+    for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        SaveDataNode(*it, file);
     
     // save hierarchy
     Logger::Debug("+ save hierarchy");
@@ -191,14 +211,15 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
         Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.c_str());
         return false;
     }   
+
+    scene = _scene;
     rootNodePathName = filename;
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
 
-    Header header;
     file->Read(&header, sizeof(Header));
     int requiredVersion = 1;
-    if (    (header.version != requiredVersion) 
-        ||  (header.signature[0] != 'S') 
+    if (   
+          (header.signature[0] != 'S') 
         ||  (header.signature[1] != 'F') 
         ||  (header.signature[2] != 'V') 
         ||  (header.signature[3] != '2'))
@@ -211,10 +232,25 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     
     Logger::Debug("+ load data objects");
 
-    LoadDataHierarchy(_scene, _scene->GetMaterials(), file, 1);
-    LoadDataHierarchy(_scene, _scene->GetStaticMeshes(), file, 1);
-
+    if (GetVersion() == 1)
+    {
+        DataNode * materialsTemp = new DataNode;
+        LoadDataHierarchy(_scene, materialsTemp, file, 1);
+        SafeRelease(materialsTemp);
+        DataNode * staticMeshes = new DataNode;
+        LoadDataHierarchy(_scene, staticMeshes, file, 1);
+        SafeRelease(staticMeshes);
+    }else if (GetVersion() == 2)
+    {
+        int32 dataNodeCount = 0;
+        file->Read(&dataNodeCount, sizeof(int32));
+        
+        for (int k = 0; k < dataNodeCount; ++k)
+            LoadDataNode(0, file);
+    }
+    
     Logger::Debug("+ load hierarchy");
+    
     SceneNode * rootNode = new SceneNode(_scene);
     rootNode->SetName(rootNodeName);
     for (int ci = 0; ci < header.nodeCount; ++ci)
@@ -223,7 +259,6 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     }
     rootNode->AddFlagRecursive(SceneNode::NODE_VISIBLE);
 	rootNode->SceneDidLoaded();
-//    ProcessLOD(_scene, rootNode);
     _scene->AddRootNode(rootNode, rootNodePathName);
     
     
@@ -239,94 +274,75 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     }
     staticMeshes.clear();
     
+    for (Map<uint64, DataNode*>::iterator it = dataNodes.begin(); it != dataNodes.end(); ++it)
+    {
+        SafeRelease(it->second);
+    }
+    dataNodes.clear();
+    
     SafeRelease(file);
     return true;
 }
-/*    
-void SceneFileV2::ProcessLOD(Scene * scene, SceneNode *forRootNode)
+
+bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
 {
-    if (scene->GetLodLayersCount() <= 0) 
+    KeyedArchive * archive = new KeyedArchive();
+    if (isDebugLogEnabled)
+        Logger::Debug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
+    
+    
+    node->Save(archive, this);  
+    archive->SetInt32("#childrenCount", node->GetChildrenCount());
+    archive->Save(file);
+    
+    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
     {
-        return;
+        DataNode * child = node->GetChild(ci);
+        SaveDataNode(child, file);
     }
     
-    List<SceneNode*> lodNodes;
-    forRootNode->FindNodesByNamePart("_lod0", lodNodes);
-    if (isDebugLogEnabled) 
-    {
-        Logger::Debug("Find %d nodes with LOD", lodNodes.size());
-    }
-    for (List<SceneNode*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
-    {
-        String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
-        if (isDebugLogEnabled) 
-        {
-            Logger::Debug("Processing LODs for %s", nodeName.c_str());
-        }
-        bool isNeedInit = true;
-        SceneNode *newNode = new SceneNode(scene);
-        newNode->SetName(nodeName);
-        MeshInstanceNode *meshToAdd = new MeshInstanceNode(scene);
-        meshToAdd->SetName("instance_0");
-        newNode->AddNode(meshToAdd);
-        (*it)->GetParent()->AddNode(newNode);
-        for (int i = scene->GetLodLayersCount(); i >= 0; i--) 
-        {
-            SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
-            if (ln) 
-            {//if layer is not a dummy
-                MeshInstanceNode *mn = (MeshInstanceNode *)ln->FindByName("instance_0");
-                if (mn) 
-                {
-                    if (isDebugLogEnabled) 
-                    {
-                        Logger::Debug("      Add LOD layer %d", i);
-                    }
-                    if (isNeedInit)
-                    {//we should init our new node from the first appeared real(not a dummy) node
-                        isNeedInit = false;
-                        newNode->SetLocalTransform(ln->GetLocalTransform());
-                        SceneNode *hnode = mn;
-                        while (true)
-                        {
-                            if (hnode->GetParent() == ln) 
-                            {
-                                break;
-                            }
-                            hnode = hnode->GetParent();
-                        }
-                        meshToAdd->SetLocalTransform(mn->AccamulateLocalTransform(hnode));
-                    }
-                    for (int32 n = 0; n < (int32)mn->GetMeshes().size(); n++) 
-                    {
-                        meshToAdd->AddPolygonGroupForLayer(i, mn->GetMeshes()[n], mn->GetPolygonGroupIndexes()[n], mn->GetMaterials()[n]);
-                    }
-                }
-                
-                ln->GetParent()->RemoveNode(ln);
-            }
-            else 
-            {//if layer is dummy
-                SceneNode *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
-                if (ln) 
-                {
-                    if (isDebugLogEnabled) 
-                    {
-                        Logger::Debug("      Add Dummy LOD layer %d", i);
-                    }
-                    meshToAdd->AddDummyLODLayer(i);
-                    
-                    ln->GetParent()->RemoveNode(ln);
-                }
-            }
-        }
-        
-        SafeRelease(newNode);
-        SafeRelease(meshToAdd);
-        
-    }
+    SafeRelease(archive);
+    return true;
 }
-*/
+    
+void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
+{
+    KeyedArchive * archive = new KeyedArchive();
+    archive->Load(file);
+    
+    String name = archive->GetString("##name");
+    DataNode * node = dynamic_cast<DataNode *>(ObjectFactory::Instance()->New(name));
+    
+    if (node)
+    {
+        if (node->GetClassName() == "DataNode")
+        {
+            SafeRelease(node);
+            return;
+        }   
+        node->SetScene(scene);
+        
+        if (isDebugLogEnabled)
+        {
+            String name = archive->GetString("name");
+            Logger::Debug("- %s(%s)", name.c_str(), node->GetClassName().c_str());
+        }
+        node->Load(archive, this);
+        AddToNodeMap(node);
+        
+        if (parent)
+            parent->AddNode(node);
+        
+        int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+        for (int ci = 0; ci < childrenCount; ++ci)
+        {
+            LoadDataNode(node, file);
+        }
+        
+        SafeRelease(node);
+    }
+    SafeRelease(archive);
+}
 
 bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
@@ -366,7 +382,8 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         {
             SafeRelease(node);
             node = SafeRetain(root); // retain root here because we release it at the end
-        }   
+        }  
+        
         node->SetScene(scene);
         
         // TODO: Rethink here
@@ -387,6 +404,9 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         }
         node->Load(archive, this);
         
+        
+        AddToNodeMap(node);
+        
         if (node != root)
             root->AddNode(node);
         
@@ -399,6 +419,13 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
     }
     
     SafeRelease(archive);
+}
+    
+void SceneFileV2::AddToNodeMap(DataNode * node)
+{
+    uint64 ptr = node->GetPreviousPointer();
+    Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
+    dataNodes[ptr] = SafeRetain(node);
 }
     
 bool SceneFileV2::SaveHierarchy(SceneNode * node, File * file, int32 level)
@@ -449,8 +476,6 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         {
             LoadHierarchy(scene, node, file, level + 1);
         }
-    }else 
-    {
     }
     
     SafeRelease(archive);

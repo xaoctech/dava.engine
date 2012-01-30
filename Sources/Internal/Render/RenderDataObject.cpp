@@ -79,8 +79,17 @@ RenderDataObject::~RenderDataObject()
     //streamMap.clear();
     
 #if defined(__DAVAENGINE_OPENGL__)
-    if (vboBuffer)
-        RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
+    #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+        if (vboBuffer)
+            RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
+        if (indexBuffer)
+            RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
+    #else 
+        if (vboBuffer)
+            RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
+        if (indexBuffer)
+            RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
+    #endif
 #endif
 }
 
@@ -145,10 +154,22 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     int32 stride = streamArray[0]->stride;
     
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+    if (vboBuffer)
+    {
+        RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
+        vboBuffer = 0;
+    }
+    
     RENDER_VERIFY(glGenBuffersARB(1, &vboBuffer));
     RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, vboBuffer));
     RENDER_VERIFY(glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW_ARB));
 #else
+    if (vboBuffer)
+    {
+        RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
+        vboBuffer = 0;
+    }
+    
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
     Logger::Debug("glGenBuffers: %d", vboBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
@@ -185,12 +206,25 @@ void RenderDataObject::BuildIndexBuffer()
     RenderManager::Instance()->LockNonMain();
     
 #if defined (__DAVAENGINE_OPENGL__)
-
+    
+    
+    
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+    if (indexBuffer)
+    {
+        RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
+        indexBuffer = 0;
+    }
+    
     RENDER_VERIFY(glGenBuffersARB(1, &indexBuffer));
     RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer));
     RENDER_VERIFY(glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW_ARB));
 #else
+    if (indexBuffer)
+    {
+        RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
+        indexBuffer = 0;
+    }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
     Logger::Debug("glGenBuffers index: %d", indexBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));

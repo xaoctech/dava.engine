@@ -183,6 +183,7 @@
 
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/PolygonGroup.h"
+#include "Render/3D/EdgeAdjacency.h"
 
 // 3D scene management
 #include "Scene3D/Scene.h"
@@ -194,6 +195,7 @@
 #include "Scene3D/CubeNode.h"
 #include "Scene3D/SphereNode.h"
 #include "Scene3D/LightNode.h"
+#include "Scene3D/ShadowVolumeNode.h"
 
 
 // Application core 

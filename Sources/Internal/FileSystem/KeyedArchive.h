@@ -131,7 +131,7 @@ public:
         \returns object
      */
     template <class T>
-    void GetByteArrayAsType(const String & key, T & value, const T & defaultValue = T());
+    T GetByteArrayAsType(const String & key, const T & defaultValue = T());
 	
 	
 	/**
@@ -268,18 +268,20 @@ private:
     
 // Implementation 
 template <class T>
-void KeyedArchive::GetByteArrayAsType(const String & key, T & value, const T & defaultValue)
+T KeyedArchive::GetByteArrayAsType(const String & key, const T & defaultValue)
 {
     int size = GetByteArraySize(key);
     if (size != 0)
     {
         DVASSERT(size == sizeof(T));
-        
+ 
+        T value;
         const uint8 * arrayData = GetByteArray(key);
         memcpy(&value, arrayData, sizeof(T));
+        return value;
     }else
     {
-        value = defaultValue;
+        return defaultValue;
     }
 }
     

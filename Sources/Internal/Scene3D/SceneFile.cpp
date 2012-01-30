@@ -830,6 +830,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
                     }
                     ln->Retain();
                     ln->SetVisible(false);
+                    ln->RemoveAllChildren();
                     ln->GetParent()->RemoveNode(ln);
                     
                     lodNode->AddNodeInLayer(ln, i);

@@ -72,7 +72,7 @@ public:
 	{
 		return lodLayers.begin()->materials;
 	}
-    
+        
 //	Vector<StaticMesh*> & GetMeshes(int32 lodLayer)
 //	{
 //		return lodLayers.begin()->meshes;
@@ -96,38 +96,43 @@ public:
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 
 	/**
-	 \brief Add lightmap texture.
-	 Consequent calls of this function will add lightmaps to consequent PolygonGroups of this MeshInstance.
-	 Normal usage (pseudocode):
-	 \code
-		ClearLightmaps();
-		for(each polygon group)
-		{
-			AddLightmap(...);
-		}
-	 \endcode
+        \brief Add lightmap texture.
+        Consequent calls of this function will add lightmaps to consequent PolygonGroups of this MeshInstance.
+            
+        Normal usage (pseudocode):
+        \code
+        ClearLightmaps();
+        for(each polygon group)
+        {
+            AddLightmap(...);
+        }
+        \endcode
 
-	 \param[in] lightmapName path to texture
+        \param[in] lightmapName path to texture
 	 */
 	void AddLightmap(const String & lightmapName);
 
 	/**
-	 \brief Delete all lightmaps for this MeshInstance. 
+        \brief Delete all lightmaps for this MeshInstance. 
 	 */
 	void ClearLightmaps();
     
 	/**
-	 \brief Replace material for polygon group. 
+        \brief Replace material for polygon group. 
 	 */
     void ReplaceMaterial(Material *material, int32 index);
 
 	void CreateDynamicShadowNode();
 	void DeleteDynamicShadowNode();
     
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
 
     Texture * GetLightmapForIndex(int32 index);
     int32 GetLightmapCount();
-    
+
+    virtual void BakeTransforms();
+
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
