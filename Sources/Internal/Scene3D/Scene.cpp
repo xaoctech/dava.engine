@@ -353,7 +353,6 @@ void Scene::Update(float timeElapsed)
 
 void Scene::Draw()
 {
-   //currentCamera->GetFrustum()->DebugDraw();
     nodeCounter = 0;
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -374,21 +373,39 @@ void Scene::Draw()
     }
 	SceneNode::Draw();
 
-	Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
-	for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
+	if(shadowVolumes.size() > 0)
 	{
-		(*it)->DrawShadow();
+		//2nd pass
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
+
+
+		RenderManager::Instance()->ClearStencilBuffer(0);
+		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
+		RENDER_VERIFY(glStencilMask(0xFFFFFFFF));
+		RENDER_VERIFY(glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF));
+
+		RENDER_VERIFY(glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_INCR, GL_KEEP));
+		RENDER_VERIFY(glStencilOpSeparate(GL_BACK, GL_KEEP, GL_DECR, GL_KEEP));
+		RenderManager::Instance()->FlushState();
+
+
+		Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
+		for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
+		{
+			(*it)->DrawShadow();
+		}
+
+		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 	
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
     
     drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
-//  Logger::Debug("upt: %lld drawt: %lld, %ld", updateTime, drawTime, nodeCounter);
-	
-//	for (int k = 0; k < staticMeshes.size(); ++k)
-//	{
-//		staticMeshes[k]->Draw();
-//	}
 }
 
 	
