@@ -590,7 +590,12 @@ void RenderManager::ClearDepthBuffer(float32 depth)
     RENDER_VERIFY(glClearDepth(depth));
 #endif 
     RENDER_VERIFY(glClear(GL_DEPTH_BUFFER_BIT));
-}   
+}
+
+void RenderManager::ClearStencilBuffer(int32 stencil)
+{
+	RENDER_VERIFY(glClearStencil(stencil));
+}
 
 void RenderManager::SetHWClip(const Rect &rect)
 {
