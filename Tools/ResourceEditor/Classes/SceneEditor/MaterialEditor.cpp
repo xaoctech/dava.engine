@@ -117,10 +117,7 @@ MaterialEditor::MaterialEditor()
             || i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
             || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
         {
-			materialProps[i]->AddFloatProperty("Diffuse color R");
-			materialProps[i]->AddFloatProperty("Diffuse color G");
-			materialProps[i]->AddFloatProperty("Diffuse color B");
-			materialProps[i]->AddFloatProperty("Diffuse color A");
+            materialProps[i]->AddColorProperty("materialeditor.diffusecolor");
         }
 
         if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
@@ -128,10 +125,7 @@ MaterialEditor::MaterialEditor()
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL
             || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
         {
-            materialProps[i]->AddFloatProperty("Specular color R");
-            materialProps[i]->AddFloatProperty("Specular color G");
-            materialProps[i]->AddFloatProperty("Specular color B");
-            materialProps[i]->AddFloatProperty("Specular color A");
+            materialProps[i]->AddColorProperty("materialeditor.specularcolor");
         }
         
     }
@@ -329,23 +323,32 @@ void MaterialEditor::OnFloatPropertyChanged(PropertyList *forList, const String 
 {
     Material *mat = GetMaterial(selectedMaterial);
     if(!mat) return;
+}
 
-    if (forList->IsPropertyAvaliable("Diffuse color R"))
+void MaterialEditor::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
+{
+    if("materialeditor.diffusecolor" == forKey)
     {
-        mat->diffuse.x = forList->GetFloatPropertyValue("Diffuse color R");
-        mat->diffuse.y = forList->GetFloatPropertyValue("Diffuse color G");
-        mat->diffuse.z = forList->GetFloatPropertyValue("Diffuse color B");
-        mat->diffuse.w = forList->GetFloatPropertyValue("Diffuse color A");
+        Material *mat = GetMaterial(selectedMaterial);
+        if(mat)
+        {
+            mat->diffuse.x = newColor.r;
+            mat->diffuse.y = newColor.g;
+            mat->diffuse.z = newColor.b;
+            mat->diffuse.w = newColor.a;
+        }
     }
-
-    if (forList->IsPropertyAvaliable("Specular color R"))
+    else if("materialeditor.specularcolor" == forKey)
     {
-        mat->specular.x = forList->GetFloatPropertyValue("Specular color R");
-        mat->specular.y = forList->GetFloatPropertyValue("Specular color G");
-        mat->specular.z = forList->GetFloatPropertyValue("Specular color B");
-        mat->specular.w = forList->GetFloatPropertyValue("Specular color A");
+        Material *mat = GetMaterial(selectedMaterial);
+        if(mat)
+        {
+            mat->specular.x = newColor.r;
+            mat->specular.y = newColor.g;
+            mat->specular.z = newColor.b;
+            mat->specular.w = newColor.a;
+        }
     }
-    
 }
 
 void MaterialEditor::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
@@ -463,22 +466,16 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
         currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
         currentList->SetBoolPropertyValue("materialeditor.twosided", mat->GetTwoSided());
         
-        
-        
-        if (currentList->IsPropertyAvaliable("Diffuse color R"))
+        if(currentList->IsPropertyAvaliable("materialeditor.diffusecolor"))
         {
-            currentList->SetFloatPropertyValue("Diffuse color R", mat->diffuse.x);
-            currentList->SetFloatPropertyValue("Diffuse color G", mat->diffuse.y);
-            currentList->SetFloatPropertyValue("Diffuse color B", mat->diffuse.z);
-            currentList->SetFloatPropertyValue("Diffuse color A", mat->diffuse.w);
+            currentList->SetColorPropertyValue("materialeditor.diffusecolor", 
+                                               Color(mat->diffuse.x, mat->diffuse.y, mat->diffuse.z, mat->diffuse.w));
         }
         
-        if (currentList->IsPropertyAvaliable("Specular color R"))
+        if(currentList->IsPropertyAvaliable("materialeditor.specularcolor"))
         {
-            currentList->SetFloatPropertyValue("Specular color R", mat->specular.x);
-            currentList->SetFloatPropertyValue("Specular color G", mat->specular.y);
-            currentList->SetFloatPropertyValue("Specular color B", mat->specular.z);
-            currentList->SetFloatPropertyValue("Specular color A", mat->specular.w);
+            currentList->SetColorPropertyValue("materialeditor.specularcolor", 
+                                               Color(mat->specular.x, mat->specular.y, mat->specular.z, mat->specular.w));
         }
     }    
 }
