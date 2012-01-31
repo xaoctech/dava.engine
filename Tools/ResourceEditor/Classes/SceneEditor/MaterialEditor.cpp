@@ -59,6 +59,11 @@ MaterialEditor::MaterialEditor()
     AddControl(text);
     SafeRelease(text);
     
+    int32 textY = (GetRect().dy - ControlsFactory::BUTTON_HEIGHT ) / 2;
+    noMaterials = new UIStaticText(Rect(materialListWidth, textY, GetRect().dx - materialListWidth, ControlsFactory::BUTTON_HEIGHT));
+    noMaterials->SetFont(ControlsFactory::GetFontLight());
+    noMaterials->SetText(LocalizedString(L"materialeditor.nomaterials"));
+    
     
     selectedMaterial = -1;
     lastSelection = NULL;
@@ -75,12 +80,12 @@ MaterialEditor::MaterialEditor()
     v.push_back("NORMAL_MAPPED_DIFFUSE");
     v.push_back("NORMAL_MAPPED_SPECULAR");
     
-    text = new UIStaticText(Rect(size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20));
-    text->SetFont(ControlsFactory::GetFontLight());
-    text->SetText(LocalizedString(L"materialeditor.materialtype"));
-    text->SetAlign(ALIGN_RIGHT|ALIGN_VCENTER);
-    AddControl(text);
-    SafeRelease(text);
+    comboboxName = new UIStaticText(Rect(size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20));
+    comboboxName->SetFont(ControlsFactory::GetFontLight());
+    comboboxName->SetText(LocalizedString(L"materialeditor.materialtype"));
+    comboboxName->SetAlign(ALIGN_RIGHT|ALIGN_VCENTER);
+    AddControl(comboboxName);
+
     materialTypes = new ComboBox(Rect(size.x - size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20), this, v);
     AddControl(materialTypes);
     
@@ -127,18 +132,22 @@ MaterialEditor::MaterialEditor()
         {
             materialProps[i]->AddColorProperty("materialeditor.specularcolor");
         }
-        
     }
 }
 
 MaterialEditor::~MaterialEditor()
 {
+    SafeRelease(noMaterials);
+    
     SafeRelease(btnSelected);
     SafeRelease(btnAll);
     
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
     SafeRelease(materialsList);
+    
+    SafeRelease(comboboxName);
+    SafeRelease(materialTypes);
 }
 
 void MaterialEditor::UpdateInternalMaterialsVector()
@@ -415,6 +424,17 @@ void MaterialEditor::SelectMaterial(int materialIndex)
     Material *mat = GetMaterial(materialIndex);
     if(mat)
     {
+        if(!materialTypes->GetParent())
+        {
+            AddControl(materialTypes);
+            AddControl(comboboxName);
+        }
+        if(noMaterials->GetParent())
+        {
+            RemoveControl(noMaterials);
+        }
+
+        
         PreparePropertiesForMaterialType(mat->type);
         materialTypes->SetSelectedIndex(mat->type, false);
     }
@@ -426,6 +446,16 @@ void MaterialEditor::SelectMaterial(int materialIndex)
             {
                 RemoveControl(materialProps[i]);
             }
+        }
+        
+        if(materialTypes->GetParent())
+        {
+            RemoveControl(materialTypes);
+            RemoveControl(comboboxName);
+        }
+        if(!noMaterials->GetParent())
+        {
+            AddControl(noMaterials);
         }
     }
 }

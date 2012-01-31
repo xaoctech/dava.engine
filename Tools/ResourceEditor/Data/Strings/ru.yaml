@@ -91,6 +91,7 @@ materialeditor.selected: "Выбранные"
 materialeditor.all: "Все"
 materialeditor.specularcolor: "Specular color:"
 materialeditor.diffusecolor: "Diffuse color:"
+materialeditor.nomaterials: "Нет материалов."
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
