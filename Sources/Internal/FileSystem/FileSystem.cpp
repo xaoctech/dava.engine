@@ -588,7 +588,7 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     Vector<String> fileFolders;
     Split(filePath, "/", fileFolders);
 
-    int32 equalCount = 0;
+    Vector<String>::size_type equalCount = 0;
     for(; equalCount < folders.size() && equalCount < fileFolders.size(); ++equalCount)
     {
         if(folders[equalCount] != fileFolders[equalCount])
@@ -598,12 +598,12 @@ String FileSystem::AbsoluteToRelativePath(const String &folderPathname, const St
     }
     
     String retPath = "";
-    for(int32 i = equalCount; i < folders.size(); ++i)
+    for(Vector<String>::size_type i = equalCount; i < folders.size(); ++i)
     {
         retPath += "../";
     }
 
-    for(int32 i = equalCount; i < fileFolders.size(); ++i)
+    for(Vector<String>::size_type i = equalCount; i < fileFolders.size(); ++i)
     {
         retPath += fileFolders[i] + "/";
     }
