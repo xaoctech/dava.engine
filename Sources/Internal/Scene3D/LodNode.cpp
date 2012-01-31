@@ -435,13 +435,7 @@ void LodNode::SceneDidLoaded()
         }
     }
 
-    lastLodUpdateFrame = 0;
-    RecheckLod();
-    int32 size = currentLod->nodes.size();
-    for (int i = 0; i < size; i++) 
-    {
-        currentLod->nodes[i]->SetUpdatable(true);
-    }
+    lastLodUpdateFrame = 1000;
 }
 
     
