@@ -401,6 +401,8 @@ void Scene::Draw()
 		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_CULL);
 		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
 		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+
+		//3rd pass
 	}
 	
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
