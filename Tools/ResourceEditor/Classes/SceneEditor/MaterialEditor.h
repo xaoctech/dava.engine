@@ -78,6 +78,8 @@ protected:
     int selectedMaterial;
     UIListCell *lastSelection;
     
+    UIStaticText *noMaterials;
+    UIStaticText *comboboxName;
     
     //===============
     enum eDisplayMode
