@@ -89,6 +89,8 @@ materialeditor.materialtype: "Тип материала:"
 materialeditor.twosided: "Двусторонний:"
 materialeditor.selected: "Выбранные"
 materialeditor.all: "Все"
+materialeditor.specularcolor: "Specular color:"
+materialeditor.diffusecolor: "Diffuse color:"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"

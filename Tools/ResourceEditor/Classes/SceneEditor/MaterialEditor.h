@@ -58,7 +58,8 @@ public:
 	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
 	virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 	virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
-    
+    virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor);
+
     void SelectMaterial(int materialIndex);
     void PreparePropertiesForMaterialType(int materialType);
     
