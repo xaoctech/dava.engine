@@ -236,22 +236,38 @@ int32 Scene::GetLodLayersCount()
 
 float32 Scene::GetLodLayerNear(int32 layerNum)
 {
-    return lodLayers[layerNum].nearDistance;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].nearDistance;
+    }
+    return lodLayers[forceLodLayer].nearDistance;
 }
 
 float32 Scene::GetLodLayerFar(int32 layerNum)
 {
-    return lodLayers[layerNum].farDistance;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].farDistance;
+    }
+    return lodLayers[forceLodLayer].farDistance;
 }
 
 float32 Scene::GetLodLayerNearSquare(int32 layerNum)
 {
-    return lodLayers[layerNum].nearDistanceSq;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].nearDistanceSq;
+    }
+    return lodLayers[forceLodLayer].nearDistanceSq;
 }
 
 float32 Scene::GetLodLayerFarSquare(int32 layerNum)
 {
-    return lodLayers[layerNum].farDistanceSq;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].farDistanceSq;
+    }
+    return lodLayers[forceLodLayer].farDistanceSq;
 }
     
 
