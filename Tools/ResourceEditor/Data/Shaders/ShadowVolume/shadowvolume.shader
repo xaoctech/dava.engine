@@ -1,7 +1,7 @@
 vertexShader:
-    glsl:   shadowvolume_debug.vsh
+    glsl:   shadowvolume.vsh
     hlsl:   putfilename
     
 fragmentShader:
-    glsl:   shadowvolume_debug.fsh
+    glsl:   shadowvolume.fsh
     hlsl:   putfilename
