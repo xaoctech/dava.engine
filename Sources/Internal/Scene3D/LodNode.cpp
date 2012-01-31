@@ -215,24 +215,6 @@ void LodNode::RecheckLod()
 #ifdef LOD_DEBUG
     int32 cl = currentLod->layer;
 #endif
-    if (scene->GetForceLodLayer() != -1)
-    {
-        for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
-        {
-            if (scene->GetForceLodLayer() == it->layer)
-            {
-                currentLod = &(*it);
-#ifdef LOD_DEBUG
-                if (cl != currentLod->layer) 
-                {
-                    Logger::Info("Switch lod to %d", currentLod->layer);
-                }
-#endif
-                return;
-            }
-        }
-    }
-    else 
     {
         float32 dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
         dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
