@@ -560,7 +560,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Box2D_iPhone_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				PRODUCT_NAME = Box2D_iPhone;
 			};
 			name = Debug;
@@ -572,7 +571,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Box2D_iPhone_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				PRODUCT_NAME = Box2D_iPhone;
 			};
 			name = Release;
@@ -651,7 +649,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Box2D_iPhone_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				PRODUCT_NAME = Box2D_iPhone;
 			};
 			name = AdHoc;
@@ -685,7 +682,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Box2D_iPhone_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				PRODUCT_NAME = Box2D_iPhone;
 			};
 			name = Distribution;

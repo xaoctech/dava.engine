@@ -428,12 +428,14 @@ void LodNode::SceneDidLoaded()
         for (size_t idx = 0; idx < size; ++idx)
         {
             ld.nodes.push_back(children[ld.indexes[idx]]);
-            if (&ld != currentLod) 
+//            if (&ld != currentLod) 
             {
                 children[ld.indexes[idx]]->SetUpdatable(false);
             }
         }
     }
+
+    lastLodUpdateFrame = 1000;
 }
 
     

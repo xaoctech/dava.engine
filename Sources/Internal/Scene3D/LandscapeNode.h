@@ -166,6 +166,13 @@ public:
 	 */
 	Texture * GetTexture(eTextureLevel level);
     
+	/**
+	 \brief Get texture name that was previously set in SetTexture.
+	 \param[in] level 
+	 \returns current texture name
+	 */
+    const String & GetTextureName(eTextureLevel level);
+    
     /**
         \brief Overloaded draw function to draw landscape
      */
