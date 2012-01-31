@@ -1019,5 +1019,9 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     }
 }
 
+const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel level)
+{
+    return textureNames[level];
+}
     
 };
