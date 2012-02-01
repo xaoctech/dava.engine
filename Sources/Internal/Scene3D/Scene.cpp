@@ -459,6 +459,39 @@ int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
     lodLayers.push_back(newLevel);
     return i;
 }
+    
+void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance)
+{
+    DVASSERT(layerNum < lodLayers.size());
+    
+    lodLayers[layerNum].nearDistance = nearDistance;
+    lodLayers[layerNum].farDistance = farDistance;
+    lodLayers[layerNum].nearDistanceSq = nearDistance * nearDistance;
+    lodLayers[layerNum].farDistanceSq = farDistance * farDistance;
+    
+    
+//    LodLayer newLevel;
+//    newLevel.nearDistance = nearDistance;
+//    newLevel.farDistance = farDistance;
+//    newLevel.nearDistanceSq = nearDistance * nearDistance;
+//    newLevel.farDistanceSq = farDistance * farDistance;
+//    int i = 0;
+//    
+//    for (Vector<LodLayer>::iterator it = lodLayers.begin(); it < lodLayers.end(); it++)
+//    {
+//        if (nearDistance < it->nearDistance)
+//        {
+//            lodLayers.insert(it, newLevel);
+//            return i;
+//        }
+//        i++;
+//    }
+//    
+//    lodLayers.push_back(newLevel);
+//    return i;
+}
+    
+    
 
 void Scene::AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume)
 {
