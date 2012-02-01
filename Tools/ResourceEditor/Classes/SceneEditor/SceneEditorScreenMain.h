@@ -5,10 +5,10 @@
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
 
-//#include "CreateNodeDialog.h"
 #include "CreateNodesDialog.h"
 
 #include "SceneNodeIDs.h"
+#include "SettingsDialog.h"
 
 using namespace DAVA;
 
@@ -18,8 +18,8 @@ class MaterialEditor;
 class SettingsDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
-//    public MenuPopupDelegate, public CreateNodeDialogDelegeate
-public MenuPopupDelegate, public CreateNodesDialogDelegeate
+    public MenuPopupDelegate, public CreateNodesDialogDelegeate,
+    public SettingsDialogDelegate
 {
 	struct BodyItem;
 
@@ -84,6 +84,10 @@ public:
 
 	BodyItem * FindCurrentBody();
     
+    virtual void SettingsChanged();
+    virtual void Input(UIEvent * event);
+
+
 private:
     
     void AutoSaveLevel(BaseObject * obj, void *, void *);

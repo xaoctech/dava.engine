@@ -149,4 +149,60 @@ void EditorSettings::SetRightPanelWidth(int32 width)
     settings->SetInt32("RightPanelWidth", width);
 }
 
+int32 EditorSettings::GetLodLayersCount()
+{
+    return settings->GetInt32("LODLayers_count", 8);
+}
+
+float32 EditorSettings::GetLodLayerNear(int32 layerNum)
+{
+    int32 count = GetLodLayersCount();
+    DVASSERT(0 <= layerNum && layerNum < count);
+
+    static const float32 LodLayerNear[] = {0, 7, 18, 990, 1990, 2990, 3990, 4990};
+    return settings->GetFloat(Format("LODLayer_%d_Near", layerNum), LodLayerNear[layerNum]);
+}
+
+float32 EditorSettings::GetLodLayerFar(int32 layerNum)
+{
+    int32 count = GetLodLayersCount();
+    DVASSERT(0 <= layerNum && layerNum < count);
+    
+    static const float32 LodLayerFar[] = {10, 20, 1000, 2000, 3000, 4000, 5000, 6000};
+    return settings->GetFloat(Format("LODLayer_%d_Far", layerNum), LodLayerFar[layerNum]);
+}
+
+void EditorSettings::SetLodLayersCount(int32 count)
+{
+    settings->SetInt32("LODLayers_count", count);
+}
+
+void EditorSettings::SetLodLayerNear(int32 layerNum, float32 near)
+{
+    int32 count = GetLodLayersCount();
+    DVASSERT(0 <= layerNum && layerNum < count);
+    
+    settings->SetFloat(Format("LODLayer_%d_Near", layerNum), near);
+}
+
+void EditorSettings::SetLodLayerFar(int32 layerNum, float32 far)
+{
+    int32 count = GetLodLayersCount();
+    DVASSERT(0 <= layerNum && layerNum < count);
+    
+    settings->SetFloat(Format("LODLayer_%d_Far", layerNum), far);
+}
+
+int32 EditorSettings::GetForceLodLayer()
+{
+    return settings->GetInt32("LODLayer_Force", -1);
+}
+
+void EditorSettings::SetForceLodLayer(int32 layer)
+{
+    int32 count = GetLodLayersCount();
+    DVASSERT(-1 <= layer && layer < count);
+    
+    settings->SetInt32("LODLayer_Force", layer);
+}
 

@@ -10,10 +10,7 @@
 #include "LandscapeEditorControl.h"
 
 #include "EditorSettings.h"
-#include "SettingsDialog.h"
-
 #include "SceneValidator.h"
-
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -37,7 +34,7 @@ void SceneEditorScreenMain::LoadResources()
     CreateTopMenu();
     
     //
-    settingsDialog = new SettingsDialog(fullRect);
+    settingsDialog = new SettingsDialog(fullRect, this);
     UIButton *settingsButton = ControlsFactory::CreateImageButton(Rect(fullRect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), "~res:/Gfx/UI/settingsicon");
 
     settingsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSettingsPressed));
@@ -1051,4 +1048,54 @@ void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *obj, void *, vo
 {
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->ToggleSceneInfo();
+}
+
+void SceneEditorScreenMain::SettingsChanged()
+{
+    for(int32 i = 0; i < bodies.size(); ++i)
+    {
+        EditorScene *scene = bodies[i]->bodyControl->GetScene();
+        
+        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
+        int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+        for(int32 iLod = 0; iLod < lodCount; ++iLod)
+        {
+            float32 near = EditorSettings::Instance()->GetLodLayerNear(iLod);
+            float32 far = EditorSettings::Instance()->GetLodLayerFar(iLod);
+            
+            scene->ReplaceLodLayer(i, near, far);
+        }
+    }
+}
+
+void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
+{
+    if(UIEvent::PHASE_KEYCHAR == event->phase)
+    {
+        bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+        if(altIsPressed)
+        {
+            int32 key = event->tid - DVKEY_1;
+            if(0 <= key && key < 8)
+            {
+                for(int32 i = 0; i < bodies.size(); ++i)
+                {
+                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
+                    scene->SetForceLodLayer(key);
+                }
+                EditorSettings::Instance()->SetForceLodLayer(key);
+                EditorSettings::Instance()->Save();
+            }
+            else if(DVKEY_0 == event->tid)
+            {
+                for(int32 i = 0; i < bodies.size(); ++i)
+                {
+                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
+                    scene->SetForceLodLayer(-1);
+                }
+                EditorSettings::Instance()->SetForceLodLayer(-1);
+                EditorSettings::Instance()->Save();
+            }
+        }
+    }
 }
