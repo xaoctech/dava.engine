@@ -68,6 +68,8 @@ class UIHierarchyDelegate
     virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node) = 0;
     virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell)
     {};
+    
+    virtual void DragAndDrop(UIHierarchyCell *who, UIHierarchyCell *target) {};
 };
 
 
@@ -276,6 +278,12 @@ protected:
     
     Map<String, Vector<UIHierarchyCell*>*> cellStore;
 
+    //Drag&Drop
+    UIHierarchyCell *draggedCell;
+    UIHierarchyCell *cellUnderDrag;
+    void DragInput(UIEvent *input);
+    UIHierarchyCell * FindVisibleCellForPoint(Vector2 &point);
+    
 };
 };
 
