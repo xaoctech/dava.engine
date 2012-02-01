@@ -148,6 +148,9 @@ void EditorBodyControl::CreateHelpPanel()
 
     AddHelpText(L"Landscape Editor:", ++y);
 	AddHelpText(L"Press & hold \"Spacebar\" to scroll area", y);
+    
+    AddHelpText(L"Alt + 1...8: set SetForceLodLayer(0, 1, ... , 7)", ++y);
+    AddHelpText(L"Alt + 0: set SetForceLodLayer(-1)", y);
 
 	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }
@@ -879,21 +882,43 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     break;
 
                 case DVKEY_5:
-                    modAxis = AXIS_X;
+                {
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        modAxis = AXIS_X;
+                    }
                     break;
+                }
 
                 case DVKEY_6:
-                    modAxis = AXIS_Y;
+                {
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        modAxis = AXIS_Y;
+                    }
                     break;
+                }
 
                 case DVKEY_7:
-                    modAxis = AXIS_Z;
+                {
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        modAxis = AXIS_Z;
+                    }
                     break;
+                }
 
                 case DVKEY_8:
                 {
-                    if (modAxis < AXIS_XY) modAxis = AXIS_XY;
-                    else modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        if (modAxis < AXIS_XY) modAxis = AXIS_XY;
+                        else modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+                    }
                     
                     break;
                 }
@@ -1782,4 +1807,42 @@ void EditorBodyControl::ToggleSceneInfo()
     {
         AddControl(sceneInfoControl);
     }
+}
+
+void EditorBodyControl::DragAndDrop(UIHierarchyCell *who, UIHierarchyCell *target)
+{
+    SceneNode *whoNode = SafeRetain((SceneNode *)who->GetNode()->GetUserNode());
+    SceneNode *targetNode = (target) ? SafeRetain((SceneNode *)target->GetNode()->GetUserNode()) : NULL;
+    
+    if(whoNode)
+    {
+        // select new parent for dragged node
+        SceneNode *newParent = (targetNode) ? targetNode : scene;
+        
+        //skip unused drag
+        if(whoNode->GetParent() != newParent)
+        {
+            // check correct hierarhy (can't drag to child)
+            SceneNode *nd = newParent->GetParent();
+            while(nd && nd != whoNode)
+            {
+                nd = nd->GetParent();
+            }
+            
+            if(!nd)
+            {
+                //drag
+                whoNode->GetParent()->RemoveNode(whoNode);
+                newParent->AddNode(whoNode);
+            }
+        }
+
+        //refresh controls
+        SelectNodeAtTree(NULL);
+        RefreshDataGraph();
+    }
+    
+    SafeRelease(whoNode);
+    SafeRelease(targetNode);
+    
 }
