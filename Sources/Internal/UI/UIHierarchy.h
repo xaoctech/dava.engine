@@ -68,7 +68,7 @@ class UIHierarchyDelegate
     virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node) = 0;
     virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell)
     {};
-    virtual void DragAndDrop(void *who, void *target) {};
+    virtual void DragAndDrop(void *who, void *target, int32 mode) {};
 };
 
 
@@ -278,6 +278,16 @@ protected:
     Map<String, Vector<UIHierarchyCell*>*> cellStore;
 
     //Drag&Drop
+public:    
+    enum eDragMode
+    {
+        DRAG_NONE = -1,
+        DRAG_CHANGE_PARENT = 0,
+        DRAG_CHANGE_ORDER,
+    };
+protected:
+    
+    eDragMode dragMode;
     void *draggedData;
     UIHierarchyCell *cellUnderDrag;
     void DragInput(UIEvent *input);
