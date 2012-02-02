@@ -368,12 +368,16 @@ void ControlsFactory::CustomizeDialog(UIControl *c)
 
 void ControlsFactory::SetScrollbar(DAVA::UIList *l)
 {
+    UIControl *c = l->FindByName("ScrollBar");
+    if(c) return;
+    
     Rect fr = l->GetRect();
     
     Sprite *scrollSpr = Sprite::Create("~res:/Gfx/UI/scroll");
     
     UIScrollBar *scrollBar = new UIScrollBar(Rect(fr.dx - scrollSpr->GetWidth(), 0, scrollSpr->GetWidth(), fr.dy), 
                                              UIScrollBar::ORIENTATION_VERTICAL);
+    scrollBar->SetName("ScrollBar");
     
     scrollBar->GetSlider()->SetSprite(scrollSpr, 0);
     scrollBar->GetSlider()->GetBackground()->SetDrawType(UIControlBackground::DRAW_STRETCH_VERTICAL);

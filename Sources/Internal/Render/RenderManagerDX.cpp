@@ -1090,6 +1090,12 @@ void RenderManager::ClearDepthBuffer(float32 depth)
     RENDER_VERIFY(direct3DDevice->Clear(0,  0, D3DCLEAR_ZBUFFER,  0,  depth,  0));
 }
 
+void RenderManager::ClearStencilBuffer(int32 stencil)
+{
+	//TODO: untested
+	RENDER_VERIFY(direct3DDevice->Clear(0,  0, D3DCLEAR_STENCIL,  0,  0,  stencil));
+}
+
 void RenderManager::SetHWClip(const Rect &rect)
 {
 	PrepareRealMatrix();

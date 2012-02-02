@@ -40,7 +40,7 @@ REGISTER_CLASS(ShadowVolumeNode);
 DAVA::ShadowVolumeNode::ShadowVolumeNode()
 {
 	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume_debug.shader");
+	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
 	shader->Recompile();
 }
 
@@ -60,11 +60,9 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
-	//PolygonGroup * group = ((MeshInstanceNode*)GetParent())->GetMeshes()[0]->GetPolygonGroup(0);
-	PolygonGroup * group = shadowPolygonGroup;
+	Matrix4 projMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
 
-	//TODO: temp solution
-	//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+	PolygonGroup * group = shadowPolygonGroup;
 
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(group->renderDataObject);

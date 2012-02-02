@@ -22,7 +22,9 @@ ComboBox::ComboBox(const Rect &rect, ComboBoxDelegate *comboDelegate, const Vect
     int32 sz = Min(8, (int32)items.size());
     list = new UIList(Rect(0, size.y, size.x, size.y * sz), UIList::ORIENTATION_VERTICAL);
     list->SetDelegate(this);
+    ControlsFactory::SetScrollbar(list);
     ControlsFactory::CusomizeListControl(list);
+    
 
     selectionIndex = 0;
     comboButton = ControlsFactory::CreateButton(Rect(0,0,size.x,size.y), StringToWString(items[selectionIndex]));
@@ -58,6 +60,7 @@ void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
     SafeRelease(list);
     list = new UIList(Rect(0, size.y, size.x, size.y * sz), UIList::ORIENTATION_VERTICAL);
     list->SetDelegate(this);
+    ControlsFactory::SetScrollbar(list);
     ControlsFactory::CusomizeListControl(list);
     
     selectionIndex = 0;

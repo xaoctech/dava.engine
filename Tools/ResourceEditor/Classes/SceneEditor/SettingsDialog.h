@@ -7,11 +7,19 @@
 
 using namespace DAVA;
 
+class SettingsDialogDelegate
+{
+public:
+    
+    virtual void SettingsChanged() = 0;
+};
+
+class ErrorDialog;
 class SettingsDialog: public UIControl, public PropertyListDelegate
 {
     
 public:
-    SettingsDialog(const Rect & rect);
+    SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDelegate);
     virtual ~SettingsDialog();
     
     virtual void WillAppear();
@@ -33,6 +41,11 @@ protected:
     PropertyList *propertyList;
     
     Vector<String> languages;
+    
+    SettingsDialogDelegate *delegate;
+    
+    ErrorDialog *errorDialog;
+
 };
 
 
