@@ -44,14 +44,12 @@ void SceneEditorScreenMain::LoadResources()
     landscapeEditor = new LandscapeEditorControl(Rect(0, ControlsFactory::BUTTON_HEIGHT + 1, 
                                                       fullRect.dx, fullRect.dy - ControlsFactory::BUTTON_HEIGHT-1));
     
-    menuPopup = new MenuPopupControl(fullRect, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
+    menuPopup = new MenuPopupControl(GetRect(), ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
     InitializeNodeDialogs();    
     
     materialEditor = new MaterialEditor();
-    
-    lastFilesDialog = new LastOpenedFilesDialog(this);
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
@@ -107,8 +105,6 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
-    SafeRelease(lastFilesDialog);
-    
     SafeRelease(sceneInfoButton);
     
     SafeRelease(settingsDialog);
@@ -300,35 +296,15 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 {
     if(EditorSettings::Instance()->GetLastOpenedCount())
     {
-        menuPopup->InitControl(MENUID_OPEN, btnOpen->GetRect());
+        Rect rect = btnOpen->GetRect();
+        rect.dx = GetRect().dx / 2;
+        menuPopup->InitControl(MENUID_OPEN, rect);
         AddControl(menuPopup);
     }
     else
     {
         ShowOpenFileDialog();
     }
-    
-
-//    if(!fileSystemDialog->GetParent())
-//    {
-//        fileSystemDialog->SetExtensionFilter(".sc2");
-//        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
-//        
-//        BodyItem *iBody = FindCurrentBody();
-//        String path = iBody->bodyControl->GetFilePath();
-//        if (path.length() > 0) 
-//        {
-//            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-//            fileSystemDialog->SetCurrentDir(path);
-//        }
-//        else 
-//        {
-//            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
-//        }
-//
-//        fileSystemDialog->Show(this);
-//        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
-//    }
 }
 
 
@@ -766,16 +742,17 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
     {
         case MENUID_OPEN:
         {
-            switch (itemID) 
+            if(EOMID_OPEN == itemID)
             {
-                case EOMID_OPEN:
-                    ShowOpenFileDialog();
-                    break;
-                case EOMID_OPENLAST:
-                    ShowOpenLastDialog();
-                    break;
+                ShowOpenFileDialog();
             }
-            
+            else
+            {
+                int32 lastIndex = itemID - EOMID_OPENLAST_STARTINDEX;
+                String path = EditorSettings::Instance()->GetLastOpenedFile(lastIndex);
+                OpenFileAtScene(path);
+            }
+
             break;
         }
             
@@ -841,16 +818,16 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
     {
         case MENUID_OPEN:
         {
-            switch (itemID) 
+            if(EOMID_OPEN == itemID)
             {
-                case EOMID_OPEN:
-                    text = LocalizedString(L"menu.open.open");
-                    break;
-                case EOMID_OPENLAST:
-                    text = LocalizedString(L"menu.open.openlast");
-                    break;
+                text = LocalizedString(L"menu.open.open");
             }
-            
+            else
+            {
+                int32 lastIndex = itemID - EOMID_OPENLAST_STARTINDEX;
+                String path = EditorSettings::Instance()->GetLastOpenedFile(lastIndex);
+                text = StringToWString(path);
+            }
             break;
         }
             
@@ -962,7 +939,7 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
     {
         case MENUID_OPEN:
         {
-            retCount = EOMID_COUNT;
+            retCount = EditorSettings::Instance()->GetLastOpenedCount() + 1;
             break;
         }
         case MENUID_CREATENODE:
@@ -1174,21 +1151,11 @@ void SceneEditorScreenMain::ShowOpenFileDialog()
     }
 }
 
-void SceneEditorScreenMain::ShowOpenLastDialog()
-{
-    lastFilesDialog->Show();
-}
-
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
     //опен всегда загружает только уровень, но не отдельные части сцены
     bodies[0]->bodyControl->OpenScene(pathToFile, true);
     bodies[0]->bodyControl->SetFilePath(pathToFile);
-}
-
-void SceneEditorScreenMain::OnLastFileSelected(String pathToFile)
-{
-    OpenFileAtScene(pathToFile);
 }
 
 
