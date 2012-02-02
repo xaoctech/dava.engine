@@ -32,6 +32,8 @@
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
 		5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */; };
 		5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */; };
+		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
+		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
 		C7AB37101473F31E00D52251 /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -511,6 +513,8 @@
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
 		5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
+		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
+		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
 		C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSFullScreenWindow.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1469,6 +1473,8 @@
 		FECFC19512E87E3000C71562 /* Scene2D */ = {
 			isa = PBXGroup;
 			children = (
+				C7783B8E14DA998F00877862 /* TextGameObject.cpp */,
+				C7783B8F14DA998F00877862 /* TextGameObject.h */,
 				47DF9D2E12F753590034D79F /* Box2DGameObject.h */,
 				47DF9D2F12F753590034D79F /* Box2DGameObject.cpp */,
 				FECFC19912E87E3000C71562 /* Box2DGameObjectManager.h */,
@@ -1921,6 +1927,7 @@
 				5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */,
 				47C138AE14D05BBA00525771 /* LodNode.h in Headers */,
 				5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */,
+				C7783B9114DA998F00877862 /* TextGameObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2205,6 +2212,7 @@
 				5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */,
 				47C138AF14D05BBA00525771 /* LodNode.cpp in Sources */,
 				5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */,
+				C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
