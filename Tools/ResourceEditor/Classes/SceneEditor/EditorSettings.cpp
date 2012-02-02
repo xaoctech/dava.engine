@@ -151,7 +151,7 @@ void EditorSettings::SetRightPanelWidth(int32 width)
 
 int32 EditorSettings::GetLodLayersCount()
 {
-    return settings->GetInt32("LODLayers_count", 8);
+    return settings->GetInt32("LODLayers_count", LOD_LEVELS_COUNT);
 }
 
 float32 EditorSettings::GetLodLayerNear(int32 layerNum)
@@ -205,4 +205,53 @@ void EditorSettings::SetForceLodLayer(int32 layer)
     
     settings->SetInt32("LODLayer_Force", layer);
 }
+
+int32 EditorSettings::GetLastOpenedCount()
+{
+    return settings->GetInt32("LastOpenedFilesCount", 0);
+}
+
+String EditorSettings::GetLastOpenedFile(int32 index)
+{
+    int32 count = GetLastOpenedCount();
+    DVASSERT((0 <= index) && (index < count));
+    
+    return settings->GetString(Format("LastOpenedFile_%d", index), "");
+}
+
+void EditorSettings::AddLastOpenedFile(const String & pathToFile)
+{
+    Vector<String> filesList;
+    
+    int32 count = GetLastOpenedCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        String path = settings->GetString(Format("LastOpenedFile_%d", i), "");
+        if(path == pathToFile)
+        {
+            return;
+        }
+        
+        filesList.push_back(path);
+    }
+
+    if(filesList.size() < RESENT_FILES_COUNT)
+    {
+        settings->SetString(Format("LastOpenedFile_%d", filesList.size()), pathToFile);
+        settings->SetInt32("LastOpenedFilesCount", filesList.size() + 1);
+    }
+    else
+    {
+        filesList.erase(filesList.begin());
+        filesList.push_back(pathToFile);
+        
+        for(int32 i = 0; i < filesList.size(); ++i)
+        {
+            settings->SetString(Format("LastOpenedFile_%d", i), filesList[i]);
+        }
+    }
+    
+    Save();
+}
+
 

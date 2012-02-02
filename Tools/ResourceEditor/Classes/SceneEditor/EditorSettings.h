@@ -8,6 +8,14 @@ using namespace DAVA;
 class EditorSettings: public Singleton<EditorSettings>
 {
     
+public: 
+    
+    enum eDefaultSettings
+    {
+        LOD_LEVELS_COUNT = 8,
+        RESENT_FILES_COUNT = 5,
+    };
+    
 public:
     EditorSettings();
     virtual ~EditorSettings();
@@ -57,6 +65,9 @@ public:
     int32 GetForceLodLayer();
     void SetForceLodLayer(int32 layer);
 
+    int32 GetLastOpenedCount();
+    String GetLastOpenedFile(int32 index);
+    void AddLastOpenedFile(const String & pathToFile);
     
 protected:
 

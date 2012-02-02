@@ -20,3 +20,11 @@ const Rect ExtendedDialog::DialogRect()
 {
     return Rect(GetRect().dx/4, GetRect().dy/4, GetRect().dx / 2, GetRect().dy/2);
 }
+
+void ExtendedDialog::Close()
+{
+    if(GetParent())
+    {
+        GetParent()->RemoveControl(this);
+    }
+}

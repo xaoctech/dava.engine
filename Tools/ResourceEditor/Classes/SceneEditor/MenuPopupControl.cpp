@@ -89,9 +89,9 @@ int32 MenuPopupControl::CellWidth(UIList * list, int32 index)
 
 void MenuPopupControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
-    int32 index = selectedCell->GetIndex();
     if(menuDelegate)
     {
+        int32 index = selectedCell->GetIndex();
         menuDelegate->MenuSelected(menuItemID, index);
     }
 }
