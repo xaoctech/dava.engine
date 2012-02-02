@@ -63,6 +63,7 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.cColorBits = 24;
 	pfd.cDepthBits = 16;
+	pfd.cStencilBits = 8;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 	int iFormat = ChoosePixelFormat( hDC, &pfd );
 	SetPixelFormat( hDC, iFormat, &pfd );
@@ -586,7 +587,7 @@ void RenderManager::ClearDepthBuffer(float32 depth)
 {
 #if defined(__DAVAENGINE_IPHONE__)
     RENDER_VERIFY(glClearDepthf(depth));
-#elif defined(__DAVAENGINE_MACOS__)
+#else
     RENDER_VERIFY(glClearDepth(depth));
 #endif 
     RENDER_VERIFY(glClear(GL_DEPTH_BUFFER_BIT));
@@ -595,6 +596,7 @@ void RenderManager::ClearDepthBuffer(float32 depth)
 void RenderManager::ClearStencilBuffer(int32 stencil)
 {
 	RENDER_VERIFY(glClearStencil(stencil));
+	RENDER_VERIFY(glClear(GL_STENCIL_BUFFER_BIT));
 }
 
 void RenderManager::SetHWClip(const Rect &rect)
@@ -849,8 +851,8 @@ void RenderManager::AttachRenderData(Shader * shader)
         RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
 #else
         RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("shader glBindBuffer: %d", currentRenderData->vboBuffer);
-        RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
+		if (DEBUG)Logger::Debug("shader glBindBuffer: %d", currentRenderData->vboBuffer);
+		RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
 #endif
 #endif 
         //}
