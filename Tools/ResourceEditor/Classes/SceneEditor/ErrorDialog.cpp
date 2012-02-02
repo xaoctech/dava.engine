@@ -97,8 +97,5 @@ const Rect ErrorDialog::DialogRect()
 
 void ErrorDialog::OnCancel(BaseObject * owner, void * userData, void * callerData)
 {
-    if(GetParent())
-    {
-        GetParent()->RemoveControl(this);
-    }
+    Close();
 }
