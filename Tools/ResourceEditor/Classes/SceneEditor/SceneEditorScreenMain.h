@@ -5,10 +5,11 @@
 #include "LibraryControl.h"
 #include "MenuPopupControl.h"
 
-//#include "CreateNodeDialog.h"
 #include "CreateNodesDialog.h"
 
 #include "SceneNodeIDs.h"
+#include "SettingsDialog.h"
+#include "LastOpenedFilesDialog.h"
 
 using namespace DAVA;
 
@@ -18,8 +19,8 @@ class MaterialEditor;
 class SettingsDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
-//    public MenuPopupDelegate, public CreateNodeDialogDelegeate
-public MenuPopupDelegate, public CreateNodesDialogDelegeate
+    public MenuPopupDelegate, public CreateNodesDialogDelegeate,
+    public SettingsDialogDelegate, public LastOpenedFilesDialogDelegate
 {
 	struct BodyItem;
 
@@ -43,9 +44,10 @@ public MenuPopupDelegate, public CreateNodesDialogDelegeate
     
     enum eMenuIDS
     {
-        MENUID_CREATENODE = 100,
-        MENUID_NEW = 200,
-        MENUID_VIEWPORT = 300,
+        MENUID_OPEN = 100,
+        MENUID_CREATENODE = 200,
+        MENUID_NEW = 300,
+        MENUID_VIEWPORT = 400,
     };
     
     enum eNewMenuIDS
@@ -54,6 +56,14 @@ public MenuPopupDelegate, public CreateNodesDialogDelegeate
         ENMID_SCENE_WITH_CAMERA,
         
         ENMID_COUNT
+    };
+    
+    enum eOpenMenuIDS
+    {
+        EOMID_OPEN = 0,
+        EOMID_OPENLAST,
+        
+        EOMID_COUNT
     };
     
 
@@ -84,6 +94,11 @@ public:
 
 	BodyItem * FindCurrentBody();
     
+    virtual void SettingsChanged();
+    virtual void Input(UIEvent * event);
+
+    virtual void OnLastFileSelected(String pathToFile);
+
 private:
     
     void AutoSaveLevel(BaseObject * obj, void *, void *);
@@ -182,12 +197,20 @@ private:
     void ReleaseNodeDialogs();
     
     UIControl *dialogBack;
+
+    //Open menu
+    void ShowOpenFileDialog();
+    void ShowOpenLastDialog();
+    void OpenFileAtScene(const String &pathToFile);
+
+    LastOpenedFilesDialog *lastFilesDialog;
     
     //Landscape
     LandscapeEditorControl *landscapeEditor;
     
     void OnSettingsPressed(BaseObject * obj, void *, void *);
     SettingsDialog *settingsDialog;
+    
     
     // general
     Font *font;
