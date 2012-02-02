@@ -1363,6 +1363,21 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
+            
+            Camera *currCamera = scene->GetCurrentCamera();
+            if(currCamera)
+            {
+                Vector3 pos = currCamera->GetPosition();
+                Vector3 direction  = currCamera->GetDirection();
+                
+                Vector3 nodePos = pos + 10 * direction;
+                nodePos.z = 0;
+                
+				Matrix4 mod;
+				mod.CreateTranslation(nodePos);
+				rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+            }
+            
             SafeRelease(rootNode); 
         }
 
