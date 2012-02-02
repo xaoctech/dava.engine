@@ -615,7 +615,24 @@ bool SceneNode::IsLodMain(SceneNode *childToCheck)
     return parent->IsLodMain(this);
 }
 
-    
+void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *afterNode)
+{
+	if (newNode)
+    {
+        const Vector<SceneNode*>::iterator &itEnd = children.end();
+        for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+        {
+            if(afterNode == (*it))
+            {
+                newNode->Retain();
+                children.insert(it, newNode);
+                newNode->SetParent(this);
+                break;
+            }
+        }
+    }
+}
+
     
 };
 
