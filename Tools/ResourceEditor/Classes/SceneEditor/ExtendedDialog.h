@@ -15,6 +15,8 @@ public:
     
 protected:
 
+    virtual void Close();
+    
     virtual const Rect DialogRect();
     DraggableDialog *draggableDialog;
 };

@@ -41,6 +41,7 @@
 #include "Platform/SystemTimer.h"
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/ShadowVolumeNode.h"
+#include "Scene3D/ShadowRect.h"
 
 namespace DAVA 
 {
@@ -353,7 +354,6 @@ void Scene::Update(float timeElapsed)
 
 void Scene::Draw()
 {
-   //currentCamera->GetFrustum()->DebugDraw();
     nodeCounter = 0;
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -372,23 +372,53 @@ void Scene::Draw()
     {
         currentCamera->Set();
     }
+
 	SceneNode::Draw();
 
-	Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
-	for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
+	if(shadowVolumes.size() > 0)
 	{
-		(*it)->DrawShadow();
+		//2nd pass
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
+
+		RenderManager::Instance()->ClearStencilBuffer(0);
+		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
+		RENDER_VERIFY(glStencilMask(0xFFFFFFFF));
+		RENDER_VERIFY(glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF));
+
+		RENDER_VERIFY(glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP));
+		RENDER_VERIFY(glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP));
+		
+		RenderManager::Instance()->FlushState();
+		Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
+		for(Vector<ShadowVolumeNode*>::iterator it = shadowVolumes.begin(); it != itEnd; ++it)
+		{
+			(*it)->DrawShadow();
+		}
+
+		//3rd pass
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+		RENDER_VERIFY(glStencilFunc(GL_NOTEQUAL, 0, 0xFFFFFFFF));
+		RENDER_VERIFY(glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP));
+
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		ShadowRect::Instance()->Draw();
+
+		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_TEST);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+
 	}
-	
-    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-    
-    drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
-//  Logger::Debug("upt: %lld drawt: %lld, %ld", updateTime, drawTime, nodeCounter);
-	
-//	for (int k = 0; k < staticMeshes.size(); ++k)
-//	{
-//		staticMeshes[k]->Draw();
-//	}
+
+
+	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
+	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
 
 	
@@ -459,6 +489,39 @@ int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
     lodLayers.push_back(newLevel);
     return i;
 }
+    
+void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance)
+{
+    DVASSERT(layerNum < lodLayers.size());
+    
+    lodLayers[layerNum].nearDistance = nearDistance;
+    lodLayers[layerNum].farDistance = farDistance;
+    lodLayers[layerNum].nearDistanceSq = nearDistance * nearDistance;
+    lodLayers[layerNum].farDistanceSq = farDistance * farDistance;
+    
+    
+//    LodLayer newLevel;
+//    newLevel.nearDistance = nearDistance;
+//    newLevel.farDistance = farDistance;
+//    newLevel.nearDistanceSq = nearDistance * nearDistance;
+//    newLevel.farDistanceSq = farDistance * farDistance;
+//    int i = 0;
+//    
+//    for (Vector<LodLayer>::iterator it = lodLayers.begin(); it < lodLayers.end(); it++)
+//    {
+//        if (nearDistance < it->nearDistance)
+//        {
+//            lodLayers.insert(it, newLevel);
+//            return i;
+//        }
+//        i++;
+//    }
+//    
+//    lodLayers.push_back(newLevel);
+//    return i;
+}
+    
+    
 
 void Scene::AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume)
 {

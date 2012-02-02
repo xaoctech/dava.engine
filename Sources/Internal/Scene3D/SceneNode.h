@@ -259,6 +259,9 @@ public:
 	void GetDataNodes(Container<T> & container);
     
     virtual void SceneDidLoaded();
+    
+    virtual void InsertBeforeNode(SceneNode *newNode, SceneNode *afterNode);
+    
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
@@ -269,8 +272,8 @@ protected:
 
 	Scene * scene;
 	SceneNode * parent;
-	std::vector<SceneNode*> children;
-	std::deque<SceneNode*> removedCache;
+	Vector<SceneNode*> children;
+	Deque<SceneNode*> removedCache;
     bool inUpdate;
 
 	String	name;
