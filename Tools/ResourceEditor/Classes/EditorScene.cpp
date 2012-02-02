@@ -11,6 +11,7 @@
 #include "SceneNodeUserData.h"
 #include "SceneEditor/SceneValidator.h"
 #include "Scene3D/LodNode.h"
+#include "SceneEditor/EditorSettings.h"
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -35,9 +36,18 @@ EditorScene::EditorScene()
 //    RegisterLodLayer(0, 15);
 //    RegisterLodLayer(12, 35);
 //    RegisterLodLayer(31, 1000);
-    RegisterLodLayer(0, 10);
-    RegisterLodLayer(7, 20);
-    RegisterLodLayer(18, 1000);
+    
+//    RegisterLodLayer(0, 10);
+//    RegisterLodLayer(7, 20);
+//    RegisterLodLayer(18, 1000);
+    
+    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+    for(int32 iLod = 0; iLod < lodCount; ++iLod)
+    {
+        float32 near = EditorSettings::Instance()->GetLodLayerNear(iLod);
+        float32 far = EditorSettings::Instance()->GetLodLayerFar(iLod);
+        RegisterLodLayer(near, far);
+    }
 }
 
 EditorScene::~EditorScene()
@@ -247,6 +257,8 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 
 SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 {
+    if(!curr) return NULL;
+    
 	int32 cc = curr->GetChildrenCount();
 	if (cc == 0)
 		return GetHighestProxy(curr->GetParent());

@@ -170,6 +170,15 @@ public:
 	 */
     void SetForceLodLayer(int32 layer);
     int32 GetForceLodLayer();
+
+    /**
+     \brief Registers LOD layer into the scene.
+     \param[in] nearDistance near view distance fro the layer
+     \param[in] farDistance far view distance fro the layer
+     \returns Serial number of the layer
+	 */
+    void ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance);
+
     
     inline int32 GetLodLayersCount();
     inline float32 GetLodLayerNear(int32 layerNum);

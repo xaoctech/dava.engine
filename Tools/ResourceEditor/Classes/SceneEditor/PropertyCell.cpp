@@ -559,7 +559,8 @@ PropertyColorCell::PropertyColorCell(PropertyCellDelegate *propDelegate, Propert
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
     keyName->size.x = width/2;
- 
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+
     colorPicker = new ColorPicker(this);
     
     colorPreview = new UIControl(Rect(keyName->size.x, 0, GetHeightForWidth(width), GetHeightForWidth(width)));

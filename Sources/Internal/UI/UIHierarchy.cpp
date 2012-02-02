@@ -31,6 +31,8 @@
 #include "UI/UIHierarchy.h"
 #include "UI/UIHierarchyCell.h"
 #include "UI/UIControlSystem.h"
+#include "Input/InputSystem.h"
+#include "Input/KeyboardDevice.h"
 
 namespace DAVA
 {
@@ -62,6 +64,9 @@ UIHierarchy::UIHierarchy(const Rect &rect, bool rectInAbsoluteCoordinates)
     needRedraw = false;
     
     scroll = new ScrollHelper();
+    
+    draggedData = NULL;
+    cellUnderDrag = NULL;
 }
 
 UIHierarchy::~UIHierarchy()
@@ -360,29 +365,164 @@ void UIHierarchy::Draw(const UIGeometricData &geometricData)
     UIControl::Draw(geometricData);
 }
 
-void UIHierarchy::Input(UIEvent *currentInput)
+UIHierarchyCell * UIHierarchy::FindVisibleCellForPoint(Vector2 &point)
 {
-    newPos = currentInput->point.y;
+    UIHierarchyCell *cell = NULL;
     
-    switch (currentInput->phase) 
+    List<UIControl*> cellsToFind = GetVisibleCells();
+    for(List<UIControl*>::const_iterator it = cellsToFind.begin(); it != cellsToFind.end(); ++it)
+    {
+        UIControl *c = *it;
+        if(c->IsPointInside(point))
+        {
+            cell = (UIHierarchyCell *)c;
+            break;
+        }
+    }
+    
+    return cell;
+}
+
+void UIHierarchy::DragInput(UIEvent *input)
+{
+    switch (input->phase) 
     {
         case UIEvent::PHASE_BEGAN:
         {
             lockTouch = true;
-            oldPos = newPos;
-            mainTouch = currentInput->tid;
-        }
+            mainTouch = input->tid;
+
+            UIHierarchyCell *draggedCell = FindVisibleCellForPoint(input->point);
+            if(draggedCell && draggedCell->GetNode())
+            {
+                draggedData = draggedCell->GetNode()->GetUserNode();
+            }
             break;
+        }
         case UIEvent::PHASE_DRAG:
         {
-        }
+            if(cellUnderDrag)
+            {
+                cellUnderDrag->SetDebugDraw(false, false);
+            }
+            
+            cellUnderDrag = FindVisibleCellForPoint(input->point);
+            
+            if(cellUnderDrag)
+            {
+                cellUnderDrag->SetDebugDraw(true, false);
+            }
+            
+            Vector2 topOffset = input->point - GetPosition(true);
+            Vector2 bottomOffset = input->point - (GetPosition(true) + GetSize());
+            
+            if(topOffset.y < 0)
+            {
+                float32 scrollPos = scroll->GetPosition();  
+                if(scrollPos < 0)
+                {
+                    scroll->SetPosition(scrollPos - topOffset.y);
+                }
+            }
+            else if(0 < bottomOffset.y)
+            {
+                float32 scrollPos = scroll->GetPosition();  
+                float32 viewSize = scroll->GetViewSize();
+                float32 elementsSize = scroll->GetElementSize();
+
+                if(scrollPos + viewSize < elementsSize)
+                {
+                    float32 newPos = scrollPos - bottomOffset.y;
+                    newPos = Max(newPos, viewSize-elementsSize);
+
+                    scroll->SetPosition(newPos);
+                }
+            }
             break;
+        }
         case UIEvent::PHASE_ENDED:
         {
             lockTouch = false;
             mainTouch = 0;
-        }
+
+            if(cellUnderDrag)
+            {
+                cellUnderDrag->SetDebugDraw(false, false);
+                cellUnderDrag = NULL;
+            }
+
+            if(draggedData)
+            {
+                UIHierarchyCell *targetCell = FindVisibleCellForPoint(input->point);
+                void *targetData = NULL;
+                if(targetCell && targetCell->GetNode())
+                {
+                    targetData = targetCell->GetNode()->GetUserNode();
+                }
+                
+                if(delegate && (draggedData != targetData))
+                {
+                    delegate->DragAndDrop(draggedData, targetData);
+                }
+
+                draggedData = NULL;
+            }
+            
             break;
+        }
+        case UIEvent::PHASE_CANCELLED:
+        {
+            lockTouch = false;
+            mainTouch = 0;
+
+            if(cellUnderDrag)
+            {
+                cellUnderDrag->SetDebugDraw(false, false);
+                cellUnderDrag = NULL;
+            }
+
+            draggedData = NULL;
+            
+            break;
+        }
+            
+        default:
+        {
+            break;
+        }
+    }
+}
+
+void UIHierarchy::Input(UIEvent *currentInput)
+{
+    bool isCommandPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+    if(isCommandPressed || draggedData)
+    {
+        DragInput(currentInput);
+    }
+    else
+    {
+        newPos = currentInput->point.y;
+        switch (currentInput->phase) 
+        {
+            case UIEvent::PHASE_BEGAN:
+            {
+                lockTouch = true;
+                oldPos = newPos;
+                mainTouch = currentInput->tid;
+            }
+                break;
+            case UIEvent::PHASE_DRAG:
+            {
+            }
+                break;
+            case UIEvent::PHASE_ENDED:
+            {
+                lockTouch = false;
+                mainTouch = 0;
+            }
+                break;
+        }
     }
 }
 
@@ -405,11 +545,19 @@ bool UIHierarchy::SystemInput(UIEvent *currentInput)
         }
         else if(currentInput->tid == mainTouch && currentInput->phase == UIEvent::PHASE_DRAG)
         {
-            if(abs(currentInput->point.y - newPos) > touchHoldSize)
+            bool isCommandPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+            if(!isCommandPressed)
+            {
+                if(abs(currentInput->point.y - newPos) > touchHoldSize)
+                {
+                    UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
+                    newPos = currentInput->point.y;
+                    return true;
+                }
+            }
+            else
             {
                 UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
-                newPos = currentInput->point.y;
-                return true;
             }
         }
         else if(currentInput->tid == mainTouch && currentInput->phase == UIEvent::PHASE_ENDED)
@@ -417,9 +565,6 @@ bool UIHierarchy::SystemInput(UIEvent *currentInput)
             mainTouch = 0;
             lockTouch = false;
         }
-        
-        
-        
     }
     
     return UIControl::SystemInput(currentInput);
@@ -605,7 +750,17 @@ int32 UIHierarchy::RecalcNode(UIHierarchyNode *parent)
         parent->AddChild(*it);
         if ((*it)->isOpen) 
         {
-            totalCount += RecalcNode((*it));
+            int32 count = RecalcNode((*it));
+            if(count)
+            {
+                totalCount += count;
+            }
+            else
+            {
+                (*it)->isOpen = false;
+                (*it)->hasChildren = false;
+            }
+//            totalCount += RecalcNode((*it));
         }
         else 
         {
@@ -724,5 +879,6 @@ void UIHierarchy::ScrollToData(void *userData)
     float32 scrollPos = count * GetCellHeight();
     scroll->SetPosition(-scrollPos);
 }
+  
     
 };
