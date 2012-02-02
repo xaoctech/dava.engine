@@ -28,6 +28,8 @@
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
+		5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */; };
+		5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */; };
 		5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */; };
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
 		5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */; };
@@ -507,6 +509,8 @@
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
 		5C6BF78214C85A2A009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
+		5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
+		5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
 		5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
@@ -1492,6 +1496,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */,
+				5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */,
 				5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */,
 				5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */,
 				FED66C0114C46E7F00A39A03 /* SceneManager.cpp */,
@@ -1921,6 +1927,7 @@
 				5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */,
 				47C138AE14D05BBA00525771 /* LodNode.h in Headers */,
 				5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */,
+				5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2205,6 +2212,7 @@
 				5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */,
 				47C138AF14D05BBA00525771 /* LodNode.cpp in Sources */,
 				5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */,
+				5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
