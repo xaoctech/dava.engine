@@ -6,5 +6,4 @@ uniform mat4 modelViewProjectionMatrix;
 void main()
 {
 	gl_Position = projectionMatrix * inPosition;
-	//gl_Position = modelViewProjectionMatrix * inPosition;
 }
