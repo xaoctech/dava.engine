@@ -1642,6 +1642,7 @@ void EditorBodyControl::Refresh()
     RefreshDataGraph();
 }
 
+
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
     if(savedTreeCell)
@@ -1809,10 +1810,10 @@ void EditorBodyControl::ToggleSceneInfo()
     }
 }
 
-void EditorBodyControl::DragAndDrop(UIHierarchyCell *who, UIHierarchyCell *target)
+void EditorBodyControl::DragAndDrop(void *who, void *target)
 {
-    SceneNode *whoNode = SafeRetain((SceneNode *)who->GetNode()->GetUserNode());
-    SceneNode *targetNode = (target) ? SafeRetain((SceneNode *)target->GetNode()->GetUserNode()) : NULL;
+    SceneNode *whoNode = SafeRetain((SceneNode *)who);
+    SceneNode *targetNode = SafeRetain((SceneNode *)target);
     
     if(whoNode)
     {
@@ -1836,7 +1837,7 @@ void EditorBodyControl::DragAndDrop(UIHierarchyCell *who, UIHierarchyCell *targe
                 newParent->AddNode(whoNode);
             }
         }
-
+        
         //refresh controls
         SelectNodeAtTree(NULL);
         RefreshDataGraph();
@@ -1844,5 +1845,4 @@ void EditorBodyControl::DragAndDrop(UIHierarchyCell *who, UIHierarchyCell *targe
     
     SafeRelease(whoNode);
     SafeRelease(targetNode);
-    
 }
