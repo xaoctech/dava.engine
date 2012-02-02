@@ -537,7 +537,7 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     localTransform = archive->GetByteArrayAsType("localTransform", localTransform);
     defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
-    flags = archive->GetUInt32("flags", 0);
+    flags = archive->GetUInt32("flags", NODE_VISIBLE);
     flags |= NODE_UPDATABLE;
     InvalidateLocalTransform();
 //    debugFlags = archive->GetUInt32("debugFlags", 0);

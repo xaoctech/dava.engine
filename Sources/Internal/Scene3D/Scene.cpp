@@ -367,7 +367,7 @@ void Scene::Draw()
 
     
 	SetupTestLighting();
-
+	
     if (currentCamera)
     {
         currentCamera->Set();
@@ -387,7 +387,7 @@ void Scene::Draw()
 		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
 		RENDER_VERIFY(glStencilMask(0xFFFFFFFF));
 		RENDER_VERIFY(glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF));
-
+		
 		RENDER_VERIFY(glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP));
 		RENDER_VERIFY(glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP));
 		
@@ -492,7 +492,7 @@ int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
     
 void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance)
 {
-    DVASSERT(layerNum < lodLayers.size());
+    DVASSERT(layerNum < (int32)lodLayers.size());
     
     lodLayers[layerNum].nearDistance = nearDistance;
     lodLayers[layerNum].farDistance = farDistance;
