@@ -257,7 +257,7 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
-    rootNode->AddFlagRecursive(SceneNode::NODE_VISIBLE);
+
 	rootNode->SceneDidLoaded();
     _scene->AddRootNode(rootNode, rootNodePathName);
     
