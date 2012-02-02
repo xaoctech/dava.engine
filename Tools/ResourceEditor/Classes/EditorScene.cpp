@@ -35,9 +35,9 @@ EditorScene::EditorScene()
 //    RegisterLodLayer(0, 15);
 //    RegisterLodLayer(12, 35);
 //    RegisterLodLayer(31, 1000);
-    RegisterLodLayer(0, 10);
-    RegisterLodLayer(7, 20);
-    RegisterLodLayer(18, 1000);
+    RegisterLodLayer(0, 77);
+    RegisterLodLayer(73, 152);
+    RegisterLodLayer(148, 1000);
 }
 
 EditorScene::~EditorScene()
