@@ -38,7 +38,7 @@
 #include "Render/Shader.h"
 #include "Render/RenderManagerGL20.h"
 #include "Render/RenderHelper.h"
-#include "LocalizationSystem.h"
+#include "FileSystem/LocalizationSystem.h"
 
 namespace DAVA 
 {
