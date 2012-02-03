@@ -384,8 +384,7 @@ void Scene::Draw()
 		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
 
 		RenderManager::Instance()->ClearStencilBuffer(0);
-		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
-		RENDER_VERIFY(glStencilMask(0xFFFFFFFF));
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
 		RENDER_VERIFY(glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF));
 		
 		RENDER_VERIFY(glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP));
@@ -407,15 +406,8 @@ void Scene::Draw()
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 		ShadowRect::Instance()->Draw();
 
-		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_TEST);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
 		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
-
 	}
-
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
