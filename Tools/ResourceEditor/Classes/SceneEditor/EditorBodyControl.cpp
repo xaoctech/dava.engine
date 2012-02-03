@@ -972,7 +972,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 						selection->GetParent()->AddNode(clone);
 						scene->SetSelection(clone);
 						selection = scene->GetProxy();
-						sceneGraphTree->Refresh();
+                        SelectNodeAtTree(selection);
+//						sceneGraphTree->Refresh();
 					}
 					
 					if (selection)
@@ -1387,7 +1388,8 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         
         Refresh();
     }
-    sceneGraphTree->Refresh();
+    SelectNodeAtTree(scene->GetSelection());
+//    sceneGraphTree->Refresh();
     RefreshDataGraph();
     SceneValidator::Instance()->EnumerateSceneTextures();
 }

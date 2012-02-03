@@ -331,30 +331,33 @@ void UIHierarchy::Update(float32 timeElapsed)
             }
         }
         
-            //adding elements to the list bottom
-        if (lastCell) 
+        if(!scrollList.empty())
         {
-            addPos = (int32)lastCell->relativePosition.y + cellHeight;
-            if(addPos + (int32)scrollContainer->relativePosition.y <= size.y * 2)
+            //adding elements to the list bottom
+            if (lastCell) 
             {
-                AddCellsAfter(((UIHierarchyCell *)lastCell)->node);
+                addPos = (int32)lastCell->relativePosition.y + cellHeight;
+                if(addPos + (int32)scrollContainer->relativePosition.y <= size.y * 2)
+                {
+                    AddCellsAfter(((UIHierarchyCell *)lastCell)->node);
+                }
+            }
+            
+            //adding elements to the list top
+            if (firstCell) 
+            {
+                addPos = (int32)firstCell->relativePosition.y - cellHeight;
+                if(addPos + (int32)scrollContainer->relativePosition.y + cellHeight > -size.y)
+                {
+                    AddCellsBefore(((UIHierarchyCell *)firstCell)->node);
+                }
             }
         }
-        
-            //adding elements to the list top
-        if (firstCell) 
+        else
         {
-            addPos = (int32)firstCell->relativePosition.y - cellHeight;
-            if(addPos + (int32)scrollContainer->relativePosition.y + cellHeight > -size.y)
-            {
-                AddCellsBefore(((UIHierarchyCell *)firstCell)->node);
-            }
+            FullRedraw();
         }
     }
-
-    
-    
-    
 }
 
 void UIHierarchy::Draw(const UIGeometricData &geometricData)
@@ -626,7 +629,6 @@ void UIHierarchy::AddCellAtPos(UIHierarchyCell *cell, int32 pos, int32 size, UIH
     cell->relativePosition.y = (float32)pos;
     cell->relativePosition.x = (float32)cell->node->nodeLevel * shiftWidth;
     scrollContainer->AddControl(cell);
-    
 }
 
 Vector<UIHierarchyCell*> *UIHierarchy::GetStoreVector(const String &cellIdentifier)
@@ -855,6 +857,7 @@ bool UIHierarchy::GetCount(UIHierarchyNode *curNode, void *userData, int32 &find
         UIHierarchyNode *nd = (*cit);
         if (nd->userNode == userData)
         {
+            --count;
             isFound = true;
         }
         else if(nd->isOpen)
