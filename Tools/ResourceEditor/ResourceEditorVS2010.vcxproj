@@ -397,7 +397,6 @@
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
-    <ClInclude Include="Classes\SceneEditor\LastOpenedFilesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
@@ -638,7 +637,6 @@
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\LastOpenedFilesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
