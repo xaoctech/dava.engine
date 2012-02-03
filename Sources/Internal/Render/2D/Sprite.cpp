@@ -38,6 +38,7 @@
 #include "Render/Shader.h"
 #include "Render/RenderManagerGL20.h"
 #include "Render/RenderHelper.h"
+#include "LocalizationSystem.h"
 
 namespace DAVA 
 {
@@ -131,15 +132,24 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 
 		if (!fp)
 		{
-			Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
-			return 0;
+            size_t pos = pathName.rfind("/");
+            String fileName = pathName.substr(pos + 1);
+            pathName = pathName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+            
+            fp = File::Create(pathName, File::READ|File::OPEN);
+            
+            if (!fp)
+            {    
+                Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
+                return 0;
+            }
 		}	
 		if (!spr) 
 		{
 			spr = new Sprite();
 		}
 		spr->resourceSizeIndex = Core::Instance()->GetBaseResourceIndex();
-		texturePath = spriteName;
+		texturePath = pathName.substr(0, pathName.length() - 4);
 	}
 	else 
 	{
