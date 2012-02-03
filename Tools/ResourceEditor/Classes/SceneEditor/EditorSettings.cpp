@@ -235,21 +235,14 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
         filesList.push_back(path);
     }
 
-    if(filesList.size() < RESENT_FILES_COUNT)
+    
+    filesList.insert(filesList.begin(), pathToFile);
+    count = 0;
+    for(;(count < filesList.size()) && (count < RESENT_FILES_COUNT); ++count)
     {
-        settings->SetString(Format("LastOpenedFile_%d", filesList.size()), pathToFile);
-        settings->SetInt32("LastOpenedFilesCount", filesList.size() + 1);
+        settings->SetString(Format("LastOpenedFile_%d", count), filesList[count]);
     }
-    else
-    {
-        filesList.erase(filesList.begin());
-        filesList.push_back(pathToFile);
-        
-        for(int32 i = 0; i < filesList.size(); ++i)
-        {
-            settings->SetString(Format("LastOpenedFile_%d", i), filesList[i]);
-        }
-    }
+    settings->SetInt32("LastOpenedFilesCount", count);
     
     Save();
 }

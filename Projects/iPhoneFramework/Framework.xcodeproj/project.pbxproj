@@ -41,6 +41,8 @@
 		5C5EC7A214D156DD009AF0ED /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */; };
 		5C5EC7A314D156DD009AF0ED /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
+		5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */; };
+		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
@@ -501,6 +503,8 @@
 		5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
+		5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
+		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1426,6 +1430,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */,
+				5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */,
 				5C5C18D214D7168300DC6DC3 /* LodNode.cpp */,
 				5C5C18D314D7168300DC6DC3 /* LodNode.h */,
 				5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */,
@@ -1845,6 +1851,7 @@
 				5C5EC7A314D156DD009AF0ED /* ShadowVolumeNode.h in Headers */,
 				5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */,
 				5C5C18DA14D716F000DC6DC3 /* EdgeAdjacency.h in Headers */,
+				5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2125,6 +2132,7 @@
 				5C5EC7A214D156DD009AF0ED /* ShadowVolumeNode.cpp in Sources */,
 				5C5C18D414D7168300DC6DC3 /* LodNode.cpp in Sources */,
 				5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */,
+				5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2197,7 +2205,10 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2239,7 +2250,10 @@
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2280,7 +2294,10 @@
 		785662DF109B65FE00DAF688 /* AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2347,7 +2364,10 @@
 		FEFB031611CA5F1B00B65B8B /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DDARWIN_NO_CARBON,

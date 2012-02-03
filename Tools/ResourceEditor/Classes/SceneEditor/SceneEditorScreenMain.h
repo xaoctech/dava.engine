@@ -9,7 +9,6 @@
 
 #include "SceneNodeIDs.h"
 #include "SettingsDialog.h"
-#include "LastOpenedFilesDialog.h"
 
 using namespace DAVA;
 
@@ -20,7 +19,7 @@ class SettingsDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodesDialogDelegeate,
-    public SettingsDialogDelegate, public LastOpenedFilesDialogDelegate
+    public SettingsDialogDelegate
 {
 	struct BodyItem;
 
@@ -61,7 +60,7 @@ class SceneEditorScreenMain:
     enum eOpenMenuIDS
     {
         EOMID_OPEN = 0,
-        EOMID_OPENLAST,
+        EOMID_OPENLAST_STARTINDEX,
         
         EOMID_COUNT
     };
@@ -96,8 +95,6 @@ public:
     
     virtual void SettingsChanged();
     virtual void Input(UIEvent * event);
-
-    virtual void OnLastFileSelected(String pathToFile);
 
 private:
     
@@ -203,8 +200,6 @@ private:
     void ShowOpenLastDialog();
     void OpenFileAtScene(const String &pathToFile);
 
-    LastOpenedFilesDialog *lastFilesDialog;
-    
     //Landscape
     LandscapeEditorControl *landscapeEditor;
     
