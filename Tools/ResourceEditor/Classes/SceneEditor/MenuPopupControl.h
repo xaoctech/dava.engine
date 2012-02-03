@@ -22,7 +22,7 @@ class MenuPopupControl: public UIControl, public UIListDelegate
     };
     
 public:
-    MenuPopupControl(const Rect & rect, float32 width, float32 yOffset);
+    MenuPopupControl(const Rect & rect, float32 yOffset);
     virtual ~MenuPopupControl();
     
     virtual void WillAppear();
@@ -33,14 +33,13 @@ public:
     virtual int32 ElementsCount(UIList * list);
 	virtual UIListCell *CellAtIndex(UIList *list, int32 index);
 	virtual int32 CellHeight(UIList * list, int32 index);
-	virtual int32 CellWidth(UIList * list, int32 index);
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 
     void InitControl(int32 _menuItemID, const Rect & rect);
     
 protected:
 
-    float32 cellWidth;
+    float32 yListOffset;
     
     MenuPopupDelegate *menuDelegate;
     int32 menuItemID;

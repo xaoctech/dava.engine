@@ -145,12 +145,15 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
 	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
 	AddHelpText(L"P (in selection) - place node on landscape", y);
+    AddHelpText(L"Alt + 1...8: set SetForceLodLayer(0, 1, ... , 7)", y);
+    AddHelpText(L"Alt + 0: set SetForceLodLayer(-1)", y);
 
     AddHelpText(L"Landscape Editor:", ++y);
 	AddHelpText(L"Press & hold \"Spacebar\" to scroll area", y);
     
-    AddHelpText(L"Alt + 1...8: set SetForceLodLayer(0, 1, ... , 7)", ++y);
-    AddHelpText(L"Alt + 0: set SetForceLodLayer(-1)", y);
+    AddHelpText(L"Scene Graph:", ++y);
+    AddHelpText(L"Left mouse with Command/Ctrl key - change parent of node", y);
+    AddHelpText(L"Right mouse with Alt key - change order of node", y);
 
 	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }
@@ -1825,31 +1828,42 @@ void EditorBodyControl::ToggleSceneInfo()
     }
 }
 
-void EditorBodyControl::DragAndDrop(void *who, void *target)
+void EditorBodyControl::DragAndDrop(void *who, void *target, int32 mode)
 {
     SceneNode *whoNode = SafeRetain((SceneNode *)who);
     SceneNode *targetNode = SafeRetain((SceneNode *)target);
     
     if(whoNode)
     {
-        // select new parent for dragged node
-        SceneNode *newParent = (targetNode) ? targetNode : scene;
-        
-        //skip unused drag
-        if(whoNode->GetParent() != newParent)
+        if(UIHierarchy::DRAG_CHANGE_PARENT == mode)
         {
-            // check correct hierarhy (can't drag to child)
-            SceneNode *nd = newParent->GetParent();
-            while(nd && nd != whoNode)
-            {
-                nd = nd->GetParent();
-            }
+            // select new parent for dragged node
+            SceneNode *newParent = (targetNode) ? targetNode : scene;
             
-            if(!nd)
+            //skip unused drag
+            if(whoNode->GetParent() != newParent)
             {
-                //drag
+                // check correct hierarhy (can't drag to child)
+                SceneNode *nd = newParent->GetParent();
+                while(nd && nd != whoNode)
+                {
+                    nd = nd->GetParent();
+                }
+                
+                if(!nd)
+                {
+                    //drag
+                    whoNode->GetParent()->RemoveNode(whoNode);
+                    newParent->AddNode(whoNode);
+                }
+            }
+        }
+        else if(UIHierarchy::DRAG_CHANGE_ORDER == mode)
+        {
+            if(targetNode && whoNode->GetParent() == targetNode->GetParent())
+            {
                 whoNode->GetParent()->RemoveNode(whoNode);
-                newParent->AddNode(whoNode);
+                targetNode->GetParent()->InsertBeforeNode(whoNode, targetNode);
             }
         }
         

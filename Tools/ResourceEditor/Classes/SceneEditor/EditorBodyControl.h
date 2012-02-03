@@ -128,7 +128,7 @@ protected:
     virtual void *ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index);
     virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node);
     virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
-    virtual void DragAndDrop(void *who, void *target);
+    virtual void DragAndDrop(void *who, void *target, int32 mode);
 
     //left Panel
     void CreateLeftPanel();
