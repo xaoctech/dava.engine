@@ -137,6 +137,9 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
         
         if (diffState & STATE_COLORMASK_ALL)
             SetColorMaskInHW();
+
+		if (diffState & STATE_STENCIL_TEST)
+			SetStensilTestInHW();
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
             if (diffState & STATE_ALPHA_TEST)
@@ -238,6 +241,18 @@ inline void RenderStateBlock::SetColorMaskInHW()
                               greenMask, 
                               blueMask, 
                               alphaMask));
+}
+
+inline void RenderStateBlock::SetStensilTestInHW()
+{
+	if (state & STATE_STENCIL_TEST)
+	{
+		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
+	}
+	else
+	{
+		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
+	}
 }
 
 inline void RenderStateBlock::SetEnableBlendingInHW()
@@ -431,7 +446,12 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAFUNC, ALPHA_TEST_MODE_MAP[alphaFunc]));
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAREF , alphaFuncCmpValue));
 }
-    
+
+inline void RenderStateBlock::SetStensilTestInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILENABLE, (state & STATE_STENCIL_TEST) != 0));
+}
+
 #endif 
     
     
