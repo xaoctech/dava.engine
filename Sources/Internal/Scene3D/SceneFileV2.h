@@ -94,11 +94,19 @@ namespace DAVA
 class SceneFileV2 : public BaseObject
 {
 public: 
+    enum eError{
+        ERROR_NO_ERROR = 0,
+        ERROR_VERSION_IS_TOO_OLD = 1,
+        ERROR_FAILED_TO_CREATE_FILE = 2,
+        ERROR_FILE_WRITE_ERROR = 3,
+    };
+    
+    
     SceneFileV2();
     ~SceneFileV2();
     
-    bool SaveScene(const String & filename, Scene * _scene);
-    bool LoadScene(const String & filename, Scene * _scene);
+    eError SaveScene(const String & filename, Scene * _scene);
+    eError LoadScene(const String & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
     void EnableSaveForGame(bool _isSaveForGame);
@@ -114,6 +122,8 @@ public:
     DataNode * GetNodeByPointer(uint64 pointer);
     
     int32 GetVersion();
+    void SetError(eError error);
+    eError GetError();
     
 private:
     void AddToNodeMap(DataNode * node);
@@ -141,6 +151,7 @@ private:
     bool isSaveForGame;
     String rootNodePathName, rootNodePath, rootNodeName; 
     Scene * scene;
+    eError lastError;
 };
   
 }; // namespace DAVA

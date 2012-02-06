@@ -39,6 +39,27 @@ class StaticMesh;
 class Material;
 class Texture;
 class SceneFileV2;
+class PolygonGroup;
+class MeshInstanceNode;
+    
+class PolygonGroupWithMaterial : public BaseObject
+{
+public:
+    PolygonGroupWithMaterial(StaticMesh * mesh, int32 polygroupIndex, Material * material);
+    virtual ~PolygonGroupWithMaterial();
+    
+    StaticMesh * GetMesh();
+    int32 GetPolygroupIndex();
+    PolygonGroup * GetPolygonGroup();
+    Material * GetMaterial();
+    
+private:
+    StaticMesh * mesh;
+    int32 polygroupIndex;
+    Material * material;
+    friend class MeshInstanceNode;
+};
+
     
 class MeshInstanceNode : public SceneNode
 {
@@ -47,8 +68,6 @@ public:
 	~MeshInstanceNode();
 	
 	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
-    void AddPolygonGroupForLayer(int32 layer, StaticMesh * mesh, int32 polygonGroupIndex, Material* material);
-    void AddDummyLODLayer(int32 layer);
 
     virtual void Update(float32 timeElapsed);
 	virtual void Draw();
@@ -58,20 +77,22 @@ public:
 	
 	inline AABBox3 & GetBoundingBox();
 	
-	Vector<StaticMesh*> & GetMeshes()
-	{
-		return lodLayers.begin()->meshes;
-	}
-
-	Vector<int32> & GetPolygonGroupIndexes()
-	{
-		return lodLayers.begin()->polygonGroupIndexes;
-	}
-
-    Vector<Material*> & GetMaterials()
-	{
-		return lodLayers.begin()->materials;
-	}
+    Vector<PolygonGroupWithMaterial*> & GetPolygonGroups();
+    
+//	Vector<StaticMesh*> & GetMeshes()
+//	{
+//		return lodLayers.begin()->meshes;
+//	}
+//
+//	Vector<int32> & GetPolygonGroupIndexes()
+//	{
+//		return lodLayers.begin()->polygonGroupIndexes;
+//	}
+//
+//    Vector<Material*> & GetMaterials()
+//	{
+//		return lodLayers.begin()->materials;
+//	}
         
 //	Vector<StaticMesh*> & GetMeshes(int32 lodLayer)
 //	{
@@ -135,25 +156,15 @@ public:
 
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
-
-    struct LodData
-    {
-        Vector<StaticMesh*> meshes;
-        Vector<int32> polygonGroupIndexes;
-        Vector<Material*> materials;
-        int layer;
-    };
+//    Vector<StaticMesh*> meshes;
+//    Vector<int32> polygonGroupIndexes;
+//    Vector<Material*> materials;
     
-    LodData *currentLod;
-    List<LodData> lodLayers;
-    
+    Vector<PolygonGroupWithMaterial*> polygroups;
     
 	AABBox3 bbox;
     AABBox3 transformedBox;
     
-    bool lodPresents;
-    int lastLodUpdateFrame;
-
 	struct LightmapData
 	{
 		Texture * lightmap;

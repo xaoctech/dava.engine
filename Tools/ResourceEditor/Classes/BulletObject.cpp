@@ -48,17 +48,19 @@ void BulletObject::CreateCollisionObject()
 	
 	trimesh = new btTriangleMesh();
 	
-	const Vector<StaticMesh*> & meshes = meshNode->GetMeshes();
-	const Vector<int32> & indexes = meshNode->GetPolygonGroupIndexes();
-	
-	uint32 meshesSize = (uint32)meshes.size();
+	//const Vector<StaticMesh*> & meshes = meshNode->GetMeshes();
+	//const Vector<int32> & indexes = meshNode->GetPolygonGroupIndexes();
+	const Vector<PolygonGroupWithMaterial*> & polygroups = meshNode->GetPolygonGroups();
+    
+    
+	uint32 meshesSize = (uint32)polygroups.size();
 
 	createdWith = meshNode->GetWorldTransform();
 	if (meshesSize > 0)
 	{
 		for (uint32 k = 0; k < meshesSize; ++k)
 		{
-			PolygonGroup * pg = meshes[k]->GetPolygonGroup(indexes[k]);    
+			PolygonGroup * pg = polygroups[k]->GetPolygonGroup();    
 			
 			int i;
 			for (i = 0; i < pg->indexCount / 3; i++)

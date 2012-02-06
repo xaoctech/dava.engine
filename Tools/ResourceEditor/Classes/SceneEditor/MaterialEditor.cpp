@@ -203,13 +203,13 @@ void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(node);
     if(mesh)
     {
-        Vector<Material *> meshMaterials = mesh->GetMaterials();
-        for(int32 iMesh = 0; iMesh < meshMaterials.size(); ++iMesh)
+        const Vector<PolygonGroupWithMaterial *> & meshMaterials = mesh->GetPolygonGroups();
+        for(int32 iMesh = 0; iMesh < (int32) meshMaterials.size(); ++iMesh)
         {
             bool found = false;
-            for(int32 child = 0; child < workingNodeMaterials.size(); ++child)
+            for(int32 child = 0; child < (int32)workingNodeMaterials.size(); ++child)
             {
-                if(workingNodeMaterials[child] == meshMaterials[iMesh])
+                if(workingNodeMaterials[child] == meshMaterials[iMesh]->GetMaterial())
                 {
                     found = true;
                     break;
@@ -218,7 +218,8 @@ void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
             
             if(!found)
             {
-                workingNodeMaterials.push_back(meshMaterials[iMesh]);
+                // TODO: ASK VICTOR WHAT DOES IT MEAN
+                workingNodeMaterials.push_back(meshMaterials[iMesh]->GetMaterial());
             }
         }
     }
