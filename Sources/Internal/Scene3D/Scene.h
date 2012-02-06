@@ -35,6 +35,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Camera.h"
+#include "Scene3D/LightNode.h"
 
 
 namespace DAVA
@@ -53,6 +54,7 @@ class DataNode;
 class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
+class LightNode;
 	
 /** 
     \ingroup scene3d
@@ -182,8 +184,11 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
+    LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
+    
 private:	
-    DataNode * scenes;
+    
+    void UpdateLights();
     
     
     uint64 updateTime;

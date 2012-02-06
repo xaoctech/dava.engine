@@ -464,7 +464,17 @@ void Scene::AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume)
 {
 	shadowVolumes.push_back(shadowVolume);
 }
-    
+
+LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
+{
+    switch(type)
+    {
+        case LightNode::TYPE_DIRECTIONAL:
+            
+            break;
+    };
+}
+
 /*void Scene::Save(KeyedArchive * archive)
 {
     // Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive

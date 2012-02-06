@@ -98,7 +98,7 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 	//TODO: copy only geometry
 	//AddPolygonGroup(meshInstance->GetMeshes()[0], meshInstance->GetPolygonGroupIndexes()[0], meshInstance->GetMaterials()[0]);
 
-	PolygonGroup * oldPolygonGroup = meshInstance->GetMeshes()[0]->GetPolygonGroup(meshInstance->GetPolygonGroupIndexes()[0]);
+	PolygonGroup * oldPolygonGroup = meshInstance->GetPolygonGroups()[0]->GetPolygonGroup();
 
 	EdgeAdjacency adjacency;
 	adjacency.InitFromPolygonGroup(oldPolygonGroup);

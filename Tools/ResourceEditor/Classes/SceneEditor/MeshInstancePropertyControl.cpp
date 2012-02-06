@@ -47,14 +47,14 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
         materialNames.push_back(mat->GetName());
     }
     
+    Vector<PolygonGroupWithMaterial*> polygroups = mesh->GetPolygonGroups();
+//    Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
+//    Vector<Material*> meshMaterials = mesh->GetMaterials();
+//    Vector<StaticMesh*> meshes = mesh->GetMeshes();
     
-    Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-    Vector<Material*> meshMaterials = mesh->GetMaterials();
-    Vector<StaticMesh*> meshes = mesh->GetMeshes();
-    
-    for(int32 i = 0; i < meshes.size(); ++i)
+    for(int32 i = 0; i < (int32)polygroups.size(); ++i)
     {
-        PolygonGroup *pg = meshes[i]->GetPolygonGroup(groupIndexes[i]);
+        PolygonGroup *pg = polygroups[i]->GetPolygonGroup();
         
         String fieldName = Format("PolygonGroup #%d", i);
         propertyList->AddSection(fieldName, GetHeaderState(fieldName, true));
@@ -97,9 +97,9 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
             String comboName = keyPrefix + ". Material";
             propertyList->AddComboProperty(comboName, materialNames);
             
-            if(meshMaterials[i])
+            if(polygroups[i]->GetMaterial())
             {
-                String meshMatName = meshMaterials[i]->GetName();
+                String meshMatName = polygroups[i]->GetMaterial()->GetName();
                 for(int32 iMat = 0; iMat < materials.size(); ++iMat)
                 {
                     if(meshMatName == materialNames[iMat])
@@ -115,7 +115,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
             }
             
             propertyList->AddMessageProperty("property.meshinstance.editmaterial", 
-                                             Message(this, &MeshInstancePropertyControl::OnGo2Materials, meshMaterials[i]));
+                                             Message(this, &MeshInstancePropertyControl::OnGo2Materials, polygroups[i]->GetMaterial()));
         }
     }
 

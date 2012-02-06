@@ -133,10 +133,11 @@ void SceneValidator::ShowErrors()
 
 void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)
 {
-    Vector<Material *>materials = meshNode->GetMaterials();
-    for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+    const Vector<PolygonGroupWithMaterial*> & polygroups = meshNode->GetPolygonGroups();
+    //Vector<Material *>materials = meshNode->GetMaterials();
+    for(int32 iMat = 0; iMat < polygroups.size(); ++iMat)
     {
-        ValidateMaterialInternal(materials[iMat]);
+        ValidateMaterialInternal(polygroups[iMat]->GetMaterial());
     }
     
     int32 lightmapCont = meshNode->GetLightmapCount();

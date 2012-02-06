@@ -49,6 +49,7 @@ SceneFileV2::SceneFileV2()
 {
     isDebugLogEnabled = false;
     isSaveForGame = false;
+    lastError = ERROR_NO_ERROR;
 }
 
 SceneFileV2::~SceneFileV2()
@@ -134,14 +135,26 @@ int32 SceneFileV2::GetVersion()
 {
     return header.version;
 }
+    
+void SceneFileV2::SetError(eError error)
+{
+    lastError = error;
+}
 
-bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
+SceneFileV2::eError SceneFileV2::GetError()
+{
+    return lastError;
+}
+
+
+SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
 {
     File * file = File::Create(filename, File::CREATE | File::WRITE);
     if (!file)
     {
         Logger::Error("SceneFileV2::SaveScene failed to create file: %s", filename.c_str());
-        return false;
+        SetError(ERROR_FAILED_TO_CREATE_FILE);
+        return GetError();
     }
     
     rootNodePathName = filename;
@@ -153,7 +166,7 @@ bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 2;
+    header.version = 3;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -195,21 +208,22 @@ bool SceneFileV2::SaveScene(const String & filename, DAVA::Scene *_scene)
         {
             Logger::Error("SceneFileV2::SaveScene failed to save hierarchy file: %s", filename.c_str());
             SafeRelease(file);
-            return false;
+            return GetError();
         }
     }
     
     SafeRelease(file);
-    return true;
+    return GetError();
 };	
     
-bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
+SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _scene)
 {
     File * file = File::Create(filename, File::OPEN | File::READ);
     if (!file)
     {
         Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.c_str());
-        return false;
+        SetError(ERROR_FAILED_TO_CREATE_FILE);
+        return GetError();
     }   
 
     scene = _scene;
@@ -227,7 +241,8 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
         Logger::Error("SceneFileV2::LoadScene header version is wrong: %d, required: %d", header.version, requiredVersion);
         
         SafeRelease(file);
-        return false;
+        SetError(ERROR_VERSION_IS_TOO_OLD);
+        return GetError();
     }
     
     Logger::Debug("+ load data objects");
@@ -240,7 +255,7 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
         DataNode * staticMeshes = new DataNode;
         LoadDataHierarchy(_scene, staticMeshes, file, 1);
         SafeRelease(staticMeshes);
-    }else if (GetVersion() == 2)
+    }else if (GetVersion() >= 2)
     {
         int32 dataNodeCount = 0;
         file->Read(&dataNodeCount, sizeof(int32));
@@ -259,8 +274,15 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     }
     rootNode->AddFlagRecursive(SceneNode::NODE_VISIBLE);
 	rootNode->SceneDidLoaded();
-    _scene->AddRootNode(rootNode, rootNodePathName);
     
+    if (GetError() == ERROR_NO_ERROR)
+    {
+        // TODO: Check do we need to releae root node here
+        _scene->AddRootNode(rootNode, rootNodePathName);
+    }else
+    {
+        SafeRelease(rootNode);
+    }
     
     for (size_t mi = 0; mi < materials.size(); ++mi)
     {
@@ -281,7 +303,7 @@ bool SceneFileV2::LoadScene(const String & filename, Scene * _scene)
     dataNodes.clear();
     
     SafeRelease(file);
-    return true;
+    return GetError();
 }
 
 bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
