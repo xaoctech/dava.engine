@@ -272,7 +272,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     {
         LoadHierarchy(_scene, rootNode, file, 1);
     }
-    rootNode->AddFlagRecursive(SceneNode::NODE_VISIBLE);
+
 	rootNode->SceneDidLoaded();
     
     if (GetError() == ERROR_NO_ERROR)

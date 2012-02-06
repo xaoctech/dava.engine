@@ -343,7 +343,13 @@ public:
         \param[in] depth by default 1.0f, means clear the depth
      */
     virtual void ClearDepthBuffer(float32 depth = 1.0f);
-	
+
+	/** 
+        \brief Clear stencil buffer with requested value
+        \param[in] stencil specifies the index used when the stencil buffer is cleared
+     */
+	virtual void ClearStencilBuffer(int32 stencil = 0);
+
 	/** 
 	 \brief Sets the sprite to use as a render target. Sprite should be created with CreateAsRenderTarget method.
 			Call RestoreRenderTarget when you finish drawing to your sprite 

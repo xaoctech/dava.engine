@@ -79,9 +79,7 @@ GameObject::GameObject()
 	priority = 0;
 	parent = 0;
 	userData = 0;
-#if defined(__DAVAENGINE_DEBUG__)
 	isDebugDraw = false;
-#endif
     nextManager = 0;
 }
 	
@@ -323,12 +321,10 @@ void GameObject::Draw()
 //		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	
-#if defined(__DAVAENGINE_DEBUG__)
 	if (isDebugDraw && collision)
 	{
 		collision->DebugDraw();
 	}
-#endif
 //	if (align == ALIGN_LEFTTOP)
 //	{
 //		//[sprite drawFrameF:frame atX:position.x atY:position.y];

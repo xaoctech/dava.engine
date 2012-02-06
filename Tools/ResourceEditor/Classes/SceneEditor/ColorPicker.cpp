@@ -427,14 +427,6 @@ void ColorPicker::SetColor(const Color & newColor, bool updateColorMap)
 }
 
 
-void ColorPicker::Close()
-{
-    if(GetParent())
-    {
-        GetParent()->RemoveControl(this);
-    }
-}
-
 void ColorPicker::OnAlphaChanged(BaseObject * owner, void * userData, void * callerData)
 {
     currentColor.a = alphaValue->GetValue();

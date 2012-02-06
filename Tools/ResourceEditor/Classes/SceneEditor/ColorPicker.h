@@ -80,8 +80,6 @@ protected:
 
     void OnAlphaChanged(BaseObject * owner, void * userData, void * callerData);
 
-    void Close();
-
     UISlider *alphaValue;
 
     UIControl *colorPreviewCurrent;

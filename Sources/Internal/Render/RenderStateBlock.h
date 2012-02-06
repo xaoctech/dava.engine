@@ -298,6 +298,9 @@ public:
     
     // ALPHA
     inline void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
+
+	// STENCIL
+	//inline void Set
     
     
     inline void SetTextureLevelInHW(uint32 textureLevel);
@@ -308,6 +311,7 @@ public:
     inline void SetCullModeInHW();
     inline void SetColorInHW();
     inline void SetColorMaskInHW();
+	inline void SetStensilTestInHW();
 
     inline void SetAlphaTestInHW();
     inline void SetAlphaTestFuncInHW();

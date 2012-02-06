@@ -518,7 +518,7 @@ void SceneNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     archive->SetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
     
     archive->SetUInt32("flags", flags);
-    archive->SetUInt32("debugFlags", debugFlags);
+//    archive->SetUInt32("debugFlags", debugFlags);
     
     archive->SetByteArrayFromArchive("customprops", customProperties);
     
@@ -537,10 +537,10 @@ void SceneNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
     localTransform = archive->GetByteArrayAsType("localTransform", localTransform);
     defaultLocalTransform = archive->GetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
 
-    flags = archive->GetUInt32("flags", 0);
+    flags = archive->GetUInt32("flags", NODE_VISIBLE);
     flags |= NODE_UPDATABLE;
     InvalidateLocalTransform();
-    debugFlags = archive->GetUInt32("debugFlags", 0);
+//    debugFlags = archive->GetUInt32("debugFlags", 0);
     
     SafeRelease(customProperties);
     customProperties = archive->GetArchiveFromByteArray("customprops");
@@ -615,7 +615,24 @@ bool SceneNode::IsLodMain(SceneNode *childToCheck)
     return parent->IsLodMain(this);
 }
 
-    
+void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *afterNode)
+{
+	if (newNode)
+    {
+        const Vector<SceneNode*>::iterator &itEnd = children.end();
+        for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+        {
+            if(afterNode == (*it))
+            {
+                newNode->Retain();
+                children.insert(it, newNode);
+                newNode->SetParent(this);
+                break;
+            }
+        }
+    }
+}
+
     
 };
 
