@@ -153,7 +153,7 @@ void EditorBodyControl::CreateHelpPanel()
     
     AddHelpText(L"Scene Graph:", ++y);
     AddHelpText(L"Left mouse with Command/Ctrl key - change parent of node", y);
-    AddHelpText(L"Right mouse with Alt key - change order of node", y);
+    AddHelpText(L"Right mouse with Shift key - change order of node", y);
 
 	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }

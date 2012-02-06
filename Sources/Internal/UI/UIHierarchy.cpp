@@ -400,7 +400,7 @@ void UIHierarchy::DragInput(UIEvent *input)
             {
                 dragMode = DRAG_CHANGE_PARENT;
             }
-            else if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT))
+            if(InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
             {
                 dragMode = DRAG_CHANGE_ORDER;
             }
@@ -499,7 +499,7 @@ void UIHierarchy::DragInput(UIEvent *input)
 void UIHierarchy::Input(UIEvent *currentInput)
 {
     bool isCommandPressed =     InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL) 
-                            ||  InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                            ||  InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
     if(isCommandPressed || draggedData)
     {
         DragInput(currentInput);
@@ -550,7 +550,7 @@ bool UIHierarchy::SystemInput(UIEvent *currentInput)
         else if(currentInput->tid == mainTouch && currentInput->phase == UIEvent::PHASE_DRAG)
         {
             bool isCommandPressed =     InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL) 
-                                    ||  InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                                    ||  InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
             if(!isCommandPressed)
             {
                 if(abs(currentInput->point.y - newPos) > touchHoldSize)
