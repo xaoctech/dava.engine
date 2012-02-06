@@ -172,6 +172,15 @@ public:
 	 */
     void SetForceLodLayer(int32 layer);
     int32 GetForceLodLayer();
+
+    /**
+     \brief Registers LOD layer into the scene.
+     \param[in] nearDistance near view distance fro the layer
+     \param[in] farDistance far view distance fro the layer
+     \returns Serial number of the layer
+	 */
+    void ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance);
+
     
     inline int32 GetLodLayersCount();
     inline float32 GetLodLayerNear(int32 layerNum);
@@ -241,22 +250,38 @@ int32 Scene::GetLodLayersCount()
 
 float32 Scene::GetLodLayerNear(int32 layerNum)
 {
-    return lodLayers[layerNum].nearDistance;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].nearDistance;
+    }
+    return lodLayers[forceLodLayer].nearDistance;
 }
 
 float32 Scene::GetLodLayerFar(int32 layerNum)
 {
-    return lodLayers[layerNum].farDistance;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].farDistance;
+    }
+    return lodLayers[forceLodLayer].farDistance;
 }
 
 float32 Scene::GetLodLayerNearSquare(int32 layerNum)
 {
-    return lodLayers[layerNum].nearDistanceSq;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].nearDistanceSq;
+    }
+    return lodLayers[forceLodLayer].nearDistanceSq;
 }
 
 float32 Scene::GetLodLayerFarSquare(int32 layerNum)
 {
-    return lodLayers[layerNum].farDistanceSq;
+    if (forceLodLayer == -1) 
+    {
+        return lodLayers[layerNum].farDistanceSq;
+    }
+    return lodLayers[forceLodLayer].farDistanceSq;
 }
     
 

@@ -145,9 +145,15 @@ void EditorBodyControl::CreateHelpPanel()
 	AddHelpText(L"5, 6, 7 (in selection) - change active axis", y);
 	AddHelpText(L"8 (in selection) - enumerate pairs of axis", y);
 	AddHelpText(L"P (in selection) - place node on landscape", y);
+    AddHelpText(L"Alt + 1...8: set SetForceLodLayer(0, 1, ... , 7)", y);
+    AddHelpText(L"Alt + 0: set SetForceLodLayer(-1)", y);
 
     AddHelpText(L"Landscape Editor:", ++y);
 	AddHelpText(L"Press & hold \"Spacebar\" to scroll area", y);
+    
+    AddHelpText(L"Scene Graph:", ++y);
+    AddHelpText(L"Left mouse with Command/Ctrl key - change parent of node", y);
+    AddHelpText(L"Right mouse with Alt key - change order of node", y);
 
 	AddHelpText(L"version "EDITOR_VERSION, ++y);
 }
@@ -879,21 +885,43 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     break;
 
                 case DVKEY_5:
-                    modAxis = AXIS_X;
+                {
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        modAxis = AXIS_X;
+                    }
                     break;
+                }
 
                 case DVKEY_6:
-                    modAxis = AXIS_Y;
+                {
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        modAxis = AXIS_Y;
+                    }
                     break;
+                }
 
                 case DVKEY_7:
-                    modAxis = AXIS_Z;
+                {
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        modAxis = AXIS_Z;
+                    }
                     break;
+                }
 
                 case DVKEY_8:
                 {
-                    if (modAxis < AXIS_XY) modAxis = AXIS_XY;
-                    else modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+                    if(!altIsPressed)
+                    {
+                        if (modAxis < AXIS_XY) modAxis = AXIS_XY;
+                        else modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
+                    }
                     
                     break;
                 }
@@ -944,7 +972,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 						selection->GetParent()->AddNode(clone);
 						scene->SetSelection(clone);
 						selection = scene->GetProxy();
-						sceneGraphTree->Refresh();
+                        SelectNodeAtTree(selection);
+//						sceneGraphTree->Refresh();
 					}
 					
 					if (selection)
@@ -1338,13 +1367,29 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
+            
+            Camera *currCamera = scene->GetCurrentCamera();
+            if(currCamera)
+            {
+                Vector3 pos = currCamera->GetPosition();
+                Vector3 direction  = currCamera->GetDirection();
+                
+                Vector3 nodePos = pos + 10 * direction;
+                nodePos.z = 0;
+                
+				Matrix4 mod;
+				mod.CreateTranslation(nodePos);
+				rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+            }
+            
             SafeRelease(rootNode); 
         }
 
         
         Refresh();
     }
-    sceneGraphTree->Refresh();
+    SelectNodeAtTree(scene->GetSelection());
+//    sceneGraphTree->Refresh();
     RefreshDataGraph();
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
@@ -1617,6 +1662,7 @@ void EditorBodyControl::Refresh()
     RefreshDataGraph();
 }
 
+
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
     if(savedTreeCell)
@@ -1782,4 +1828,52 @@ void EditorBodyControl::ToggleSceneInfo()
     {
         AddControl(sceneInfoControl);
     }
+}
+
+void EditorBodyControl::DragAndDrop(void *who, void *target, int32 mode)
+{
+    SceneNode *whoNode = SafeRetain((SceneNode *)who);
+    SceneNode *targetNode = SafeRetain((SceneNode *)target);
+    
+    if(whoNode)
+    {
+        if(UIHierarchy::DRAG_CHANGE_PARENT == mode)
+        {
+            // select new parent for dragged node
+            SceneNode *newParent = (targetNode) ? targetNode : scene;
+            
+            //skip unused drag
+            if(whoNode->GetParent() != newParent)
+            {
+                // check correct hierarhy (can't drag to child)
+                SceneNode *nd = newParent->GetParent();
+                while(nd && nd != whoNode)
+                {
+                    nd = nd->GetParent();
+                }
+                
+                if(!nd)
+                {
+                    //drag
+                    whoNode->GetParent()->RemoveNode(whoNode);
+                    newParent->AddNode(whoNode);
+                }
+            }
+        }
+        else if(UIHierarchy::DRAG_CHANGE_ORDER == mode)
+        {
+            if(targetNode && whoNode->GetParent() == targetNode->GetParent())
+            {
+                whoNode->GetParent()->RemoveNode(whoNode);
+                targetNode->GetParent()->InsertBeforeNode(whoNode, targetNode);
+            }
+        }
+        
+        //refresh controls
+        SelectNodeAtTree(NULL);
+        RefreshDataGraph();
+    }
+    
+    SafeRelease(whoNode);
+    SafeRelease(targetNode);
 }

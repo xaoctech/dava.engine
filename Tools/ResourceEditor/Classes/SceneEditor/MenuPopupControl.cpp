@@ -1,22 +1,15 @@
 #include "MenuPopupControl.h"
 #include "ControlsFactory.h"
 
-MenuPopupControl::MenuPopupControl(const Rect & rect, float32 width, float32 yOffset)
+MenuPopupControl::MenuPopupControl(const Rect & rect, float32 yOffset)
     :   UIControl(rect)
 {
     menuItemID = -1;
     menuDelegate = NULL;
     
-    cellWidth = width;
-    Rect r = rect;
-    r.x = 0;
-    r.dx = width;
-    r.y = yOffset;
-    r.dy = GetRect().dy - yOffset;
+    yListOffset = yOffset;
 
-    menuButtonsList = new UIList(r, UIList::ORIENTATION_VERTICAL);
-    menuButtonsList->SetDelegate(this);
-    AddControl(menuButtonsList);
+    menuButtonsList = NULL;
     
     this->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MenuPopupControl::OnCancel));
 }
@@ -65,7 +58,7 @@ UIListCell *MenuPopupControl::CellAtIndex(UIList *list, int32 index)
     UIListCell *c = list->GetReusableCell("MenuPopup cell"); //try to get cell from the reusable cells store
     if(!c)
     { //if cell of requested type isn't find in the store create new cell
-        c = new UIListCell(Rect(0, 0, cellWidth, CELL_HEIGHT), "MenuPopup cell");
+        c = new UIListCell(Rect(0, 0, list->GetRect().dx, CELL_HEIGHT), "MenuPopup cell");
     }
     
     if(menuDelegate)
@@ -82,26 +75,29 @@ int32 MenuPopupControl::CellHeight(UIList * list, int32 index)
     return CELL_HEIGHT;
 }
 
-int32 MenuPopupControl::CellWidth(UIList * list, int32 index)
-{
-    return cellWidth;
-}
-
 void MenuPopupControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
-    int32 index = selectedCell->GetIndex();
     if(menuDelegate)
     {
+        int32 index = selectedCell->GetIndex();
         menuDelegate->MenuSelected(menuItemID, index);
     }
 }
 
 void MenuPopupControl::InitControl(int32 _menuItemID, const Rect & rect)
 {
+    RemoveControl(menuButtonsList);
+    SafeRelease(menuButtonsList);
+
     menuItemID = _menuItemID;
 
-    Vector2 position = menuButtonsList->GetPosition();
-    position.x = rect.x;
-    menuButtonsList->SetPosition(position);
+    Rect listRect = rect;
+    listRect.x = rect.x;
+    listRect.y = yListOffset;
+    listRect.dy = GetRect().dy - yListOffset;
+ 
+    menuButtonsList = new UIList(listRect, UIList::ORIENTATION_VERTICAL);
+    menuButtonsList->SetDelegate(this);
+    AddControl(menuButtonsList);
 }
 

@@ -69,6 +69,29 @@ void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
                 ValidateSceneNodeInternal(node);
             }
         }
+        
+        KeyedArchive *customProperties = node->GetCustomProperties();
+        if(customProperties->IsKeyExists("editor.referenceToOwner"))
+        {
+            String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+            if(1 < dataSourcePath.length())
+            {
+                if('/' == dataSourcePath[0])
+                {
+                    dataSourcePath = dataSourcePath.substr(1);
+                }
+                
+                String referencePath = customProperties->GetString("editor.referenceToOwner");
+                String::size_type pos = referencePath.rfind(dataSourcePath);
+                if((String::npos != pos) && (1 != pos))
+                {
+                    referencePath.replace(pos, dataSourcePath.length(), "");
+                    customProperties->SetString("editor.referenceToOwner", referencePath);
+                    
+                    errorMessages.insert("ReferenceToOwner isn't correct. Re-save level.");
+                }
+            }
+        }
     }
 }
 

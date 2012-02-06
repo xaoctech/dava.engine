@@ -17,7 +17,8 @@ collisionPartTransform(&((Matrix4&)pWorldTransform)),
 meshNode(_meshNode),
 updateFlag(true),
 shape(NULL),
-collisionObject(0)
+collisionObject(0),
+trimesh(0)
 
 {    
 	CreateCollisionObject();
@@ -43,7 +44,7 @@ void BulletObject::DeleteCollisionObject()
 }
 
 void BulletObject::CreateCollisionObject()
-{    
+{
 	collisionObject = new btCollisionObject();
 	
 	trimesh = new btTriangleMesh();

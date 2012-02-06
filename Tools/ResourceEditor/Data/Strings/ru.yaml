@@ -6,6 +6,8 @@ dialog.close: "Закрыть"
 
 #menu strings
 menu.open: "Открыть" 
+menu.open.open: "Открыть"
+menu.open.openlast: "Последние"
 menu.save: "Сохранить"
 menu.export: "Save to Game"
 menu.materials: "Материалы"
@@ -89,6 +91,9 @@ materialeditor.materialtype: "Тип материала:"
 materialeditor.twosided: "Двусторонний:"
 materialeditor.selected: "Выбранные"
 materialeditor.all: "Все"
+materialeditor.specularcolor: "Specular color:"
+materialeditor.diffusecolor: "Diffuse color:"
+materialeditor.nomaterials: "Нет материалов."
 
 #Modification Panel
 modificationpanel.modification: "Modification:"

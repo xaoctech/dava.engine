@@ -10,10 +10,7 @@
 #include "LandscapeEditorControl.h"
 
 #include "EditorSettings.h"
-#include "SettingsDialog.h"
-
 #include "SceneValidator.h"
-
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -37,7 +34,7 @@ void SceneEditorScreenMain::LoadResources()
     CreateTopMenu();
     
     //
-    settingsDialog = new SettingsDialog(fullRect);
+    settingsDialog = new SettingsDialog(fullRect, this);
     UIButton *settingsButton = ControlsFactory::CreateImageButton(Rect(fullRect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), "~res:/Gfx/UI/settingsicon");
 
     settingsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSettingsPressed));
@@ -47,7 +44,7 @@ void SceneEditorScreenMain::LoadResources()
     landscapeEditor = new LandscapeEditorControl(Rect(0, ControlsFactory::BUTTON_HEIGHT + 1, 
                                                       fullRect.dx, fullRect.dy - ControlsFactory::BUTTON_HEIGHT-1));
     
-    menuPopup = new MenuPopupControl(fullRect, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
+    menuPopup = new MenuPopupControl(GetRect(), ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
     InitializeNodeDialogs();    
@@ -239,9 +236,12 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
     switch (fileSystemDialogOpMode) 
     {
         case DIALOG_OPERATION_MENU_OPEN:
-        {//опен всегда загружает только уровень, но не отдельные части сцены
-            bodies[0]->bodyControl->OpenScene(pathToFile, true);
-            bodies[0]->bodyControl->SetFilePath(pathToFile);
+        {
+            EditorSettings::Instance()->AddLastOpenedFile(pathToFile);
+            OpenFileAtScene(pathToFile);
+//        //опен всегда загружает только уровень, но не отдельные части сцены
+//            bodies[0]->bodyControl->OpenScene(pathToFile, true);
+//            bodies[0]->bodyControl->SetFilePath(pathToFile);
             break;
         }
             
@@ -294,30 +294,17 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 
 void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 {
-    if(!fileSystemDialog->GetParent())
+    if(EditorSettings::Instance()->GetLastOpenedCount())
     {
-        fileSystemDialog->SetExtensionFilter(".sc2");
-        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
-        
-        BodyItem *iBody = FindCurrentBody();
-        String path = iBody->bodyControl->GetFilePath();
-        if (path.length() > 0) 
-        {
-            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-            fileSystemDialog->SetCurrentDir(path);
-        }
-        else 
-        {
-            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
-        }
-
-
-
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+        Rect rect = btnOpen->GetRect();
+        rect.dx = GetRect().dx / 2;
+        menuPopup->InitControl(MENUID_OPEN, rect);
+        AddControl(menuPopup);
     }
-
-    
+    else
+    {
+        ShowOpenFileDialog();
+    }
 }
 
 
@@ -753,6 +740,23 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
     
     switch (menuID) 
     {
+        case MENUID_OPEN:
+        {
+            if(EOMID_OPEN == itemID)
+            {
+                ShowOpenFileDialog();
+            }
+            else
+            {
+                int32 lastIndex = itemID - EOMID_OPENLAST_STARTINDEX;
+                String path = EditorSettings::Instance()->GetLastOpenedFile(lastIndex);
+                OpenFileAtScene(path);
+            }
+
+            break;
+        }
+            
+            
         case MENUID_CREATENODE:
         {
             nodeDialog->CreateNode(itemID);
@@ -812,6 +816,21 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
     
     switch (menuID) 
     {
+        case MENUID_OPEN:
+        {
+            if(EOMID_OPEN == itemID)
+            {
+                text = LocalizedString(L"menu.open.open");
+            }
+            else
+            {
+                int32 lastIndex = itemID - EOMID_OPENLAST_STARTINDEX;
+                String path = EditorSettings::Instance()->GetLastOpenedFile(lastIndex);
+                text = StringToWString(path);
+            }
+            break;
+        }
+            
         case MENUID_CREATENODE:
         {
             switch (itemID) 
@@ -918,6 +937,11 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
     switch (menuID) 
     {
+        case MENUID_OPEN:
+        {
+            retCount = EditorSettings::Instance()->GetLastOpenedCount() + 1;
+            break;
+        }
         case MENUID_CREATENODE:
         {
             retCount = ECNID_COUNT;
@@ -1052,3 +1076,86 @@ void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *obj, void *, vo
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->ToggleSceneInfo();
 }
+
+void SceneEditorScreenMain::SettingsChanged()
+{
+    for(int32 i = 0; i < bodies.size(); ++i)
+    {
+        EditorScene *scene = bodies[i]->bodyControl->GetScene();
+        
+        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
+        int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+        for(int32 iLod = 0; iLod < lodCount; ++iLod)
+        {
+            float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
+            float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
+            
+            scene->ReplaceLodLayer(i, nearDistance, farDistance);
+        }
+    }
+}
+
+void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
+{
+    if(UIEvent::PHASE_KEYCHAR == event->phase)
+    {
+        bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+        if(altIsPressed)
+        {
+            int32 key = event->tid - DVKEY_1;
+            if(0 <= key && key < 8)
+            {
+                for(int32 i = 0; i < bodies.size(); ++i)
+                {
+                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
+                    scene->SetForceLodLayer(key);
+                }
+                EditorSettings::Instance()->SetForceLodLayer(key);
+                EditorSettings::Instance()->Save();
+            }
+            else if(DVKEY_0 == event->tid)
+            {
+                for(int32 i = 0; i < bodies.size(); ++i)
+                {
+                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
+                    scene->SetForceLodLayer(-1);
+                }
+                EditorSettings::Instance()->SetForceLodLayer(-1);
+                EditorSettings::Instance()->Save();
+            }
+        }
+    }
+}
+
+void SceneEditorScreenMain::ShowOpenFileDialog()
+{
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".sc2");
+        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
+        
+        BodyItem *iBody = FindCurrentBody();
+        String path = iBody->bodyControl->GetFilePath();
+        if (path.length() > 0) 
+        {
+            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+            fileSystemDialog->SetCurrentDir(path);
+        }
+        else 
+        {
+            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+        }
+
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+    }
+}
+
+void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
+{
+    //опен всегда загружает только уровень, но не отдельные части сцены
+    bodies[0]->bodyControl->OpenScene(pathToFile, true);
+    bodies[0]->bodyControl->SetFilePath(pathToFile);
+}
+
+

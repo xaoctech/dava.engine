@@ -168,7 +168,7 @@ void GameObjectManager::RealAddObject(GameObject * _object)
 
 void GameObjectManager::RemoveObject(GameObject * _object)
 {
-	if (_object && _object->GetManager() == this)
+	if (_object && _object->GetManager() == this && (!_object->dead))
 	{
 		_object->dead = true;
 		
