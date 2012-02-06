@@ -528,6 +528,8 @@ LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
             
             break;
     };
+
+	return 0;
 }
 
 /*void Scene::Save(KeyedArchive * archive)
