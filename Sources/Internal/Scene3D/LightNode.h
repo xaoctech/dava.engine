@@ -62,11 +62,20 @@ public:
     
     eType GetType() const;
     const Color & GetColor() const;    
-
+    
+    const Vector3 & GetLightPosition() const;
+    const Vector3 & GetLightDirection() const;
+    
+    
+    virtual void Update(float32 timeElapsed);
+    virtual void Draw();
+    
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
 protected:
+    Vector3 lightPosition;
+    Vector3 lightDirection;
     eType type;
     Color color;
 };

@@ -74,6 +74,24 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     
     return dstNode;
 }
+    
+void LightNode::Update(float32 timeElapsed)
+{
+    bool needUpdateTransformBox = false;
+    if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
+    {
+        needUpdateTransformBox = true;
+    }
+    SceneNode::Update(timeElapsed);
+    
+    if (needUpdateTransformBox)
+    {
+        lightPosition = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
+        Matrix3 rotationPart(GetWorldTransform());
+        lightDirection = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
+        lightDirection.Normalize();
+    }
+}
 
 LightNode::eType LightNode::GetType() const
 {
@@ -107,5 +125,24 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	 color.a = archive->GetFloat("color.a");
 }
 
+void LightNode::Draw()
+{
+    SceneNode::Draw();
+    
+    if (debugFlags != DEBUG_DRAW_NONE)
+    {
+        if (!(flags&SceneNode::NODE_VISIBLE))return;
+
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
+        
+        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f); 
+        RenderHelper::Instance()->DrawLine(lightPosition, lightPosition + lightDirection * 20);        
+        
+        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    
+}
 
 };
