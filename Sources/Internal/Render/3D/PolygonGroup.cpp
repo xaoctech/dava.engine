@@ -187,12 +187,25 @@ void PolygonGroup::CreateBaseVertexArray()
     
 void PolygonGroup::ApplyMatrix(const Matrix4 & matrix)
 {
+    aabbox = AABBox3(); // reset bbox
+    
+    Matrix4 normalMatrix4;
+    matrix.GetInverse(normalMatrix4);
+    normalMatrix4.Transpose();
+    Matrix3 normalMatrix3;
+    normalMatrix3 = normalMatrix4;
+
     for (int32 vi = 0; vi < vertexCount; ++vi)
     {
         Vector3 vertex;
         GetCoord(vi, vertex);
         vertex = vertex * matrix;
         SetCoord(vi, vertex);
+        
+        Vector3 normal;
+        GetNormal(vi, normal);
+        normal = normal * normalMatrix3;
+        SetNormal(vi, normal);
     }    
 }
 	
@@ -208,6 +221,9 @@ void PolygonGroup::ReleaseData()
 	
 void PolygonGroup::BuildBuffers()
 {
+    // Added to rebuild vertex buffer pointers 
+    UpdateDataPointersAndStreams();
+
     renderDataObject->BuildVertexBuffer(vertexCount);
     renderDataObject->SetIndices((eIndexFormat)indexFormat, (uint8*)indexArray, indexCount);
     renderDataObject->BuildIndexBuffer();

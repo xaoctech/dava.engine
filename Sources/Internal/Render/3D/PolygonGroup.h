@@ -191,6 +191,7 @@ inline void	PolygonGroup::SetNormal(int32 i, const Vector3 & _v)
 {
 	Vector3 * v = (Vector3 *)((uint8 *)normalArray + i * vertexStride);  
 	*v = _v;
+    (*v).Normalize();
 }
 
 inline void	PolygonGroup::SetTangent(int32 i, const Vector3 & _v)

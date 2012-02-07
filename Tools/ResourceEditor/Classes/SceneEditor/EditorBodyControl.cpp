@@ -22,17 +22,11 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     isModeModification = false;
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
-    savedTreeCell = 0;
 	nodesPropertyPanel = 0;
 	helpDialog = 0;
 	btnPlaceOn = 0;
 
 
-    for(int32 i = 0; i < EDNID_COUNT; ++i)
-    {
-        dataNodes[i] = NULL;
-    }
-    
     ControlsFactory::CusomizeBottomLevelControl(this);
 
 
@@ -571,10 +565,7 @@ bool EditorBodyControl::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNod
             return ((DataNode*)forNode)->GetChildrenCount() > 0;
         }
         
-        for(int32 i = 0; i < EDNID_COUNT; ++i)
-        {
-            if(dataNodes[i]) return true;
-        }
+        return dataNodes.size() > 0;
     }
     
     return false;
@@ -607,13 +598,7 @@ int32 EditorBodyControl::ChildrenCount(UIHierarchy *forHierarchy, void *forParen
             return ((DataNode*)forParent)->GetChildrenCount();
         }
         
-        int32 count = 0;
-        for(int32 i = 0; i < EDNID_COUNT; ++i)
-        {
-            if(dataNodes[i]) ++count;
-        }
-
-        return count;
+        return dataNodes.size();
     }
 
     return 0;
@@ -637,17 +622,14 @@ void * EditorBodyControl::ChildAtIndex(UIHierarchy *forHierarchy, void *forParen
             return ((DataNode*)forParent)->GetChild(index);
         }
         
-        int32 newIndex = 0;
-        for(int32 i = 0; i < EDNID_COUNT; ++i)
+        
+        Set<DataNode *>::const_iterator it = dataNodes.begin();
+        Set<DataNode *>::const_iterator endIt = dataNodes.end();
+        for(int32 i = 0; it != endIt; ++it, ++i)
         {
-            if(dataNodes[i])
+            if(i == index)
             {
-                if(index == newIndex)
-                {
-                    return dataNodes[i];
-                }
-                
-                ++newIndex;
+                return (*it);
             }
         }
     }
@@ -673,7 +655,6 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
         if(n == selectedSceneGraphNode)
         {
             c->SetSelected(true, false);
-            savedTreeCell = c;
         }
         else
         {
@@ -710,8 +691,6 @@ UIHierarchyCell * EditorBodyControl::CellForNode(UIHierarchy *forHierarchy, void
 
 void EditorBodyControl::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell)
 {
-    savedTreeCell = selectedCell;
-
     if(forHierarchy == sceneGraphTree)
     {
         UIHierarchyNode * hNode = selectedCell->GetNode();
@@ -771,9 +750,18 @@ void EditorBodyControl::DebugInfo()
 
 void EditorBodyControl::UpdatePropertyPanel()
 {
-    if(selectedSceneGraphNode || selectedDataGraphNode)
+    if(selectedSceneGraphNode && (NULL != leftPanelSceneGraph->GetParent()))
     {
 		RecreatePropertiesPanelForNode(selectedSceneGraphNode);
+        if(!nodesPropertyPanel->GetParent())
+        {
+            rightPanel->AddControl(nodesPropertyPanel);
+        }
+        RefreshProperties();
+    }
+    else if(selectedDataGraphNode && (NULL != leftPanelDataGraph->GetParent()))
+    {
+		RecreatePropertiesPanelForNode(selectedDataGraphNode);
         if(!nodesPropertyPanel->GetParent())
         {
             rightPanel->AddControl(nodesPropertyPanel);
@@ -1287,7 +1275,6 @@ void EditorBodyControl::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void
             parentNode->RemoveNode(selectedSceneGraphNode);
             
             selectedSceneGraphNode = NULL;
-            savedTreeCell = NULL;
             UpdatePropertyPanel();
 
             sceneGraphTree->Refresh();
@@ -1312,7 +1299,6 @@ void EditorBodyControl::OnEnableDebugFlagsPressed(BaseObject * obj, void *, void
 
 void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
-    
     if (FileSystem::Instance()->GetExtension(pathToFile) == ".sce")
     {
         if(editScene)
@@ -1385,12 +1371,12 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SafeRelease(rootNode); 
         }
 
-        
         Refresh();
     }
+    
     SelectNodeAtTree(scene->GetSelection());
-//    sceneGraphTree->Refresh();
     RefreshDataGraph();
+    
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
@@ -1411,7 +1397,6 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     nodesToAdd.clear();
 
     selectedSceneGraphNode = NULL;
-    savedTreeCell = NULL;
     UpdatePropertyPanel();
     Refresh();
     sceneGraphTree->Refresh();
@@ -1462,7 +1447,6 @@ void EditorBodyControl::WillAppear()
 {
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
-    savedTreeCell = NULL;
 
     cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
     sceneGraphTree->Refresh();
@@ -1504,8 +1488,6 @@ bool EditorBodyControl::PropertiesAreShown()
 
 void EditorBodyControl::ShowSceneGraph(bool show)
 {
-    ResetSelection();
-    
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     if(show && !leftPanelSceneGraph->GetParent())
     {
@@ -1532,6 +1514,11 @@ void EditorBodyControl::ShowSceneGraph(bool show)
             ChangeControlWidthLeft(outputPanel, -leftSideWidth);
         }
     }
+    
+    if(show)
+    {
+        UpdatePropertyPanel();
+    }
 }
 
 bool EditorBodyControl::SceneGraphAreShown()
@@ -1541,7 +1528,7 @@ bool EditorBodyControl::SceneGraphAreShown()
 
 void EditorBodyControl::ShowDataGraph(bool show)
 {
-    ResetSelection();
+//    ResetSelection();
 
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     if(show && !leftPanelDataGraph->GetParent())
@@ -1556,7 +1543,7 @@ void EditorBodyControl::ShowDataGraph(bool show)
                 ChangeControlWidthLeft(outputPanel, leftSideWidth);
             }
             
-            RefreshDataGraph();
+            RefreshDataGraph(true);
         }
     }
     else if(!show && leftPanelDataGraph->GetParent())
@@ -1568,6 +1555,11 @@ void EditorBodyControl::ShowDataGraph(bool show)
         {
             ChangeControlWidthLeft(outputPanel, -leftSideWidth);
         }
+    }
+
+    if(show)
+    {
+        UpdatePropertyPanel();
     }
 }
 
@@ -1665,11 +1657,6 @@ void EditorBodyControl::Refresh()
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
-    if(savedTreeCell)
-    {
-        savedTreeCell->SetSelected(false, false);
-    }
-
     selectedSceneGraphNode = node;
     if(node)
     {
@@ -1704,6 +1691,8 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
         
         sceneGraphTree->OpenNodes(nodesForSearch);
         sceneGraphTree->ScrollToData(selectedSceneGraphNode);
+        
+        RefreshDataGraph();
     }
     else
     {
@@ -1715,11 +1704,11 @@ void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 
 void EditorBodyControl::RefreshProperties()
 {
-    if(selectedSceneGraphNode)
+    if(selectedSceneGraphNode && (NULL != leftPanelSceneGraph->GetParent()))
     {
         nodesPropertyPanel->ReadFrom(selectedSceneGraphNode);
     }
-    else if(selectedDataGraphNode)
+    else if(selectedDataGraphNode && (NULL != leftPanelDataGraph))
     {
         nodesPropertyPanel->ReadFrom(selectedDataGraphNode);
     }
@@ -1731,13 +1720,20 @@ void EditorBodyControl::ResetSelection()
     SelectNodeAtTree(0);
 }
 
-void EditorBodyControl::RefreshDataGraph()
+void EditorBodyControl::RefreshDataGraph(bool force/* = true*/)
 {
-    //dataNodes[EDNID_MATERIAL] = scene->GetMaterials();
-    dataNodes[EDNID_MESH] = 0; // scene->GetStaticMeshes();
-    dataNodes[EDNID_SCENE] = 0; //scene->GetScenes();
-    
-    dataGraphTree->Refresh();
+    if(force || (NULL != leftPanelDataGraph->GetParent()))
+    {
+        selectedDataGraphNode = NULL;
+        dataNodes.clear();
+        
+        if(selectedSceneGraphNode)
+        {
+            selectedSceneGraphNode->GetDataNodes(dataNodes);
+        }
+        
+        dataGraphTree->Refresh();
+    }
 }
 
 void EditorBodyControl::OnRefreshSceneGraph(BaseObject * obj, void *, void *)
@@ -1758,6 +1754,19 @@ void EditorBodyControl::RecreatePropertiesPanelForNode(SceneNode * node)
 	}
 	SafeRelease(nodesPropertyPanel);
 
+	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
+	nodesPropertyPanel->SetDelegate(this);
+	nodesPropertyPanel->SetWorkingScene(scene);
+}
+
+void EditorBodyControl::RecreatePropertiesPanelForNode(DataNode * node)
+{
+	if(nodesPropertyPanel && nodesPropertyPanel->GetParent())
+	{
+		nodesPropertyPanel->GetParent()->RemoveControl(nodesPropertyPanel);
+	}
+	SafeRelease(nodesPropertyPanel);
+    
 	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
 	nodesPropertyPanel->SetDelegate(this);
 	nodesPropertyPanel->SetWorkingScene(scene);
