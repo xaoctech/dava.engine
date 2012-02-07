@@ -518,9 +518,38 @@ void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
 void MeshInstanceNode::BakeTransforms()
 {
     const Matrix4 & localTransform = GetLocalTransform();
+
+    Set<PolygonGroup*> groupsToBatch;
     
-    
-    
+    bool canBakeEverything = true;
+    for (int k = 0; k < (int32)polygroups.size(); ++k)
+    {
+        //Logger::Debug("%d - mesh: %d pg: %d", k, polygroups[k]->GetMesh()->GetRetainCount(), polygroups[k]->GetPolygonGroup()->GetRetainCount());
+     
+        StaticMesh * mesh = polygroups[k]->GetMesh();
+        PolygonGroup * polygroup = polygroups[k]->GetPolygonGroup();
+        if ((mesh->GetRetainCount() == 1) && (polygroup->GetRetainCount() == 1))
+        {
+            groupsToBatch.insert(polygroup);
+        }
+        else
+        {
+            canBakeEverything = false; 
+            Logger::Debug("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
+        }
+    }   
+    if (canBakeEverything)
+    {
+        bbox = AABBox3(); // reset bbox
+        for (Set<PolygonGroup*>::iterator it = groupsToBatch.begin(); it != groupsToBatch.end(); ++it)
+        {
+            PolygonGroup * polygroup = *it;
+            polygroup->ApplyMatrix(localTransform);
+            polygroup->BuildBuffers();
+            bbox.AddAABBox(polygroup->GetBoundingBox());
+        }
+        SetLocalTransform(Matrix4::IDENTITY);
+    }
 }
 
 //String MeshInstanceNode::GetDebugDescription()
