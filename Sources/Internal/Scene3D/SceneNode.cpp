@@ -56,7 +56,7 @@ SceneNode::SceneNode(Scene * _scene)
     defaultLocalTransform.Identity();
 	//animation = 0;
     debugFlags = DEBUG_DRAW_NONE;
-    flags = NODE_VISIBLE | NODE_UPDATABLE;
+    flags = NODE_VISIBLE | NODE_UPDATABLE | NODE_LOCAL_MATRIX_IDENTITY;
 	userData = 0;
     
     customProperties = new KeyedArchive();
