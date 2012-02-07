@@ -152,6 +152,10 @@ public:
     Texture * GetLightmapForIndex(int32 index);
     int32 GetLightmapCount();
 
+    /**
+        \brief 
+     
+     */
     virtual void BakeTransforms();
 
 protected:
