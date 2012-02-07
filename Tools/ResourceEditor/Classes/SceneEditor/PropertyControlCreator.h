@@ -9,6 +9,7 @@ class PropertyControlCreator
 {
 public:
 	static NodesPropertyControl * CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties);
+	static NodesPropertyControl * CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties);
 };
 
 #endif //__PROPERTY_CONTROL_CREATOR_H__
