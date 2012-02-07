@@ -69,7 +69,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         currentTexture[idx] = 0;
     alphaFunc = CMP_ALWAYS;
     shader = 0;
-    cullMode = CULL_BACK;
+    cullMode = FACE_BACK;
     
     if (doHardwareReset)
     {
@@ -403,12 +403,12 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
 
 inline void RenderStateBlock::SetStencilRefInHW()
 {
-	//nothing
+	changeSet |= STATE_CHANGED_STENCIL_FUNC;
 }
 
 inline void RenderStateBlock::SetStencilMaskInHW()
 {
-	//nothing
+	changeSet |= STATE_CHANGED_STENCIL_FUNC;
 }
 
 inline void RenderStateBlock::SetStencilFuncInHW()
@@ -419,8 +419,8 @@ inline void RenderStateBlock::SetStencilFuncInHW()
 	}
 	else
 	{
-		RENDER_VERIFY(glStencilFuncSeparate(CULL_FACE_MAP[CULL_FRONT], COMPARE_FUNCTION_MAP[stencilState.func[0]], stencilState.ref, stencilState.mask));
-		RENDER_VERIFY(glStencilFuncSeparate(CULL_FACE_MAP[CULL_BACK], COMPARE_FUNCTION_MAP[stencilState.func[1]], stencilState.ref, stencilState.mask));
+		RENDER_VERIFY(glStencilFuncSeparate(CULL_FACE_MAP[FACE_FRONT], COMPARE_FUNCTION_MAP[stencilState.func[0]], stencilState.ref, stencilState.mask));
+		RENDER_VERIFY(glStencilFuncSeparate(CULL_FACE_MAP[FACE_BACK], COMPARE_FUNCTION_MAP[stencilState.func[1]], stencilState.ref, stencilState.mask));
 	}
 }
 
@@ -441,8 +441,8 @@ inline void RenderStateBlock::SetStencilZFailInHW()
 
 inline void RenderStateBlock::SetStencilOpInHW()
 {
-	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[CULL_FRONT], stencilState.fail[0], stencilState.zFail[0], stencilState.pass[0]));
-	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[CULL_BACK], stencilState.fail[1], stencilState.zFail[1], stencilState.pass[1]));
+	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[FACE_FRONT], STENCIL_OP_MAP[stencilState.fail[0]], STENCIL_OP_MAP[stencilState.zFail[0]], STENCIL_OP_MAP[stencilState.pass[0]]));
+	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[FACE_BACK], STENCIL_OP_MAP[stencilState.fail[1]], STENCIL_OP_MAP[stencilState.zFail[1]], STENCIL_OP_MAP[stencilState.pass[1]]));
 }
 
     

@@ -765,7 +765,7 @@ uint32 RenderManager::GetState()
 }
     
     
-void RenderManager::SetCullMode(eCull _cullFace)
+void RenderManager::SetCullMode(eFace _cullFace)
 {
     currentState.SetCullMode(_cullFace);
 }
@@ -773,6 +773,11 @@ void RenderManager::SetCullMode(eCull _cullFace)
 void RenderManager::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
 {
     currentState.SetAlphaFunc(func, cmpValue);
+}
+
+RenderStateBlock * RenderManager::State()
+{
+	return &RenderManager::Instance()->currentState;
 }
 
 	
