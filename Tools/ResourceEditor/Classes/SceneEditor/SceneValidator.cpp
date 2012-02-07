@@ -51,6 +51,7 @@ void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
             node->GetParent()->RemoveNode(node);
         }
     }
+    emptyNodesForDeletion.clear();
 }
 
 void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
@@ -103,16 +104,16 @@ void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
         }
     }
     
-    Set<DataNode*> dataNodeSet;
-    sceneNode->GetDataNodes(dataNodeSet);
-    if (dataNodeSet.size() == 0)
-    {
-        SceneNode * parent = sceneNode->GetParent();
-        if (parent)
-        {
-            emptyNodesForDeletion.insert(sceneNode);
-        }
-    }
+//    Set<DataNode*> dataNodeSet;
+//    sceneNode->GetDataNodes(dataNodeSet);
+//    if (dataNodeSet.size() == 0)
+//    {
+//        SceneNode * parent = sceneNode->GetParent();
+//        if (parent)
+//        {
+//            emptyNodesForDeletion.insert(sceneNode);
+//        }
+//    }
 }
 
 void SceneValidator::ValidateTexture(Texture *texture)
