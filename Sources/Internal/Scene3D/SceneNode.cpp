@@ -90,6 +90,24 @@ void SceneNode::AddNode(SceneNode * node)
         node->SetParent(this);
     }
 }
+    
+void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode)
+{
+    if (newNode)
+    {
+        const Vector<SceneNode*>::iterator &itEnd = children.end();
+        for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
+        {
+            if(beforeNode == (*it))
+            {
+                newNode->Retain();
+                children.insert(it, newNode);
+                newNode->SetParent(this);
+                break;
+            }
+        }
+    }
+}
 
 void SceneNode::RemoveNode(SceneNode * node)
 {
@@ -216,6 +234,8 @@ void SceneNode::BakeTransforms()
             children[c]->SetDefaultLocalTransform(children[c]->GetDefaultLocalTransform() * defaultLocalTransform);
         }
         SetLocalTransform(Matrix4::IDENTITY);
+        AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
+        
         //worldTransform = Matrix4
         Update(0.0f);
         for (uint32 c = 0; c < size; ++c)
@@ -291,7 +311,8 @@ void SceneNode::Update(float32 timeElapsed)
 	{
 		if (parent)
         {
-            worldTransform = localTransform * parent->worldTransform;
+            if (flags & NODE_LOCAL_MATRIX_IDENTITY)worldTransform = parent->worldTransform;
+            else worldTransform = localTransform * parent->worldTransform;
         }else 
 		{
             worldTransform = localTransform;
@@ -614,25 +635,6 @@ bool SceneNode::IsLodMain(SceneNode *childToCheck)
     
     return parent->IsLodMain(this);
 }
-
-void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *afterNode)
-{
-	if (newNode)
-    {
-        const Vector<SceneNode*>::iterator &itEnd = children.end();
-        for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
-        {
-            if(afterNode == (*it))
-            {
-                newNode->Retain();
-                children.insert(it, newNode);
-                newNode->SetParent(this);
-                break;
-            }
-        }
-    }
-}
-
     
 };
 

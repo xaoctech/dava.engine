@@ -187,6 +187,7 @@ void PolygonGroup::CreateBaseVertexArray()
     
 void PolygonGroup::ApplyMatrix(const Matrix4 & matrix)
 {
+    aabbox = AABBox3(); // reset bbox
     for (int32 vi = 0; vi < vertexCount; ++vi)
     {
         Vector3 vertex;
@@ -208,6 +209,9 @@ void PolygonGroup::ReleaseData()
 	
 void PolygonGroup::BuildBuffers()
 {
+    // Added to rebuild vertex buffer pointers 
+    UpdateDataPointersAndStreams();
+
     renderDataObject->BuildVertexBuffer(vertexCount);
     renderDataObject->SetIndices((eIndexFormat)indexFormat, (uint8*)indexArray, indexCount);
     renderDataObject->BuildIndexBuffer();

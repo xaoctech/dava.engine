@@ -273,6 +273,14 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 propertyList->SetFilepathPropertyValue("property.landscape.alphamask", "");
 
                 propertyList->SetFilepathPropertyValue("property.landscape.texturemask", resultPath);
+                LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+                if(landscape)
+                {
+                    Texture::EnableMipmapGeneration();
+                    landscape->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, resultPath);
+                    SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TEXTUREMASK));
+                    Texture::DisableMipmapGeneration();
+                }
             }
         }
     }
