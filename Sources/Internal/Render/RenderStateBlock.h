@@ -270,7 +270,7 @@ public:
     
     Color color;
     eBlendMode sourceFactor, destFactor;
-    eCull cullMode;
+    eFace cullMode;
     eCmpFunc alphaFunc;
     uint8    alphaFuncCmpValue;
 
@@ -312,7 +312,7 @@ public:
     inline void SetShader(Shader * shader);
     
     // CULL MODE
-    inline void SetCullMode(eCull mode);
+    inline void SetCullMode(eFace mode);
     
     // ALPHA
     inline void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
@@ -320,10 +320,10 @@ public:
 	// STENCIL
 	inline void SetStencilRef(int32 ref);
 	inline void SetStencilMask(uint32 mask);
-	inline void SetStencilFunc(eCull face, eCmpFunc func);
-	inline void SetStencilPass(eCull face, eStencilOp operation);
-	inline void SetStencilFail(eCull face, eStencilOp operation);
-	inline void SetStencilZFail(eCull face, eStencilOp operation);
+	inline void SetStencilFunc(eFace face, eCmpFunc func);
+	inline void SetStencilPass(eFace face, eStencilOp operation);
+	inline void SetStencilFail(eFace face, eStencilOp operation);
+	inline void SetStencilZFail(eFace face, eStencilOp operation);
 
 
     
@@ -432,7 +432,7 @@ inline void RenderStateBlock::SetShader(Shader * _shader)
 }
 
 // CULL MODE
-inline void RenderStateBlock::SetCullMode(eCull _cullMode)
+inline void RenderStateBlock::SetCullMode(eFace _cullMode)
 {
     if (cullMode != _cullMode)
     {   
@@ -495,9 +495,9 @@ inline void RenderStateBlock::SetStencilMask(uint32 mask)
 	}
 }
 
-inline void RenderStateBlock::SetStencilFunc(eCull face, eCmpFunc func)
+inline void RenderStateBlock::SetStencilFunc(eFace face, eCmpFunc func)
 {
-	if(face == CULL_FRONT || face == CULL_BACK)
+	if(face == FACE_FRONT || face == FACE_BACK)
 	{
 		if(stencilState.func[face] != func)
 		{
@@ -515,9 +515,9 @@ inline void RenderStateBlock::SetStencilFunc(eCull face, eCmpFunc func)
 	}
 }
 
-inline void RenderStateBlock::SetStencilPass(eCull face, eStencilOp operation)
+inline void RenderStateBlock::SetStencilPass(eFace face, eStencilOp operation)
 {
-	if(face == CULL_FRONT || face == CULL_BACK)
+	if(face == FACE_FRONT || face == FACE_BACK)
 	{
 		if(stencilState.pass[face] != operation)
 		{
@@ -535,9 +535,9 @@ inline void RenderStateBlock::SetStencilPass(eCull face, eStencilOp operation)
 	}
 }
 
-inline void RenderStateBlock::SetStencilFail(eCull face, eStencilOp operation)
+inline void RenderStateBlock::SetStencilFail(eFace face, eStencilOp operation)
 {
-	if(face == CULL_FRONT || face == CULL_BACK)
+	if(face == FACE_FRONT || face == FACE_BACK)
 	{
 		if(stencilState.fail[face] != operation)
 		{
@@ -555,9 +555,9 @@ inline void RenderStateBlock::SetStencilFail(eCull face, eStencilOp operation)
 	}
 }
 
-inline void RenderStateBlock::SetStencilZFail(eCull face, eStencilOp operation)
+inline void RenderStateBlock::SetStencilZFail(eFace face, eStencilOp operation)
 {
-	if(face == CULL_FRONT || face == CULL_BACK)
+	if(face == FACE_FRONT || face == FACE_BACK)
 	{
 		if(stencilState.zFail[face] != operation)
 		{

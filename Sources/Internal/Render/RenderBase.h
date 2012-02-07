@@ -208,24 +208,24 @@ enum eIndexFormat
     
 static const int32 INDEX_FORMAT_SIZE[2] = {2, 4};
     
-enum eCull
+enum eFace
 {
-    CULL_FRONT = 0,
-    CULL_BACK,
-    CULL_FRONT_AND_BACK,
+    FACE_FRONT = 0,
+    FACE_BACK,
+    FACE_FRONT_AND_BACK,
 
-    CULL_COUNT,
+    FACE_COUNT,
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
-    static const GLint CULL_FACE_MAP[CULL_COUNT] = 
+    static const GLint CULL_FACE_MAP[FACE_COUNT] = 
     {
         GL_FRONT,
         GL_BACK,
         GL_FRONT_AND_BACK,
     };
 #elif defined(__DAVAENGINE_DIRECTX9__) 
-   static const int32 CULL_FACE_MAP[CULL_COUNT] = 
+   static const int32 CULL_FACE_MAP[FACE_COUNT] = 
    {
        D3DCULL_CCW,
 	   D3DCULL_CW,

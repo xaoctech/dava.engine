@@ -278,9 +278,11 @@ public:
     void SetState(uint32 state);
     uint32 GetState();
     void PopState();
+
+	static RenderStateBlock * State();
     
     void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
-    void SetCullMode(eCull cullFace);
+    void SetCullMode(eFace cullFace);
 
     
     
