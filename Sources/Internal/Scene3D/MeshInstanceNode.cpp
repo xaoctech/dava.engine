@@ -158,12 +158,13 @@ void MeshInstanceNode::Draw()
     
     for (uint32 k = 0; k < meshesSize; ++k)
     {
-        if (polygroups[k]->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+        PolygonGroupWithMaterial * polygroup = polygroups[k];
+        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
 		{
-            polygroups[k]->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
+            polygroup->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
         }
         
-        polygroups[k]->mesh->DrawPolygonGroup(polygroups[k]->polygroupIndex, polygroups[k]->material);
+        polygroup->mesh->DrawPolygonGroup(polygroups[k]->polygroupIndex, polygroups[k]->material);
     }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
@@ -256,8 +257,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
     nd->polygroups = polygroups;
     for (int32 k = 0; k < (int32) polygroups.size(); ++k)
     {
-        nd->polygroups[k]->material->Retain();
-        nd->polygroups[k]->mesh->Retain();
+        nd->polygroups[k]->Retain();
     }
     
     nd->bbox = bbox;
