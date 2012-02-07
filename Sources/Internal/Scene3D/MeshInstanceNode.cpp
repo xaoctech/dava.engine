@@ -549,6 +549,7 @@ void MeshInstanceNode::BakeTransforms()
             bbox.AddAABBox(polygroup->GetBoundingBox());
         }
         SetLocalTransform(Matrix4::IDENTITY);
+        AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
     }
 }
 
