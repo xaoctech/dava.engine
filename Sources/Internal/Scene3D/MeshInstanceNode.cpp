@@ -158,12 +158,13 @@ void MeshInstanceNode::Draw()
     
     for (uint32 k = 0; k < meshesSize; ++k)
     {
-        if (polygroups[k]->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+        PolygonGroupWithMaterial * polygroup = polygroups[k];
+        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
 		{
-            polygroups[k]->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
+            polygroup->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
         }
         
-        polygroups[k]->mesh->DrawPolygonGroup(polygroups[k]->polygroupIndex, polygroups[k]->material);
+        polygroup->mesh->DrawPolygonGroup(polygroups[k]->polygroupIndex, polygroups[k]->material);
     }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
@@ -235,29 +236,11 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 
     SceneNode::Clone(dstNode);
     MeshInstanceNode *nd = (MeshInstanceNode *)dstNode;
-//    nd->lodLayers = lodLayers;
-//    
-//    const List<LodData>::const_iterator & end = nd->lodLayers.end();
-//    for (List<LodData>::iterator it = nd->lodLayers.begin(); it != end; ++it)
-//    {
-//        LodData & ld = *it;
-//        size_t size = ld.materials.size();
-//        for (size_t idx = 0; idx < size; ++idx)
-//        {
-//            ld.materials[idx]->Retain();
-//            ld.meshes[idx]->Retain();
-//        }
-//    }
-// 
-//    nd->lodPresents = lodPresents;
-//    nd->lastLodUpdateFrame = 1000;
-//    nd->currentLod = &(*nd->lodLayers.begin());
     
     nd->polygroups = polygroups;
     for (int32 k = 0; k < (int32) polygroups.size(); ++k)
     {
-        nd->polygroups[k]->material->Retain();
-        nd->polygroups[k]->mesh->Retain();
+        nd->polygroups[k]->Retain();
     }
     
     nd->bbox = bbox;
@@ -518,8 +501,43 @@ void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
 void MeshInstanceNode::BakeTransforms()
 {
     const Matrix4 & localTransform = GetLocalTransform();
+
+    Set<PolygonGroup*> groupsToBatch;
     
+    bool canBakeEverything = true;
+    for (int k = 0; k < (int32)polygroups.size(); ++k)
+    {
+        //Logger::Debug("%d - mesh: %d pg: %d", k, polygroups[k]->GetMesh()->GetRetainCount(), polygroups[k]->GetPolygonGroup()->GetRetainCount());
+     
+        StaticMesh * mesh = polygroups[k]->GetMesh();
+        PolygonGroup * polygroup = polygroups[k]->GetPolygonGroup();
+        if ((mesh->GetRetainCount() == 1) && (polygroup->GetRetainCount() == 1))
+        {
+            groupsToBatch.insert(polygroup);
+        }
+        else
+        {
+            canBakeEverything = false; 
+            Logger::Debug("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
+        }
+    }   
+    if (canBakeEverything)
+    {
+        bbox = AABBox3(); // reset bbox
+        for (Set<PolygonGroup*>::iterator it = groupsToBatch.begin(); it != groupsToBatch.end(); ++it)
+        {
+            PolygonGroup * polygroup = *it;
+            polygroup->ApplyMatrix(localTransform);
+            polygroup->BuildBuffers();
+            bbox.AddAABBox(polygroup->GetBoundingBox());
+        }
+        SetLocalTransform(Matrix4::IDENTITY);
+        AddFlag(NODE_LOCAL_MATRIX_IDENTITY);
+    }
+}
     
+void MeshInstanceNode::RegisterNearestLight(LightNode * node)
+{
     
 }
 

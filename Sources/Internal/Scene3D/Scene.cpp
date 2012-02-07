@@ -328,7 +328,7 @@ void Scene::SetupTestLighting()
 //	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spotdirection); 
 #endif
 }
-
+    
 void Scene::Update(float timeElapsed)
 {
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
@@ -520,6 +520,15 @@ void Scene::AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume)
 	shadowVolumes.push_back(shadowVolume);
 }
 
+    
+void Scene::UpdateLights()
+{
+    
+    
+    
+    
+}
+    
 LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
 {
     switch(type)
