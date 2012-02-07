@@ -139,7 +139,7 @@ public:
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
     inline void SetLocalTransform(const Matrix4 & newMatrix);
-    inline void SetWorldTransform(const Matrix4 & newMatrix);
+    //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
     
@@ -375,7 +375,7 @@ inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
     
 inline Matrix4 & SceneNode::ModifyLocalTransform()
 {
-    flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
     return localTransform;
 }
 
@@ -383,16 +383,19 @@ inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
     localTransform = newMatrix;
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
+    else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
 }
-
-inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
-{
-    worldTransform = newMatrix;
-}
-
+//
+//inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
+//{
+//    worldTransform = newMatrix;
+//}
+//
+    
 inline void SceneNode::InvalidateLocalTransform()
 {
-    flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
 }
 
     
