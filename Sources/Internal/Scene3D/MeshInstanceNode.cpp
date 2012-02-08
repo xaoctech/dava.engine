@@ -192,8 +192,8 @@ void MeshInstanceNode::Draw()
         //if (debugFlags & DEBUG_DRAW_NORMALS)
         {
             
-            const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-            const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
+            //const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+            // const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
             
             for (uint32 k = 0; k < meshesSize; ++k)
             {
@@ -351,7 +351,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         }
     }else
     {
-        int32 lodCount = archive->GetInt32("lodCount", 0);
+        //int32 lodCount = archive->GetInt32("lodCount", 0);
         
         //for (int32 lodIdx = 0; lodIdx < lodCount; ++lodIdx)
         int32 lodIdx = 0;
