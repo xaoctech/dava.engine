@@ -93,46 +93,98 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 
 void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 {
-	//TODO: copy only geometry
-	//AddPolygonGroup(meshInstance->GetMeshes()[0], meshInstance->GetPolygonGroupIndexes()[0], meshInstance->GetMaterials()[0]);
-
 	PolygonGroup * oldPolygonGroup = meshInstance->GetPolygonGroups()[0]->GetPolygonGroup();
 
-	EdgeAdjacency adjacency;
-	adjacency.InitFromPolygonGroup(oldPolygonGroup);
-
-	const Vector<EdgeAdjacency::Edge> & edges = adjacency.GetEdges();
-	int32 sharedEdgesCount = adjacency.GetEdgesWithTwoTrianglesCount();
+	EdgeAdjacency oldAdjacency;
+	oldAdjacency.InitFromPolygonGroup(oldPolygonGroup, oldPolygonGroup->GetIndexCount());
+	int32 sharedEdgesCount = oldAdjacency.GetEdgesWithTwoTrianglesCount();
 
 	shadowPolygonGroup = new PolygonGroup(GetScene());
-	shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldPolygonGroup->GetVertexCount() + sharedEdgesCount*2*2,//*2 - two triangles per edge, *2 - 2 vertices per triangle
+	shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldPolygonGroup->GetIndexCount() + sharedEdgesCount*2*2,//*2 - two triangles per edge, *2 - 2 vertices per triangle
 		oldPolygonGroup->GetIndexCount() + sharedEdgesCount*2*3);//*2 - two triangles per edge, *3 - 3 indeces per triangle
-
-	//copy old coord/normal data
-	int32 oldVertexCount = oldPolygonGroup->GetVertexCount();
-	for(int32 i = 0; i < oldVertexCount; ++i)
-	{
-		Vector3 coord;
-		oldPolygonGroup->GetCoord(i, coord);
-		shadowPolygonGroup->SetCoord(i, coord);
-
-		Vector3 normal;
-		oldPolygonGroup->GetNormal(i, normal);
-		shadowPolygonGroup->SetNormal(i, normal);
-	}
 
 	//copy old index data
 	int32 oldIndexCount = oldPolygonGroup->GetIndexCount();
-	for(int32 i = 0; i < oldIndexCount; ++i)
+	//for(int32 i = 0; i < oldIndexCount; ++i)
+	//{
+	//	int32 index;
+	//	oldPolygonGroup->GetIndex(i, index);
+	//	shadowPolygonGroup->SetIndex(i, index);
+	//}
+
+	int32 i0, i1, i2;
+	Vector3 p0, p1, p2;
+	for(int32 i = 0; i < oldIndexCount; i += 3)
 	{
-		int32 index;
-		oldPolygonGroup->GetIndex(i, index);
-		shadowPolygonGroup->SetIndex(i, index);
+		oldPolygonGroup->GetIndex(i+0, i0);
+		oldPolygonGroup->GetIndex(i+1, i1);
+		oldPolygonGroup->GetIndex(i+2, i2);
+		oldPolygonGroup->GetCoord(i0, p0);
+		oldPolygonGroup->GetCoord(i1, p1);
+		oldPolygonGroup->GetCoord(i2, p2);
+
+		Vector3 v0 = p1 - p0;
+		Vector3 v1 = p2 - p0;
+		Vector3 normal = v0.CrossProduct(v1);
+		normal.Normalize();
+
+		shadowPolygonGroup->SetIndex(i+0, i+0);
+		shadowPolygonGroup->SetIndex(i+1, i+1);
+		shadowPolygonGroup->SetIndex(i+2, i+2);
+		shadowPolygonGroup->SetCoord(i+0, p0);
+		shadowPolygonGroup->SetCoord(i+1, p1);
+		shadowPolygonGroup->SetCoord(i+2, p2);
+		shadowPolygonGroup->SetNormal(i+0, normal);
+		shadowPolygonGroup->SetNormal(i+1, normal);
+		shadowPolygonGroup->SetNormal(i+2, normal);
 	}
+
+
+	EdgeAdjacency newAdjacency;
+	newAdjacency.InitFromPolygonGroup(shadowPolygonGroup, oldPolygonGroup->GetIndexCount());
+	const Vector<EdgeAdjacency::Edge> & edges = newAdjacency.GetEdges();
+
+	//copy old coord/normal data
+	//int32 oldVertexCount = oldPolygonGroup->GetVertexCount();
+	//for(int32 i = 0; i < oldVertexCount; ++i)
+	//{
+	//	Vector3 coord;
+	//	oldPolygonGroup->GetCoord(i, coord);
+	//	shadowPolygonGroup->SetCoord(i, coord);
+
+	//	Vector3 normal;
+	//	oldPolygonGroup->GetNormal(i, normal);
+	//	shadowPolygonGroup->SetNormal(i, normal);
+	//}
+
+
+
+	//for(int32 i = 0; i < oldIndexCount; i += 3)
+	//{
+	//	Vector3 p1;// = vertices[indices[i+0]].position;
+	//	Vector3 p2;// = vertices[indices[i+1]].position;
+	//	Vector3 p3;// = vertices[indices[i+2]].position;
+	//	int32 i1, i2, i3;
+	//	shadowPolygonGroup->GetIndex(i+0, i1);
+	//	shadowPolygonGroup->GetIndex(i+1, i2);
+	//	shadowPolygonGroup->GetIndex(i+2, i3);
+	//	shadowPolygonGroup->GetCoord(i1, p1);
+	//	shadowPolygonGroup->GetCoord(i2, p2);
+	//	shadowPolygonGroup->GetCoord(i3, p3);
+
+	//	Vector3 v1 = p2 - p1;
+	//	Vector3 v2 = p3 - p1;
+	//	Vector3 normal = v1.CrossProduct(v2);
+	//	normal.Normalize();
+
+	//	shadowPolygonGroup->SetNormal(i1, normal);
+	//	shadowPolygonGroup->SetNormal(i2, normal);
+	//	shadowPolygonGroup->SetNormal(i3, normal);
+	//}
 
 	//generate degenerate quads
 	newIndexCount = oldIndexCount;
-	newVertexCount = oldVertexCount;
+	newVertexCount = oldIndexCount;
 	int32 edgesCount = edges.size();
 	for(int32 i = 0; i < edgesCount; ++i)
 	{
@@ -159,8 +211,6 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 			//normals
 			Vector3 n0 = CalculateNormalForVertex(i0);
 			Vector3 n1 = CalculateNormalForVertex(i1);
-			Logger::Debug("n0 %f %f %f", n0.x, n0.y, n0.z);
-			Logger::Debug("n1 %f %f %f", n1.x, n1.y, n1.z);
 
 			//triangles
 			int32 index0AtT0 = FindIndexInTriangleForPointInEdge(i0, 0, edge);
