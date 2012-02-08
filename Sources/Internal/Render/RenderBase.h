@@ -143,18 +143,18 @@ static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] =
 enum eCmpFunc
 {
     CMP_NEVER = 0,   // Never passes.
-    CMP_LESS,    // Passes if the incoming alpha value is less than the reference value.
-    CMP_EQUAL,   // Passes if the incoming alpha value is equal to the reference value.
-    CMP_LEQUAL,  // Passes if the incoming alpha value is less than or equal to the reference value.
-    CMP_GREATER, // Passes if the incoming alpha value is greater than the reference value.
-    CMP_NOTEQUAL, // Passes if the incoming alpha value is not equal to the reference value.
-    CMP_GEQUAL,   // Passes if the incoming alpha value is greater than or equal to the reference value.
+    CMP_LESS,    // Passes if the incoming value is less than the reference value.
+    CMP_EQUAL,   // Passes if the incoming value is equal to the reference value.
+    CMP_LEQUAL,  // Passes if the incoming value is less than or equal to the reference value.
+    CMP_GREATER, // Passes if the incoming value is greater than the reference value.
+    CMP_NOTEQUAL, // Passes if the incoming value is not equal to the reference value.
+    CMP_GEQUAL,   // Passes if the incoming value is greater than or equal to the reference value.
     CMP_ALWAYS,
     CMP_TEST_MODE_COUNT, 
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint ALPHA_TEST_MODE_MAP[CMP_TEST_MODE_COUNT] = 
+static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] = 
 {
     GL_NEVER,
     GL_LESS,
@@ -166,7 +166,7 @@ static const GLint ALPHA_TEST_MODE_MAP[CMP_TEST_MODE_COUNT] =
     GL_ALWAYS,
 };
 #elif defined(__DAVAENGINE_DIRECTX9__)  
-static const GLint ALPHA_TEST_MODE_MAP[CMP_TEST_MODE_COUNT] = 
+static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] = 
 {
     D3DCMP_NEVER,
     D3DCMP_LESS,
@@ -208,28 +208,70 @@ enum eIndexFormat
     
 static const int32 INDEX_FORMAT_SIZE[2] = {2, 4};
     
-enum eCull
+enum eFace
 {
-    CULL_FRONT = 0,
-    CULL_BACK,
-    CULL_FRONT_AND_BACK,
-    CULL_COUNT,
+    FACE_FRONT = 0,
+    FACE_BACK,
+    FACE_FRONT_AND_BACK,
+
+    FACE_COUNT,
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
-    static const GLint CULL_FACE_MAP[CULL_COUNT] = 
+    static const GLint CULL_FACE_MAP[FACE_COUNT] = 
     {
         GL_FRONT,
         GL_BACK,
         GL_FRONT_AND_BACK,
     };
 #elif defined(__DAVAENGINE_DIRECTX9__) 
-   static const int32 CULL_FACE_MAP[CULL_COUNT] = 
+   static const int32 CULL_FACE_MAP[FACE_COUNT] = 
    {
        D3DCULL_CCW,
 	   D3DCULL_CW,
 	   D3DCULL_NONE,
    };
+#endif
+
+
+enum eStencilOp
+{
+	STENCILOP_KEEP,
+	STENCILOP_ZERO,
+	STENCILOP_REPLACE,
+	STENCILOP_INCR,
+	STENCILOP_INCR_WRAP,
+	STENCILOP_DECR,
+	STENCILOP_DECR_WRAP,
+	STENCILOP_INVERT,
+
+	STENCILOP_COUNT
+};
+
+#if defined(__DAVAENGINE_OPENGL__)
+static const GLint STENCIL_OP_MAP[STENCILOP_COUNT] = 
+{
+	GL_KEEP,
+	GL_ZERO,
+	GL_REPLACE,
+	GL_INCR,
+	GL_INCR_WRAP,
+	GL_DECR,
+	GL_DECR_WRAP,
+	GL_INVERT
+};
+#elif defined(__DAVAENGINE_DIRECTX9__) 
+static const int32 STENCIL_OP_MAP[STENCILOP_COUNT] = 
+{
+	D3DSTENCILOP_KEEP,
+	D3DSTENCILOP_ZERO,
+	D3DSTENCILOP_REPLACE,
+	D3DSTENCILOP_INCRSAT,
+	D3DSTENCILOP_INCR,
+	D3DSTENCILOP_DECRSAT,
+	D3DSTENCILOP_DECR,
+	D3DSTENCILOP_INVERT
+};
 #endif
     
 enum ePrimitiveType
@@ -243,6 +285,7 @@ enum ePrimitiveType
 
 	PRIMITIVETYPE_COUNT
 };
+
     
 // TODO: we have same structs & functions in PolygonGroup -- we should find a right place for them
 enum eVertexFormat

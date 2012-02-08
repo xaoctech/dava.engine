@@ -305,6 +305,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Scene.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h" />
@@ -548,6 +549,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Scene.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp" />

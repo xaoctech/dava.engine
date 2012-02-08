@@ -83,7 +83,7 @@ public:
     
     void UpdateLibraryState(bool isShown, int32 width);
 
-	void BeastProcessScene();
+	void BeastProcessScene(bool fullshade);
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
     EditorScene * GetScene();
