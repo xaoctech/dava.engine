@@ -35,14 +35,15 @@ public:
     MaterialEditor();
     ~MaterialEditor();
     
-    void SetWorkingScene(Scene *newWorkingScene, SceneNode *selectedSceneNode);
-    void EditMaterial(Scene *newWorkingScene, Material *material);
+    void SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode);
+    void EditMaterial(Scene *newWorkingScene, Material *newWorkingMaterial);
     
     void OnButton(BaseObject * object, void * userData, void * callerData);
     
     virtual void WillAppear();
     virtual void WillDisappear();
     virtual void UpdateInternalMaterialsVector();
+    virtual void UpdateNodeMaterialsVector();
 
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
@@ -64,6 +65,7 @@ public:
     void PreparePropertiesForMaterialType(int materialType);
     
 protected:
+    
     Vector<Material*> materials;
     
     UIList *materialsList;
@@ -72,8 +74,8 @@ protected:
     
     Scene *workingScene;
     SceneNode *workingSceneNode;
+    Material *workingMaterial;
     Vector<Material*> workingNodeMaterials;
-    void EnumerateNodeMaterials(SceneNode *node);
     
     int selectedMaterial;
     UIListCell *lastSelection;

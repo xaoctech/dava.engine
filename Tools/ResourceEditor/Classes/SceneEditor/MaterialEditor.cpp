@@ -33,6 +33,7 @@ MaterialEditor::MaterialEditor()
     ControlsFactory::CustomizeDialog(this);
     displayMode = EDM_ALL;
     
+    workingMaterial = NULL;
     workingSceneNode = NULL;
     workingScene = NULL;
     float32 materialListWidth = size.x * materialListPart;
@@ -137,15 +138,25 @@ MaterialEditor::MaterialEditor()
 
 MaterialEditor::~MaterialEditor()
 {
-    SafeRelease(noMaterials);
-    
-    SafeRelease(btnSelected);
-    SafeRelease(btnAll);
-    
+    for (int32 k = 0; k < (int32)materials.size(); ++k)
+    {
+        SafeRelease(materials[k]);
+    }
+    materials.clear();
+    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
+    {
+        SafeRelease(workingNodeMaterials[k]);
+    }
+    workingNodeMaterials.clear();
+
+    SafeRelease(workingMaterial);
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
-    SafeRelease(materialsList);
     
+    SafeRelease(noMaterials);
+    SafeRelease(btnSelected);
+    SafeRelease(btnAll);
+    SafeRelease(materialsList);
     SafeRelease(comboboxName);
     SafeRelease(materialTypes);
 }
@@ -166,19 +177,36 @@ void MaterialEditor::UpdateInternalMaterialsVector()
     }
 }
 
+void MaterialEditor::UpdateNodeMaterialsVector()
+{
+    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
+    {
+        SafeRelease(workingNodeMaterials[k]);
+    }
+
+    workingNodeMaterials.clear();
+    if(workingSceneNode)
+    {
+        workingSceneNode->GetDataNodes(workingNodeMaterials);
+    }
+    else if(workingMaterial)
+    {
+        workingNodeMaterials.push_back(workingMaterial);
+    }
+    
+    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
+    {
+        workingNodeMaterials[k]->Retain();
+    }
+}
+
+
 void MaterialEditor::WillAppear()
 {
     UpdateInternalMaterialsVector();
+    UpdateNodeMaterialsVector();
     
-    if (0 < materials.size())
-    {
-        selectedMaterial = 0;
-    }
-    else
-    {
-        selectedMaterial = -1;
-    }
-    SelectMaterial(selectedMaterial);
+    OnAllPressed(NULL, NULL, NULL);
 }
 
 void MaterialEditor::WillDisappear()
@@ -188,113 +216,60 @@ void MaterialEditor::WillDisappear()
         SafeRelease(materials[k]);
     }
     materials.clear();
+    for (int32 k = 0; k < (int32)workingNodeMaterials.size(); ++k)
+    {
+        SafeRelease(workingNodeMaterials[k]);
+    }
     workingNodeMaterials.clear();
     
-    selectedMaterial = -1;
-    SelectMaterial(selectedMaterial);
-}
-
-
-void MaterialEditor::EnumerateNodeMaterials(DAVA::SceneNode *node)
-{
-    if(!node)
-    {
-        node = workingSceneNode;
-    }
-        
-    //add materials to list
-    MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *>(node);
-    if(mesh)
-    {
-        const Vector<PolygonGroupWithMaterial *> & meshMaterials = mesh->GetPolygonGroups();
-        for(int32 iMesh = 0; iMesh < (int32) meshMaterials.size(); ++iMesh)
-        {
-            bool found = false;
-            for(int32 child = 0; child < (int32)workingNodeMaterials.size(); ++child)
-            {
-                if(workingNodeMaterials[child] == meshMaterials[iMesh]->GetMaterial())
-                {
-                    found = true;
-                    break;
-                }
-            }
-            
-            if(!found)
-            {
-                // TODO: ASK VICTOR WHAT DOES IT MEAN
-                workingNodeMaterials.push_back(meshMaterials[iMesh]->GetMaterial());
-            }
-        }
-    }
+    SelectMaterial(-1);
     
-    if(node)
-    {
-        int32 count = node->GetChildrenCount();
-        for(int32 i = 0; i < count; ++i)
-        {
-            EnumerateNodeMaterials(node->GetChild(i));    
-        }
-        
-    }
-}
-
-void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *material)
-{
-    SafeRelease(workingSceneNode);
-    SafeRelease(workingScene);
-    
-    workingScene = SafeRetain(newWorkingScene);
-    workingNodeMaterials.clear();
-    workingNodeMaterials.push_back(material);
-
-    UdpateButtons(true);
-
     if (lastSelection) 
     {
         lastSelection->SetSelected(false, false);
         lastSelection = NULL;
     }
+}
+
+
+void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *newWorkingMaterial)
+{
+    if ((newWorkingScene == workingScene) && (workingMaterial == newWorkingMaterial))
+    {
+        return;
+    }
+
+    SafeRelease(workingMaterial);
+    SafeRelease(workingSceneNode);
+    SafeRelease(workingScene);
     
-    selectedMaterial = 0;
-    SelectMaterial(selectedMaterial);
+    workingScene = SafeRetain(newWorkingScene);
+    workingMaterial = SafeRetain(newWorkingMaterial);
     
+    UdpateButtons(NULL != workingMaterial);
+
+    SelectMaterial(0);
     RefreshList();
 }
 
 
-void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *selectedSceneNode)
+void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode)
 {
-    if (newWorkingScene == workingScene && workingSceneNode == selectedSceneNode) 
+    if ((newWorkingScene == workingScene) && (workingSceneNode == newWorkingSceneNode))
     {
         return;
     }
     
+    SafeRelease(workingMaterial);
     SafeRelease(workingSceneNode);
     SafeRelease(workingScene);
 
     workingScene = SafeRetain(newWorkingScene);
-    workingSceneNode = SafeRetain(selectedSceneNode);
-    workingNodeMaterials.clear();
-    EnumerateNodeMaterials(NULL);
+    workingSceneNode = SafeRetain(newWorkingSceneNode);
+
+    UdpateButtons(NULL != workingSceneNode);
     
-    UdpateButtons(NULL != selectedSceneNode);
-    
-    if (lastSelection) 
-    {
-        lastSelection->SetSelected(false, false);
-        lastSelection = NULL;
-    }
-    
-    if (0 < materials.size())
-    {
-        selectedMaterial = 0;
-    }
-    else
-    {
-        selectedMaterial = -1;
-    }
-    SelectMaterial(selectedMaterial);
-    
+    SelectMaterial(0);
     RefreshList();
 }
 
@@ -425,6 +400,8 @@ void MaterialEditor::SelectMaterial(int materialIndex)
     Material *mat = GetMaterial(materialIndex);
     if(mat)
     {
+        selectedMaterial = materialIndex;
+        
         if(!materialTypes->GetParent())
         {
             AddControl(materialTypes);
@@ -435,12 +412,13 @@ void MaterialEditor::SelectMaterial(int materialIndex)
             RemoveControl(noMaterials);
         }
 
-        
         PreparePropertiesForMaterialType(mat->type);
         materialTypes->SetSelectedIndex(mat->type, false);
     }
     else
     {
+        selectedMaterial = -1;
+        
         for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
         {
             if (materialProps[i]->GetParent())
@@ -534,26 +512,21 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     if (!c) 
     {
         c = new UIListCell(Rect(0, 0, size.x * materialListPart, 20), "Material name cell");
-    }
 
-    
-    UIControl *sceneFlagBox = SafeRetain(c->FindByName("flagBox"));
-    if(!sceneFlagBox)
-    {
-        int32 height = 16;
-        int32 width = 16;
-        float32 y = (CellHeight(forList, index) - height) / 2;
-        float32 x = forList->GetRect().dx - width;
+        float32 boxSize = 16;
+        float32 y = (CellHeight(forList, index) - boxSize) / 2;
+        float32 x = forList->GetRect().dx - boxSize;
         
-        Rect r = Rect(x, y, width, height);
-        sceneFlagBox = new UIControl(r);
+        Rect r = Rect(x, y, boxSize, boxSize);
+        UIControl *sceneFlagBox = new UIControl(r);
         sceneFlagBox->SetName("flagBox");
         sceneFlagBox->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
         sceneFlagBox->SetSprite("~res:/Gfx/UI/marker", 1);
         sceneFlagBox->SetInputEnabled(false);
         c->AddControl(sceneFlagBox);
+        SafeRelease(sceneFlagBox);
     }
-    
+
     Material *mat = GetMaterial(index);
     bool found = false;
     if(EDM_ALL == displayMode)
@@ -573,12 +546,17 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     }
     
     ControlsFactory::CustomizeListCell(c, StringToWString(mat->GetName()));
+    UIControl *sceneFlagBox = c->FindByName("flagBox");
     sceneFlagBox->SetVisible(found, false);
     
     if (index == selectedMaterial) 
     {
         c->SetSelected(true, false);
         lastSelection = c;
+    }
+    else
+    {
+        c->SetSelected(false, false);
     }
     
     return c;
@@ -597,10 +575,9 @@ void MaterialEditor::OnCellSelected(UIList *forList, UIListCell *selectedCell)
         {
             lastSelection->SetSelected(false, false);
         }
-        selectedMaterial = selectedCell->GetIndex();
         selectedCell->SetSelected(true, false);
         lastSelection = selectedCell;
-        SelectMaterial(selectedMaterial);
+        SelectMaterial(selectedCell->GetIndex());
     }    
 }
 
@@ -617,16 +594,7 @@ void MaterialEditor::OnAllPressed(BaseObject * object, void * userData, void * c
         lastSelection = NULL;
     }
     
-    if(0 < materials.size())
-    {
-        selectedMaterial = 0;
-    }
-    else
-    {
-        selectedMaterial = -1;
-    }
-    SelectMaterial(selectedMaterial);
-
+    SelectMaterial(0);
     RefreshList();
 }
 
@@ -643,16 +611,7 @@ void MaterialEditor::OnSelectedPressed(BaseObject * object, void * userData, voi
         lastSelection = NULL;
     }
     
-    if(0 < workingNodeMaterials.size())
-    {
-        selectedMaterial = 0;
-    }
-    else
-    {
-        selectedMaterial = -1;
-    }
-    SelectMaterial(selectedMaterial);
-
+    SelectMaterial(0);
     RefreshList();
 }
 
@@ -686,18 +645,18 @@ void MaterialEditor::RefreshList()
 Material * MaterialEditor::GetMaterial(int32 index)
 {
     Material *mat = NULL;
-    if(0 <= index)
+    if(EDM_ALL == displayMode)
     {
-        if(EDM_ALL == displayMode)
+        if((0 <= index) && (index < materials.size()))
         {
             mat = materials[index];
         }
-        else
+    }
+    else
+    {
+        if((0 <= index) && (index < workingNodeMaterials.size()))
         {
-            if(index < workingNodeMaterials.size())
-            {
-                mat = workingNodeMaterials[index];
-            }
+            mat = workingNodeMaterials[index];
         }
     }
     return mat;

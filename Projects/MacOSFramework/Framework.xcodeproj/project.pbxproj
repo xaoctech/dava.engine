@@ -105,6 +105,8 @@
 		FE707B1A147588AC0082008F /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE707B19147588AC0082008F /* SpriteNode.cpp */; };
 		FE707B1D147588B60082008F /* BillboardNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE707B1B147588B60082008F /* BillboardNode.cpp */; };
 		FE707B1E147588B60082008F /* BillboardNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE707B1C147588B60082008F /* BillboardNode.h */; };
+		FE78E87B14E17E7E007DD1AA /* QuadTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE78E87914E17E7D007DD1AA /* QuadTree.cpp */; };
+		FE78E87C14E17E7E007DD1AA /* QuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = FE78E87A14E17E7D007DD1AA /* QuadTree.h */; };
 		FE879F87145061E400F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE879F85145061E400F889E5 /* TextureMulColorAlphaTestEffect.cpp */; };
 		FE879F88145061E400F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = FE879F86145061E400F889E5 /* TextureMulColorAlphaTestEffect.h */; };
 		FE941D321331543700515418 /* CorePlatformMacOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE941D2C1331543700515418 /* CorePlatformMacOS.cpp */; };
@@ -589,6 +591,8 @@
 		FE707B19147588AC0082008F /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		FE707B1B147588B60082008F /* BillboardNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BillboardNode.cpp; sourceTree = "<group>"; };
 		FE707B1C147588B60082008F /* BillboardNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BillboardNode.h; sourceTree = "<group>"; };
+		FE78E87914E17E7D007DD1AA /* QuadTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QuadTree.cpp; sourceTree = "<group>"; };
+		FE78E87A14E17E7D007DD1AA /* QuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadTree.h; sourceTree = "<group>"; };
 		FE879F85145061E400F889E5 /* TextureMulColorAlphaTestEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureMulColorAlphaTestEffect.cpp; sourceTree = "<group>"; };
 		FE879F86145061E400F889E5 /* TextureMulColorAlphaTestEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureMulColorAlphaTestEffect.h; sourceTree = "<group>"; };
 		FE941D2C1331543700515418 /* CorePlatformMacOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CorePlatformMacOS.cpp; sourceTree = "<group>"; };
@@ -1502,6 +1506,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				FE78E87914E17E7D007DD1AA /* QuadTree.cpp */,
+				FE78E87A14E17E7D007DD1AA /* QuadTree.h */,
 				5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */,
 				5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */,
 				5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */,
@@ -1935,6 +1941,7 @@
 				5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */,
 				C7783B9114DA998F00877862 /* TextGameObject.h in Headers */,
 				5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */,
+				FE78E87C14E17E7E007DD1AA /* QuadTree.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2221,6 +2228,7 @@
 				5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */,
 				C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */,
 				5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */,
+				FE78E87B14E17E7E007DD1AA /* QuadTree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
