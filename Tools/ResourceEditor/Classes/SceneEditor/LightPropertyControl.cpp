@@ -41,6 +41,12 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 	propertyList->AddFloatProperty("Intensity");
 	propertyList->SetFloatPropertyValue("Intensity", light->GetCustomProperties()->GetFloat("editor.intensity", 1.f));
 
+	propertyList->AddFloatProperty("Falloff cutoff");
+	propertyList->SetFloatPropertyValue("Falloff cutoff", light->GetCustomProperties()->GetFloat("editor.staticlight.falloffcutoff", 1000.f));
+
+	propertyList->AddFloatProperty("Falloff exponent");
+	propertyList->SetFloatPropertyValue("Falloff exponent", light->GetCustomProperties()->GetFloat("editor.staticlight.falloffexponent", 1.f));
+
 	if(LightNode::TYPE_DIRECTIONAL == light->GetType())
 	{
 		propertyList->AddFloatProperty("Shadow angle");
@@ -48,6 +54,11 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 
 		propertyList->AddIntProperty("Shadow samples");
 		propertyList->SetIntPropertyValue("Shadow samples", light->GetCustomProperties()->GetInt32("editor.staticlight.shadowsamples", 1));
+	}
+	else if(LightNode::TYPE_POINT == light->GetType())
+	{
+		propertyList->AddFloatProperty("Shadow radius");
+		propertyList->SetFloatPropertyValue("Shadow radius", light->GetCustomProperties()->GetFloat("editor.staticlight.shadowradius", 0.f));
 	}
 }
 
@@ -60,8 +71,8 @@ void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
         
         if(LightNode::TYPE_DIRECTIONAL == light->GetType())
         {
-            light->GetCustomProperties()->SetFloat("editor.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
-            light->GetCustomProperties()->SetInt32("editor.shadowsamples", propertyList->GetIntPropertyValue("Shadow samples"));
+            light->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", propertyList->GetFloatPropertyValue("Shadow angle"));
+            light->GetCustomProperties()->SetInt32("editor.staticlight.shadowsamples", propertyList->GetIntPropertyValue("Shadow samples"));
         }
     }
 
@@ -99,6 +110,24 @@ void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const S
             light->GetCustomProperties()->SetFloat("editor.staticlight.shadowangle", newValue);
         }
     }
+	else if("Shadow radius" == forKey)
+	{
+		LightNode *light = dynamic_cast<LightNode *>(currentNode);
+		if(LightNode::TYPE_POINT == light->GetType())
+		{
+			light->GetCustomProperties()->SetFloat("editor.staticlight.shadowradius", newValue);
+		}
+	}
+	else if("Falloff cutoff" == forKey)
+	{
+		LightNode *light = dynamic_cast<LightNode *>(currentNode);
+		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffcutoff", newValue);
+	}
+	else if("Falloff exponent" == forKey)
+	{
+		LightNode *light = dynamic_cast<LightNode *>(currentNode);
+		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffexponent", newValue);
+	}
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
