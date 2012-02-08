@@ -945,6 +945,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1644,6 +1647,9 @@
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
