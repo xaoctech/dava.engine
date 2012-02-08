@@ -23,69 +23,19 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_EDGE_ADJACENCY_H__
-#define __DAVAENGINE_EDGE_ADJACENCY_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
+#include "Scene3D/QuadTree.h"
 
 namespace DAVA
 {
-
-class PolygonGroup;
-
-class EdgeAdjacency
-{
-public:
-
-	struct TriangleData
-	{
-		int32 i0;
-		int32 i1;
-		int32 i2;
-	};
-
-	struct Edge
-	{
-		Vector3 points[2];
-
-		Vector<TriangleData> sharedTriangles;
-
-		bool IsEqual(const Edge & otherEdge);
-	};
-
-	struct Triangle
-	{
-		int32 edgeIndices[3];
-	};
-
-	void InitFromPolygonGroup(PolygonGroup * polygonGroup, int32 indexCount);
-
-	const Vector<Edge> & GetEdges();
-	const Triangle & GetTriangle(int32 index);
-
-	int32 GetEdgesWithTwoTrianglesCount();
-
-	static bool IsPointsEqual(const Vector3 & p0, const Vector3 & p1);
-
-private:
-	PolygonGroup * polygonGroup;
-	
-	
-	Vector<Edge> edges;
-
-	Vector<Triangle> triangles;
-
-	void AddEdge(Edge & edge);
-
-	void FillEdge(Edge & edge, int32 index0, int32 index1);
-	int32 GetEdgeIndex(Edge & edge);
-
-	void CreateTriangle(int32 startingVertex);
+    
+    
+    
 };
 
-};
 
-#endif //__DAVAENGINE_EDGE_ADJACENCY_H__
+
+

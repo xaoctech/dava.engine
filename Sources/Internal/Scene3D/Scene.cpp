@@ -359,7 +359,7 @@ void Scene::Draw()
 
 	shadowVolumes.clear();
     
-    RenderManager::Instance()->SetCullMode(CULL_BACK);
+    RenderManager::Instance()->SetCullMode(FACE_BACK);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->ClearDepthBuffer();
@@ -378,17 +378,25 @@ void Scene::Draw()
 	if(shadowVolumes.size() > 0)
 	{
 		//2nd pass
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
+		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+		//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		//RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
 
 		RenderManager::Instance()->ClearStencilBuffer(0);
 		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
-		RENDER_VERIFY(glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF));
 		
-		RENDER_VERIFY(glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP));
-		RENDER_VERIFY(glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP));
+		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_ALWAYS);
+		RenderManager::State()->SetStencilRef(1);
+		RenderManager::State()->SetStencilMask(0xFFFFFFFF);
+
+		RenderManager::State()->SetStencilPass(FACE_FRONT, STENCILOP_KEEP);
+		RenderManager::State()->SetStencilFail(FACE_FRONT, STENCILOP_KEEP);
+		RenderManager::State()->SetStencilZFail(FACE_FRONT, STENCILOP_DECR_WRAP);
+
+		RenderManager::State()->SetStencilPass(FACE_BACK, STENCILOP_KEEP);
+		RenderManager::State()->SetStencilFail(FACE_BACK, STENCILOP_KEEP);
+		RenderManager::State()->SetStencilZFail(FACE_BACK, STENCILOP_INCR_WRAP);
 		
 		RenderManager::Instance()->FlushState();
 		Vector<ShadowVolumeNode*>::iterator itEnd = shadowVolumes.end();
@@ -400,11 +408,15 @@ void Scene::Draw()
 		//3rd pass
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
-		RENDER_VERIFY(glStencilFunc(GL_NOTEQUAL, 0, 0xFFFFFFFF));
-		RENDER_VERIFY(glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP));
+		
+		RenderManager::State()->SetStencilRef(0);
+		RenderManager::State()->SetStencilFunc(FACE_FRONT_AND_BACK, CMP_NOTEQUAL);
+		RenderManager::State()->SetStencilPass(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
+		RenderManager::State()->SetStencilFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
+		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		ShadowRect::Instance()->Draw();
+		//ShadowRect::Instance()->Draw();
 
 		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	}

@@ -8,6 +8,8 @@ uniform mat3 normalMatrix;
 
 uniform vec3 lightPosition0;
 
+varying vec3 clr;
+
 void main()
 {
 	vec3 normal = normalMatrix * inNormal.xyz;
@@ -31,4 +33,7 @@ void main()
 	{
 		gl_Position = modelViewProjectionMatrix * inPosition;
 	}
+
+	//gl_Position = modelViewProjectionMatrix * inPosition;
+	clr = inNormal;
 }

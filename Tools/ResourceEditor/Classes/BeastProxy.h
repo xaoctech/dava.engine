@@ -13,6 +13,7 @@ public:
 	virtual void ParseScene(BeastManager * manager, DAVA::Scene * scene) {};
 	virtual void GenerateLightmaps(BeastManager * manager) {};
 	virtual void SetLightmapsDirectory(BeastManager * manager, const DAVA::String & path) {};
+	virtual void SetMode(BeastManager * manager, DAVA::int32 mode) {};
 };
 
 #endif //__BEAST_PROXY__

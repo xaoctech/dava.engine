@@ -172,6 +172,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	x += dx;
 	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast"));
+	x += dx;
+	btnBeastFullshade = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast.fullshade"));
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
 	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
@@ -189,6 +191,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     AddControl(btnProject);
 #ifdef __DAVAENGINE_BEAST__
 	AddControl(btnBeast);
+	AddControl(btnBeastFullshade);
 #endif
     AddControl(btnLandscape);
     AddControl(btnViewPortSize);
@@ -203,6 +206,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnProject->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenProjectPressed));
 #ifdef __DAVAENGINE_BEAST__
 	btnBeast->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
+	btnBeastFullshade->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
 #endif// #ifdef __DAVAENGINE_BEAST__
 	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapePressed));
 	btnViewPortSize->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnViewPortSize));
@@ -219,6 +223,7 @@ void SceneEditorScreenMain::ReleaseTopMenu()
     SafeRelease(btnProject);
 #ifdef __DAVAENGINE_BEAST__
 	SafeRelease(btnBeast);
+	SafeRelease(btnBeastFullshade);
 #endif// #ifdef __DAVAENGINE_BEAST__
     SafeRelease(btnLandscape);
     SafeRelease(btnViewPortSize);
@@ -726,7 +731,15 @@ void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
 {
-	bodies[0]->bodyControl->BeastProcessScene();
+	if(btnBeastFullshade == obj)
+	{
+		bodies[0]->bodyControl->BeastProcessScene(true);
+	}
+	else
+	{
+		bodies[0]->bodyControl->BeastProcessScene(false);
+	}
+	
 }
 
 void SceneEditorScreenMain::MenuCanceled()

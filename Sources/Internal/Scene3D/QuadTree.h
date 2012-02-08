@@ -23,69 +23,53 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#ifndef __DAVAENGINE_QUADTREE_H__
+#define __DAVAENGINE_QUADTREE_H__
 
-#ifndef __DAVAENGINE_EDGE_ADJACENCY_H__
-#define __DAVAENGINE_EDGE_ADJACENCY_H__
-
+#include "Base/BaseObject.h"
+#include "Base/StaticSingleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
+#include "Scene3D/SceneNodeAnimationKey.h"
+#include <deque>
 
 namespace DAVA
 {
-
-class PolygonGroup;
-
-class EdgeAdjacency
+class Material;
+class MeshInstanceNode;
+    
+class QuadTreeNode
 {
 public:
+    
+    
+};
 
-	struct TriangleData
-	{
-		int32 i0;
-		int32 i1;
-		int32 i2;
-	};
+class QuadTree : public BaseObject
+{
+public:
+    QuadTree();
+    virtual ~QuadTree();
+    
+    void Build(Scene * scene);
+    
+    void Update(float32 timeElapsed);
 
-	struct Edge
-	{
-		Vector3 points[2];
-
-		Vector<TriangleData> sharedTriangles;
-
-		bool IsEqual(const Edge & otherEdge);
-	};
-
-	struct Triangle
-	{
-		int32 edgeIndices[3];
-	};
-
-	void InitFromPolygonGroup(PolygonGroup * polygonGroup, int32 indexCount);
-
-	const Vector<Edge> & GetEdges();
-	const Triangle & GetTriangle(int32 index);
-
-	int32 GetEdgesWithTwoTrianglesCount();
-
-	static bool IsPointsEqual(const Vector3 & p0, const Vector3 & p1);
-
+    void Draw(); 
 private:
-	PolygonGroup * polygonGroup;
-	
-	
-	Vector<Edge> edges;
-
-	Vector<Triangle> triangles;
-
-	void AddEdge(Edge & edge);
-
-	void FillEdge(Edge & edge, int32 index0, int32 index1);
-	int32 GetEdgeIndex(Edge & edge);
-
-	void CreateTriangle(int32 startingVertex);
+    Map<Material*, Set<MeshInstanceNode*> > nodesForRender;
 };
 
 };
 
-#endif //__DAVAENGINE_EDGE_ADJACENCY_H__
+#endif // __DAVAENGINE_SCENEMANAGER_H__
+
+
+
+
+
