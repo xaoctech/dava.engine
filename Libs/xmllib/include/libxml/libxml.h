@@ -28,6 +28,9 @@
  */
 #include <win32config.h>
 #include <libxml/xmlversion.h>
+#elif defined(_WIN32)
+#include <libxml/win32config.h>
+#include <libxml/xmlversion.h>
 #else
 #include "config.h"
 #include <libxml/xmlversion.h>
