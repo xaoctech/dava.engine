@@ -211,6 +211,18 @@ void LodNode::RecheckLod()
 {
 //#define LOD_DEBUG
 
+    if (scene->GetForceLodLayer() != -1) 
+    {
+        for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
+        {
+            if (it->layer >= scene->GetForceLodLayer())
+            {
+                currentLod = &(*it);
+                return;
+            }
+        }
+            return;
+    }
     
 #ifdef LOD_DEBUG
     int32 cl = currentLod->layer;
