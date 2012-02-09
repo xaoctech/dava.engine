@@ -54,11 +54,11 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     
     Vector<String> lodsForSelection;
     int32 count = EditorSettings::Instance()->GetLodLayersCount();
+    lodsForSelection.push_back("-1");
     for(int32 i = 0; i < count; ++i)
     {
         lodsForSelection.push_back(Format("%d", i));
     }
-    lodsForSelection.push_back("-1");
     propertyList->AddComboProperty("Force LodLayer", lodsForSelection);
     
     for(int32 i = 0; i < count; ++i)
@@ -132,14 +132,7 @@ void SettingsDialog::WillAppear()
     //
     int32 count = EditorSettings::Instance()->GetLodLayersCount();
     int32 forcelod = EditorSettings::Instance()->GetForceLodLayer();
-    if(-1 == forcelod)
-    {
-        propertyList->SetComboPropertyIndex("Force LodLayer", count);
-    }
-    else
-    {
-        propertyList->SetComboPropertyIndex("Force LodLayer", forcelod);
-    }
+    propertyList->SetComboPropertyIndex("Force LodLayer", forcelod + 1);
 
     for(int32 i = 0; i < count; ++i)
     {
@@ -248,15 +241,7 @@ void SettingsDialog::OnComboIndexChanged(PropertyList *forList, const String &fo
     }
     else if("Force LodLayer" == forKey)
     {
-        int32 count = EditorSettings::Instance()->GetLodLayersCount();
-        if(count <= newItemIndex)
-        {
-            EditorSettings::Instance()->SetForceLodLayer(-1);
-        }
-        else
-        {
-            EditorSettings::Instance()->SetForceLodLayer(newItemIndex);
-        }
+        EditorSettings::Instance()->SetForceLodLayer(newItemIndex - 1);
         EditorSettings::Instance()->Save();
     }
 }
