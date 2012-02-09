@@ -47,14 +47,16 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 #include "Input/AccelerometeriPhone.h"
-#endif 
+#elif defined(__DAVAENGINE_ANDROID__)
+#	include "Input/AccelerometerAndroid.h"
+#endif //PLATFORMS
 
 namespace DAVA 
 {
 
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static bool useAutodetectContentScaleFactor = false;
-#endif 
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
 	float Core::virtualToPhysical = 0;
 	float Core::physicalToVirtual = 0;
@@ -108,9 +110,11 @@ void Core::CreateSingletons()
 	new UIControlSystem();
 	new SoundSystem(64);
 	
-#ifdef __DAVAENGINE_IPHONE__
+#if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();
-#endif
+#elif defined(__DAVAENGINE_ANDROID__)
+	new AccelerometerAndroidImpl();
+#endif //#if defined __DAVAENGINE_IPHONE__
 	
 	new UIScreenManager();
 
@@ -137,10 +141,10 @@ void Core::ReleaseSingletons()
 	FontManager::Instance()->Release();
 	AnimationManager::Instance()->Release();
 	SystemTimer::Instance()->Release();
-#ifdef __DAVAENGINE_IPHONE__
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	Accelerometer::Instance()->Release();
 	//SoundSystem::Instance()->Release();
-#endif
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	//RenderManager::Instance()->Release();
 	LocalizationSystem::Instance()->Release();
 	Logger::Debug("[Core::Release] successfull");
@@ -156,7 +160,9 @@ void Core::SetOptions(KeyedArchive * archiveOfOptions)
 	options = SafeRetain(archiveOfOptions);
 #if defined(__DAVAENGINE_IPHONE__)
 		useAutodetectContentScaleFactor = options->GetBool("iPhone_autodetectScreenScaleFactor", false);
-#endif 
+#elif defined(__DAVAENGINE_ANDROID__)
+		useAutodetectContentScaleFactor = options->GetBool("Android_autodetectScreenScaleFactor", false);
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	
 	screenOrientation = options->GetInt32("orientation", SCREEN_ORIENTATION_PORTRAIT);
 	
@@ -185,12 +191,12 @@ KeyedArchive * Core::GetOptions()
 	return options;
 }
 	
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 bool Core::IsAutodetectContentScaleFactor()
 {
 	return useAutodetectContentScaleFactor;
 }
-#endif 
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
 //void Core::SetContentScaleFactor(float scaleFactor)
 //{
@@ -572,7 +578,10 @@ void Core::SystemProcessFrame()
         InputSystem::Instance()->OnBeforeUpdate();
 		core->BeginFrame();
 //#endif
+
+#if !defined(__DAVAENGINE_ANDROID__)
 		RenderResource::SaveAllResourcesToSystemMem();
+#endif //#if !defined(__DAVAENGINE_ANDROID__)
 
 		// recalc frame inside begin / end frame
 		if (Core::Instance()->needTorecalculateMultipliers) 

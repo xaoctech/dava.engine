@@ -251,15 +251,42 @@ void UIFileSystemDialog::SetExtensionFilter(const String & extensionFilter)
     SetExtensionFilter(newExtensionFilter);
 }
 
+#ifdef __DAVAENGINE_ANDROID__
+int AndroidToLower (int c)
+{
+    if('A' <= c && c <= 'Z')
+    {
+        return c - ('A' - 'a');
+    }
+    else
+    {
+        WideString str = L"АЯа";
+        if(str.at(0) <= c && c <= str.at(1))
+        {
+            return c - (str.at(0) - str.at(2));
+        }
+    }
+    
+    return c;
+}
+
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
+
 void UIFileSystemDialog::SetExtensionFilter(const Vector<String> &newExtensionFilter)
 {
     DVASSERT(!GetParent());
     extensionFilter.clear();
     extensionFilter = newExtensionFilter;
     
-	int32 size = extensionFilter.size();
+    int32 size = extensionFilter.size();
+#ifdef __DAVAENGINE_ANDROID__    
+    for (int32 k = 0; k < size; ++k)
+        std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), AndroidToLower);
+#else //#ifdef __DAVAENGINE_ANDROID__    
     for (int32 k = 0; k < size; ++k)
         std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), ::tolower);
+#endif //#ifndef __DAVAENGINE_ANDROID__    
 }
 
 const Vector<String> & UIFileSystemDialog::GetExtensionFilter()
@@ -375,9 +402,14 @@ void UIFileSystemDialog::RefreshList()
                     textField->SetText(StringToWString(files->GetFilename(fu.indexInFileList)));
                 }
                 String ext = FileSystem::GetExtension(fu.name);
+#ifdef __DAVAENGINE_ANDROID__    
+                std::transform(ext.begin(), ext.end(), ext.begin(), AndroidToLower);
+#else //#ifdef __DAVAENGINE_ANDROID__
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+#endif //#ifdef __DAVAENGINE_ANDROID__    
+
                 bool isPresent = false;
-				int32 size = extensionFilter.size();
+		int32 size = extensionFilter.size();
                 for (int32 n = 0; n < size; n++) 
                 {
                     if (extensionFilter[n] == ".*" || ext == extensionFilter[n])
