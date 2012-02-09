@@ -27,59 +27,61 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_LOCALIZATION_SYSTEM_H__
-#define __DAVAENGINE_LOCALIZATION_SYSTEM_H__
+#include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
 
-#include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
+#include "FileSystem/DynamicMemoryFile.h"
 
-#include "FileSystem/YamlParser.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-namespace DAVA 
+
+namespace DAVA
 {
 
-class LocalizationSystem : public Singleton<LocalizationSystem>
+File * File::CreateFromSystemPath(zip *APKArchive, const String &filename)
 {
-public:	
-	LocalizationSystem();
-	virtual ~LocalizationSystem();
-	
-	void InitWithDirectory(const String &directoryPath);
-	
-	const String &GetCurrentLocale();
-	void SetCurrentLocale(const String &newLangId);
-	
-	const WideString & GetLocalizedString(const WideString & key);
+//	Logger::Debug("[File::CreateFromSystemPath] assets file %s", filename.c_str());
 
-private:
-
-	void LoadStringFile(const String & fileName);
-	void UnloadStringFile(const String & fileName); 
-
-	String langId;
-	
-	struct StringFile
+	if(!APKArchive)
 	{
-		String pathName;
-		Map<WideString, WideString> strings;
-	};
-	List<StringFile*> stringsList;
+		Logger::Error("[File::CreateFromSystemPath] APKArchive is NULL");
+		return NULL;
+	}
 
-	StringFile* LoadFromYamlFile(const String & fileName);
+	zip_file * zipfile = zip_fopen(APKArchive, filename.c_str(), 0);
+	if(zipfile)
+	{
+		DynamicMemoryFile *fileInstance = NULL;
+		struct zip_stat fileStat = {0};
+		int retCode = zip_stat(APKArchive, filename.c_str(), ZIP_FL_NOCASE, &fileStat);
+//		Logger::Debug("[File::CreateFromSystemPath] retCode = %d", retCode);
+		if(0 == retCode)
+		{
+			int32 dataSize = fileStat.size;
+			uint8 *data = new uint8[dataSize];
 
-	YamlParser::YamlDataHolder *dataHolder;
-};
+			uint32 readSize = zip_fread(zipfile, data, dataSize);
+			if(readSize != dataSize)
+			{
+				Logger::Error("[File::CreateFromSystemPath] error of reading from file, readSize = %d, datasize = %d", readSize, dataSize);
+			}
 
-inline const WideString &  LocalizedString(const WideString & key)
-{
-	return LocalizationSystem::Instance()->GetLocalizedString(key);
+			fileInstance = DynamicMemoryFile::Create((int8*)data, readSize, File::READ); 
+//			Logger::Debug("[File::CreateFromSystemPath] file created, size = %d", readSize);
+		}
+		
+		zip_fclose(zipfile);
+		return fileInstance;
+	}
+	else
+	{
+		Logger::Error("[File::CreateFromSystemPath] can't open file %s", filename.c_str());
+	}
+
+	Logger::Error("[File::CreateFromSystemPath] returns NULL");
+	return NULL;
 }
-inline const WideString &  LocalizedString(const String & key)
-{
-	return LocalizationSystem::Instance()->GetLocalizedString(WideString(key.begin(), key.end()));
-}
-	
-	
-};
 
-#endif // __DAVAENGINE_LOCALIZATION_SYSTEM_H__
+}
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)

@@ -97,7 +97,7 @@ bool RenderManager::ChangeDisplayMode(DisplayMode mode, bool isFullscreen)
 	return true;
 }	
 	
-#else
+#else //#if defined(__DAVAENGINE_WIN32__)
 
 bool RenderManager::Create()
 {
@@ -110,13 +110,14 @@ void RenderManager::Release()
 	
 }
 
-#endif
+#endif //#if defined(__DAVAENGINE_WIN32__)
 
 void RenderManager::DetectRenderingCapabilities()
 {
-	caps.isHardwareCursorSupported = false;
 #if defined(__DAVAENGINE_MACOS__)
 	caps.isHardwareCursorSupported = true;
+#else
+	caps.isHardwareCursorSupported = false;
 #endif
 }
 
@@ -179,7 +180,7 @@ void RenderManager::EndFrame()
 	isInsideDraw = false;
 #if defined(__DAVAENGINE_WIN32__)
 	::SwapBuffers(hDC);
-#endif
+#endif //#if defined(__DAVAENGINE_WIN32__)
 	
 	RENDER_VERIFY("");	// verify at the end of the frame
 }
@@ -650,11 +651,11 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 {
 	if (renderTarget == NULL)
 	{
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, fboViewFramebuffer));
-#else
+#else //Non ES platforms
 		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
-#endif
+#endif //PLATFORMS
 		RENDER_VERIFY(glViewport(0, 0, frameBufferWidth, frameBufferHeight));
 
 		SetRenderOrientation(Core::Instance()->GetScreenOrientation());
@@ -664,9 +665,12 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 		renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
 #if defined(__DAVAENGINE_IPHONE__)
 		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, renderTarget->GetTexture()->fboID));
-#else
+#elif defined(__DAVAENGINE_ANDROID__)
+		BindFBO(renderTarget->GetTexture()->fboID);
+        renderTarget->GetTexture()->renderTargetModified = true;
+#else //Non ES platforms
 		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
-#endif
+#endif //PLATFORMS
 
 		RENDER_VERIFY(glViewport(0, 0, renderTarget->GetTexture()->width, renderTarget->GetTexture()->height));
 
