@@ -378,10 +378,10 @@ void Scene::Draw()
 	if(shadowVolumes.size() > 0)
 	{
 		//2nd pass
-		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		//RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
 
 		RenderManager::Instance()->ClearStencilBuffer(0);
 		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
@@ -416,7 +416,7 @@ void Scene::Draw()
 		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		//ShadowRect::Instance()->Draw();
+		ShadowRect::Instance()->Draw();
 
 		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	}

@@ -142,7 +142,7 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 
 	EdgeAdjacency newAdjacency;
 	newAdjacency.InitFromPolygonGroup(shadowPolygonGroup, oldPolygonGroup->GetIndexCount());
-	const Vector<EdgeAdjacency::Edge> & edges = newAdjacency.GetEdges();
+	Vector<EdgeAdjacency::Edge> & edges = newAdjacency.GetEdges();
 
 	//copy old coord/normal data
 	//int32 oldVertexCount = oldPolygonGroup->GetVertexCount();
@@ -182,6 +182,7 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 	//	shadowPolygonGroup->SetNormal(i3, normal);
 	//}
 
+	Vector<EdgeAdjacency::Edge> nonShared;
 	//generate degenerate quads
 	newIndexCount = oldIndexCount;
 	newVertexCount = oldIndexCount;
@@ -196,17 +197,11 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 			i0[0] = edge.sharedTriangles[0].i0;
 			i0[1] = edge.sharedTriangles[0].i1;
 			i0[2] = edge.sharedTriangles[0].i2;
-			//shadowPolygonGroup->GetIndex(edge.sharedTriangles[0].i0, i0[0]);
-			//shadowPolygonGroup->GetIndex(edge.sharedTriangles[0].i1, i0[1]);
-			//shadowPolygonGroup->GetIndex(edge.sharedTriangles[0].i2, i0[2]);
 
 			int32 i1[3];
 			i1[0] = edge.sharedTriangles[1].i0;
 			i1[1] = edge.sharedTriangles[1].i1;
 			i1[2] = edge.sharedTriangles[1].i2;
-			//shadowPolygonGroup->GetIndex(edge.sharedTriangles[0].i0, i1[0]);
-			//shadowPolygonGroup->GetIndex(edge.sharedTriangles[0].i1, i1[1]);
-			//shadowPolygonGroup->GetIndex(edge.sharedTriangles[0].i2, i1[2]);
 
 			//normals
 			Vector3 n0 = CalculateNormalForVertex(i0);
@@ -234,7 +229,13 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 			shadowPolygonGroup->SetIndex(newIndexCount++, newI1T0);
 			shadowPolygonGroup->SetIndex(newIndexCount++, newI0T1);
 		}
+		else
+		{
+			nonShared.push_back(edge);
+		}
 	}
+
+	int i = 0;
 }
 
 int32 ShadowVolumeNode::DuplicateVertexAndSetNormalAtIndex(const Vector3 & normal, int32 index)
