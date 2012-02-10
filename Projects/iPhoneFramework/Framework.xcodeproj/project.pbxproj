@@ -43,6 +43,8 @@
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */; };
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
+		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
+		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
@@ -110,17 +112,6 @@
 		FE9C216812E9A254005C397A /* Circle.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9C216612E9A254005C397A /* Circle.h */; };
 		FE9C216912E9A254005C397A /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9C216712E9A254005C397A /* Sphere.h */; };
 		FEB6037712E8ED7200C749A1 /* Math2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEB6037612E8ED7200C749A1 /* Math2D.cpp */; };
-		FECFB5A612E5904500C71562 /* api.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32212E5904400C71562 /* api.c */; };
-		FECFB5A712E5904500C71562 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB32312E5904400C71562 /* config.h */; };
-		FECFB5A812E5904500C71562 /* dumper.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32412E5904400C71562 /* dumper.c */; };
-		FECFB5A912E5904500C71562 /* emitter.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32512E5904400C71562 /* emitter.c */; };
-		FECFB5AA12E5904500C71562 /* loader.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32612E5904400C71562 /* loader.c */; };
-		FECFB5AB12E5904500C71562 /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32712E5904400C71562 /* parser.c */; };
-		FECFB5AC12E5904500C71562 /* reader.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32812E5904400C71562 /* reader.c */; };
-		FECFB5AD12E5904500C71562 /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32912E5904400C71562 /* scanner.c */; };
-		FECFB5AE12E5904500C71562 /* writer.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32A12E5904400C71562 /* writer.c */; };
-		FECFB5AF12E5904500C71562 /* yaml.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB32B12E5904400C71562 /* yaml.h */; };
-		FECFB5B012E5904500C71562 /* yaml_private.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB32C12E5904400C71562 /* yaml_private.h */; };
 		FECFB5B112E5904500C71562 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB32F12E5904400C71562 /* AnimatedObject.cpp */; };
 		FECFB5B212E5904500C71562 /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB33012E5904400C71562 /* AnimatedObject.h */; };
 		FECFB5B312E5904500C71562 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB33112E5904400C71562 /* Animation.cpp */; };
@@ -505,6 +496,8 @@
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
+		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
+		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -574,17 +567,6 @@
 		FE9C216612E9A254005C397A /* Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Circle.h; sourceTree = "<group>"; };
 		FE9C216712E9A254005C397A /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sphere.h; sourceTree = "<group>"; };
 		FEB6037612E8ED7200C749A1 /* Math2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Math2D.cpp; sourceTree = "<group>"; };
-		FECFB32212E5904400C71562 /* api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = api.c; sourceTree = "<group>"; };
-		FECFB32312E5904400C71562 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		FECFB32412E5904400C71562 /* dumper.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dumper.c; sourceTree = "<group>"; };
-		FECFB32512E5904400C71562 /* emitter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = emitter.c; sourceTree = "<group>"; };
-		FECFB32612E5904400C71562 /* loader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = loader.c; sourceTree = "<group>"; };
-		FECFB32712E5904400C71562 /* parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parser.c; sourceTree = "<group>"; };
-		FECFB32812E5904400C71562 /* reader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = reader.c; sourceTree = "<group>"; };
-		FECFB32912E5904400C71562 /* scanner.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = scanner.c; sourceTree = "<group>"; };
-		FECFB32A12E5904400C71562 /* writer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = writer.c; sourceTree = "<group>"; };
-		FECFB32B12E5904400C71562 /* yaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yaml.h; sourceTree = "<group>"; };
-		FECFB32C12E5904400C71562 /* yaml_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yaml_private.h; sourceTree = "<group>"; };
 		FECFB32F12E5904400C71562 /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		FECFB33012E5904400C71562 /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		FECFB33112E5904400C71562 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -920,6 +902,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */,
+				5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */,
 				5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */,
 				FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */,
 				EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */,
@@ -940,6 +924,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				5C97964514E3E75000FFFA14 /* libxml_ios.a */,
+				5C97964614E3E75000FFFA14 /* libyaml_ios.a */,
 				5C77ABBE14C7703800E92D28 /* libpng_ios.a */,
 				FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */,
 				FECFB1D912E5904400C71562 /* External */,
@@ -1006,29 +992,10 @@
 		FECFB1D912E5904400C71562 /* External */ = {
 			isa = PBXGroup;
 			children = (
-				FECFB32112E5904400C71562 /* Yaml */,
 			);
 			name = External;
 			path = ../../Sources/External;
 			sourceTree = SOURCE_ROOT;
-		};
-		FECFB32112E5904400C71562 /* Yaml */ = {
-			isa = PBXGroup;
-			children = (
-				FECFB32212E5904400C71562 /* api.c */,
-				FECFB32312E5904400C71562 /* config.h */,
-				FECFB32412E5904400C71562 /* dumper.c */,
-				FECFB32512E5904400C71562 /* emitter.c */,
-				FECFB32612E5904400C71562 /* loader.c */,
-				FECFB32712E5904400C71562 /* parser.c */,
-				FECFB32812E5904400C71562 /* reader.c */,
-				FECFB32912E5904400C71562 /* scanner.c */,
-				FECFB32A12E5904400C71562 /* writer.c */,
-				FECFB32B12E5904400C71562 /* yaml.h */,
-				FECFB32C12E5904400C71562 /* yaml_private.h */,
-			);
-			path = Yaml;
-			sourceTree = "<group>";
 		};
 		FECFB32D12E5904400C71562 /* Internal */ = {
 			isa = PBXGroup;
@@ -1622,9 +1589,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */,
-				FECFB5A712E5904500C71562 /* config.h in Headers */,
-				FECFB5AF12E5904500C71562 /* yaml.h in Headers */,
-				FECFB5B012E5904500C71562 /* yaml_private.h in Headers */,
 				FECFB5B212E5904500C71562 /* AnimatedObject.h in Headers */,
 				FECFB5B412E5904500C71562 /* Animation.h in Headers */,
 				FECFB5B612E5904500C71562 /* AnimationManager.h in Headers */,
@@ -1925,14 +1889,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FECFB5A612E5904500C71562 /* api.c in Sources */,
-				FECFB5A812E5904500C71562 /* dumper.c in Sources */,
-				FECFB5A912E5904500C71562 /* emitter.c in Sources */,
-				FECFB5AA12E5904500C71562 /* loader.c in Sources */,
-				FECFB5AB12E5904500C71562 /* parser.c in Sources */,
-				FECFB5AC12E5904500C71562 /* reader.c in Sources */,
-				FECFB5AD12E5904500C71562 /* scanner.c in Sources */,
-				FECFB5AE12E5904500C71562 /* writer.c in Sources */,
 				FECFB5B112E5904500C71562 /* AnimatedObject.cpp in Sources */,
 				FECFB5B312E5904500C71562 /* Animation.cpp in Sources */,
 				FECFB5B512E5904500C71562 /* AnimationManager.cpp in Sources */,
@@ -2205,10 +2161,7 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2250,10 +2203,7 @@
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2294,10 +2244,7 @@
 		785662DF109B65FE00DAF688 /* AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2364,10 +2311,7 @@
 		FEFB031611CA5F1B00B65B8B /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DDARWIN_NO_CARBON,
