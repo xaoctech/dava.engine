@@ -189,6 +189,13 @@ protected:
     UIButton *positiveButton;
     UIButton *negativeButton;
     
+    //History navigation    
+    Vector<String> foldersHistory;
+    int32 historyPosition;
+    UIButton *historyBackwardButton;
+    UIButton *historyForwardButton;
+    void HistoryButtonPressed(BaseObject *obj, void *data, void *callerData);
+    void CreateHistoryForPath(const String &pathToFile);
 };
 };
 

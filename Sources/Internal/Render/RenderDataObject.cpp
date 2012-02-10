@@ -57,10 +57,16 @@ void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, vo
 }
     
 RenderDataObject::RenderDataObject()
+	: RenderResource()
 {
     resultVertexFormat = 0;
     vboBuffer = 0;
     
+#if defined(__DAVAENGINE_ANDROID__)
+    savedVertexCount = 0;
+    savedPointer = 0;
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+
     indexFormat = EIF_16;
     indices = 0;
     indexBuffer = 0;
@@ -136,7 +142,12 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
 #if defined (__DAVAENGINE_OPENGL__)
     uint32 size = streamArray.size();
     if (size == 0)return;
-    
+ 
+#if defined(__DAVAENGINE_ANDROID__)
+    savedVertexCount = vertexCount;
+    savedPointer = streamArray[0]->pointer;
+#endif//#if defined(__DAVAENGINE_ANDROID__)
+   
     //;
     
     for (uint32 k = 1; k < size; ++k)
@@ -242,5 +253,24 @@ void RenderDataObject::BuildIndexBuffer()
     RenderManager::Instance()->UnlockNonMain();
 }
 
+#if defined(__DAVAENGINE_ANDROID__)
+void RenderDataObject::SaveToSystemMemory()
+{
+}
 
+void RenderDataObject::RenderDataObject::Lost()
+{
+    vboBuffer = 0;
+}
+
+void RenderDataObject::Invalidate()
+{
+	if(savedVertexCount)
+	{
+		streamArray[0]->pointer = savedPointer;
+		BuildVertexBuffer(savedVertexCount);
+	}
+}
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 }

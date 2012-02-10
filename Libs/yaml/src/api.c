@@ -91,7 +91,7 @@ yaml_string_extend(yaml_char_t **start,
 
 	return 1;
 /*
-	yaml_char_t *new_start = yaml_realloc(*start, (*end - *start)*2);
+    yaml_char_t *new_start = yaml_realloc(*start, (*end - *start)*2);
 
     if (!new_start) return 0;
 

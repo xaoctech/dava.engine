@@ -13,7 +13,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #ifdef PNG_WRITE_SUPPORTED
 
 /* Transform the data according to the user's wishes.  The order of
