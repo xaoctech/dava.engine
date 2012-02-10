@@ -30,9 +30,11 @@
 
 #include "Sound/Sound.h"
 #include "Sound/SoundWVProvider.h"
+
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 #include "Sound/SoundOVProvider.h"
-#endif
+#endif //#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+
 #include "Sound/SoundBuffer.h"
 #include "Sound/SoundInstance.h"
 #include "Sound/SoundSystem.h"
@@ -40,7 +42,7 @@
 #include "Sound/SoundGroup.h"
 #if defined(__DAVAENGINE_IPHONE__)
 #include "Sound/MusicIos.h"
-#endif
+#endif //#if defined(__DAVAENGINE_IPHONE__)
 
 namespace DAVA
 {
@@ -113,7 +115,7 @@ void Sound::Init()
 	{
 		provider = new SoundOVProvider(fileName);
 	}
-#endif
+#endif //#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 
 	if(TYPE_STATIC == type)
 	{

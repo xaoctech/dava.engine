@@ -204,9 +204,9 @@ public:
 	 */
 	virtual void SetIcon(int32 iconId) {};
 	
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static bool IsAutodetectContentScaleFactor();
-#endif 
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 //	static void SetContentScaleFactor(float scaleFactor);//sets content scale factor
 //	static float GetContentScaleFactor();//returns content scale factor
 //	static float GetInverseContentScaleFactor();//returns one divided by content scale factor(0.5 for scale factor 2.0)
