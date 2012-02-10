@@ -117,10 +117,14 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
         }
 
         case ECNID_SERVICENODE:
+        {
             SetHeader(LocalizedString(L"createnode.servicenode"));
             sceneNode = new SceneNode(scene);
+            KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+            customProperties->SetBool("editor.isLocked", true);
             sceneNode->SetName("Servicenode");
             break;
+        }
 
         case ECNID_BOX:
             SetHeader(LocalizedString(L"createnode.box"));

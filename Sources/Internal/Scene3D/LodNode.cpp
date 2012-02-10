@@ -417,6 +417,7 @@ void LodNode::SceneDidLoaded()
         }
     }
 
+    currentLod = NULL;
     SetCurrentLod(&(*lodLayers.rbegin()));
     lastLodUpdateFrame = 1000;
     

@@ -61,14 +61,13 @@ bool EdgeAdjacency::IsPointsEqual(const Vector3 & p0, const Vector3 & p1)
 	}
 }
 
-void EdgeAdjacency::InitFromPolygonGroup(PolygonGroup * _polygonGroup)
+void EdgeAdjacency::InitFromPolygonGroup(PolygonGroup * _polygonGroup, int32 indexCount)
 {
 	polygonGroup = _polygonGroup;
 
 	ePrimitiveType primitiveType = polygonGroup->GetPrimitiveType();
 	DVASSERT(PRIMITIVETYPE_TRIANGLELIST == primitiveType);
 
-	int32 indexCount = polygonGroup->GetIndexCount();
 	for(int32 i = 0; i < indexCount; i += 3)
 	{
 		CreateTriangle(i);
@@ -83,15 +82,11 @@ void EdgeAdjacency::CreateTriangle(int32 startingI)
 	polygonGroup->GetIndex(i, i0);
 	polygonGroup->GetIndex(i+1, i1);
 	polygonGroup->GetIndex(i+2, i2);
-	Logger::Debug("i %d %d %d", i0, i1, i2);
 
 	Vector3 p0, p1, p2;
 	polygonGroup->GetCoord(i0, p0);
 	polygonGroup->GetCoord(i1, p1);
 	polygonGroup->GetCoord(i2, p2);
-	Logger::Debug("p0 %f %f %f", p0.x, p0.y, p0.z);
-	Logger::Debug("p1 %f %f %f", p1.x, p1.y, p1.z);
-	Logger::Debug("p2 %f %f %f", p2.x, p2.y, p2.z);
 
 	Edge edge0;
 	FillEdge(edge0, i0, i1);

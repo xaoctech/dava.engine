@@ -37,6 +37,7 @@ protected:
     
     void ShowErrors();
     
+    Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;
     ErrorDialog *errorDialog;
     

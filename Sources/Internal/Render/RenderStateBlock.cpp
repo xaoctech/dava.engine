@@ -69,7 +69,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         currentTexture[idx] = 0;
     alphaFunc = CMP_ALWAYS;
     shader = 0;
-    cullMode = CULL_BACK;
+    cullMode = FACE_BACK;
     
     if (doHardwareReset)
     {
@@ -202,6 +202,52 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
             SetTextureLevelInHW(3);
             previousState->currentTexture[3] = currentTexture[3];
         }
+
+		if (changeSet & STATE_CHANGED_STENCIL_REF)
+		{
+			SetStencilRefInHW();
+			previousState->stencilState.ref = stencilState.ref;
+		}
+		if (changeSet & STATE_CHANGED_STENCIL_MASK)
+		{
+			SetStencilMaskInHW();
+			previousState->stencilState.mask = stencilState.mask;
+		}
+		if (changeSet & STATE_CHANGED_STENCIL_FUNC)
+		{
+			SetStencilFuncInHW();
+			previousState->stencilState.func[0] = stencilState.func[0];
+			previousState->stencilState.func[1] = stencilState.func[1];
+		}
+
+		if (changeSet & STATE_CHANGED_STENCIL_PASS)
+		{
+			SetStencilPassInHW();
+			previousState->stencilState.pass[0] = stencilState.pass[0];
+			previousState->stencilState.pass[1] = stencilState.pass[1];
+		}
+		if (changeSet & STATE_CHANGED_STENCIL_FAIL)
+		{
+			SetStencilFailInHW();
+			previousState->stencilState.fail[0] = stencilState.fail[0];
+			previousState->stencilState.fail[1] = stencilState.fail[1];
+		}
+		if (changeSet & STATE_CHANGED_STENCIL_ZFAIL)
+		{
+			SetStencilZFailInHW();
+			previousState->stencilState.zFail[0] = stencilState.zFail[0];
+			previousState->stencilState.zFail[1] = stencilState.zFail[1];
+		}
+		if((changeSet & STATE_CHANGED_STENCIL_PASS) || (changeSet & STATE_CHANGED_STENCIL_FAIL) || (changeSet & STATE_CHANGED_STENCIL_ZFAIL))
+		{
+			SetStencilOpInHW();
+			previousState->stencilState.pass[0] = stencilState.pass[0];
+			previousState->stencilState.pass[1] = stencilState.pass[1];
+			previousState->stencilState.fail[0] = stencilState.fail[0];
+			previousState->stencilState.fail[1] = stencilState.fail[1];
+			previousState->stencilState.zFail[0] = stencilState.zFail[0];
+			previousState->stencilState.zFail[1] = stencilState.zFail[1];
+		}
 
 #if defined(__DAVAENGINE_OPENGL__)
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
@@ -352,8 +398,53 @@ inline void RenderStateBlock::SetAlphaTestInHW()
 
 inline void RenderStateBlock::SetAlphaTestFuncInHW()
 {
-     RENDER_VERIFY(glAlphaFunc(ALPHA_TEST_MODE_MAP[alphaFunc], alphaFuncCmpValue) );
+     RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
 }
+
+inline void RenderStateBlock::SetStencilRefInHW()
+{
+	changeSet |= STATE_CHANGED_STENCIL_FUNC;
+}
+
+inline void RenderStateBlock::SetStencilMaskInHW()
+{
+	changeSet |= STATE_CHANGED_STENCIL_FUNC;
+}
+
+inline void RenderStateBlock::SetStencilFuncInHW()
+{
+	if(stencilState.func[0] == (stencilState.func[1]))
+	{
+		RENDER_VERIFY(glStencilFunc(COMPARE_FUNCTION_MAP[stencilState.func[0]], stencilState.ref, stencilState.mask));
+	}
+	else
+	{
+		RENDER_VERIFY(glStencilFuncSeparate(CULL_FACE_MAP[FACE_FRONT], COMPARE_FUNCTION_MAP[stencilState.func[0]], stencilState.ref, stencilState.mask));
+		RENDER_VERIFY(glStencilFuncSeparate(CULL_FACE_MAP[FACE_BACK], COMPARE_FUNCTION_MAP[stencilState.func[1]], stencilState.ref, stencilState.mask));
+	}
+}
+
+inline void RenderStateBlock::SetStencilPassInHW()
+{
+	//nothing
+}
+
+inline void RenderStateBlock::SetStencilFailInHW()
+{
+	//nothing
+}
+
+inline void RenderStateBlock::SetStencilZFailInHW()
+{
+	//nothing
+}
+
+inline void RenderStateBlock::SetStencilOpInHW()
+{
+	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[FACE_FRONT], STENCIL_OP_MAP[stencilState.fail[0]], STENCIL_OP_MAP[stencilState.zFail[0]], STENCIL_OP_MAP[stencilState.pass[0]]));
+	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[FACE_BACK], STENCIL_OP_MAP[stencilState.fail[1]], STENCIL_OP_MAP[stencilState.zFail[1]], STENCIL_OP_MAP[stencilState.pass[1]]));
+}
+
     
 #elif defined(__DAVAENGINE_DIRECTX9__)
     
@@ -443,7 +534,7 @@ inline void RenderStateBlock::SetAlphaTestInHW()
 
 inline void RenderStateBlock::SetAlphaTestFuncInHW()
 {
-	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAFUNC, ALPHA_TEST_MODE_MAP[alphaFunc]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAFUNC, COMPARE_FUNCTION_MAP[alphaFunc]));
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAREF , alphaFuncCmpValue));
 }
 
@@ -452,9 +543,54 @@ inline void RenderStateBlock::SetStensilTestInHW()
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILENABLE, (state & STATE_STENCIL_TEST) != 0));
 }
 
+inline void RenderStateBlock::SetStencilRefInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILREF, stencilState.ref));
+}
+
+inline void RenderStateBlock::SetStencilMaskInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILMASK, stencilState.mask));
+}
+
+inline void RenderStateBlock::SetStencilFuncInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILFUNC, stencilState.func[0]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CCW_STENCILFUNC, stencilState.func[1]));
+}
+
+inline void RenderStateBlock::SetStencilPassInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILPASS, stencilState.pass[0]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CCW_STENCILPASS, stencilState.pass[1]));
+}
+
+inline void RenderStateBlock::SetStencilFailInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILFAIL, stencilState.fail[0]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CCW_STENCILFAIL, stencilState.fail[1]));
+}
+
+inline void RenderStateBlock::SetStencilZFailInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILZFAIL, stencilState.zFail[0]));
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_CCW_STENCILZFAIL, stencilState.zFail[1]));
+}
+
+inline void RenderStateBlock::SetStencilOpInHW()
+{
+}
+
 #endif 
     
-    
-    
-    
+RenderStateBlock::StencilState::StencilState()
+{
+	ref = 0;
+	mask = 0xFFFFFFFF;
+	func[0] = func[1] = CMP_ALWAYS;
+	pass[0] = pass[1] = STENCILOP_KEEP;
+	fail[0] = fail[1] = STENCILOP_KEEP;
+	zFail[0] = zFail[1] = STENCILOP_KEEP;
+} 
+
 };

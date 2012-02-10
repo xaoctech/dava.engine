@@ -210,12 +210,18 @@ public:
         STATE_CHANGED_CULLMODE = 1 << 3,
         STATE_CHANGED_SHADER = 1 << 4,
         STATE_CHANGED_ALPHA_FUNC = 1 << 5,
-
     
         STATE_CHANGED_TEXTURE0 = 1 << 8,        
         STATE_CHANGED_TEXTURE1 = 1 << 9,        
         STATE_CHANGED_TEXTURE2 = 1 << 10,        
         STATE_CHANGED_TEXTURE3 = 1 << 11,
+
+		STATE_CHANGED_STENCIL_REF = 1 << 12,
+		STATE_CHANGED_STENCIL_MASK = 1 << 13,
+		STATE_CHANGED_STENCIL_FUNC = 1 << 14,
+		STATE_CHANGED_STENCIL_PASS = 1 << 15,
+		STATE_CHANGED_STENCIL_FAIL = 1 << 16,
+		STATE_CHANGED_STENCIL_ZFAIL = 1 << 17,
     };
     /*
         algorithm: 
@@ -264,9 +270,21 @@ public:
     
     Color color;
     eBlendMode sourceFactor, destFactor;
-    eCull cullMode;
+    eFace cullMode;
     eCmpFunc alphaFunc;
     uint8    alphaFuncCmpValue;
+
+	struct StencilState
+	{
+		StencilState();
+		int32 ref;
+		uint32 mask;
+		eCmpFunc func[2];
+		eStencilOp pass[2];
+		eStencilOp fail[2];
+		eStencilOp zFail[2];
+	};
+	StencilState stencilState;
     
     static const uint32 MAX_TEXTURE_LEVELS = 4;
     Texture * currentTexture[MAX_TEXTURE_LEVELS];
@@ -294,13 +312,20 @@ public:
     inline void SetShader(Shader * shader);
     
     // CULL MODE
-    inline void SetCullMode(eCull mode);
+    inline void SetCullMode(eFace mode);
     
     // ALPHA
     inline void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
 
 	// STENCIL
-	//inline void Set
+	inline void SetStencilRef(int32 ref);
+	inline void SetStencilMask(uint32 mask);
+	inline void SetStencilFunc(eFace face, eCmpFunc func);
+	inline void SetStencilPass(eFace face, eStencilOp operation);
+	inline void SetStencilFail(eFace face, eStencilOp operation);
+	inline void SetStencilZFail(eFace face, eStencilOp operation);
+
+
     
     
     inline void SetTextureLevelInHW(uint32 textureLevel);
@@ -315,6 +340,14 @@ public:
 
     inline void SetAlphaTestInHW();
     inline void SetAlphaTestFuncInHW();
+
+	inline void SetStencilRefInHW();
+	inline void SetStencilMaskInHW();
+	inline void SetStencilFuncInHW();
+	inline void SetStencilPassInHW();
+	inline void SetStencilFailInHW();
+	inline void SetStencilZFailInHW();
+	inline void SetStencilOpInHW();
     
     /**
         Function to reset state to original zero state.
@@ -399,7 +432,7 @@ inline void RenderStateBlock::SetShader(Shader * _shader)
 }
 
 // CULL MODE
-inline void RenderStateBlock::SetCullMode(eCull _cullMode)
+inline void RenderStateBlock::SetCullMode(eFace _cullMode)
 {
     if (cullMode != _cullMode)
     {   
@@ -444,8 +477,103 @@ inline Texture * RenderStateBlock::GetTexture(uint32 textureLevel)
     return currentTexture[textureLevel];
 }
 
-   
+inline void RenderStateBlock::SetStencilRef(int32 ref)
+{
+	if(stencilState.ref != ref)
+	{
+		stencilState.ref = ref;
+		changeSet |= STATE_CHANGED_STENCIL_REF;
+	}
+}
 
+inline void RenderStateBlock::SetStencilMask(uint32 mask)
+{
+	if(stencilState.mask != mask)
+	{
+		stencilState.mask = mask;
+		changeSet |= STATE_CHANGED_STENCIL_MASK;
+	}
+}
+
+inline void RenderStateBlock::SetStencilFunc(eFace face, eCmpFunc func)
+{
+	if(face == FACE_FRONT || face == FACE_BACK)
+	{
+		if(stencilState.func[face] != func)
+		{
+			stencilState.func[face] = func;
+			changeSet |= STATE_CHANGED_STENCIL_FUNC;
+		}
+	}
+	else
+	{
+		if((stencilState.func[0] != func) || (stencilState.func[1] != func))
+		{
+			stencilState.func[0] = stencilState.func[1] = func;
+			changeSet |= STATE_CHANGED_STENCIL_FUNC;
+		}
+	}
+}
+
+inline void RenderStateBlock::SetStencilPass(eFace face, eStencilOp operation)
+{
+	if(face == FACE_FRONT || face == FACE_BACK)
+	{
+		if(stencilState.pass[face] != operation)
+		{
+			stencilState.pass[face] = operation;
+			changeSet |= STATE_CHANGED_STENCIL_PASS;
+		}
+	}
+	else
+	{
+		if((stencilState.pass[0] != operation) || (stencilState.pass[1] != operation))
+		{
+			stencilState.pass[0] = stencilState.pass[1] = operation;
+			changeSet |= STATE_CHANGED_STENCIL_PASS;
+		}
+	}
+}
+
+inline void RenderStateBlock::SetStencilFail(eFace face, eStencilOp operation)
+{
+	if(face == FACE_FRONT || face == FACE_BACK)
+	{
+		if(stencilState.fail[face] != operation)
+		{
+			stencilState.fail[face] = operation;
+			changeSet |= STATE_CHANGED_STENCIL_FAIL;
+		}
+	}
+	else
+	{
+		if((stencilState.fail[0] != operation) || (stencilState.fail[1] != operation))
+		{
+			stencilState.fail[0] = stencilState.fail[1] = operation;
+			changeSet |= STATE_CHANGED_STENCIL_FAIL;
+		}
+	}
+}
+
+inline void RenderStateBlock::SetStencilZFail(eFace face, eStencilOp operation)
+{
+	if(face == FACE_FRONT || face == FACE_BACK)
+	{
+		if(stencilState.zFail[face] != operation)
+		{
+			stencilState.zFail[face] = operation;
+			changeSet |= STATE_CHANGED_STENCIL_ZFAIL;
+		}
+	}
+	else
+	{
+		if((stencilState.zFail[0] != operation) || (stencilState.zFail[1] != operation))
+		{
+			stencilState.zFail[0] = stencilState.zFail[1] = operation;
+			changeSet |= STATE_CHANGED_STENCIL_ZFAIL;
+		}
+	}
+}
     
 };
 

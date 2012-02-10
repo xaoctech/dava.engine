@@ -189,56 +189,82 @@ void ScenePreviewControl::RecreateScene()
     SetScene(editorScene);
 }
 
-bool ScenePreviewControl::OpenScene(const String &pathToFile)
+int32 ScenePreviewControl::OpenScene(const String &pathToFile)
 {
     if(currentScenePath.length())
     {
         editorScene->ReleaseRootNode(currentScenePath);
         editorScene->RemoveNode(rootNode);
+
         rootNode = NULL;
+        currentScenePath = "";
     }
     
     RecreateScene();
     
-    currentScenePath = pathToFile;
-    rootNode = editorScene->GetRootNode(pathToFile);
-    if(rootNode)
+    int32 retError = SceneFileV2::ERROR_NO_ERROR;
+    String ext = FileSystem::Instance()->GetExtension(pathToFile);
+    if(ext == ".sce")
     {
-        editorScene->AddNode(rootNode);
+        SceneFile *file = new SceneFile();
+        file->SetDebugLog(true);
+        if(!file->LoadScene(pathToFile, editorScene))
+        {
+            retError = ERROR_CANNOT_OPEN_FILE;
+        }
         
-        needSetCamera = true;
-        Camera *cam = editorScene->GetCamera(0);
-        if(!cam)
-        {
-            Camera * cam = new Camera(editorScene);
-            cam->SetName("preview-camera");
-            cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
-            cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-            cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-            cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
-            
-            cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
-            
-            editorScene->AddNode(cam);
-            editorScene->AddCamera(cam);
-            editorScene->SetCurrentCamera(cam);
-            cameraController->SetScene(editorScene);
-            
-            SafeRelease(cam);
-            
-            sceCamera = false;
-        }
-        else
-        {
-            sceCamera = true;
-        }
+        SafeRelease(file);
+    }
+    else if(ext == ".sc2")
+    {
+        SceneFileV2 *file = new SceneFileV2();
+        file->EnableDebugLog(true);
+        retError = file->LoadScene(pathToFile, editorScene);
+        SafeRelease(file);
     }
     else
     {
-        currentScenePath = "";
+        retError = ERROR_WRONG_EXTENSION;
     }
     
-    return (NULL != rootNode);
+    if(SceneFileV2::ERROR_NO_ERROR == retError)
+    {
+        rootNode = editorScene->GetRootNode(pathToFile);
+        if(rootNode)
+        {
+            currentScenePath = pathToFile;
+            editorScene->AddNode(rootNode);
+            
+            needSetCamera = true;
+            Camera *cam = editorScene->GetCamera(0);
+            if(!cam)
+            {
+                Camera * cam = new Camera(editorScene);
+                cam->SetName("preview-camera");
+                cam->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
+                cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+                cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+                cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
+                
+                cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
+                
+                editorScene->AddNode(cam);
+                editorScene->AddCamera(cam);
+                editorScene->SetCurrentCamera(cam);
+                cameraController->SetScene(editorScene);
+                
+                SafeRelease(cam);
+                
+                sceCamera = false;
+            }
+            else
+            {
+                sceCamera = true;
+            }
+        }
+    }
+    
+    return retError;
 }
 
 void ScenePreviewControl::Update(float32 timeElapsed)

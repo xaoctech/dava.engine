@@ -249,8 +249,8 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
             RemoveControl(panelDAE);
         }
         
-        bool isOpened = preview->OpenScene(selectedFileName);
-        if(isOpened)
+        int32 error = preview->OpenScene(selectedFileName);
+        if(SceneFileV2::ERROR_NO_ERROR == error)
         {
             if(!panelSCE->GetParent())
             {
@@ -259,10 +259,45 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
         }
         else
         {
-            errorMessage->SetText(LocalizedString(L"library.errormessage.format"));
+            switch (error)
+            {
+                case SceneFileV2::ERROR_FAILED_TO_CREATE_FILE:
+                {
+                    errorMessage->SetText(LocalizedString(L"library.errormessage.failedtocreeatefile"));
+                    break;
+                }
+
+                case SceneFileV2::ERROR_FILE_WRITE_ERROR:
+                {
+                    errorMessage->SetText(LocalizedString(L"library.errormessage.filewriteerror"));
+                    break;
+                }
+
+                case SceneFileV2::ERROR_VERSION_IS_TOO_OLD:
+                {
+                    errorMessage->SetText(LocalizedString(L"library.errormessage.versionistooold"));
+                    break;
+                }
+
+                case ScenePreviewControl::ERROR_CANNOT_OPEN_FILE:
+                {
+                    errorMessage->SetText(LocalizedString(L"library.errormessage.cannotopenfile"));
+                    break;
+                }
+
+                case ScenePreviewControl::ERROR_WRONG_EXTENSION:
+                {
+                    errorMessage->SetText(LocalizedString(L"library.errormessage.wrongextension"));
+                    break;
+                }
+
+                default:
+                    errorMessage->SetText(LocalizedString(L"library.errormessage.unknownerror"));
+                    break;
+            }
+            
             AddControl(errorMessage);
         }
-
     }
     else
     {

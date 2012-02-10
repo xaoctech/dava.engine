@@ -47,8 +47,7 @@ class KeyedArchive;
 class SceneFileV2;
 class DataNode;
 /**
-    \brief Root class of 3D scene hierarchy. 
- 
+    \brief Base class of 3D scene hierarchy. All nodes in our scene graph is inherited from this node.
  */
 class SceneNode : public BaseObject
 {
@@ -61,9 +60,12 @@ public:
     
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
+    
+    virtual void    InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode);
+    
 	virtual void	RemoveNode(SceneNode * node);
 	virtual SceneNode * GetChild(int32 index);
-	virtual int32 GetChildrenCount();
+	virtual int32   GetChildrenCount();
 	virtual void	RemoveAllChildren();
     
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);
@@ -137,12 +139,13 @@ public:
     inline const Matrix4 & GetDefaultLocalTransform(); 
     
     inline void SetLocalTransform(const Matrix4 & newMatrix);
-    inline void SetWorldTransform(const Matrix4 & newMatrix);
+    //inline void SetWorldTransform(const Matrix4 & newMatrix);
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     inline void InvalidateLocalTransform();
     
     /*
-        Go down by hierarchy and bake all transforms
+        \brief Go down by hierarchy and bake all transforms.
+        Function can be used to bake transforms to minimize amount of matrix multiplications.
      */
     virtual void BakeTransforms();
     
@@ -154,6 +157,7 @@ public:
         NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
         NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
         NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
+        NODE_LOCAL_MATRIX_IDENTITY = 1 << 4,
     };
 	
     inline void AddFlag(int32 flagToAdd);
@@ -218,16 +222,11 @@ public:
 		return userData;
 	}
 	
-//	bool isSolidNode;
-    
-    //Returns maximum Bounding Box as WorlTransformedBox
-
     /**
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
      */
     virtual AABBox3 GetWTMaximumBoundingBox();
-    
     
     /**
         \brief virtual function to save node to KeyedArchive
@@ -257,10 +256,12 @@ public:
     
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
-    
+        
+    /**
+        \brief this function is called after scene is loaded from file
+        You can perform additional initialization here
+     */
     virtual void SceneDidLoaded();
-    
-    virtual void InsertBeforeNode(SceneNode *newNode, SceneNode *afterNode);
     
 protected:
 
@@ -374,7 +375,7 @@ inline const Matrix4 & SceneNode::GetDefaultLocalTransform()
     
 inline Matrix4 & SceneNode::ModifyLocalTransform()
 {
-    flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
     return localTransform;
 }
 
@@ -382,16 +383,19 @@ inline void SceneNode::SetLocalTransform(const Matrix4 & newMatrix)
 {
     localTransform = newMatrix;
     flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    if (newMatrix == Matrix4::IDENTITY)flags |= NODE_LOCAL_MATRIX_IDENTITY;
+    else flags &= ~NODE_LOCAL_MATRIX_IDENTITY;
 }
-
-inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
-{
-    worldTransform = newMatrix;
-}
-
+//
+//inline void SceneNode::SetWorldTransform(const Matrix4 & newMatrix)
+//{
+//    worldTransform = newMatrix;
+//}
+//
+    
 inline void SceneNode::InvalidateLocalTransform()
 {
-    flags &= ~NODE_WORLD_MATRIX_ACTUAL;
+    flags &= ~(NODE_WORLD_MATRIX_ACTUAL | NODE_LOCAL_MATRIX_IDENTITY);
 }
 
     

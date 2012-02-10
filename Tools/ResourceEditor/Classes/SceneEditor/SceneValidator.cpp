@@ -42,6 +42,16 @@ void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
     {
         ShowErrors();
     }
+    
+    for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+    {
+        SceneNode * node = *it;
+        if (node->GetParent())
+        {
+            node->GetParent()->RemoveNode(node);
+        }
+    }
+    emptyNodesForDeletion.clear();
 }
 
 void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
@@ -91,6 +101,17 @@ void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
                     errorMessages.insert("ReferenceToOwner isn't correct. Re-save level.");
                 }
             }
+        }
+    }
+    
+    Set<DataNode*> dataNodeSet;
+    sceneNode->GetDataNodes(dataNodeSet);
+    if (dataNodeSet.size() == 0)
+    {
+        SceneNode * parent = sceneNode->GetParent();
+        if (parent)
+        {
+            emptyNodesForDeletion.insert(sceneNode);
         }
     }
 }

@@ -40,7 +40,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #elif defined(__DAVAENGINE_MACOS__)
 #include <ApplicationServices/ApplicationServices.h>
-#endif 
+#endif //PLATFORMS
 
 namespace DAVA 
 {
@@ -397,7 +397,7 @@ Image * Image::CreateFromFile(const String & pathName)
 	return davaImage;
 }
 #endif 
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
 
 Image * Image::CreateFromFile(const String & pathName)
@@ -440,7 +440,9 @@ Image * Image::CreateFromFile(const String & pathName)
 	return davaImage;
 };
 
-#endif //	
+#else //other platforms
+
+#endif //PLATFORMS	
 
 void Image::Resize(int32 newWidth, int32 newHeight)
 {
