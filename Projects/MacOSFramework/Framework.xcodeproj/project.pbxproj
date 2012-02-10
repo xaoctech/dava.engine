@@ -27,9 +27,12 @@
 		47FBFFD713A790C800E5A7F6 /* UIHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */; };
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
+		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
+		5C42C98A14E3B3DD00EB3F53 /* XMLParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C42C98914E3B3DD00EB3F53 /* XMLParser.cpp */; };
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
 		5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */; };
 		5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */; };
+		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
 		5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */; };
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
 		5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */; };
@@ -124,17 +127,6 @@
 		FEC3E537133CCCDF00442ADD /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */; };
 		FEC711AF149F839C00939323 /* SceneFileV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC711AD149F839C00939323 /* SceneFileV2.cpp */; };
 		FEC711B0149F839C00939323 /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC711AE149F839C00939323 /* SceneFileV2.h */; };
-		FECFAF8712E58B7A00C71562 /* api.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFACFF12E58B7900C71562 /* api.c */; };
-		FECFAF8812E58B7A00C71562 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFAD0012E58B7900C71562 /* config.h */; };
-		FECFAF8912E58B7A00C71562 /* dumper.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0112E58B7900C71562 /* dumper.c */; };
-		FECFAF8A12E58B7A00C71562 /* emitter.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0212E58B7900C71562 /* emitter.c */; };
-		FECFAF8B12E58B7A00C71562 /* loader.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0312E58B7900C71562 /* loader.c */; };
-		FECFAF8C12E58B7A00C71562 /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0412E58B7900C71562 /* parser.c */; };
-		FECFAF8D12E58B7A00C71562 /* reader.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0512E58B7900C71562 /* reader.c */; };
-		FECFAF8E12E58B7A00C71562 /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0612E58B7900C71562 /* scanner.c */; };
-		FECFAF8F12E58B7A00C71562 /* writer.c in Sources */ = {isa = PBXBuildFile; fileRef = FECFAD0712E58B7900C71562 /* writer.c */; };
-		FECFAF9012E58B7A00C71562 /* yaml.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFAD0812E58B7900C71562 /* yaml.h */; };
-		FECFAF9112E58B7A00C71562 /* yaml_private.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFAD0912E58B7900C71562 /* yaml_private.h */; };
 		FECFC20E12E87E3000C71562 /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFC0A712E87E3000C71562 /* AnimatedObject.cpp */; };
 		FECFC20F12E87E3000C71562 /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFC0A812E87E3000C71562 /* AnimatedObject.h */; };
 		FECFC21012E87E3000C71562 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFC0A912E87E3000C71562 /* Animation.cpp */; };
@@ -511,10 +503,13 @@
 		47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchy.cpp; sourceTree = "<group>"; };
 		47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHierarchyCell.h; sourceTree = "<group>"; };
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
+		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
+		5C42C98914E3B3DD00EB3F53 /* XMLParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XMLParser.cpp; sourceTree = "<group>"; };
 		5C6BF78214C85A2A009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
 		5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
+		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
 		5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
@@ -612,17 +607,6 @@
 		FEC711AE149F839C00939323 /* SceneFileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileV2.h; sourceTree = "<group>"; };
 		FECA0D7013D5F67000059D5D /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		FECA0D7113D5F67000059D5D /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
-		FECFACFF12E58B7900C71562 /* api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = api.c; sourceTree = "<group>"; };
-		FECFAD0012E58B7900C71562 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		FECFAD0112E58B7900C71562 /* dumper.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dumper.c; sourceTree = "<group>"; };
-		FECFAD0212E58B7900C71562 /* emitter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = emitter.c; sourceTree = "<group>"; };
-		FECFAD0312E58B7900C71562 /* loader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = loader.c; sourceTree = "<group>"; };
-		FECFAD0412E58B7900C71562 /* parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parser.c; sourceTree = "<group>"; };
-		FECFAD0512E58B7900C71562 /* reader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = reader.c; sourceTree = "<group>"; };
-		FECFAD0612E58B7900C71562 /* scanner.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = scanner.c; sourceTree = "<group>"; };
-		FECFAD0712E58B7900C71562 /* writer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = writer.c; sourceTree = "<group>"; };
-		FECFAD0812E58B7900C71562 /* yaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yaml.h; sourceTree = "<group>"; };
-		FECFAD0912E58B7900C71562 /* yaml_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yaml_private.h; sourceTree = "<group>"; };
 		FECFC0A712E87E3000C71562 /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		FECFC0A812E87E3000C71562 /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		FECFC0A912E87E3000C71562 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -960,6 +944,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */,
+				5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */,
 				5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */,
 				FEF4E23212CD3C1F004B850E /* libBox2D_MacOS.a in Frameworks */,
 				D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */,
@@ -986,6 +972,8 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				5C97965914E3F09F00FFFA14 /* libyaml_macos.a */,
+				5C42C98314E3AFA400EB3F53 /* libxml_macos.a */,
 				5C6BF78214C85A2A009297F7 /* libz.dylib */,
 				5C77AB7C14C7509D00E92D28 /* libpng_macos.a */,
 				FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */,
@@ -1092,29 +1080,10 @@
 		FECFABB612E58B7800C71562 /* External */ = {
 			isa = PBXGroup;
 			children = (
-				FECFACFE12E58B7900C71562 /* Yaml */,
 			);
 			name = External;
 			path = ../../Sources/External;
 			sourceTree = SOURCE_ROOT;
-		};
-		FECFACFE12E58B7900C71562 /* Yaml */ = {
-			isa = PBXGroup;
-			children = (
-				FECFACFF12E58B7900C71562 /* api.c */,
-				FECFAD0012E58B7900C71562 /* config.h */,
-				FECFAD0112E58B7900C71562 /* dumper.c */,
-				FECFAD0212E58B7900C71562 /* emitter.c */,
-				FECFAD0312E58B7900C71562 /* loader.c */,
-				FECFAD0412E58B7900C71562 /* parser.c */,
-				FECFAD0512E58B7900C71562 /* reader.c */,
-				FECFAD0612E58B7900C71562 /* scanner.c */,
-				FECFAD0712E58B7900C71562 /* writer.c */,
-				FECFAD0812E58B7900C71562 /* yaml.h */,
-				FECFAD0912E58B7900C71562 /* yaml_private.h */,
-			);
-			path = Yaml;
-			sourceTree = "<group>";
 		};
 		FECFC0A512E87E3000C71562 /* Internal */ = {
 			isa = PBXGroup;
@@ -1267,6 +1236,7 @@
 				FECFC0F712E87E3000C71562 /* Logger.h */,
 				FECFC0F812E87E3000C71562 /* LoggerMacOS.mm */,
 				FECFC0FB12E87E3000C71562 /* XMLParser.h */,
+				5C42C98914E3B3DD00EB3F53 /* XMLParser.cpp */,
 				FECFC0FC12E87E3000C71562 /* XMLParser.mm */,
 				FECFC0FD12E87E3000C71562 /* YamlArchive.cpp */,
 				FECFC0FE12E87E3000C71562 /* YamlArchive.h */,
@@ -1707,9 +1677,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FECFAF8812E58B7A00C71562 /* config.h in Headers */,
-				FECFAF9012E58B7A00C71562 /* yaml.h in Headers */,
-				FECFAF9112E58B7A00C71562 /* yaml_private.h in Headers */,
 				FECFC20F12E87E3000C71562 /* AnimatedObject.h in Headers */,
 				FECFC21112E87E3000C71562 /* Animation.h in Headers */,
 				FECFC21312E87E3000C71562 /* AnimationManager.h in Headers */,
@@ -2017,14 +1984,6 @@
 			files = (
 				FE04522D140EED6F002A6D27 /* Frustum.cpp in Sources */,
 				FE04522C140EED5C002A6D27 /* LandscapeNode.cpp in Sources */,
-				FECFAF8712E58B7A00C71562 /* api.c in Sources */,
-				FECFAF8912E58B7A00C71562 /* dumper.c in Sources */,
-				FECFAF8A12E58B7A00C71562 /* emitter.c in Sources */,
-				FECFAF8B12E58B7A00C71562 /* loader.c in Sources */,
-				FECFAF8C12E58B7A00C71562 /* parser.c in Sources */,
-				FECFAF8D12E58B7A00C71562 /* reader.c in Sources */,
-				FECFAF8E12E58B7A00C71562 /* scanner.c in Sources */,
-				FECFAF8F12E58B7A00C71562 /* writer.c in Sources */,
 				FECFC20E12E87E3000C71562 /* AnimatedObject.cpp in Sources */,
 				FECFC21012E87E3000C71562 /* Animation.cpp in Sources */,
 				FECFC21212E87E3000C71562 /* AnimationManager.cpp in Sources */,
@@ -2229,6 +2188,7 @@
 				C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */,
 				5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */,
 				FE78E87B14E17E7E007DD1AA /* QuadTree.cpp in Sources */,
+				5C42C98A14E3B3DD00EB3F53 /* XMLParser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2247,7 +2207,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2262,7 +2221,6 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Libs/freetype/include,
-					./../../Sources/External/Yaml,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
 				);
@@ -2282,7 +2240,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2295,7 +2252,6 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Libs/freetype/include,
-					./../../Sources/External/Yaml,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
 				);
@@ -2330,11 +2286,13 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Sources/External/Freetype,
-					./../../Sources/External/Yaml,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/include,
 				);
-				LIBRARY_SEARCH_PATHS = /opt/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/opt/local/lib,
+					./../../Libs/libs,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
@@ -2363,11 +2321,13 @@
 					./../../Sources/Internal,
 					./../../Sources/External,
 					./../../Sources/External/Freetype,
-					./../../Sources/External/Yaml,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/include,
 				);
-				LIBRARY_SEARCH_PATHS = /opt/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/opt/local/lib,
+					./../../Libs/libs,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

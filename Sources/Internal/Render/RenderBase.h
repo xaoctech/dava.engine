@@ -80,8 +80,18 @@
 		#include <d3d9.h>
 		#include <dxerr.h>
 #endif 
+#elif defined(__DAVAENGINE_ANDROID__)
+	#define __DAVAENGINE_OPENGL__
+	#include <GLES/gl.h>
+	#include <GLES/glext.h>
+ 	#include <GLES2/gl2.h>
+ 	#include <GLES2/gl2ext.h>
 
-#endif 
+	#define __DAVAENGINE_ANDROID_APIVERSION_8__	// for different SDK versions different path and 
+
+#else //PLATFORMS
+	//other platforms
+#endif//PLATFORMS 
 
 
 #if defined(__DAVAENGINE_OPENGL__)
