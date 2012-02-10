@@ -31,7 +31,8 @@
 
 #if !defined(__DAVAENGINE_WIN32__)
 #include <unistd.h>
-#endif 
+#endif //#if !defined(__DAVAENGINE_WIN32__)
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -267,7 +268,11 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
 	/* create file */
 	FILE *fp = fopen(file_name, "wb");
 	if (!fp)
-		abort_("[write_png_file] File %s could not be opened for writing", file_name);
+	{
+		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name);
+		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
+		return;
+	}
 	
 	
 	/* initialize stuff */
@@ -278,17 +283,30 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
 	
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
-		abort_("[write_png_file] png_create_info_struct failed");
+	{
+		Logger::Error("[LibPngWrapper::WritePngFile] png_create_info_struct failed");
+
+		//abort_("[write_png_file] png_create_info_struct failed");
+		return;
+	}
 	
 	if (setjmp(png_jmpbuf(png_ptr)))
-		abort_("[write_png_file] Error during init_io");
+	{
+		Logger::Error("[LibPngWrapper::WritePngFile] Error during init_io");
+		//abort_("[write_png_file] Error during init_io");
+		return;
+	}
 	
 	png_init_io(png_ptr, fp);
 	
 	
 	/* write header */
 	if (setjmp(png_jmpbuf(png_ptr)))
-		abort_("[write_png_file] Error during writing header");
+	{
+		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing header");
+		//abort_("[write_png_file] Error during writing header");
+		return;
+	}
 	
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 				 bit_depth, color_type, PNG_INTERLACE_NONE,
@@ -308,14 +326,22 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
 	
 	/* write bytes */
 	if (setjmp(png_jmpbuf(png_ptr)))
-		abort_("[write_png_file] Error during writing bytes");
+	{
+		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing bytes");
+		//abort_("[write_png_file] Error during writing bytes");
+		return;
+	}
 	
 	png_write_image(png_ptr, row_pointers);
 	
 	
 	/* end write */
 	if (setjmp(png_jmpbuf(png_ptr)))
-		abort_("[write_png_file] Error during end of write");
+	{
+		Logger::Error("[LibPngWrapper::WritePngFile] Error during end of write");
+		//abort_("[write_png_file] Error during end of write");
+		return;
+	}
 	
 	png_write_end(png_ptr, NULL);
 	
