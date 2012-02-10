@@ -13,7 +13,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #ifdef PNG_PROGRESSIVE_READ_SUPPORTED
 
 /* Push model modes */
