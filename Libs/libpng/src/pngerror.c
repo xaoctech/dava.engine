@@ -18,7 +18,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #if defined(PNG_READ_SUPPORTED) || defined(PNG_WRITE_SUPPORTED)
 
 static void /* PRIVATE */
