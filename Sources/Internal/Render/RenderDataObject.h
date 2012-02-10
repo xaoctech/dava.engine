@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "Render/RenderBase.h"
+#include "Render/RenderResource.h"
 
 namespace DAVA
 {
@@ -56,7 +57,7 @@ public:
     void * pointer;
 };
 
-class RenderDataObject : public BaseObject
+class RenderDataObject : public RenderResource //BaseObject
 {
 public:
     RenderDataObject();
@@ -74,6 +75,13 @@ public:
     */
     void BuildVertexBuffer(int32 vertexCount); // pack data to VBOs and allow to use VBOs instead of SetStreams
     
+#if defined(__DAVAENGINE_ANDROID__)
+	virtual void SaveToSystemMemory();
+	virtual void Lost();
+	virtual void Invalidate();
+	int32 savedVertexCount;
+    void * savedPointer;
+#endif //#if defined(__DAVAENGINE_ANDROID__)
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
     void BuildIndexBuffer();

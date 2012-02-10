@@ -61,7 +61,7 @@ public:
 		int32 edgeIndices[3];
 	};
 
-	void InitFromPolygonGroup(PolygonGroup * polygonGroup);
+	void InitFromPolygonGroup(PolygonGroup * polygonGroup, int32 indexCount);
 
 	const Vector<Edge> & GetEdges();
 	const Triangle & GetTriangle(int32 index);

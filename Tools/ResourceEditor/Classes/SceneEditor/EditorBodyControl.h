@@ -83,7 +83,7 @@ public:
     
     void UpdateLibraryState(bool isShown, int32 width);
 
-	void BeastProcessScene();
+	void BeastProcessScene(bool fullshade);
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
     EditorScene * GetScene();
@@ -154,17 +154,10 @@ protected:
 	
     UIControl *leftPanelDataGraph;
     UIHierarchy * dataGraphTree;
-    enum eDataNodesIDs
-    {
-        EDNID_MATERIAL = 0,
-        EDNID_MESH,
-        EDNID_SCENE,
-        
-        EDNID_COUNT
-    };
+
+    Set<DAVA::DataNode *> dataNodes;
     
-    DataNode *dataNodes[EDNID_COUNT];
-    void RefreshDataGraph();
+    void RefreshDataGraph(bool force = false);
     void OnRefreshDataGraph(BaseObject * obj, void *, void *);
 
     //scene controls
@@ -185,7 +178,6 @@ protected:
     UIControl *rightPanel;
     SceneNode * selectedSceneGraphNode;
     DataNode * selectedDataGraphNode;
-    UIHierarchyCell *savedTreeCell;
 
     NodesPropertyControl *nodesPropertyPanel;
     //
@@ -238,6 +230,7 @@ protected:
 
 	Rect propertyPanelRect;
 	void RecreatePropertiesPanelForNode(SceneNode *node);
+	void RecreatePropertiesPanelForNode(DataNode *node);
 	ModificationPopUp * modificationPopUp;
 	
 

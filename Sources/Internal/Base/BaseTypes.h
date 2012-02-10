@@ -68,6 +68,11 @@
 
 
 // add some other platform detection here...
+#if !defined (__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_WIN32__) && !defined(__DAVAENGINE_MACOS__)
+#if defined(__ANDROID__) || defined(ANDROID) 
+	#define __DAVAENGINE_ANDROID__
+#endif //#if defined(__ANDROID__) || defined(ANDROID) 
+#endif //#if !defined (__DAVAENGINE_IPHONE__) && !defined(__DAVAENGINE_WIN32__) && !defined(__DAVAENGINE_MACOS__)
 
 
 /////////
@@ -90,6 +95,11 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <unistd.h>
+
+#elif defined(__DAVAENGINE_ANDROID__)
+//TODO: specific includes
+//#define __DAVASOUND_AL__
+#undef __DAVASOUND_AL__
 
 #else
 // some other platform...
@@ -161,7 +171,12 @@ typedef float			float32;
 typedef double			float64;
 
 typedef std::string		String;
+#if defined(__DAVAENGINE_ANDROID__)
+	typedef std::basic_string<wchar_t>	WideString;
+#else //#if defined(__DAVAENGINE_ANDROID__)
 typedef std::wstring	WideString;
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+
 	
 
 //template <typename _Ty, typename _Ax = std::allocator(_Ty)> 

@@ -143,7 +143,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 
     FCDGeometryPolygonsInput* pTexCoordInput1 = 0;
     FCDGeometrySource* pTexCoordSource1 = 0;   
-    if (texCoordInputList.size() == 2 && texCoordSourcesList.size() == 2)
+    if (texCoordInputList.size() >= 2 && texCoordSourcesList.size() >= 2)
     {
         pTexCoordInput1 = texCoordInputList[1];
         pTexCoordSource1 = texCoordSourcesList[1];

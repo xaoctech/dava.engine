@@ -40,6 +40,13 @@ private:
 
 class ScenePreviewControl: public UI3DView
 {
+public:
+    
+    enum eError
+    {
+        ERROR_WRONG_EXTENSION = 100,
+        ERROR_CANNOT_OPEN_FILE = 101
+    };
     
 public:
     ScenePreviewControl(const Rect & rect);
@@ -48,7 +55,7 @@ public:
     virtual void Input(UIEvent * touch);
     virtual void Update(float32 timeElapsed);
 
-    bool OpenScene(const String &pathToFile);
+    int32 OpenScene(const String &pathToFile);
     
 protected:
 

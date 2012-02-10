@@ -41,6 +41,7 @@ class Texture;
 class SceneFileV2;
 class PolygonGroup;
 class MeshInstanceNode;
+class LightNode;
     
 class PolygonGroupWithMaterial : public BaseObject
 {
@@ -78,29 +79,8 @@ public:
 	inline AABBox3 & GetBoundingBox();
 	
     Vector<PolygonGroupWithMaterial*> & GetPolygonGroups();
-    
-//	Vector<StaticMesh*> & GetMeshes()
-//	{
-//		return lodLayers.begin()->meshes;
-//	}
-//
-//	Vector<int32> & GetPolygonGroupIndexes()
-//	{
-//		return lodLayers.begin()->polygonGroupIndexes;
-//	}
-//
-//    Vector<Material*> & GetMaterials()
-//	{
-//		return lodLayers.begin()->materials;
-//	}
-        
-//	Vector<StaticMesh*> & GetMeshes(int32 lodLayer)
-//	{
-//		return lodLayers.begin()->meshes;
-//	}
-	
+    	
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-//    virtual SceneNode* Clone();
     
     //Returns maximum Bounding Box as WorlTransformedBox
     virtual AABBox3 GetWTMaximumBoundingBox();
@@ -152,15 +132,22 @@ public:
     Texture * GetLightmapForIndex(int32 index);
     int32 GetLightmapCount();
 
+    /**
+        \brief Bake transformations into polygon groups if polygon groups single instanced.
+     */
     virtual void BakeTransforms();
+    
+    /**
+        \brief Register nearest node to this MeshInstanceNode.
+        MeshInstance can have own criterias of detection on which light nodes are intresting for this particular mesh and which are not.
+     */
+    virtual void RegisterNearestLight(LightNode * node);
 
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
-//    Vector<StaticMesh*> meshes;
-//    Vector<int32> polygonGroupIndexes;
-//    Vector<Material*> materials;
     
     Vector<PolygonGroupWithMaterial*> polygroups;
+    Vector<LightNode*> nearestLights;
     
 	AABBox3 bbox;
     AABBox3 transformedBox;

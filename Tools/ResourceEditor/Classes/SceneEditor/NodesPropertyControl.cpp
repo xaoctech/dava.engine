@@ -116,6 +116,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetMatrix4PropertyValue("property.scenenode.worldmatrix", sceneNode->GetWorldTransform());
     }
 
+    
 	{ //static light
 		 propertyList->AddSection("Used in static lighting", GetHeaderState("Used in static lighting", true));
 
@@ -160,6 +161,16 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
                 default:
                     break;
             }
+        }
+    }
+    else
+    {
+        KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+        if(customProperties && customProperties->IsKeyExists("editor.isLocked"))
+        {
+            propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
+            propertyList->AddBoolProperty("editor.isLocked", PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetBoolPropertyValue("editor.isLocked", customProperties->GetBool("editor.isLocked"));
         }
     }
 }
@@ -263,6 +274,14 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
             customProperties->SetBool(forKey, newValue);
         }
     }
+    else
+    {
+        KeyedArchive *customProperties = currentNode->GetCustomProperties();
+        if(customProperties->IsKeyExists(forKey))
+        {
+            customProperties->SetBool(forKey, newValue);
+        }
+    }
 
     
     if(nodesDelegate)
@@ -333,7 +352,6 @@ void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * 
         r.y = listHolder->GetRect().dy - r.dy - ControlsFactory::BUTTON_HEIGHT;
         
         deletionList = new UIList(r, UIList::ORIENTATION_VERTICAL);
-//        ControlsFactory::CustomizeDialog(deletionList);
         ControlsFactory::CustomizePropertyCell(deletionList, false);
 
         deletionList->SetDelegate(this);
@@ -355,30 +373,18 @@ void NodesPropertyControl::NodeCreated(bool success)
         switch (propControl->GetPropType()) 
         {
             case CreatePropertyControl::EPT_STRING:
-//                propertyList->AddStringProperty(name);
-//                propertyList->SetStringPropertyValue(name, "");
-                
                 currentProperties->SetString(name, "");
                 break;
 
             case CreatePropertyControl::EPT_INT:
-//                propertyList->AddIntProperty(name);
-//                propertyList->SetIntPropertyValue(name, 0);
-                
                 currentProperties->SetInt32(name, 0);
 
                 break;
             case CreatePropertyControl::EPT_FLOAT:
-//                propertyList->AddFloatProperty(name);
-//                propertyList->SetFloatPropertyValue(name, 0.f);
-                
                 currentProperties->SetFloat(name, 0.f);
 
                 break;
             case CreatePropertyControl::EPT_BOOL:
-//                propertyList->AddBoolProperty(name);
-//                propertyList->SetBoolPropertyValue(name, false);
-                
                 currentProperties->SetBool(name, false);
 
                 break;

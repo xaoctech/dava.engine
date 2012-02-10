@@ -46,3 +46,9 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
     
 	return new NodesPropertyControl(rect, createNodeProperties);
 }
+
+NodesPropertyControl * PropertyControlCreator::CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties)
+{
+	return new NodesPropertyControl(rect, createNodeProperties);
+}
+
