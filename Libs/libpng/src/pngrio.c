@@ -20,7 +20,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #ifdef PNG_READ_SUPPORTED
 
 /* Read the data from whatever input you are using.  The default routine

@@ -18,7 +18,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #ifdef PNG_READ_SUPPORTED
 
 /* Set the action on getting a CRC error for an ancillary or critical chunk. */
