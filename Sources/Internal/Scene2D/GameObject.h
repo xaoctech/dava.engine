@@ -118,7 +118,7 @@ public:
     inline void		SetBlendMode(eBlendMode	srcOp, eBlendMode destOp);
 	
     inline bool GetVisible() const;
-	inline void SetVisible(bool isVisible);
+	inline void SetVisible(bool isVisible,  bool hierarchic = true);
 
 	inline bool IsDead() const;
 
@@ -424,9 +424,18 @@ inline bool GameObject::GetVisible() const
     return visible;
 }
 
-inline void GameObject::SetVisible(bool isVisible)
+inline void GameObject::SetVisible(bool isVisible, bool hierarchic)
 {
     visible = isVisible;
+    
+    if(hierarchic)
+    {	
+        List<GameObject*>::iterator it = children.begin();
+        for(; it != children.end(); ++it)
+        {
+            (*it)->SetVisible(isVisible, hierarchic);
+        }
+    }
 }
 	
 void GameObject::SetUserData(void *_userData)

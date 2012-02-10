@@ -70,17 +70,17 @@ public:
 		WRAP_REPEAT,
 	};
 	
-#ifdef __DAVAENGINE_IPHONE__
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static const int MAX_WIDTH = 1024;
 	static const int MIN_WIDTH = 8;
 	static const int MAX_HEIGHT = 1024;
 	static const int MIN_HEIGHT = 8;
-#else
+#else //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static const int MAX_WIDTH = 4096;
 	static const int MIN_WIDTH = 8;
 	static const int MAX_HEIGHT = 4096;
 	static const int MIN_HEIGHT = 8;
-#endif 
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
 	// Main constructurs
 	
@@ -193,6 +193,27 @@ public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
+
+#if defined(__DAVAENGINE_ANDROID__) 
+	bool		 renderTargetModified;
+    bool         renderTargetAutosave;
+
+	virtual void SaveToSystemMemory();
+	virtual void Lost();
+	virtual void Invalidate();
+	void InvalidateFromFile();
+	void InvalidateFromSavedData();
+
+	static int32 FormatMultiplier(PixelFormat format);
+
+    void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
+    void SaveData(uint8 * data, int32 dataSize);
+    
+
+	uint8 *savedData;
+	int32 savedDataSize;
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	static LPDIRECT3DTEXTURE9 CreateTextureNative(Vector2 & size, PixelFormat & format, bool isRenderTarget, int32 flags);
 	void SetAsHardwareCursor(const Vector2 & hotSpot);
@@ -205,7 +226,7 @@ public:							// properties for fast access
 	virtual void Lost();
 	virtual void Invalidate();
 	
-#endif 
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 
 	String		relativePathname;
 	String		debugInfo;
@@ -215,7 +236,7 @@ public:							// properties for fast access
 //	uint32		imageHeight;	// image height
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		fboID;			// id of frame buffer object
-#endif
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 	PixelFormat format;			// texture format 
 	bool		isRenderTarget;
 
@@ -245,9 +266,9 @@ private:
 // Implementation of inline functions
 inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
 {
-#if defined(__DAVAENGINE_DIRECTX9__)
+#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
     renderTargetAutosave = isEnabled;
-#endif 
+#endif //#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
 }
 inline const String & Texture::GetPathname()
 {

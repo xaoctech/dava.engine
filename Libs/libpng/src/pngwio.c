@@ -20,7 +20,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #ifdef PNG_WRITE_SUPPORTED
 
 /* Write the data to whatever output you are using.  The default routine

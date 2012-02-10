@@ -587,12 +587,16 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 	//if (IsEmptyNode(node))return;
 																		   
 	int nodeId = globalNodeId;
-	char name[64];
-	strcpy(name, node->originalNode->GetDaeId().c_str());
+    std::string name(node->originalNode->GetDaeId());
+    if (name.find("node-") == 0)
+    {//if node name begins from "node-"
+        name = name.substr(strlen("node-"));
+    }
+//	strcpy(name, node->originalNode->GetDaeId().c_str());
 		
 	
 	fwrite(&nodeId, sizeof(int32), 1, sceneFP);
-	fwrite(name, strlen(name) + 1, 1, sceneFP);
+	fwrite(name.c_str(), name.length() + 1, 1, sceneFP);
 	// write node information
 	SceneFile::SceneNodeDef def;
 	def.parentId = parentId;
@@ -611,7 +615,7 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 		}		
 	}
 
-	DAVA::Logger::Debug("%s Write scene node: %s childCount: %d isJoint: %d\n", GetIndentString('-', level + 1), name, def.childCount, (int)node->isJoint);
+	DAVA::Logger::Debug("%s Write scene node: %s childCount: %d isJoint: %d\n", GetIndentString('-', level + 1), name.c_str(), def.childCount, (int)node->isJoint);
 	
 	fwrite(&def, sizeof(def), 1, sceneFP);
 	

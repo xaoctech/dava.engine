@@ -16,7 +16,7 @@
 
 #define PNG_INTERNAL
 #define PNG_NO_PEDANTIC_WARNINGS
-#include "png.h"
+#include "libpng/png.h"
 #ifdef PNG_READ_SUPPORTED
 
 #if defined(_WIN32_WCE) && (_WIN32_WCE<0x500)

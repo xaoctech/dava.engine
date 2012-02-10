@@ -64,7 +64,7 @@
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB   %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype246MT_D.lib;libpngd.lib;zlibd.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -81,7 +81,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>freetype246MT.lib;libpng.lib;zlib.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -130,9 +130,6 @@
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.h" />
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.h" />
-    <ClInclude Include="..\..\Sources\External\Yaml\config.h" />
-    <ClInclude Include="..\..\Sources\External\Yaml\yaml.h" />
-    <ClInclude Include="..\..\Sources\External\Yaml\yaml_private.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
@@ -413,14 +410,6 @@
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
-    <ClCompile Include="..\..\Sources\External\Yaml\api.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\dumper.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\emitter.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\loader.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\parser.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\reader.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\scanner.c" />
-    <ClCompile Include="..\..\Sources\External\Yaml\writer.c" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
@@ -459,6 +448,7 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\ResourceArchive.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlArchive.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlParser.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
