@@ -91,215 +91,411 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 }
 
 
+
+int32 ShadowVolumeNode::FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count)
+{
+	for( int i = 0; i < count; ++i )
+	{
+		// If both vertex indexes of the old edge in mapping entry are -1, then
+		// we have searched every valid entry without finding a match.  Return
+		// this index as a newly created entry.
+		if( ( mapping[i].oldEdge[0] == -1 && mapping[i].oldEdge[1] == -1 ) ||
+
+			// Or if we find a match, return the index.
+			( mapping[i].oldEdge[1] == nV1 && mapping[i].oldEdge[0] == nV2 ) )
+		{
+			return i;
+		}
+	}
+
+	DVASSERT(0);
+	return -1;  // We should never reach this line
+}
+
+
 void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 {
 	PolygonGroup * oldPolygonGroup = meshInstance->GetPolygonGroups()[0]->GetPolygonGroup();
 
-	EdgeAdjacency oldAdjacency;
-	oldAdjacency.InitFromPolygonGroup(oldPolygonGroup, oldPolygonGroup->GetIndexCount());
-	int32 sharedEdgesCount = oldAdjacency.GetEdgesWithTwoTrianglesCount();
+	
 
-	shadowPolygonGroup = new PolygonGroup(GetScene());
-	shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldPolygonGroup->GetIndexCount() + sharedEdgesCount*2*2,//*2 - two triangles per edge, *2 - 2 vertices per triangle
-		oldPolygonGroup->GetIndexCount() + sharedEdgesCount*2*3);//*2 - two triangles per edge, *3 - 3 indeces per triangle
-
-	//copy old index data
+	int32 numEdges = oldPolygonGroup->GetIndexCount();
 	int32 oldIndexCount = oldPolygonGroup->GetIndexCount();
-	//for(int32 i = 0; i < oldIndexCount; ++i)
-	//{
-	//	int32 index;
-	//	oldPolygonGroup->GetIndex(i, index);
-	//	shadowPolygonGroup->SetIndex(i, index);
-	//}
+	EdgeMapping * mapping = new EdgeMapping[numEdges];
+	int32 numMaps = 0;
 
-	int32 i0, i1, i2;
-	Vector3 p0, p1, p2;
-	for(int32 i = 0; i < oldIndexCount; i += 3)
+	//generate adjacency
+	int32 oldVertexCount = oldPolygonGroup->GetVertexCount();
+	int32 * adjacency = new int32[oldVertexCount];
+	Memset(adjacency, -1, oldVertexCount*sizeof(int32));
+	for(int32 i = 0; i < oldVertexCount; ++i)
 	{
-		oldPolygonGroup->GetIndex(i+0, i0);
-		oldPolygonGroup->GetIndex(i+1, i1);
-		oldPolygonGroup->GetIndex(i+2, i2);
-		oldPolygonGroup->GetCoord(i0, p0);
-		oldPolygonGroup->GetCoord(i1, p1);
-		oldPolygonGroup->GetCoord(i2, p2);
+		Vector3 newFoundCoord;
+		oldPolygonGroup->GetCoord(i, newFoundCoord);
+		adjacency[i] = i;
+		for(int32 j = 0; j < i; ++j)
+		{
+			Vector3 oldCoord;
+			oldPolygonGroup->GetCoord(j, oldCoord);
+			if(EdgeAdjacency::IsPointsEqual(newFoundCoord, oldCoord))
+			{
+				adjacency[i] = j;
+				break;
+			}
+		}
+	}
 
-		Vector3 v0 = p1 - p0;
-		Vector3 v1 = p2 - p0;
+	PolygonGroup * newPolygonGroup = new PolygonGroup(GetScene());
+	newPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldIndexCount, oldIndexCount + numEdges*2*3);
+	int32 nextIndex = 0;
+
+	//int32 nextOutVertex = 0;
+
+	int32 facesCount = oldIndexCount/3;
+	for(int32 f = 0; f < facesCount; ++f)
+	{
+		//copy old vertex data
+		int32 oldIndex0, oldIndex1, oldIndex2;
+		Vector3 oldPos0, oldPos1, oldPos2;
+		oldPolygonGroup->GetIndex(f*3+0, oldIndex0);
+		oldPolygonGroup->GetCoord(oldIndex0, oldPos0);
+		newPolygonGroup->SetCoord(f*3+0, oldPos0);
+		newPolygonGroup->SetIndex(nextIndex++, f*3+0);
+
+		oldPolygonGroup->GetIndex(f*3+1, oldIndex1);
+		oldPolygonGroup->GetCoord(oldIndex1, oldPos1);
+		newPolygonGroup->SetCoord(f*3+1, oldPos1);
+		newPolygonGroup->SetIndex(nextIndex++, f*3+1);
+
+		oldPolygonGroup->GetIndex(f*3+2, oldIndex2);
+		oldPolygonGroup->GetCoord(oldIndex2, oldPos2);
+		newPolygonGroup->SetCoord(f*3+2, oldPos2);
+		newPolygonGroup->SetIndex(nextIndex++, f*3+2);
+
+		//generate new normals
+		Vector3 v0 = oldPos1 - oldPos0;
+		Vector3 v1 = oldPos2 - oldPos0;
 		Vector3 normal = v0.CrossProduct(v1);
 		normal.Normalize();
 
-		shadowPolygonGroup->SetIndex(i+0, i+0);
-		shadowPolygonGroup->SetIndex(i+1, i+1);
-		shadowPolygonGroup->SetIndex(i+2, i+2);
-		shadowPolygonGroup->SetCoord(i+0, p0);
-		shadowPolygonGroup->SetCoord(i+1, p1);
-		shadowPolygonGroup->SetCoord(i+2, p2);
-		shadowPolygonGroup->SetNormal(i+0, normal);
-		shadowPolygonGroup->SetNormal(i+1, normal);
-		shadowPolygonGroup->SetNormal(i+2, normal);
+		newPolygonGroup->SetNormal(f*3+0, normal);
+		newPolygonGroup->SetNormal(f*3+1, normal);
+		newPolygonGroup->SetNormal(f*3+2, normal);
+
+
+		//edge 1
+		int32 nIndex;
+		int32 vertIndex[3] = 
+		{
+			adjacency[oldIndex0],
+			adjacency[oldIndex1],
+			adjacency[oldIndex2]
+		};
+		nIndex = FindEdgeInMappingTable(vertIndex[0], vertIndex[1], mapping, numEdges);
+
+		if(mapping[nIndex].oldEdge[0] == -1 && mapping[nIndex].oldEdge[1] == -1)
+		{
+			// No entry for this edge yet.  Initialize one.
+			mapping[nIndex].oldEdge[0] = vertIndex[0];
+			mapping[nIndex].oldEdge[1] = vertIndex[1];
+			mapping[nIndex].newEdge[0][0] = f*3 + 0;
+			mapping[nIndex].newEdge[0][1] = f*3 + 1;
+
+			++numMaps;
+		}
+		else
+		{
+			// An entry is found for this edge.  Create
+			// a quad and output it.
+			mapping[nIndex].newEdge[1][0] = f*3 + 0;
+			mapping[nIndex].newEdge[1][1] = f*3 + 1;
+
+			// First triangle
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][1]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][0]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][0]);
+
+			// Second triangle
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][1]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][0]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][0]);
+
+			// pMapping[nIndex] is no longer needed. Copy the last map entry
+			// over and decrement the map count.
+			mapping[nIndex] = mapping[numMaps - 1];
+			Memset(&mapping[numMaps - 1], 0xFF, sizeof(mapping[numMaps - 1]));
+			--numMaps;
+		}
+
+		//edge 2
+		nIndex = FindEdgeInMappingTable(vertIndex[1], vertIndex[2], mapping, numEdges);
+
+		if(mapping[nIndex].oldEdge[0] == -1 && mapping[nIndex].oldEdge[1] == -1)
+		{
+			mapping[nIndex].oldEdge[0] = vertIndex[1];
+			mapping[nIndex].oldEdge[1] = vertIndex[2];
+			mapping[nIndex].newEdge[0][0] = f*3 + 1;
+			mapping[nIndex].newEdge[0][1] = f*3 + 2;
+
+			++numMaps;
+		}
+		else
+		{
+			mapping[nIndex].newEdge[1][0] = f*3 + 1;
+			mapping[nIndex].newEdge[1][1] = f*3 + 2;
+
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][1]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][0]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][0]);
+
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][1]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][0]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][0]);
+
+			mapping[nIndex] = mapping[numMaps - 1];
+			Memset(&mapping[numMaps - 1], 0xFF, sizeof(mapping[numMaps - 1]));
+			--numMaps;
+		}
+
+		//edge 3
+		nIndex = FindEdgeInMappingTable(vertIndex[2], vertIndex[0], mapping, numEdges);
+
+		if(mapping[nIndex].oldEdge[0] == -1 && mapping[nIndex].oldEdge[1] == -1)
+		{
+			mapping[nIndex].oldEdge[0] = vertIndex[2];
+			mapping[nIndex].oldEdge[1] = vertIndex[0];
+			mapping[nIndex].newEdge[0][0] = f*3 + 2;
+			mapping[nIndex].newEdge[0][1] = f*3 + 0;
+
+			++numMaps;
+		}
+		else
+		{
+			mapping[nIndex].newEdge[1][0] = f*3 + 2;
+			mapping[nIndex].newEdge[1][1] = f*3 + 0;
+
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][1]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][0]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][0]);
+
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][1]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[1][0]);
+			newPolygonGroup->SetIndex(nextIndex++, mapping[nIndex].newEdge[0][0]);
+
+			mapping[nIndex] = mapping[numMaps - 1];
+			Memset(&mapping[numMaps - 1], 0xFF, sizeof(mapping[numMaps - 1]));
+			--numMaps;
+		}
 	}
 
+	Logger::Debug("faces to path: %d", numMaps);
 
-	EdgeAdjacency newAdjacency;
-	newAdjacency.InitFromPolygonGroup(shadowPolygonGroup, oldPolygonGroup->GetIndexCount());
-	Vector<EdgeAdjacency::Edge> & edges = newAdjacency.GetEdges();
+	//EdgeAdjacency oldAdjacency;
+	//oldAdjacency.InitFromPolygonGroup(oldPolygonGroup, oldPolygonGroup->GetIndexCount());
+	//int32 sharedEdgesCount = oldAdjacency.GetEdgesWithTwoTrianglesCount();
 
-	//copy old coord/normal data
-	//int32 oldVertexCount = oldPolygonGroup->GetVertexCount();
-	//for(int32 i = 0; i < oldVertexCount; ++i)
-	//{
-	//	Vector3 coord;
-	//	oldPolygonGroup->GetCoord(i, coord);
-	//	shadowPolygonGroup->SetCoord(i, coord);
+	//shadowPolygonGroup = new PolygonGroup(GetScene());
+	//shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldPolygonGroup->GetIndexCount() + sharedEdgesCount*2*2,//*2 - two triangles per edge, *2 - 2 vertices per triangle
+	//	oldPolygonGroup->GetIndexCount() + sharedEdgesCount*2*3);//*2 - two triangles per edge, *3 - 3 indeces per triangle
 
-	//	Vector3 normal;
-	//	oldPolygonGroup->GetNormal(i, normal);
-	//	shadowPolygonGroup->SetNormal(i, normal);
-	//}
+	////copy old index data
+	//int32 oldIndexCount = oldPolygonGroup->GetIndexCount();
+	////for(int32 i = 0; i < oldIndexCount; ++i)
+	////{
+	////	int32 index;
+	////	oldPolygonGroup->GetIndex(i, index);
+	////	shadowPolygonGroup->SetIndex(i, index);
+	////}
 
-
-
+	//int32 i0, i1, i2;
+	//Vector3 p0, p1, p2;
 	//for(int32 i = 0; i < oldIndexCount; i += 3)
 	//{
-	//	Vector3 p1;// = vertices[indices[i+0]].position;
-	//	Vector3 p2;// = vertices[indices[i+1]].position;
-	//	Vector3 p3;// = vertices[indices[i+2]].position;
-	//	int32 i1, i2, i3;
-	//	shadowPolygonGroup->GetIndex(i+0, i1);
-	//	shadowPolygonGroup->GetIndex(i+1, i2);
-	//	shadowPolygonGroup->GetIndex(i+2, i3);
-	//	shadowPolygonGroup->GetCoord(i1, p1);
-	//	shadowPolygonGroup->GetCoord(i2, p2);
-	//	shadowPolygonGroup->GetCoord(i3, p3);
+	//	oldPolygonGroup->GetIndex(i+0, i0);
+	//	oldPolygonGroup->GetIndex(i+1, i1);
+	//	oldPolygonGroup->GetIndex(i+2, i2);
+	//	oldPolygonGroup->GetCoord(i0, p0);
+	//	oldPolygonGroup->GetCoord(i1, p1);
+	//	oldPolygonGroup->GetCoord(i2, p2);
 
-	//	Vector3 v1 = p2 - p1;
-	//	Vector3 v2 = p3 - p1;
-	//	Vector3 normal = v1.CrossProduct(v2);
+	//	Vector3 v0 = p1 - p0;
+	//	Vector3 v1 = p2 - p0;
+	//	Vector3 normal = v0.CrossProduct(v1);
 	//	normal.Normalize();
 
-	//	shadowPolygonGroup->SetNormal(i1, normal);
-	//	shadowPolygonGroup->SetNormal(i2, normal);
-	//	shadowPolygonGroup->SetNormal(i3, normal);
+	//	shadowPolygonGroup->SetIndex(i+0, i+0);
+	//	shadowPolygonGroup->SetIndex(i+1, i+1);
+	//	shadowPolygonGroup->SetIndex(i+2, i+2);
+	//	shadowPolygonGroup->SetCoord(i+0, p0);
+	//	shadowPolygonGroup->SetCoord(i+1, p1);
+	//	shadowPolygonGroup->SetCoord(i+2, p2);
+	//	shadowPolygonGroup->SetNormal(i+0, normal);
+	//	shadowPolygonGroup->SetNormal(i+1, normal);
+	//	shadowPolygonGroup->SetNormal(i+2, normal);
 	//}
 
-	Vector<EdgeAdjacency::Edge> nonShared;
-	//generate degenerate quads
-	newIndexCount = oldIndexCount;
-	newVertexCount = oldIndexCount;
-	int32 edgesCount = edges.size();
-	for(int32 i = 0; i < edgesCount; ++i)
-	{
-		const EdgeAdjacency::Edge & edge = edges[i];
-		if(edge.sharedTriangles.size() == 2)
-		{
-			//indeces
-			int32 i0[3];
-			i0[0] = edge.sharedTriangles[0].i0;
-			i0[1] = edge.sharedTriangles[0].i1;
-			i0[2] = edge.sharedTriangles[0].i2;
 
-			int32 i1[3];
-			i1[0] = edge.sharedTriangles[1].i0;
-			i1[1] = edge.sharedTriangles[1].i1;
-			i1[2] = edge.sharedTriangles[1].i2;
+	//EdgeAdjacency newAdjacency;
+	//newAdjacency.InitFromPolygonGroup(shadowPolygonGroup, oldPolygonGroup->GetIndexCount());
+	//Vector<EdgeAdjacency::Edge> & edges = newAdjacency.GetEdges();
 
-			//normals
-			Vector3 n0 = CalculateNormalForVertex(i0);
-			Vector3 n1 = CalculateNormalForVertex(i1);
+	////copy old coord/normal data
+	////int32 oldVertexCount = oldPolygonGroup->GetVertexCount();
+	////for(int32 i = 0; i < oldVertexCount; ++i)
+	////{
+	////	Vector3 coord;
+	////	oldPolygonGroup->GetCoord(i, coord);
+	////	shadowPolygonGroup->SetCoord(i, coord);
 
-			//triangles
-			int32 index0AtT0 = FindIndexInTriangleForPointInEdge(i0, 0, edge);
-			int32 newI0T0 = DuplicateVertexAndSetNormalAtIndex(n0, index0AtT0);
+	////	Vector3 normal;
+	////	oldPolygonGroup->GetNormal(i, normal);
+	////	shadowPolygonGroup->SetNormal(i, normal);
+	////}
 
-			int32 index1AtT0 = FindIndexInTriangleForPointInEdge(i0, 1, edge);
-			int32 newI1T0 = DuplicateVertexAndSetNormalAtIndex(n0, index1AtT0);
 
-			int32 index0AtT1 = FindIndexInTriangleForPointInEdge(i1, 0, edge);
-			int32 newI0T1 = DuplicateVertexAndSetNormalAtIndex(n1, index0AtT1);
 
-			int32 index1AtT1 = FindIndexInTriangleForPointInEdge(i1, 1, edge);
-			int32 newI1T1 = DuplicateVertexAndSetNormalAtIndex(n1, index1AtT1);
+	////for(int32 i = 0; i < oldIndexCount; i += 3)
+	////{
+	////	Vector3 p1;// = vertices[indices[i+0]].position;
+	////	Vector3 p2;// = vertices[indices[i+1]].position;
+	////	Vector3 p3;// = vertices[indices[i+2]].position;
+	////	int32 i1, i2, i3;
+	////	shadowPolygonGroup->GetIndex(i+0, i1);
+	////	shadowPolygonGroup->GetIndex(i+1, i2);
+	////	shadowPolygonGroup->GetIndex(i+2, i3);
+	////	shadowPolygonGroup->GetCoord(i1, p1);
+	////	shadowPolygonGroup->GetCoord(i2, p2);
+	////	shadowPolygonGroup->GetCoord(i3, p3);
 
-			//new triangles
-			shadowPolygonGroup->SetIndex(newIndexCount++, newI0T1);
-			shadowPolygonGroup->SetIndex(newIndexCount++, newI1T0);
-			shadowPolygonGroup->SetIndex(newIndexCount++, newI0T0);
+	////	Vector3 v1 = p2 - p1;
+	////	Vector3 v2 = p3 - p1;
+	////	Vector3 normal = v1.CrossProduct(v2);
+	////	normal.Normalize();
 
-			shadowPolygonGroup->SetIndex(newIndexCount++, newI1T1);
-			shadowPolygonGroup->SetIndex(newIndexCount++, newI1T0);
-			shadowPolygonGroup->SetIndex(newIndexCount++, newI0T1);
-		}
-		else
-		{
-			nonShared.push_back(edge);
-		}
-	}
+	////	shadowPolygonGroup->SetNormal(i1, normal);
+	////	shadowPolygonGroup->SetNormal(i2, normal);
+	////	shadowPolygonGroup->SetNormal(i3, normal);
+	////}
 
-	int i = 0;
+	//Vector<EdgeAdjacency::Edge> nonShared;
+	////generate degenerate quads
+	//newIndexCount = oldIndexCount;
+	//newVertexCount = oldIndexCount;
+	//int32 edgesCount = edges.size();
+	//for(int32 i = 0; i < edgesCount; ++i)
+	//{
+	//	const EdgeAdjacency::Edge & edge = edges[i];
+	//	if(edge.sharedTriangles.size() == 2)
+	//	{
+	//		//indeces
+	//		int32 i0[3];
+	//		i0[0] = edge.sharedTriangles[0].i0;
+	//		i0[1] = edge.sharedTriangles[0].i1;
+	//		i0[2] = edge.sharedTriangles[0].i2;
+
+	//		int32 i1[3];
+	//		i1[0] = edge.sharedTriangles[1].i0;
+	//		i1[1] = edge.sharedTriangles[1].i1;
+	//		i1[2] = edge.sharedTriangles[1].i2;
+
+	//		//normals
+	//		Vector3 n0 = CalculateNormalForVertex(i0);
+	//		Vector3 n1 = CalculateNormalForVertex(i1);
+
+	//		//triangles
+	//		int32 index0AtT0 = FindIndexInTriangleForPointInEdge(i0, 0, edge);
+	//		int32 newI0T0 = DuplicateVertexAndSetNormalAtIndex(n0, index0AtT0);
+
+	//		int32 index1AtT0 = FindIndexInTriangleForPointInEdge(i0, 1, edge);
+	//		int32 newI1T0 = DuplicateVertexAndSetNormalAtIndex(n0, index1AtT0);
+
+	//		int32 index0AtT1 = FindIndexInTriangleForPointInEdge(i1, 0, edge);
+	//		int32 newI0T1 = DuplicateVertexAndSetNormalAtIndex(n1, index0AtT1);
+
+	//		int32 index1AtT1 = FindIndexInTriangleForPointInEdge(i1, 1, edge);
+	//		int32 newI1T1 = DuplicateVertexAndSetNormalAtIndex(n1, index1AtT1);
+
+	//		//new triangles
+	//		shadowPolygonGroup->SetIndex(newIndexCount++, newI0T1);
+	//		shadowPolygonGroup->SetIndex(newIndexCount++, newI1T0);
+	//		shadowPolygonGroup->SetIndex(newIndexCount++, newI0T0);
+
+	//		shadowPolygonGroup->SetIndex(newIndexCount++, newI1T1);
+	//		shadowPolygonGroup->SetIndex(newIndexCount++, newI1T0);
+	//		shadowPolygonGroup->SetIndex(newIndexCount++, newI0T1);
+	//	}
+	//	else
+	//	{
+	//		nonShared.push_back(edge);
+	//	}
+	//}
+
+	//int i = 0;
 }
 
-int32 ShadowVolumeNode::DuplicateVertexAndSetNormalAtIndex(const Vector3 & normal, int32 index)
-{
-	Vector3 coord;
-	shadowPolygonGroup->GetCoord(index, coord);
-	shadowPolygonGroup->SetCoord(newVertexCount, coord);
 
-	shadowPolygonGroup->SetNormal(newVertexCount, normal);
-
-	newVertexCount++;
-
-	return newVertexCount-1;
-}
-
-Vector3 ShadowVolumeNode::CalculateNormalForVertex(int32 * originalTriangleVertices)
-{
-	Vector3 p1, p2, p3;
-	shadowPolygonGroup->GetCoord(originalTriangleVertices[0], p1);
-	shadowPolygonGroup->GetCoord(originalTriangleVertices[1], p2);
-	shadowPolygonGroup->GetCoord(originalTriangleVertices[2], p3);
-
-	Vector3 v1 = p2 - p1;
-	Vector3 v2 = p3 - p1;
-	Vector3 normal = v1.CrossProduct(v2);
-	normal.Normalize();
-
-	return normal;
-}
-
-int32 ShadowVolumeNode::FindIndexInTriangleForPointInEdge(int32 * triangleStartIndex, int32 pointInEdge, const EdgeAdjacency::Edge & edge)
-{
-	Vector3 coord = edge.points[pointInEdge];
-
-	Vector3 c0;
-	shadowPolygonGroup->GetCoord(triangleStartIndex[0], c0);
-	if(EdgeAdjacency::IsPointsEqual(c0, coord))
-	{
-		return triangleStartIndex[0];
-	}
-	else
-	{
-		Vector3 c1;
-		shadowPolygonGroup->GetCoord(triangleStartIndex[1], c1);
-		if(EdgeAdjacency::IsPointsEqual(c1, coord))
-		{
-			return triangleStartIndex[1];
-		}
-		else
-		{
-			Vector3 c2;
-			shadowPolygonGroup->GetCoord(triangleStartIndex[2], c2);
-			if(EdgeAdjacency::IsPointsEqual(c2, coord))
-			{
-				return triangleStartIndex[2];
-			}
-			else
-			{
-				DVASSERT(0);
-				return -1;
-			}
-		}
-	}
-}
+//int32 ShadowVolumeNode::DuplicateVertexAndSetNormalAtIndex(const Vector3 & normal, int32 index)
+//{
+//	Vector3 coord;
+//	shadowPolygonGroup->GetCoord(index, coord);
+//	shadowPolygonGroup->SetCoord(newVertexCount, coord);
+//
+//	shadowPolygonGroup->SetNormal(newVertexCount, normal);
+//
+//	newVertexCount++;
+//
+//	return newVertexCount-1;
+//}
+//
+//Vector3 ShadowVolumeNode::CalculateNormalForVertex(int32 * originalTriangleVertices)
+//{
+//	Vector3 p1, p2, p3;
+//	shadowPolygonGroup->GetCoord(originalTriangleVertices[0], p1);
+//	shadowPolygonGroup->GetCoord(originalTriangleVertices[1], p2);
+//	shadowPolygonGroup->GetCoord(originalTriangleVertices[2], p3);
+//
+//	Vector3 v1 = p2 - p1;
+//	Vector3 v2 = p3 - p1;
+//	Vector3 normal = v1.CrossProduct(v2);
+//	normal.Normalize();
+//
+//	return normal;
+//}
+//
+//int32 ShadowVolumeNode::FindIndexInTriangleForPointInEdge(int32 * triangleStartIndex, int32 pointInEdge, const EdgeAdjacency::Edge & edge)
+//{
+//	Vector3 coord = edge.points[pointInEdge];
+//
+//	Vector3 c0;
+//	shadowPolygonGroup->GetCoord(triangleStartIndex[0], c0);
+//	if(EdgeAdjacency::IsPointsEqual(c0, coord))
+//	{
+//		return triangleStartIndex[0];
+//	}
+//	else
+//	{
+//		Vector3 c1;
+//		shadowPolygonGroup->GetCoord(triangleStartIndex[1], c1);
+//		if(EdgeAdjacency::IsPointsEqual(c1, coord))
+//		{
+//			return triangleStartIndex[1];
+//		}
+//		else
+//		{
+//			Vector3 c2;
+//			shadowPolygonGroup->GetCoord(triangleStartIndex[2], c2);
+//			if(EdgeAdjacency::IsPointsEqual(c2, coord))
+//			{
+//				return triangleStartIndex[2];
+//			}
+//			else
+//			{
+//				DVASSERT(0);
+//				return -1;
+//			}
+//		}
+//	}
+//}
 
 
 
