@@ -199,16 +199,44 @@ int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length)
 	return 1;
 }
 
+#ifdef __DAVAENGINE_ANDROID__
+int AndroidToLower (int c)
+{
+    if('A' <= c && c <= 'Z')
+    {
+        return c - ('A' - 'a');
+    }
+    else
+    {
+        WideString str = L"АЯа";
+        if(str.at(0) <= c && c <= str.at(1))
+        {
+            return c - (str.at(0) - str.at(2));
+        }
+    }
+    
+    return c;
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+
     
 int32 CompareStrings(const String &str1, const String &str2)
 {
     String newStr1 = "";
     newStr1.resize(str1.length());
+#if defined (__DAVAENGINE_ANDROID__)
+    std::transform(str1.begin(), str1.end(), newStr1.begin(), AndroidToLower);
+#else 
     std::transform(str1.begin(), str1.end(), newStr1.begin(), ::tolower);
+#endif 
     
     String newStr2 = "";
     newStr2.resize(str2.length());
+#if defined (__DAVAENGINE_ANDROID__)
+    std::transform(str2.begin(), str2.end(), newStr2.begin(), AndroidToLower);
+#else 
     std::transform(str2.begin(), str2.end(), newStr2.begin(), ::tolower);
+#endif 
     
     if(newStr1 == newStr2)
     {

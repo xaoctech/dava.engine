@@ -148,11 +148,13 @@ private:
 template<class T>
 const String & ObjectFactory::GetName(T * t)
 {
+#if !defined(__DAVAENGINE_ANDROID__)    
     Map<String, String>::iterator it = nameMap.find(typeid(*t).name());
     if (it != nameMap.end())
     {
         return it->second;
     }
+#endif //#if !defined(__DAVAENGINE_ANDROID__)    
     return unregisteredClassName;
 }
 
