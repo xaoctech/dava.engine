@@ -12,9 +12,12 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
+#include "PropertyControlCreator.h"
 void SceneEditorScreenMain::LoadResources()
 {
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
+    new PropertyControlCreator();
+    
     ControlsFactory::CustomizeScreenBack(this);
 
     font = ControlsFactory::GetFontLight();
@@ -128,6 +131,8 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(landscapeEditor);
     
     ReleaseTopMenu();
+    
+    PropertyControlCreator::Instance()->Release();
 }
 
 

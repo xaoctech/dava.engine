@@ -5,11 +5,36 @@
 using namespace DAVA;
 
 class NodesPropertyControl;
-class PropertyControlCreator
+class PropertyControlCreator: public Singleton<PropertyControlCreator>
 {
+    enum ePropertyControlIDs
+    {
+        EPCID_LIGHT,
+        EPCID_CUBE,
+        EPCID_SPHERE,
+        EPCID_CAMERA,
+        EPCID_LANDSCAPE,
+        EPCID_MESH,
+        EPCID_NODE,
+        
+        EPCID_COUNT
+    };
+    
 public:
-	static NodesPropertyControl * CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties);
-	static NodesPropertyControl * CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties);
+	
+    PropertyControlCreator();
+    virtual ~PropertyControlCreator();
+    
+    NodesPropertyControl * CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties);
+	NodesPropertyControl * CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties);
+    
+private:
+    
+    NodesPropertyControl * CreateControlForNode(ePropertyControlIDs controlID, const Rect & rect, bool createNodeProperties);
+
+    
+    NodesPropertyControl *controls[EPCID_COUNT];
+    
 };
 
 #endif //__PROPERTY_CONTROL_CREATOR_H__
