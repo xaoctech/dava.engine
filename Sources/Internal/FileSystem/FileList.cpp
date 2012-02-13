@@ -221,7 +221,7 @@ bool FileList::IsNavigationDirectory(int32 index)
 
 void FileList::Sort()
 {
-    sort(fileList.begin(), fileList.end());
+    std::sort(fileList.begin(), fileList.end());
 }
     
     

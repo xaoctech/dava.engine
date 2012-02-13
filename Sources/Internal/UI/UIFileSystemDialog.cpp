@@ -302,28 +302,6 @@ void UIFileSystemDialog::SetExtensionFilter(const String & extensionFilter)
     SetExtensionFilter(newExtensionFilter);
 }
 
-#ifdef __DAVAENGINE_ANDROID__
-int AndroidToLower (int c)
-{
-    if('A' <= c && c <= 'Z')
-    {
-        return c - ('A' - 'a');
-    }
-    else
-    {
-        WideString str = L"АЯа";
-        if(str.at(0) <= c && c <= str.at(1))
-        {
-            return c - (str.at(0) - str.at(2));
-        }
-    }
-    
-    return c;
-}
-
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
-
 void UIFileSystemDialog::SetExtensionFilter(const Vector<String> &newExtensionFilter)
 {
     DVASSERT(!GetParent());
