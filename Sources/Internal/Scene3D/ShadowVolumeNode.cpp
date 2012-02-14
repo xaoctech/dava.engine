@@ -37,7 +37,8 @@ namespace DAVA
 
 REGISTER_CLASS(ShadowVolumeNode);
 
-DAVA::ShadowVolumeNode::ShadowVolumeNode()
+ShadowVolumeNode::ShadowVolumeNode()
+: shadowPolygonGroup(0)
 {
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
@@ -47,6 +48,7 @@ DAVA::ShadowVolumeNode::ShadowVolumeNode()
 DAVA::ShadowVolumeNode::~ShadowVolumeNode()
 {
 	SafeRelease(shader);
+	SafeRelease(shadowPolygonGroup);
 }
 
 void DAVA::ShadowVolumeNode::Draw()
@@ -62,10 +64,8 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 
 	Matrix4 projMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
 
-	PolygonGroup * group = shadowPolygonGroup;
-
 	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->SetRenderData(group->renderDataObject);
+	RenderManager::Instance()->SetRenderData(shadowPolygonGroup->renderDataObject);
 	RenderManager::Instance()->FlushState();
 
 	int32 uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
@@ -78,13 +78,13 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 		shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
 	}
 
-	if (group->renderDataObject->GetIndexBufferID() != 0)
+	if (shadowPolygonGroup->renderDataObject->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, shadowPolygonGroup->indexCount, EIF_16, 0);
 	}
 	else
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, shadowPolygonGroup->indexCount, EIF_16, shadowPolygonGroup->indexArray);
 	}
 
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
@@ -145,7 +145,7 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 		}
 	}
 
-	PolygonGroup * newPolygonGroup = new PolygonGroup(GetScene());
+	PolygonGroup * newPolygonGroup = new PolygonGroup();
 	newPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldIndexCount, oldIndexCount + numEdges*3);
 	int32 nextIndex = 0;
 
@@ -286,9 +286,163 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 		}
 	}
 
-	//Logger::Debug("faces to path: %d", numMaps);
+	int32 nextVertex = oldIndexCount;
 
-	shadowPolygonGroup = newPolygonGroup;
+	//patch holes
+	if(numMaps > 0)
+	{
+		PolygonGroup * patchPolygonGroup = new PolygonGroup();
+		// Make enough room in IB for the face and up to 3 quads for each patching face
+		patchPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, oldIndexCount+numMaps*3, nextIndex + numMaps*7*3);
+
+		Memcpy(patchPolygonGroup->meshData, newPolygonGroup->meshData, newPolygonGroup->GetVertexCount()*newPolygonGroup->vertexStride);
+		Memcpy(patchPolygonGroup->indexArray, newPolygonGroup->indexArray, newPolygonGroup->GetIndexCount()*sizeof(int16));
+
+		SafeRelease(newPolygonGroup);
+		newPolygonGroup = patchPolygonGroup;
+
+		// Now, we iterate through the edge mapping table and
+		// for each shared edge, we generate a quad.
+		// For each non-shared edge, we patch the opening
+		// with new faces.
+		
+		for(int32 i = 0; i < numMaps; ++i)
+		{
+			if(mapping[i].oldEdge[0] != -1 && mapping[i].oldEdge[1] != -1)
+			{
+				// If the 2nd new edge indexes is -1,
+				// this edge is a non-shared one.
+				// We patch the opening by creating new
+				// faces.
+				if(mapping[i].newEdge[1][0] == -1 || mapping[i].newEdge[1][1] == -1) // must have only one new edge
+				{
+					// Find another non-shared edge that
+					// shares a vertex with the current edge.
+					for(int32 i2 = i + 1; i2 < numMaps; ++i2)
+					{
+						if(mapping[i2].oldEdge[0] != -1 && mapping[i2].oldEdge[1] != -1      // must have a valid old edge
+							&&(mapping[i2].newEdge[1][0] == -1 || mapping[i2].newEdge[1][1] == -1))// must have only one new edge
+						{
+							int32 nVertShared = 0;
+							if(mapping[i2].oldEdge[0] == mapping[i].oldEdge[1])
+								++nVertShared;
+							if(mapping[i2].oldEdge[1] == mapping[i].oldEdge[0])
+								++nVertShared;
+
+							if(2 == nVertShared)
+							{
+								// These are the last two edges of this particular
+								// opening. Mark this edge as shared so that a degenerate
+								// quad can be created for it.
+
+								mapping[i2].newEdge[1][0] = mapping[i].newEdge[0][0];
+								mapping[i2].newEdge[1][1] = mapping[i].newEdge[0][1];
+								break;
+							}
+							else if(1 == nVertShared)
+							{
+								// nBefore and nAfter tell us which edge comes before the other.
+								int32 nBefore, nAfter;
+								if(mapping[i2].oldEdge[0] == mapping[i].oldEdge[1])
+								{
+									nBefore = i;
+									nAfter = i2;
+								}
+								else
+								{
+									nBefore = i2;
+									nAfter = i;
+								}
+
+								// Found such an edge. Now create a face along with two
+								// degenerate quads from these two edges.
+								Vector3 coord0, coord1, coord2;
+								newPolygonGroup->GetCoord(mapping[nAfter].newEdge[0][1], coord0);
+								newPolygonGroup->GetCoord(mapping[nBefore].newEdge[0][1], coord1);
+								newPolygonGroup->GetCoord(mapping[nBefore].newEdge[0][0], coord2);
+
+								newPolygonGroup->SetCoord(nextVertex+0, coord0);
+								newPolygonGroup->SetCoord(nextVertex+1, coord1);
+								newPolygonGroup->SetCoord(nextVertex+2, coord2);
+
+								// Recompute the normal
+								Vector3 v0 = coord1 - coord0;
+								Vector3 v1 = coord2 - coord0;
+								Vector3 normal = v0.CrossProduct(v1);
+								normal.Normalize();
+
+								newPolygonGroup->SetNormal(nextVertex+0, normal);
+								newPolygonGroup->SetNormal(nextVertex+1, normal);
+								newPolygonGroup->SetNormal(nextVertex+2, normal);
+
+								newPolygonGroup->SetIndex(nextIndex+0, nextVertex+0);
+								newPolygonGroup->SetIndex(nextIndex+1, nextVertex+1);
+								newPolygonGroup->SetIndex(nextIndex+2, nextVertex+2);
+
+								// 1st quad
+								newPolygonGroup->SetIndex(nextIndex+3, mapping[nBefore].newEdge[0][1]);
+								newPolygonGroup->SetIndex(nextIndex+4, mapping[nBefore].newEdge[0][0]);
+								newPolygonGroup->SetIndex(nextIndex+5, nextVertex + 1);
+
+								newPolygonGroup->SetIndex(nextIndex+6, nextVertex + 2);
+								newPolygonGroup->SetIndex(nextIndex+7, nextVertex + 1);
+								newPolygonGroup->SetIndex(nextIndex+8, mapping[nBefore].newEdge[0][0]);
+
+								// 2nd quad
+								newPolygonGroup->SetIndex(nextIndex+9, mapping[nAfter].newEdge[0][1]);
+								newPolygonGroup->SetIndex(nextIndex+10, mapping[nAfter].newEdge[0][0]);
+								newPolygonGroup->SetIndex(nextIndex+11, nextVertex);
+
+								newPolygonGroup->SetIndex(nextIndex+12, nextVertex + 1);
+								newPolygonGroup->SetIndex(nextIndex+13,  nextVertex);
+								newPolygonGroup->SetIndex(nextIndex+14, mapping[nAfter].newEdge[0][0]);
+
+								// Modify mapping entry i2 to reflect the third edge
+								// of the newly added face.
+								if(mapping[i2].oldEdge[0] == mapping[i].oldEdge[1])
+								{
+									mapping[i2].oldEdge[0] = mapping[i].oldEdge[0];
+								}
+								else
+								{
+									mapping[i2].oldEdge[1] = mapping[i].oldEdge[1];
+								}
+								mapping[i2].newEdge[0][0] = nextVertex + 2;
+								mapping[i2].newEdge[0][1] = nextVertex;
+
+								// Update next vertex/index positions
+								nextVertex += 3;
+								nextIndex += 15;
+
+								break;
+							}
+						}
+					}
+				}
+				else
+				{
+					// This is a shared edge.  Create the degenerate quad.
+					// First triangle
+					newPolygonGroup->SetIndex(nextIndex++, mapping[i].newEdge[0][1]);
+					newPolygonGroup->SetIndex(nextIndex++, mapping[i].newEdge[0][0]);
+					newPolygonGroup->SetIndex(nextIndex++, mapping[i].newEdge[1][0]);
+
+					// Second triangle
+					newPolygonGroup->SetIndex(nextIndex++, mapping[i].newEdge[1][1]);
+					newPolygonGroup->SetIndex(nextIndex++,  mapping[i].newEdge[1][0]);
+					newPolygonGroup->SetIndex(nextIndex++, mapping[i].newEdge[0][0]);
+				}
+			}
+		}
+	}
+
+	SafeRelease(shadowPolygonGroup);
+	shadowPolygonGroup = new PolygonGroup(GetScene());
+	shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, nextVertex, nextIndex);
+	Memcpy(shadowPolygonGroup->meshData, newPolygonGroup->meshData, nextVertex*newPolygonGroup->vertexStride);
+	Memcpy(shadowPolygonGroup->indexArray, newPolygonGroup->indexArray, nextIndex*sizeof(int16));
+
+	SafeRelease(newPolygonGroup);
 }
 
 
