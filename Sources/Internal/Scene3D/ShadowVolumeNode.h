@@ -37,7 +37,7 @@ namespace DAVA
 
 class PolygonGroup;
 
-class ShadowVolumeNode : public MeshInstanceNode
+class ShadowVolumeNode : public SceneNode
 {
 public:
 	ShadowVolumeNode();
@@ -48,6 +48,10 @@ public:
 	void DrawShadow();
 
 	void CopyGeometryFrom(MeshInstanceNode * meshInstance);
+
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
 private:
 	Shader * shader;
