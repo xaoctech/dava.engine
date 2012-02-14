@@ -72,9 +72,23 @@ SceneNode::~SceneNode()
 
 void SceneNode::SetScene(Scene * _scene)
 {
-    DVASSERT(scene == 0);
+    // Сheck 
+    if (scene)scene->UnregisterNode(this);
     scene = _scene;
+    if (scene)scene->RegisterNode(this);
+    
+    const std::vector<SceneNode*>::iterator & childrenEnd = children.end();
+	for (std::vector<SceneNode*>::iterator t = children.begin(); t != childrenEnd; ++t)
+	{
+        (*t)->SetScene(_scene);
+    }
 }
+    
+Scene * SceneNode::GetScene()
+{
+    return scene;
+}
+
 
 void SceneNode::SetParent(SceneNode * node)
 {
@@ -88,6 +102,7 @@ void SceneNode::AddNode(SceneNode * node)
         node->Retain();
         children.push_back(node);
         node->SetParent(this);
+        node->SetScene(GetScene());
     }
 }
     
@@ -128,6 +143,7 @@ void SceneNode::RemoveNode(SceneNode * node)
 			children.erase(t);
             if (node)
             {
+                node->SetScene(0);
                 node->SetParent(0);
                 node->Release();
             }

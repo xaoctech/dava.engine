@@ -50,8 +50,6 @@ public:
 		TYPE_COUNT
     };
     
-    
-public:
     LightNode(Scene * _scene = 0);
     virtual ~LightNode();
     
@@ -63,9 +61,8 @@ public:
     eType GetType() const;
     const Color & GetColor() const;    
     
-    const Vector3 & GetLightPosition() const;
-    const Vector3 & GetLightDirection() const;
-    
+    const Vector3 & GetPosition() const;
+    const Vector3 & GetDirection() const;
     
     virtual void Update(float32 timeElapsed);
     virtual void Draw();
@@ -74,8 +71,8 @@ public:
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
 protected:
-    Vector3 lightPosition;
-    Vector3 lightDirection;
+    Vector3 position;
+    Vector3 direction;
     eType type;
     Color color;
 };

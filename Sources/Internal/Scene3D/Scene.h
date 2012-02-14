@@ -81,7 +81,17 @@ public:
 	Scene();
 	~Scene();
 	
-	void		ClearScene();
+    /**
+        \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
+     */
+    virtual void    RegisterNode(SceneNode * node);
+    virtual void    UnregisterNode(SceneNode * node);
+    
+    /**
+        \brief Overloaded GetScene returns this, instead of normal functionality.
+     */
+    virtual Scene * GetScene();
+
     
 //  DataNode * GetMaterials();
 //	Material * GetMaterial(int32 index);
@@ -193,6 +203,7 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
+    Set<LightNode*> & GetLights();
     LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
     
 private:	
@@ -221,6 +232,7 @@ private:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
+    Set<LightNode*> lights;
 
     friend class SceneNode;
 };

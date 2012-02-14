@@ -154,7 +154,7 @@ public:
     /*
         Go through all vertices and optimize it, remove redundant vertices. 
      */ 
-    void    OptimizeVertices();
+    void    OptimizeVertices(float32 eplison = 1e-6f);
     
     /*
         Use greedy algorithm to convert mesh from triangle lists to triangle strips
