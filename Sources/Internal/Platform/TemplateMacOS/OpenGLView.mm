@@ -60,6 +60,7 @@ extern void FrameworkMain(int argc, char *argv[]);
         NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay),//24,
 #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFADepthSize, 16,
+        NSOpenGLPFAStencilSize, 8,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
         0
