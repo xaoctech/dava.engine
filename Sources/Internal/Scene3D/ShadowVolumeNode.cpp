@@ -29,6 +29,7 @@
 #include "Render/RenderManager.h"
 #include "Render/3D/StaticMesh.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/SceneFileV2.h"
 
 
 
@@ -445,6 +446,26 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 	SafeRelease(newPolygonGroup);
 }
 
+void ShadowVolumeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+{
+	SceneNode::Save(archive, sceneFileV2);
+
+	archive->SetByteArrayAsType("pg", (uint64)shadowPolygonGroup);
+}
+
+void ShadowVolumeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+{
+	SceneNode::Load(archive, sceneFileV2);
+
+	uint64 ptr = archive->GetByteArrayAsType("pg", (uint64)0);
+	shadowPolygonGroup = dynamic_cast<PolygonGroup*>(sceneFileV2->GetNodeByPointer(ptr));
+	SafeRetain(shadowPolygonGroup);
+}
+
+void ShadowVolumeNode::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+	dataNodes.insert(shadowPolygonGroup);
+}
 
 
 };

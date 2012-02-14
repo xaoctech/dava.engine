@@ -86,7 +86,7 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
-    for (int32 idx = 0; idx < polygroups.size(); ++idx)
+    for (int32 idx = 0; idx < (int32)polygroups.size(); ++idx)
     {
         SafeRelease(polygroups[idx]);
     }
@@ -467,7 +467,7 @@ void MeshInstanceNode::CreateDynamicShadowNode()
 	shadowVolume->CopyGeometryFrom(this);
 
 	AddNode(shadowVolume);
-	SafeRelease(shadowVolume);
+	shadowVolume->Release();
 }
 
 void MeshInstanceNode::DeleteDynamicShadowNode()
