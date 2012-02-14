@@ -53,6 +53,7 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
+	,	shadowRect(0)
 {   
 }
 
@@ -80,6 +81,8 @@ Scene::~Scene()
         SafeRelease(it->second);
     }
     rootNodes.clear();
+
+	SafeRelease(shadowRect);
 }
 
 //int32 Scene::GetMaterialCount()
@@ -377,6 +380,11 @@ void Scene::Draw()
 
 	if(shadowVolumes.size() > 0)
 	{
+		if(!shadowRect)
+		{
+			shadowRect = ShadowRect::Create();
+		}
+
 		//2nd pass
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
@@ -416,7 +424,7 @@ void Scene::Draw()
 		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		ShadowRect::Instance()->Draw();
+		shadowRect->Draw();
 
 		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	}

@@ -55,6 +55,7 @@ class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
 class LightNode;
+class ShadowRect;
 	
 /** 
     \ingroup scene3d
@@ -221,6 +222,7 @@ private:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
+	ShadowRect * shadowRect;
 
     friend class SceneNode;
 };
