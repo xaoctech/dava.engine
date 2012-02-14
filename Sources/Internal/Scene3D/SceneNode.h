@@ -55,8 +55,19 @@ public:
 	SceneNode(Scene * scene = 0);
 	virtual ~SceneNode();
 	
-    
+    /**
+        \brief Function to set scene for node and it's children. 
+        Function goes recursively and set scene for this node, and each child. 
+        \param[in] _scene pointer to scene we want to set as holder for this node. 
+     */
     virtual void SetScene(Scene * _scene);
+    /**
+        \brief Function to return scene of this node. This is virtual function. For SceneNode's function returns it's scene value. 
+        In Scene class function is overloaded and returns self. It required to avoid dynamic casts to find a scene. 
+        \returns pointer to the scene that holds this node. 
+     */
+    virtual Scene * GetScene();
+
     
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
@@ -67,7 +78,7 @@ public:
 	virtual SceneNode * GetChild(int32 index);
 	virtual int32   GetChildrenCount();
 	virtual void	RemoveAllChildren();
-    
+        
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);
     
     /**
@@ -204,9 +215,7 @@ public:
         \returns flags of this specific scene node
      */
     uint32 GetDebugFlags() const;
-    
-    inline Scene *GetScene() const;
-	
+    	
     void SetSolid(bool isSolid);
     bool GetSolid();
     
@@ -412,11 +421,6 @@ inline void SceneNode::SetTag(int32 _tag)
 inline uint32 SceneNode::GetDebugFlags() const
 {
     return debugFlags;
-}
-    
-inline Scene *SceneNode::GetScene() const
-{
-    return scene;
 }
     
 template<template <typename> class Container, class T>

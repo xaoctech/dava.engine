@@ -32,13 +32,40 @@
 #include "Render/Texture.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/StringFormat.h"
+#include "Render/Shader.h"
+#include "Render/3D/PolygonGroup.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
-#include "Render/Shader.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Scene3D/LightNode.h"
 
 namespace DAVA 
 {
+    
+    
+InstanceMaterialState::InstanceMaterialState()
+{
+    for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
+        lightNodes[k] = 0;
+}
+
+InstanceMaterialState::~InstanceMaterialState()
+{
+    for (int32 k = 0; k < LIGHT_NODE_MAX_COUNT; ++k)
+        SafeRelease(lightNodes[k]);
+}
+
+void InstanceMaterialState::SetLight(int32 lightIndex, LightNode * lightNode)
+{ 
+    SafeRelease(lightNodes[lightIndex]);
+    lightNodes[lightIndex] = SafeRetain(lightNode); 
+}
+
+LightNode * InstanceMaterialState::GetLight(int32 lightIndex) 
+{ 
+    return lightNodes[lightIndex]; 
+}
+
     
 REGISTER_CLASS(Material);
     
@@ -262,8 +289,10 @@ bool Material::GetTwoSided()
     return isTwoSided;
 }
 
-void Material::Bind()
+void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
 {
+	RenderManager::Instance()->SetRenderData(group->renderDataObject);
+
     RenderManager::Instance()->SetShader(shader);
         
     if (textures[Material::TEXTURE_DIFFUSE])
@@ -294,17 +323,33 @@ void Material::Bind()
         shader->SetUniformValue(uniformTexture1, 1);
         
     }
-    if (uniformLightPosition0 != -1)
+    
+
+    if (instanceMaterialState)
     {
-        if (scene->GetCurrentCamera())
+        Camera * camera = scene->GetCurrentCamera();
+        LightNode * lightNode0 = instanceMaterialState->GetLight(0);
+        if (uniformLightPosition0 != -1 && lightNode0 && camera)
         {
-            Vector3 lightPosition0(-50.0f, 0.0f, 0.0f);
-            const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
-            lightPosition0 = lightPosition0 * matrix;
+            const Matrix4 & matrix = camera->GetMatrix();
+            Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
             
-            shader->SetUniformValue(uniformLightPosition0, lightPosition0); 
+            shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace); 
         }
     }
+    
+    // TODO: rethink this code
+    if (group->renderDataObject->GetIndexBufferID() != 0)
+	{
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+	}else
+	{
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+	}
+    
+	RenderManager::Instance()->SetTexture(0, 1); 
+	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+
 }
 
 

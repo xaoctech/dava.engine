@@ -49,8 +49,6 @@ public:
     virtual int32 Release();
 	
     virtual void AddNode(DataNode * node);
-
-	virtual void DrawPolygonGroup(int32 index, Material * material);
 	
 	uint32			GetPolygonGroupCount();
 	PolygonGroup *	GetPolygonGroup(uint32 index);

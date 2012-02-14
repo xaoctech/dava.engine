@@ -279,7 +279,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     {
         // TODO: Check do we need to releae root node here
         _scene->AddRootNode(rootNode, rootNodePathName);
-    }else
+    }
+    else
     {
         SafeRelease(rootNode);
     }
