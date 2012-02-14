@@ -148,7 +148,8 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
             break;
     }
 
-	propertyList = PropertyControlCreator::CreateControlForNode(sceneNode, propertyRect, true);
+	propertyList = PropertyControlCreator::Instance()->CreateControlForNode(sceneNode, propertyRect, true);
+    SafeRetain(propertyList);
 	AddControl(propertyList);
 
 	SetScene(editorScene);
