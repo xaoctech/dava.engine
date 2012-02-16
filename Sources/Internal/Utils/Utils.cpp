@@ -78,7 +78,7 @@ bool IsEqual(const WideString& s1, const WideString& s2)
 	return (*p1 == *p2);
 }
 
-
+#ifdef __DAVAENGINE_OPENGL__
 int32 lastBindedTexture = 0;
 int32 GetSavedTextureID()
 {
@@ -155,7 +155,7 @@ void BindFBO(int32 fbo)
 	}
 }
 
-
+#endif //
 
 void Split(const String & inputString, const String & delims, Vector<String> & tokens)
 {
