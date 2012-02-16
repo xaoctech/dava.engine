@@ -44,12 +44,13 @@ namespace DAVA
 //const char * FilepathInDocuments(const char * relativePathname);
 //const char * FilepathInDocuments(const String & relativePathname);
 
+#ifdef __DAVAENGINE_OPENGL__
 int32 GetSavedTextureID();
 void BindTexture(int32 tId);
 
 int32 GetSavedFBO();
 void BindFBO(int32 fbo);
-
+#endif
 
 int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length);
 
