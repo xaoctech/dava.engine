@@ -40,7 +40,7 @@ class PolygonGroup;
 class ShadowVolumeNode : public SceneNode
 {
 public:
-	ShadowVolumeNode();
+	ShadowVolumeNode(Scene * scene = 0);
 	virtual ~ShadowVolumeNode();
 
 	virtual void Draw();
@@ -52,6 +52,8 @@ public:
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
 private:
 	Shader * shader;
