@@ -38,9 +38,10 @@ namespace DAVA
 
 REGISTER_CLASS(ShadowVolumeNode);
 
-ShadowVolumeNode::ShadowVolumeNode()
+ShadowVolumeNode::ShadowVolumeNode(Scene * _scene)
 : shadowPolygonGroup(0)
 {
+	scene = _scene;
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
 	shader->Recompile();
@@ -465,6 +466,22 @@ void ShadowVolumeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 void ShadowVolumeNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
 	dataNodes.insert(shadowPolygonGroup);
+}
+
+SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		dstNode = new ShadowVolumeNode(scene);
+	}
+
+	SceneNode::Clone(dstNode);
+	ShadowVolumeNode *nd = (ShadowVolumeNode *)dstNode;
+
+	nd->shadowPolygonGroup = shadowPolygonGroup;
+	nd->shadowPolygonGroup->Retain();
+
+	return dstNode;
 }
 
 

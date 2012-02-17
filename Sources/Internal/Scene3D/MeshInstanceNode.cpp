@@ -476,6 +476,20 @@ void MeshInstanceNode::DeleteDynamicShadowNode()
 	RemoveNode(shadowVolume);
 }
 
+void MeshInstanceNode::ConvertToShadowVolume()
+{
+	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();
+	shadowVolume->SetScene(GetScene());
+	shadowVolume->SetName("dynamicshadow.shadowvolume");
+
+	shadowVolume->CopyGeometryFrom(this);
+
+	GetParent()->AddNode(shadowVolume);
+	shadowVolume->Release();
+
+	//Release();
+}
+
 void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
 {
 //    const List<LodData>::iterator & end = lodLayers.end();
@@ -540,6 +554,7 @@ void MeshInstanceNode::RegisterNearestLight(LightNode * node)
 {
     
 }
+
 
 //String MeshInstanceNode::GetDebugDescription()
 //{

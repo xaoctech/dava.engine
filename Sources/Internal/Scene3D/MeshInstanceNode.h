@@ -125,6 +125,7 @@ public:
 
 	void CreateDynamicShadowNode();
 	void DeleteDynamicShadowNode();
+	void ConvertToShadowVolume();
     
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
