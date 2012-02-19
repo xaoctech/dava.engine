@@ -54,10 +54,22 @@ UIJoypad::~UIJoypad()
 
 const Vector2 &UIJoypad::GetDigitalPosition()
 {
-	if(needRecalcDigital)
+//	if(needRecalcDigital)
+//	{
+//		RecalcDigitalPosition();
+//	}
+	if(needRecalcAnalog)
 	{
-		RecalcDigitalPosition();
+		RecalcAnalogPosition();
 	}
+	
+	float32 xSign = analogVector.x >= 0.0f ? 1.0f : -1.0f;
+	float32 ySign = analogVector.y >= 0.0f ? 1.0f : -1.0f;
+	
+	digitalVector.x = 0.0f + (int32)(analogVector.x + xSign * 0.5f);
+	digitalVector.y = 0.0f + (int32)(analogVector.y + ySign * 0.5f);	
+	
+	Logger::Debug("%f %f", digitalVector.x, digitalVector.y);
 	return digitalVector;
 }
 const Vector2 &UIJoypad::GetAnalogPosition()
