@@ -44,12 +44,13 @@ namespace DAVA
 //const char * FilepathInDocuments(const char * relativePathname);
 //const char * FilepathInDocuments(const String & relativePathname);
 
+#ifdef __DAVAENGINE_OPENGL__
 int32 GetSavedTextureID();
 void BindTexture(int32 tId);
 
 int32 GetSavedFBO();
 void BindFBO(int32 fbo);
-
+#endif
 
 int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length);
 
@@ -74,6 +75,11 @@ void Split(const String & inputString, const String & delims, Vector<String> & t
 
 void ReplaceBundleName(const String &newBundlePath);
 	
+#ifdef __DAVAENGINE_ANDROID__
+    int AndroidToLower (int c);
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
+    
 /**
  \brief Function to compare strings without letter case
  \param[in] ext1 - first string 

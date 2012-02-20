@@ -34,6 +34,7 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     t->SetText(LocalizedString(L"createproperty.type"));
     t->SetFont(ControlsFactory::GetFontLight());
     AddControl(t);
+    SafeRelease(t);
     
     typeCombo = new ComboBox(controlRect, NULL, types);
     AddControl(typeCombo);
@@ -45,6 +46,7 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     t->SetText(LocalizedString(L"createproperty.name"));
     t->SetFont(ControlsFactory::GetFontLight());
     AddControl(t);
+    SafeRelease(t);
     
     nameField = new UITextField(controlRect);
     ControlsFactory::CustomizeEditablePropertyCell(nameField);
