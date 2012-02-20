@@ -15,6 +15,8 @@ public:
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
+
+	void OnConvertToShadowVolume(BaseObject * object, void * userData, void * callerData);
     
 protected:
 

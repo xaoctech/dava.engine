@@ -100,7 +100,7 @@ public:
 	inline int GetTagId();
 	inline void SetTimeMultiplier(float32 m);
 	inline float32 GetTimeMultiplier();
-	
+	inline AnimatedObject * GetOwner();
 	
 protected:
 	int		state;
@@ -150,6 +150,11 @@ inline float32 Animation::GetTimeMultiplier()
     return timeMultiplier;
 }
 
+inline AnimatedObject * Animation::GetOwner()
+{
+    return owner;
+}
+    
 };
 
 

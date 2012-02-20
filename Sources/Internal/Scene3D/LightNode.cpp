@@ -31,6 +31,7 @@
 #include "Scene3D/LightNode.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
@@ -77,25 +78,35 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     
 void LightNode::Update(float32 timeElapsed)
 {
-    bool needUpdateTransformBox = false;
+    bool needUpdateVars = false;
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
-        needUpdateTransformBox = true;
+        needUpdateVars = true;
+        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
     }
     SceneNode::Update(timeElapsed);
     
-    if (needUpdateTransformBox)
+    if (needUpdateVars)
     {
-        lightPosition = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
+        position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
         Matrix3 rotationPart(GetWorldTransform());
-        lightDirection = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
-        lightDirection.Normalize();
+        direction = Vector3(0.0, -1.0f, 0.0f) * rotationPart;
+        direction.Normalize();
     }
 }
 
 LightNode::eType LightNode::GetType() const
 {
     return type;
+}
+const Vector3 & LightNode::GetPosition() const
+{
+    return position; 
+}
+
+const Vector3 & LightNode::GetDirection() const
+{
+    return direction;
 }
     
 const Color & LightNode::GetColor() const
@@ -137,7 +148,7 @@ void LightNode::Draw()
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
         
         RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f); 
-        RenderHelper::Instance()->DrawLine(lightPosition, lightPosition + lightDirection * 20);        
+        RenderHelper::Instance()->DrawLine(position, position + direction * 20);        
         
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);

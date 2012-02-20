@@ -543,32 +543,32 @@ void RenderManager::EndFrame()
 
 void RenderManager::SetViewport(const Rect & rect)
 {
-	viewPort = rect;
-    PrepareRealMatrix();
-    
-	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
-	int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);
-	int32 width = (int32)(rect.dx * currentDrawScale.x);
-	int32 height = (int32)(rect.dy * currentDrawScale.y);    
-    
-    switch(renderOrientation)
-    {
-        case Core::SCREEN_ORIENTATION_PORTRAIT:
-        break;    
-		default:
-			Logger::Error("");
-			break;
-            
-    }  
-	D3DVIEWPORT9 vp;
-	vp.X      = x;
-	vp.Y      = y;
-	vp.Width  = width;
-	vp.Height = height;
-	vp.MinZ   = 0.0f;
-	vp.MaxZ   = 1.0f;
+	//viewPort = rect;
+ //   PrepareRealMatrix();
+ //   
+	//int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
+	//int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);
+	//int32 width = (int32)(rect.dx * currentDrawScale.x);
+	//int32 height = (int32)(rect.dy * currentDrawScale.y);    
+ //   
+ //   switch(renderOrientation)
+ //   {
+ //       case Core::SCREEN_ORIENTATION_PORTRAIT:
+ //       break;    
+	//	default:
+	//		Logger::Error("");
+	//		break;
+ //           
+ //   }  
+	//D3DVIEWPORT9 vp;
+	//vp.X      = x;
+	//vp.Y      = y;
+	//vp.Width  = width;
+	//vp.Height = height;
+	//vp.MinZ   = 0.0f;
+	//vp.MaxZ   = 1.0f;
 
-	direct3DDevice->SetViewport(&vp);
+	//direct3DDevice->SetViewport(&vp);
 }
 
 
@@ -653,12 +653,12 @@ void RenderManager::EnableVertexArray(bool isEnabled)
 		oldVertexArrayEnabled = isEnabled;
 	}
 }
-void RenderManager::EnableTextureCoordArray(bool isEnabled)
+void RenderManager::EnableTextureCoordArray(bool isEnabled, int32 textureLevel)
 {
-	if((int32)isEnabled != oldTextureCoordArrayEnabled)
+	if(isEnabled != oldTextureCoordArrayEnabled[textureLevel])
 	{
-		buffers[BUFFER_TEXCOORD0].isEnabled = isEnabled;
-		oldTextureCoordArrayEnabled = isEnabled;
+		buffers[BUFFER_TEXCOORD0+textureLevel].isEnabled = isEnabled;
+		oldTextureCoordArrayEnabled[textureLevel] = isEnabled;
 	}
 }
 	
@@ -667,7 +667,7 @@ void RenderManager::EnableColorArray(bool isEnabled)
 	if((int32)isEnabled != oldColorArrayEnabled)
 	{
 		buffers[BUFFER_COLOR].isEnabled = isEnabled;
-		oldTextureCoordArrayEnabled = isEnabled;
+		oldTextureCoordArrayEnabled[BUFFER_TEXCOORD0] = isEnabled;
 		oldColorArrayEnabled = isEnabled;
 	}
 }	
@@ -1309,7 +1309,7 @@ void RenderManager::AttachRenderData(Shader * shader)
         }
         if (difference & EVF_TEXCOORD0)
         {
-            EnableTextureCoordArray(0 != (pointerArraysCurrentState & EVF_TEXCOORD0));
+            EnableTextureCoordArray(0 != (pointerArraysCurrentState & EVF_TEXCOORD0), 0);
         }
         pointerArraysRendererState = pointerArraysCurrentState;
         

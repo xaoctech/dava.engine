@@ -137,7 +137,11 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     AddControl(historyForwardButton);
     
 
-    textField = new UITextField(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)negativeButton->relativePosition.x - border*2, (float32)cellH));
+//    textField = new UITextField(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)negativeButton->relativePosition.x - border*2, (float32)cellH));
+    int32 textFieldOffset = historyForwardButton->relativePosition.x + historyForwardButton->size.x + border;
+    textField = new UITextField(Rect(textFieldOffset,
+                                     (float32)positiveButton->relativePosition.y, 
+                                     (float32)negativeButton->relativePosition.x - border - textFieldOffset, (float32)cellH));
     textField->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     textField->GetBackground()->SetColor(Color(0.25f, 0.25f, 0.25f, 0.25f));
     textField->SetFont(f);
@@ -301,28 +305,6 @@ void UIFileSystemDialog::SetExtensionFilter(const String & extensionFilter)
     Split(extensionFilter, ";", newExtensionFilter);
     SetExtensionFilter(newExtensionFilter);
 }
-
-#ifdef __DAVAENGINE_ANDROID__
-int AndroidToLower (int c)
-{
-    if('A' <= c && c <= 'Z')
-    {
-        return c - ('A' - 'a');
-    }
-    else
-    {
-        WideString str = L"АЯа";
-        if(str.at(0) <= c && c <= str.at(1))
-        {
-            return c - (str.at(0) - str.at(2));
-        }
-    }
-    
-    return c;
-}
-
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
 
 void UIFileSystemDialog::SetExtensionFilter(const Vector<String> &newExtensionFilter)
 {

@@ -1758,7 +1758,8 @@ void EditorBodyControl::RecreatePropertiesPanelForNode(SceneNode * node)
 	}
 	SafeRelease(nodesPropertyPanel);
 
-	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
+	nodesPropertyPanel = PropertyControlCreator::Instance()->CreateControlForNode(node, propertyPanelRect, false);
+    SafeRetain(nodesPropertyPanel);
 	nodesPropertyPanel->SetDelegate(this);
 	nodesPropertyPanel->SetWorkingScene(scene);
 }
@@ -1771,7 +1772,8 @@ void EditorBodyControl::RecreatePropertiesPanelForNode(DataNode * node)
 	}
 	SafeRelease(nodesPropertyPanel);
     
-	nodesPropertyPanel = PropertyControlCreator::CreateControlForNode(node, propertyPanelRect, false);
+	nodesPropertyPanel = PropertyControlCreator::Instance()->CreateControlForNode(node, propertyPanelRect, false);
+    SafeRetain(nodesPropertyPanel);
 	nodesPropertyPanel->SetDelegate(this);
 	nodesPropertyPanel->SetWorkingScene(scene);
 }

@@ -328,6 +328,36 @@ void PolygonGroup::DebugDraw()
     }
 }
 
+/*class VertexQuadTree
+{
+public:
+    VertexOctTree()
+    {
+        
+    }
+    
+    ~VertexOctTree()
+    {
+        
+    }
+    
+    struct Vertex
+    {
+        Vector3 position;
+        uint32  color;
+        Vector3 normal;
+        Vector2 texCoords[4];
+    };
+    
+    DynamicObjectCacheData<Vertex>
+};*/
+
+
+void PolygonGroup::OptimizeVertices(float32 eplison)
+{
+    
+};
+    
     
     
 };

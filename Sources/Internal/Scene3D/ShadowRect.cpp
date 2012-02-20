@@ -35,6 +35,23 @@
 namespace DAVA
 {
 
+ShadowRect * ShadowRect::instance = 0;
+
+
+ShadowRect * ShadowRect::Create()
+{
+	if(instance)
+	{
+		instance->Retain();
+	}
+	else
+	{
+		instance = new ShadowRect();
+	}
+
+	return instance;
+}
+
 ShadowRect::ShadowRect()
 {
 	rdo = new RenderDataObject();
@@ -59,6 +76,8 @@ ShadowRect::~ShadowRect()
 {
 	SafeRelease(shader);
 	SafeRelease(rdo);
+
+	instance = 0;
 }
 
 void ShadowRect::Draw()
