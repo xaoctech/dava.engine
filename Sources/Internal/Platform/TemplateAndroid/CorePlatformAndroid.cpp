@@ -191,9 +191,9 @@ namespace DAVA
             
             if (options)
             {
-                windowedMode.width = options->GetInt("width");
-                windowedMode.height = options->GetInt("height");
-                windowedMode.bpp = options->GetInt("bpp");
+                windowedMode.width = options->GetInt32("width");
+                windowedMode.height = options->GetInt32("height");
+                windowedMode.bpp = options->GetInt32("bpp");
             }
             
             Logger::Debug("[CoreAndroidPlatform::] w = %d, h = %d", windowedMode.width, windowedMode.height);

@@ -37,21 +37,26 @@ namespace DAVA
 class RenderDataObject;
 class RenderDataStream;
 class Scene;
-class ShadowRect : public StaticSingleton<ShadowRect>
+class ShadowRect : public BaseObject
 {
 public:
-	ShadowRect();
+	static ShadowRect * Create();
+
 	virtual ~ShadowRect();
 
 	void Draw();
 
 private:
+	ShadowRect();
+
 	RenderDataObject * rdo;
 	RenderDataStream * vertexStream;
 
 	Shader * shader;
 
 	float32 vertices[12];
+
+	static ShadowRect * instance;
 };
 
 };

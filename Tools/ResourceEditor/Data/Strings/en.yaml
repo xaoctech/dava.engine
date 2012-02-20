@@ -171,6 +171,11 @@ property.landscape.texture1: "Texture1/Detail:"
 property.landscape.texturebump: "Texture Bump:"
 property.landscape.texturemask: "Texture Mask:"
 
+#Dynamic lighting
+property.meshinstance.dynamicshadow: "Dynamic lighting"
+property.meshinstance.dynamicshadow.enable: "Cast shadow"
+
+
 #Settings Dialog
 settings.header: "Settings"
 settingsdialog.screenwidth: "Width:"

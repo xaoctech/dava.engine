@@ -37,10 +37,10 @@ namespace DAVA
 
 class PolygonGroup;
 
-class ShadowVolumeNode : public MeshInstanceNode
+class ShadowVolumeNode : public SceneNode
 {
 public:
-	ShadowVolumeNode();
+	ShadowVolumeNode(Scene * scene = 0);
 	virtual ~ShadowVolumeNode();
 
 	virtual void Draw();
@@ -49,18 +49,40 @@ public:
 
 	void CopyGeometryFrom(MeshInstanceNode * meshInstance);
 
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+
 private:
 	Shader * shader;
 
 
 	//shadow mesh generation
 	PolygonGroup * shadowPolygonGroup;
-	int32 newIndexCount;
-	int32 newVertexCount;
+	//int32 newIndexCount;
+	//int32 newVertexCount;
 
-	int32 FindIndexInTriangleForPointInEdge(int32 * triangleStartIndex, int32 pointInEdge, const EdgeAdjacency::Edge & edge);
-	int32 DuplicateVertexAndSetNormalAtIndex(const Vector3 & normal, int32 index);
-	Vector3 CalculateNormalForVertex(int32 * originalTriangleVertices);
+	//int32 FindIndexInTriangleForPointInEdge(int32 * triangleStartIndex, int32 pointInEdge, const EdgeAdjacency::Edge & edge);
+	//int32 DuplicateVertexAndSetNormalAtIndex(const Vector3 & normal, int32 index);
+	//Vector3 CalculateNormalForVertex(int32 * originalTriangleVertices);
+
+///
+	struct EdgeMapping
+	{
+		int32 oldEdge[2];
+		int32 newEdge[2][2];
+
+	public:
+		EdgeMapping()
+		{
+			Memset(oldEdge, -1, sizeof(oldEdge));
+			Memset(newEdge, -1, sizeof(newEdge));
+		}
+	};
+
+	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
 };
 
 }

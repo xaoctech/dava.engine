@@ -100,22 +100,23 @@ void EdgeAdjacency::CreateTriangle(int32 startingI)
 	FillEdge(edge2, i2, i0);
 	int32 edgeIndex2 = GetEdgeIndex(edge2);
 
-	Triangle triangle;
-	triangle.edgeIndices[0] = edgeIndex0;
-	triangle.edgeIndices[1] = edgeIndex1;
-	triangle.edgeIndices[2] = edgeIndex2;
-
-	int32 triangleIndex = triangles.size();
-	triangles.push_back(triangle);
-
 	TriangleData triangleData;
 	triangleData.i0 = i0;
 	triangleData.i1 = i1;
 	triangleData.i2 = i2;
 
-	edges[edgeIndex0].sharedTriangles.push_back(triangleData);
-	edges[edgeIndex1].sharedTriangles.push_back(triangleData);
-	edges[edgeIndex2].sharedTriangles.push_back(triangleData);
+	if(edges[edgeIndex0].sharedTriangles.size() < 2)
+	{
+		edges[edgeIndex0].sharedTriangles.push_back(triangleData);
+	}
+	if(edges[edgeIndex1].sharedTriangles.size() < 2)
+	{
+		edges[edgeIndex1].sharedTriangles.push_back(triangleData);
+	}
+	if(edges[edgeIndex2].sharedTriangles.size() < 2)
+	{
+		edges[edgeIndex2].sharedTriangles.push_back(triangleData);
+	}
 }
 
 void EdgeAdjacency::FillEdge(Edge & edge, int32 index0, int32 index1)
@@ -145,7 +146,7 @@ int32 EdgeAdjacency::GetEdgeIndex(Edge & edge)
 	return edgesCount;
 }
 
-const Vector<EdgeAdjacency::Edge> & EdgeAdjacency::GetEdges()
+Vector<EdgeAdjacency::Edge> & EdgeAdjacency::GetEdges()
 {
 	return edges;
 }
@@ -164,11 +165,6 @@ int32 EdgeAdjacency::GetEdgesWithTwoTrianglesCount()
 	}
 
 	return ret;
-}
-
-const EdgeAdjacency::Triangle & EdgeAdjacency::GetTriangle(int32 index)
-{
-	return triangles[index];
 }
 
 };

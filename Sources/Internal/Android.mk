@@ -28,7 +28,9 @@ LOCAL_SRC_FILES :=  \
                     Animation/LinearAnimation.cpp \
                     \
                     Base/BaseMath.cpp \
+                    Base/BaseObject.cpp \
                     Base/BaseObjectChecker.cpp \
+                    Base/Data.cpp \
                     Base/DynamicObjectCache.cpp \
                     Base/EventDispatcher.cpp \
                     Base/Message.cpp \
@@ -64,6 +66,8 @@ LOCAL_SRC_FILES :=  \
                     \
                     Input/Accelerometer.cpp \
                     Input/AccelerometerAndroid.cpp \
+                    Input/InputSystem.cpp \
+                    Input/KeyboardDevice.cpp \
                     \
                     Math/Neon/NeonMath.cpp \
                     \
@@ -102,26 +106,29 @@ LOCAL_SRC_FILES :=  \
                     Render/2D/TextBlock.cpp \
                     \
                     Render/3D/AnimatedMesh.cpp \
+                    Render/3D/EdgeAdjacency.cpp \
                     Render/3D/PolygonGroup.cpp \
                     Render/3D/StaticMesh.cpp \
                     \
                     Render/Effects/ColorOnlyEffect.cpp \
                     Render/Effects/MultiTextureEffect.cpp \
+                    Render/Effects/TextureMulColorAlphaTestEffect.cpp \
                     Render/Effects/TextureMulColorEffect.cpp \
                     \
                     Render/DynamicIndexBuffer.cpp \
                     Render/DynamicVertexBuffer.cpp \
                     Render/Image.cpp \
                     Render/LibPngHelpers.cpp \
+                    Render/Material.cpp \
                     Render/RenderBase.cpp \
                     Render/RenderDataObject.cpp \
                     Render/RenderEffect.cpp \
                     Render/RenderGrayscaleEffect.cpp \
                     Render/RenderHelper.cpp \
                     Render/RenderManager.cpp \
+                    Render/RenderManagerFactory.cpp \
                     Render/RenderManagerGL.cpp \
                     Render/RenderManagerGL20.cpp \
-                    Render/RenderManagerFactory.cpp \
                     Render/RenderResource.cpp \
                     Render/RenderStateBlock.cpp \
                     Render/Shader.cpp \
@@ -129,6 +136,7 @@ LOCAL_SRC_FILES :=  \
                     Render/StaticIndexBuffer.cpp \
                     Render/StaticVertexBuffer.cpp \
                     Render/Texture.cpp \
+                    Render/UberShader.cpp \
                     \
                     Scene2D/Box2DDebugDraw.cpp \
                     Scene2D/Box2DGameObject.cpp \
@@ -138,23 +146,35 @@ LOCAL_SRC_FILES :=  \
                     Scene2D/GameObject.cpp \
                     Scene2D/GameObjectAnimations.cpp \
                     Scene2D/GameObjectManager.cpp \
+                    Scene2D/TextGameObject.cpp \
                     \
+                    Scene3D/BillboardNode.cpp \
                     Scene3D/BoneNode.cpp \
                     Scene3D/Camera.cpp \
+                    Scene3D/CubeNode.cpp \
+                    Scene3D/DataNode.cpp \
                     Scene3D/Frustum.cpp \
                     Scene3D/LandscapeNode.cpp \
+                    Scene3D/LightNode.cpp \
+                    Scene3D/LodNode.cpp \
                     Scene3D/MeshInstanceNode.cpp \
                     Scene3D/PathManip.cpp \
+                    Scene3D/ProxyNode.cpp \
+                    Scene3D/QuadTree.cpp \
                     Scene3D/RotatingCubeNode.cpp \
                     Scene3D/Scene.cpp \
                     Scene3D/SceneAnimationMixer.cpp \
                     Scene3D/SceneFile.cpp \
+                    Scene3D/SceneFileV2.cpp \
+                    Scene3D/SceneManager.cpp \
                     Scene3D/SceneNode.cpp \
-                    Scene3D/SceneNode3d.cpp \
                     Scene3D/SceneNodeAnimation.cpp \
                     Scene3D/SceneNodeAnimationKey.cpp \
                     Scene3D/SceneNodeAnimationList.cpp \
+                    Scene3D/ShadowRect.cpp \
+                    Scene3D/ShadowVolumeNode.cpp \
                     Scene3D/SkeletonNode.cpp \
+                    Scene3D/SphereNode.cpp \
                     Scene3D/SpriteNode.cpp \
                     \
                     Sound/Sound.cpp \
@@ -167,8 +187,8 @@ LOCAL_SRC_FILES :=  \
                     Sound/SoundSystem.cpp \
                     Sound/SoundWVProvider.cpp \
                     \
-                    UI/UI3DView.cpp \
                     UI/ScrollHelper.cpp \
+                    UI/UI3DView.cpp \
                     UI/UIButton.cpp \
                     UI/UIControl.cpp \
                     UI/UIControlBackground.cpp \
@@ -202,7 +222,8 @@ LOCAL_SRC_FILES :=  \
                     Utils/Utils.cpp \
 
 # set build flags
-LOCAL_CFLAGS := -frtti -g -O0
+LOCAL_CFLAGS := -frtti -g -O0 -DGL_GLEXT_PROTOTYPES=1
+#LOCAL_CFLAGS := -DUSE_FILE32API 
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)

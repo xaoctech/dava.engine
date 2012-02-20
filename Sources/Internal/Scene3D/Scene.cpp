@@ -42,6 +42,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/ShadowRect.h"
+#include "Scene3D/LightNode.h"
 
 namespace DAVA 
 {
@@ -53,6 +54,7 @@ Scene::Scene()
     ,   currentCamera(0)
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
+	,	shadowRect(0)
 {   
 }
 
@@ -80,8 +82,30 @@ Scene::~Scene()
         SafeRelease(it->second);
     }
     rootNodes.clear();
+
+	SafeRelease(shadowRect);
 }
 
+void Scene::RegisterNode(SceneNode * node)
+{
+    LightNode * light = dynamic_cast<LightNode*>(node);
+    if (light)
+        lights.insert(light);
+}
+
+void Scene::UnregisterNode(SceneNode * node)
+{
+    LightNode * light = dynamic_cast<LightNode*>(node);
+    if (light)
+        lights.erase(light);
+        
+}
+
+Scene * Scene::GetScene()
+{
+    return this;
+}
+    
 //int32 Scene::GetMaterialCount()
 //{
 //    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
@@ -332,6 +356,9 @@ void Scene::SetupTestLighting()
 void Scene::Update(float timeElapsed)
 {
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
+    // lights 
+    flags &= ~SCENE_LIGHTS_MODIFIED;
     
 	int32 size = (int32)animations.size();
 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
@@ -377,11 +404,16 @@ void Scene::Draw()
 
 	if(shadowVolumes.size() > 0)
 	{
+		if(!shadowRect)
+		{
+			shadowRect = ShadowRect::Create();
+		}
+
 		//2nd pass
-		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-		//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		//RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(BLEND_ZERO, BLEND_ONE);
 
 		RenderManager::Instance()->ClearStencilBuffer(0);
 		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_STENCIL_TEST);
@@ -416,7 +448,7 @@ void Scene::Draw()
 		RenderManager::State()->SetStencilZFail(FACE_FRONT_AND_BACK, STENCILOP_KEEP);
 
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		//ShadowRect::Instance()->Draw();
+		shadowRect->Draw();
 
 		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	}
@@ -550,6 +582,11 @@ LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
             break;
     };
     return NULL;
+}
+
+Set<LightNode*> & Scene::GetLights()
+{
+    return lights;
 }
 
 /*void Scene::Save(KeyedArchive * archive)

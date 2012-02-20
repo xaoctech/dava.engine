@@ -607,7 +607,7 @@ void RenderManager::ClearWithColor(float32 r, float32 g, float32 b, float32 a)
 
 void RenderManager::ClearDepthBuffer(float32 depth)
 {
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glClearDepthf(depth));
 #else
     RENDER_VERIFY(glClearDepth(depth));
@@ -672,8 +672,11 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 {
 	if (renderTarget == NULL)
 	{
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__)
 		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, fboViewFramebuffer));
+#elif defined(__DAVAENGINE_ANDROID__)
+        BindFBO(fboViewFramebuffer);
+//        renderTarget->GetTexture()->renderTargetModified = true;
 #else //Non ES platforms
 		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
 #endif //PLATFORMS

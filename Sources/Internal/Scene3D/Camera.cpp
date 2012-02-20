@@ -366,7 +366,7 @@ const Vector3 & Camera::GetLeft() const
     
 const Matrix4 & Camera::GetMatrix() const 
 {
-    return cameraTransform;
+    return modelMatrix;
 }
 
 void Camera::RebuildCameraFromValues()

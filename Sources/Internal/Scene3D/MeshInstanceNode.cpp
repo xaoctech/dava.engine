@@ -31,6 +31,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/3D/StaticMesh.h"
+#include "Render/Material.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Utils/StringFormat.h"
@@ -81,16 +82,18 @@ Material * PolygonGroupWithMaterial::GetMaterial()
 MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 :	SceneNode(_scene)
 {
-	
+	materialState = new InstanceMaterialState();
 }
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
-    for (int32 idx = 0; idx < polygroups.size(); ++idx)
+    for (int32 idx = 0; idx < (int32)polygroups.size(); ++idx)
     {
         SafeRelease(polygroups[idx]);
     }
     polygroups.clear();
+    
+    SafeRelease(materialState);
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -109,11 +112,18 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
         needUpdateTransformBox = true;
+        UpdateLights();
+    }
+    else
+    {
+        //if (GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
+        UpdateLights();
     }
     SceneNode::Update(timeElapsed);
     
     if (needUpdateTransformBox)
         bbox.GetTransformedBox(worldTransform, transformedBox);
+
 }
     
 void MeshInstanceNode::Draw()
@@ -164,7 +174,7 @@ void MeshInstanceNode::Draw()
             polygroup->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
         }
         
-        polygroup->mesh->DrawPolygonGroup(polygroups[k]->polygroupIndex, polygroups[k]->material);
+        polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
     }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
@@ -470,13 +480,27 @@ void MeshInstanceNode::CreateDynamicShadowNode()
 	shadowVolume->CopyGeometryFrom(this);
 
 	AddNode(shadowVolume);
-	SafeRelease(shadowVolume);
+	shadowVolume->Release();
 }
 
 void MeshInstanceNode::DeleteDynamicShadowNode()
 {
 	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName("dynamicshadow.shadowvolume");
 	RemoveNode(shadowVolume);
+}
+
+void MeshInstanceNode::ConvertToShadowVolume()
+{
+	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();
+	shadowVolume->SetScene(GetScene());
+	shadowVolume->SetName("dynamicshadow.shadowvolume");
+
+	shadowVolume->CopyGeometryFrom(this);
+
+	GetParent()->AddNode(shadowVolume);
+	shadowVolume->Release();
+
+	//Release();
 }
 
 void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
@@ -539,10 +563,35 @@ void MeshInstanceNode::BakeTransforms()
     }
 }
     
+    
+void MeshInstanceNode::UpdateLights()
+{
+    Vector3 meshPosition = Vector3() * worldTransform;
+    float32 squareMinDistance = 10000000.0f;
+    LightNode * nearestLight = 0;
+    
+    Set<LightNode*> & lights = scene->GetLights();
+    const Set<LightNode*>::iterator & endIt = lights.end();
+    for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
+    {
+        LightNode * node = *it;
+        const Vector3 & lightPosition = node->GetPosition();
+        
+        float32 squareDistanceToLight = (meshPosition - lightPosition).SquareLength();
+        if (squareDistanceToLight < squareMinDistance)
+        {
+            squareMinDistance = squareDistanceToLight;
+            nearestLight = node;
+        }
+    }
+    RegisterNearestLight(nearestLight);
+}
+
 void MeshInstanceNode::RegisterNearestLight(LightNode * node)
 {
-    
+    materialState->SetLight(0, node);
 }
+
 
 //String MeshInstanceNode::GetDebugDescription()
 //{
