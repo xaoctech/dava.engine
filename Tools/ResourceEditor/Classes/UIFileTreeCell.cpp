@@ -15,29 +15,22 @@ namespace DAVA
 {
 UIFileTreeCell::UIFileTreeCell(const Rect &rect, const String &cellIdentifier)
 :	UIListCell(rect, cellIdentifier)
+    ,   text(NULL)
+    ,   openButton(NULL)
 {
-//	FTFont * fnt = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-//	fnt->SetColor(0, 0, 0, 1);
-//	fnt->SetSize(14);
-//	SetStateFont(STATE_NORMAL, fnt);
-//	SafeRelease(fnt);
-
-    ControlsFactory::CustomizeListCell(this, L"");
-    
-	
-	//Rect iconSize = Rect(0, 0, rect.dy, rect.dy);
-	//icon = new UIControl(rect);
-	//text = new UIStaticText(rect);
-	
-	
-	// icon = UIControl(, <#bool rectInAbsoluteCoordinates#>)
-	// 
-	//GetStateBackground(STATE_NORMAL)->SetDrawType(UIControlBackground::DRAW_FILL);
-	//GetStateBackground(STATE_NORMAL)->SetColor(Color(0.0, 0.0, 0.0, 1.0f));
-	//SetStateText(UIControl::STATE_NORMAL, L"Mega test!");
-
+    text = new UIStaticText(Rect(15, 0, rect.dx - 15, rect.dy));
+    AddControl(text);
+    openButton = new UIButton(Rect(0, 0, 15, rect.dy));
+    openButton->SetInputEnabled(false);
+    AddControl(openButton);
 }
 	
+UIFileTreeCell::~UIFileTreeCell()
+{
+    SafeRelease(text);
+    SafeRelease(openButton);
+}
+    
 void UIFileTreeCell::SetItemInfo(UITreeItemInfo * _itemInfo)
 {
 	itemInfo = _itemInfo;
@@ -48,15 +41,5 @@ UITreeItemInfo * UIFileTreeCell::GetItemInfo()
 	return itemInfo;
 }
 	
-void UIFileTreeCell::SystemDraw(const UIGeometricData &geometricData)
-{
-	UIListCell::SystemDraw(geometricData);
-}
-	
-void UIFileTreeCell::Draw(const UIGeometricData &geometricData)
-{
-	UIListCell::Draw(geometricData);
-}
-
 };
 
