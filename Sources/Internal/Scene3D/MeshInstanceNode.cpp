@@ -112,13 +112,18 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
         needUpdateTransformBox = true;
+        UpdateLights();
+    }
+    else
+    {
+        //if (GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
+        UpdateLights();
     }
     SceneNode::Update(timeElapsed);
     
     if (needUpdateTransformBox)
         bbox.GetTransformedBox(worldTransform, transformedBox);
 
-    UpdateLights();
 }
     
 void MeshInstanceNode::Draw()

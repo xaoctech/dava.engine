@@ -169,10 +169,15 @@ public:
         NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
         NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
         NODE_LOCAL_MATRIX_IDENTITY = 1 << 4,
+        
+        
+        // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
+        SCENE_LIGHTS_MODIFIED = 1 << 31,
     };
 	
     inline void AddFlag(int32 flagToAdd);
     inline void RemoveFlag(int32 flagToRemove);
+    inline uint32 GetFlags() const;
     void AddFlagRecursive(int32 flagToAdd);
     void RemoveFlagRecursive(int32 flagToRemove);
     
@@ -350,6 +355,11 @@ inline void SceneNode::AddFlag(int32 flagToAdd)
 inline void SceneNode::RemoveFlag(int32 flagToRemove)
 {
     flags &= ~flagToRemove;
+}
+    
+inline uint32 SceneNode::GetFlags() const
+{
+    return flags;
 }
 
 inline SceneNode * SceneNode::GetParent()
