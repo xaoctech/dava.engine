@@ -205,8 +205,13 @@ public:
         \brief 
         
      */
-    void SetViewport(const Rect & rect);     
-    
+    void SetViewport(const Rect & rect, bool precaleulatedCoordinates);     
+
+    const Rect & GetViewport()
+    {
+        return viewport;
+    }
+
     /**
      *** State Management
      */
@@ -586,6 +591,8 @@ protected:
 	
     RenderDataObject * currentRenderData;
 
+    Rect viewport;
+    
     /* 
         Size of the original renderTarget created for 3D rendering.
     */

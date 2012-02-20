@@ -128,7 +128,7 @@ void Camera::Recalc()
 	ymin = -ymax;
 	
     float32 realAspect = aspect;
-    if ((Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT) || (Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN) || (Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_TEXTURE))
+    if ((RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT) || (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN) || (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_TEXTURE))
     {
         realAspect = 1.0f / realAspect;
 	}
@@ -146,7 +146,7 @@ Vector2 Camera::GetOnScreenPosition(const Vector3 &forPoint, const Rect & viewpo
 //                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
 
 
-	switch(Core::Instance()->GetScreenOrientation())
+	switch(RenderManager::Instance()->GetRenderOrientation())
 	{
 		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
         {
@@ -214,7 +214,7 @@ void Camera::RecalcTransform()
 //	Core::eScreenOrientation orientation = Core::Instance()->GetScreenOrientation();
 	modelMatrix = Matrix4::IDENTITY;
     
-	switch(Core::Instance()->GetScreenOrientation())
+	switch(RenderManager::Instance()->GetRenderOrientation())
 	{
 		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
                 //glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
@@ -223,6 +223,11 @@ void Camera::RecalcTransform()
 		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
                 //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
             modelMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(90.0f));
+			break;
+		case Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN:
+		case Core::SCREEN_ORIENTATION_TEXTURE:
+                //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+            modelMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(180.0f));
 			break;
         default:
             break;
@@ -406,6 +411,7 @@ void Camera::LookAt(Vector3	position, Vector3 view, Vector3 up)
 
 void Camera::Set()
 {
+	flags = REQUIRE_REBUILD | REQUIRE_REBUILD_MODEL | REQUIRE_REBUILD_PROJECTION;
     if (flags & REQUIRE_REBUILD)
     {
         RebuildCameraFromValues();

@@ -129,7 +129,7 @@ bool RenderManager::IsDeviceLost()
 void RenderManager::BeginFrame()
 {
     stats.Clear();
-	RENDER_VERIFY(glViewport(0, 0, frameBufferWidth, frameBufferHeight));
+    SetViewport(Rect(0, 0, -1, -1), true);
 	
 	SetRenderOrientation(Core::Instance()->GetScreenOrientation());
 	DVASSERT(!currentRenderTarget);
@@ -170,6 +170,13 @@ void RenderManager::PrepareRealMatrix()
         
         glTranslate = glScale * glTranslate;
         SetMatrix(MATRIX_MODELVIEW, glTranslate);
+//        Logger::Info("2D matricies recalculated");
+//        Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+//        Logger::Info("Model matrix");
+//        modelViewSave.Dump();
+//        Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
+//        Logger::Info("Proj matrix");
+//        projectionSave.Dump();
     }
 }
 }
@@ -187,21 +194,30 @@ void RenderManager::EndFrame()
     
     
     
-void RenderManager::SetViewport(const Rect & rect)
+void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates)
 {    
-	PrepareRealMatrix();
+    if ((rect.dx < 0.0f) && (rect.dy < 0.0f))
+    {
+        viewport = rect;
+        RENDER_VERIFY(glViewport(0, 0, frameBufferWidth, frameBufferHeight));
+        return;
+    }
+    if (precaleulatedCoordinates) 
+    {
+        viewport = rect;
+        RENDER_VERIFY(glViewport((int32)rect.x, (int32)rect.y, (int32)rect.dx, (int32)rect.dy));
+        return;
+    }
+
+    PrepareRealMatrix();
     
+
 	int32 x = (int32)(rect.x * currentDrawScale.x + currentDrawOffset.x);
 	int32 y = (int32)(rect.y * currentDrawScale.y + currentDrawOffset.y);
 	int32 width, height;
     width = (int32)(rect.dx * currentDrawScale.x);
     height = (int32)(rect.dy * currentDrawScale.y);    
     
-    if ((rect.dx < 0.0f) && (rect.dy < 0.0f))
-    {
-        glViewport(0, 0, frameBufferWidth, frameBufferHeight);
-        return;
-    }
     
     switch(renderOrientation)
     {
@@ -233,9 +249,14 @@ void RenderManager::SetViewport(const Rect & rect)
         break;
             
     }    
-    glViewport(x, y, width, height);
+    RENDER_VERIFY(glViewport(x, y, width, height));
+    viewport.x = (float32)x;
+    viewport.y = (float32)y;
+    viewport.dx = (float32)width;
+    viewport.dy = (float32)height;
 }
 
+    
 
 // Viewport management
 void RenderManager::SetRenderOrientation(int32 orientation)
@@ -656,7 +677,7 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 #else //Non ES platforms
 		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
 #endif //PLATFORMS
-		RENDER_VERIFY(glViewport(0, 0, frameBufferWidth, frameBufferHeight));
+        SetViewport(Rect(0, 0, -1, -1), true);
 
 		SetRenderOrientation(Core::Instance()->GetScreenOrientation());
 	}
@@ -672,7 +693,8 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
 #endif //PLATFORMS
 
-		RENDER_VERIFY(glViewport(0, 0, renderTarget->GetTexture()->width, renderTarget->GetTexture()->height));
+        
+        SetViewport(Rect(0, 0, renderTarget->GetTexture()->width, renderTarget->GetTexture()->height), true);
 
 //		RENDER_VERIFY(glMatrixMode(GL_PROJECTION));
 //		RENDER_VERIFY(glLoadIdentity());
@@ -688,9 +710,9 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
         
 		//RENDER_VERIFY(glMatrixMode(GL_MODELVIEW));
 		//RENDER_VERIFY(glLoadIdentity());
-        
         IdentityModelMatrix();
 		IdentityMappingMatrix();
+
 		viewMappingDrawScale.x = renderTarget->GetResourceToPhysicalFactor();
 		viewMappingDrawScale.y = renderTarget->GetResourceToPhysicalFactor();
 //		Logger::Info("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
