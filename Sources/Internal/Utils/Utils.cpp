@@ -78,7 +78,7 @@ bool IsEqual(const WideString& s1, const WideString& s2)
 	return (*p1 == *p2);
 }
 
-
+#ifdef __DAVAENGINE_OPENGL__
 int32 lastBindedTexture = 0;
 int32 GetSavedTextureID()
 {
@@ -155,7 +155,7 @@ void BindFBO(int32 fbo)
 	}
 }
 
-
+#endif //
 
 void Split(const String & inputString, const String & delims, Vector<String> & tokens)
 {
@@ -184,13 +184,7 @@ int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length)
 	YamlParser::YamlDataHolder * holder = (YamlParser::YamlDataHolder*)ext;
 	int32 sizeToWrite = Min((uint32)size, holder->fileSize-holder->dataOffset);
 
-//    Logger::Debug("[read_handler] sizeToWrite = %d, holder = %p, buffer = %p", sizeToWrite, holder, buffer);
-//    if(holder)
-//    {
-//        Logger::Debug("[read_handler] holder->data = %p", holder->data);
-//    }
-    
-	memcpy(buffer, holder->data, sizeToWrite);
+    memcpy(buffer, holder->data+holder->dataOffset, sizeToWrite);
 	
     *length = sizeToWrite;
 
@@ -199,16 +193,44 @@ int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length)
 	return 1;
 }
 
+#ifdef __DAVAENGINE_ANDROID__
+int AndroidToLower (int c)
+{
+    if('A' <= c && c <= 'Z')
+    {
+        return c - ('A' - 'a');
+    }
+    else
+    {
+        WideString str = L"АЯа";
+        if(str.at(0) <= c && c <= str.at(1))
+        {
+            return c - (str.at(0) - str.at(2));
+        }
+    }
+    
+    return c;
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+
     
 int32 CompareStrings(const String &str1, const String &str2)
 {
     String newStr1 = "";
     newStr1.resize(str1.length());
+#if defined (__DAVAENGINE_ANDROID__)
+    std::transform(str1.begin(), str1.end(), newStr1.begin(), AndroidToLower);
+#else 
     std::transform(str1.begin(), str1.end(), newStr1.begin(), ::tolower);
+#endif 
     
     String newStr2 = "";
     newStr2.resize(str2.length());
+#if defined (__DAVAENGINE_ANDROID__)
+    std::transform(str2.begin(), str2.end(), newStr2.begin(), AndroidToLower);
+#else 
     std::transform(str2.begin(), str2.end(), newStr2.begin(), ::tolower);
+#endif 
     
     if(newStr1 == newStr2)
     {

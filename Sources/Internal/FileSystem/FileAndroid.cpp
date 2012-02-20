@@ -66,7 +66,7 @@ File * File::CreateFromSystemPath(zip *APKArchive, const String &filename)
 				Logger::Error("[File::CreateFromSystemPath] error of reading from file, readSize = %d, datasize = %d", readSize, dataSize);
 			}
 
-			fileInstance = DynamicMemoryFile::Create((int8*)data, readSize, File::READ); 
+			fileInstance = DynamicMemoryFile::Create(data, readSize, File::READ); 
 //			Logger::Debug("[File::CreateFromSystemPath] file created, size = %d", readSize);
 		}
 		

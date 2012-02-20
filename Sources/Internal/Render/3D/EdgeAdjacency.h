@@ -56,15 +56,9 @@ public:
 		bool IsEqual(const Edge & otherEdge);
 	};
 
-	struct Triangle
-	{
-		int32 edgeIndices[3];
-	};
-
 	void InitFromPolygonGroup(PolygonGroup * polygonGroup, int32 indexCount);
 
-	const Vector<Edge> & GetEdges();
-	const Triangle & GetTriangle(int32 index);
+	Vector<Edge> & GetEdges();
 
 	int32 GetEdgesWithTwoTrianglesCount();
 
@@ -73,10 +67,7 @@ public:
 private:
 	PolygonGroup * polygonGroup;
 	
-	
 	Vector<Edge> edges;
-
-	Vector<Triangle> triangles;
 
 	void AddEdge(Edge & edge);
 

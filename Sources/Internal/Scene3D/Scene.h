@@ -55,6 +55,7 @@ class SceneFileV2;
 class ShadowVolumeNode;
 class ProxyNode;
 class LightNode;
+class ShadowRect;
 	
 /** 
     \ingroup scene3d
@@ -233,6 +234,7 @@ private:
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
+	ShadowRect * shadowRect;
 
     friend class SceneNode;
 };

@@ -23,17 +23,15 @@ class UIFileTreeCell : public UIListCell
 {
 public:
 	UIFileTreeCell(const Rect &rect, const String &cellIdentifier);
-	virtual void Draw(const UIGeometricData &geometricData);
-	virtual void SystemDraw(const UIGeometricData &geometricData);
-
-//	UIControl * GetIcon();
-//	UIStaticText * GetText();
+    ~UIFileTreeCell();
+    
 	void SetItemInfo(UITreeItemInfo * entry);
 	UITreeItemInfo * GetItemInfo();
+    
+    UIStaticText *text;
+    UIButton *openButton;
+
 protected:
-//	UIControl * triangleControl;
-//	UIControl * icon;
-//	UIStaticText * text;
 	UITreeItemInfo * itemInfo;
 };	
 };

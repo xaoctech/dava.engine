@@ -123,6 +123,8 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
 	
 	propertyList->AddBoolProperty("property.meshinstance.dynamicshadow.enable");
 	propertyList->SetBoolPropertyValue("property.meshinstance.dynamicshadow.enable", currentNode->GetCustomProperties()->GetBool("property.meshinstance.dynamicshadow.enable", false));
+
+	propertyList->AddMessageProperty("property.meshinstance.dynamicshadow.converttovolume", Message(this, &MeshInstancePropertyControl::OnConvertToShadowVolume));
 }
 
 
@@ -203,4 +205,9 @@ int32 MeshInstancePropertyControl::GetIndexFromKey(const String &forKey)
     int32 retNum = atoi(num.c_str());
     
     return retNum;
+}
+
+void MeshInstancePropertyControl::OnConvertToShadowVolume(BaseObject * object, void * userData, void * callerData)
+{
+	((MeshInstanceNode*)currentNode)->ConvertToShadowVolume();
 }

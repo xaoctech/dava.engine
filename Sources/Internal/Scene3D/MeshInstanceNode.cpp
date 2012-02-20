@@ -87,7 +87,7 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
-    for (int32 idx = 0; idx < polygroups.size(); ++idx)
+    for (int32 idx = 0; idx < (int32)polygroups.size(); ++idx)
     {
         SafeRelease(polygroups[idx]);
     }
@@ -477,13 +477,27 @@ void MeshInstanceNode::CreateDynamicShadowNode()
 	shadowVolume->CopyGeometryFrom(this);
 
 	AddNode(shadowVolume);
-	SafeRelease(shadowVolume);
+	shadowVolume->Release();
 }
 
 void MeshInstanceNode::DeleteDynamicShadowNode()
 {
 	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName("dynamicshadow.shadowvolume");
 	RemoveNode(shadowVolume);
+}
+
+void MeshInstanceNode::ConvertToShadowVolume()
+{
+	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();
+	shadowVolume->SetScene(GetScene());
+	shadowVolume->SetName("dynamicshadow.shadowvolume");
+
+	shadowVolume->CopyGeometryFrom(this);
+
+	GetParent()->AddNode(shadowVolume);
+	shadowVolume->Release();
+
+	//Release();
 }
 
 void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)
@@ -574,6 +588,7 @@ void MeshInstanceNode::RegisterNearestLight(LightNode * node)
 {
     materialState->SetLight(0, node);
 }
+
 
 //String MeshInstanceNode::GetDebugDescription()
 //{

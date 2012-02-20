@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "FileSystem/FileSystem.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
@@ -111,20 +112,7 @@ private:
                 return true;
             }
             
-            String n1 = "";
-            n1.resize(name.length());
-            std::transform(name.begin(), name.end(), n1.begin(), ::tolower);
-            
-            String n2 = "";
-            n2.resize(other.name.length());
-            std::transform(other.name.begin(), other.name.end(), n2.begin(), ::tolower);
-            
-            if(n1 < n2)
-            {
-                return true;
-            }
-            
-            return false;
+            return (CompareStrings(name, other.name) < 0);
         }
 	};
 	String					path;

@@ -171,11 +171,15 @@ UIFileTreeCell *LibraryControl::CellAtIndex(UIFileTree * tree, UITreeItemInfo *e
 	}
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");
+
+    ControlsFactory::CustomizeExpandButton(c->openButton);
+    c->text->SetText(StringToWString(entry->GetName()));
     
-	c->SetStateText(UIControl::STATE_NORMAL, StringToWString(entry->GetName()));
-    c->GetStateTextControl(UIControl::STATE_NORMAL)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    c->SetStateText(UIControl::STATE_SELECTED, StringToWString(entry->GetName()));
-	c->GetStateTextControl(UIControl::STATE_SELECTED)->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    Font *font = ControlsFactory::GetFontDark();
+    c->text->SetFont(font);
+    c->text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
+    c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
+    c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
     
     c->SetSelected(false, false);
 
@@ -211,6 +215,14 @@ UIFileTreeCell *LibraryControl::CellAtIndex(UIFileTree * tree, UITreeItemInfo *e
         SafeRelease(f);
     }
     
+    if(FileSystem::Instance()->IsDirectory(path))
+    {
+        c->openButton->SetVisible(true);
+    }
+    else
+    {
+        c->openButton->SetVisible(false);
+    }
     
     SafeRelease(sceneFlagBox);
     
