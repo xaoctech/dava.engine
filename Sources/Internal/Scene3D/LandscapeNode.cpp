@@ -444,6 +444,8 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     Image::EnableAlphaPremultiplication(false);
     
+    SafeRelease(textures[level]);
+
     Texture * texture = Texture::CreateFromFile(textureName); 
     if (texture)
     {
@@ -451,7 +453,6 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
         texture->GenerateMipmaps();
         texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
     }
-    SafeRelease(textures[level]);
     textures[level] = texture;
 
     Image::EnableAlphaPremultiplication(true);
