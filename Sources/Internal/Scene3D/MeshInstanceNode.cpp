@@ -402,12 +402,15 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         }
     }
 
-	int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
-	for(int32 i = 0; i < lightmapsCount; ++i)
-	{
-		String lightmapName = archive->GetString(Format("lightmap%d", i), "");
-		AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
-	}
+//    if (polygroups[0]->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+    {
+        int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
+        for(int32 i = 0; i < lightmapsCount; ++i)
+        {
+            String lightmapName = archive->GetString(Format("lightmap%d", i), "");
+            AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
+        }
+    }
 }
     
 Vector<PolygonGroupWithMaterial*> & MeshInstanceNode::GetPolygonGroups()
