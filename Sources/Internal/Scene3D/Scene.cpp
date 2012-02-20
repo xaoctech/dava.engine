@@ -353,6 +353,9 @@ void Scene::SetupTestLighting()
 void Scene::Update(float timeElapsed)
 {
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
+    // lights 
+    flags &= ~SCENE_LIGHTS_MODIFIED;
     
 	int32 size = (int32)animations.size();
 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)

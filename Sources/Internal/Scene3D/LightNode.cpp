@@ -31,6 +31,7 @@
 #include "Scene3D/LightNode.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA 
 {
@@ -77,14 +78,15 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     
 void LightNode::Update(float32 timeElapsed)
 {
-    bool needUpdateTransformBox = false;
+    bool needUpdateVars = false;
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
-        needUpdateTransformBox = true;
+        needUpdateVars = true;
+        GetScene()->AddFlag(SceneNode::SCENE_LIGHTS_MODIFIED);
     }
     SceneNode::Update(timeElapsed);
     
-    if (needUpdateTransformBox)
+    if (needUpdateVars)
     {
         position = Vector3(0.0f, 0.0f, 0.0f) * GetWorldTransform();
         Matrix3 rotationPart(GetWorldTransform());
