@@ -96,6 +96,13 @@ public:
     virtual void SettingsChanged();
     virtual void Input(UIEvent * event);
 
+	struct BodyItem
+	{
+		UIButton *headerButton;
+		UIButton *closeButton;
+		EditorBodyControl *bodyControl;
+	};
+
 private:
     
     void AutoSaveLevel(BaseObject * obj, void *, void *);
@@ -133,12 +140,7 @@ private:
     
 
     //Body list
-    struct BodyItem
-    {
-        UIButton *headerButton;
-        UIButton *closeButton;
-        EditorBodyControl *bodyControl;
-    };
+
     
     
     Vector<BodyItem *> bodies;
