@@ -108,6 +108,8 @@ public:
 	void PopDebugCamera();
 
     void ToggleSceneInfo();
+
+	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
 	
 protected:
 
@@ -142,7 +144,6 @@ protected:
     UIControl *leftPanelSceneGraph;
     UIHierarchy * sceneGraphTree;
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
-    void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
     void OnBakeMatricesPressed(BaseObject * obj, void *, void *);
     void OnRefreshSceneGraph(BaseObject * obj, void *, void *);

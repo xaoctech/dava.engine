@@ -486,8 +486,6 @@ void MeshInstanceNode::ConvertToShadowVolume()
 
 	GetParent()->AddNode(shadowVolume);
 	shadowVolume->Release();
-
-	//Release();
 }
 
 void MeshInstanceNode::GetDataNodes(Set<DataNode*> & dataNodes)

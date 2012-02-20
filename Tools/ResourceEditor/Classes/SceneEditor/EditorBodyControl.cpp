@@ -1346,7 +1346,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         else
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
-            SceneValidator::Instance()->ValidateSceneNode(rootNode);
+            //SceneValidator::Instance()->ValidateSceneNode(rootNode);
 
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
