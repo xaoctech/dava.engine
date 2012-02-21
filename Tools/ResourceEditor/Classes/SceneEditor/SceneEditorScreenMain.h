@@ -21,7 +21,6 @@ class SceneEditorScreenMain:
     public MenuPopupDelegate, public CreateNodesDialogDelegeate,
     public SettingsDialogDelegate
 {
-	struct BodyItem;
 
     enum eConst
     {        
@@ -67,6 +66,9 @@ class SceneEditorScreenMain:
     
 
 public:
+    
+    struct BodyItem;
+
 
 	virtual void LoadResources();
 	virtual void UnloadResources();
