@@ -42,9 +42,27 @@ class UberShader;
 class Shader;
 class Texture;    
 class SceneFileV2;
+class LightNode;
+class PolygonGroup;
     
     
 // TODO: move Material to Scene3D
+    
+class InstanceMaterialState : public BaseObject
+{
+    static const int32 LIGHT_NODE_MAX_COUNT = 4;
+public:
+    InstanceMaterialState();
+    virtual ~InstanceMaterialState();
+    
+    void SetLight(int32 lightIndex, LightNode * lightNode);
+    LightNode * GetLight(int32 lightIndex);
+    
+private:
+    LightNode * lightNodes[LIGHT_NODE_MAX_COUNT];
+};
+    
+    
 class Material : public DataNode
 {
 public:
@@ -85,7 +103,13 @@ public:
     void SetTwoSided(bool isTwoSided);
     bool GetTwoSided();
     
-    void Bind();
+    /*  
+     
+     */
+    //void SetLight(LightNode * light, int32 index);
+        
+    void Draw(PolygonGroup * group, InstanceMaterialState * state);
+    
     
     eType   type;
 

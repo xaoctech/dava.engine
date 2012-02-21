@@ -97,41 +97,5 @@ PolygonGroup * StaticMesh::GetPolygonGroup(uint32 index)
 {
     return reinterpret_cast<PolygonGroup*>(children[index]);
 }
-	
-
-void StaticMesh::DrawPolygonGroup(int32 index, Material * material)
-{
-//    Matrix4 proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-//    Matrix4 glMatrixProj;
-//    glGetFloatv(GL_PROJECTION_MATRIX, glMatrixProj.data);
-//    
-//    LOG_AS_MATRIX4(proj);
-//    LOG_AS_MATRIX4(glMatrixProj);
-//    
-//    Matrix4 modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-//    Matrix4 glModelView;
-//    glGetFloatv(GL_MODELVIEW_MATRIX, glModelView.data);
-//    
-//    LOG_AS_MATRIX4(modelView);
-//    LOG_AS_MATRIX4(glModelView);
-    
-    
-	PolygonGroup * group = reinterpret_cast<PolygonGroup*>(children[index]);
-
-	RenderManager::Instance()->SetRenderData(group->renderDataObject);
-	material->Bind();
-	if (group->renderDataObject->GetIndexBufferID() != 0)
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
-	}else
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
-	}
-
-	RenderManager::Instance()->SetTexture(0, 1); 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-}
-
-
 
 };

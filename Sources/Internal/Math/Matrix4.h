@@ -76,6 +76,8 @@ struct Matrix4
 
 	//inline Matrix4(const Matrix3 & m);
 	inline Matrix4(const Matrix4 & m);
+    
+    void Dump();
 	
 	inline Matrix4 & operator = (const Matrix4 & m);
 

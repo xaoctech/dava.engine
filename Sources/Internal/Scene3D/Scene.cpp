@@ -42,6 +42,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/ShadowRect.h"
+#include "Scene3D/LightNode.h"
 
 namespace DAVA 
 {
@@ -85,6 +86,26 @@ Scene::~Scene()
 	SafeRelease(shadowRect);
 }
 
+void Scene::RegisterNode(SceneNode * node)
+{
+    LightNode * light = dynamic_cast<LightNode*>(node);
+    if (light)
+        lights.insert(light);
+}
+
+void Scene::UnregisterNode(SceneNode * node)
+{
+    LightNode * light = dynamic_cast<LightNode*>(node);
+    if (light)
+        lights.erase(light);
+        
+}
+
+Scene * Scene::GetScene()
+{
+    return this;
+}
+    
 //int32 Scene::GetMaterialCount()
 //{
 //    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
@@ -335,6 +356,9 @@ void Scene::SetupTestLighting()
 void Scene::Update(float timeElapsed)
 {
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
+    // lights 
+    flags &= ~SCENE_LIGHTS_MODIFIED;
     
 	int32 size = (int32)animations.size();
 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
@@ -558,6 +582,11 @@ LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
             break;
     };
     return NULL;
+}
+
+Set<LightNode*> & Scene::GetLights()
+{
+    return lights;
 }
 
 /*void Scene::Save(KeyedArchive * archive)

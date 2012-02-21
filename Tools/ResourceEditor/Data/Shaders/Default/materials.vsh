@@ -65,7 +65,7 @@ void main()
     float nDotHV = max(0.0, dot(normal, halfVector));
     float specular = pow(nDotHV, 30.0);
 //#endif
-    varDiffuseColor = vec4(0.5 + diffuse + specular);
+    varDiffuseColor = vec4(0.5 + diffuse);
 #endif
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)

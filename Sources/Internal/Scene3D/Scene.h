@@ -82,7 +82,17 @@ public:
 	Scene();
 	~Scene();
 	
-	void		ClearScene();
+    /**
+        \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
+     */
+    virtual void    RegisterNode(SceneNode * node);
+    virtual void    UnregisterNode(SceneNode * node);
+    
+    /**
+        \brief Overloaded GetScene returns this, instead of normal functionality.
+     */
+    virtual Scene * GetScene();
+
     
 //  DataNode * GetMaterials();
 //	Material * GetMaterial(int32 index);
@@ -194,6 +204,7 @@ public:
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
+    Set<LightNode*> & GetLights();
     LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
     
 private:	
@@ -222,6 +233,7 @@ private:
     Camera * clipCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
+    Set<LightNode*> lights;
 	ShadowRect * shadowRect;
 
     friend class SceneNode;
@@ -252,38 +264,22 @@ int32 Scene::GetLodLayersCount()
 
 float32 Scene::GetLodLayerNear(int32 layerNum)
 {
-    if (forceLodLayer == -1) 
-    {
-        return lodLayers[layerNum].nearDistance;
-    }
-    return lodLayers[forceLodLayer].nearDistance;
+    return lodLayers[layerNum].nearDistance;
 }
 
 float32 Scene::GetLodLayerFar(int32 layerNum)
 {
-    if (forceLodLayer == -1) 
-    {
-        return lodLayers[layerNum].farDistance;
-    }
-    return lodLayers[forceLodLayer].farDistance;
+    return lodLayers[layerNum].farDistance;
 }
 
 float32 Scene::GetLodLayerNearSquare(int32 layerNum)
 {
-    if (forceLodLayer == -1) 
-    {
-        return lodLayers[layerNum].nearDistanceSq;
-    }
-    return lodLayers[forceLodLayer].nearDistanceSq;
+    return lodLayers[layerNum].nearDistanceSq;
 }
 
 float32 Scene::GetLodLayerFarSquare(int32 layerNum)
 {
-    if (forceLodLayer == -1) 
-    {
-        return lodLayers[layerNum].farDistanceSq;
-    }
-    return lodLayers[forceLodLayer].farDistanceSq;
+    return lodLayers[layerNum].farDistanceSq;
 }
     
 

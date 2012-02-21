@@ -210,7 +210,20 @@ bool LodNode::IsLodMain(SceneNode *childToCheck)
 void LodNode::RecheckLod()
 {
 //#define LOD_DEBUG
+    if (!currentLod)return;
 
+    if (scene->GetForceLodLayer() != -1) 
+    {
+        for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
+        {
+            if (it->layer >= scene->GetForceLodLayer())
+            {
+                currentLod = &(*it);
+                return;
+            }
+        }
+            return;
+    }
     
 #ifdef LOD_DEBUG
     int32 cl = currentLod->layer;
@@ -418,8 +431,11 @@ void LodNode::SceneDidLoaded()
     }
 
     currentLod = NULL;
-    SetCurrentLod(&(*lodLayers.rbegin()));
-    lastLodUpdateFrame = 1000;
+    if (lodLayers.size() > 0)
+    {
+        SetCurrentLod(&(*lodLayers.rbegin()));
+        lastLodUpdateFrame = 1000;
+    }
     
 }
 
