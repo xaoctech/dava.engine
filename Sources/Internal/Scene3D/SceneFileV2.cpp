@@ -303,6 +303,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     }
     dataNodes.clear();
     
+    SafeRelease(rootNode);
     SafeRelease(file);
     return GetError();
 }
@@ -499,6 +500,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
         {
             LoadHierarchy(scene, node, file, level + 1);
         }
+        SafeRelease(node);
     }
     
     SafeRelease(archive);
