@@ -100,9 +100,15 @@ void UI3DView::SystemDraw(const UIGeometricData & geometricData)
     RenderManager::Instance()->PushDrawMatrix();
 	RenderManager::Instance()->PushMappingMatrix();
     Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+//    Logger::Info("Model matrix");
+//    modelViewSave.Dump();
     Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
+//    Logger::Info("Proj matrix");
+//    projectionSave.Dump();
+    int32 renderOrientation = RenderManager::Instance()->GetRenderOrientation();
 
-    RenderManager::Instance()->SetViewport(viewportRect);
+    Rect viewportSave = RenderManager::Instance()->GetViewport();
+    RenderManager::Instance()->SetViewport(viewportRect, false);
     RenderManager::Instance()->ClearDepthBuffer();
     
 //    glEnable(GL_DEPTH_TEST);
@@ -127,17 +133,21 @@ void UI3DView::SystemDraw(const UIGeometricData & geometricData)
     /*
         Restore render orientation
      */
-    RenderManager::Instance()->SetViewport(Rect(0.0f, 0.0f, -1.0f, -1.0f));
-    RenderManager::Instance()->SetRenderOrientation(Core::Instance()->GetScreenOrientation());
+    RenderManager::Instance()->SetViewport(viewportSave, true);
+    RenderManager::Instance()->SetRenderOrientation(renderOrientation);
 
-    RenderManager::Instance()->Reset(); // Boroda: Do we need this??
-    
     //RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
     
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewSave);
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projectionSave);
 	RenderManager::Instance()->PopDrawMatrix();
 	RenderManager::Instance()->PopMappingMatrix();
+//    modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+//    Logger::Info("Model matrix");
+//    modelViewSave.Dump();
+//    projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
+//    Logger::Info("Proj matrix");
+//    projectionSave.Dump();
 }
     
 void UI3DView::Update(float32 timeElapsed)

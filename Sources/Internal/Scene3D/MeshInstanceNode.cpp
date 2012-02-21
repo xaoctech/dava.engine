@@ -31,6 +31,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/3D/StaticMesh.h"
+#include "Render/Material.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Utils/StringFormat.h"
@@ -81,7 +82,7 @@ Material * PolygonGroupWithMaterial::GetMaterial()
 MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 :	SceneNode(_scene)
 {
-	
+	materialState = new InstanceMaterialState();
 }
 	
 MeshInstanceNode::~MeshInstanceNode()
@@ -91,6 +92,8 @@ MeshInstanceNode::~MeshInstanceNode()
         SafeRelease(polygroups[idx]);
     }
     polygroups.clear();
+    
+    SafeRelease(materialState);
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -109,11 +112,18 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
         needUpdateTransformBox = true;
+        UpdateLights();
+    }
+    else
+    {
+        //if (GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
+        UpdateLights();
     }
     SceneNode::Update(timeElapsed);
     
     if (needUpdateTransformBox)
         bbox.GetTransformedBox(worldTransform, transformedBox);
+
 }
     
 void MeshInstanceNode::Draw()
@@ -164,7 +174,7 @@ void MeshInstanceNode::Draw()
             polygroup->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
         }
         
-        polygroup->mesh->DrawPolygonGroup(polygroups[k]->polygroupIndex, polygroups[k]->material);
+        polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
     }
 	
 	if (debugFlags != DEBUG_DRAW_NONE)
@@ -402,12 +412,15 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         }
     }
 
-	int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
-	for(int32 i = 0; i < lightmapsCount; ++i)
-	{
-		String lightmapName = archive->GetString(Format("lightmap%d", i), "");
-		AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
-	}
+//    if (polygroups[0]->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+    {
+        int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
+        for(int32 i = 0; i < lightmapsCount; ++i)
+        {
+            String lightmapName = archive->GetString(Format("lightmap%d", i), "");
+            AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
+        }
+    }
 }
     
 Vector<PolygonGroupWithMaterial*> & MeshInstanceNode::GetPolygonGroups()
@@ -548,9 +561,33 @@ void MeshInstanceNode::BakeTransforms()
     }
 }
     
+    
+void MeshInstanceNode::UpdateLights()
+{
+    Vector3 meshPosition = Vector3() * worldTransform;
+    float32 squareMinDistance = 10000000.0f;
+    LightNode * nearestLight = 0;
+    
+    Set<LightNode*> & lights = scene->GetLights();
+    const Set<LightNode*>::iterator & endIt = lights.end();
+    for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
+    {
+        LightNode * node = *it;
+        const Vector3 & lightPosition = node->GetPosition();
+        
+        float32 squareDistanceToLight = (meshPosition - lightPosition).SquareLength();
+        if (squareDistanceToLight < squareMinDistance)
+        {
+            squareMinDistance = squareDistanceToLight;
+            nearestLight = node;
+        }
+    }
+    RegisterNearestLight(nearestLight);
+}
+
 void MeshInstanceNode::RegisterNearestLight(LightNode * node)
 {
-    
+    materialState->SetLight(0, node);
 }
 
 

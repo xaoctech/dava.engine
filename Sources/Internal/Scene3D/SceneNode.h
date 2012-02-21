@@ -55,8 +55,19 @@ public:
 	SceneNode(Scene * scene = 0);
 	virtual ~SceneNode();
 	
-    
+    /**
+        \brief Function to set scene for node and it's children. 
+        Function goes recursively and set scene for this node, and each child. 
+        \param[in] _scene pointer to scene we want to set as holder for this node. 
+     */
     virtual void SetScene(Scene * _scene);
+    /**
+        \brief Function to return scene of this node. This is virtual function. For SceneNode's function returns it's scene value. 
+        In Scene class function is overloaded and returns self. It required to avoid dynamic casts to find a scene. 
+        \returns pointer to the scene that holds this node. 
+     */
+    virtual Scene * GetScene();
+
     
 	// working with childs
 	virtual void	AddNode(SceneNode * node);
@@ -67,7 +78,7 @@ public:
 	virtual SceneNode * GetChild(int32 index);
 	virtual int32   GetChildrenCount();
 	virtual void	RemoveAllChildren();
-    
+        
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);
     
     /**
@@ -158,10 +169,15 @@ public:
         NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
         NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
         NODE_LOCAL_MATRIX_IDENTITY = 1 << 4,
+        
+        
+        // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
+        SCENE_LIGHTS_MODIFIED = 1 << 31,
     };
 	
     inline void AddFlag(int32 flagToAdd);
     inline void RemoveFlag(int32 flagToRemove);
+    inline uint32 GetFlags() const;
     void AddFlagRecursive(int32 flagToAdd);
     void RemoveFlagRecursive(int32 flagToRemove);
     
@@ -204,9 +220,7 @@ public:
         \returns flags of this specific scene node
      */
     uint32 GetDebugFlags() const;
-    
-    inline Scene *GetScene() const;
-	
+    	
     void SetSolid(bool isSolid);
     bool GetSolid();
     
@@ -342,6 +356,11 @@ inline void SceneNode::RemoveFlag(int32 flagToRemove)
 {
     flags &= ~flagToRemove;
 }
+    
+inline uint32 SceneNode::GetFlags() const
+{
+    return flags;
+}
 
 inline SceneNode * SceneNode::GetParent()
 {
@@ -412,11 +431,6 @@ inline void SceneNode::SetTag(int32 _tag)
 inline uint32 SceneNode::GetDebugFlags() const
 {
     return debugFlags;
-}
-    
-inline Scene *SceneNode::GetScene() const
-{
-    return scene;
 }
     
 template<template <typename> class Container, class T>

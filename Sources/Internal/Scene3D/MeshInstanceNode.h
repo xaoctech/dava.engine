@@ -42,6 +42,7 @@ class SceneFileV2;
 class PolygonGroup;
 class MeshInstanceNode;
 class LightNode;
+class InstanceMaterialState;
     
 class PolygonGroupWithMaterial : public BaseObject
 {
@@ -145,10 +146,13 @@ public:
     virtual void RegisterNearestLight(LightNode * node);
 
 protected:
+    virtual void UpdateLights();
+    
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
     
     Vector<PolygonGroupWithMaterial*> polygroups;
     Vector<LightNode*> nearestLights;
+    InstanceMaterialState * materialState;
     
 	AABBox3 bbox;
     AABBox3 transformedBox;
