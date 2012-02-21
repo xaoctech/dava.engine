@@ -29,6 +29,7 @@ public:
     virtual ~LibraryControl();
     
     virtual void WillAppear();
+    virtual void WillDisappear();
 	virtual void Update(float32 timeElapsed);
 
     void SetPath(const String &path);

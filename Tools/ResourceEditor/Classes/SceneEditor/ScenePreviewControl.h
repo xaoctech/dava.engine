@@ -56,10 +56,11 @@ public:
     virtual void Update(float32 timeElapsed);
 
     int32 OpenScene(const String &pathToFile);
+    void ReleaseScene();
+    void RecreateScene();
     
 protected:
 
-    void RecreateScene();
     
     void SetupCamera();
     

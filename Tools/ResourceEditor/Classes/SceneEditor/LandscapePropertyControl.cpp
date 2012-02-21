@@ -267,6 +267,7 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 FileSystem::Instance()->SplitPath(lightmapPath, path, fileName);
                 
                 String resultPath = path + "EditorMaskTexture" + extension;
+                FileSystem::Instance()->DeleteFile(resultPath);
                 lightMap->Save(resultPath);
                 
                 propertyList->SetFilepathPropertyValue("property.landscape.lightmap", "");
