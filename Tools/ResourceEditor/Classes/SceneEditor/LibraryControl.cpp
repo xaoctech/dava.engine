@@ -97,6 +97,21 @@ void LibraryControl::WillAppear()
     RefreshTree();
 }
 
+void LibraryControl::WillDisappear()
+{
+    if(panelSCE->GetParent())
+    {
+        preview->ReleaseScene();
+        preview->RecreateScene();
+        
+        RemoveControl(panelSCE);
+
+//        selectedFileName = "";
+//        selectedFileNameShort = "";
+    }
+}
+
+
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path;

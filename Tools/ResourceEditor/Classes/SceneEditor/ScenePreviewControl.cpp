@@ -142,23 +142,22 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
     rootNode = NULL;
     
     editorScene = new Scene();
-    SetScene(editorScene);
 
     // Camera setup
     cameraController = new PreviewCameraController();
     cameraController->SetRadius(10.f);
     cameraController->SetControlHeight(rect.dy);
+    
+    SetScene(editorScene);
+    cameraController->SetScene(editorScene);
 }
     
 ScenePreviewControl::~ScenePreviewControl()
 {
-    SafeRelease(cameraController);
-    if (rootNode && editorScene)
-    {
-        editorScene->RemoveNode(rootNode);
-        rootNode = NULL;
-    }
+    ReleaseScene();
+
     SafeRelease(editorScene);
+    SafeRelease(cameraController);
 }
 
 
@@ -174,6 +173,8 @@ void ScenePreviewControl::RecreateScene()
     if(editorScene)
     {
         SetScene(NULL);
+        cameraController->SetScene(NULL);
+        
         SafeRelease(editorScene);
     }
     
@@ -186,20 +187,26 @@ void ScenePreviewControl::RecreateScene()
     editorScene->RegisterLodLayer(23, 30);
     editorScene->RegisterLodLayer(27, 35);
     editorScene->RegisterLodLayer(33, 40);
+
     SetScene(editorScene);
+    cameraController->SetScene(editorScene);
+}
+
+void ScenePreviewControl::ReleaseScene()
+{
+    if(currentScenePath.length())
+    {
+        editorScene->RemoveNode(rootNode);
+        editorScene->ReleaseRootNode(currentScenePath);
+        
+        rootNode = NULL;
+        currentScenePath = "";
+    }
 }
 
 int32 ScenePreviewControl::OpenScene(const String &pathToFile)
 {
-    if(currentScenePath.length())
-    {
-        editorScene->ReleaseRootNode(currentScenePath);
-        editorScene->RemoveNode(rootNode);
-
-        rootNode = NULL;
-        currentScenePath = "";
-    }
-    
+    ReleaseScene();
     RecreateScene();
     
     int32 retError = SceneFileV2::ERROR_NO_ERROR;
