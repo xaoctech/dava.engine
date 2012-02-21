@@ -17,6 +17,7 @@
 		5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */; };
 		5C03F92014990CCB002EE5C1 /* LibraryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */; };
 		5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */; };
+		5C059F8214F3EAE600B4FAFB /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5C059F8114F3EAE600B4FAFB /* icon.icns */; };
 		5C07AA5E14A8C91200802097 /* OutputPanelControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AA5C14A8C91200802097 /* OutputPanelControl.cpp */; };
 		5C07AA6214A8DF5400802097 /* OutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C07AA6014A8DF5400802097 /* OutputControl.cpp */; };
 		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
@@ -322,6 +323,7 @@
 		5C03F91C14990CCB002EE5C1 /* LibraryControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryControl.h; sourceTree = "<group>"; };
 		5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneEditorScreenMain.cpp; sourceTree = "<group>"; };
 		5C03F91E14990CCB002EE5C1 /* SceneEditorScreenMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneEditorScreenMain.h; sourceTree = "<group>"; };
+		5C059F8114F3EAE600B4FAFB /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		5C07AA5C14A8C91200802097 /* OutputPanelControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputPanelControl.cpp; sourceTree = "<group>"; };
 		5C07AA5D14A8C91200802097 /* OutputPanelControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputPanelControl.h; sourceTree = "<group>"; };
 		5C07AA6014A8DF5400802097 /* OutputControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputControl.cpp; sourceTree = "<group>"; };
@@ -921,6 +923,7 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				5C059F8114F3EAE600B4FAFB /* icon.icns */,
 				5C6BF78514C85A62009297F7 /* libz.dylib */,
 				FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */,
 				FE9420291332597D00515418 /* Framework.xcodeproj */,
@@ -1929,6 +1932,7 @@
 				FE9892E611638EF700500198 /* MainMenu.xib in Resources */,
 				FEA30C361231362D00E691CC /* version.plist in Resources */,
 				FEFCD5EE12AE50860060A1A1 /* Data in Resources */,
+				5C059F8214F3EAE600B4FAFB /* icon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
