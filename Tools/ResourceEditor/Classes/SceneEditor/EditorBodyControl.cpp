@@ -1242,6 +1242,12 @@ void EditorBodyControl::Update(float32 timeElapsed)
         cameraController->Update(timeElapsed);
     }
     UIControl::Update(timeElapsed);
+
+	BeastProxy::Instance()->Update(beastManager);
+	if(BeastProxy::Instance()->IsJobDone(beastManager))
+	{
+		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
+	}
 }
 
 void EditorBodyControl::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
