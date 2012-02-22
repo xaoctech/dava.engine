@@ -9,6 +9,8 @@ class BeastProxy : public DAVA::Singleton<BeastProxy>
 public:
 	virtual BeastManager * CreateManager();
 	virtual void SafeDeleteManager(BeastManager ** manager) {};
+	virtual void Update(BeastManager * manager) {};
+	virtual bool IsJobDone(BeastManager * manager) {return false;}
 
 	virtual void ParseScene(BeastManager * manager, DAVA::Scene * scene) {};
 	virtual void GenerateLightmaps(BeastManager * manager) {};
