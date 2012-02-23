@@ -53,7 +53,7 @@ public:
         }
         Vector<SceneNode*> nodes;
         Vector<int32> indexes;
-        int layer;
+        int32 layer;
         bool isDummy;
     };
     
@@ -85,6 +85,8 @@ public:
     virtual void SceneDidLoaded();
     
     virtual bool IsLodMain(SceneNode *childToCheck = NULL);//if childToCheck is NULL checks the caller node
+
+	int32 GetMaxLodLayer();
 
 
 protected:

@@ -1600,17 +1600,12 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
 
 void EditorBodyControl::BeastProcessScene(bool fullshade)
 {
+	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 	beastManager = BeastProxy::Instance()->CreateManager();
 
 	String path = EditorSettings::Instance()->GetDataSourcePath() + "lightmaps/";
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
-	BeastProxy::Instance()->ParseScene(beastManager, scene);
-
-	if(fullshade)
-	{
-		BeastProxy::Instance()->SetMode(beastManager, 1);
-	}
-	BeastProxy::Instance()->GenerateLightmaps(beastManager);
+	BeastProxy::Instance()->Run(beastManager, scene);
 }
 
 EditorScene * EditorBodyControl::GetScene()

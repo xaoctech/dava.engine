@@ -439,5 +439,21 @@ void LodNode::SceneDidLoaded()
     
 }
 
+int32 LodNode::GetMaxLodLayer()
+{
+	int32 ret = -1;
+	const List<LodData>::const_iterator &end = lodLayers.end();
+	for (List<LodData>::iterator it = lodLayers.begin(); it != end; ++it)
+	{
+		LodData & ld = *it;
+		if(ld.layer > ret)
+		{
+			ret = ld.layer;
+		}
+	}
+
+	return ret;
+}
+
     
 };
