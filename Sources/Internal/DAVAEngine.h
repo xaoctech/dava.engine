@@ -196,6 +196,7 @@
 #include "Scene3D/SphereNode.h"
 #include "Scene3D/LightNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
+#include "Scene3D/LodNode.h"
 
 
 // Application core 
