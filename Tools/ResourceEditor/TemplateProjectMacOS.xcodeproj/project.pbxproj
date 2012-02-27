@@ -31,6 +31,7 @@
 		5C87C49914C34A3500E2C63B /* PaintAreaControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
+		5CB7FAB514FB5A32000EE8A8 /* TextureTrianglesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */; };
 		5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */; };
 		5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */; };
 		5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD509BB14C6CB250089067E /* SettingsDialog.cpp */; };
@@ -349,6 +350,8 @@
 		5CA721A814B73A64000D2851 /* NodesPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodesPropertyControl.h; sourceTree = "<group>"; };
 		5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateNodesDialog.cpp; sourceTree = "<group>"; };
 		5CA721D514B760D9000D2851 /* CreateNodesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNodesDialog.h; sourceTree = "<group>"; };
+		5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureTrianglesDialog.cpp; sourceTree = "<group>"; };
+		5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureTrianglesDialog.h; sourceTree = "<group>"; };
 		5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneValidator.cpp; sourceTree = "<group>"; };
 		5CD1A27114D0ACE9005E76B5 /* SceneValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneValidator.h; sourceTree = "<group>"; };
 		5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ErrorDialog.cpp; sourceTree = "<group>"; };
@@ -1022,6 +1025,8 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */,
+				5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */,
 				5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */,
 				5CD1A27414D0AEE8005E76B5 /* ErrorDialog.h */,
 				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
@@ -1706,7 +1711,6 @@
 				FEF303B61335CFC50078054F /* UIFileTreeCell.h */,
 				FEF304E01336953A0078054F /* UISpriteEditor.cpp */,
 				FEF304E11336953A0078054F /* UISpriteEditor.h */,
-				FEF304E3133695BB0078054F /* UIScrollView.cpp */,
 				FEF304E4133695BB0078054F /* UIScrollView.h */,
 				FE1AE2E01455B51F00C6F712 /* VertexOctTree.cpp */,
 				FE1AE2E11455B51F00C6F712 /* VertexOctTree.h */,
@@ -1763,6 +1767,7 @@
 		FEDDC95F1429FFEB0004BF1A /* ColladaExport */ = {
 			isa = PBXGroup;
 			children = (
+				FEF304E3133695BB0078054F /* UIScrollView.cpp */,
 				FE2246EC142F7AB300BC3B92 /* ColladaConvert.cpp */,
 				FE2246ED142F7AB300BC3B92 /* ColladaConvert.h */,
 				FEDDC98D142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp */,
@@ -2183,6 +2188,7 @@
 				5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */,
 				5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */,
 				5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */,
+				5CB7FAB514FB5A32000EE8A8 /* TextureTrianglesDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

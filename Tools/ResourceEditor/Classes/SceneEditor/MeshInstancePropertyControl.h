@@ -22,6 +22,7 @@ protected:
 
 	int32 GetIndexFromKey(const String &forKey);
     void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
+    void OnShowTexture(BaseObject * object, void * userData, void * callerData);
 
     Vector<Material*> materials;
     Vector<String> materialNames;

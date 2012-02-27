@@ -139,6 +139,7 @@ property.meshinstance.meshinstance: "Mesh Instance"
 property.meshinstance.bboxmin: "BBox.min:"
 property.meshinstance.bboxmax: "BBox.max:"
 property.meshinstance.editmaterial: "Edit Material"
+property.meshinstance.showtriangles: "Show Triangles"
 
 #SphereNode Section
 property.spherenode.sphere: "Sphere"
