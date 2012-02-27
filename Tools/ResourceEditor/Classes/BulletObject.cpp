@@ -66,9 +66,9 @@ void BulletObject::CreateCollisionObject()
 			int i;
 			for (i = 0; i < pg->indexCount / 3; i++)
 			{
-				int index0 = pg->indexArray[i*3];
-				int index1 = pg->indexArray[i*3+1];
-				int index2 = pg->indexArray[i*3+2];
+				uint16 index0 = pg->indexArray[i*3];
+				uint16 index1 = pg->indexArray[i*3+1];
+				uint16 index2 = pg->indexArray[i*3+2];
 				Vector3 v;
 				pg->GetCoord(index0, v);
 				v = v * createdWith;
