@@ -49,10 +49,6 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
     }
     
     Vector<PolygonGroupWithMaterial*> polygroups = mesh->GetPolygonGroups();
-//    Vector<int32> groupIndexes = mesh->GetPolygonGroupIndexes();
-//    Vector<Material*> meshMaterials = mesh->GetMaterials();
-//    Vector<StaticMesh*> meshes = mesh->GetMeshes();
-    
     for(int32 i = 0; i < (int32)polygroups.size(); ++i)
     {
         PolygonGroup *pg = polygroups[i]->GetPolygonGroup();
@@ -117,7 +113,11 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
             
             propertyList->AddMessageProperty("property.meshinstance.editmaterial", 
                                              Message(this, &MeshInstancePropertyControl::OnGo2Materials, polygroups[i]->GetMaterial()));
+
         }
+        propertyList->AddMessageProperty("property.meshinstance.showtriangles", 
+                                         Message(this, &MeshInstancePropertyControl::OnShowTexture, pg));
+        
     }
 
 	propertyList->AddSection("property.meshinstance.dynamicshadow", GetHeaderState("property.meshinstance.dynamicshadow", true));
@@ -134,6 +134,13 @@ void MeshInstancePropertyControl::OnGo2Materials(DAVA::BaseObject *object, void 
     Material *material = (Material *)userData;
     SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
     screen->EditMaterial(material);
+}
+
+void MeshInstancePropertyControl::OnShowTexture(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    PolygonGroup *polygonGroup = (PolygonGroup *)userData;
+    SceneEditorScreenMain *screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
+    screen->ShowTextureTriangles(polygonGroup);
 }
 
 void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
