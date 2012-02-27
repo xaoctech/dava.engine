@@ -93,6 +93,21 @@ void TextureTrianglesDialog::InitWithData(PolygonGroup *pg)
 {
     SafeRelease(workingPolygonGroup);
     workingPolygonGroup = SafeRetain(pg);
+    
+    Vector<String> comboboxItems;
+    if(workingPolygonGroup)
+    {
+        for(int32 i = 0; i < workingPolygonGroup->textureCoordCount; ++i)
+        {
+            comboboxItems.push_back(Format("%d", i));
+        }
+    }
+    else
+    {
+        comboboxItems.push_back("No coordinates");
+    }
+    combobox->SetNewItemsSet(comboboxItems);
+    
     combobox->SetSelectedIndex(0, true);
 }
 
