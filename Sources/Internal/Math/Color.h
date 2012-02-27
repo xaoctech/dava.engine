@@ -30,6 +30,8 @@
 #ifndef __DAVAENGINE_COLORF_H__
 #define __DAVAENGINE_COLORF_H__
 
+#include "Vector.h"
+
 namespace DAVA 
 {
 
@@ -58,6 +60,7 @@ public:
 	
 	inline Color();
 	inline Color(float32 r, float32 g, float32 b, float32 a);
+    inline explicit Color(const Vector4 & vector);
 	
 	inline const Color & operator += (const Color & _v);
 	inline const Color & operator -= (const Color & _v);
@@ -95,7 +98,14 @@ inline Color::Color(float32 _r, float32 _g, float32 _b, float32 _a)
 {
 	r = _r; g = _g; b = _b; a = _a;
 }
-
+    
+inline Color::Color(const Vector4 & vector)
+{
+    r = vector.x;
+    g = vector.y;
+    b = vector.z;
+    a = vector.w;
+}
 
 //! On operations
 inline const Color & Color::operator += (const Color & _v)

@@ -73,10 +73,11 @@ UberShader * Material::uberShader = 0;
 
 Material::Material(Scene * _scene) 
     :   DataNode(_scene)
-    ,   diffuse(1.0f, 1.0f, 1.0f, 1.0f)
-    ,   specular(1.0f, 1.0f, 1.0f, 1.0f)
-    ,   ambient(1.0f, 1.0f, 1.0f, 1.0f)
-    ,   emission(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   diffuseColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   specularColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   ambientColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   emissiveColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   shininess(1.0f)
     ,   isOpaque(false)
     ,   isTwoSided(false)
 {
@@ -111,22 +112,12 @@ void Material::SetScene(Scene * _scene)
 {
     DVASSERT(scene == 0);
     scene = _scene;
-//    if (scene)
-//    {
-//        DataNode * materialsNode = scene->GetMaterials();
-//        materialsNode->AddNode(this);
-//    }
 }
 
 
 int32 Material::Release()
 {
     int32 retainCount = BaseObject::Release();
-//    if (retainCount == 1)
-//    {
-//        DataNode * materialsNode = scene->GetMaterials();
-//        materialsNode->RemoveNode(this);
-//    }
     return retainCount;
 }
 
@@ -139,6 +130,8 @@ void Material::RebuildShader()
     uniformTexture0 = -1;
     uniformTexture1 = -1;
     uniformLightPosition0 = -1;
+    uniformMaterialDiffuseColor = -1;
+    uniformMaterialSpecularColor = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -185,7 +178,8 @@ void Material::RebuildShader()
         case MATERIAL_VERTEX_LIT_TEXTURE:
             //
             uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-            
+            uniformMaterialDiffuseColor = shader->FindUniformLocationByName("materialDiffuseColor");
+            uniformMaterialSpecularColor = shader->FindUniformLocationByName("materialSpecularColor");
             break;
         default:
             break;
@@ -213,10 +207,12 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
         }
     }
     
-    keyedArchive->SetByteArrayAsType("mat.diffuse", diffuse);
-    keyedArchive->SetByteArrayAsType("mat.ambient", ambient);
-    keyedArchive->SetByteArrayAsType("mat.specular", specular);
-    keyedArchive->SetByteArrayAsType("mat.emission", emission);
+    keyedArchive->SetByteArrayAsType("mat.diffuse", diffuseColor);
+    keyedArchive->SetByteArrayAsType("mat.ambient", ambientColor);
+    keyedArchive->SetByteArrayAsType("mat.specular", specularColor);
+    keyedArchive->SetByteArrayAsType("mat.emission", emissiveColor);
+    keyedArchive->SetFloat("mat.shininess", shininess);
+    
     keyedArchive->SetBool("mat.isOpaque", isOpaque);
     keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
     
@@ -257,10 +253,11 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 //        } 
     }
     
-    diffuse = keyedArchive->GetByteArrayAsType("mat.diffuse", diffuse);
-    ambient = keyedArchive->GetByteArrayAsType("mat.ambient", ambient);
-    specular = keyedArchive->GetByteArrayAsType("mat.specular", specular);
-    emission = keyedArchive->GetByteArrayAsType("mat.emission", emission);
+    diffuseColor = keyedArchive->GetByteArrayAsType("mat.diffuse", diffuseColor);
+    ambientColor = keyedArchive->GetByteArrayAsType("mat.ambient", ambientColor);
+    specularColor = keyedArchive->GetByteArrayAsType("mat.specular", specularColor);
+    emissiveColor = keyedArchive->GetByteArrayAsType("mat.emission", emissiveColor);
+    shininess = keyedArchive->GetFloat("mat.shininess", shininess);
     
     isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
     isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
@@ -287,6 +284,50 @@ void Material::SetTwoSided(bool _isTwoSided)
 bool Material::GetTwoSided()
 {
     return isTwoSided;
+}
+    
+void Material::SetAmbientColor(const Color & color)
+{
+    ambientColor = color;
+}
+void Material::SetDiffuseColor(const Color & color)
+{
+    diffuseColor = color;
+}
+void Material::SetSpecularColor(const Color & color)
+{
+    specularColor = color;
+}
+void Material::SetEmissiveColor(const Color & color)
+{
+    emissiveColor = color;
+}
+
+const Color & Material::GetAmbientColor() const
+{
+    return ambientColor;
+}
+const Color & Material::GetDiffuseColor() const
+{
+    return diffuseColor;
+}
+const Color & Material::GetSpecularColor() const
+{
+    return specularColor;
+}
+const Color & Material::GetEmissiveColor() const
+{
+    return emissiveColor;
+}
+    
+void Material::SetShininess(float32 _shininess)
+{
+    shininess = _shininess;
+}
+
+float32 Material::GetShininess() const
+{
+    return shininess;
 }
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
@@ -329,12 +370,23 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
     {
         Camera * camera = scene->GetCurrentCamera();
         LightNode * lightNode0 = instanceMaterialState->GetLight(0);
-        if (uniformLightPosition0 != -1 && lightNode0 && camera)
+        if (lightNode0 && camera)
         {
-            const Matrix4 & matrix = camera->GetMatrix();
-            Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
-            
-            shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace); 
+            if (uniformLightPosition0 != -1)
+            {
+                const Matrix4 & matrix = camera->GetMatrix();
+                Vector3 lightPosition0InCameraSpace = lightNode0->GetPosition() * matrix;
+                
+                shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace); 
+            }
+            if (uniformMaterialDiffuseColor != -1)
+            {
+                shader->SetUniformValue(uniformMaterialDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+            }
+            if (uniformMaterialSpecularColor != -1)
+            {
+                shader->SetUniformValue(uniformMaterialSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+            }
         }
     }
     

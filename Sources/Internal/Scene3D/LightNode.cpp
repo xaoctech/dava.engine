@@ -41,7 +41,8 @@ REGISTER_CLASS(LightNode);
 LightNode::LightNode(Scene * _scene)
 :	SceneNode(_scene),
 	type(TYPE_DIRECTIONAL),
-	color(1.0f, 1.0f, 1.0f, 1.0f)
+	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
+    specularColor(1.0f, 1.0f, 1.0f, 1.0f)
 {
 }
     
@@ -55,9 +56,14 @@ void LightNode::SetType(DAVA::LightNode::eType _type)
     type = _type;
 }
 
-void LightNode::SetColor(DAVA::Color _color)
+void LightNode::SetDiffuseColor(const Color & _color)
 {
-    color = _color;
+    diffuseColor = _color;
+}
+
+void LightNode::SetSpecularColor(const Color & _color)
+{
+    specularColor = _color;
 }
 
 SceneNode* LightNode::Clone(SceneNode *dstNode)
@@ -71,7 +77,8 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     
     LightNode *lightNode = (LightNode *)dstNode;
     lightNode->type = type;
-    lightNode->color = color;
+    lightNode->diffuseColor = diffuseColor;
+    lightNode->specularColor = specularColor;
     
     return dstNode;
 }
@@ -109,9 +116,14 @@ const Vector3 & LightNode::GetDirection() const
     return direction;
 }
     
-const Color & LightNode::GetColor() const
+const Color & LightNode::GetDiffuseColor() const
 {
-    return color;
+    return diffuseColor;
+}
+    
+const Color & LightNode::GetSpecularColor() const
+{
+    return specularColor;
 }
 
 void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -119,21 +131,31 @@ void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	SceneNode::Save(archive, sceneFile);
 	
 	archive->SetInt32("type", type);
-	archive->SetFloat("color.r", color.r);
-	archive->SetFloat("color.g", color.g);
-	archive->SetFloat("color.b", color.b);
-	archive->SetFloat("color.a", color.a);
+	archive->SetFloat("color.r", diffuseColor.r);
+	archive->SetFloat("color.g", diffuseColor.g);
+	archive->SetFloat("color.b", diffuseColor.b);
+	archive->SetFloat("color.a", diffuseColor.a);
+
+	archive->SetFloat("specColor.r", specularColor.r);
+	archive->SetFloat("specColor.g", specularColor.g);
+	archive->SetFloat("specColor.b", specularColor.b);
+	archive->SetFloat("specColor.a", specularColor.a);
 }
 
 void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
-	 SceneNode::Load(archive, sceneFile);
+    SceneNode::Load(archive, sceneFile);
 
-	 type = (eType)archive->GetInt32("type");
-	 color.r = archive->GetFloat("color.r");
-	 color.g = archive->GetFloat("color.g");
-	 color.b = archive->GetFloat("color.b");
-	 color.a = archive->GetFloat("color.a");
+    type = (eType)archive->GetInt32("type");
+    diffuseColor.r = archive->GetFloat("color.r", diffuseColor.r);
+    diffuseColor.g = archive->GetFloat("color.g", diffuseColor.g);
+    diffuseColor.b = archive->GetFloat("color.b", diffuseColor.b);
+    diffuseColor.a = archive->GetFloat("color.a", diffuseColor.a);
+    
+    specularColor.r = archive->GetFloat("specColor.r", specularColor.r);
+    specularColor.g = archive->GetFloat("specColor.g", specularColor.g);
+    specularColor.b = archive->GetFloat("specColor.b", specularColor.b);
+    specularColor.a = archive->GetFloat("specColor.a", specularColor.a);
 }
 
 void LightNode::Draw()
@@ -142,7 +164,7 @@ void LightNode::Draw()
     
     if (debugFlags != DEBUG_DRAW_NONE)
     {
-        if (!(flags&SceneNode::NODE_VISIBLE))return;
+        if (!(flags & SceneNode::NODE_VISIBLE))return;
 
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE); 
@@ -153,7 +175,6 @@ void LightNode::Draw()
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
-    
 }
 
 };

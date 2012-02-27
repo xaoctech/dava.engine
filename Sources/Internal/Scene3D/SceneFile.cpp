@@ -321,8 +321,11 @@ bool SceneFile::ReadMaterial()
 
 	Material * mat = new Material(scene);
 
-	mat->ambient = materialDef.ambient;
-	mat->diffuse = materialDef.diffuse;
+	mat->SetAmbientColor(Color(materialDef.ambient));
+	mat->SetDiffuseColor(Color(materialDef.diffuse));
+    mat->SetEmissiveColor(Color(materialDef.emission));
+    mat->SetShininess(materialDef.shininess);
+    
 	
     //String diffuseTextureName;
    
@@ -369,13 +372,10 @@ bool SceneFile::ReadMaterial()
             mat->textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
     }
     
-	mat->emission = materialDef.emission;
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
 	mat->SetName(materialDef.name);
 	mat->reflective = materialDef.reflective;
 	mat->reflectivity = materialDef.reflectivity;
-	mat->shininess = materialDef.shininess;
-	mat->specular = materialDef.specular;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
     mat->SetOpaque(materialDef.hasOpacity);

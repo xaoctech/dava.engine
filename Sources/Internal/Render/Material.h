@@ -103,23 +103,23 @@ public:
     void SetTwoSided(bool isTwoSided);
     bool GetTwoSided();
     
-    /*  
-     
-     */
-    //void SetLight(LightNode * light, int32 index);
+    void SetAmbientColor(const Color & color);
+    void SetDiffuseColor(const Color & color);
+    void SetSpecularColor(const Color & color);
+    void SetEmissiveColor(const Color & color);
+        
+    const Color & GetAmbientColor() const;
+    const Color & GetDiffuseColor() const;
+    const Color & GetSpecularColor() const;
+    const Color & GetEmissiveColor() const;
+    
+    void SetShininess(float32 shininess);
+    float32 GetShininess() const;
         
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
-    
     eType   type;
 
-	Vector4 ambient;
-	Vector4 diffuse;
-	Vector4 specular;
-	Vector4 emission;
-
-    // Boroda: I do not know is these fields will be required. Get them from exporter, but actually we do not using them
-	float32	shininess;
 	Vector4 reflective;
 	float32	reflectivity;
 
@@ -143,9 +143,6 @@ public:
     void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     
-    int32 uniformTexture0;
-    int32 uniformTexture1;
-    int32 uniformLightPosition0;
     
 private:
     void RebuildShader();
@@ -153,7 +150,21 @@ private:
     bool    isOpaque;  
     bool    isTwoSided;
     
+    float32	shininess;
+    
+    Color ambientColor;
+	Color diffuseColor;
+	Color specularColor;
+	Color emissiveColor;
+    
     Shader  * shader;
+    
+    int32 uniformTexture0;
+    int32 uniformTexture1;
+    int32 uniformLightPosition0;
+    int32 uniformMaterialDiffuseColor;
+    int32 uniformMaterialSpecularColor;
+    
     static UberShader * uberShader;
 };
 

@@ -315,24 +315,12 @@ void MaterialEditor::OnColorPropertyChanged(PropertyList *forList, const String 
     if("materialeditor.diffusecolor" == forKey)
     {
         Material *mat = GetMaterial(selectedMaterial);
-        if(mat)
-        {
-            mat->diffuse.x = newColor.r;
-            mat->diffuse.y = newColor.g;
-            mat->diffuse.z = newColor.b;
-            mat->diffuse.w = newColor.a;
-        }
+        mat->SetDiffuseColor(newColor);
     }
     else if("materialeditor.specularcolor" == forKey)
     {
         Material *mat = GetMaterial(selectedMaterial);
-        if(mat)
-        {
-            mat->specular.x = newColor.r;
-            mat->specular.y = newColor.g;
-            mat->specular.z = newColor.b;
-            mat->specular.w = newColor.a;
-        }
+        mat->SetSpecularColor(newColor);
     }
 }
 
@@ -478,13 +466,13 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
         if(currentList->IsPropertyAvaliable("materialeditor.diffusecolor"))
         {
             currentList->SetColorPropertyValue("materialeditor.diffusecolor", 
-                                               Color(mat->diffuse.x, mat->diffuse.y, mat->diffuse.z, mat->diffuse.w));
+                                               mat->GetDiffuseColor());
         }
         
         if(currentList->IsPropertyAvaliable("materialeditor.specularcolor"))
         {
             currentList->SetColorPropertyValue("materialeditor.specularcolor", 
-                                               Color(mat->specular.x, mat->specular.y, mat->specular.z, mat->specular.w));
+                                               mat->GetSpecularColor());
         }
     }    
 }

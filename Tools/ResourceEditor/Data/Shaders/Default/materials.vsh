@@ -40,7 +40,8 @@ uniform vec3 lightPosition0;
 varying vec2 varTexCoord0;
 
 #if defined(VERTEX_LIT)
-varying lowp vec4 varDiffuseColor;
+varying lowp float varDiffuseColor;
+varying lowp float varSpecularColor;
 #endif
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
@@ -58,14 +59,12 @@ void main()
     
     VP = normalize(VP);
     
-    float diffuse = max(0.0, dot(normal, VP));
-//#if defined(SPECULAR)
+    varDiffuseColor = max(0.0, dot(normal, VP));
+
     vec3 eye = vec3(0.0, 0.0, 1.0);
     vec3 halfVector = normalize(VP + eye);
     float nDotHV = max(0.0, dot(normal, halfVector));
-    float specular = pow(nDotHV, 30.0);
-//#endif
-    varDiffuseColor = vec4(0.5 + diffuse);
+    varSpecularColor = pow(nDotHV, 30.0);
 #endif
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)

@@ -287,6 +287,12 @@ void Shader::SetUniformValue(int32 uniformLocation, const Vector3 & vector)
 {
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &vector.x));
 }
+
+void Shader::SetUniformValue(int32 uniformLocation, const Color & color)
+{
+    RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &color.r));
+}
+
 void Shader::SetUniformValue(int32 uniformLocation, const Vector4 & vector)
 {
     RENDER_VERIFY(glUniform4fv(uniformLocation, 1, &vector.x));
