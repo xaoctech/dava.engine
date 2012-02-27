@@ -56,10 +56,12 @@ public:
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
     void SetType(eType _type);
-    void SetColor(Color _color);
+    void SetDiffuseColor(const Color & _color);
+    void SetSpecularColor(const Color & _color);
     
     eType GetType() const;
-    const Color & GetColor() const;    
+    const Color & GetDiffuseColor() const;    
+    const Color & GetSpecularColor() const;    
     
     const Vector3 & GetPosition() const;
     const Vector3 & GetDirection() const;
@@ -74,7 +76,8 @@ protected:
     Vector3 position;
     Vector3 direction;
     eType type;
-    Color color;
+    Color diffuseColor;
+    Color specularColor;
 };
 
 };

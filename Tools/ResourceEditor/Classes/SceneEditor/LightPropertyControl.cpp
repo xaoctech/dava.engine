@@ -27,9 +27,15 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddComboProperty("property.lightnode.type", types);
 	propertyList->SetComboPropertyIndex("property.lightnode.type", light->GetType());
 
-    propertyList->AddColorProperty("property.lightnode.color");
-	propertyList->SetColorPropertyValue("property.lightnode.color", light->GetColor());
+    propertyList->AddColorProperty("property.lightnode.diffuse.color");
+	propertyList->SetColorPropertyValue("property.lightnode.diffuse.color", light->GetDiffuseColor());
 
+    propertyList->AddColorProperty("property.lightnode.specular.color");
+	propertyList->SetColorPropertyValue("property.lightnode.specular.color", light->GetSpecularColor());
+
+    //propertyList->AddFloatProperty("property.lightnode.material.shininess", light->GetShininess())
+    
+    
 	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
 	propertyList->AddBoolProperty("Enable");
@@ -148,10 +154,15 @@ void LightPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
 
 void LightPropertyControl::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
 {
-    if("property.lightnode.color" == forKey)
+    if("property.lightnode.diffuse.color" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentNode);
-        light->SetColor(newColor);
+        light->SetDiffuseColor(newColor);
+    }
+    if("property.lightnode.specular.color" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->SetSpecularColor(newColor);
     }
 }
 

@@ -18,31 +18,36 @@ varying mediump vec2 varTexCoord1;
 #endif 
 
 #if defined(VERTEX_LIT)
-varying lowp vec4 varDiffuseColor;
+uniform lowp vec3 materialDiffuseColor;
+uniform lowp vec3 materialSpecularColor;
+
+varying lowp float varDiffuseColor;
+varying lowp float varSpecularColor;
 #endif 
 
 void main()
 {
     // FETCH PHASE
-    lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
+    lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
 #if defined(OPAQUE)
     if (textureColor0.a < 0.9)discard;
 #endif
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
-    lowp vec4 textureColor1 = texture2D(texture1, varTexCoord1);
+    lowp vec3 textureColor1 = texture2D(texture1, varTexCoord1).rgb;
 #endif
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
-    gl_FragColor = varDiffuseColor * textureColor0;
+	vec3 color = varDiffuseColor * materialDiffuseColor * textureColor0 + varSpecularColor * materialSpecularColor;
 #else
     #if defined(MATERIAL_TEXTURE)
-    	gl_FragColor = textureColor0;
+    	vec3 color = textureColor0;
     #elif defined(MATERIAL_DECAL)
-    	gl_FragColor = textureColor0 * textureColor1;
+    	vec3 color = textureColor0 * textureColor1;
     #elif defined(MATERIAL_DETAIL)
-        gl_FragColor = textureColor0 * textureColor1 * 2.0;
+        vec3 color = textureColor0 * textureColor1 * 2.0;
     #endif 
 #endif
+    gl_FragColor = vec4(color, 1.0);
 }
