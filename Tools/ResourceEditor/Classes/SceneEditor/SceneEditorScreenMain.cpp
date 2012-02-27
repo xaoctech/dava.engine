@@ -12,6 +12,8 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
+#include "TextureTrianglesDialog.h"
+
 #include "PropertyControlCreator.h"
 void SceneEditorScreenMain::LoadResources()
 {
@@ -51,6 +53,8 @@ void SceneEditorScreenMain::LoadResources()
     menuPopup->SetDelegate(this);
     
     InitializeNodeDialogs();    
+    
+    textureTrianglesDialog = new TextureTrianglesDialog();
     
     materialEditor = new MaterialEditor();
     
@@ -108,6 +112,7 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(textureTrianglesDialog);
     SafeRelease(sceneInfoButton);
     
     SafeRelease(settingsDialog);
@@ -1176,4 +1181,11 @@ void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
     bodies[0]->bodyControl->SetFilePath(pathToFile);
 }
 
+void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
+{
+    if(textureTrianglesDialog)
+    {
+        textureTrianglesDialog->Show(polygonGroup);
+    }
+}
 
