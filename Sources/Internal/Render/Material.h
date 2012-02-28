@@ -115,6 +115,10 @@ public:
     
     void SetShininess(float32 shininess);
     float32 GetShininess() const;
+
+	void SetSetupLightmap(bool isSetupLightmap);
+	bool GetSetupLightmap();
+	void SetSetupLightmapSize(int32 setupLightmapSize);
         
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
@@ -149,6 +153,9 @@ private:
     
     bool    isOpaque;  
     bool    isTwoSided;
+
+	bool	isSetupLightmap;
+	int32	setupLightmapSize;
     
     float32	shininess;
     

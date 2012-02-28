@@ -80,6 +80,8 @@ Material::Material(Scene * _scene)
     ,   shininess(1.0f)
     ,   isOpaque(false)
     ,   isTwoSided(false)
+	,	isSetupLightmap(false)
+	,	setupLightmapSize(1)
 {
 //    if (scene)
 //    {
@@ -143,6 +145,10 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
         case MATERIAL_UNLIT_TEXTURE_DECAL:
             shaderCombileCombo = "MATERIAL_DECAL";
+			if(isSetupLightmap)
+			{
+				shaderCombileCombo = shaderCombileCombo + ";SETUP_LIGHTMAP";
+			}
             break;
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
             shaderCombileCombo = "MATERIAL_DETAIL";
@@ -158,9 +164,7 @@ void Material::RebuildShader()
     {
         shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
     }
-    
 
-    
     // Get shader if combo unavailable compile it
     shader = uberShader->GetShader(shaderCombileCombo);
     
@@ -360,11 +364,25 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
     
     if (textures[Material::TEXTURE_DECAL])
     {
-        shader->SetUniformValue(uniformTexture0, 0);
-        shader->SetUniformValue(uniformTexture1, 1);
+		if(uniformTexture0 != -1)
+		{
+			shader->SetUniformValue(uniformTexture0, 0);
+		}
+		if(uniformTexture1 != -1)
+		{
+			shader->SetUniformValue(uniformTexture1, 1);
+		}
         
     }
     
+	if(isSetupLightmap)
+	{
+		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
+		if (lightmapSizePosition != -1)
+		{
+			shader->SetUniformValue(lightmapSizePosition, setupLightmapSize); 
+		}
+	}
 
     if (instanceMaterialState)
     {
@@ -404,6 +422,23 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 
 }
 
+void Material::SetSetupLightmap(bool _isSetupLightmap)
+{
+	if(isSetupLightmap != _isSetupLightmap)
+	{
+		isSetupLightmap = _isSetupLightmap;
+		RebuildShader();
+	}
+}
 
+bool Material::GetSetupLightmap()
+{
+	return isSetupLightmap;
+}
+
+void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
+{
+	setupLightmapSize = _setupLightmapSize;
+}
 
 };
