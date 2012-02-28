@@ -25,6 +25,10 @@ varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
 #endif 
 
+#if defined(SETUP_LIGHTMAP)
+varying lowp float varLightmapSize;
+#endif
+
 void main()
 {
     // FETCH PHASE
@@ -35,6 +39,37 @@ void main()
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
     lowp vec3 textureColor1 = texture2D(texture1, varTexCoord1).rgb;
+#if defined(SETUP_LIGHTMAP)
+	vec3 lightGray = vec3(0.75, 0.75, 0.75);
+	vec3 darkGray = vec3(0.25, 0.25, 0.25);
+	bool isXodd;
+	bool isYodd;
+	if(fract(floor(varTexCoord1.x*varLightmapSize)/2.0) == 0.0)
+	{
+		isXodd = true;
+	}
+	else
+	{
+		isXodd = false;
+	}
+	if(fract(floor(varTexCoord1.y*varLightmapSize)/2.0) == 0.0)
+	{
+		isYodd = true;
+	}
+	else
+	{
+		isYodd = false;
+	}
+	
+	if((isXodd && isYodd) || (!isXodd && !isYodd))
+	{
+		textureColor1 = lightGray;
+	}
+	else
+	{
+		textureColor1 = darkGray;
+	}
+#endif
 #endif
 
     // DRAW PHASE
