@@ -39,6 +39,9 @@ varying vec3 varHalfVec;
 varying vec3 varEyeVec;
 #endif
 
+#if defined(SETUP_LIGHTMAP)
+varying lowp float varLightmapSize;
+#endif
 
 void main()
 {
@@ -54,13 +57,44 @@ void main()
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
     lowp vec3 textureColor1 = texture2D(texture1, varTexCoord1).rgb;
+#if defined(SETUP_LIGHTMAP)
+	vec3 lightGray = vec3(0.75, 0.75, 0.75);
+	vec3 darkGray = vec3(0.25, 0.25, 0.25);
+	bool isXodd;
+	bool isYodd;
+	if(fract(floor(varTexCoord1.x*varLightmapSize)/2.0) == 0.0)
+	{
+		isXodd = true;
+	}
+	else
+	{
+		isXodd = false;
+	}
+	if(fract(floor(varTexCoord1.y*varLightmapSize)/2.0) == 0.0)
+	{
+		isYodd = true;
+	}
+	else
+	{
+		isYodd = false;
+	}
+	
+	if((isXodd && isYodd) || (!isXodd && !isYodd))
+	{
+		textureColor1 = lightGray;
+	}
+	else
+	{
+		textureColor1 = darkGray;
+	}
+#endif
 #endif
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
 	vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0 + varSpecularColor * materialLightSpecularColor;
 #elif defined(PIXEL_LIT)
-	// lookup normal from normal map, move from [0,1] to  [-1, 1] range, normalize
+	// lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalMapTexture, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
 
