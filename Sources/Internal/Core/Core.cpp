@@ -89,6 +89,10 @@ void Core::CreateSingletons()
     // check types size
     
 	new FileSystem();
+	FileSystem::Instance()->SetDefaultDocumentsDirectory();
+        FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
+
+	
 	new Logger();
 	if (isConsoleMode)
 	{

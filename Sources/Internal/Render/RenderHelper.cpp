@@ -567,7 +567,8 @@ void RenderHelper::DrawBox(const AABBox3 & box)
 		
 		//draw
 		
-		for (int i = 0; i < triangleIndices.size() / 3; i++)
+		int32 size = triangleIndices.size()/3;
+		for (int i = 0; i < size; i++)
 		{
 			Vector3 p1 = points[triangleIndices[i]];
 			Vector3 p2 = points[triangleIndices[i + 1]];
