@@ -128,13 +128,17 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 	FCDGeometryPolygonsInput* pVertexInput = polygons->FindInput(FUDaeGeometryInput::POSITION);
 	FCDGeometryPolygonsInput* pTexCoordInput0 = polygons->FindInput(FUDaeGeometryInput::TEXCOORD);
 	FCDGeometryPolygonsInput* pNormalInput = polygons->FindInput(FUDaeGeometryInput::NORMAL);
+	FCDGeometryPolygonsInput* pTangentInput = polygons->FindInput(FUDaeGeometryInput::TEXTANGENT);
 
 	FCDGeometrySource* pVertexSource = polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::POSITION);
 	FCDGeometrySource* pTexCoordSource0 = polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::TEXCOORD);
 	FCDGeometrySource* pNormalSource = polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::NORMAL);
+	FCDGeometrySource* pTangentSource = polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::TEXTANGENT);
 
     if (pTexCoordInput0 && pTexCoordSource0)
         vertexFormat |= EVF_TEXCOORD0;
+    if (pTangentInput && pTangentSource)
+        vertexFormat |= EVF_TANGENT;
     
     FCDGeometryPolygonsInputList texCoordInputList;
     polygons->FindInputs(FUDaeGeometryInput::TEXCOORD, texCoordInputList);
@@ -175,7 +179,8 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 	int texIndexCount0 = -1; 
     int texIndexCount1 = -1;
 	int normalIndexCount = -1; 
-	uint32 * vertexIndeces = 0, * normalIndeces = 0, * texIndices0 = 0, * texIndices1 = 0;
+    int tangentIndexCount = -1;
+	uint32 * vertexIndeces = 0, * normalIndeces = 0, * texIndices0 = 0, * texIndices1 = 0, *tangentIndices;
 
 	if (pVertexInput)
 	{
@@ -200,6 +205,12 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 		normalIndexCount = (int)pNormalInput->GetIndexCount();
 		normalIndeces = (uint32*)pNormalInput->GetIndices();
 	}	
+    
+    if (pTangentInput)
+    {
+		tangentIndexCount = (int)pTangentInput->GetIndexCount();
+		tangentIndices = (uint32*)pTangentInput->GetIndices();
+    }
 
 	triangleCount = vertexIndexCount / 3;
 	unoptimizedVerteces.resize(vertexIndexCount);	
@@ -217,6 +228,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 		ColladaVertex tv;
 		int vertexIndex = vertexIndeces[v];
 		int normalIndex = vertexIndex;
+        int tangentIndex = vertexIndex; // seems it's just for some case where we do not have indices ??? 
 		int tex0Index = vertexIndex;
 		int tex1Index = vertexIndex;
 
@@ -236,7 +248,13 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 			p = &pNormalSource->GetData()[normalIndex * 3];
 			tv.normal.x=p[0]; tv.normal.y=p[1]; tv.normal.z=p[2];
 		}
-	
+        if (pTangentSource)
+        {
+            tangentIndex = tangentIndices[v];
+            p = &pTangentSource->GetData()[tangentIndex * 3];
+            tv.tangent.x = p[0]; tv.tangent.y = p[1]; tv.tangent.z = p[2];
+        }
+
 		if (pTexCoordSource0)
 		{
 			tex0Index = texIndices0[v];
@@ -269,6 +287,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 			}
 			//printf("ind: %d, ", vertexIndex);
 		}
+        
 		if ((vertexIndex != normalIndex || vertexIndex != tex0Index || vertexIndex != tex1Index))
 		{
 			int fuckingMax = 0;
@@ -444,6 +463,22 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
                     equalIJ = false;
                 }
                 if (!FLOAT_EQUAL_EPS( tvi->texCoords[1].y, tvj->texCoords[1].y, EPS))
+                {
+                    equalIJ = false;
+                }
+            }
+            
+            if (pTangentSource)
+            {
+                if (!FLOAT_EQUAL_EPS( tvi->tangent.x, tvj->tangent.x, EPS))
+                {
+                    equalIJ = false;
+                }
+                if (!FLOAT_EQUAL_EPS( tvi->tangent.y, tvj->tangent.y, EPS))
+                {
+                    equalIJ = false;
+                }
+                if (!FLOAT_EQUAL_EPS( tvi->tangent.z, tvj->tangent.z, EPS))
                 {
                     equalIJ = false;
                 }

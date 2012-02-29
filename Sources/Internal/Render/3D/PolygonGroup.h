@@ -149,7 +149,16 @@ public:
         If you want you can build tangents for your submesh
         This function rebuild the polygroup from ground with binormal  
      */
-    void    BuildTangents();
+    void    BuildTangentsBinormals(uint32 flagsToAdd);
+    
+    /**
+        \brief Function to generate normal, tangent, binormal vectors using triangle vertices, and texture coords.
+        This is helper function that is used inside BuildTangents function
+     */
+    static void TangentVectors( const Vector3 &v0, const Vector3 &v1, const Vector3 &v2, 
+                           const Vector2 &t0, const Vector2 &t1, const Vector2 &t2, 
+                        Vector3 &sdir, Vector3 &tdir, Vector3 &normal);
+
     
     /*
         Go through all vertices and optimize it, remove redundant vertices. 

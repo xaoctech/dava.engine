@@ -160,16 +160,16 @@ public:
     void SetTexture(eTextureLevel level, const String & textureName);
 
 	/**
-	 \brief Get texture that was previously set in SetTexture.
-	 \param[in] level 
-	 \returns current texture
+        \brief Get texture that was previously set in SetTexture.
+        \param[in] level 
+        \returns current texture
 	 */
 	Texture * GetTexture(eTextureLevel level);
     
 	/**
-	 \brief Get texture name that was previously set in SetTexture.
-	 \param[in] level 
-	 \returns current texture name
+        \brief Get texture name that was previously set in SetTexture.
+        \param[in] level 
+        \returns current texture name
 	 */
     const String & GetTextureName(eTextureLevel level);
     
@@ -179,10 +179,10 @@ public:
 	virtual void Draw();
 
 	/**
-	 \brief Get landscape mesh geometry.
-	 Unoptimized lod0 mesh is returned.
-	 \param[out] vertices landscape vertices
-	 \param[out] indices landscape indices
+        \brief Get landscape mesh geometry.
+        Unoptimized lod0 mesh is returned.
+        \param[out] vertices landscape vertices
+        \param[out] indices landscape indices
 	 */
 	void GetGeometry(Vector<LandscapeVertex> & vertices, Vector<int32> & indices);
     
@@ -192,8 +192,8 @@ public:
 	inline AABBox3 & GetBoundingBox();
 
     /**
-     \brief Function to receive pathname of heightmap object
-     \returns pathname of heightmap
+        \brief Function to receive pathname of heightmap object
+        \returns pathname of heightmap
      */
     const String & GetHeightMapPathname();
 
@@ -202,9 +202,9 @@ public:
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
+    // TODO: Need comment here
 	bool PlacePoint(const Vector3 & point, Vector3 & result);
 
-	
 protected:	
     
     class LandscapeQuad

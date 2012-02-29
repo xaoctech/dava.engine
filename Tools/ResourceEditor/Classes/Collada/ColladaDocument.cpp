@@ -307,6 +307,8 @@ void ColladaDocument::SaveScene( const String & scenePath, const String & sceneN
 		material.specular.y = colladaMaterial->diffuse.y;
 		material.specular.z = colladaMaterial->diffuse.z;
 		material.specular.w = colladaMaterial->diffuse.w;
+        
+        material.shininess = colladaMaterial->shininess;
 		
         material.hasOpacity = false;
 		
@@ -478,7 +480,14 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
                 v.normal.Normalize();
                 fwrite(&v.normal, sizeof(Vector3), 1, sceneFP);
                 //Logger::Debug("normal: %f %f %f", v.normal.x, v.normal.y, v.normal.z);
+			}            
+            if (vertexFormat & EVF_TANGENT)
+            {
+                v.tangent.Normalize();
+                fwrite(&v.tangent, sizeof(Vector3), 1, sceneFP);
+                //Logger::Debug("normal: %f %f %f", v.normal.x, v.normal.y, v.normal.z);
 			}
+            
             if (vertexFormat & EVF_TEXCOORD0)
             {
                 FlipTexCoords(v.texCoords[0]);
