@@ -63,6 +63,11 @@ varying vec3 varHalfVec;
 varying vec3 varEyeVec;
 #endif
 
+#if defined(SETUP_LIGHTMAP)
+uniform int lightmapSize;
+varying lowp float varLightmapSize;
+#endif
+
 void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
@@ -122,5 +127,8 @@ void main()
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
 	varTexCoord1 = inTexCoord1;
+	#if defined(SETUP_LIGHTMAP)
+		varLightmapSize = lightmapSize;
+	#endif
 #endif
 }

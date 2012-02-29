@@ -171,7 +171,17 @@ void MeshInstanceNode::Draw()
         PolygonGroupWithMaterial * polygroup = polygroups[k];
         if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
 		{
-            polygroup->material->textures[Material::TEXTURE_DECAL] = GetLightmapForIndex(k);
+			Texture * lightmap = GetLightmapForIndex(k);
+			if(lightmap)
+			{
+				polygroup->material->SetSetupLightmap(false);
+				polygroup->material->textures[Material::TEXTURE_DECAL] = lightmap;
+			}
+			else
+			{
+				polygroup->material->SetSetupLightmap(true);
+				polygroup->material->SetSetupLightmapSize(GetCustomProperties()->GetInt32(DAVA::Format("#%d.lightmap.size", k), 128));
+			}
         }
         
         polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
