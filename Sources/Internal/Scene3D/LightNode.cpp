@@ -41,6 +41,7 @@ REGISTER_CLASS(LightNode);
 LightNode::LightNode(Scene * _scene)
 :	SceneNode(_scene),
 	type(TYPE_DIRECTIONAL),
+    ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
     specularColor(1.0f, 1.0f, 1.0f, 1.0f)
 {
@@ -54,6 +55,11 @@ LightNode::~LightNode()
 void LightNode::SetType(DAVA::LightNode::eType _type)
 {
     type = _type;
+}
+    
+void LightNode::SetAmbientColor(const Color & _color)
+{
+    ambientColor = _color;
 }
 
 void LightNode::SetDiffuseColor(const Color & _color)
@@ -77,6 +83,7 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
     
     LightNode *lightNode = (LightNode *)dstNode;
     lightNode->type = type;
+    lightNode->ambientColor = ambientColor;
     lightNode->diffuseColor = diffuseColor;
     lightNode->specularColor = specularColor;
     
@@ -115,6 +122,11 @@ const Vector3 & LightNode::GetDirection() const
 {
     return direction;
 }
+   
+const Color & LightNode::GetAmbientColor() const
+{
+    return ambientColor;
+}
     
 const Color & LightNode::GetDiffuseColor() const
 {
@@ -131,6 +143,11 @@ void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	SceneNode::Save(archive, sceneFile);
 	
 	archive->SetInt32("type", type);
+	archive->SetFloat("ambColor.r", ambientColor.r);
+	archive->SetFloat("ambColor.g", ambientColor.g);
+	archive->SetFloat("ambColor.b", ambientColor.b);
+	archive->SetFloat("ambColor.a", ambientColor.a);
+
 	archive->SetFloat("color.r", diffuseColor.r);
 	archive->SetFloat("color.g", diffuseColor.g);
 	archive->SetFloat("color.b", diffuseColor.b);
@@ -147,6 +164,12 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     SceneNode::Load(archive, sceneFile);
 
     type = (eType)archive->GetInt32("type");
+    
+    ambientColor.r = archive->GetFloat("ambColor.r", ambientColor.r);
+    ambientColor.g = archive->GetFloat("ambColor.g", ambientColor.g);
+    ambientColor.b = archive->GetFloat("ambColor.b", ambientColor.b);
+    ambientColor.a = archive->GetFloat("ambColor.a", ambientColor.a);
+    
     diffuseColor.r = archive->GetFloat("color.r", diffuseColor.r);
     diffuseColor.g = archive->GetFloat("color.g", diffuseColor.g);
     diffuseColor.b = archive->GetFloat("color.b", diffuseColor.b);

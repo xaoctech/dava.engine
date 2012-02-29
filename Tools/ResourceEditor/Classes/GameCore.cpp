@@ -77,12 +77,12 @@ void GameCore::OnAppFinished()
 void GameCore::OnSuspend()
 {
 	//prevent going to suspend
-    //ApplicationCore::OnSuspend();
+    ApplicationCore::OnSuspend();
 }
 
 void GameCore::OnResume()
 {
-   // ApplicationCore::OnResume();
+    ApplicationCore::OnResume();
 }
 
 void GameCore::OnBackground()

@@ -75,18 +75,23 @@ public:
         MATERIAL_UNLIT_TEXTURE_LIGHTMAP,            // texture * lightmap
         
         MATERIAL_VERTEX_LIT_TEXTURE,                // single texture with vertex lighting
-        MATERIAL_VERTEX_LIT_DETAIL,         // single texture * detail texture * 2.0 with vertex lighting
+        MATERIAL_VERTEX_LIT_DETAIL,                 // single texture * detail texture * 2.0 with vertex lighting
         MATERIAL_VERTEX_LIT_DECAL,
+        MATERIAL_VERTEX_LIT_LIGHTMAP,               // vertex lit lighting + lightmaps
         
-        MATERIAL_NORMAL_MAPPED_DIFFUSE,     // single texture + diffuse light normal mapping
-        MATERIAL_NORMAL_MAPPED_SPECULAR,    // single texture + diffuse + specular normal mapping
+        MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE,
+        MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR,     // single texture + diffuse light normal mapping
+        MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP, // single texture + diffuse light normal mapping
         
+
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
         // MATERIAL_VERTEX_LIGHTING,       // flag
         // MATERIAL_NORMAL_MAPPED,         // flag
         MATERIAL_TYPES_COUNT
     };
+    
+    static const char8 * GetTypeName(eType type);
 
     Material(Scene * _scene = 0);
     virtual ~Material();
@@ -94,7 +99,6 @@ public:
     virtual void SetScene(Scene * _scene);
    
 	virtual int32 Release();
-    static const char * GetTypeName();
     
     void SetType(eType _type);
     void SetOpaque(bool isOpaque);
@@ -162,8 +166,11 @@ private:
     int32 uniformTexture0;
     int32 uniformTexture1;
     int32 uniformLightPosition0;
-    int32 uniformMaterialDiffuseColor;
-    int32 uniformMaterialSpecularColor;
+    int32 uniformMaterialLightAmbientColor;
+    int32 uniformMaterialLightDiffuseColor;
+    int32 uniformMaterialLightSpecularColor;
+    int32 uniformMaterialSpecularShininess;
+
     
     static UberShader * uberShader;
 };

@@ -69,17 +69,11 @@ MaterialEditor::MaterialEditor()
     selectedMaterial = -1;
     lastSelection = NULL;
     Vector<String> v;
-    v.push_back("UNLIT_TEXTURE");
-    v.push_back("UNLIT_TEXTURE_DETAIL");
-    v.push_back("UNLIT_TEXTURE_DECAL");
-    v.push_back("UNLIT_TEXTURE_LIGHTMAP");
+    for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
+    {
+        v.push_back(Material::GetTypeName((Material::eType)i));
+    }
     
-    v.push_back("VERTEX_LIT_TEXTURE");
-    v.push_back("VERTEX_LIT_TEXTURE_DETAIL");
-    v.push_back("VERTEX_LIT_TEXTURE_DECAL");
-    
-    v.push_back("NORMAL_MAPPED_DIFFUSE");
-    v.push_back("NORMAL_MAPPED_SPECULAR");
     
     comboboxName = new UIStaticText(Rect(size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20));
     comboboxName->SetFont(ControlsFactory::GetFontLight());
@@ -108,8 +102,9 @@ MaterialEditor::MaterialEditor()
             materialProps[i]->AddFilepathProperty(textureNames[ME_DETAIL], ".png;.pvr");
         }
 
-        if (i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
-            || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
+        if (i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP)
         {
             materialProps[i]->AddFilepathProperty(textureNames[ME_NORMAL_MAP], ".png;.pvr");
         }
@@ -120,18 +115,22 @@ MaterialEditor::MaterialEditor()
         if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
             || i == Material::MATERIAL_VERTEX_LIT_DECAL
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL
-            || i == Material::MATERIAL_NORMAL_MAPPED_DIFFUSE
-            || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP)
         {
+            materialProps[i]->AddColorProperty("materialeditor.ambientcolor");
             materialProps[i]->AddColorProperty("materialeditor.diffusecolor");
         }
 
         if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
             || i == Material::MATERIAL_VERTEX_LIT_DECAL
             || i == Material::MATERIAL_VERTEX_LIT_DETAIL
-            || i == Material::MATERIAL_NORMAL_MAPPED_SPECULAR)
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR
+            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP)
         {
             materialProps[i]->AddColorProperty("materialeditor.specularcolor");
+            materialProps[i]->AddFloatProperty("materialeditor.specularshininess");
         }
     }
 }
@@ -305,14 +304,22 @@ void MaterialEditor::OnStringPropertyChanged(PropertyList *forList, const String
 }
 
 void MaterialEditor::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
-{
-    Material *mat = GetMaterial(selectedMaterial);
-    if(!mat) return;
+{    
+    if ("materialeditor.specularshininess" == forKey)
+    {
+        Material *mat = GetMaterial(selectedMaterial);
+        mat->SetShininess(newValue);
+    }
 }
 
 void MaterialEditor::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
 {
-    if("materialeditor.diffusecolor" == forKey)
+    if("materialeditor.ambientcolor" == forKey)
+    {
+        Material *mat = GetMaterial(selectedMaterial);
+        mat->SetAmbientColor(newColor);
+    }
+    else if("materialeditor.diffusecolor" == forKey)
     {
         Material *mat = GetMaterial(selectedMaterial);
         mat->SetDiffuseColor(newColor);
@@ -450,7 +457,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
             {
                 if (mat->textures[textureTypes[i]])
                 {
-                    currentList->SetFilepathPropertyValue(textureNames[i], mat->names[i]);
+                    currentList->SetFilepathPropertyValue(textureNames[i], mat->names[textureTypes[i]]);
                 }
                 else 
                 {
@@ -462,6 +469,12 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
         
         currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
         currentList->SetBoolPropertyValue("materialeditor.twosided", mat->GetTwoSided());
+
+        if(currentList->IsPropertyAvaliable("materialeditor.ambientcolor"))
+        {
+            currentList->SetColorPropertyValue("materialeditor.ambientcolor", 
+                                               mat->GetAmbientColor());
+        }
         
         if(currentList->IsPropertyAvaliable("materialeditor.diffusecolor"))
         {
@@ -473,6 +486,11 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
         {
             currentList->SetColorPropertyValue("materialeditor.specularcolor", 
                                                mat->GetSpecularColor());
+        }
+        
+        if(currentList->IsPropertyAvaliable("materialeditor.specularshininess"))
+        {
+            currentList->SetFloatPropertyValue("materialeditor.specularshininess", mat->GetShininess());
         }
     }    
 }

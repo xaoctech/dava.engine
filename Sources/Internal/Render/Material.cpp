@@ -33,6 +33,7 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/StringFormat.h"
 #include "Render/Shader.h"
+#include "Render/Image.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/Scene.h"
@@ -70,13 +71,44 @@ LightNode * InstanceMaterialState::GetLight(int32 lightIndex)
 REGISTER_CLASS(Material);
     
 UberShader * Material::uberShader = 0;
+    
+const char8 * Material::GetTypeName(eType format)
+{
+    switch(format)
+    {
+        case MATERIAL_UNLIT_TEXTURE:
+            return "UNLIT_TEXTURE";
+        case MATERIAL_UNLIT_TEXTURE_DETAIL:
+            return "UNLIT_TEXTURE_DETAIL";
+        case MATERIAL_UNLIT_TEXTURE_DECAL:
+            return "UNLIT_TEXTURE_DECAL";
+        case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
+            return "UNLIT_TEXTURE_LIGHTMAP";
+        case MATERIAL_VERTEX_LIT_TEXTURE:
+            return "VERTEX_LIT_TEXTURE";
+        case MATERIAL_VERTEX_LIT_DETAIL:
+            return "VERTEX_LIT_DETAIL";
+        case MATERIAL_VERTEX_LIT_DECAL:
+            return "VERTEX_LIT_DECAL";
+        case MATERIAL_VERTEX_LIT_LIGHTMAP:
+            return "VERTEX_LIT_LIGHTMAP";
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
+            return "PIXEL_LIT_NORMAL_DIFFUSE";
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
+            return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR";
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
+            return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
+    };
+    return "WRONG MATERIAL";
+}
+
 
 Material::Material(Scene * _scene) 
     :   DataNode(_scene)
-    ,   diffuseColor(1.0f, 1.0f, 1.0f, 1.0f)
-    ,   specularColor(1.0f, 1.0f, 1.0f, 1.0f)
-    ,   ambientColor(1.0f, 1.0f, 1.0f, 1.0f)
-    ,   emissiveColor(1.0f, 1.0f, 1.0f, 1.0f)
+    ,   diffuseColor(0.8f, 0.8f, 0.8f, 1.0f)
+    ,   specularColor(0.0f, 0.0f, 0.0f, 1.0f)
+    ,   ambientColor(0.2f, 0.2f, 0.2f, 1.0f)
+    ,   emissiveColor(0.0f, 0.0f, 0.0f, 1.0f)
     ,   shininess(1.0f)
     ,   isOpaque(false)
     ,   isTwoSided(false)
@@ -98,6 +130,10 @@ Material::Material(Scene * _scene)
         uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
         uberShader->CompileShaderCombination("MATERIAL_DECAL;VERTEX_LIT");
         uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
+        
+        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;");
+        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;");
+        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS;");
     }
     
 //    type = MATERIAL_UNLIT_TEXTURE;
@@ -130,8 +166,10 @@ void Material::RebuildShader()
     uniformTexture0 = -1;
     uniformTexture1 = -1;
     uniformLightPosition0 = -1;
-    uniformMaterialDiffuseColor = -1;
-    uniformMaterialSpecularColor = -1;
+    uniformMaterialLightAmbientColor = -1;
+    uniformMaterialLightDiffuseColor = -1;
+    uniformMaterialLightSpecularColor = -1;
+    uniformMaterialSpecularShininess = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -150,7 +188,15 @@ void Material::RebuildShader()
         case MATERIAL_VERTEX_LIT_TEXTURE:
             shaderCombileCombo = "MATERIAL_TEXTURE;VERTEX_LIT";
             break;
-            
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
+            shaderCombileCombo = "MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE";
+            break;
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
+            shaderCombileCombo = "MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR";
+            break;
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
+            shaderCombileCombo = "MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS";
+            break;
         default:
             break;
     };
@@ -159,6 +205,8 @@ void Material::RebuildShader()
         shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
     }
     
+    //if (isDistanceAttenuation)
+    shaderCombileCombo = shaderCombileCombo + ";DISTANCE_ATTENUATION";
 
     
     // Get shader if combo unavailable compile it
@@ -170,7 +218,6 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
         case MATERIAL_UNLIT_TEXTURE_DECAL:
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
-            //shader->SetT
             uniformTexture0 = shader->FindUniformLocationByName("texture0");
             uniformTexture1 = shader->FindUniformLocationByName("texture1");
             
@@ -178,8 +225,22 @@ void Material::RebuildShader()
         case MATERIAL_VERTEX_LIT_TEXTURE:
             //
             uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-            uniformMaterialDiffuseColor = shader->FindUniformLocationByName("materialDiffuseColor");
-            uniformMaterialSpecularColor = shader->FindUniformLocationByName("materialSpecularColor");
+            uniformMaterialLightAmbientColor = shader->FindUniformLocationByName("materialLightAmbientColor");
+            uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
+            uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
+            uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
+            break;
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
+        case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
+            uniformTexture0 = shader->FindUniformLocationByName("texture0");
+            uniformTexture1 = shader->FindUniformLocationByName("normalMapTexture");
+
+            uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
+            uniformMaterialLightAmbientColor = shader->FindUniformLocationByName("materialLightAmbientColor");
+            uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
+            uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
+            uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
             break;
         default:
             break;
@@ -221,6 +282,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
+    Image::EnableAlphaPremultiplication(false);
+    Texture::EnableMipmapGeneration();
+
     DataNode::Load(keyedArchive, sceneFile);
 
     int texCount = keyedArchive->GetInt32("mat.texCount");
@@ -238,13 +302,11 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             names[k] = absolutePathname;
             Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
-            Texture::EnableMipmapGeneration();
             textures[k] = Texture::CreateFromFile(names[k]);
             if (textures[k])
             {
                 textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
             }
-            Texture::DisableMipmapGeneration();
         }
         
 //        if (names[k].size())
@@ -252,6 +314,9 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 //            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
 //        } 
     }
+    Texture::DisableMipmapGeneration();
+    Image::EnableAlphaPremultiplication(true);
+    
     
     diffuseColor = keyedArchive->GetByteArrayAsType("mat.diffuse", diffuseColor);
     ambientColor = keyedArchive->GetByteArrayAsType("mat.ambient", ambientColor);
@@ -341,7 +406,7 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
         RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
     }
         
-    if (textures[Material::TEXTURE_DECAL])
+    if (textures[Material::TEXTURE_DECAL]) // this is normal map as well
     {
         RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
     }
@@ -362,7 +427,6 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
     {
         shader->SetUniformValue(uniformTexture0, 0);
         shader->SetUniformValue(uniformTexture1, 1);
-        
     }
     
 
@@ -379,13 +443,21 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
                 
                 shader->SetUniformValue(uniformLightPosition0, lightPosition0InCameraSpace); 
             }
-            if (uniformMaterialDiffuseColor != -1)
+            if (uniformMaterialLightAmbientColor != -1)
             {
-                shader->SetUniformValue(uniformMaterialDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+                shader->SetUniformValue(uniformMaterialLightAmbientColor, lightNode0->GetAmbientColor() * GetAmbientColor());
             }
-            if (uniformMaterialSpecularColor != -1)
+            if (uniformMaterialLightDiffuseColor != -1)
             {
-                shader->SetUniformValue(uniformMaterialSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+                shader->SetUniformValue(uniformMaterialLightDiffuseColor, lightNode0->GetDiffuseColor() * GetDiffuseColor());
+            }
+            if (uniformMaterialLightSpecularColor != -1)
+            {
+                shader->SetUniformValue(uniformMaterialLightSpecularColor, lightNode0->GetSpecularColor() * GetSpecularColor());
+            }
+            if (uniformMaterialSpecularShininess != -1)
+            {
+                shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
             }
         }
     }

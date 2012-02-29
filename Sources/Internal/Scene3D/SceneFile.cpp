@@ -416,7 +416,7 @@ bool SceneFile::ReadStaticMesh()
 		
 		for (uint32 v = 0; v < vertexCount; ++v)
 		{
-			Vector3 position, normal; 
+			Vector3 position, normal, tangent; 
 			Vector2 texCoords0, texCoords1;
             
             if (polygonGroup->GetFormat() & EVF_VERTEX)
@@ -429,6 +429,13 @@ bool SceneFile::ReadStaticMesh()
             {
                 sceneFP->Read(&normal, sizeof(Vector3));
                 polygonGroup->SetNormal(v, normal);
+                //Logger::Debug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
+            }
+
+            if (polygonGroup->GetFormat() & EVF_TANGENT)
+            {
+                sceneFP->Read(&tangent, sizeof(Vector3));
+                polygonGroup->SetTangent(v, tangent);
                 //Logger::Debug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
             }
             

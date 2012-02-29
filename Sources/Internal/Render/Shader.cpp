@@ -282,6 +282,11 @@ void Shader::SetUniformValue(int32 uniformLocation, int32 value)
 {
     RENDER_VERIFY(glUniform1i(uniformLocation, value));
 }
+    
+void Shader::SetUniformValue(int32 uniformLocation, float32 value)
+{
+    RENDER_VERIFY(glUniform1f(uniformLocation, value));
+}
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector3 & vector)
 {

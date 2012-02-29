@@ -88,8 +88,10 @@ public:
     
     
     void SetUniformValue(int32 uniformLocation, int32 value);
+    void SetUniformValue(int32 uniformLocation, float32 value);
     void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
     void SetUniformValue(int32 uniformLocation, const Color & color);
+
 
     void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
     void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);

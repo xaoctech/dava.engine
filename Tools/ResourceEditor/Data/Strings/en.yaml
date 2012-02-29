@@ -97,8 +97,10 @@ materialeditor.materialtype: "Material type:"
 materialeditor.twosided: "Two-Sided:"
 materialeditor.selected: "Selected"
 materialeditor.all: "All"
+materialeditor.ambientcolor: "Ambient color:"
 materialeditor.specularcolor: "Specular color:"
 materialeditor.diffusecolor: "Diffuse color:"
+materialeditor.specularshininess: "Specular shininess:"
 materialeditor.nomaterials: "No materials."
 
 #Modification Panel
@@ -126,6 +128,10 @@ property.lightnode.light: "Light"
 property.lightnode.type: "Type:"
 property.lightnode.color: "Color:"
 property.lightnode.staticlight: "Static light"
+property.lightnode.ambient.color: "Ambient color:"
+property.lightnode.diffuse.color: "Diffuse color:"
+property.lightnode.specular.color: "Specular color:"
+
 
 #CubeNode Section
 property.cubenode.cube: "Cube"

@@ -205,6 +205,10 @@ void MeshInstanceNode::Draw()
             //const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
             // const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
             
+            
+            const float32 DEBUG_VECTOR_LENGTH = 5.0f;
+            
+            
             for (uint32 k = 0; k < meshesSize; ++k)
             {
                 PolygonGroup * pGroup = polygroups[k]->mesh->GetPolygonGroup(polygroups[k]->polygroupIndex);
@@ -212,17 +216,46 @@ void MeshInstanceNode::Draw()
                 {
                     Vector3 vertex;
                     Vector3 normal;
-                    pGroup->GetCoord(vi, vertex);
-                    pGroup->GetNormal(vi, normal);
+                    Vector3 tangent;
+                    Vector3 binormal;
                     
-                    //vertex = vertex;
-                    //normal = normal * modelView;
-                    Vector3 vertex2 = vertex + normal * 10.0f;
-                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
-                    RenderManager::Instance()->SetColor(color);
+                    pGroup->GetCoord(vi, vertex);
+                    if (pGroup->GetFormat() & EVF_NORMAL)
+                    {
+                        pGroup->GetNormal(vi, normal);
+                    }
+                    if (pGroup->GetFormat() & EVF_TANGENT)
+                    {
+                        pGroup->GetTangent(vi, tangent);
+                    }
+                    if (pGroup->GetFormat() & EVF_BINORMAL)
+                    {
+                        pGroup->GetBinormal(vi, binormal);
+                    }else
+                    {
+                        binormal = CrossProduct(normal, tangent);
+                    }
+                    Vector3 vertex2;
+//                     vertex2 = vertex + normal * DEBUG_VECTOR_LENGTH;
+//                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
+//                    RenderManager::Instance()->SetColor(color);
+//                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
+                    
+                    vertex2 = vertex + tangent * DEBUG_VECTOR_LENGTH;
+                    Color tcolor(0.0f, 1.0f, 0.0f, 1.0f);
+                    RenderManager::Instance()->SetColor(tcolor);
                     RenderHelper::Instance()->DrawLine(vertex, vertex2);
+                    
+                    vertex2 = vertex + binormal * DEBUG_VECTOR_LENGTH;
+                    Color bcolor(0.0f, 0.0f, 1.0f, 1.0f);
+                    RenderManager::Instance()->SetColor(bcolor);
+                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
+                    
+                    
                 }
+
             }
+            
         }
 		
 //      RenderManager::Instance()->EnableDepthTest(true);
