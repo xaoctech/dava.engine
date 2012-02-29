@@ -46,7 +46,7 @@ varying lowp float varLightmapSize;
 void main()
 {
     // FETCH PHASE
-#if defined(GLOSS)
+#if defined(GLOSS) || defined(OPAQUE)
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
@@ -92,7 +92,7 @@ void main()
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
-	vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0 + varSpecularColor * materialLightSpecularColor;
+	vec3 color = (materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor) * textureColor0.rgb + varSpecularColor * materialLightSpecularColor;
 #elif defined(PIXEL_LIT)
 	// lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalMapTexture, varTexCoord0).rgb - 1.0;
@@ -119,11 +119,11 @@ void main()
 #endif
 	
 #elif defined(MATERIAL_TEXTURE)
-    vec3 color = textureColor0;
+    vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_DECAL)
-    vec3 color = textureColor0 * textureColor1;
+    vec3 color = textureColor0.rgb * textureColor1.rgb;
 #elif defined(MATERIAL_DETAIL)
-    vec3 color = textureColor0 * textureColor1 * 2.0;
+    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #endif
 
     gl_FragColor = vec4(color, 1.0);
