@@ -88,6 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -110,6 +111,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Distribute|Win32'">
@@ -131,6 +133,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -418,6 +421,10 @@
     <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
+    <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
+    <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
+    <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
+    <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
     <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h" />
@@ -660,6 +667,10 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
+    <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp" />
+    <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
+    <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
+    <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp" />

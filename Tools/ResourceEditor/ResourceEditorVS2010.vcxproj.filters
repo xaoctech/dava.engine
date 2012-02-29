@@ -692,6 +692,18 @@
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1694,6 +1706,18 @@
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">
@@ -1713,6 +1737,9 @@
     </Filter>
     <Filter Include="SceneEditor\Light">
       <UniqueIdentifier>{c15ad809-0a22-4925-9e14-8ae8ceead1b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ParticlesEditor">
+      <UniqueIdentifier>{6ec51eee-d801-45d5-bf1c-67ed4659414b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

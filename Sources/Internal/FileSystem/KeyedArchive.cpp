@@ -82,7 +82,7 @@ bool KeyedArchive::Load(File *archive)
     uint32 numberOfItems = 0;
     archive->Read(&numberOfItems, 4);
     
-    for (int item = 0; item < numberOfItems; ++item)
+    for (uint32 item = 0; item < numberOfItems; ++item)
 	{
 		VariantType key;
 		key.Read(archive);
