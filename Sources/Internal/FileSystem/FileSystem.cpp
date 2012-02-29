@@ -45,6 +45,7 @@
 #include <io.h> 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <Shlobj.h>
 #elif defined(__DAVAENGINE_ANDROID__)
 #include <unistd.h>
 #include <sys/types.h>
