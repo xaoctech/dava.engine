@@ -342,20 +342,33 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
     {
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
         
-        if (state & (STATE_TEXTURE0 << textureLevel))
-            glEnable(GL_TEXTURE_2D);
-        else 
-            glDisable(GL_TEXTURE_2D);
+        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+        {
+            if (state & (STATE_TEXTURE0 << textureLevel))
+            {
+                RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
+            }
+            else 
+            {
+                RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
+            }
+        }
         
         RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, currentTexture[textureLevel]->id));
     }else
     {
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
 
-        if (state & (STATE_TEXTURE0 << textureLevel))
-            glEnable(GL_TEXTURE_2D);
-        else 
-            glDisable(GL_TEXTURE_2D);
+        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+        {
+            if (state & (STATE_TEXTURE0 << textureLevel))
+            {
+                RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
+            }else
+            {
+                RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
+            }
+        }
         
         RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, 0));
     }    
