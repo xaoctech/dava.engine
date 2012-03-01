@@ -65,6 +65,12 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     uniformTexture = -1;
     uniformDetailTexture = -1;
     uniformCameraPosition = -1;
+    
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        uniformTextureTiling[k] = -1;
+        textureTiling[k] = Vector2(1.0f, 1.0f);
+    }
 }
 
 LandscapeNode::~LandscapeNode()
@@ -107,6 +113,9 @@ void LandscapeNode::InitShaders()
             uniformTexture1 = blendedShader->FindUniformLocationByName("texture1");
             uniformTextureMask = blendedShader->FindUniformLocationByName("textureMask");
             uniformCameraPosition = blendedShader->FindUniformLocationByName("cameraPosition");
+            
+            uniformTextureTiling[0] = blendedShader->FindUniformLocationByName("texture0Tiling");
+            uniformTextureTiling[1] = blendedShader->FindUniformLocationByName("texture1Tiling");
             
             activeShader = blendedShader;
             break;
@@ -438,6 +447,16 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
         }
     }
     depth++;
+}
+    
+void LandscapeNode::SetTextureTiling(eTextureLevel level, const Vector2 & tiling)
+{
+    textureTiling[level] = tiling;
+}
+    
+const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
+{
+    return textureTiling[level];
 }
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
@@ -798,7 +817,7 @@ void LandscapeNode::Draw()
 #if defined(__DAVAENGINE_MACOS__)
     if (debugFlags & DEBUG_DRAW_ALL)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 #endif
     
@@ -864,6 +883,8 @@ void LandscapeNode::Draw()
             blendedShader->SetUniformValue(uniformTexture1, 1);
             blendedShader->SetUniformValue(uniformTextureMask, 2);
             blendedShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            blendedShader->SetUniformValue(uniformTextureTiling[0], textureTiling[0]);
+            blendedShader->SetUniformValue(uniformTextureTiling[1], textureTiling[1]);
         }            
         break;
     }
@@ -993,8 +1014,8 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
+        archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
     }
-        
 }
     
 void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -1017,6 +1038,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         Logger::Debug("landscape tex load: %s abs:%s", textureName.c_str(), absPath.c_str());
 
         SetTexture((eTextureLevel)k, absPath);
+        
+        textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
     }
 }
 

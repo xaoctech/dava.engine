@@ -110,6 +110,17 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 
 	propertyList->AddIntProperty("lightmap.size");
 	propertyList->SetIntPropertyValue("lightmap.size", currentNode->GetCustomProperties()->GetInt32("lightmap.size", 1024));
+    
+
+    propertyList->AddFloatProperty("property.landscape.texture0.tilex");
+    propertyList->SetFloatPropertyValue("property.landscape.texture0.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TEXTURE0).x);
+    propertyList->AddFloatProperty("property.landscape.texture0.tiley");
+    propertyList->SetFloatPropertyValue("property.landscape.texture0.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TEXTURE0).y);
+    
+    propertyList->AddFloatProperty("property.landscape.texture1.tilex");
+    propertyList->SetFloatPropertyValue("property.landscape.texture1.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TEXTURE1).x);
+    propertyList->AddFloatProperty("property.landscape.texture1.tiley");
+    propertyList->SetFloatPropertyValue("property.landscape.texture1.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TEXTURE1).y);
 }
 
 
@@ -136,6 +147,21 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
             landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
         }
     }
+    if ("property.landscape.texture0.tilex" == forKey || "property.landscape.texture0.tiley" == forKey)
+    {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture0.tilex"),
+                       propertyList->GetFloatPropertyValue("property.landscape.texture0.tiley"));
+        landscape->SetTextureTiling(LandscapeNode::TEXTURE_TEXTURE0, tiling);
+    }
+    if ("property.landscape.texture1.tilex" == forKey || "property.landscape.texture1.tiley" == forKey)
+    {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture1.tilex"),
+                       propertyList->GetFloatPropertyValue("property.landscape.texture1.tiley"));
+        landscape->SetTextureTiling(LandscapeNode::TEXTURE_TEXTURE1, tiling);
+    }
+
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
 

@@ -119,7 +119,7 @@ public:
     {
         RENDERING_MODE_TEXTURE = 0,
         RENDERING_MODE_DETAIL_SHADER, 
-        RENDERING_MODE_BLENDED_SHADER, 
+        RENDERING_MODE_BLENDED_SHADER,  // revision 1 of blender shader. Support only 2 textures per landscape.
     };
     
     /**
@@ -172,6 +172,19 @@ public:
         \returns current texture name
 	 */
     const String & GetTextureName(eTextureLevel level);
+    
+    
+	/**
+        \brief Set tiling for specific texture level.
+        This function gives you can control of tiling for specific landscape level.
+     */    
+    void SetTextureTiling(eTextureLevel level, const Vector2 & tiling);
+
+    /**
+        \brief Get tiling for specified texture level.
+        \returns Tiling for specified texture level.
+     */
+    const Vector2 & GetTextureTiling(eTextureLevel level); 
     
     /**
         \brief Overloaded draw function to draw landscape
@@ -269,6 +282,8 @@ protected:
     int32 uniformTexture;
     int32 uniformDetailTexture;
     int32 uniformCameraPosition;
+    int32 uniformTextureTiling[TEXTURE_COUNT];
+    Vector2 textureTiling[TEXTURE_COUNT];
     
     Shader * activeShader;
     Shader * singleTextureShader;
