@@ -247,4 +247,14 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
     Save();
 }
 
+void EditorSettings::SetDrawGrid(bool drawGrid)
+{
+    settings->SetBool("DrawGrid", drawGrid);
+}
+
+bool EditorSettings::GetDrawGrid()
+{
+    return settings->GetBool("DrawGrid", true);
+}
+
 

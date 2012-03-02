@@ -44,6 +44,8 @@ EditorScene::EditorScene()
         float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
         RegisterLodLayer(nearDistance, farDistance);
     }
+    
+    SetDrawGrid(true);
 }
 
 EditorScene::~EditorScene()
@@ -292,7 +294,10 @@ void EditorScene::Draw()
 	Scene::Draw();
     SceneValidator::Instance()->CollectSceneStats(RenderManager::Instance()->GetStats());
     
-	DrawGrid();
+    if(drawGrid)
+    {
+        DrawGrid();
+    }
 }
 
 #define GRIDMAX 500.0f
@@ -338,6 +343,11 @@ void EditorScene::DrawDebugNodes(SceneNode * curr)
 	{
 		DrawDebugNodes(curr->GetChild(i));
 	}
+}
+
+void EditorScene::SetDrawGrid(bool newDrawGrid)
+{
+    drawGrid = newDrawGrid;
 }
 
 

@@ -1115,6 +1115,8 @@ void SceneEditorScreenMain::SettingsChanged()
             
             scene->ReplaceLodLayer(i, nearDistance, farDistance);
         }
+        
+        scene->SetDrawGrid(EditorSettings::Instance()->GetDrawGrid());
     }
 }
 

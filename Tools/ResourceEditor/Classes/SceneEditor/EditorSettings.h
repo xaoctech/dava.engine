@@ -69,6 +69,9 @@ public:
     String GetLastOpenedFile(int32 index);
     void AddLastOpenedFile(const String & pathToFile);
     
+    void SetDrawGrid(bool drawGrid);
+    bool GetDrawGrid();
+    
 protected:
 
     KeyedArchive *settings;

@@ -48,6 +48,8 @@ public:
 	void SetBulletUpdate(SceneNode* curr, bool value);
 	void ReleaseUserData(SceneNode * curr);
 	LandscapeNode * GetLandScape(SceneNode *node);
+    
+    void SetDrawGrid(bool newDrawGrid);
 	
 protected:
 
@@ -65,6 +67,8 @@ protected:
 	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;
+    
+    bool drawGrid;
 };
 
 #endif

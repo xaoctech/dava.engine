@@ -67,6 +67,9 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
         propertyList->AddFloatProperty(Format("LoadLevel Far #%d", i), PropertyList::PROPERTY_IS_EDITABLE);
     }
     
+    propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
+
+    
     errorDialog = new ErrorDialog();
 }
     
@@ -139,6 +142,8 @@ void SettingsDialog::WillAppear()
         propertyList->SetFloatPropertyValue(Format("LoadLevel Near #%d", i), EditorSettings::Instance()->GetLodLayerNear(i));
         propertyList->SetFloatPropertyValue(Format("LoadLevel Far #%d", i), EditorSettings::Instance()->GetLodLayerFar(i));
     }
+    
+    propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
 }
 
 void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -228,6 +233,11 @@ void SettingsDialog::OnBoolPropertyChanged(PropertyList *forList, const String &
     if("settingsdialog.output" == forKey)
     {
         EditorSettings::Instance()->SetShowOuput(newValue);
+        EditorSettings::Instance()->Save();
+    }
+    else if("settingsdialog.drawgrid" == forKey)
+    {
+        EditorSettings::Instance()->SetDrawGrid(newValue);
         EditorSettings::Instance()->Save();
     }
 }

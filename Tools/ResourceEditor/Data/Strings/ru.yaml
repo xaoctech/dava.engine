@@ -184,9 +184,7 @@ property.landscape.texture1.tiley: "Texture 1 Tiling Y"
 settings.header: "Настройки"
 settingsdialog.screenwidth: "Ширина"
 settingsdialog.screenheight: "Высота"
-
 settingsdialog.autosave: "Авто сохранение(мин):"
-
 settingsdialog.language: "Язык:"
 settingsdialog.output: "Показывать лог:"
 settingsdialog.cameraspeed1: "1-ая скорость камеры:"
@@ -195,6 +193,7 @@ settingsdialog.cameraspeed3: "3-ая скорость камеры:"
 settingsdialog.cameraspeed4: "4-ая скорость камеры:"
 settingsdialog.leftpanelwidth: "Ширина левой панели:"
 settingsdialog.rightpanelwidth: "Ширина правой панели:"
+settingsdialog.drawgrid: "Рисовать сетку в сцене:"
 
 #Color Picker
 colorpicker.r: "Red:"
