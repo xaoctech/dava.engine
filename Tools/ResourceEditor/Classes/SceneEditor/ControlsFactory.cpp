@@ -334,6 +334,12 @@ void ControlsFactory::CustomizePropertySectionCell(UIControl *c)
     c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 }
 
+void ControlsFactory::CustomizePropertySubsectionCell(UIControl *c)
+{
+    c->GetBackground()->color = Color(0.4f, 0.8f, 0.4f, 0.5f);
+    c->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+}
+
 void ControlsFactory::CustomizePropertyButtonCell(UIListCell *c)
 {
     c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);

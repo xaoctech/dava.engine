@@ -13,6 +13,7 @@
 #include "EditorSettings.h"
 #include "ColorPicker.h"
 #include "PVRConverter.h"
+#include "UISliderWithText.h"
 
 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
@@ -608,3 +609,86 @@ void PropertyColorCell::ColorPickerDone(const Color &newColor)
     propertyDelegate->OnPropertyChanged(property);
 }
 
+
+//*************** PropertySubsectionCell **************
+PropertySubsectionCell::PropertySubsectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+:   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    ControlsFactory::CustomizePropertySubsectionCell(this);
+    keyName->size.x = width;
+    
+    SetData(prop);
+}
+
+PropertySubsectionCell::~PropertySubsectionCell()
+{
+}
+
+float32 PropertySubsectionCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT;
+}
+
+
+//*************** PropertySliderCell **************
+PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
+:   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = width;
+    keyName->size.y = GetHeightForWidth(width)/2;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+    
+    float32 textWidth = 50;
+    minValue = new UIStaticText(Rect(0, keyName->size.y, textWidth, keyName->size.y));
+    minValue->SetFont(ControlsFactory::GetFontLight());
+    minValue->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+    AddControl(minValue);
+
+    maxValue = new UIStaticText(Rect(width - textWidth, keyName->size.y, textWidth, keyName->size.y));
+    maxValue->SetFont(ControlsFactory::GetFontLight());
+    maxValue->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+    AddControl(maxValue);
+
+    slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
+    slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
+    slider->SetMinSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 1);
+    slider->SetMinDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
+    slider->SetMinLeftRightStretchCap(5);
+    slider->SetMaxSprite("~res:/Gfx/LandscapeEditor/Tools/polzunok", 0);
+    slider->SetMaxDrawType(UIControlBackground::DRAW_STRETCH_HORIZONTAL);
+    slider->SetMaxLeftRightStretchCap(5);
+    slider->SetThumbSprite("~res:/Gfx/LandscapeEditor/Tools/polzunokCenter", 0);
+    AddControl(slider);
+
+    SetData(prop);
+}
+
+PropertySliderCell::~PropertySliderCell()
+{
+    SafeRelease(minValue);
+    SafeRelease(maxValue);
+    SafeRelease(slider);
+}
+
+float32 PropertySliderCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT * 2;
+}
+
+void PropertySliderCell::OnValueChanged(DAVA::BaseObject *owner, void *userData, void *callerData)
+{
+    property->SetSliderValue(slider->GetValue());
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}
+
+void PropertySliderCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    minValue->SetText(Format(L"%f", prop->GetSliderMinValue()));
+    maxValue->SetText(Format(L"%f", prop->GetSliderMaxValue()));
+    
+    slider->SetMinMaxValue(prop->GetSliderMinValue(), prop->GetSliderMaxValue());
+    slider->SetValue(prop->GetSliderValue());
+}

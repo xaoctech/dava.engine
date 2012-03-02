@@ -27,6 +27,7 @@
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C4E87B014B3AE7C006C5191 /* LandscapeEditorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */; };
 		5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C6BF78514C85A62009297F7 /* libz.dylib */; };
+		5C6ECBD91500B34000A27E71 /* UISliderWithText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */; };
 		5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C81C29D14D0480700580500 /* PVRConverter.cpp */; };
 		5C87C49914C34A3500E2C63B /* PaintAreaControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
@@ -342,6 +343,8 @@
 		5C4E87AE14B3AE7C006C5191 /* LandscapeEditorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorControl.cpp; sourceTree = "<group>"; };
 		5C4E87AF14B3AE7C006C5191 /* LandscapeEditorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorControl.h; sourceTree = "<group>"; };
 		5C6BF78514C85A62009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISliderWithText.cpp; sourceTree = "<group>"; };
+		5C6ECBD81500B34000A27E71 /* UISliderWithText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISliderWithText.h; sourceTree = "<group>"; };
 		5C81C29D14D0480700580500 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
 		5C81C29E14D0480700580500 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		5C87C49714C34A3500E2C63B /* PaintAreaControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PaintAreaControl.cpp; sourceTree = "<group>"; };
@@ -1006,6 +1009,8 @@
 		5C0E984014BC931C008188FE /* Properties */ = {
 			isa = PBXGroup;
 			children = (
+				5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */,
+				5C6ECBD81500B34000A27E71 /* UISliderWithText.h */,
 				FEDDC9521428E59E0004BF1A /* EditMatrixControl.h */,
 				FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */,
 				5CFAF30F14A6334100355DCF /* UICheckBox.h */,
@@ -2189,6 +2194,7 @@
 				5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */,
 				5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */,
 				5CB7FAB514FB5A32000EE8A8 /* TextureTrianglesDialog.cpp in Sources */,
+				5C6ECBD91500B34000A27E71 /* UISliderWithText.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

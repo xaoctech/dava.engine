@@ -50,6 +50,9 @@ public:
         PROP_CELL_SECTION,
         PROP_CELL_BUTTON,
         PROP_CELL_COLOR,
+        PROP_CELL_SUBSECTION,
+        PROP_CELL_SLIDER,
+
         
         PROP_CELL_COUNT
     };
@@ -209,6 +212,39 @@ private:
     void OnButtonPressed(BaseObject * owner, void * userData, void * callerData);
     UIControl *colorPreview;
     ColorPicker *colorPicker;
+};
+
+class PropertySubsectionCell: public PropertyCell
+{
+public:
+    
+    PropertySubsectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertySubsectionCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    
+private:
+    
+};
+
+class UISliderWithText;
+class PropertySliderCell: public PropertyCell
+{
+public:
+    
+    PropertySliderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertySliderCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+    
+private:
+    
+    void OnValueChanged(BaseObject * owner, void * userData, void * callerData);
+
+    UIStaticText *minValue;
+    UIStaticText *maxValue;
+    UISliderWithText *slider;
 };
 
 

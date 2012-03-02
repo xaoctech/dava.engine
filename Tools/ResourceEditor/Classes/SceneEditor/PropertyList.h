@@ -29,6 +29,7 @@ public:
     virtual void OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4){};
     virtual void OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded){};
     virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor){};
+    virtual void OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue){};
 };
 
 
@@ -60,6 +61,8 @@ public:
     void AddSection(const String &sectionName, bool expanded = true);
     void AddMessageProperty(const String &propertyName, const Message &newMessage);
     void AddColorProperty(const String &propertyName);
+    void AddSubsection(const String &subsectionName);
+    void AddSliderProperty(const String &propertyName);
 
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
@@ -72,6 +75,7 @@ public:
     void SetSectionIsOpened(const String &sectionName, bool isOpened);
     void SetMessagePropertyValue(const String &propertyName, const Message &newMessage);
     void SetColorPropertyValue(const String &propertyName, const Color &newColor);
+    void SetSliderPropertyValue(const String &propertyName, float32 newMinValue, float32 newMaxValue, float32 newValue);
     
     const String &GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
@@ -83,6 +87,7 @@ public:
     const Matrix4 & GetMatrix4PropertyValue(const String &propertyName);
     bool GetSectionIsOpened(const String &sectrionName);
     const Color &GetColorPropertyValue(const String &sectrionName);
+    float32 GetSliderPropertyValue(const String &propertyName);
 
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
