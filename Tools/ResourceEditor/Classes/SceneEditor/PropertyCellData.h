@@ -28,6 +28,8 @@ public:
         PROP_VALUE_SECTION,
         PROP_VALUE_MESSAGE,
         PROP_VALUE_COLOR,
+        PROP_VALUE_SLIDER,
+        PROP_VALUE_SUBSECTION,
         
         PROP_VALUE_COUNT
     };
@@ -50,6 +52,9 @@ public:
     const Message & GetMessage();
     bool GetClearDataEnabled();
     const Color &GetColor();
+    float32 GetSliderValue();
+    float32 GetSliderMinValue();
+    float32 GetSliderMaxValue();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
@@ -64,6 +69,9 @@ public:
     void SetMessage(const Message &newMessage);
     void SetClearDataEnabled(bool enabled);
     void SetColor(const Color& newColor);
+    
+    void SetSliderValue(float32 newMin, float32 newMax, float32 newValue);
+    void SetSliderValue(float32 newValue);
     
     int32 cellType;
     String key;
@@ -88,6 +96,11 @@ protected:
     Message messageValue;
     
     Color color;
+    
+    float32 sliderValueMax;
+    float32 sliderValueMin;
+    float32 sliderValue;
+    
 };
 
 #endif

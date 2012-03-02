@@ -55,7 +55,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
         
         String fieldName = Format("PolygonGroup #%d", i);
         propertyList->AddSection(fieldName, GetHeaderState(fieldName, true));
-        
+
         int32 vertexFormat = pg->GetFormat();
         
         String keyPrefix = Format("#%d", i);
@@ -88,6 +88,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
 
 		propertyList->AddIntProperty(keyPrefix + ".lightmap.size");
 		propertyList->SetIntPropertyValue(keyPrefix + ".lightmap.size", currentNode->GetCustomProperties()->GetInt32(keyPrefix + ".lightmap.size", 128));
+        
         
         if(matCount && !createNodeProperties)
         {

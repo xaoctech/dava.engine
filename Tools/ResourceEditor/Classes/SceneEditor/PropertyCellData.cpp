@@ -24,6 +24,11 @@ PropertyCellData::PropertyCellData(int _valueType)
     stringValue = "";
     boolValue = false;
 
+    
+    sliderValueMax = 0.f;
+    sliderValueMin = 0.f;
+    sliderValue = 0.f;
+
     valueType = _valueType;
 }
 
@@ -190,3 +195,36 @@ void PropertyCellData::SetColor(const Color& newColor)
     DVASSERT(valueType == PROP_VALUE_COLOR);
     color = newColor;
 }
+
+float32 PropertyCellData::GetSliderValue()
+{
+    DVASSERT(valueType == PROP_VALUE_SLIDER);
+    return sliderValue;
+}
+
+float32 PropertyCellData::GetSliderMinValue()
+{
+    DVASSERT(valueType == PROP_VALUE_SLIDER);
+    return sliderValueMin;
+}
+
+float32 PropertyCellData::GetSliderMaxValue()
+{
+    DVASSERT(valueType == PROP_VALUE_SLIDER);
+    return sliderValueMax;
+}
+
+void PropertyCellData::SetSliderValue(float32 newMin, float32 newMax, float32 newValue)
+{
+    DVASSERT(valueType == PROP_VALUE_SLIDER);
+    sliderValue = newValue;
+    sliderValueMin = newMin;
+    sliderValueMax = newMax;
+}
+
+void PropertyCellData::SetSliderValue(float32 newValue)
+{
+    DVASSERT(valueType == PROP_VALUE_SLIDER);
+    sliderValue = newValue;
+}
+
