@@ -299,6 +299,31 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 	//DVASSERT(0 && "FileSystem::CopyFile not implemented for current platform");
 #endif //PLATFORMS
 }
+
+
+bool FileSystem::CopyDirectory(const String & sourceDirectory, const String & destinationDirectory)
+{
+	bool ret = true;
+
+	FileList fileList(sourceDirectory);
+	int32 count = fileList.GetCount();
+	String fileOnly;
+	String pathOnly;
+	for(int32 i = 0; i < count; ++i)
+	{
+		if(!fileList.IsDirectory(i) && !fileList.IsNavigationDirectory(i))
+		{
+			const String & pathName = fileList.GetPathname(i);
+			FileSystem::SplitPath(pathName, pathOnly, fileOnly);
+			if(!CopyFile(pathName, destinationDirectory+"/"+fileOnly))
+			{
+				ret = false;
+			}
+		}
+	}
+
+	return ret;
+}
 	
 bool FileSystem::DeleteFile(const String & filePath)
 {
@@ -769,6 +794,7 @@ void FileSystem::SetPath(const char8 *docPath, const char8 *assets)
 		Logger::Error("[FileSystem::SetPath] can't open APK from path: %s", assetsPath);
 	}
 }
+
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
     
