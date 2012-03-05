@@ -469,6 +469,7 @@
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
+    <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="Classes\TexturePacker\DefinitionFile.h" />
@@ -713,6 +714,7 @@
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
+    <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp" />

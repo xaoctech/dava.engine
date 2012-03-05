@@ -541,7 +541,7 @@ void RenderManager::EndFrame()
 }
 
 
-void RenderManager::SetViewport(const Rect & rect)
+void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates)
 {
 	//viewPort = rect;
  //   PrepareRealMatrix();
