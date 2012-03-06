@@ -166,7 +166,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 3;
+    header.version = 4;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
@@ -231,9 +231,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     FileSystem::Instance()->SplitPath(rootNodePathName, rootNodePath, rootNodeName);
 
     file->Read(&header, sizeof(Header));
-    int requiredVersion = 1;
-    if (   
-          (header.signature[0] != 'S') 
+    int requiredVersion = 3;
+    if (    (header.signature[0] != 'S') 
         ||  (header.signature[1] != 'F') 
         ||  (header.signature[2] != 'V') 
         ||  (header.signature[3] != '2'))
@@ -247,15 +246,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     
     Logger::Debug("+ load data objects");
 
-    if (GetVersion() == 1)
-    {
-        DataNode * materialsTemp = new DataNode;
-        LoadDataHierarchy(_scene, materialsTemp, file, 1);
-        SafeRelease(materialsTemp);
-        DataNode * staticMeshes = new DataNode;
-        LoadDataHierarchy(_scene, staticMeshes, file, 1);
-        SafeRelease(staticMeshes);
-    }else if (GetVersion() >= 2)
+    if (GetVersion() >= 2)
     {
         int32 dataNodeCount = 0;
         file->Read(&dataNodeCount, sizeof(int32));
