@@ -1603,7 +1603,15 @@ void EditorBodyControl::BeastProcessScene(bool fullshade)
 	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 	beastManager = BeastProxy::Instance()->CreateManager();
 
-	String path = EditorSettings::Instance()->GetDataSourcePath() + "lightmaps/";
+	String path = GetFilePath();
+	if(String::npos == path.find("DataSource"))
+	{
+		return;
+	}
+
+	path += "_lightmaps/";
+	FileSystem::Instance()->CreateDirectory(path, false);
+
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 	BeastProxy::Instance()->Run(beastManager, scene);
 }
