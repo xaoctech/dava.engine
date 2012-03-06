@@ -246,10 +246,10 @@ void MeshInstanceNode::Draw()
                         binormal = CrossProduct(normal, tangent);
                     }
                     Vector3 vertex2;
-//                     vertex2 = vertex + normal * DEBUG_VECTOR_LENGTH;
-//                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
-//                    RenderManager::Instance()->SetColor(color);
-//                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
+                     vertex2 = vertex + normal * DEBUG_VECTOR_LENGTH;
+                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
+                    RenderManager::Instance()->SetColor(color);
+                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
                     
                     vertex2 = vertex + tangent * DEBUG_VECTOR_LENGTH;
                     Color tcolor(0.0f, 1.0f, 0.0f, 1.0f);

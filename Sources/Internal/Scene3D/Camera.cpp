@@ -504,6 +504,7 @@ void Camera::Draw()
 
 Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport)
 {
+	
 	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
 	finalMatrix.Inverse();		
 
@@ -511,8 +512,28 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 
 	/* Map x and y from window coordinates */
 
-	in.x = (in.x - viewport.x) / viewport.dx;
-	in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
+	
+	switch(RenderManager::Instance()->GetRenderOrientation())
+	{
+		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+        {
+			float32 xx = (in.y - viewport.y) / viewport.dy;
+			float32 yy = (in.x - viewport.x) / viewport.dx;
+			
+			in.x = xx;
+			in.y = yy;
+        }
+            break;
+		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+        {
+            DVASSERT(false);
+        }
+			break;
+        default:
+			in.x = (in.x - viewport.x) / viewport.dx;
+			in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
+            break;
+	}
 
 	/* Map to range -1 to 1 */
 	in.x = in.x * 2 - 1;
@@ -523,7 +544,6 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 	
 	Vector3 result(0,0,0);
 	if (out.w == 0.0) return result;
-	
 	
 	result.x = out.x / out.w;
 	result.y = out.y / out.w;

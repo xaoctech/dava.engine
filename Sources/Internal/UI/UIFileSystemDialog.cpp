@@ -313,13 +313,8 @@ void UIFileSystemDialog::SetExtensionFilter(const Vector<String> &newExtensionFi
     extensionFilter = newExtensionFilter;
     
     int32 size = extensionFilter.size();
-#ifdef __DAVAENGINE_ANDROID__    
-    for (int32 k = 0; k < size; ++k)
-        std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), AndroidToLower);
-#else //#ifdef __DAVAENGINE_ANDROID__    
     for (int32 k = 0; k < size; ++k)
         std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), ::tolower);
-#endif //#ifndef __DAVAENGINE_ANDROID__    
 }
 
 const Vector<String> & UIFileSystemDialog::GetExtensionFilter()
@@ -435,11 +430,7 @@ void UIFileSystemDialog::RefreshList()
                     textField->SetText(StringToWString(files->GetFilename(fu.indexInFileList)));
                 }
                 String ext = FileSystem::GetExtension(fu.name);
-#ifdef __DAVAENGINE_ANDROID__    
-                std::transform(ext.begin(), ext.end(), ext.begin(), AndroidToLower);
-#else //#ifdef __DAVAENGINE_ANDROID__
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-#endif //#ifdef __DAVAENGINE_ANDROID__    
 
                 bool isPresent = false;
 		int32 size = extensionFilter.size();

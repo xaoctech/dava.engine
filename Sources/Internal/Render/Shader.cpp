@@ -338,19 +338,19 @@ GLint Shader::LinkProgram(GLuint prog)
 
     GLint status;
     
-    glLinkProgram(prog);
+    RENDER_VERIFY(glLinkProgram(prog));
     
     GLint logLength;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+    RENDER_VERIFY(glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength));
     if (logLength > 0)
     {
         GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
+        RENDER_VERIFY(glGetProgramInfoLog(prog, logLength, &logLength, log));
         //Logger::Debug("Program link log:\n%s", log);
         free(log);
     }
     
-    glGetProgramiv(prog, GL_LINK_STATUS, &status);
+    RENDER_VERIFY(glGetProgramiv(prog, GL_LINK_STATUS, &status));
     if (status == GL_FALSE)
         Logger::Debug("Failed to link program %d", prog);
     
@@ -371,7 +371,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     
     if (defines.length() == 0)
     {
-        glShaderSource(*shader, 1, &sources, &count);	// set source code in the shader
+        RENDER_VERIFY(glShaderSource(*shader, 1, &sources, &count));	// set source code in the shader
     }else
     {
         const GLchar * multipleSources[] = 
@@ -384,24 +384,24 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
             defines.length(),
             count,
         };
-        glShaderSource(*shader, 2, multipleSources, multipleCounts);	// set source code in the shader
+        RENDER_VERIFY(glShaderSource(*shader, 2, multipleSources, multipleCounts));	// set source code in the shader
     }
     
-    glCompileShader(*shader);					// compile shader
+    RENDER_VERIFY(glCompileShader(*shader));					// compile shader
     
 //#if defined(DEBUG)
     GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+    RENDER_VERIFY(glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength));
     if (logLength > 0)
     {
         GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
+        RENDER_VERIFY(glGetShaderInfoLog(*shader, logLength, &logLength, log));
         Logger::Debug("Shader compile log:\n%s", log);
         free(log);
     }
 //#endif
     
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+    RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
     if (status == GL_FALSE)
     {
         //Logger::Debug("Failed to compile shader:\n");

@@ -31,6 +31,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Shader.h"
 #include "Platform/Thread.h"
+#include "Utils/Utils.h"
 
 
 namespace DAVA
@@ -354,7 +355,7 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
             }
         }
         
-        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, currentTexture[textureLevel]->id));
+        BindTexture(currentTexture[textureLevel]->id);
     }else
     {
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
@@ -370,7 +371,7 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
             }
         }
         
-        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, 0));
+        BindTexture(0);
     }    
 }
 inline void RenderStateBlock::SetDepthTestInHW()
