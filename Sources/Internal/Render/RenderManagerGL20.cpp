@@ -30,6 +30,7 @@
 #include "Render/RenderBase.h"
 #include "Render/RenderManagerGL20.h"
 #include "Render/Shader.h"
+#include "Render/OGLHelpers.h"
 
 #if defined(__DAVAENGINE_OPENGL__)
 
@@ -48,9 +49,13 @@ void RenderVertexAttributesState::EnableVertexAttributes(uint32 attributesToEnab
         if ((diff >> attribIndex) & 1)
         {
             if ((attributesToEnable >> attribIndex) & 1)
-                glEnableVertexAttribArray(attribIndex);
+            {
+                RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
+            }
             else 
-                glDisableVertexAttribArray(attribIndex);
+            {
+                RENDER_VERIFY(glDisableVertexAttribArray(attribIndex));
+            }
         }
     activeVertexAttributes = attributesToEnable;
 }

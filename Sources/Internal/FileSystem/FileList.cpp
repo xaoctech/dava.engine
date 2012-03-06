@@ -90,28 +90,16 @@ FileList::FileList(const String & filepath)
 	//entry.Name = "E:\\";
 	//entry.isDirectory = true;
 	//Files.push_back(entry);
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	struct dirent **namelist;
 	FileEntry entry;
 
-	int32 n = scandir(path.c_str(), &namelist, 0, alphasort);
-	if (n >= 0)
-	{
-		while(n--)
-		{
-			entry.name = namelist[n]->d_name;
-			entry.size = 0;
-			entry.isDirectory = namelist[n]->d_type == DT_DIR;
-			fileList.push_back(entry);
-			free(namelist[n]);
-		}
-		free(namelist);
-	}
-#elif defined(__DAVAENGINE_ANDROID__)
-	struct dirent **namelist;
-	FileEntry entry;
-
+#if defined (__DAVAENGINE_ANDROID__)
 	int32 n = scandir(path.c_str(), &namelist, 0, alphasortAndroid);
+#else //#if defined (__DAVAENGINE_ANDROID__)
+	int32 n = scandir(path.c_str(), &namelist, 0, alphasort);
+#endif //#if defined (__DAVAENGINE_ANDROID__)    
+    
 	if (n >= 0)
 	{
 		while(n--)
