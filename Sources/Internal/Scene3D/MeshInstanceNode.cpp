@@ -350,21 +350,18 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 //        lodIdx++;
 //    }
 
-    if (sceneFile->GetVersion() == 3)
+    int32 polygroupCount = (int32)polygroups.size();
+    archive->SetInt32("pgcnt", polygroupCount);
+    
+    for (int idx = 0; idx < polygroupCount; ++idx)
     {
-        int32 polygroupCount = (int32)polygroups.size();
-        archive->SetInt32("pgcnt", polygroupCount);
+        Material * material = polygroups[idx]->material;
+        StaticMesh * mesh = polygroups[idx]->mesh;
+        int32 pgIndex = polygroups[idx]->polygroupIndex;
         
-        for (int idx = 0; idx < polygroupCount; ++idx)
-        {
-            Material * material = polygroups[idx]->material;
-            StaticMesh * mesh = polygroups[idx]->mesh;
-            int32 pgIndex = polygroups[idx]->polygroupIndex;
-            
-            archive->SetByteArrayAsType(Format("pg%d_matptr", idx), (uint64)material);
-            archive->SetByteArrayAsType(Format("pg%d_meshptr", idx), (uint64)mesh);
-            archive->SetInt32(Format("pg%d_pg", idx), pgIndex);
-        }
+        archive->SetByteArrayAsType(Format("pg%d_matptr", idx), (uint64)material);
+        archive->SetByteArrayAsType(Format("pg%d_meshptr", idx), (uint64)mesh);
+        archive->SetInt32(Format("pg%d_pg", idx), pgIndex);
     }
     
 	archive->SetInt32("lightmapsCount", (int32)lightmaps.size());
@@ -383,8 +380,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Load(archive, sceneFile);
 
-    
-    if (sceneFile->GetVersion() == 3)
+    if (sceneFile->GetVersion() >= 3)
     {
         int32 polygroupCount = archive->GetInt32("pgcnt", 0);
         

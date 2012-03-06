@@ -58,16 +58,12 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     renderingMode = RENDERING_MODE_TEXTURE;
     
     activeShader = 0;
-    singleTextureShader = 0;
-    detailShader = 0;
-    blendedShader = 0;
     
-    uniformTexture = -1;
-    uniformDetailTexture = -1;
     uniformCameraPosition = -1;
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
+        uniformTextures[k] = -1;
         uniformTextureTiling[k] = -1;
         textureTiling[k] = Vector2(1.0f, 1.0f);
     }
@@ -93,41 +89,57 @@ void LandscapeNode::InitShaders()
         case RENDERING_MODE_TEXTURE:
             break;
         case RENDERING_MODE_DETAIL_SHADER:
-            detailShader = new Shader();
-            detailShader->LoadFromYaml("~res:/Shaders/Landscape/detail-texture.shader");
-            detailShader->Recompile();
+            activeShader = new Shader();
+            activeShader->LoadFromYaml("~res:/Shaders/Landscape/detail-texture.shader");
+            activeShader->Recompile();
 
             
-            uniformTexture = detailShader->FindUniformLocationByName("texture");
-            uniformDetailTexture = detailShader->FindUniformLocationByName("detailTexture");
-            uniformCameraPosition = detailShader->FindUniformLocationByName("cameraPosition");
+            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("texture");
+            uniformTextures[TEXTURE_DETAIL] = activeShader->FindUniformLocationByName("detailTexture");
+            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
 
-            activeShader = detailShader;
             break;
         case RENDERING_MODE_BLENDED_SHADER:
-            blendedShader = new Shader();
-            blendedShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
-            blendedShader->Recompile();
+            activeShader = new Shader();
+            activeShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
+            activeShader->Recompile();
 
-            uniformTexture0 = blendedShader->FindUniformLocationByName("texture0");
-            uniformTexture1 = blendedShader->FindUniformLocationByName("texture1");
-            uniformTextureMask = blendedShader->FindUniformLocationByName("textureMask");
-            uniformCameraPosition = blendedShader->FindUniformLocationByName("cameraPosition");
+            uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0");
+            uniformTextures[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1");
+            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("textureMask");
+            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
             
-            uniformTextureTiling[0] = blendedShader->FindUniformLocationByName("texture0Tiling");
-            uniformTextureTiling[1] = blendedShader->FindUniformLocationByName("texture1Tiling");
+            uniformTextureTiling[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0Tiling");
+            uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
             
-            activeShader = blendedShader;
             break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+            activeShader = new Shader();
+            activeShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+            activeShader->Recompile();
+            
+            uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("tileTexture0");
+            uniformTextures[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("tileTexture1");
+            uniformTextures[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("tileTexture2");
+            uniformTextures[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("tileTexture3");
+            uniformTextures[TEXTURE_TILE_MASK] = activeShader->FindUniformLocationByName("tileMask");
+            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("colorTexture");
+            
+            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
+            
+            uniformTextureTiling[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0Tiling");
+            uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
+            uniformTextureTiling[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("texture2Tiling");
+            uniformTextureTiling[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("texture3Tiling");
+            
+            break;
+
     }
 }
     
 void LandscapeNode::ReleaseShaders()
 {
-    SafeRelease(blendedShader);
-    SafeRelease(singleTextureShader);
-    SafeRelease(detailShader);
-    activeShader = 0;
+    SafeRelease(activeShader);
 }
 
 
@@ -849,42 +861,73 @@ void LandscapeNode::Draw()
     {
         case RENDERING_MODE_TEXTURE:
             RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-            if (textures[TEXTURE_TEXTURE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE0], 0);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
         break;
             
         case RENDERING_MODE_DETAIL_SHADER:
         {
-            if (textures[TEXTURE_TEXTURE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE0], 0);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
             if (textures[TEXTURE_DETAIL])
                 RenderManager::Instance()->SetTexture(textures[TEXTURE_DETAIL], 1);
 
-            RenderManager::Instance()->SetShader(detailShader);
+            RenderManager::Instance()->SetShader(activeShader);
             RenderManager::Instance()->FlushState();
 
-            detailShader->SetUniformValue(uniformTexture, 0);
-            detailShader->SetUniformValue(uniformDetailTexture, 1);
-            detailShader->SetUniformValue(uniformCameraPosition, cameraPos);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_DETAIL], 1);
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);
         }
         break;
         case RENDERING_MODE_BLENDED_SHADER:
         {
-            if (textures[TEXTURE_TEXTURE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE0], 0);
-            if (textures[TEXTURE_TEXTURE1])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE1], 1);
-            if (textures[TEXTURE_TEXTUREMASK])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTUREMASK], 2);
+            if (textures[TEXTURE_TILE0])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+            if (textures[TEXTURE_TILE1])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 2);
 
-            RenderManager::Instance()->SetShader(blendedShader);
+            RenderManager::Instance()->SetShader(activeShader);
             RenderManager::Instance()->FlushState();
-            blendedShader->SetUniformValue(uniformTexture0, 0);
-            blendedShader->SetUniformValue(uniformTexture1, 1);
-            blendedShader->SetUniformValue(uniformTextureMask, 2);
-            blendedShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            blendedShader->SetUniformValue(uniformTextureTiling[0], textureTiling[0]);
-            blendedShader->SetUniformValue(uniformTextureTiling[1], textureTiling[1]);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+        }            
+        break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+        {
+            if (textures[TEXTURE_TILE0])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+            if (textures[TEXTURE_TILE1])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+            if (textures[TEXTURE_TILE2])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
+            if (textures[TEXTURE_TILE3])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
+            if (textures[TEXTURE_TILE_MASK])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
+            
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
         }            
         break;
     }
@@ -1031,15 +1074,31 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
     BuildLandscapeFromHeightmapImage(renderingMode, path, box);
     
+    
+    
+    
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         String textureName = archive->GetString(Format("tex_%d", k));
         String absPath = sceneFile->RelativeToAbsolute(textureName);
-        Logger::Debug("landscape tex load: %s abs:%s", textureName.c_str(), absPath.c_str());
+        Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
 
-        SetTexture((eTextureLevel)k, absPath);
-        
-        textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+        if (sceneFile->GetVersion() >= 4)
+        {
+            SetTexture((eTextureLevel)k, absPath);
+            textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+        }
+        else
+        {
+            if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
+                SetTexture((eTextureLevel)(k + 2), absPath);
+                
+            if (k == 3)
+                SetTexture(TEXTURE_COLOR, absPath);
+
+            if ((k == 0) || (k == 1))
+                textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+        }
     }
 }
 

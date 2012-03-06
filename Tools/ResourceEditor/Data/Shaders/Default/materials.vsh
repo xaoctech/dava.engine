@@ -64,7 +64,7 @@ varying vec3 varEyeVec;
 #endif
 
 #if defined(SETUP_LIGHTMAP)
-uniform int lightmapSize;
+uniform float lightmapSize;
 varying lowp float varLightmapSize;
 #endif
 

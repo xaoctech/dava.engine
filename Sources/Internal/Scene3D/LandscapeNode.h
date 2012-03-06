@@ -120,6 +120,7 @@ public:
         RENDERING_MODE_TEXTURE = 0,
         RENDERING_MODE_DETAIL_SHADER, 
         RENDERING_MODE_BLENDED_SHADER,  // revision 1 of blender shader. Support only 2 textures per landscape.
+        RENDERING_MODE_TILE_MASK_SHADER,  // revision 2 of blender shader. Support 4 textures per landscape.
     };
     
     /**
@@ -131,11 +132,15 @@ public:
     
     enum eTextureLevel
     {
-        TEXTURE_TEXTURE0 = 0,
-        TEXTURE_TEXTURE1,
-        TEXTURE_DETAIL = TEXTURE_TEXTURE1,
-        TEXTURE_BUMP,
-        TEXTURE_TEXTUREMASK, 
+        TEXTURE_COLOR = 0,  // in case of BLENDED_SHADER in alpha channel it can be tile mask for TILED_TEXTURES
+        TEXTURE_TILE_MASK,
+        TEXTURE_TILE0,   
+        TEXTURE_TILE1,
+        TEXTURE_TILE2,
+        TEXTURE_TILE3,
+        // TEXTURE_BUMP,
+        
+        TEXTURE_DETAIL, 
         TEXTURE_COUNT,
     };
 
@@ -279,21 +284,16 @@ protected:
     void InitShaders();
     void ReleaseShaders();
     
-    int32 uniformTexture;
-    int32 uniformDetailTexture;
     int32 uniformCameraPosition;
+    int32 uniformTextures[TEXTURE_COUNT];
     int32 uniformTextureTiling[TEXTURE_COUNT];
     Vector2 textureTiling[TEXTURE_COUNT];
     
     Shader * activeShader;
-    Shader * singleTextureShader;
-    Shader * detailShader;
-    Shader * blendedShader;
-    
-    int32 uniformTexture0;
-    int32 uniformTexture1;
-    int32 uniformTextureMask;
-    
+//    Shader * singleTextureShader;
+//    Shader * detailShader;
+//    Shader * blendedShader;
+        
     int8 queueRdoQuad;
     int32 queueRenderCount;
     uint16 * queueDrawIndices;

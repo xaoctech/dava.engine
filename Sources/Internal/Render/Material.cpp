@@ -445,7 +445,7 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
 		if (lightmapSizePosition != -1)
 		{
-			shader->SetUniformValue(lightmapSizePosition, setupLightmapSize); 
+			shader->SetUniformValue(lightmapSizePosition, (float32)setupLightmapSize); 
 		}
 	}
 
