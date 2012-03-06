@@ -75,10 +75,6 @@ void Split(const String & inputString, const String & delims, Vector<String> & t
 
 void ReplaceBundleName(const String &newBundlePath);
 	
-#ifdef __DAVAENGINE_ANDROID__
-    int AndroidToLower (int c);
-#endif //#ifdef __DAVAENGINE_ANDROID__
-    
     
 /**
  \brief Function to compare strings without letter case

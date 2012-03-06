@@ -260,16 +260,16 @@ void RenderDataObject::SaveToSystemMemory()
 
 void RenderDataObject::RenderDataObject::Lost()
 {
-    vboBuffer = 0;
+//    vboBuffer = 0;
 }
 
 void RenderDataObject::Invalidate()
 {
-	if(savedVertexCount)
-	{
-		streamArray[0]->pointer = savedPointer;
-		BuildVertexBuffer(savedVertexCount);
-	}
+//	if(savedVertexCount)
+//	{
+//		streamArray[0]->pointer = savedPointer;
+//		BuildVertexBuffer(savedVertexCount);
+//	}
 }
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)

@@ -352,6 +352,8 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
     String path = iBody->bodyControl->GetFilePath();
+	String lightmapsSource = path + "_lightmaps/";
+	String lightmapsDestination = lightmapsSource;
     if(String::npos == path.find("DataSource"))
     {
         return;
@@ -402,7 +404,11 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     }
     
     NodeExportPreparation(scene);
-    
+
+	lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
+	FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
+    FileSystem::Instance()->CopyDirectory(lightmapsSource, lightmapsDestination);
+
     SceneFileV2 * file = new SceneFileV2();
     file->EnableSaveForGame(true);
     file->EnableDebugLog(true);

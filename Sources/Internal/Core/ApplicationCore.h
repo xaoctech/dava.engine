@@ -211,12 +211,12 @@ protected:
 	virtual void OnAppFinished() = 0;
 
 	
-#ifdef __DAVAENGINE_IPHONE__
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	/**
 		\brief Called when application go to background on iOS platforms
 	 */
 	virtual void OnBackground() = 0;
-#endif
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	
 	/**	
 		\brief this function is called every frame to let you update your application. 
