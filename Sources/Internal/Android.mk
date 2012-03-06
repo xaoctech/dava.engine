@@ -223,7 +223,6 @@ LOCAL_SRC_FILES :=  \
 
 # set build flags
 LOCAL_CFLAGS := -frtti -g -O0 -DGL_GLEXT_PROTOTYPES=1
-#LOCAL_CFLAGS := -DUSE_FILE32API 
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)

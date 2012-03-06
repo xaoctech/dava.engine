@@ -20,12 +20,15 @@
 namespace DAVA
 {
 
-class AndroidSystemListener
+class AndroidSystemDelegate
 {
 public:
 	virtual void ShowKeyboard() = 0;
 	virtual void HideKeyboard() = 0;
 	virtual bool DownloadHttpFile(const String & url, const String & documentsPathname) = 0;
+    
+    virtual GLint RenderBuffer() = 0;
+	virtual GLint FrameBuffer() = 0;
 };
 
 
@@ -37,12 +40,13 @@ public:
 
 	CoreAndroidPlatform();
 
-	virtual void CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemListener * sysListener);
+	virtual void CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate);
 
 	virtual void Quit();
 
-	void RepaintView();
+	void RenderRecreated();
 	void ResizeView(int32 w, int32 h);
+	void RepaintView();
 
 	// called from Activity and manage a visible lifetime
 	void StartVisible();
@@ -59,7 +63,6 @@ public:
 
 	void OnTouch(int action, int id, int x, int y, long time);
 
-	void RenderRecreated();
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
@@ -81,7 +84,7 @@ private:
 
 	bool foreground;
 
-	AndroidSystemListener *androidListener;
+	AndroidSystemDelegate *androidDelegate;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)

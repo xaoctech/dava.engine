@@ -204,17 +204,18 @@ Texture::~Texture()
 
 	if(fboID != (uint32)-1)
 	{
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 		RENDER_VERIFY(glDeleteFramebuffersOES(1, &fboID));
-#elif defined(__DAVAENGINE_ANDROID__)
-		RENDER_VERIFY(glDeleteFramebuffersOES(1, &fboID));
-		
-		SafeDeleteArray(savedData);
-		savedDataSize = 0;
 #else //Non ES platforms
 		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
 #endif //PLATFORMS
-	}
+
+#if defined(__DAVAENGINE_ANDROID__)
+		SafeDeleteArray(savedData);
+		savedDataSize = 0;
+#endif// #if defined(__DAVAENGINE_ANDROID__)
+
+    }
 	
 	if(id)
 	{
@@ -1015,7 +1016,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 	{
 #endif //#if defined(__DAVAENGINE_WIN32__)        
 		RENDER_VERIFY(glGenFramebuffersEXT(1, &tx->fboID));
-		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
+//		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
+        BindFBO(tx->fboID);
 	
 		// And attach it to the FBO so we can render to it
 		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tx->id, 0));
@@ -1119,8 +1121,8 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 	debugInfo = _debugInfo;	
 #endif
 }
-    #if defined(__DAVAENGINE_ANDROID__)
-    
+
+#if defined(__DAVAENGINE_ANDROID__)    
 void Texture::SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height)
 {
     int32 textureSize = width * height * FormatMultiplier(format);
@@ -1413,16 +1415,19 @@ Image * Texture::ReadDataToImage()
     
     RenderManager::Instance()->LockNonMain();
     
-    int saveFBO = 0;
-#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
-#else //Non ES platforms
-    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO));
-#endif //PLATFORMS
-    
-    int32 saveId = 0;
-    RENDER_VERIFY(glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId));
-    RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, id))
+//    int saveFBO = 0;
+//#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
+//#else //Non ES platforms
+//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO));
+//#endif //PLATFORMS
+    int32 saveFBO = GetSavedFBO();
+
+//    int32 saveId = 0;
+//    RENDER_VERIFY(glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId));
+//    RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, id))
+    int32 saveId = GetSavedTextureID();
+    BindTexture(id);
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     switch(format) 
@@ -1441,15 +1446,17 @@ Image * Texture::ReadDataToImage()
             break;
     }
     
-#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-    RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, saveFBO));	// Unbind the FBO for now
-#else //Non ES platforms
-    RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, saveFBO));	// Unbind the FBO for now
-#endif //PLATFORMS
+//#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+//    RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, saveFBO));	// Unbind the FBO for now
+//#else //Non ES platforms
+//    RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, saveFBO));	// Unbind the FBO for now
+//#endif //PLATFORMS
+    BindFBO(saveFBO);
     
     if (saveId != 0)
     {
-        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, saveId))
+//        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, saveId))
+        BindTexture(saveId);
     }
     
     RenderManager::Instance()->UnlockNonMain();

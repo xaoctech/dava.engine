@@ -118,17 +118,20 @@ namespace DAVA
         RenderManager *instance = RenderManager::Instance();
 		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] instance = %p", instance);
         
+		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] 1");
 		UIControlSystem::Instance()->SetInputScreenAreaSize(windowedMode.width, windowedMode.height);
+		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] 2");
 		Core::Instance()->SetPhysicalScreenSize(windowedMode.width, windowedMode.height);
+		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] 3");
 
         RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
 
         Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] finish");
     }
 
-	void CoreAndroidPlatform::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemListener * sysListener)
+	void CoreAndroidPlatform::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
 	{
-		androidListener = sysListener;
+		androidDelegate = sysDelegate;
 
 		Core::CreateSingletons();
 
@@ -141,30 +144,6 @@ namespace DAVA
 		//////////////////////////////////////////////////////////////////////////
 		windowedMode = DisplayMode(480, 320, 16, 0);
 
-//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] before create rendered");
-//        RenderManager::Create(Core::RENDERER_OPENGL_ES_1_0);
-//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] after create rendered");
-
-//        FrameworkDidLaunched();
-//        
-//		KeyedArchive * options = Core::GetOptions();
-//
-//		if (options)
-//		{
-//			windowedMode.width = options->GetInt("width");
-//			windowedMode.height = options->GetInt("height");
-//			windowedMode.bpp = options->GetInt("bpp");
-//		}
-//
-//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] w = %d, h = %d", windowedMode.width, windowedMode.height);
-//
-//
-////		RenderManager::Instance()->SetFPS(60);
-////
-////		UpdateScreenMode();
-//
-//		//////////////////////////////////////////////////////////////////////////
-//		Core::Instance()->SystemAppStarted();
 	}
     
     void CoreAndroidPlatform::RenderRecreated()
@@ -182,7 +161,8 @@ namespace DAVA
             wasCreated = true;
             
             Logger::Debug("[CoreAndroidPlatform::] before create rendered");
-            RenderManager::Create(Core::RENDERER_OPENGL_ES_1_0);
+            RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
+            RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
             Logger::Debug("[CoreAndroidPlatform::] after create rendered");
             
             FrameworkDidLaunched();
@@ -403,10 +383,10 @@ namespace DAVA
 
 	bool CoreAndroidPlatform::DownloadHttpFile(const String & url, const String & documentsPathname)
 	{
-		if(androidListener)
+		if(androidDelegate)
 		{
 			String path = FileSystem::Instance()->SystemPathForFrameworkPath(documentsPathname);
-			return androidListener->DownloadHttpFile(url, path);
+			return androidDelegate->DownloadHttpFile(url, path);
 		}
 
 		return false;

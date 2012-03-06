@@ -87,12 +87,11 @@ int32 GetSavedTextureID()
 #if defined(__DAVAENGINE_ANDROID__)
 	saveId = lastBindedTexture;
 #else //#if defined(__DAVAENGINE_ANDROID__)
-//	RENDER_VERIFY(glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId));
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
     
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
+//    GLenum err = glGetError();
+//    if (err != GL_NO_ERROR)
+//        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
     
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -104,12 +103,11 @@ void BindTexture(int32 tId)
 {
 	if(0 != tId)
 	{
-// 		RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, tId));
 		glBindTexture(GL_TEXTURE_2D, tId);
 
-		GLenum err = glGetError();
-		if (err != GL_NO_ERROR)
-			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+//		GLenum err = glGetError();
+//		if (err != GL_NO_ERROR)
+//			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
 
 		lastBindedTexture = tId;
 	}
@@ -125,12 +123,11 @@ int32 GetSavedFBO()
 #elif defined(__DAVAENGINE_ANDROID__)
 	saveFBO = lastBindedFBO;
 #else //Non ES platforms
-//	RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO));
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO);
 
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
+//    GLenum err = glGetError();
+//    if (err != GL_NO_ERROR)
+//        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
 
 #endif //PLATFORMS
 
@@ -146,16 +143,16 @@ void BindFBO(int32 fbo)
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);	// Unbind the FBO for now
 #endif //PLATFORMS
 
-		GLenum err = glGetError();
-		if (err != GL_NO_ERROR)
-			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+//		GLenum err = glGetError();
+//		if (err != GL_NO_ERROR)
+//			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
 
 
 		lastBindedFBO = fbo;
 	}
 }
 
-#endif //
+#endif //#ifdef __DAVAENGINE_OPENGL__
 
 void Split(const String & inputString, const String & delims, Vector<String> & tokens)
 {
@@ -193,44 +190,15 @@ int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length)
 	return 1;
 }
 
-#ifdef __DAVAENGINE_ANDROID__
-int AndroidToLower (int c)
-{
-    if('A' <= c && c <= 'Z')
-    {
-        return c - ('A' - 'a');
-    }
-    else
-    {
-        WideString str = L"АЯа";
-        if(str.at(0) <= c && c <= str.at(1))
-        {
-            return c - (str.at(0) - str.at(2));
-        }
-    }
-    
-    return c;
-}
-#endif //#ifdef __DAVAENGINE_ANDROID__
-
-    
 int32 CompareStrings(const String &str1, const String &str2)
 {
     String newStr1 = "";
     newStr1.resize(str1.length());
-#if defined (__DAVAENGINE_ANDROID__)
-    std::transform(str1.begin(), str1.end(), newStr1.begin(), AndroidToLower);
-#else 
     std::transform(str1.begin(), str1.end(), newStr1.begin(), ::tolower);
-#endif 
     
     String newStr2 = "";
     newStr2.resize(str2.length());
-#if defined (__DAVAENGINE_ANDROID__)
-    std::transform(str2.begin(), str2.end(), newStr2.begin(), AndroidToLower);
-#else 
     std::transform(str2.begin(), str2.end(), newStr2.begin(), ::tolower);
-#endif 
     
     if(newStr1 == newStr2)
     {

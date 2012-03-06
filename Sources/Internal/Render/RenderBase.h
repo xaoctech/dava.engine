@@ -87,8 +87,6 @@
  	#include <GLES2/gl2.h>
  	#include <GLES2/gl2ext.h>
 
-	#define __DAVAENGINE_ANDROID_APIVERSION_8__	// for different SDK versions different path and 
-
 #else //PLATFORMS
 	//other platforms
 #endif//PLATFORMS 

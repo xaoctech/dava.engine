@@ -446,11 +446,7 @@ const String & FileSystem::SystemPathForFrameworkPath(const String & frameworkPa
 		if(find != tempRetPath.npos)
 		{
 			tempRetPath = tempRetPath.erase(0, 5);
-#if defined(__DAVAENGINE_ANDROID__)
-			tempRetPath = FilepathInDocuments(documentsPath, "") + tempRetPath;
-#else //#if defined(__DAVAENGINE_ANDROID__)
 			tempRetPath = FilepathInDocuments("") + tempRetPath;
-#endif //#if defined(__DAVAENGINE_ANDROID__)
 		}
 	}
 	return tempRetPath;
@@ -532,9 +528,9 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
     {
 #if defined(__DAVAENGINE_WIN32__)
         SetCurrentDocumentsDirectory(String(GetUserDocumentsPath()) + "DAVAProject\\");
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) 
+#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVASOUND_ANDROID__)
         SetCurrentDocumentsDirectory(String(GetUserDocumentsPath()) + "DAVAProject/");
-#endif
+#endif //PLATFORMS
     }
     
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
@@ -550,7 +546,7 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
     {
         return String("/Users/Shared/");
     }
-#endif
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
 	
 #if defined(__DAVAENGINE_WIN32__)
     const String FileSystem::GetUserDocumentsPath()
@@ -572,7 +568,20 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
         szPath[n+1] = 0;
         return szPath;
     }   
-#endif
+#endif //#if defined(__DAVAENGINE_WIN32__)
+    
+#if defined(__DAVAENGINE_ANDROID__)
+    const String FileSystem::GetUserDocumentsPath()
+    {
+        return documentsPath;
+    }
+    
+    const String FileSystem::GetPublicDocumentsPath()
+    {
+        //TODO: need to return real path;
+        return documentsPath;
+    }
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
     
 String FileSystem::RealPath(const String & _path)
 {

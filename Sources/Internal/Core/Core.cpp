@@ -627,10 +627,10 @@ void Core::SystemProcessFrame()
 	
 void Core::GoBackground()
 {
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 	if (core)
 		core->OnBackground();
-#endif 
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__) 
 }
 
 uint32 Core::GetGlobalFrameIndex()

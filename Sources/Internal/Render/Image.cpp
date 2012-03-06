@@ -403,7 +403,8 @@ Image * Image::CreateFromFile(const String & pathName)
 Image * Image::CreateFromFile(const String & pathName)
 {
 	Image * davaImage = new Image();
-	if (1 != LibPngWrapper::ReadPngFile(FileSystem::Instance()->SystemPathForFrameworkPath(pathName).c_str(), davaImage))
+//	if (1 != LibPngWrapper::ReadPngFile(FileSystem::Instance()->SystemPathForFrameworkPath(pathName).c_str(), davaImage))
+	if (1 != LibPngWrapper::ReadPngFile(pathName.c_str(), davaImage))
 	{
 		SafeRelease(davaImage);
 		return 0;
