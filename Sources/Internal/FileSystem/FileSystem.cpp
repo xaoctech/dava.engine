@@ -149,15 +149,15 @@ namespace DAVA
 		return FilepathRelativeToBundle(relativePathname.c_str());
 	}
 
-	const char * FilepathInDocuments(const char * documentsPath, const char * relativePathname)
-	{
-		return Format("%s/Documents%s", documentsPath, relativePathname);
-	}
-
-	const char * FilepathInDocuments(const String & documetsPath, const String & relativePathname)
-	{
-		return FilepathInDocuments(documetsPath.c_str(), relativePathname.c_str());
-	}
+//	const char * FilepathInDocuments(const char * documentsPath, const char * relativePathname)
+//	{
+//		return Format("%s/Documents%s", documentsPath, relativePathname);
+//	}
+//
+//	const char * FilepathInDocuments(const String & documetsPath, const String & relativePathname)
+//	{
+//		return FilepathInDocuments(documetsPath.c_str(), relativePathname.c_str());
+//	}
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
@@ -408,10 +408,9 @@ uint32 FileSystem::DeleteDirectoryFiles(const String & path, bool isRecursive)
 File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
+    String::size_type find = frameworkPath.find("~res:");
 
-	size_t find = frameworkPath.find("~res:");
-
-	if(find != frameworkPath.npos)
+	if(String::npos != find)
 	{
 		return File::CreateFromSystemPath(APKArchive, SystemPathForFrameworkPath(frameworkPath));
 	}
