@@ -536,9 +536,13 @@ void Texture::GenerateMipmaps()
 	int saveId = GetSavedTextureID();
 	BindTexture(id);
 	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__)// || defined(__DAVAENGINE_ANDROID__)
 	// definitelly works for the iPhone
 	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+#elif defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 #else //Non-ES platforms

@@ -231,6 +231,8 @@ bool Shader::Recompile()
     
     if (!LinkProgram(program))
     {
+        Logger::Error("Failed to Link program for shader: %s", fragmentShaderPath.c_str());
+
         DeleteShaders();
         return false;
     }
@@ -273,6 +275,10 @@ bool Shader::Recompile()
         uniformIDs[k] = uniform;
         Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
+    
+    
+    Logger::Debug("shader recompile success: %s", fragmentShaderPath.c_str());
+
     
     RenderManager::Instance()->UnlockNonMain();
     return true;
@@ -404,7 +410,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
     if (status == GL_FALSE)
     {
-        //Logger::Debug("Failed to compile shader:\n");
+        Logger::Debug("Failed to compile shader: status == GL_FALSE\n");
     }
     RenderManager::Instance()->UnlockNonMain();
 
