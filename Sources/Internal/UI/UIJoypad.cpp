@@ -69,7 +69,6 @@ const Vector2 &UIJoypad::GetDigitalPosition()
 	digitalVector.x = 0.0f + (int32)(analogVector.x + xSign * 0.5f);
 	digitalVector.y = 0.0f + (int32)(analogVector.y + ySign * 0.5f);	
 	
-	Logger::Debug("%f %f", digitalVector.x, digitalVector.y);
 	return digitalVector;
 }
 const Vector2 &UIJoypad::GetAnalogPosition()
