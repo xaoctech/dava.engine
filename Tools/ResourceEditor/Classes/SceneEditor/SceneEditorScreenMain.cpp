@@ -459,6 +459,7 @@ void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
     pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
     FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
     FileSystem::Instance()->CreateDirectory(pathOnly, true);
+	FileSystem::Instance()->DeleteFile(pathTo);
     FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
 }
 
