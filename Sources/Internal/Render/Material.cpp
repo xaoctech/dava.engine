@@ -98,6 +98,8 @@ const char8 * Material::GetTypeName(eType format)
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR";
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
+        default:
+            break;
     };
     return "WRONG MATERIAL";
 }
@@ -125,6 +127,8 @@ Material::Material(Scene * _scene)
     {
         uberShader = new UberShader();
         uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
+        
+        
         uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
         uberShader->CompileShaderCombination("MATERIAL_DECAL");
         uberShader->CompileShaderCombination("MATERIAL_DETAIL");
