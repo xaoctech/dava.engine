@@ -1,18 +1,22 @@
+#ifdef GL_ES
+// define default precision for float, vec, mat.
+precision highp float;
+#endif
+
 attribute vec4 inPosition;
 attribute vec2 inTexCoord0;
 
 uniform mat4 modelViewProjectionMatrix;
-uniform vec3 cameraPosition;
-uniform vec2 texture0Tiling;
-uniform vec2 texture1Tiling;
-uniform vec2 texture2Tiling;
-uniform vec2 texture3Tiling;
+uniform lowp vec2 texture0Tiling;
+uniform lowp vec2 texture1Tiling;
+uniform lowp vec2 texture2Tiling;
+uniform lowp vec2 texture3Tiling;
 
-varying vec2 varTexCoordOrig;
-varying vec2 varTexCoord0;
-varying vec2 varTexCoord1;
-varying vec2 varTexCoord2;
-varying vec2 varTexCoord3;
+varying lowp vec2 varTexCoordOrig;
+varying lowp vec2 varTexCoord0;
+varying lowp vec2 varTexCoord1;
+varying lowp vec2 varTexCoord2;
+varying lowp vec2 varTexCoord3;
 
 void main()
 {
