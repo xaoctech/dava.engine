@@ -865,7 +865,13 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
 			height = Max(height >> 1, 1);
 		}
 		
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        GLint minFilter = GL_LINEAR;
+        if(i > 0) //has mipmaps
+        {
+            minFilter = GL_LINEAR_MIPMAP_LINEAR;
+        }
+        
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		
 		if (0 != savedId)
