@@ -26,6 +26,32 @@ DefinitionFile::~DefinitionFile()
 	SafeDeleteArray(frameRects);
 }
 
+void DefinitionFile::LoadPNG(const String & _filename, const String & pathToProcess)
+{
+	String path;
+	String name;
+	CommandLineParser::SplitFilePath(_filename, path, name);
+	String nameWithoutExt = name.substr(0, name.length() - 4);
+	String corespondingPngImage = path + String("/") + nameWithoutExt + String(".png");
+
+	filename = pathToProcess + String("/") + nameWithoutExt + String(".txt");
+	frameCount = 1;
+
+	PngImageExt image;
+	image.Read(corespondingPngImage.c_str());
+	spriteWidth = image.GetWidth();
+	spriteHeight = image.GetHeight();
+
+	frameRects = new Rect2i[1];
+	frameRects[0].x = 0;
+	frameRects[0].y = 0;
+	frameRects[0].dx = spriteWidth;
+	frameRects[0].dy = spriteHeight;
+
+	String fileWrite = pathToProcess + String("/") + nameWithoutExt + "0" + String(".png"); 
+	FileSystem::Instance()->CopyFile(_filename, fileWrite);
+}
+
 bool DefinitionFile::LoadPNGDef(const std::string & _filename, const std::string & pathToProcess)
 {
 	if (CommandLineParser::Instance()->GetVerbose())printf("* Load PNG Definition: %s\n", _filename.c_str()); 
@@ -177,4 +203,6 @@ bool DefinitionFile::Load(const std::string & _filename)
 	
 	return true;
 }
+
+
 

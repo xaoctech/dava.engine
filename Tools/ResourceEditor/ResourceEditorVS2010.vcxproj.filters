@@ -707,6 +707,9 @@
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\LightmapsPacker.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1722,6 +1725,9 @@
       <Filter>ParticlesEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LightmapsPacker.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
