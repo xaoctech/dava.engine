@@ -10,6 +10,7 @@
 
 #include "SceneInfoControl.h"
 #include "SceneValidator.h"
+#include "../LightmapsPacker.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -1246,6 +1247,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	BeastProxy::Instance()->Update(beastManager);
 	if(BeastProxy::Instance()->IsJobDone(beastManager))
 	{
+		PackLightmaps();
 		BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 	}
 }
@@ -1598,18 +1600,18 @@ void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
     }
 }
 
-void EditorBodyControl::BeastProcessScene(bool fullshade)
+void EditorBodyControl::BeastProcessScene()
 {
 	BeastProxy::Instance()->SafeDeleteManager(&beastManager);
 	beastManager = BeastProxy::Instance()->CreateManager();
 
-	String path = GetFilePath();
-	if(String::npos == path.find("DataSource"))
-	{
-		return;
-	}
+	//String path = GetFilePath();
+	//if(String::npos == path.find("DataSource"))
+	//{
+	//	return;
+	//}
 
-	path += "_lightmaps/";
+	String path = "lightmaps_temp/";
 	FileSystem::Instance()->CreateDirectory(path, false);
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
@@ -1900,4 +1902,13 @@ void EditorBodyControl::DragAndDrop(void *who, void *target, int32 mode)
     
     SafeRelease(whoNode);
     SafeRelease(targetNode);
+}
+
+void EditorBodyControl::PackLightmaps()
+{
+	LightmapsPacker packer;
+	packer.SetInputDir("lightmaps_temp/");
+	packer.SetOutputDir(GetFilePath()+"_lightmaps/");
+	packer.Pack();
+	packer.ParseSpriteDescriptors();
 }

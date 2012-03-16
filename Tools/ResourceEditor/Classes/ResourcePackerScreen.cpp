@@ -16,6 +16,11 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "UIFileTree.h"
 
+ResourcePackerScreen::ResourcePackerScreen()
+{
+	processAllPng = false;
+}
+
 void ResourcePackerScreen::LoadResources()
 {
 	inputGfxDirectory = FileSystem::RealPath("/Sources/dava.framework/Tools/ResourceEditor/DataSource/Gfx/");
@@ -457,13 +462,22 @@ void ResourcePackerScreen::RecursiveTreeWalk(const String & inputPath, const Str
 				{
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fileList->GetFilename(fi));
 					definitionFileList.push_back(defFile);
-				}else if (FileSystem::GetExtension(fullname) == ".pngdef")
+				}
+				else if(processAllPng && FileSystem::GetExtension(fullname) == ".png")
+				{
+					DefinitionFile * defFile = new DefinitionFile();
+					defFile->LoadPNG(fullname, processDirectoryPath);
+					definitionFileList.push_back(defFile);
+				}
+				else if (FileSystem::GetExtension(fullname) == ".pngdef")
 				{
 					DefinitionFile * defFile = new DefinitionFile();
 					if (defFile->LoadPNGDef(fullname, processDirectoryPath))
 					{
 						definitionFileList.push_back(defFile);
-					}else {
+					}
+					else 
+					{
 						SafeDelete(defFile);
 					}
 				}
@@ -483,7 +497,8 @@ void ResourcePackerScreen::RecursiveTreeWalk(const String & inputPath, const Str
 			if (!isSplit)
 			{
 				packer.PackToTextures(excludeDirectory.c_str(), outputPathWithSlash.c_str(), definitionFileList);
-			}else
+			}
+			else
 			{
 				packer.PackToTexturesSeparate(excludeDirectory.c_str(), outputPathWithSlash.c_str(), definitionFileList);
 			}
@@ -599,4 +614,6 @@ int32 ResourcePackerScreen::CellHeight(UIList *forList, int32 index)
 {
     return 16;
 }
+
+
 

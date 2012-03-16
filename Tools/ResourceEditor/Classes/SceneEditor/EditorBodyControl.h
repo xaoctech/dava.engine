@@ -83,7 +83,7 @@ public:
     
     void UpdateLibraryState(bool isShown, int32 width);
 
-	void BeastProcessScene(bool fullshade);
+	void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
     EditorScene * GetScene();
@@ -260,6 +260,8 @@ protected:
     eViewPortIDs currentViewPortID;
     
     SceneInfoControl *sceneInfoControl;
+
+	void PackLightmaps();
 };
 
 

@@ -127,7 +127,6 @@ private:
     UIButton * btnNew;
     UIButton * btnProject;
 	UIButton * btnBeast;
-	UIButton * btnBeastFullshade;
 	UIButton * btnLandscape;
 	UIButton * btnViewPortSize;
 
