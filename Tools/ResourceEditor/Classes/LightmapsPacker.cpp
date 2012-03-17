@@ -1,10 +1,12 @@
 #include "LightmapsPacker.h"
 #include "ResourcePackerScreen.h"
 #include "../TexturePacker/CommandLineParser.h"
+#include "SceneEditor/PVRConverter.h"
+#include "Render/Texture.h"
 
 LightmapsPacker::LightmapsPacker()
 {
-
+	compressFormat = Texture::FORMAT_PVR4;
 }
 
 LightmapsPacker::~LightmapsPacker()
@@ -40,11 +42,6 @@ void LightmapsPacker::Pack()
 	SafeRelease(resourcePackerScreen);
 }
 
-void LightmapsPacker::Compress()
-{
-
-}
-
 void LightmapsPacker::ParseSpriteDescriptors()
 {
 	FileList * fileList = new FileList(outputDir);
@@ -70,7 +67,11 @@ void LightmapsPacker::ParseSpriteDescriptors()
 		file->ReadLine(buf, sizeof(buf)); //textures count
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
-		data.textureName = outputDir + "/" + String(buf, readSize);
+		String originalTextureName = outputDir + "/" + String(buf, readSize);
+		if(Texture::FORMAT_PVR4 == compressFormat || Texture::FORMAT_PVR2 == compressFormat)
+		{
+			data.textureName = FileSystem::Instance()->ReplaceExtension(originalTextureName, ".pvr");
+		}
 
 		file->ReadLine(buf, sizeof(buf)); //image size
 
@@ -82,13 +83,15 @@ void LightmapsPacker::ParseSpriteDescriptors()
 		dx++;//cause TexturePacker::ReduceRectToOriginalSize removed one pixel by default
 		dy++;
 
-		Vector2 textureSize = GetTextureSize(data.textureName);
+		Vector2 textureSize = GetTextureSize(originalTextureName);
 		data.uvOffset = Vector2((float32)x/textureSize.x, (float32)y/textureSize.y);
 		data.uvScale = Vector2((float32)dx/textureSize.x, (float32)dy/textureSize.y);
 		
 		file->Release();
 
 		atlasingData.push_back(data);
+
+		FileSystem::Instance()->DeleteFile(fileName);
 	}
 
 	fileList->Release();
@@ -116,4 +119,23 @@ Vector2 LightmapsPacker::GetTextureSize(const String & filePath)
 Vector<LightmapAtlasingData> * LightmapsPacker::GetAtlasingData()
 {
 	return &atlasingData;
+}
+
+void LightmapsPacker::Compress()
+{
+	FileList * fileList = new FileList(outputDir);
+
+	int32 itemsCount = fileList->GetCount();
+	for(int32 i = 0; i < itemsCount; ++i)
+	{
+		const String & fileName = fileList->GetPathname(i);
+		if(fileList->IsDirectory(i) || (FileSystem::Instance()->GetExtension(fileName) != ".png"))
+		{
+			continue;
+		}
+
+		String newName = PVRConverter::Instance()->ConvertPngToPvr(fileName, compressFormat, true);
+	}
+
+	fileList->Release();
 }

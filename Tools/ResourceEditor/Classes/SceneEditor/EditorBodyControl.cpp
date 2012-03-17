@@ -1910,6 +1910,7 @@ void EditorBodyControl::PackLightmaps()
 	packer.SetInputDir("lightmaps_temp/");
 	packer.SetOutputDir(GetFilePath()+"_lightmaps/");
 	packer.Pack();
+	packer.Compress();
 	packer.ParseSpriteDescriptors();
 
 	BeastProxy::Instance()->UpdateAtlas(beastManager, packer.GetAtlasingData());
