@@ -139,7 +139,7 @@ public:
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
 
-    Texture * GetLightmapForIndex(int32 index);
+	LightmapData * GetLightmapDataForIndex(int32 index);
     int32 GetLightmapCount();
 
     /**

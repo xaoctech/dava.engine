@@ -229,6 +229,8 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
             uniformTexture0 = shader->FindUniformLocationByName("texture0");
             uniformTexture1 = shader->FindUniformLocationByName("texture1");
+			uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
+			uniformUvScale = shader->FindUniformLocationByName("uvScale");
             
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
@@ -452,6 +454,13 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 			shader->SetUniformValue(lightmapSizePosition, (float32)setupLightmapSize); 
 		}
 	}
+
+	if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
+	{
+		shader->SetUniformValue(uniformUvOffset, uvOffset);
+		shader->SetUniformValue(uniformUvScale, uvScale);
+	}
+	
 
     if (instanceMaterialState)
     {

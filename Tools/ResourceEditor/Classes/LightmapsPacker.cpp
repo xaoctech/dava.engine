@@ -82,9 +82,8 @@ void LightmapsPacker::ParseSpriteDescriptors()
 		dx++;//cause TexturePacker::ReduceRectToOriginalSize removed one pixel by default
 		dy++;
 
-		data.uvOffset = Vector2((float32)x, (float32)y);
-
 		Vector2 textureSize = GetTextureSize(data.textureName);
+		data.uvOffset = Vector2((float32)x/textureSize.x, (float32)y/textureSize.y);
 		data.uvScale = Vector2((float32)dx/textureSize.x, (float32)dy/textureSize.y);
 		
 		file->Release();

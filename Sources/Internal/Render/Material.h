@@ -135,6 +135,9 @@ public:
 	float	transparency; 
 	float	indexOfRefraction;
 
+	Vector2 uvOffset;
+	Vector2 uvScale;
+
     enum eTextureLevel
     {
         TEXTURE_DIFFUSE = 0,
@@ -178,7 +181,8 @@ private:
     int32 uniformMaterialLightDiffuseColor;
     int32 uniformMaterialLightSpecularColor;
     int32 uniformMaterialSpecularShininess;
-
+	int32 uniformUvOffset;
+	int32 uniformUvScale;
     
     static UberShader * uberShader;
 };
