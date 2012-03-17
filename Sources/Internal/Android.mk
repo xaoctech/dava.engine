@@ -222,7 +222,7 @@ LOCAL_SRC_FILES :=  \
                     Utils/Utils.cpp \
 
 # set build flags
-LOCAL_CFLAGS := -frtti -g -O0 -DGL_GLEXT_PROTOTYPES=1
+LOCAL_CFLAGS := -frtti -g -O2 -DGL_GLEXT_PROTOTYPES=1
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
