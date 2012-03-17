@@ -63,7 +63,7 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, int32 format,
             break;
 
         case Texture::FORMAT_PVR2:
-            command = Format("%s -fOGLPVRTC4 -i%s", converterPath.c_str(), pngFileName.c_str());
+            command = Format("%s -fOGLPVRTC2 -i%s", converterPath.c_str(), pngFileName.c_str());
             break;
             
         default:
@@ -95,11 +95,11 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, int32 format,
         case Texture::FORMAT_PVR2:
             if(generateMimpaps)
             {
-                command = Format("\"\"%s\" -fPVRTC2 -i%s -m\"", converterPath.c_str(), pngFileName.c_str());
+                command = Format("\"\"%s\" -fOGLPVRTC2 -i%s -m\"", converterPath.c_str(), pngFileName.c_str());
             }
             else
             {
-                command = Format("\"\"%s\" -fPVRTC2 -i%s\"", converterPath.c_str(), pngFileName.c_str());
+                command = Format("\"\"%s\" -fOGLPVRTC2 -i%s\"", converterPath.c_str(), pngFileName.c_str());
             }
             break;
             
