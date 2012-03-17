@@ -1078,8 +1078,16 @@ void SceneEditorScreenMain::AutoSaveLevel(BaseObject * obj, void *, void *)
     time_t now = time(0);
     tm* utcTime = localtime(&now);
     
-    String pathToFile = EditorSettings::Instance()->GetDataSourcePath();
-    pathToFile += Format("AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+    String folderPath = EditorSettings::Instance()->GetDataSourcePath() + "Autosave";
+    bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
+    if(!folderExcists)
+    {
+        FileSystem::Instance()->CreateDirectory(folderPath);
+    }
+
+    
+    
+    String pathToFile = folderPath + Format("/AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
                                                                 utcTime->tm_hour, utcTime->tm_min);
     
     BodyItem *iBody = bodies[0];
