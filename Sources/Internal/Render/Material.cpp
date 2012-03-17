@@ -517,5 +517,19 @@ void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
 {
 	setupLightmapSize = _setupLightmapSize;
 }
+    
+void Material::SetTexture(eTextureLevel level, const String & textureName)
+{
+    SafeRelease(textures[level]);
+    names[level] = "";
+    
+    Texture *t = Texture::CreateFromFile(textureName);
+    if(t)
+    {
+        textures[level] = t;
+        names[level] = textureName;
+    }
+}
+
 
 };
