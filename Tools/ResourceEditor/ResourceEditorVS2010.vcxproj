@@ -442,6 +442,7 @@
     <ClInclude Include="Classes\SceneEditor\EditorLightNode.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
     <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
@@ -468,9 +469,13 @@
     <ClInclude Include="Classes\SceneEditor\SceneValidator.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
+    <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="Classes\TexturePacker\DefinitionFile.h" />
@@ -689,6 +694,7 @@
     <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
     <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
@@ -714,9 +720,13 @@
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
+    <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp" />
