@@ -7,6 +7,7 @@
 #include "PVRConverter.h"
 
 #include "UIZoomControl.h"
+#include "SceneValidator.h"
 
 TextureConverterDialog::TextureConverterDialog(const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)
@@ -208,10 +209,7 @@ void TextureConverterDialog::EnumerateTexturesFromMaterials()
         for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
         {
             Texture *t = materials[iMat]->textures[iTex];
-            if(t)
-            {
-                textures.insert(SafeRetain(t));
-            }
+            CollectTexture(t);
         }
     }
 }
@@ -229,16 +227,26 @@ void TextureConverterDialog::EnumerateTexturesFromNodes(SceneNode * node)
             for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)
             {
                 Texture *t = landscape->GetTexture((LandscapeNode::eTextureLevel)iTex);
-                if(t)
-                {
-                    textures.insert(SafeRetain(t));
-                }
+                CollectTexture(t);
             }
         }
         
         EnumerateTexturesFromNodes(child);
     }
 }
+
+void TextureConverterDialog::CollectTexture(Texture *texture)
+{
+    if(texture)
+    {
+        String::size_type pos = texture->relativePathname.find("~res:/");
+        if(String::npos == pos)
+        {
+            textures.insert(SafeRetain(texture));
+        }
+    }
+}
+
 
 void TextureConverterDialog::RestoreTextures(Texture *t, const String &newTexturePath)
 {
@@ -315,7 +323,20 @@ void TextureConverterDialog::OnConvert(DAVA::BaseObject *owner, void *userData, 
     }
     else 
     {
-        formatDialog->Show();
+        Texture *t = GetTextureForIndex(selectedItem);
+        if (t->width != t->height)
+        {
+            ErrorNotifier::Instance()->ShowError("Wrong size. Texture must be square.");
+        }
+        else if(SceneValidator::IsntPower2(t->width))
+        {
+            ErrorNotifier::Instance()->ShowError("Wrong size. Size must be power of 2.");
+        }
+        else 
+        {
+            formatDialog->Show();
+        }
+        
     }
 }
 

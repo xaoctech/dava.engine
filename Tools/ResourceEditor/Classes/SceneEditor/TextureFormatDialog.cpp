@@ -87,7 +87,7 @@ void TextureFormatDialog::Show()
         {
             pvrButtons[i]->SetSelected(false);
         }
-        mipmapEnabled->SetChecked(false, false);
+        mipmapEnabled->SetChecked(true, false);
         
         UIScreen *screen = UIScreenManager::Instance()->GetScreen();
         screen->AddControl(this);
