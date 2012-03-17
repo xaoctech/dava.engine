@@ -5,7 +5,6 @@
 
 using namespace DAVA;
 
-class ErrorDialog;
 class SceneInfoControl;
 class SceneValidator: public Singleton<SceneValidator>
 {
@@ -39,7 +38,6 @@ protected:
     
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;
-    ErrorDialog *errorDialog;
     
     SceneInfoControl *infoControl;
 
