@@ -40,7 +40,7 @@ namespace DAVA
 
 File * File::CreateFromSystemPath(zip *APKArchive, const String &filename)
 {
-	Logger::Debug("[File::CreateFromSystemPath] assets file %s", filename.c_str());
+//	Logger::Debug("[File::CreateFromSystemPath] assets file %s", filename.c_str());
 
 	if(!APKArchive)
 	{
@@ -54,7 +54,7 @@ File * File::CreateFromSystemPath(zip *APKArchive, const String &filename)
 		DynamicMemoryFile *fileInstance = NULL;
 		struct zip_stat fileStat = {0};
 		int retCode = zip_stat(APKArchive, filename.c_str(), ZIP_FL_NOCASE, &fileStat);
-		Logger::Debug("[File::CreateFromSystemPath] retCode = %d", retCode);
+//		Logger::Debug("[File::CreateFromSystemPath] retCode = %d", retCode);
 		if(0 == retCode)
 		{
 			int32 dataSize = fileStat.size;
@@ -67,7 +67,7 @@ File * File::CreateFromSystemPath(zip *APKArchive, const String &filename)
 			}
 
 			fileInstance = DynamicMemoryFile::Create(data, readSize, File::READ); 
-			Logger::Debug("[File::CreateFromSystemPath] file created, size = %d", readSize);
+//			Logger::Debug("[File::CreateFromSystemPath] file created, size = %d", readSize);
 		}
 		
 		zip_fclose(zipfile);
