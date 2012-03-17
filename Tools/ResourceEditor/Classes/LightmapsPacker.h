@@ -4,17 +4,11 @@
 #include "DAVAEngine.h"
 using namespace DAVA;
 
+#include "LightmapAtlasingData.h"
+
 class LightmapsPacker
 {
 public:
-	struct LightmapAtlasingData
-	{
-		String meshInstanceName;
-		String textureName;
-		Vector2 uvOffset;
-		Vector2 uvScale;
-	};
-
 	LightmapsPacker();
 	~LightmapsPacker();
 
@@ -23,12 +17,13 @@ public:
 	void Pack();
 	void Compress();
 	void ParseSpriteDescriptors();
+	Vector<LightmapAtlasingData> * GetAtlasingData();
 
 private:
 	String inputDir;
 	String outputDir;
 
-	Vector<LightmapAtlasingData> lightmapsData;
+	Vector<LightmapAtlasingData> atlasingData;
 
 	Vector2 GetTextureSize(const String & filePath);
 };

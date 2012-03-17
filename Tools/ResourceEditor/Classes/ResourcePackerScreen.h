@@ -59,7 +59,7 @@ public:
 	
 	bool isGfxModified;
 
-	bool processAllPng;
+	bool isLightmapsPacking;
 };
 
 #endif // __DAVAENGINE_RESOURCEPACKERSCREEN_H__

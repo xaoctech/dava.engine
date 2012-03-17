@@ -369,9 +369,14 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	Vector<LightmapData>::iterator lighmapsEnd = lightmaps.end();
 	for(Vector<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
 	{
-		String filename = sceneFile->AbsoluteToRelative((*lightmapsIterator).lightmapName);
+		LightmapData & data = *lightmapsIterator;
+		String filename = sceneFile->AbsoluteToRelative(data.lightmapName);
 
 		archive->SetString(Format("lightmap%d", lightmapIndex), filename.c_str());
+		archive->SetFloat(Format("lightmap%duvoX", lightmapIndex), data.uvOffset.x);
+		archive->SetFloat(Format("lightmap%duvoY", lightmapIndex), data.uvOffset.y);
+		archive->SetFloat(Format("lightmap%duvsX", lightmapIndex), data.uvScale.x);
+		archive->SetFloat(Format("lightmap%duvsY", lightmapIndex), data.uvScale.y);
 		lightmapIndex++;
 	}
 }
@@ -456,8 +461,16 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
         for(int32 i = 0; i < lightmapsCount; ++i)
         {
-            String lightmapName = archive->GetString(Format("lightmap%d", i), "");
-            AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
+			LightmapData data;
+
+            data.lightmapName = archive->GetString(Format("lightmap%d", i), "");
+			data.lightmapName = sceneFile->RelativeToAbsolute(data.lightmapName);
+			data.uvOffset.x = archive->GetFloat(Format("lightmap%duvoX", i));
+			data.uvOffset.y = archive->GetFloat(Format("lightmap%duvoY", i));
+			data.uvScale.x = archive->GetFloat(Format("lightmap%duvsX", i));
+			data.uvScale.y = archive->GetFloat(Format("lightmap%duvsY", i));
+
+            AddLightmap(i, data);
         }
     }
 }
@@ -467,12 +480,17 @@ Vector<PolygonGroupWithMaterial*> & MeshInstanceNode::GetPolygonGroups()
     return polygroups;
 }
 
-void MeshInstanceNode::AddLightmap(const String & lightmapName)
+void MeshInstanceNode::AddLightmap(int32 polygonGroupIndex, const LightmapData & lightmapData)
 {
-	LightmapData data;
-	data.lightmapName = lightmapName;
-	data.lightmap = Texture::CreateFromFile(lightmapName);
-	lightmaps.push_back(data);
+	LightmapData data = lightmapData;
+	data.lightmap = Texture::CreateFromFile(data.lightmapName);
+
+	if(polygonGroupIndex > ((int32)lightmaps.size()-1))
+	{
+		lightmaps.resize(polygonGroupIndex+1);
+	}
+
+	lightmaps[polygonGroupIndex] = data;
 }
 
 void MeshInstanceNode::ClearLightmaps()
