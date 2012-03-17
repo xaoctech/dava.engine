@@ -44,6 +44,12 @@ uniform vec3 lightPosition0;
 uniform float materialSpecularShininess;
 #endif
 
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
+//implemented only for lightmaps in code
+uniform mediump vec2 uvOffset;
+uniform mediump vec2 uvScale;
+#endif
+
 
 // OUTPUT ATTRIBUTES
 varying vec2 varTexCoord0;
@@ -126,7 +132,7 @@ void main()
 
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
-	varTexCoord1 = inTexCoord1;
+	varTexCoord1 = uvScale*inTexCoord1+uvOffset;
 	#if defined(SETUP_LIGHTMAP)
 		varLightmapSize = lightmapSize;
 	#endif

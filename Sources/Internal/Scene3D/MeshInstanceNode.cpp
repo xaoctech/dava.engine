@@ -171,11 +171,13 @@ void MeshInstanceNode::Draw()
         PolygonGroupWithMaterial * polygroup = polygroups[k];
         if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
 		{
-			Texture * lightmap = GetLightmapForIndex(k);
-			if(lightmap)
+			LightmapData * data = GetLightmapDataForIndex(k);
+			if(data && data->lightmap)
 			{
 				polygroup->material->SetSetupLightmap(false);
-				polygroup->material->textures[Material::TEXTURE_DECAL] = lightmap;
+				polygroup->material->textures[Material::TEXTURE_DECAL] = data->lightmap;
+				polygroup->material->uvOffset = data->uvOffset;
+				polygroup->material->uvScale = data->uvScale;
 			}
 			else
 			{
@@ -511,11 +513,11 @@ void MeshInstanceNode::ReplaceMaterial(DAVA::Material *material, int32 index)
     polygroups[index]->material = SafeRetain(material);
 }
 
-Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
+MeshInstanceNode::LightmapData * MeshInstanceNode::GetLightmapDataForIndex(int32 index)
 {
 	if(index < (int32)lightmaps.size())
 	{
-		return lightmaps[index].lightmap;
+		return &(lightmaps[index]);
 	}
 	else
 	{
