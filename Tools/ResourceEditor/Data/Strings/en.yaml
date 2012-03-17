@@ -30,6 +30,7 @@ menu.viewport.iphone: "iPhone"
 menu.viewport.retina: "Retina"
 menu.viewport.ipad: "iPad"
 menu.viewport.default: "Default"
+menu.textureconvertor: "Texture Convertor"
 
 #Panels
 panel.graph.scene: "Scene Graph"
@@ -212,3 +213,7 @@ colorpicker.r: "Red:"
 colorpicker.g: "Green:"
 colorpicker.b: "Blue:"
 colorpicker.a: "Alpha:"
+
+#Texture Converter
+textureconverter.convert: "Convert"
+textureformatdialog.generatemipmap: "Generate mipmaps"
