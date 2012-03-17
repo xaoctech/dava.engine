@@ -438,7 +438,7 @@ Texture * TextureConverterDialog::CreateFromImage(const String &fileName)
 	Texture * texture = Texture::CreateFromData((Texture::PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
 	texture->relativePathname = fileName;
-    texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
+//    texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
 	
 	SafeRelease(image);
 	
