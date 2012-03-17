@@ -11,7 +11,7 @@ echo "PWD=`pwd`"
 
 export NDK_MODULE_PATH=`pwd`/jni
 
-ndk-build NDK_DEBUG=1
+ndk-build NDK_DEBUG=0
 if [ $? != 0 ]; then
     echo "ERROR: Can't build test program!"
     exit 1
