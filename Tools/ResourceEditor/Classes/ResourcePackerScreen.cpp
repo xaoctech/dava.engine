@@ -18,7 +18,7 @@
 
 ResourcePackerScreen::ResourcePackerScreen()
 {
-	processAllPng = false;
+	isLightmapsPacking = false;
 }
 
 void ResourcePackerScreen::LoadResources()
@@ -463,7 +463,7 @@ void ResourcePackerScreen::RecursiveTreeWalk(const String & inputPath, const Str
 					DefinitionFile * defFile = ProcessPSD(processDirectoryPath, fullname, fileList->GetFilename(fi));
 					definitionFileList.push_back(defFile);
 				}
-				else if(processAllPng && FileSystem::GetExtension(fullname) == ".png")
+				else if(isLightmapsPacking && FileSystem::GetExtension(fullname) == ".png")
 				{
 					DefinitionFile * defFile = new DefinitionFile();
 					defFile->LoadPNG(fullname, processDirectoryPath);
@@ -493,6 +493,12 @@ void ResourcePackerScreen::RecursiveTreeWalk(const String & inputPath, const Str
 			bool isSplit = false;
 			if (CommandLineParser::Instance()->IsFlagSet("--split"))
 				isSplit = true;
+
+			if(isLightmapsPacking)
+			{
+				packer.UseOnlySquareTextures();
+				packer.SetMaxTextureSize(2048);
+			}
 
 			if (!isSplit)
 			{

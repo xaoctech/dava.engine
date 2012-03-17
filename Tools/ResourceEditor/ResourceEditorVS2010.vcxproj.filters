@@ -1760,6 +1760,9 @@
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\LightmapAtlasingData.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">

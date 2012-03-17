@@ -33,7 +33,7 @@ void LightmapsPacker::Pack()
 	resourcePackerScreen->inputGfxDirectory = inputDir;
 	resourcePackerScreen->outputGfxDirectory = outputDir;
 	resourcePackerScreen->excludeDirectory = inputDir + "/../";
-	resourcePackerScreen->processAllPng = true;
+	resourcePackerScreen->isLightmapsPacking = true;
 
 	resourcePackerScreen->PackResources();
 
@@ -63,12 +63,14 @@ void LightmapsPacker::ParseSpriteDescriptors()
 
 		LightmapAtlasingData data;
 
+		data.meshInstanceName = String(fileList->GetFilename(i), 0, fileList->GetFilename(i).length()-4);
+
 		File * file = File::Create(fileName, File::OPEN | File::READ);
 		
 		file->ReadLine(buf, sizeof(buf)); //textures count
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
-		data.textureName = String(buf, readSize);
+		data.textureName = outputDir + "/" + String(buf, readSize);
 
 		file->ReadLine(buf, sizeof(buf)); //image size
 
@@ -82,12 +84,12 @@ void LightmapsPacker::ParseSpriteDescriptors()
 
 		data.uvOffset = Vector2((float32)x, (float32)y);
 
-		Vector2 textureSize = GetTextureSize(outputDir+"/"+data.textureName);
+		Vector2 textureSize = GetTextureSize(data.textureName);
 		data.uvScale = Vector2((float32)dx/textureSize.x, (float32)dy/textureSize.y);
 		
 		file->Release();
 
-		lightmapsData.push_back(data);
+		atlasingData.push_back(data);
 	}
 
 	fileList->Release();
@@ -110,4 +112,9 @@ Vector2 LightmapsPacker::GetTextureSize(const String & filePath)
 	SafeRelease(image);
 
 	return ret;
+}
+
+Vector<LightmapAtlasingData> * LightmapsPacker::GetAtlasingData()
+{
+	return &atlasingData;
 }
