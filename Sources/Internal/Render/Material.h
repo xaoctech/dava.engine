@@ -135,7 +135,7 @@ public:
 	float	transparency; 
 	float	indexOfRefraction;
 
-    enum
+    enum eTextureLevel
     {
         TEXTURE_DIFFUSE = 0,
         TEXTURE_DETAIL = 1,
@@ -151,6 +151,7 @@ public:
     void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     
+    void SetTexture(eTextureLevel level, const String & textureName);
     
 private:
     void RebuildShader();
