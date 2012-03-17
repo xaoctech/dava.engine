@@ -39,6 +39,7 @@ protected:
     void EnumerateTextures();
     void EnumerateTexturesFromMaterials();
     void EnumerateTexturesFromNodes(SceneNode * node);
+    void CollectTexture(Texture *texture);
 
     void RestoreTextures(Texture *t, const String &newTexturePath);
     void RestoreTexturesFromMaterials(Texture *t, const String &newTexturePath);
