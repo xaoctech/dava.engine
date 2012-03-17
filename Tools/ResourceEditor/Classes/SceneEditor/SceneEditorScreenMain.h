@@ -17,6 +17,7 @@ class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
+class TextureConverterDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodesDialogDelegeate,
@@ -129,6 +130,7 @@ private:
 	UIButton * btnBeast;
 	UIButton * btnLandscape;
 	UIButton * btnViewPortSize;
+    UIButton * btnTextureConverter;
 
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
@@ -141,6 +143,7 @@ private:
 	void OnBeastPressed(BaseObject * obj, void *, void *);
 	void OnLandscapePressed(BaseObject * obj, void *, void *);
     void OnViewPortSize(BaseObject * obj, void *, void *);
+    void OnTextureConverter(BaseObject * obj, void *, void *);
     
 
     //Body list
@@ -214,6 +217,7 @@ private:
     SettingsDialog *settingsDialog;
     
     TextureTrianglesDialog *textureTrianglesDialog;
+    TextureConverterDialog *textureConverterDialog;
     
     // general
     Font *font;

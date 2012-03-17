@@ -364,24 +364,35 @@ void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const Stri
             Material *mat = GetMaterial(selectedMaterial);
             if(mat)
             {
-                if (mat->textures[textureTypes[i]])
+                mat->SetTexture((Material::eTextureLevel)textureTypes[i], newValue);
+                Texture *tx = mat->textures[textureTypes[i]];
+                if(tx)
                 {
-                    SafeRelease(mat->textures[textureTypes[i]]);
-                    mat->names[textureTypes[i]] = "";
-                }
-                Texture *tx = Texture::CreateFromFile(newValue);
-                if (tx) 
-                {
-                    mat->textures[textureTypes[i]] = tx;
-                    mat->names[textureTypes[i]] = newValue;
-                    
                     SceneValidator::Instance()->ValidateTexture(tx);
                 }
                 else 
                 {
-                    //mat->names[textureTypes[i]] = newValue;
                     materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], "");
                 }
+                
+//                if (mat->textures[textureTypes[i]])
+//                {
+//                    SafeRelease(mat->textures[textureTypes[i]]);
+//                    mat->names[textureTypes[i]] = "";
+//                }
+//                Texture *tx = Texture::CreateFromFile(newValue);
+//                if (tx) 
+//                {
+//                    mat->textures[textureTypes[i]] = tx;
+//                    mat->names[textureTypes[i]] = newValue;
+//                    
+//                    SceneValidator::Instance()->ValidateTexture(tx);
+//                }
+//                else 
+//                {
+//                    //mat->names[textureTypes[i]] = newValue;
+//                    materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], "");
+//                }
             }
 
             break;

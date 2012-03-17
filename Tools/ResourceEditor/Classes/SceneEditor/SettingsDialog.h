@@ -14,7 +14,6 @@ public:
     virtual void SettingsChanged() = 0;
 };
 
-class ErrorDialog;
 class SettingsDialog: public UIControl, public PropertyListDelegate
 {
     
@@ -43,9 +42,6 @@ protected:
     Vector<String> languages;
     
     SettingsDialogDelegate *delegate;
-    
-    ErrorDialog *errorDialog;
-
 };
 
 

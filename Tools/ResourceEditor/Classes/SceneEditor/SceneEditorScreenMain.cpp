@@ -13,10 +13,15 @@
 #include "SceneValidator.h"
 
 #include "TextureTrianglesDialog.h"
+#include "TextureConverterDialog.h"
 
 #include "PropertyControlCreator.h"
+#include "ErrorNotifier.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
+    new ErrorNotifier();
+    
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
     
@@ -55,6 +60,8 @@ void SceneEditorScreenMain::LoadResources()
     InitializeNodeDialogs();    
     
     textureTrianglesDialog = new TextureTrianglesDialog();
+    
+    textureConverterDialog = new TextureConverterDialog(fullRect);
     
     materialEditor = new MaterialEditor();
     
@@ -112,6 +119,7 @@ void SceneEditorScreenMain::LoadResources()
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(textureConverterDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(sceneInfoButton);
     
@@ -138,6 +146,7 @@ void SceneEditorScreenMain::UnloadResources()
     ReleaseTopMenu();
     
     PropertyControlCreator::Instance()->Release();
+    ErrorNotifier::Instance()->Release();
 }
 
 
@@ -167,6 +176,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     int32 dx = ControlsFactory::BUTTON_WIDTH;
     int32 dy = ControlsFactory::BUTTON_HEIGHT;
     btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.open"));
+    ControlsFactory::CustomizeButtonExpandable(btnOpen);
     x += dx;
     btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.save"));
     x += dx;
@@ -175,8 +185,10 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.materials"));
     x += dx;
     btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.createnode"));
+    ControlsFactory::CustomizeButtonExpandable(btnCreate);
     x += dx;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.new"));
+    ControlsFactory::CustomizeButtonExpandable(btnNew);
     x += dx;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.openproject"));
 #ifdef __DAVAENGINE_BEAST__
@@ -187,6 +199,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
+	x += dx;
+	btnTextureConverter = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.textureconvertor"));
     
     
 
@@ -202,6 +216,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 #endif
     AddControl(btnLandscape);
     AddControl(btnViewPortSize);
+    AddControl(btnTextureConverter);
     
 
     btnOpen->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnOpenPressed));
@@ -216,6 +231,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 #endif// #ifdef __DAVAENGINE_BEAST__
 	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapePressed));
 	btnViewPortSize->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnViewPortSize));
+	btnTextureConverter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnTextureConverter));
 }
 
 void SceneEditorScreenMain::ReleaseTopMenu()
@@ -232,6 +248,7 @@ void SceneEditorScreenMain::ReleaseTopMenu()
 #endif// #ifdef __DAVAENGINE_BEAST__
     SafeRelease(btnLandscape);
     SafeRelease(btnViewPortSize);
+    SafeRelease(btnTextureConverter);
 }
 
 void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
@@ -1185,3 +1202,12 @@ void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
     }
 }
 
+void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, void *)
+{
+    if(textureConverterDialog)
+    {
+        BodyItem *body = FindCurrentBody();
+
+        textureConverterDialog->Show(body->bodyControl->GetScene());
+    }
+}

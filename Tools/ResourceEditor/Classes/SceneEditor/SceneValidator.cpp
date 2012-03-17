@@ -1,5 +1,5 @@
 #include "SceneValidator.h"
-#include "ErrorDialog.h"
+#include "ErrorNotifier.h"
 #include "EditorSettings.h"
 #include "SceneInfoControl.h"
 
@@ -8,13 +8,11 @@ SceneValidator::SceneValidator()
     sceneTextureCount = 0;
     sceneTextureMemory = 0;
 
-    errorDialog = NULL;
     infoControl = NULL;
 }
 
 SceneValidator::~SceneValidator()
 {
-    SafeRelease(errorDialog);
     SafeRelease(infoControl);
 }
 
@@ -168,11 +166,7 @@ bool SceneValidator::IsntPower2(int32 num)
 
 void SceneValidator::ShowErrors()
 {
-    if(!errorDialog)
-    {
-        errorDialog = new ErrorDialog();
-    }
-    errorDialog->Show(errorMessages);
+    ErrorNotifier::Instance()->ShowError(errorMessages);
 }
 
 void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)

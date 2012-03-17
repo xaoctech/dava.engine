@@ -371,7 +371,7 @@ void TextureConverterDialog::SetupTexturePreview()
     String workingTexturePath = GetWorkingTexturePath(workingTexture->relativePathname);
 
     bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
-    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
+//    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
 
 //    if(workingTexture->isAlphaPremultiplied)
     {
@@ -409,7 +409,7 @@ void TextureConverterDialog::SetupTexturePreview()
     }
     
 //    if(!isMipmaps && workingTexture->isMimMapTexture)
-    if(isMipmaps)
+//    if(isMipmaps)
     {
         Texture::EnableMipmapGeneration();
     }

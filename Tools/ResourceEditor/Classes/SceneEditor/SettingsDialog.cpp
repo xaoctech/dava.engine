@@ -2,7 +2,7 @@
 #include "ControlsFactory.h"
 
 #include "EditorSettings.h"
-#include "ErrorDialog.h"
+#include "ErrorNotifier.h"
 
 SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDelegate)
     :   UIControl(rect)
@@ -70,13 +70,10 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
 
     
-    errorDialog = new ErrorDialog();
 }
     
 SettingsDialog::~SettingsDialog()
 {
-    SafeRelease(errorDialog);
-    
     SafeRelease(propertyList);
     SafeRelease(dialogPanel);
 }
@@ -91,9 +88,7 @@ void SettingsDialog::OnClose(BaseObject * object, void * userData, void * caller
         
         if(cur <= prev)
         {
-            Set<String> error;
-            error.insert("Lod layers have wrong values.");
-            errorDialog->Show(error);
+            ErrorNotifier::Instance()->ShowError("Lod layers have wrong values.");
             return;
         }
     }
