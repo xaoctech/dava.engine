@@ -24,9 +24,9 @@ public:
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
-protected:
+    static bool IsntPower2(int32 num);
 
-    bool IsntPower2(int32 num);
+protected:
     
     void ValidateTextureInternal(Texture *texture);
     void ValidateLandscapeInternal(LandscapeNode *landscape);
