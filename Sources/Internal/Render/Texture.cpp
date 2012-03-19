@@ -184,12 +184,16 @@ Texture::Texture()
 	fboID = -1;
 #endif
 
-#ifdef __DAVAENGINE_ANDROID__
+    
+    isMimMapTexture = false;
+	isAlphaPremultiplied = false;
+
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	savedData = NULL;
 	savedDataSize = 0;
 	renderTargetModified = false;
     renderTargetAutosave = true;
-#endif //#ifdef __DAVAENGINE_ANDROID__
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
 Texture::~Texture()
@@ -210,7 +214,7 @@ Texture::~Texture()
 		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
 #endif //PLATFORMS
 
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		SafeDeleteArray(savedData);
 		savedDataSize = 0;
 #endif// #if defined(__DAVAENGINE_ANDROID__)
@@ -232,7 +236,7 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 {
 	RenderManager::Instance()->LockNonMain();
 	Texture * tx = CreateFromData(format, data, width, height);
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     tx->SaveData(format, data, width, height);
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	RenderManager::Instance()->UnlockNonMain();
@@ -531,12 +535,15 @@ void Texture::DisableMipmapGeneration()
 void Texture::GenerateMipmaps()
 {
 	RenderManager::Instance()->LockNonMain();
+    
+    isMimMapTexture = true;
+
 #if defined(__DAVAENGINE_OPENGL__)
 
 	int saveId = GetSavedTextureID();
 	BindTexture(id);
 	
-#if defined(__DAVAENGINE_IPHONE__)// || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__)
 	// definitelly works for the iPhone
 	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
@@ -564,6 +571,45 @@ void Texture::GenerateMipmaps()
 	RenderManager::Instance()->UnlockNonMain();
 }
 
+void Texture::GeneratePixelesation()
+{
+	RenderManager::Instance()->LockNonMain();
+    
+    isMimMapTexture = false;
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    
+	int saveId = GetSavedTextureID();
+	BindTexture(id);
+	
+#if defined(__DAVAENGINE_IPHONE__)
+	// definitelly works for the iPhone
+	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#elif defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#else //Non-ES platforms
+	RENDER_VERIFY(glGenerateMipmapEXT(GL_TEXTURE_2D));
+    
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#endif //PLATFORMS
+    
+	if (saveId != 0)
+	{
+		BindTexture(saveId);
+	}
+	
+	
+#elif defined(__DAVAENGINE_DIRECTX9__)
+    
+#endif // #if defined(__DAVAENGINE_OPENGL__)
+	RenderManager::Instance()->UnlockNonMain();
+}
+    
 void Texture::UsePvrMipmaps()
 {
 	RenderManager::Instance()->LockNonMain();
@@ -625,6 +671,7 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	texture = Texture::CreateFromData((Texture::PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
 	texture->relativePathname = pathName;
+    texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
 	
 	if (texture)
 		textureMap[texture->relativePathname] = texture;
@@ -1132,7 +1179,7 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 #endif
 }
 
-#if defined(__DAVAENGINE_ANDROID__)    
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 void Texture::SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height)
 {
     int32 textureSize = width * height * FormatMultiplier(format);
@@ -1248,7 +1295,12 @@ void Texture::Lost()
 
 	if(fboID != (uint32)-1)
 	{
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 		RENDER_VERIFY(glDeleteFramebuffersOES(1, &fboID));
+#else //Non ES platforms
+		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
+#endif //PLATFORMS
+
 		fboID = -1;
 	}
 
@@ -1270,8 +1322,12 @@ void Texture::Invalidate()
 		return;
 	}
 
-	RenderManager::Instance()->LockNonMain();
+    RenderManager::Instance()->LockNonMain();
 
+    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
+    
+    Image::EnableAlphaPremultiplication(isAlphaPremultiplied);
+    
 	if(isRenderTarget)
 	{
 		//////////////////////////////////////////////////////////////////////////
@@ -1289,6 +1345,7 @@ void Texture::Invalidate()
 		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 
+#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
 		// Setup our FBO
 		RENDER_VERIFY(glGenFramebuffersOES(1, &fboID));
 		BindFBO(fboID);
@@ -1301,6 +1358,19 @@ void Texture::Invalidate()
 		{
 			Logger::Error("[Texture::Invalidate] glCheckFramebufferStatusOES: %d", status);
 		}
+#elif defined(__DAVAENGINE_MACOS__)
+        RENDER_VERIFY(glGenFramebuffersEXT(1, &fboID));
+        BindFBO(fboID);
+        
+		// And attach it to the FBO so we can render to it
+		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, id, 0));
+        
+		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
+		{
+			Logger::Error("[Texture::CreateFBO] glCheckFramebufferStatusEXT: %d", status);
+		}
+#endif 
 
 		BindFBO(saveFBO);
 
@@ -1322,6 +1392,8 @@ void Texture::Invalidate()
 		InvalidateFromFile();
 	}
 
+    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
+    
 	RenderManager::Instance()->UnlockNonMain();
 }
 
@@ -1359,7 +1431,7 @@ void Texture::InvalidateFromSavedData()
 
 
 	GLint wrapMode = GL_CLAMP_TO_EDGE;
-	if (isMipmapGenerationEnabled)
+	if (isMimMapTexture)
 	{
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
@@ -1389,6 +1461,8 @@ void Texture::InvalidateFromFile()
 		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
 		return;
 	}
+    isAlphaPremultiplied = image->isAlphaPremultiplied;
+
 
 	savedData = image->GetData();
 	InvalidateFromSavedData();

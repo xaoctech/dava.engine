@@ -165,6 +165,7 @@ public:
 	static void DisableMipmapGeneration();
     static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
 	void GenerateMipmaps();
+	void GeneratePixelesation();
 	
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
 
@@ -194,7 +195,7 @@ public:							// properties for fast access
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-#if defined(__DAVAENGINE_ANDROID__) 
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	bool		 renderTargetModified;
     bool         renderTargetAutosave;
 
@@ -209,7 +210,6 @@ public:							// properties for fast access
     void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
     void SaveData(uint8 * data, int32 dataSize);
     
-
 	uint8 *savedData;
 	int32 savedDataSize;
 #endif //#if defined(__DAVAENGINE_ANDROID__) 
@@ -239,6 +239,10 @@ public:							// properties for fast access
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	PixelFormat format;			// texture format 
 	bool		isRenderTarget;
+
+    bool isMimMapTexture;
+	bool isAlphaPremultiplied;
+
 
 	void SetDebugInfo(const String & _debugInfo);
 
