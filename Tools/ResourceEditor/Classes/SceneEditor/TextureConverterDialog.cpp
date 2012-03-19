@@ -429,6 +429,16 @@ void TextureConverterDialog::SetupTexturePreview()
         dstTexture = CreateFromImage(dstPath);
     }
     
+    if(srcTexture)
+    {
+        srcTexture->GeneratePixelesation();
+    }
+    
+    if(dstTexture)
+    {
+        dstTexture->GeneratePixelesation();
+    }
+    
 //    if(!isMipmaps && workingTexture->isMimMapTexture)
 //    if(isMipmaps)
     {
