@@ -208,6 +208,11 @@ void TextureConverterDialog::EnumerateTexturesFromMaterials()
     {
         for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
         {
+			if((materials[iMat]->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP) && iTex > Material::TEXTURE_DIFFUSE)
+			{
+				continue;
+			}
+
             Texture *t = materials[iMat]->textures[iTex];
             CollectTexture(t);
         }

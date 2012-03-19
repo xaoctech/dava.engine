@@ -32,6 +32,7 @@ void LightmapsPacker::Pack()
 
 	CommandLineParser::Instance()->ClearFlags();
 
+	resourcePackerScreen->clearProcessDirectory = true;
 	resourcePackerScreen->inputGfxDirectory = inputDir;
 	resourcePackerScreen->outputGfxDirectory = outputDir;
 	resourcePackerScreen->excludeDirectory = inputDir + "/../";
