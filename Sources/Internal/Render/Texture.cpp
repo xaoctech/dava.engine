@@ -1555,7 +1555,7 @@ Image * Texture::CreateImageFromMemory()
     Image *image = NULL;
     if(isRenderTarget)
     {
-        Sprite *renderTarget = Sprite::CreateFromTexture(this, 0, 0, width, height);
+        Sprite *renderTarget = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
         
         image = ReadDataToImage();
@@ -1564,10 +1564,10 @@ Image * Texture::CreateImageFromMemory()
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget(width, height, Texture::FORMAT_RGBA8888);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, Texture::FORMAT_RGBA8888);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
-        Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, width, height);
+        Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
         drawTexture->SetPosition(0, 0);
         drawTexture->Draw();
 
