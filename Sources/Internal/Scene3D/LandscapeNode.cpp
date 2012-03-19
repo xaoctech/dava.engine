@@ -165,7 +165,7 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     landscapeRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].position); 
     landscapeRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &landscapeVertices[0].texCoord); 
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
-    SafeDeleteArray(landscapeVertices);
+//    SafeDeleteArray(landscapeVertices);
     
     landscapeVerticesArray.push_back(landscapeVertices);
     
