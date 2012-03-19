@@ -117,7 +117,6 @@ Animation *	UIZoomControl::ScrollOffsetAnimation(const Vector2 & _position, floa
 
 void UIZoomControl::SetScale(float currentScale)
 { 
-    //Logger::Debug("%s %f", __FUNCTION__, currentScale);
 	zoomScale = currentScale;
     
     contentControl->scale = Vector2(zoomScale, zoomScale);
@@ -137,10 +136,15 @@ void UIZoomControl::SetScale(float currentScale)
 		scrollZero.y = (size.y - adjH)/2.f;
 	}
 }
+
+float32 UIZoomControl::GetScale()
+{
+    return zoomScale;
+}
+
 	
 void UIZoomControl::PerformScroll()
 {
-    Logger::Debug("%s", __FUNCTION__);
 	Vector2 clickEndPosition = clickStartPosition;
 	clickEndPosition.x -= (scrollOrigin.x);
 	clickEndPosition.y -= (scrollOrigin.y);
@@ -157,8 +161,6 @@ void UIZoomControl::PerformScroll()
 
 void UIZoomControl::Update(float32 timeElapsed)
 {
-	//Logger::Info("%f %f", scrollOrigin.x, scrollOrigin.y);
-
 	if(state == STATE_DECCELERATION)
 	{
 		scrollOrigin.x += deccelerationSpeed.x * scrollPixelsPerSecond * timeElapsed;
@@ -178,9 +180,6 @@ void UIZoomControl::Update(float32 timeElapsed)
     //scrolls back to 0.0
 	if(state != STATE_ZOOM && state != STATE_SCROLL) 
 	{
-//        Logger::Debug("scrollOrigin (%f, %f) scrollZero (%f, %f) size(%f, %f)", scrollOrigin.x, scrollOrigin.y, scrollZero.x, scrollZero.y, size.x, size.y);
-//        Logger::Debug("contentSize*zoomScale (%f, %f)", contentSize.dx * zoomScale, contentSize.dy * zoomScale);
-        
 		//hcenter
 		if((scrollOrigin.x > 0) && ((scrollOrigin.x + contentSize.dx * zoomScale) < (size.x)))
 		{
@@ -221,13 +220,10 @@ void UIZoomControl::Update(float32 timeElapsed)
 	//scrolling over the edge
 	drawScrollPos.x = scrollCurrentShift.x;
 	drawScrollPos.y = scrollCurrentShift.y;
-
-    //Logger::Debug("scrollOrigin (%f, %f) scrollZero (%f, %f) size(%f, %f)", scrollOrigin.x, scrollOrigin.y, scrollZero.x, scrollZero.y, size.x, size.y);
 }
 
 void UIZoomControl::StartScroll(Vector2 _startScrollPosition)
 {
-    Logger::Debug("%s", __FUNCTION__);
 	scrollStartInitialPosition = _startScrollPosition;
 	scrollStartPosition = _startScrollPosition;
 	scrollCurrentPosition = _startScrollPosition;
@@ -240,7 +236,6 @@ void UIZoomControl::StartScroll(Vector2 _startScrollPosition)
 
 void UIZoomControl::ProcessScroll(Vector2 _currentScrollPosition)
 {
-    Logger::Debug("%s", __FUNCTION__, _currentScrollPosition.x, _currentScrollPosition.y);    
 	scrollCurrentPosition = _currentScrollPosition;
 
 	if (LineLength(Point2f(scrollCurrentPosition.x, scrollCurrentPosition.y), Point2f(scrollStartInitialPosition.x, scrollStartInitialPosition.y)) >= SCROLL_BEGIN_PIXELS)
@@ -258,7 +253,6 @@ void UIZoomControl::ProcessScroll(Vector2 _currentScrollPosition)
 
 void UIZoomControl::EndScroll()
 {
-    Logger::Debug("%s scrollCurrentShift %f %f", __FUNCTION__, scrollCurrentShift.x, scrollCurrentShift.y);
 	scrollOrigin.x += scrollCurrentShift.x;
 	scrollOrigin.y += scrollCurrentShift.y;
     
@@ -448,7 +442,6 @@ void UIZoomControl::Input(UIEvent * currentTouch)
 
 						scrollPixelsPerSecond = length
                                                 / (tmp - scrollStartTime);
-                        //Logger::Debug("length %f tmp %f scrollStartTime %f", length, tmp, scrollStartTime);
 						scrollStartTime = scrollCurrentTime;
 					}
 				}
@@ -456,7 +449,6 @@ void UIZoomControl::Input(UIEvent * currentTouch)
 				break;
 			case UIEvent::PHASE_ENDED:
 			{
-                Logger::Debug("PHASE_ENDED %d", state);
 				if(state == STATE_SCROLL)
 				{
 					if(currentTouch->tid == scrollTouch.tid)
@@ -599,17 +591,7 @@ void UIZoomControl::Input(UIEvent * currentTouch)
 			}
 			break;
 		}
-        //Logger::Debug("zoomScale %f prevZoomScale %f", zoomScale, prevZoomScale);
 	}
-	
-//	if (saveState == state)
-//	{
-//		Logger::Debug("event: %d prevState: %d resultState: %d - alltouches: %d", currentTouch->phase, saveState, state, touches.size());
-//	}
-//    else
-//	{
-//        Logger::Debug("CHANGED: event: %d prevState: %d resultState: %d - alltouches: %d", currentTouch->phase, saveState, state, touches.size());
-//    }
 }
 
 void UIZoomControl::SystemDraw(const UIGeometricData &geometricData)
