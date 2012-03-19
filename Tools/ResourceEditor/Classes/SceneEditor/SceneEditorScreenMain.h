@@ -48,6 +48,7 @@ class SceneEditorScreenMain:
         MENUID_CREATENODE = 200,
         MENUID_NEW = 300,
         MENUID_VIEWPORT = 400,
+        MENUID_EXPORTTOGAME,
     };
     
     enum eNewMenuIDS
@@ -65,7 +66,16 @@ class SceneEditorScreenMain:
         
         EOMID_COUNT
     };
-    
+
+    enum eExportToGameMenuIDS
+    {
+        EETGMID_PNG = 0,
+        EETGMID_PVR,
+        EETGMID_DXT,
+        
+        EETGMID_COUNT
+    };
+
 
 public:
     
@@ -221,6 +231,8 @@ private:
     
     // general
     Font *font;
+    
+    void ExportToGameAction(int32 actionID);
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__
