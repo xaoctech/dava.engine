@@ -43,6 +43,7 @@ namespace DAVA
 GLuint Shader::activeProgram = 0;
 
 Shader::Shader()
+    : RenderResource()
 {
     DVASSERT(RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL_ES_2_0 || RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL);
     
@@ -63,6 +64,11 @@ Shader::Shader()
 
     vertexShaderData = 0;
     fragmentShaderData = 0;
+    
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    relativeFileName = "";
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
 }
 
 String VertexTypeStringFromEnum(GLenum type); // Fucking XCode 4 analyzer
@@ -136,6 +142,10 @@ void Shader::SetDefineList(const String & enableDefinesList)
     
 bool Shader::LoadFromYaml(const String & pathname)
 {
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    relativeFileName = pathname;
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
     uint64 shaderLoadTime = SystemTimer::Instance()->AbsoluteMS();
     String pathOnly, shaderFilename;
     FileSystem::SplitPath(pathname, pathOnly, shaderFilename);
@@ -503,6 +513,27 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 }
 
     
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+void Shader::SaveToSystemMemory()
+{
+    RenderResource::Lost();
+}
+void Shader::Lost()
+{
+    Logger::Debug("[Shader::Lost]");
+    DeleteShaders();
+    RenderResource::Lost();
+}
+void Shader::Invalidate()
+{
+    Logger::Debug("[Shader::Invalidate]");
+//    LoadFromYaml(relativeFileName);
+    Recompile();
+    
+    RenderResource::Invalidate();
+}
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
 
 #endif 
 
