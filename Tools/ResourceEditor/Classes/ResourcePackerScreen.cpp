@@ -19,6 +19,7 @@
 ResourcePackerScreen::ResourcePackerScreen()
 {
 	isLightmapsPacking = false;
+	clearProcessDirectory = false;
 }
 
 void ResourcePackerScreen::LoadResources()
@@ -416,6 +417,11 @@ void ResourcePackerScreen::RecursiveTreeWalk(const String & inputPath, const Str
 		//Logger::Error("Can't create directory: %s", processDirectoryPath.c_str());
 	}
 
+	if(clearProcessDirectory)
+	{
+		FileSystem::Instance()->DeleteDirectoryFiles(processDirectoryPath, false);
+	}
+
 	//String outputPath = outputPath;
 	if (FileSystem::Instance()->CreateDirectory(outputPath) == FileSystem::DIRECTORY_CANT_CREATE)
 	{
@@ -566,12 +572,12 @@ void ResourcePackerScreen::OnCellSelected(UIFileTree * tree, UIFileTreeCell *sel
 
 UIFileTreeCell *ResourcePackerScreen::CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index)
 {
-    int32 width = tree->GetRect().dx;
+    int32 width = (int32)tree->GetRect().dx;
     
 	UIFileTreeCell *c = (UIFileTreeCell *)tree->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
 	if(!c)
 	{ //if cell of requested type isn't find in the store create new cell
-		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
+		c = new UIFileTreeCell(Rect(0, 0, (float32)width, 20.f), "FileTreeCell");
 	}
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");

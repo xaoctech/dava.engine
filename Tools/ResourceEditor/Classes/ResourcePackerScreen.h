@@ -60,6 +60,7 @@ public:
 	bool isGfxModified;
 
 	bool isLightmapsPacking;
+	bool clearProcessDirectory;
 };
 
 #endif // __DAVAENGINE_RESOURCEPACKERSCREEN_H__
