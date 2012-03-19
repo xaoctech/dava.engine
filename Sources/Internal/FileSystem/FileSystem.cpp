@@ -218,11 +218,7 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 		pos     = path.find_first_of(delims, lastPos);
 	}
 	
-#if defined(__DAVAENGINE_WIN32__)
-	String dir = "";
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	String dir = "/";
-#endif //PLATFORMS
 	
 	for (size_t k = 0; k < tokens.size(); ++k)
 	{
