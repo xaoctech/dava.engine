@@ -181,6 +181,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.save"));
     x += dx;
     btnExport = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.export"));
+    ControlsFactory::CustomizeButtonExpandable(btnExport);
     x += dx;
     btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.materials"));
     x += dx;
@@ -362,76 +363,8 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 {
-    BodyItem *iBody = FindCurrentBody();
-    String path = iBody->bodyControl->GetFilePath();
-	String lightmapsSource = path + "_lightmaps/";
-	String lightmapsDestination = lightmapsSource;
-    if(String::npos == path.find("DataSource"))
-    {
-        return;
-    }
-    path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
-    
-    String fileOnly;
-    String pathOnly;
-    FileSystem::SplitPath(path, pathOnly, fileOnly);
-    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-    path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-
-	
-	iBody->bodyControl->PushDebugCamera();
-	
-    Scene * scene = iBody->bodyControl->GetScene();
-
-//    for (int i = 0; i < scene->GetMaterialCount(); i++)
-//    {
-//        Material *m = scene->GetMaterial(i);
-//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-//        {
-//            if (m->names[n].length() > 0 && m->names[n].find("DataSource") != m->names[n].npos)
-//            {
-//                m->names[n].replace(m->names[n].find("DataSource"), strlen("DataSource"), "Data");
-//            }
-//        }
-//    }
-    
-    Vector<Material*> materials;
-    scene->GetDataNodes(materials);
-    for (int i = 0; i < (int)materials.size(); i++)
-    {
-        Material *m = materials[i];
-        if (m->GetName().find("editor.") == String::npos)
-        {
-            for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-            {
-                if (m->textures[n])
-                {
-                    if (!m->textures[n]->relativePathname.empty()) 
-                    {
-                        ExportTexture(m->textures[n]->relativePathname);
-                    }
-                }
-            }
-        }
-    }
-    
-    NodeExportPreparation(scene);
-
-	lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
-	FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
-    FileSystem::Instance()->CopyDirectory(lightmapsSource, lightmapsDestination);
-
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableSaveForGame(true);
-    file->EnableDebugLog(true);
-    file->SaveScene(path.c_str(), scene);
-    SafeRelease(file);
-
-    
-	iBody->bodyControl->PopDebugCamera();
-
-	
-    libraryControl->RefreshTree();
+    menuPopup->InitControl(MENUID_EXPORTTOGAME, btnExport->GetRect());
+    AddControl(menuPopup);
 }
 
 void SceneEditorScreenMain::NodeExportPreparation(SceneNode *node)
@@ -838,6 +771,11 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_EXPORTTOGAME:
+        {
+            ExportToGameAction(itemID);
+            break;
+        }
             
         default:
             break;
@@ -958,6 +896,28 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_EXPORTTOGAME:
+        {
+            switch (itemID) 
+            {
+                case EETGMID_PNG:
+                    text = LocalizedString(L"menu.export.png");
+                    break;
+                    
+                case EETGMID_PVR:
+                    text = LocalizedString(L"menu.export.pvr");
+                    break;
+
+                case EETGMID_DXT:
+                    text = LocalizedString(L"menu.export.dxt");
+                    break;
+                    
+                default:
+                    break;
+            }
+
+        }
+            
         default:
             break;
     }
@@ -989,8 +949,16 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         }
             
         case MENUID_VIEWPORT:
+        {
             retCount = EditorBodyControl::EVPID_COUNT;
             break;
+        }
+
+        case MENUID_EXPORTTOGAME:
+        {
+            retCount = EETGMID_COUNT;
+            break;
+        }
             
         default:
             break;
@@ -1219,3 +1187,99 @@ void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, vo
         textureConverterDialog->Show(body->bodyControl->GetScene());
     }
 }
+
+void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
+{
+    switch (actionID) 
+    {
+        case EETGMID_PNG:
+            //Save to game as png
+            break;
+
+        case EETGMID_PVR:
+            //Save to game as pvr
+            break;
+
+        case EETGMID_DXT:
+            //Save to game as dxt
+            break;
+
+            
+        default:
+            break;
+    }
+    
+//  old code
+    BodyItem *iBody = FindCurrentBody();
+    String path = iBody->bodyControl->GetFilePath();
+	String lightmapsSource = path + "_lightmaps/";
+	String lightmapsDestination = lightmapsSource;
+    if(String::npos == path.find("DataSource"))
+    {
+        return;
+    }
+    path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
+    
+    String fileOnly;
+    String pathOnly;
+    FileSystem::SplitPath(path, pathOnly, fileOnly);
+    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+    path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+
+	
+	iBody->bodyControl->PushDebugCamera();
+	
+    Scene * scene = iBody->bodyControl->GetScene();
+
+//    for (int i = 0; i < scene->GetMaterialCount(); i++)
+//    {
+//        Material *m = scene->GetMaterial(i);
+//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+//        {
+//            if (m->names[n].length() > 0 && m->names[n].find("DataSource") != m->names[n].npos)
+//            {
+//                m->names[n].replace(m->names[n].find("DataSource"), strlen("DataSource"), "Data");
+//            }
+//        }
+//    }
+    
+    Vector<Material*> materials;
+    scene->GetDataNodes(materials);
+    for (int i = 0; i < (int)materials.size(); i++)
+    {
+        Material *m = materials[i];
+        if (m->GetName().find("editor.") == String::npos)
+        {
+            for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
+            {
+                if (m->textures[n])
+                {
+                    if (!m->textures[n]->relativePathname.empty()) 
+                    {
+                        ExportTexture(m->textures[n]->relativePathname);
+                    }
+                }
+            }
+        }
+    }
+    
+    NodeExportPreparation(scene);
+
+	lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
+	FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
+    FileSystem::Instance()->CopyDirectory(lightmapsSource, lightmapsDestination);
+
+    SceneFileV2 * file = new SceneFileV2();
+    file->EnableSaveForGame(true);
+    file->EnableDebugLog(true);
+    file->SaveScene(path.c_str(), scene);
+    SafeRelease(file);
+
+    
+	iBody->bodyControl->PopDebugCamera();
+
+	
+    libraryControl->RefreshTree();
+    
+}
+
