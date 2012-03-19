@@ -392,23 +392,13 @@ void TextureConverterDialog::SetupTexturePreview()
     String workingTexturePath = GetWorkingTexturePath(workingTexture->relativePathname);
 
     bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
-//    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
+    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
 
-//    if(workingTexture->isAlphaPremultiplied)
-    {
-        Image::EnableAlphaPremultiplication(false);
-    }
-//    if(workingTexture->isMimMapTexture)
-    {
-        Texture::DisableMipmapGeneration();   
-    }
+    Image::EnableAlphaPremultiplication(false);
+    Texture::DisableMipmapGeneration();   
 
     if(FileSystem::GetExtension(workingTexturePath) == ".png")
     {
-//        srcTexture = Texture::CreateFromFile(workingTexturePath);
-//
-//        String dstPath = FileSystem::ReplaceExtension(workingTexturePath, ".pvr");
-//        dstTexture = Texture::CreateFromFile(dstPath);
         srcTexture = CreateFromImage(workingTexturePath);
         
         String dstPath = FileSystem::ReplaceExtension(workingTexturePath, ".pvr.png");
@@ -416,12 +406,6 @@ void TextureConverterDialog::SetupTexturePreview()
     }
     else 
     {
-//        String srcPath = FileSystem::ReplaceExtension(workingTexturePath, ".png");
-//        srcTexture = Texture::CreateFromFile(srcPath);
-//
-//        dstTexture = Texture::CreateFromFile(workingTexturePath);
-
-        
         String srcPath = FileSystem::ReplaceExtension(workingTexturePath, ".png");
         srcTexture = CreateFromImage(srcPath);
         
@@ -439,15 +423,11 @@ void TextureConverterDialog::SetupTexturePreview()
         dstTexture->GeneratePixelesation();
     }
     
-//    if(!isMipmaps && workingTexture->isMimMapTexture)
-//    if(isMipmaps)
+    if(isMipmaps)
     {
         Texture::EnableMipmapGeneration();
     }
-//    if(workingTexture->isAlphaPremultiplied)
-    {
-        Image::EnableAlphaPremultiplication(isEnabled);
-    }
+    Image::EnableAlphaPremultiplication(isEnabled);
     
     
     SetupZoomedPreview(srcTexture, srcPreview, srcZoomPreview);
@@ -486,12 +466,12 @@ void TextureConverterDialog::SetupZoomedPreview(Texture *tex, UIControl *preview
         preview->SetSize(texSize);
         zoomControl->SetContentSize(texSize);
         zoomControl->SetOffset(Vector2(0, 0));
-        float32 minScale = zoomControl->GetSize().x / tex->width;
+        float32 minScale = 1.f;
         zoomControl->SetScales(minScale, 10.f);
-        zoomControl->SetScale(5.f);
+        zoomControl->SetScale(minScale);
         
-        zoomSlider->SetValue(5.f);
         zoomSlider->SetMinMaxValue(minScale, 10.f);
+        zoomSlider->SetValue(minScale);
 
         if(!zoomControl->GetParent())
         {
@@ -513,11 +493,31 @@ void TextureConverterDialog::OnZoomChanged(DAVA::BaseObject *object, void *userD
     float32 scale = zoomSlider->GetValue();
     if(dstZoomPreview->GetParent())
     {
+        Vector2 offset = dstZoomPreview->GetOffset();
+        if(offset.x < 0 || offset.y < 0)
+        {
+            Vector2 point = dstZoomPreview->GetSize() / 2;
+            Vector2 way = (point - offset);
+            way = way / dstZoomPreview->GetScale() * scale;
+            offset = point - way;
+        }
+        
         dstZoomPreview->SetScale(scale);
+        dstZoomPreview->SetOffset(offset);
     }
     if(srcZoomPreview->GetParent())
     {
+        Vector2 offset = srcZoomPreview->GetOffset();
+        if(offset.x < 0 || offset.y < 0)
+        {
+            Vector2 point = srcZoomPreview->GetSize() / 2;
+            Vector2 way = (point - offset);
+            way = way / srcZoomPreview->GetScale() * scale;
+            offset = point - way;
+        }
+        
         srcZoomPreview->SetScale(scale);
+        srcZoomPreview->SetOffset(offset);
     }
 }
 

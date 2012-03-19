@@ -16,13 +16,11 @@ public:
     static int32 GetCellHeight();
 protected:
 
-    static Texture::PixelFormat GetPVRFormat(const String &path);
-    static uint32 ConvertLittleToHost(uint32 value);
-    
     UIControl *preview;
     UIStaticText *textureName;
     UIStaticText *textureFormat;
     UIStaticText *textureDimensions;
+    UIStaticText *textureSize;
 };
 
 

@@ -24,6 +24,7 @@ public:
 	void SetContentSize(const Vector2 &_contentSize);
     const Vector2 &GetContentSize();
 	void SetScale(float currentScale);
+    float32 GetScale();
 	void SetOffset(const Vector2& offset);
     Vector2 GetOffset();
     
