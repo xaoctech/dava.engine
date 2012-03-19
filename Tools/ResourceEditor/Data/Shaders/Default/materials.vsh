@@ -132,9 +132,12 @@ void main()
 
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
-	varTexCoord1 = uvScale*inTexCoord1+uvOffset;
+	
 	#if defined(SETUP_LIGHTMAP)
 		varLightmapSize = lightmapSize;
+		varTexCoord1 = inTexCoord1;
+	#else
+		varTexCoord1 = uvScale*inTexCoord1+uvOffset;
 	#endif
 #endif
 }
