@@ -104,6 +104,14 @@ public:
     //virtual uint32 GetVertexFormat();
     //virtual uint32 GetAttributeIndex(eVertexFormat fmt);
     
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+	virtual void SaveToSystemMemory();
+	virtual void Lost();
+	virtual void Invalidate();
+    String relativeFileName;
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
+    
 private:
 #if defined(__DAVAENGINE_DIRECTX9__)
     
