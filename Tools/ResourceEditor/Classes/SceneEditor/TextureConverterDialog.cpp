@@ -154,18 +154,7 @@ UIListCell *TextureConverterDialog::CellAtIndex(UIList *list, int32 index)
         c = new TextureConverterCell(Rect(0, 0, list->GetSize().dx, 10), "TextureConverter cell");
     }
     
-    String textureName = GetWorkingTexturePath(GetTextureForIndex(index)->relativePathname);
-    textureName = FileSystem::ReplaceExtension(textureName, "");
-    if(textureName == selectedTextureName)
-    {
-        selectedItem = index;
-        c->SetSelected(true, false);
-    }
-    else 
-    {
-        c->SetSelected(false, false);
-    }
-    
+    c->SetSelected(selectedItem == index, false);
     c->SetTexture(GetWorkingTexturePath(GetTextureForIndex(index)->relativePathname));
     return c;
 }
@@ -327,6 +316,7 @@ void TextureConverterDialog::RestoreTexturesFromNodes(Texture *t, const String &
 void TextureConverterDialog::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
     selectedItem = selectedCell->GetIndex();
+
     SetupTexturePreview();
     
     //set selections
@@ -362,7 +352,6 @@ void TextureConverterDialog::OnConvert(DAVA::BaseObject *owner, void *userData, 
         {
             formatDialog->Show();
         }
-        
     }
 }
 
@@ -373,15 +362,34 @@ void TextureConverterDialog::OnFormatSelected(int32 newFormat, bool generateMimp
     String newName = PVRConverter::Instance()->ConvertPngToPvr(GetSrcTexturePath(t->relativePathname), newFormat, generateMimpaps);
     RestoreTextures(t, newName);
     
-    
     selectedTextureName = GetWorkingTexturePath(newName);
     selectedTextureName = FileSystem::ReplaceExtension(selectedTextureName, "");
-    
+
+    selectedTextureName = NormalizePath(selectedTextureName);
+
     ReleaseTextures();
     EnumerateTextures();
-    textureList->Refresh();
+
+    selectedItem = -1;
+    Set<Texture *>::iterator it = textures.begin();
+    Set<Texture *>::iterator endIt = textures.end();
     
-    textureList->ScrollToElement(0);
+    for(int32 i = 0; it != endIt; ++it, ++i)
+    {
+        Texture *t = (*it);
+        
+        String textureName = GetWorkingTexturePath(t->relativePathname);
+        textureName = FileSystem::ReplaceExtension(textureName, "");
+        textureName = NormalizePath(textureName);
+        
+        if(textureName == selectedTextureName)
+        {
+            selectedItem = i;
+            break;
+        }
+    }
+    
+    textureList->Refresh();
     textureList->ScrollToElement(selectedItem);
     
     SetupTexturePreview();
@@ -626,5 +634,44 @@ String TextureConverterDialog::GetSrcTexturePath(const String &relativeTexturePa
     }
 
     return relativeTexturePath;
+}
+
+String TextureConverterDialog::NormalizePath(const String &pathname)
+{
+    Vector<String> tokens;
+    Split(pathname, "/", tokens);
+    
+    String retString = "";
+    int32 skipCount = 0;
+    for(int32 i = tokens.size() - 1; i >= 0; --i)
+    {
+        if(tokens[i] == "..")
+        {
+            ++skipCount;
+        }
+        else if(skipCount)
+        {
+            i -= skipCount;
+            skipCount = 0;
+        }
+        else 
+        {
+            if(i == tokens.size() - 1)
+            {
+                retString = tokens[i];
+            }
+            else 
+            {
+                retString = tokens[i] + "/" + retString;
+            }
+        }
+    }
+    
+    if(pathname.length() && '/' == pathname.at(0))
+    {
+        retString = "/" + retString;
+    }
+    
+    return retString;
 }
 
