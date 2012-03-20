@@ -3,6 +3,8 @@
 #include "EditorSettings.h"
 #include "SceneInfoControl.h"
 
+#include "PVRUtils.h"
+
 SceneValidator::SceneValidator()
 {
     sceneTextureCount = 0;
@@ -219,7 +221,17 @@ void SceneValidator::EnumerateSceneTextures()
 		Texture *t = it->second;
         if(String::npos != t->relativePathname.find(projectPath))
         {
-            sceneTextureMemory += t->GetDataSize();
+            String::size_type pvrpngPos = t->relativePathname.find(".pvr.png");
+            if(String::npos != pvrpngPos)
+            {
+                String pvrPath = FileSystem::ReplaceExtension(t->relativePathname, "");
+                sceneTextureMemory += PVRUtils::Instance()->GetPVRDataLength(pvrPath);
+            }
+            else 
+            {
+                sceneTextureMemory += t->GetDataSize();
+            }
+            
             ++sceneTextureCount;
         }
 	}

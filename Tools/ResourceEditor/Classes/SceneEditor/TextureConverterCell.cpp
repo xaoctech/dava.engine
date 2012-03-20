@@ -1,101 +1,7 @@
 #include "TextureConverterCell.h"
 #include "ControlsFactory.h"
 
-typedef struct _PVRHeader
-{
-	uint32 headerLength;
-	uint32 height;
-	uint32 width;
-	uint32 numMipmaps;
-	uint32 flags;
-	uint32 dataLength;
-	uint32 bpp;
-	uint32 bitmaskRed;
-	uint32 bitmaskGreen;
-	uint32 bitmaskBlue;
-	uint32 bitmaskAlpha;
-	uint32 pvrTag;
-	uint32 numSurfs;
-} PVRHeader;
-
-#define PVR_TEXTURE_FLAG_TYPE_MASK   0xff
-
-enum
-{
-    kPVRTextureFlagTypePVRTC_2 = 24,
-    kPVRTextureFlagTypePVRTC_4
-};
-
-uint32 ConvertLittleToHost(uint32 value)
-{
-    uint32 testValue = 1;
-    uint8 *testValuePtr = (uint8 *)&testValue;
-    
-    if(testValuePtr[0] < testValuePtr[1])
-    {   //be
-        uint8 *valuePtr = (uint8 *)&value;
-        
-        testValuePtr[0] = valuePtr[3];
-        testValuePtr[1] = valuePtr[2];
-        testValuePtr[2] = valuePtr[1];
-        testValuePtr[3] = valuePtr[0];
-        
-        return testValue;
-    }
-    
-    return value;    
-}
-
-bool GetPVRHeader(PVRHeader *header, const String &path)
-{
-    File *pvrFile = File::Create(path, File::READ | File::OPEN);
-    if(pvrFile)
-    {
-        int32 readBytes = pvrFile->Read(header, sizeof(PVRHeader));
-        SafeRelease(pvrFile);
-
-        return (sizeof(PVRHeader) == readBytes);
-    }
-    return false;
-}
-
-WideString SizeToReadableForm(float32 size)
-{
-    WideString retString = L"";
-    
-    if(1000000 < size)
-    {
-        retString = Format(L"%0.2f MB", size / (1024 * 1024) );
-    }
-    else if(1000 < size)
-    {
-        retString = Format(L"%0.2f KB", size / 1024);
-    }
-    else 
-    {
-        retString = Format(L"%d B", (int32)size);
-    }
-    
-    return  retString;
-}
-
-Texture::PixelFormat GetPVRFormat(int32 format)
-{
-    Texture::PixelFormat retFormat = Texture::FORMAT_INVALID;
-    uint32 formatFlags = ConvertLittleToHost(format) & PVR_TEXTURE_FLAG_TYPE_MASK;
-    if(kPVRTextureFlagTypePVRTC_4 == formatFlags)
-    {
-        retFormat = Texture::FORMAT_PVR4;
-    }
-    else if(kPVRTextureFlagTypePVRTC_2 == formatFlags)
-    {
-        retFormat = Texture::FORMAT_PVR2;
-    }
-    
-    return retFormat;
-}
-
-
+#include "PVRUtils.h"
 
 TextureConverterCell::TextureConverterCell(const Rect &rect, const String &cellIdentifier)
 :   UIListCell(Rect(rect.x, rect.y, rect.dx, GetCellHeight()), cellIdentifier)
@@ -176,15 +82,15 @@ void TextureConverterCell::SetTexture(const String &texturePath)
         Texture *pvrTex = Texture::CreateFromFile(pvrPath);
         if(pvrTex)
         {
-            PVRHeader pvrHeader = {0};
-            GetPVRHeader(&pvrHeader, pvrPath);
+            PVRUtils::PVRHeader pvrHeader = {0};
+            PVRUtils::Instance()->GetPVRHeader(&pvrHeader, pvrPath);
 
-            Texture::PixelFormat format = GetPVRFormat(pvrHeader.flags);
+            Texture::PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
 
             String pvrFormat = Texture::GetPixelFormatString(format);
             textureFormat->SetText(StringToWString(pngFormat + "/" + pvrFormat));
             
-            textureSize->SetText(SizeToReadableForm(pvrHeader.dataLength));
+            textureSize->SetText(PVRUtils::SizeInBytesToWideString(pvrHeader.dataLength));
             
             SafeRelease(pvrTex);
         }
@@ -195,11 +101,12 @@ void TextureConverterCell::SetTexture(const String &texturePath)
     }
     else if(".pvr" == ext)
     {
-        PVRHeader pvrHeader = {0};
-        GetPVRHeader(&pvrHeader, textureWorkingPath);
-        Texture::PixelFormat format = GetPVRFormat(pvrHeader.flags);
+        PVRUtils::PVRHeader pvrHeader = {0};
+        PVRUtils::Instance()->GetPVRHeader(&pvrHeader, textureWorkingPath);
+
+        Texture::PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
         String pvrFormat = Texture::GetPixelFormatString(format);
-        textureSize->SetText(SizeToReadableForm(pvrHeader.dataLength));
+        textureSize->SetText(PVRUtils::SizeInBytesToWideString(pvrHeader.dataLength));
 
         String pngPath = FileSystem::ReplaceExtension(textureWorkingPath, ".pvr");
         Texture *pngTex = Texture::CreateFromFile(pngPath);
