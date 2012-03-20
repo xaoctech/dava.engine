@@ -3,7 +3,7 @@
 #include "PropertyList.h"
 #include "EditorSettings.h"
 #include "SceneValidator.h"
-
+#include "PVRUtils.h"
 
 SceneInfoControl::SceneInfoControl(const Rect &rect)
     :   UIControl(rect)
@@ -61,6 +61,17 @@ void SceneInfoControl::SetFloatInfoValue(const String &key, float32 newValue)
     sceneInfo->SetFloatPropertyValue(key, newValue);
 }
 
+void SceneInfoControl::SetStringInfoValue(const String &key, const String &newString)
+{
+    if(!sceneInfo->IsPropertyAvaliable(key))
+    {
+        sceneInfo->AddStringProperty(key, PropertyList::PROPERTY_IS_READ_ONLY);
+    }
+    
+    sceneInfo->SetStringPropertyValue(key, newString);
+}
+
+
 
 void SceneInfoControl::SetWorkingScene(Scene *scene)
 {
@@ -71,11 +82,15 @@ void SceneInfoControl::SetWorkingScene(Scene *scene)
 void SceneInfoControl::InvalidateTexturesInfo(int32 count, int32 size)
 {
     SetIntInfoValue("Text.Count", count);
-    SetIntInfoValue("Text.Memory", size);
+//    SetIntInfoValue("Text.Memory", size);
+    SetStringInfoValue("Text.Memory", PVRUtils::SizeInBytesToString(size));
 
     if(workingScene)
     {
-        SetIntInfoValue("Mat.Count", -1);
+        Vector<Material *>materials;
+        workingScene->GetDataNodes(materials);
+        
+        SetIntInfoValue("Mat.Count", materials.size());
     }
     
     RedrawCells();
