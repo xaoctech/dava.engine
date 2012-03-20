@@ -74,6 +74,11 @@ protected:
     void SetupZoomedPreview(Texture *tex, UIControl *preview, UIZoomControl *zoomControl);
     
     static String GetWorkingTexturePath(const String &relativeTexturePath);
+    static String GetSrcTexturePath(const String &relativeTexturePath);
+
+    static String NormalizePath(const String &pathname);
+
+    String selectedTextureName;
 };
 
 

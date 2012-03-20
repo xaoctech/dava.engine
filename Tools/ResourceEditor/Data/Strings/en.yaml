@@ -219,4 +219,5 @@ colorpicker.a: "Alpha:"
 
 #Texture Converter
 textureconverter.convert: "Convert"
+textureconverter.notification: "Save level after conversion!"
 textureformatdialog.generatemipmap: "Generate mipmaps"
