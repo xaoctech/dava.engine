@@ -211,4 +211,5 @@ colorpicker.a: "Alpha:"
 
 #Texture Converter
 textureconverter.convert: "Конвертировать"
+textureconverter.notification: "Сохраните уровень после конвертации!"
 textureformatdialog.generatemipmap: "Сгенерировать mipmaps"

@@ -23,6 +23,7 @@ protected:
     void InvalidateRenderStats();
     void SetIntInfoValue(const String &key, int32 newValue);
     void SetFloatInfoValue(const String &key, float32 newValue);
+    void SetStringInfoValue(const String &key, const String &newString);
     
     void UpdateInfo(BaseObject * owner, void * userData, void * callerData);
     void RedrawCells();
