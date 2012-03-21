@@ -535,6 +535,7 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
     Texture *t = Texture::CreateFromFile(textureName);
     if(t)
     {
+		t->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
         textures[level] = t;
         names[level] = textureName;
     }
