@@ -725,6 +725,9 @@
     <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1762,6 +1765,9 @@
     </ClInclude>
     <ClInclude Include="Classes\LightmapAtlasingData.h">
       <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PVRUtils.h">
+      <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

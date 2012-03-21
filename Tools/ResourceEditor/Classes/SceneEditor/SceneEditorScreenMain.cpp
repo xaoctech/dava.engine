@@ -1190,22 +1190,23 @@ void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, vo
 
 void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
 {
+	bool useConvertedTextures;
     switch (actionID) 
     {
         case EETGMID_PNG:
-            //Save to game as png
+            useConvertedTextures = false;
             break;
 
         case EETGMID_PVR:
-            //Save to game as pvr
+            useConvertedTextures = true;
             break;
 
         case EETGMID_DXT:
-            //Save to game as dxt
+            DVASSERT(0);
             break;
 
-            
         default:
+			DVASSERT(0);
             break;
     }
     
@@ -1226,22 +1227,9 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
     FileSystem::Instance()->CreateDirectory(pathOnly, true);
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
 
-	
 	iBody->bodyControl->PushDebugCamera();
 	
     Scene * scene = iBody->bodyControl->GetScene();
-
-//    for (int i = 0; i < scene->GetMaterialCount(); i++)
-//    {
-//        Material *m = scene->GetMaterial(i);
-//        for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-//        {
-//            if (m->names[n].length() > 0 && m->names[n].find("DataSource") != m->names[n].npos)
-//            {
-//                m->names[n].replace(m->names[n].find("DataSource"), strlen("DataSource"), "Data");
-//            }
-//        }
-//    }
     
     Vector<Material*> materials;
     scene->GetDataNodes(materials);
@@ -1256,7 +1244,14 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
                 {
                     if (!m->textures[n]->relativePathname.empty()) 
                     {
-                        ExportTexture(m->textures[n]->relativePathname);
+						if(useConvertedTextures)
+						{
+							ExportTexture(m->names[n]);
+						}
+						else
+						{
+							ExportTexture(m->textures[n]->relativePathname);
+						}
                     }
                 }
             }
@@ -1265,9 +1260,9 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
     
     NodeExportPreparation(scene);
 
-	lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
-	FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
-    FileSystem::Instance()->CopyDirectory(lightmapsSource, lightmapsDestination);
+	//lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
+	//FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
+ //   FileSystem::Instance()->CopyDirectory(lightmapsSource, lightmapsDestination);
 
     SceneFileV2 * file = new SceneFileV2();
     file->EnableSaveForGame(true);
