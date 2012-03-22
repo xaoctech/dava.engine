@@ -218,7 +218,13 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 		pos     = path.find_first_of(delims, lastPos);
 	}
 	
-	String dir = "/";
+	String dir = "";
+
+    size_t find = path.find(":");
+    if(find == path.npos)
+	{
+        dir = "/";
+    }
 	
 	for (size_t k = 0; k < tokens.size(); ++k)
 	{
