@@ -164,6 +164,20 @@ public:
      */
     void SetTexture(eTextureLevel level, const String & textureName);
 
+    
+    /**
+     \brief Set texture for the specific texture level
+     
+     To render landscape you need to set textures.  
+     For RENDERING_MODE_TEXTURE you need to set only TEXTURE_TEXTURE0.
+     For RENDERING_MODE_DETAIL_SHADER you have to set TEXTURE_TEXTURE0 and TEXTURE_DETAIL
+     For RENDERING_MODE_BLENDED_SHADER you have to set TEXTURE_TEXTURE0, TEXTURE_TEXTURE1, TEXTURE_TEXTUREMASK
+     
+     \param[in] level level of texture you want to set
+     \param[in] texture you want to set to specific level
+     */
+    void SetTexture(eTextureLevel level, Texture * texture);
+
 	/**
         \brief Get texture that was previously set in SetTexture.
         \param[in] level 
