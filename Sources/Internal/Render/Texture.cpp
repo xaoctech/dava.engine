@@ -1285,7 +1285,7 @@ void Texture::SaveToSystemMemory()
 
 void Texture::Lost()
 {
-	Logger::Debug("[Texture::Lost] id = %d, isrendertarget = %d, fboID = %d, file = %s", id, isRenderTarget, fboID, relativePathname.c_str());
+//	Logger::Debug("[Texture::Lost] id = %d, isrendertarget = %d, fboID = %d, file = %s", id, isRenderTarget, fboID, relativePathname.c_str());
 
 	RenderManager::Instance()->LockNonMain();
 	if(RenderManager::Instance()->GetTexture() == this)
@@ -1315,7 +1315,7 @@ void Texture::Lost()
 
 void Texture::Invalidate()
 {
-	Logger::Debug("[Texture::Invalidate] id is %d, isRenderTarget is %d", id, isRenderTarget);
+//	Logger::Debug("[Texture::Invalidate] id is %d, isRenderTarget is %d", id, isRenderTarget);
 	if(id)
 	{
 		Logger::Warning("[Texture::Invalidate] id is %d, exit", id);
@@ -1381,13 +1381,13 @@ void Texture::Invalidate()
 	}
 	else if(savedData)
 	{
-		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
+//		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
 
 		InvalidateFromSavedData();
 	}
 	else
 	{
-		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
+//		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
 
 		InvalidateFromFile();
 	}
@@ -1453,7 +1453,7 @@ void Texture::InvalidateFromSavedData()
 
 void Texture::InvalidateFromFile()
 {
-	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
+//	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
 
 	Image * image = Image::CreateFromFile(relativePathname);
 	if (!image)
@@ -1561,6 +1561,8 @@ Image * Texture::CreateImageFromMemory()
         image = ReadDataToImage();
             
         RenderManager::Instance()->RestoreRenderTarget();
+        
+        SafeRelease(renderTarget);
     }
     else
     {
@@ -1574,6 +1576,9 @@ Image * Texture::CreateImageFromMemory()
         RenderManager::Instance()->RestoreRenderTarget();
         
         image = renderTarget->GetTexture()->CreateImageFromMemory();
+
+        SafeRelease(renderTarget);
+        SafeRelease(drawTexture);
     }
         
     return image;

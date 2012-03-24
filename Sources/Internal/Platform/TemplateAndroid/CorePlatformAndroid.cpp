@@ -66,17 +66,11 @@ namespace DAVA
             Core::Instance()->SystemAppFinished();
         }
 
-        Logger::Debug("[CoreAndroidPlatform::QuitAction] 1");
-        
 		FrameworkWillTerminate();
-
-        Logger::Debug("[CoreAndroidPlatform::QuitAction] 2");
 
 #ifdef ENABLE_MEMORY_MANAGER
 		if (DAVA::MemoryManager::Instance() != 0)
 		{
-            Logger::Debug("[CoreAndroidPlatform::QuitAction] 3");
-            
 			DAVA::MemoryManager::Instance()->FinalLog();
 		}
 #endif
@@ -87,9 +81,6 @@ namespace DAVA
 
 	void CoreAndroidPlatform::RepaintView()
 	{
-// 		int64 ticks = SystemTimer::Instance()->GetTickCount();
-// 		Logger::Warning("[CoreAndroidPlatform::RepaintView] %lld", ticks);
-
         if(renderIsActive)
         {
             DAVA::RenderManager::Instance()->Lock();
@@ -115,18 +106,13 @@ namespace DAVA
 
 	void CoreAndroidPlatform::UpdateScreenMode()
 	{
-        RenderManager *instance = RenderManager::Instance();
-		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] instance = %p", instance);
-        
-		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] 1");
 		UIControlSystem::Instance()->SetInputScreenAreaSize(windowedMode.width, windowedMode.height);
-		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] 2");
 		Core::Instance()->SetPhysicalScreenSize(windowedMode.width, windowedMode.height);
-		Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] 3");
 
-        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
+        RenderManager::Instance()->InitFBSize(windowedMode.width, windowedMode.height);
+//        RenderManager::Instance()->Init(windowedMode.width, windowedMode.height);
 
-        Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] finish");
+        Logger::Debug("[CoreAndroidPlatform::UpdateScreenMode] done");
     }
 
 	void CoreAndroidPlatform::CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate)
@@ -136,14 +122,13 @@ namespace DAVA
 		Core::CreateSingletons();
 
         Logger::SetTag(logTag);
-		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] docpath = %s", docPath);
-		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] assets = %s", assets);
+//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] docpath = %s", docPath);
+//		Logger::Debug("[CoreAndroidPlatform::CreateAndroidWindow] assets = %s", assets);
 
 		FileSystem::Instance()->SetPath(docPath, assets);
 
 		//////////////////////////////////////////////////////////////////////////
 		windowedMode = DisplayMode(480, 320, 16, 0);
-
 	}
     
     void CoreAndroidPlatform::RenderRecreated()
@@ -160,10 +145,12 @@ namespace DAVA
         {
             wasCreated = true;
             
-            Logger::Debug("[CoreAndroidPlatform::] before create rendered");
+            Logger::Debug("[CoreAndroidPlatform::] before create renderer");
             RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
+	        RenderManager::Instance()->Init(0, 0);
+
             RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
-            Logger::Debug("[CoreAndroidPlatform::] after create rendered");
+            Logger::Debug("[CoreAndroidPlatform::] after create renderer");
             
             FrameworkDidLaunched();
             
@@ -177,7 +164,6 @@ namespace DAVA
             }
             
             Logger::Debug("[CoreAndroidPlatform::] w = %d, h = %d", windowedMode.width, windowedMode.height);
-            
             
             RenderManager::Instance()->SetFPS(60);
             
@@ -195,13 +181,13 @@ namespace DAVA
     
     void CoreAndroidPlatform::OnCreateActivity()
 	{
-		Logger::Debug("[CoreAndroidPlatform::OnCreateActivity]");
+//		Logger::Debug("[CoreAndroidPlatform::OnCreateActivity]");
 	}
 
 
     void CoreAndroidPlatform::OnDestroyActivity()
 	{
-		Logger::Debug("[CoreAndroidPlatform::OnDestroyActivity]");
+//		Logger::Debug("[CoreAndroidPlatform::OnDestroyActivity]");
         
         renderIsActive = false;
 	}
@@ -209,14 +195,12 @@ namespace DAVA
 
 	void CoreAndroidPlatform::StartVisible()
 	{
-		Logger::Debug("[CoreAndroidPlatform::StartVisible]");
-
-//		Core::Resume();
+//		Logger::Debug("[CoreAndroidPlatform::StartVisible]");
 	}
 
 	void CoreAndroidPlatform::StopVisible()
 	{
-		Logger::Debug("[CoreAndroidPlatform::StopVisible]");
+//		Logger::Debug("[CoreAndroidPlatform::StopVisible]");
 	}
 
 	void CoreAndroidPlatform::StartForeground()

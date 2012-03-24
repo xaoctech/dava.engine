@@ -142,7 +142,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     RenderManager::Instance()->LockNonMain();
 //#if !defined(__DAVAENGINE_MACOS__)
     
-    Logger::Debug("[RenderDataObject::BuildVertexBuffer] vbo = %d", vboBuffer);
+//    Logger::Debug("[RenderDataObject::BuildVertexBuffer] vbo = %d", vboBuffer);
     
 #if defined (__DAVAENGINE_OPENGL__)
     
@@ -185,7 +185,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     }
     
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
-    Logger::Debug("glGenBuffers: %d", vboBuffer);
+//    Logger::Debug("glGenBuffers: %d", vboBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 #endif
@@ -244,7 +244,7 @@ void RenderDataObject::BuildIndexBuffer()
         indexBuffer = 0;
     }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
-    Logger::Debug("glGenBuffers index: %d", indexBuffer);
+//    Logger::Debug("glGenBuffers index: %d", indexBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     RENDER_VERIFY(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW));
 #endif
@@ -267,7 +267,7 @@ void RenderDataObject::SaveToSystemMemory()
 
 void RenderDataObject::Lost()
 {
-    Logger::Debug("[RenderDataObject::Lost]");
+//    Logger::Debug("[RenderDataObject::Lost]");
     //    vboBuffer = 0;
 #if defined(__DAVAENGINE_OPENGL__)
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
@@ -292,7 +292,7 @@ void RenderDataObject::Lost()
 
 void RenderDataObject::Invalidate()
 {
-    Logger::Debug("[RenderDataObject::Invalidate]");
+//    Logger::Debug("[RenderDataObject::Invalidate]");
 
     if(isLost)
     {
@@ -317,7 +317,7 @@ void RenderDataObject::Invalidate()
     }
     else
     {
-        Logger::Debug("[RenderDataObject::Invalidate] not lost !!!");
+        Logger::Warning("[RenderDataObject::Invalidate] not lost !!!");
     }
 }
 
