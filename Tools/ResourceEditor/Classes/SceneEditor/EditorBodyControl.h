@@ -10,16 +10,24 @@
 #include "NodesPropertyControl.h"
 #include "ModificationPopUp.h"
 
+#include "LandscapeToolsPanel.h"
+#include "LandscapeEditorPropertyControl.h"
+
 using namespace DAVA;
 
 class SceneInfoControl;
-
+class PaintTool;
 class BeastManager;
 class OutputPanelControl;
-class EditorBodyControl : 
+class PaintTool;
+class HeightmapNode;
+class EditorBodyControl: 
         public UIControl, 
         public UIHierarchyDelegate, 
-        public NodesPropertyDelegate
+        public NodesPropertyDelegate,
+        public LandscapeToolsPanelDelegate,
+        public LandscapeEditorPropertyControlDelegate,
+        public UIFileSystemDialogDelegate
 {
     enum eConst
     {
@@ -108,9 +116,25 @@ public:
 	void PopDebugCamera();
 
     void ToggleSceneInfo();
+    void ToggleLandscapeEditor();
 
 	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
-	
+
+	//Tools Panel delegate
+    virtual void OnToolSelected(PaintTool *newTool);
+
+    //LE property control delegate
+    virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
+    virtual void SaveMask();
+
+    // user input for LE
+    virtual void LandscapeEditorInput(UIEvent * touch);
+
+    //file dialog delegate
+    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
+    virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
+
+    
 protected:
 
     void ResetSelection();
@@ -262,6 +286,48 @@ protected:
     SceneInfoControl *sceneInfoControl;
 
 	void PackLightmaps();
+    
+    //Landscape Editor
+    bool savedModificatioMode;
+    HeightmapNode *heightmapNode;
+    LandscapeToolsPanel *leToolsPanel;
+    LandscapeNode *workingLandscape;
+    Texture *leSavedTexture;
+    Sprite *leMaskSprite;
+    void CreateMaskTexture();
+    void CreateLandscapeEditor();
+    void ReleaseLandscapeEditor();
+    
+    UIFileSystemDialog * fileSystemDialog;
+    uint32 fileSystemDialogOpMode;
+    enum DIALOG_OPERATION
+    {
+        DIALOG_OPERATION_NONE = 0,
+        DIALOG_OPERATION_SAVE,
+    };
+    
+    enum eLEConst
+    {
+        ZOOM_MULTIPLIER = 4
+    };
+
+    
+    void SaveMask(const String &pathToFile);
+    
+    bool GetLandscapePoint(const Vector2 &touchPoint, Vector2 &landscapePoint);
+    void UpdateTileMask();
+    
+    LandscapeEditorSettings *leSettings;
+    PaintTool *currentTool;
+
+    eBlendMode srcBlendMode;
+    eBlendMode dstBlendMode;
+    Color paintColor;
+    Vector2 startPoint;
+    Vector2 endPoint;
+    Vector2 prevDrawPos;
+    
+    bool isPaintActive;
 };
 
 

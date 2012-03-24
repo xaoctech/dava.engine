@@ -6,12 +6,23 @@
 #include "PropertyList.h"
 
 #include "PaintAreaControl.h"
+#include "CameraController.h"
+
+#include "NodesPropertyControl.h"
+#include "PaintTool.h"
+
 
 using namespace DAVA;
 
 class PaintAreaControl;
 class PaintTool;
-class LandscapeEditorControl : public UIControl, public PropertyListDelegate, public UIFileSystemDialogDelegate
+class EditorScene;
+class LandscapePropertyControl;
+class PaintTool;
+class LandscapeEditorControl: 
+        public UIControl, 
+        public PropertyListDelegate, 
+        public UIFileSystemDialogDelegate
 {
     enum eConst
     {
@@ -33,7 +44,9 @@ public:
     virtual ~LandscapeEditorControl();
     
     virtual void WillAppear();
-        
+	virtual void Update(float32 timeElapsed);
+    virtual void Input(UIEvent * event);
+
     virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
@@ -41,7 +54,6 @@ public:
     virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
     virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
 
-    
 protected:
 
     void SetDrawingMask(int32 flag, bool value);
@@ -49,9 +61,6 @@ protected:
     void CreateLeftPanel();
     void ReleaseLeftPanel();
     
-    void CreateRightPanel();
-    void ReleaseRightPanel();
-
     void CreatePaintAreaPanel();
     void ReleasePaintAreaPanel();
     
@@ -59,9 +68,6 @@ protected:
     // left side
     UIControl *leftPanel;
     PropertyList *propertyList;
-
-    //right side
-    UIControl *rightPanel;
 
     //paint area
 	void OnToolSelected(BaseObject * object, void * userData, void * callerData);
@@ -89,7 +95,19 @@ protected:
 
     
     void OnSavePressed(BaseObject * object, void * userData, void * callerData);
-
+    
+    
+    // new 3d Landscape
+    void Create3D();
+    void Release3D();
+    LandscapeNode *workingLandscape;
+    EditorScene * scene;
+    UI3DView * scene3dView;
+    WASDCameraController * cameraController;
+    
+    LandscapePropertyControl *landscapeProperties;
+    
+    void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
 };
 
 

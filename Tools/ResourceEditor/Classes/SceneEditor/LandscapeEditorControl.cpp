@@ -6,6 +6,11 @@
 
 #include "PaintAreaControl.h"
 
+#include "EditorScene.h"
+#include "CameraController.h"
+#include "LandscapePropertyControl.h"
+
+
 //***************    LandscapeEditorControl    **********************
 LandscapeEditorControl::LandscapeEditorControl(const Rect & rect)
     :   UIControl(rect)
@@ -13,8 +18,8 @@ LandscapeEditorControl::LandscapeEditorControl(const Rect & rect)
     ControlsFactory::CusomizeBottomLevelControl(this);
     
     CreateLeftPanel();
-    CreateRightPanel();
     CreatePaintAreaPanel();
+    Create3D();
     
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -33,8 +38,9 @@ LandscapeEditorControl::~LandscapeEditorControl()
 {
     SafeRelease(fileSystemDialog);
     
+    Release3D();
+    
     ReleasePaintAreaPanel();
-    ReleaseRightPanel();
     ReleaseLeftPanel();
 }
 
@@ -48,7 +54,12 @@ void LandscapeEditorControl::CreateLeftPanel()
     leftPanel = ControlsFactory::CreatePanelControl(leftRect);
     AddControl(leftPanel);
     
-    propertyList = new PropertyList(Rect(0, 0, leftRect.dx, leftRect.dy), this);
+
+    landscapeProperties = new LandscapePropertyControl(Rect(0, 0, leftRect.dx, leftRect.dy / 2), true);
+    leftPanel->AddControl(landscapeProperties);
+
+    
+    propertyList = new PropertyList(Rect(0, leftRect.dy / 2, leftRect.dx, leftRect.dy / 2), this);
     leftPanel->AddControl(propertyList);
     
     propertyList->AddIntProperty("landscapeeditor.size", PropertyList::PROPERTY_IS_EDITABLE);
@@ -73,7 +84,6 @@ void LandscapeEditorControl::CreateLeftPanel()
     propertyList->AddBoolProperty("landscapeeditor.showresult", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetBoolPropertyValue("landscapeeditor.showresult", false);
     
-    
     propertyList->AddBoolProperty("landscapeeditor.maskred", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetBoolPropertyValue("landscapeeditor.maskred", true);
     propertyList->AddBoolProperty("landscapeeditor.maskgreen", PropertyList::PROPERTY_IS_EDITABLE);
@@ -93,29 +103,13 @@ void LandscapeEditorControl::ReleaseLeftPanel()
     SafeRelease(leftPanel);
 }
 
-void LandscapeEditorControl::CreateRightPanel()
-{
-    Rect fullRect = GetRect();
-    
-    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    Rect rightRect = Rect(fullRect.dx - rightSideWidth, 0, rightSideWidth, fullRect.dy);
-    rightPanel = ControlsFactory::CreatePanelControl(rightRect);
-    AddControl(rightPanel);
-}
-
-void LandscapeEditorControl::ReleaseRightPanel()
-{
-    SafeRelease(rightPanel);
-}
-
 void LandscapeEditorControl::CreatePaintAreaPanel()
 {
     Rect fullRect = GetRect();
     
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
-    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
     Rect toolsRect = Rect(leftSideWidth + OFFSET, 0, 
-                          fullRect.dx - leftSideWidth - rightSideWidth - OFFSET*2, TOOLS_HEIGHT);
+                          fullRect.dx - leftSideWidth - OFFSET*2, TOOLS_HEIGHT);
     toolsPanel = ControlsFactory::CreatePanelControl(toolsRect);
     AddControl(toolsPanel);
     
@@ -180,12 +174,14 @@ void LandscapeEditorControl::CreatePaintAreaPanel()
     Rect paintRect = Rect(toolsRect.x, toolsRect.y + toolsRect.dy + OFFSET, 
                           toolsRect.dx, fullRect.dy - (toolsRect.y + toolsRect.dy + OFFSET*2));
     
-    scrollView = new UIScrollView(paintRect);
-    scrollView->SetContentSize(Vector2(1024, 1024));
-    AddControl(scrollView);
-    
-    paintArea = new PaintAreaControl(Rect(0, 0, 1024, 1024));
-    scrollView->AddControl(paintArea);
+    scrollView = NULL;
+    paintArea = NULL;
+//    scrollView = new UIScrollView(paintRect);
+//    scrollView->SetContentSize(Vector2(1024, 1024));
+//    AddControl(scrollView);
+//    
+//    paintArea = new PaintAreaControl(Rect(0, 0, 1024, 1024));
+//    scrollView->AddControl(paintArea);
 }
 
 void LandscapeEditorControl::ReleasePaintAreaPanel()
@@ -241,15 +237,21 @@ void LandscapeEditorControl::AddSliderHeader(UISlider *slider, const WideString 
 
 void LandscapeEditorControl::WillAppear()
 {
-    scrollView->SetScale(zoom->GetValue() * PaintAreaControl::ZOOM_MULTIPLIER);
+    if(scrollView)
+    {
+        scrollView->SetScale(zoom->GetValue() * PaintAreaControl::ZOOM_MULTIPLIER);
+    }
 
-    paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, propertyList->GetFilepathPropertyValue("landscapeeditor.lightmap"));
-    paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, propertyList->GetFilepathPropertyValue("landscapeeditor.texture0"));
-    paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE1, propertyList->GetFilepathPropertyValue("landscapeeditor.texture1"));
-
-    paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue("landscapeeditor.showresult"));
-
-    paintArea->SetDrawingMask(PaintAreaControl::EDM_NONE);
+    if(paintArea)
+    {
+        paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, propertyList->GetFilepathPropertyValue("landscapeeditor.lightmap"));
+        paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, propertyList->GetFilepathPropertyValue("landscapeeditor.texture0"));
+        paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE1, propertyList->GetFilepathPropertyValue("landscapeeditor.texture1"));
+        
+        paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue("landscapeeditor.showresult"));
+        paintArea->SetDrawingMask(PaintAreaControl::EDM_NONE);
+    }
+    
     SetDrawingMask(PaintAreaControl::EDM_RED, propertyList->GetBoolPropertyValue("landscapeeditor.maskred"));
     SetDrawingMask(PaintAreaControl::EDM_GREEN, propertyList->GetBoolPropertyValue("landscapeeditor.maskgreen"));
     SetDrawingMask(PaintAreaControl::EDM_BLUE, propertyList->GetBoolPropertyValue("landscapeeditor.maskblue"));
@@ -258,6 +260,16 @@ void LandscapeEditorControl::WillAppear()
     if(!selectedTool)
     {
         toolButtons[0]->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+    }
+    
+    if(cameraController)
+    {
+        cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
+    }
+
+    if(landscapeProperties && workingLandscape)
+    {
+        landscapeProperties->ReadFrom(workingLandscape);
     }
     
     UIControl::WillAppear();
@@ -279,7 +291,10 @@ void LandscapeEditorControl::OnToolSelected(DAVA::BaseObject *object, void *user
             
             selectedTool->zoom = zoom->GetValue();
             
-            paintArea->SetPaintTool(selectedTool);
+            if(paintArea)
+            {
+                paintArea->SetPaintTool(selectedTool);
+            }
         }
         else
         {
@@ -306,7 +321,11 @@ void LandscapeEditorControl::OnIntensionChanged(DAVA::BaseObject *object, void *
 
 void LandscapeEditorControl::OnZoomChanged(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    scrollView->SetScale(zoom->GetValue() * PaintAreaControl::ZOOM_MULTIPLIER);
+    if(scrollView)
+    {
+        scrollView->SetScale(zoom->GetValue() * PaintAreaControl::ZOOM_MULTIPLIER);
+    }
+
     if(selectedTool)
     {
         selectedTool->zoom = zoom->GetValue();
@@ -320,9 +339,16 @@ void LandscapeEditorControl::OnIntPropertyChanged(PropertyList *forList, const S
     if("landscapeeditor.size" == forKey)
     {
         Vector2 texSize(newValue, newValue);
-        paintArea->SetTextureSideSize(texSize);
-        paintArea->SetSize(texSize);
-        scrollView->SetContentSize(texSize);
+        if(paintArea)
+        {
+            paintArea->SetTextureSideSize(texSize);
+            paintArea->SetSize(texSize);
+        }
+        
+        if(scrollView)
+        {
+            scrollView->SetContentSize(texSize);
+        }
     }
 }
 
@@ -330,17 +356,20 @@ void LandscapeEditorControl::OnFilepathPropertyChanged(PropertyList *forList, co
 {
     if(EditorSettings::IsValidPath(newValue))
     {
-        if("landscapeeditor.lightmap" == forKey)
+        if(paintArea)
         {
-            paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, newValue);
-        }
-        else if("landscapeeditor.texture0" == forKey)
-        {
-            paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, newValue);
-        }
-        else if("landscapeeditor.texture1" == forKey)
-        {
-            paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, newValue);
+            if("landscapeeditor.lightmap" == forKey)
+            {
+                paintArea->SetTexture(PaintAreaControl::ETROID_LIGHTMAP_RGB, newValue);
+            }
+            else if("landscapeeditor.texture0" == forKey)
+            {
+                paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, newValue);
+            }
+            else if("landscapeeditor.texture1" == forKey)
+            {
+                paintArea->SetTexture(PaintAreaControl::ETROID_TEXTURE_TEXTURE0, newValue);
+            }
         }
     }
 }
@@ -349,7 +378,10 @@ void LandscapeEditorControl::OnBoolPropertyChanged(PropertyList *forList, const 
 {
     if("landscapeeditor.showresult" == forKey)
     {
-        paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue(forKey));
+        if(paintArea)
+        {
+            paintArea->ShowResultTexture(propertyList->GetBoolPropertyValue(forKey));
+        }
     }
     else if("landscapeeditor.maskred" == forKey)
     {
@@ -372,16 +404,19 @@ void LandscapeEditorControl::OnBoolPropertyChanged(PropertyList *forList, const 
 
 void LandscapeEditorControl::SetDrawingMask(int32 flag, bool value)
 {
-    int32 drawingMask = paintArea->GetDrawingMask();
-    if(value)
+    if(paintArea)
     {
-        drawingMask |= flag;
+        int32 drawingMask = paintArea->GetDrawingMask();
+        if(value)
+        {
+            drawingMask |= flag;
+        }
+        else
+        {
+            drawingMask &= ~flag;
+        }
+        paintArea->SetDrawingMask(drawingMask);
     }
-    else
-    {
-        drawingMask &= ~flag;
-    }
-    paintArea->SetDrawingMask(drawingMask);
 }
 
 void LandscapeEditorControl::OnSavePressed(BaseObject * object, void * userData, void * callerData)
@@ -404,7 +439,10 @@ void LandscapeEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const
     {
         case DIALOG_OPERATION_SAVE:
         {
-            paintArea->SaveMask(pathToFile);
+            if(paintArea)
+            {
+                paintArea->SaveMask(pathToFile);
+            }
             break;
         }
             
@@ -420,3 +458,104 @@ void LandscapeEditorControl::OnFileSytemDialogCanceled(UIFileSystemDialog *forDi
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
 }
 
+void LandscapeEditorControl::Create3D()
+{
+    Rect fullRect = GetRect();
+    Rect toolsRect = toolsPanel->GetRect();
+    
+    Rect sceneRect = Rect(toolsRect.x, toolsRect.y + toolsRect.dy + OFFSET, 
+                          toolsRect.dx, fullRect.dy - (toolsRect.y + toolsRect.dy + OFFSET*2));
+
+    scene3dView = new UI3DView(sceneRect);
+
+    scene3dView->SetDebugDraw(true);
+    scene3dView->SetInputEnabled(false);
+    AddControl(scene3dView);
+
+    scene = new EditorScene();
+    scene3dView->SetScene(scene);
+
+    // Camera setup
+    cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
+    
+    Camera * cam = new Camera(scene);
+    cam->SetName("landscapeeditor.main-camera");
+    cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+    cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    cam->SetTarget(Vector3(0.0f, 1.0f, 0.0f));
+    
+    cam->Setup(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f); 
+    
+    scene->AddNode(cam);
+    scene->AddCamera(cam);
+    scene->SetCurrentCamera(cam);
+    cameraController->SetScene(scene);
+    
+    SafeRelease(cam);
+        
+    
+    workingLandscape = new LandscapeNode(scene);
+    scene->AddNode(workingLandscape);
+}
+
+void LandscapeEditorControl::Release3D()
+{
+    if(scene && workingLandscape)
+    {
+        scene->RemoveNode(workingLandscape);
+    }
+    
+    SafeRelease(workingLandscape);
+    SafeRelease(scene);
+    SafeRelease(scene3dView);
+    SafeRelease(cameraController);
+}
+
+void LandscapeEditorControl::Input(UIEvent * event)
+{
+    
+    if(UIEvent::BUTTON_1 == event->tid)
+    {
+        Vector3 from, dir;
+        GetCursorVectors(&from, &dir, event->point);
+        Vector3 to = from + dir * 1000.0f;
+        scene->TrySelection(from, to);				
+//        selection = scene->GetProxy();
+        
+    }
+    else 
+    {
+        if(cameraController)
+        {
+            cameraController->Input(event);
+        }
+    }
+    
+    UIControl::Input(event);
+}
+
+void LandscapeEditorControl::Update(float32 timeElapsed)
+{
+    if(cameraController)
+    {
+        cameraController->Update(timeElapsed);
+    }
+    
+    UIControl::Update(timeElapsed);
+}
+
+void LandscapeEditorControl::GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point)
+{
+    if(scene)
+    {
+        Camera * cam = scene->GetCurrentCamera();
+        if (cam)
+        {
+            const Rect & rect = scene3dView->GetLastViewportRect();
+            *from = cam->GetPosition();
+            Vector3 to = cam->UnProject(point.x, point.y, 0, rect);
+            to -= *from;
+            *dir = to;
+        }
+    }
+}

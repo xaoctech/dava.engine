@@ -5,6 +5,7 @@
 #include "SpherePropertyControl.h"
 #include "CameraPropertyControl.h"
 #include "LandscapePropertyControl.h"
+#include "LandscapeEditorPropertyControl.h"
 
 PropertyControlCreator::PropertyControlCreator()
 {
@@ -103,6 +104,11 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
             case EPCID_NODE:
                 controls[controlID] = new NodesPropertyControl(rect, createNodeProperties);
                 break;
+
+            case EPCID_LANDSCAPE_EDITOR:
+                controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties);
+                break;
+
                 
             default:
                 break;
@@ -111,5 +117,10 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
 
     
     return controls[controlID];
+}
+
+NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(SceneNode * sceneNode, const Rect & rect)
+{
+	return CreateControlForNode(EPCID_LANDSCAPE_EDITOR, rect, false);
 }
 
