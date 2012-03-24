@@ -5,46 +5,6 @@
 
 using namespace DAVA;
 
-class PaintTool: public BaseObject
-{
-public:
-
-    enum eBrushType
-    {
-        EBT_STANDART = 0,
-        EBT_SPIKE,
-        EBT_CIRCLE,
-        EBT_NOISE,
-        EBT_ERODE,
-        EBT_WATER_ERODE,
-        
-        EBT_COUNT
-    };
-    
-public:
-
-    PaintTool(eBrushType _type, const String & _spriteName, float32 _solidRadius)
-    {
-        brushType = _type;
-        spriteName = _spriteName;
-        
-        radius = 0.5f;
-        intension = 0.5f;
-        zoom = 0.5f;
-        
-        solidRadius = _solidRadius;
-    }
-    
-    eBrushType brushType;
-    String spriteName;
-    
-    float32 radius;
-    float32 intension;
-    float32 zoom;
-    float32 solidRadius;
-};
-
-
 class TextureRenderObject: public BaseObject
 {
 public:
@@ -64,7 +24,7 @@ public:
 };
 
 
-
+class PaintTool;
 class PaintAreaControl: public UIControl
 {
 public:

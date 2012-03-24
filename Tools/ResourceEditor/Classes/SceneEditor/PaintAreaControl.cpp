@@ -5,6 +5,8 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
+#include "PaintTool.h"
+
 //***************** TextureRenderObject *********************
 TextureRenderObject::TextureRenderObject()
 {
