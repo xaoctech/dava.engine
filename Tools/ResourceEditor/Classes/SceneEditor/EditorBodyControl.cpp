@@ -1366,13 +1366,16 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
-            SceneValidator::Instance()->ValidateSceneNode(rootNode);
-
-            mainFilePath = pathToFile;
-            for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-            {   
-                //рут нода это сама сцена в данном случае
-                scene->AddNode(rootNode->GetChild(ci));
+            if(rootNode)
+            {
+                SceneValidator::Instance()->ValidateSceneNode(rootNode);
+                
+                mainFilePath = pathToFile;
+                for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+                {   
+                    //рут нода это сама сцена в данном случае
+                    scene->AddNode(rootNode->GetChild(ci));
+                }
             }
         }
         else
