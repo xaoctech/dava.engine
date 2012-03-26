@@ -590,9 +590,6 @@
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
@@ -649,9 +646,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp">
       <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PaintAreaControl.cpp">
-      <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
       <Filter>SceneEditor</Filter>
@@ -726,6 +720,18 @@
       <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PaintTool.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1622,9 +1628,6 @@
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
@@ -1684,9 +1687,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
       <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PaintAreaControl.h">
-      <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
       <Filter>SceneEditor</Filter>
@@ -1767,6 +1767,18 @@
       <Filter>SceneEditor\Beast</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PVRUtils.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\HeightmapNode.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PaintTool.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>

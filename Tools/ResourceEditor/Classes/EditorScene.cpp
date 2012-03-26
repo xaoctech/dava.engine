@@ -12,6 +12,7 @@
 #include "SceneEditor/SceneValidator.h"
 #include "Scene3D/LodNode.h"
 #include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/HeightmapNode.h"
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -181,6 +182,60 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::Vector3 &direction, DAVA::Vector3 &point)
+{
+	btVector3 pos(from.x, from.y, from.z);
+    btVector3 to(direction.x, direction.y, direction.z);
+    
+    btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
+    collisionWorld->rayTest(pos, to, cb);
+	btCollisionObject * coll = 0;
+	if (cb.hasHit()) 
+    {
+		Logger::Debug("Has Hit");
+		int findedIndex = cb.m_collisionObjects.size() - 1;
+//		if(lastSelectedPhysics)
+//		{
+//			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->GetUserData();
+//			if (data)
+//			{
+//				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
+//				{					
+//					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
+//					{
+//						findedIndex = i;
+//						break;
+//					}
+//				}
+//				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
+//					findedIndex--;
+//				findedIndex = findedIndex % cb.m_collisionObjects.size();
+//			}
+//		}
+        
+        
+		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
+		
+		if (findedIndex == -1)
+			findedIndex = cb.m_collisionObjects.size() - 1;
+		coll = cb.m_collisionObjects[findedIndex];
+        
+		HeightmapNode *hm = FindHeightmap(this, coll);
+        if(hm)
+        {
+            point.x = cb.m_hitPointWorld[findedIndex].x();
+            point.y = cb.m_hitPointWorld[findedIndex].y();
+            point.z = cb.m_hitPointWorld[findedIndex].z();
+            
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+
 LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
 {
     LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
@@ -200,6 +255,27 @@ LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
 	return 0;
 }
 
+
+HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject * coll)
+{
+	HeightmapNode * node = dynamic_cast<HeightmapNode *> (curr);
+	if (node && node->collisionObject == coll)
+	{
+        return node;
+	}
+    
+	int size = curr->GetChildrenCount();
+//	for (int i = 0; i < size; i++)
+	for (int i = size-1; i >= 0; --i)
+	{
+		HeightmapNode * result = FindHeightmap(curr->GetChild(i), coll);
+		if (result)
+			return result;
+	}
+	return 0;
+}
+
+
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
 	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);
@@ -212,6 +288,7 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 		if (data->bulletObject->GetCollisionObject() == coll)
 			return curr;
 	}
+    
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
 	{

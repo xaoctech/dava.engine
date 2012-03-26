@@ -16,6 +16,7 @@
 
 using namespace DAVA;
 
+class HeightmapNode;
 class EditorScene : public Scene
 {
 public:
@@ -29,6 +30,7 @@ public:
 	void CheckNodes(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
+    bool LandscapeIntersection(const Vector3 &from, const Vector3 &direction, Vector3 &point); 
 
 	inline SceneNode * GetSelection()
 	{
@@ -64,6 +66,7 @@ protected:
 	SceneNode * proxy;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
+	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
 	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;

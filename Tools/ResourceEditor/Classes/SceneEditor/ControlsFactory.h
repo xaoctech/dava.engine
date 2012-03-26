@@ -24,6 +24,10 @@ public:
         
         TEXTURE_PREVIEW_HEIGHT = 100,
         TEXTURE_PREVIEW_WIDTH = 200,
+        
+        TOOLS_HEIGHT = 40,
+        TOOL_BUTTON_SIDE = 32,
+
     };
     
     enum eColorPickerSizes

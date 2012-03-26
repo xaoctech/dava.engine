@@ -101,8 +101,6 @@
 		FE578B5413278D730081BDE9 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = FE578B4113278D730081BDE9 /* SoundSystem.h */; };
 		FE578B5513278D730081BDE9 /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE578B4213278D730081BDE9 /* SoundWVProvider.cpp */; };
 		FE578B5613278D730081BDE9 /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FE578B4313278D730081BDE9 /* SoundWVProvider.h */; };
-		FE57C487142BD33600060A75 /* NeonMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE57C485142BD33600060A75 /* NeonMath.cpp */; };
-		FE57C488142BD33600060A75 /* NeonMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FE57C486142BD33600060A75 /* NeonMath.h */; };
 		FE5DB8A313B8D62400C00F98 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB89F13B8D62400C00F98 /* Shader.cpp */; };
 		FE5DB8A413B8D62400C00F98 /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5DB8A013B8D62400C00F98 /* Shader.h */; };
 		FE5DB8A513B8D62400C00F98 /* ShaderDX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB8A113B8D62400C00F98 /* ShaderDX.cpp */; };
@@ -556,8 +554,6 @@
 		FE578B4113278D730081BDE9 /* SoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSystem.h; sourceTree = "<group>"; };
 		FE578B4213278D730081BDE9 /* SoundWVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundWVProvider.cpp; sourceTree = "<group>"; };
 		FE578B4313278D730081BDE9 /* SoundWVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundWVProvider.h; sourceTree = "<group>"; };
-		FE57C485142BD33600060A75 /* NeonMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NeonMath.cpp; sourceTree = "<group>"; };
-		FE57C486142BD33600060A75 /* NeonMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeonMath.h; sourceTree = "<group>"; };
 		FE5DB89F13B8D62400C00F98 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		FE5DB8A013B8D62400C00F98 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		FE5DB8A113B8D62400C00F98 /* ShaderDX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderDX.cpp; sourceTree = "<group>"; };
@@ -980,15 +976,6 @@
 			path = Sound;
 			sourceTree = "<group>";
 		};
-		FE57C484142BD33600060A75 /* Neon */ = {
-			isa = PBXGroup;
-			children = (
-				FE57C485142BD33600060A75 /* NeonMath.cpp */,
-				FE57C486142BD33600060A75 /* NeonMath.h */,
-			);
-			path = Neon;
-			sourceTree = "<group>";
-		};
 		FECFB1D912E5904400C71562 /* External */ = {
 			isa = PBXGroup;
 			children = (
@@ -1177,7 +1164,6 @@
 		FECFB38C12E5904400C71562 /* Math */ = {
 			isa = PBXGroup;
 			children = (
-				FE57C484142BD33600060A75 /* Neon */,
 				FE9C216612E9A254005C397A /* Circle.h */,
 				FE9C216712E9A254005C397A /* Sphere.h */,
 				FECFB38D12E5904400C71562 /* AABBox2.cpp */,
@@ -1796,7 +1782,6 @@
 				FE044F18140EE8F1002A6D27 /* MusicIos.h in Headers */,
 				FE044F58140EEB7F002A6D27 /* Frustum.h in Headers */,
 				FE044F5A140EEB7F002A6D27 /* LandscapeNode.h in Headers */,
-				FE57C488142BD33600060A75 /* NeonMath.h in Headers */,
 				FE127708144444E80082901E /* UIScrollBar.h in Headers */,
 				FE879F5914504A1800F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */,
 				FEE98F00146948C900EEAEFC /* UberShader.h in Headers */,
@@ -2067,7 +2052,6 @@
 				FE044F57140EEB7F002A6D27 /* Frustum.cpp in Sources */,
 				FE044F59140EEB7F002A6D27 /* LandscapeNode.cpp in Sources */,
 				47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */,
-				FE57C487142BD33600060A75 /* NeonMath.cpp in Sources */,
 				FE127707144444E80082901E /* UIScrollBar.cpp in Sources */,
 				FE879F5814504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */,
 				FEE98EFB146948C000EEAEFC /* Material.cpp in Sources */,

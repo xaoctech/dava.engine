@@ -7,8 +7,6 @@
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
 
-#include "LandscapeEditorControl.h"
-
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
@@ -50,10 +48,7 @@ void SceneEditorScreenMain::LoadResources()
     settingsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSettingsPressed));
     AddControl(settingsButton);
     SafeRelease(settingsButton);
-    
-    landscapeEditor = new LandscapeEditorControl(Rect(0, ControlsFactory::BUTTON_HEIGHT + 1, 
-                                                      fullRect.dx, fullRect.dy - ControlsFactory::BUTTON_HEIGHT-1));
-    
+        
     menuPopup = new MenuPopupControl(GetRect(), ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
@@ -140,9 +135,7 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(fileSystemDialog);
     
     ReleaseBodyList();
-    
-    SafeRelease(landscapeEditor);
-    
+        
     ReleaseTopMenu();
     
     PropertyControlCreator::Instance()->Release();
@@ -991,14 +984,17 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
 
 void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
 {
-    if(landscapeEditor->GetParent())
-    {
-        RemoveControl(landscapeEditor);
-    }
-    else
-    {
-        AddControl(landscapeEditor);
-    }
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ToggleLandscapeEditor();
+    
+//    if(landscapeEditor->GetParent())
+//    {
+//        RemoveControl(landscapeEditor);
+//    }
+//    else
+//    {
+//        AddControl(landscapeEditor);
+//    }
 }
 
 void SceneEditorScreenMain::EditMaterial(Material *material)
@@ -1034,8 +1030,9 @@ void SceneEditorScreenMain::AutoSaveLevel(BaseObject * obj, void *, void *)
 
     
     
-    String pathToFile = folderPath + Format("/AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",   utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
-                                                                utcTime->tm_hour, utcTime->tm_min);
+    String pathToFile = folderPath + Format("/AutoSave_%04d.%02d.%02d_%02d_%02d.sc2",   
+                                            utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+                                            utcTime->tm_hour, utcTime->tm_min);
     
     BodyItem *iBody = bodies[0];
     Scene * scene = iBody->bodyControl->GetScene();
