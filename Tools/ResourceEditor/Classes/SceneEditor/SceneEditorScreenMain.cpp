@@ -7,8 +7,6 @@
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
 
-#include "LandscapeEditorControl.h"
-
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
@@ -50,10 +48,7 @@ void SceneEditorScreenMain::LoadResources()
     settingsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSettingsPressed));
     AddControl(settingsButton);
     SafeRelease(settingsButton);
-    
-    landscapeEditor = new LandscapeEditorControl(Rect(0, ControlsFactory::BUTTON_HEIGHT + 1, 
-                                                      fullRect.dx, fullRect.dy - ControlsFactory::BUTTON_HEIGHT-1));
-    
+        
     menuPopup = new MenuPopupControl(GetRect(), ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
     
@@ -140,9 +135,7 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(fileSystemDialog);
     
     ReleaseBodyList();
-    
-    SafeRelease(landscapeEditor);
-    
+        
     ReleaseTopMenu();
     
     PropertyControlCreator::Instance()->Release();

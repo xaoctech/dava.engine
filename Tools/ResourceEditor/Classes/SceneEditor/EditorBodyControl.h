@@ -117,6 +117,7 @@ public:
 
     void ToggleSceneInfo();
     void ToggleLandscapeEditor();
+    void CloseLE();
 
 	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
 
@@ -125,7 +126,8 @@ public:
 
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
-    virtual void SaveMask();
+    virtual void MaskTextureWillChanged();
+    virtual void MaskTextureDidChanged();
 
     // user input for LE
     virtual void LandscapeEditorInput(UIEvent * touch);
@@ -310,9 +312,19 @@ protected:
     {
         ZOOM_MULTIPLIER = 4
     };
-
     
-    void SaveMask(const String &pathToFile);
+    enum eLEState
+    {
+        ELE_NONE = -1,
+        ELE_ACTIVE,
+        ELE_CLOSING,
+        ELE_SAVING_MASK,
+        ELE_MASK_SAVED
+    };
+    eLEState leState;
+    
+    void SaveNewMask();
+    void SaveMaskAs(const String &pathToFile, bool closeLE);
     
     bool GetLandscapePoint(const Vector2 &touchPoint, Vector2 &landscapePoint);
     void UpdateTileMask();

@@ -70,28 +70,28 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddSliderHeader(radius, LocalizedString(L"landscapeeditor.radius"));
     AddSliderHeader(intension, LocalizedString(L"landscapeeditor.intension"));
     
-    Rect checkrect = zoom->GetRect();
-    checkrect.y += checkrect.dy;
-    checkrect.dx = checkrect.dy;
-    strightDrawing = new UICheckBox("~res:/Gfx/UI/chekBox", checkrect);
-    strightDrawing->SetChecked(true, false);
-    AddControl(strightDrawing);
-    
-    Rect checkTextRect = checkrect;
-    checkTextRect.x = checkrect.x + checkrect.dx + ControlsFactory::OFFSET;
-    checkTextRect.dx = zoom->GetRect().dx - checkrect.dx - ControlsFactory::OFFSET;
-    UIStaticText *textControl = new UIStaticText(checkTextRect);
-    textControl->SetText(LocalizedString(L"landscapeeditor.drawstright"));
-    textControl->SetFont(ControlsFactory::GetFontLight());
-    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
-    AddControl(textControl);
-    SafeRelease(textControl);
+//    Rect checkrect = zoom->GetRect();
+//    checkrect.y += checkrect.dy;
+//    checkrect.dx = checkrect.dy;
+//    strightDrawing = new UICheckBox("~res:/Gfx/UI/chekBox", checkrect);
+//    strightDrawing->SetChecked(true, false);
+//    AddControl(strightDrawing);
+//    
+//    Rect checkTextRect = checkrect;
+//    checkTextRect.x = checkrect.x + checkrect.dx + ControlsFactory::OFFSET;
+//    checkTextRect.dx = zoom->GetRect().dx - checkrect.dx - ControlsFactory::OFFSET;
+//    UIStaticText *textControl = new UIStaticText(checkTextRect);
+//    textControl->SetText(LocalizedString(L"landscapeeditor.drawstright"));
+//    textControl->SetFont(ControlsFactory::GetFontLight());
+//    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
+//    AddControl(textControl);
+//    SafeRelease(textControl);
 }
 
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
-    SafeRelease(strightDrawing);
+//    SafeRelease(strightDrawing);
     SafeRelease(radius);
     SafeRelease(intension);
     SafeRelease(zoom);
@@ -204,8 +204,8 @@ PaintTool * LandscapeToolsPanel::CurrentTool()
     return selectedTool;
 }
 
-bool LandscapeToolsPanel::StrightDrawing()
-{
-    return strightDrawing->Checked();
-}
+//bool LandscapeToolsPanel::StrightDrawing()
+//{
+//    return strightDrawing->Checked();
+//}
 

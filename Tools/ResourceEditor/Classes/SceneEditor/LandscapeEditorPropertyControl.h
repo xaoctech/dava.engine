@@ -24,8 +24,8 @@ class LandscapeEditorPropertyControlDelegate
 {
 public: 
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings) = 0;
-    virtual void SaveMask() = 0;
-    
+    virtual void MaskTextureWillChanged() = 0;
+    virtual void MaskTextureDidChanged() = 0;
 };
 
 class LandscapeEditorPropertyControl: public LandscapePropertyControl
@@ -36,14 +36,13 @@ public:
 
 	virtual void ReadFrom(SceneNode * sceneNode);
     virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+    virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
 
     void SetDelegate(LandscapeEditorPropertyControlDelegate *newDelegate);
     
     LandscapeEditorSettings * Settings();
     
 protected:
-
-    void OnSavePressed(BaseObject * object, void * userData, void * callerData);
 
     void SetValuesFromSettings();
     
