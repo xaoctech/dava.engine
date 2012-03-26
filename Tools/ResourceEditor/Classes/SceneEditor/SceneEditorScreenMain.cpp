@@ -367,35 +367,6 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     AddControl(menuPopup);
 }
 
-void SceneEditorScreenMain::NodeExportPreparation(SceneNode *node)
-{
-    LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
-    if (land) 
-    {
-        ExportTexture(land->GetHeightMapPathname());
-        for (int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
-        {
-            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
-            if (t) 
-            {
-                ExportTexture(t->relativePathname);
-            }
-        }
-    }
-
-
-    
-    
-    
-    
-    
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
-    {
-        SceneNode * child = node->GetChild(ci);
-        NodeExportPreparation(child);
-    }
-}
-
 void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
 {
     String fileOnly;
@@ -403,6 +374,14 @@ void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
     String pathTo = textureDataSourcePath;
     pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
     FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+
+	//default pathTo  -gith
+	if(useConvertedTextures)
+	{
+		// texture.pvr.png -> texture.pvr
+		pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
+	}
+
     FileSystem::Instance()->CreateDirectory(pathOnly, true);
 	FileSystem::Instance()->DeleteFile(pathTo);
     FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
@@ -1190,7 +1169,6 @@ void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, vo
 
 void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
 {
-	bool useConvertedTextures;
     switch (actionID) 
     {
         case EETGMID_PNG:
@@ -1238,27 +1216,25 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
         Material *m = materials[i];
         if (m->GetName().find("editor.") == String::npos)
         {
-            for (int n = 0; n < Material::TEXTURE_COUNT; n++) 
-            {
-                if (m->textures[n])
-                {
-                    if (!m->textures[n]->relativePathname.empty()) 
-                    {
-						if(useConvertedTextures)
-						{
-							ExportTexture(m->names[n]);
-						}
-						else
-						{
-							ExportTexture(m->textures[n]->relativePathname);
-						}
-                    }
-                }
-            }
+
+			if (m->textures[Material::TEXTURE_DIFFUSE])
+			{
+				if (!m->textures[Material::TEXTURE_DIFFUSE]->relativePathname.empty()) 
+				{
+					if(useConvertedTextures)
+					{
+						ExportTexture(m->names[Material::TEXTURE_DIFFUSE]);
+					}
+					else
+					{
+						ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+					}
+				}
+			}
         }
     }
     
-    NodeExportPreparation(scene);
+    ExportLandscapeAndMeshLightmaps(scene);
 
 	//lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
 	//FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
@@ -1278,3 +1254,33 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
     
 }
 
+void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
+{
+	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+	//if(land) 
+	//{
+	//	ExportTexture(land->GetHeightMapPathname());
+	//	for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+	//	{
+	//		Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+	//		if(t) 
+	//		{
+	//			ExportTexture(t->relativePathname);
+	//			if(useConvertedTextures)
+	//			{
+	//				ExportTexture(m->names[Material::TEXTURE_DIFFUSE]);
+	//			}
+	//			else
+	//			{
+	//				ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+	//			}
+	//		}
+	//	}
+	//}
+
+	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
+	{
+		SceneNode * child = node->GetChild(ci);
+		ExportLandscapeAndMeshLightmaps(child);
+	}
+}
