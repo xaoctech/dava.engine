@@ -197,7 +197,7 @@ private:
     void OnSceneInfoPressed(BaseObject * obj, void *, void *);
     
 
-    void NodeExportPreparation(SceneNode *node);//expand this methods if you need to expand export functionality
+    void ExportLandscapeAndMeshLightmaps(SceneNode *node);//expand this methods if you need to expand export functionality
     void ExportTexture(const String &textureDataSourcePath);
     
     // menu
@@ -233,6 +233,7 @@ private:
     Font *font;
     
     void ExportToGameAction(int32 actionID);
+	bool useConvertedTextures;
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__
