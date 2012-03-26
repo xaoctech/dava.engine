@@ -12,7 +12,6 @@
 
 using namespace DAVA;
 
-class LandscapeEditorControl;
 class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;
@@ -219,9 +218,6 @@ private:
     void ShowOpenFileDialog();
     void ShowOpenLastDialog();
     void OpenFileAtScene(const String &pathToFile);
-
-    //Landscape
-    LandscapeEditorControl *landscapeEditor;
     
     void OnSettingsPressed(BaseObject * obj, void *, void *);
     SettingsDialog *settingsDialog;

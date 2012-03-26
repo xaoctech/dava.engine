@@ -488,6 +488,13 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 
     Image::EnableAlphaPremultiplication(true);
 }
+
+void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
+{
+    SafeRelease(textures[level]);
+    textures[level] = SafeRetain(texture);
+}
+
     
 Texture * LandscapeNode::GetTexture(eTextureLevel level)
 {

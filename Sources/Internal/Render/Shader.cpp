@@ -263,7 +263,7 @@ bool Shader::Recompile()
         
         int32 flagIndex = GetAttributeIndexByName(attributeName);
         vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
-        Logger::Debug("shader attr: %s size: %d type: %s flagIndex: %d", attributeName, size, VertexTypeStringFromEnum(type).c_str(), flagIndex);
+//        Logger::Debug("shader attr: %s size: %d type: %s flagIndex: %d", attributeName, size, VertexTypeStringFromEnum(type).c_str(), flagIndex);
         //if (vertexFormatAttribIndeces[k] != -1)
         //    Logger::Debug("shader attr matched: 0x%08x", (1 << flagIndex));
     }
@@ -283,11 +283,11 @@ bool Shader::Recompile()
         uniformNames[k] = attributeName;
         uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
         uniformIDs[k] = uniform;
-        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
+//        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
     
     
-    Logger::Debug("shader recompile success: %s", fragmentShaderPath.c_str());
+//    Logger::Debug("shader recompile success: %s", fragmentShaderPath.c_str());
 
     
     RenderManager::Instance()->UnlockNonMain();
@@ -368,7 +368,7 @@ GLint Shader::LinkProgram(GLuint prog)
     
     RENDER_VERIFY(glGetProgramiv(prog, GL_LINK_STATUS, &status));
     if (status == GL_FALSE)
-        Logger::Debug("Failed to link program %d", prog);
+        Logger::Error("Failed to link program %d", prog);
     
     RenderManager::Instance()->UnlockNonMain();
 
@@ -412,7 +412,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     {
         GLchar *log = (GLchar *)malloc(logLength);
         RENDER_VERIFY(glGetShaderInfoLog(*shader, logLength, &logLength, log));
-        Logger::Debug("Shader compile log:\n%s", log);
+//        Logger::Debug("Shader compile log:\n%s", log);
         free(log);
     }
 //#endif
@@ -420,7 +420,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
     if (status == GL_FALSE)
     {
-        Logger::Debug("Failed to compile shader: status == GL_FALSE\n");
+        Logger::Error("Failed to compile shader: status == GL_FALSE\n");
     }
     RenderManager::Instance()->UnlockNonMain();
 
@@ -520,13 +520,13 @@ void Shader::SaveToSystemMemory()
 }
 void Shader::Lost()
 {
-    Logger::Debug("[Shader::Lost]");
+//    Logger::Debug("[Shader::Lost]");
     DeleteShaders();
     RenderResource::Lost();
 }
 void Shader::Invalidate()
 {
-    Logger::Debug("[Shader::Invalidate]");
+//    Logger::Debug("[Shader::Invalidate]");
 //    LoadFromYaml(relativeFileName);
     Recompile();
     

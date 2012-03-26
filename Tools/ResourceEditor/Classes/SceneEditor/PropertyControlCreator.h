@@ -17,6 +17,8 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
         EPCID_MESH,
         EPCID_NODE,
         
+        EPCID_LANDSCAPE_EDITOR,
+        
         EPCID_COUNT
     };
     
@@ -27,7 +29,9 @@ public:
     
     NodesPropertyControl * CreateControlForNode(SceneNode * sceneNode, const Rect & rect, bool createNodeProperties);
 	NodesPropertyControl * CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties);
-    
+
+    NodesPropertyControl * CreateControlForLandscapeEditor(SceneNode * sceneNode, const Rect & rect);
+
 private:
     
     NodesPropertyControl * CreateControlForNode(ePropertyControlIDs controlID, const Rect & rect, bool createNodeProperties);

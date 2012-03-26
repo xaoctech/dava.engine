@@ -97,6 +97,9 @@ public:
 	 */
 #ifdef __DAVAENGINE_OPENGL__ 
 	void Init(int32 _frameBufferWidth, int32 _frameBufferHeight);
+#ifdef __DAVAENGINE_ANDROID__    
+	void InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight);
+#endif //    #ifdef __DAVASOUND_ANDROID__    
 #else
 	void Init(int32 _frameBufferWidth, int32 _frameBufferHeight);
 	LPDIRECT3D9		  GetD3D();

@@ -69,6 +69,14 @@ public:
 	static void LostAllResources();
 	static void InvalidateAllResources();
 	static void SaveAllResourcesToSystemMem();
+ 
+    //Debug
+	static void LostAllShaders();
+	static void InvalidateAllShaders();
+	static void LostAllTextures();
+	static void InvalidateAllTextures();
+	static void LostAllRDO();
+	static void InvalidateAllRDO();
 };
 
 };
