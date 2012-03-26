@@ -77,13 +77,28 @@ void LandscapeEditorPropertyControl::OnBoolPropertyChanged(PropertyList *forList
     }
 }
 
+void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+{
+    if("property.landscape.texture.tilemask" == forKey && delegate)
+    {
+        delegate->MaskTextureWillChanged();
+    }
+        
+    LandscapePropertyControl::OnFilepathPropertyChanged(forList, forKey, newValue);
+    
+    if("property.landscape.texture.tilemask" == forKey && delegate)
+    {
+        delegate->MaskTextureDidChanged();
+    }
+}
+
+
 void LandscapeEditorPropertyControl::SetValuesFromSettings()
 {
     propertyList->SetBoolPropertyValue("landscapeeditor.maskred", settings->redMask);
     propertyList->SetBoolPropertyValue("landscapeeditor.maskgreen", settings->greenMask);
     propertyList->SetBoolPropertyValue("landscapeeditor.maskblue", settings->blueMask);
     propertyList->SetBoolPropertyValue("landscapeeditor.maskalpha", settings->alphaMask);
-    
 }
 
 
@@ -102,22 +117,11 @@ void LandscapeEditorPropertyControl::ReadFrom(DAVA::SceneNode *sceneNode)
     propertyList->AddBoolProperty("landscapeeditor.maskblue", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddBoolProperty("landscapeeditor.maskalpha", PropertyList::PROPERTY_IS_EDITABLE);
     SetValuesFromSettings();
-
-    propertyList->AddMessageProperty("landscapeeditor.savemask", 
-                                     Message(this, &LandscapeEditorPropertyControl::OnSavePressed));
 }
 
 void LandscapeEditorPropertyControl::SetDelegate(LandscapeEditorPropertyControlDelegate *newDelegate)
 {
     delegate = newDelegate;
-}
-
-void LandscapeEditorPropertyControl::OnSavePressed(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(delegate)
-    {
-        delegate->SaveMask();
-    }
 }
 
 LandscapeEditorSettings * LandscapeEditorPropertyControl::Settings()

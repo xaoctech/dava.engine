@@ -1141,6 +1141,9 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 					currPoint.x = startDragPoint.x;
 					currPoint.y = startDragPoint.y;
 					break;
+                    
+                default:
+                    break;
 			}
 			modification.CreateTranslation(currPoint - startDragPoint);
 		}
@@ -1266,6 +1269,8 @@ void EditorBodyControl::Update(float32 timeElapsed)
     {
         cameraController->Update(timeElapsed);
     }
+    
+    
     UIControl::Update(timeElapsed);
 
 	BeastProxy::Instance()->Update(beastManager);
@@ -1964,20 +1969,34 @@ void EditorBodyControl::LandscapeEditorSettingsChanged(LandscapeEditorSettings *
     leSettings = settings;
 }
 
-void EditorBodyControl::SaveMask()
+void EditorBodyControl::MaskTextureWillChanged()
 {
-    if(!fileSystemDialog->GetParent())
+    if(leSavedTexture)
     {
-        fileSystemDialog->SetExtensionFilter(".png");
-        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
-        
-        fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
-        
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_SAVE;
+        String pathToFile = leSavedTexture->relativePathname;
+        SaveMaskAs(pathToFile, false);
     }
-
 }
+
+void EditorBodyControl::MaskTextureDidChanged()
+{
+    CreateMaskTexture();
+}
+
+
+//void EditorBodyControl::SaveMask()
+//{
+//    if(!fileSystemDialog->GetParent())
+//    {
+//        fileSystemDialog->SetExtensionFilter(".png");
+//        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
+//        
+//        fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+//        
+//        fileSystemDialog->Show(this);
+//        fileSystemDialogOpMode = DIALOG_OPERATION_SAVE;
+//    }
+//}
 
 #pragma mark -- UIFileSystemDialogDelegate
 void EditorBodyControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
@@ -1986,7 +2005,7 @@ void EditorBodyControl::OnFileSelected(UIFileSystemDialog *forDialog, const Stri
     {
         case DIALOG_OPERATION_SAVE:
         {
-            SaveMask(pathToFile);
+            SaveMaskAs(pathToFile, true);
             break;
         }
             
@@ -2000,6 +2019,8 @@ void EditorBodyControl::OnFileSelected(UIFileSystemDialog *forDialog, const Stri
 void EditorBodyControl::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
+    
+    CloseLE();
 }
 
 #pragma mark --Landscape Editor
@@ -2012,7 +2033,6 @@ void EditorBodyControl::CreateLandscapeEditor()
 
     leToolsPanel = new LandscapeToolsPanel(this, rect);
  
-    
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
@@ -2024,13 +2044,19 @@ void EditorBodyControl::CreateLandscapeEditor()
         fileSystemDialog->SetCurrentDir(path);   
     }
     
-    
     workingLandscape = NULL;
     leSavedTexture = NULL;
     leMaskSprite = NULL;
     currentTool = NULL;
     heightmapNode = NULL;
     leSettings = NULL;
+    
+    //init draw params
+    srcBlendMode = BLEND_SRC_ALPHA;
+    dstBlendMode = BLEND_ONE;
+    paintColor = Color(1.f, 1.f, 1.f, 1.0f);
+    
+    leState = ELE_NONE;
 }
 
 void EditorBodyControl::ReleaseLandscapeEditor()
@@ -2044,31 +2070,13 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 
 void EditorBodyControl::ToggleLandscapeEditor()
 {
-    if(leToolsPanel->GetParent())
+    if(ELE_ACTIVE == leState)
     {
-        workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, leSavedTexture);
-        workingLandscape = NULL;
+        leState = ELE_CLOSING;
         
-        scene->RemoveNode(heightmapNode);
-        SafeRelease(heightmapNode);
-        
-        SafeRelease(leSavedTexture);
-        SafeRelease(leMaskSprite);
-        
-        currentTool = NULL;
-
-        RemoveControl(leToolsPanel);
-
-        AddControl(btnModeSelection);
-        AddControl(btnModeModification);
-        
-        isModeModification = savedModificatioMode;
-        UpdateModState();
-        
-        scene->SetSelection(NULL);
-        SelectNodeAtTree(NULL);
+        SaveNewMask();
     }
-    else 
+    else if(ELE_NONE == leState)
     {
         workingLandscape = scene->GetLandScape(scene);
         
@@ -2092,7 +2100,10 @@ void EditorBodyControl::ToggleLandscapeEditor()
         savedModificatioMode = isModeModification;
         isModeModification = false;
 
-        AddControl(leToolsPanel);
+        if(!leToolsPanel->GetParent())
+        {
+            AddControl(leToolsPanel);
+        }
         
         heightmapNode = new HeightmapNode(scene);
         scene->AddNode(heightmapNode);
@@ -2106,14 +2117,48 @@ void EditorBodyControl::ToggleLandscapeEditor()
         leSettings = ((LandscapeEditorPropertyControl *)nodesPropertyPanel)->Settings();
 
         CreateMaskTexture();
+        
+        leState = ELE_ACTIVE;
     }
+}
+
+void EditorBodyControl::CloseLE()
+{
+    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, leSavedTexture);
+    workingLandscape = NULL;
+    
+    scene->RemoveNode(heightmapNode);
+    SafeRelease(heightmapNode);
+    
+    SafeRelease(leSavedTexture);
+    SafeRelease(leMaskSprite);
+    
+    currentTool = NULL;
+    
+    RemoveControl(leToolsPanel);
+
+    if(!btnModeSelection->GetParent())
+    {
+        AddControl(btnModeSelection);
+    }
+    if(!btnModeModification->GetParent())
+    {
+        AddControl(btnModeModification);
+    }
+    
+    isModeModification = savedModificatioMode;
+    UpdateModState();
+    
+    scene->SetSelection(NULL);
+    SelectNodeAtTree(NULL);
+    
+    leState = ELE_NONE;
 }
 
 void EditorBodyControl::CreateMaskTexture()
 {
     SafeRelease(leSavedTexture);
     leSavedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
-    
     
     SafeRelease(leMaskSprite);
     
@@ -2143,7 +2188,28 @@ void EditorBodyControl::CreateMaskTexture()
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, leMaskSprite->GetTexture());
 }
 
-void EditorBodyControl::SaveMask(const String &pathToFile)
+void EditorBodyControl::SaveNewMask()
+{
+    leState = ELE_SAVING_MASK;
+    
+    if(leSavedTexture)
+    {
+        String pathToFile = leSavedTexture->relativePathname;
+        SaveMaskAs(pathToFile, true);
+    }
+    else if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".png");
+        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
+        
+        fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+        
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_SAVE;
+    }
+}
+
+void EditorBodyControl::SaveMaskAs(const String &pathToFile, bool closeLE)
 {
     if(leMaskSprite)
     {
@@ -2152,12 +2218,18 @@ void EditorBodyControl::SaveMask(const String &pathToFile)
         {
             img->Save(pathToFile);
             SafeRelease(img);
-
+            
             SafeRelease(leSavedTexture);
-            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, pathToFile); //?
+            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, pathToFile); 
             leSavedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
             workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, leMaskSprite->GetTexture());
         }
+    }
+    
+    if(closeLE)
+    {
+        leState = ELE_MASK_SAVED;
+        CloseLE();
     }
 }
 
@@ -2177,7 +2249,6 @@ bool EditorBodyControl::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &la
         
         landscapePoint.x = (point.x - box.min.x)* leMaskSprite->GetWidth() / (box.max.x - box.min.x);
         landscapePoint.y = (point.y - box.min.y) * leMaskSprite->GetWidth() / (box.max.y - box.min.y);
-//        float32 z = (point.z - box.min.z) * leMaskSprite->GetWidth() / (box.max.z - box.min.z);
     }
     
     return isIntersect;
@@ -2189,26 +2260,8 @@ void EditorBodyControl::LandscapeEditorInput(DAVA::UIEvent *touch)
 {
     if(UIEvent::BUTTON_1 == touch->tid)
     {
-        if(leToolsPanel->StrightDrawing())
-        {
-            srcBlendMode = BLEND_SRC_ALPHA;
-            dstBlendMode = BLEND_ONE;
-            
-            paintColor = Color(1.f, 1.f, 1.f, 1.0f);
-        }
-        else 
-        {
-            srcBlendMode = BLEND_SRC_ALPHA;
-            dstBlendMode = BLEND_SRC_ALPHA_SATURATE;
-            
-            paintColor = Color(0.f, 0.f, 0.f, 1.0f);
-        }
-
-        
         if(UIEvent::PHASE_BEGAN == touch->phase)
         {
-            
-            
             Vector2 point;
             isPaintActive = GetLandscapePoint(touch->point, point);
             if(isPaintActive)
@@ -2246,7 +2299,7 @@ void EditorBodyControl::LandscapeEditorInput(DAVA::UIEvent *touch)
         else if(UIEvent::PHASE_ENDED == touch->phase)
         {
             Vector2 point;
-            bool isIntersect = GetLandscapePoint(touch->point, point);
+            GetLandscapePoint(touch->point, point);
             if(isPaintActive)
             {
                 isPaintActive = false;
@@ -2267,11 +2320,9 @@ void EditorBodyControl::UpdateTileMask()
 {
     if(currentTool && currentTool->sprite && currentTool->zoom)
     {
-//        float32 scaleSize = currentTool->sprite->GetWidth() * currentTool->radius * 4 / (currentTool->zoom * ZOOM_MULTIPLIER);
         float32 scaleSize = currentTool->sprite->GetWidth() * currentTool->radius * currentTool->zoom * ZOOM_MULTIPLIER;
         Vector2 deltaPos = endPoint - startPoint;
         {
-//            Vector2 pos = startPoint/(currentTool->zoom * ZOOM_MULTIPLIER) - Vector2(scaleSize, scaleSize)/2;
             Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
             if(pos != prevDrawPos)
             {
@@ -2296,8 +2347,8 @@ void EditorBodyControl::UpdateTileMask()
                 RenderManager::Instance()->SetState(drawState);
                 RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
                 
-//                paintColor.a = currentTool->intension;
-                RenderManager::Instance()->SetColor(paintColor);
+                Color toolColor = paintColor * currentTool->intension;
+                RenderManager::Instance()->SetColor(toolColor);
                 
                 //set tool sprite
                 currentTool->sprite->SetScaleSize(scaleSize, scaleSize);
@@ -2305,7 +2356,6 @@ void EditorBodyControl::UpdateTileMask()
                 
                 currentTool->sprite->Draw();
                 prevDrawPos = pos;
-                
                 
                 RenderManager::Instance()->RestoreRenderTarget();
                 

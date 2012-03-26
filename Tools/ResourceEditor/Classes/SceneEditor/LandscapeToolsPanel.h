@@ -30,7 +30,7 @@ public:
     virtual void WillAppear();
     
     PaintTool *CurrentTool();
-    bool StrightDrawing();
+//    bool StrightDrawing();
 
 protected:
 
@@ -49,7 +49,7 @@ protected:
 	void OnIntensionChanged(BaseObject * object, void * userData, void * callerData);
 	void OnZoomChanged(BaseObject * object, void * userData, void * callerData);
 
-    UICheckBox *strightDrawing;
+//    UICheckBox *strightDrawing;
     
     LandscapeToolsPanelDelegate *delegate;
 };
