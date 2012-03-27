@@ -176,6 +176,7 @@ void Material::RebuildShader()
     uniformMaterialLightDiffuseColor = -1;
     uniformMaterialLightSpecularColor = -1;
     uniformMaterialSpecularShininess = -1;
+    uniformMaterialLightIntensity0 = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -240,6 +241,7 @@ void Material::RebuildShader()
             uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
             uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
             uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
+            uniformMaterialLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
             break;
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
@@ -490,6 +492,11 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
             if (uniformMaterialSpecularShininess != -1)
             {
                 shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
+            }
+            
+            if (uniformMaterialLightIntensity0 != -1)
+            {
+                shader->SetUniformValue(uniformMaterialLightIntensity0, lightNode0->GetIntensity());
             }
         }
     }
