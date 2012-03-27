@@ -1,5 +1,5 @@
 #include "HeightmapNode.h"
-#include "btHeightfieldTerrainShape.h"
+#include "bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 
 #include "../EditorScene.h"
 

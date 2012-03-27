@@ -445,8 +445,10 @@
     <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
     <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
+    <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
@@ -457,7 +459,7 @@
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
     <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
-    <ClInclude Include="Classes\SceneEditor\PaintAreaControl.h" />
+    <ClInclude Include="Classes\SceneEditor\PaintTool.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
@@ -698,8 +700,10 @@
     <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
@@ -710,7 +714,7 @@
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\PaintAreaControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PaintTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
