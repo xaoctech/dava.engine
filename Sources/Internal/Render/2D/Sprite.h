@@ -268,6 +268,8 @@ public:
 	 */
     float32 *GetTextureVerts(int32 frame);
 
+	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
+	RenderDataObject * spriteRenderObject;
 	
 protected:
 	Sprite();
@@ -280,7 +282,7 @@ protected:
 	void Clear();
 	
 //private:
-    inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
+    
     
 	enum eSpriteTransform 
 	{
@@ -352,7 +354,7 @@ protected:
     // For rendering of clipped objects
     static Vector<Vector2> clippedTexCoords;
     static Vector<Vector2> clippedVertices;
-    RenderDataObject * spriteRenderObject;
+    
 
     //static bool batchingEnabled;
     //static Vector<Vector2> 

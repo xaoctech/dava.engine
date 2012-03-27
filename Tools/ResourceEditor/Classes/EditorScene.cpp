@@ -147,7 +147,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
-		Logger::Debug("Has Hit");
+		//Logger::Debug("Has Hit");
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(lastSelectedPhysics)
 		{
@@ -192,7 +192,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
-		Logger::Debug("Has Hit");
+		//Logger::Debug("Has Hit");
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 //		if(lastSelectedPhysics)
 //		{
@@ -214,7 +214,7 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 //		}
         
         
-		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
+		//Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
 		if (findedIndex == -1)
 			findedIndex = cb.m_collisionObjects.size() - 1;
