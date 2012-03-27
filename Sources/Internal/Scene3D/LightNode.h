@@ -59,11 +59,13 @@ public:
     void SetAmbientColor(const Color & _color);
     void SetDiffuseColor(const Color & _color);
     void SetSpecularColor(const Color & _color);
+    void SetIntensity(float32 intensity);
     
     eType GetType() const;
     const Color & GetAmbientColor() const;
     const Color & GetDiffuseColor() const;    
     const Color & GetSpecularColor() const;    
+    float32 GetIntensity() const;
     
     const Vector3 & GetPosition() const;
     const Vector3 & GetDirection() const;
@@ -81,6 +83,7 @@ protected:
     Color ambientColor;
     Color diffuseColor;
     Color specularColor;
+    float32 intensity;
 };
 
 };

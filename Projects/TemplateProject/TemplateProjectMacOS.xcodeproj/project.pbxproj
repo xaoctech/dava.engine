@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C96765E1520C06200EF0237 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C96765C1520BF9600EF0237 /* libFramework.a */; };
+		5C9676601520C0BF00EF0237 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C96765F1520C0BF00EF0237 /* libz.dylib */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */; };
 		FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */; };
 		FE9892E511638EF700500198 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E111638EF700500198 /* InfoPlist.strings */; };
 		FE9892E611638EF700500198 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = FE9892E311638EF700500198 /* MainMenu.xib */; };
-		FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE98931811638F3C00500198 /* libFramework.a */; };
 		FEA30C331231362D00E691CC /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FEA30C291231362D00E691CC /* main.mm */; };
 		FEA30C361231362D00E691CC /* version.plist in Resources */ = {isa = PBXBuildFile; fileRef = FEA30C2E1231362D00E691CC /* version.plist */; };
 		FEC3CA811283557F00541220 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */; };
@@ -23,16 +24,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FE93072A12C28C1100A33E69 /* PBXContainerItemProxy */ = {
+		5C96765B1520BF9600EF0237 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = Framework;
-		};
-		FE98931711638F3C00500198 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
+			containerPortal = 5C9676501520BF9500EF0237 /* Framework.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = Framework;
@@ -45,12 +39,13 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		5C9676501520BF9500EF0237 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../dava.framework/Projects/MacOSFramework/Framework.xcodeproj; sourceTree = "<group>"; };
+		5C96765F1520C0BF00EF0237 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE444EEA1153A1D500F5EFD6 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		FE5288A4132FA5EB000FE4F0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		FE9892E211638EF700500198 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = MacOSSpecific/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		FE9892E411638EF700500198 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = MacOSSpecific/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		FE98930B11638F3C00500198 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../MacOSFramework/Framework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		FEA30C291231362D00E691CC /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		FEA30C2E1231362D00E691CC /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
 		FEC3CA6C1283557F00541220 /* AppScreens.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreens.h; path = Classes/AppScreens.h; sourceTree = "<group>"; };
@@ -69,7 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */,
+				5C9676601520C0BF00EF0237 /* libz.dylib in Frameworks */,
+				5C96765E1520C06200EF0237 /* libFramework.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				FE444EEB1153A1D500F5EFD6 /* OpenGL.framework in Frameworks */,
 				FE5288A5132FA5EB000FE4F0 /* OpenAL.framework in Frameworks */,
@@ -110,8 +106,9 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
+				5C96765F1520C0BF00EF0237 /* libz.dylib */,
+				5C9676501520BF9500EF0237 /* Framework.xcodeproj */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
-				FE98930B11638F3C00500198 /* Framework.xcodeproj */,
 				FE445A961153C27800F5EFD6 /* Classes */,
 				FEA30C211231362D00E691CC /* MacOSSpecific */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -149,6 +146,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		5C9676511520BF9500EF0237 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5C96765C1520BF9600EF0237 /* libFramework.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		FE445A961153C27800F5EFD6 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,14 +166,6 @@
 				FEC3CA7C1283557F00541220 /* TestScreen.h */,
 			);
 			name = Classes;
-			sourceTree = "<group>";
-		};
-		FE98930C11638F3C00500198 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FE98931811638F3C00500198 /* libFramework.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		FEA30C211231362D00E691CC /* MacOSSpecific */ = {
@@ -195,7 +192,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FE93072B12C28C1100A33E69 /* PBXTargetDependency */,
 			);
 			name = TemplateProjectMacOS;
 			productInstallPath = "$(HOME)/Applications";
@@ -225,8 +221,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = FE98930C11638F3C00500198 /* Products */;
-					ProjectRef = FE98930B11638F3C00500198 /* Framework.xcodeproj */;
+					ProductGroup = 5C9676511520BF9500EF0237 /* Products */;
+					ProjectRef = 5C9676501520BF9500EF0237 /* Framework.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -237,11 +233,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		FE98931811638F3C00500198 /* libFramework.a */ = {
+		5C96765C1520BF9600EF0237 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libFramework.a;
-			remoteRef = FE98931711638F3C00500198 /* PBXContainerItemProxy */;
+			remoteRef = 5C96765B1520BF9600EF0237 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -291,14 +287,6 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		FE93072B12C28C1100A33E69 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Framework;
-			targetProxy = FE93072A12C28C1100A33E69 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXVariantGroup section */
 		FE9892E111638EF700500198 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
@@ -329,7 +317,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = TemplateProjectMacOS;
@@ -344,7 +331,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = TemplateProjectMacOS;
@@ -358,13 +344,13 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_DEBUG;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
+					./../dava.framework/Sources/Internal,
+					./../dava.framework/Sources/External,
 					/opt/local/include/,
 				);
 				ONLY_ACTIVE_ARCH = YES;
@@ -382,13 +368,13 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					./../../Sources/Internal,
-					./../../Sources/External,
+					./../dava.framework/Sources/Internal,
+					./../dava.framework/Sources/External,
 					/opt/local/include/,
 				);
 				OTHER_CPLUSPLUSFLAGS = (

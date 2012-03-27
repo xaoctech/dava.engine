@@ -35,9 +35,11 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 
     propertyList->AddColorProperty("property.lightnode.specular.color");
 	propertyList->SetColorPropertyValue("property.lightnode.specular.color", light->GetSpecularColor());
+    
+    propertyList->AddFloatProperty("property.lightnode.intensity");
+	propertyList->SetFloatPropertyValue("property.lightnode.intensity", light->GetIntensity());
 
     //propertyList->AddFloatProperty("property.lightnode.material.shininess", light->GetShininess())
-    
     
 	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
@@ -136,7 +138,11 @@ void LightPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const S
 	{
 		LightNode *light = dynamic_cast<LightNode *>(currentNode);
 		light->GetCustomProperties()->SetFloat("editor.staticlight.falloffexponent", newValue);
-	}
+	}else if("property.lightnode.intensity" == forKey)
+    {
+        LightNode *light = dynamic_cast<LightNode *>(currentNode);
+        light->SetIntensity(newValue);
+    }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
