@@ -36,8 +36,8 @@ uniform mat4 modelViewProjectionMatrix;
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
-
-uniform vec3 lightPosition0; 
+uniform vec3 lightPosition0;
+uniform float lightIntensity0; 
 #endif
 
 #if defined(VERTEX_LIT)
@@ -83,7 +83,7 @@ void main()
     vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
     vec3 VP = lightPosition0 - ecPosition3;
     float attenuation = length(VP);
-    attenuation = 500.0 / (attenuation * attenuation); // use inverse distance for distance attenuation
+    attenuation = lightIntensity0 / (attenuation * attenuation); // use inverse distance for distance attenuation
     VP = normalize(VP);
     
     varDiffuseColor = max(0.0, dot(normal, VP)) * attenuation;
