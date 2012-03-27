@@ -72,6 +72,12 @@ void LightNode::SetSpecularColor(const Color & _color)
     specularColor = _color;
 }
 
+void LightNode::SetIntensity(float32 _intensity)
+{
+    intensity = _intensity;
+}
+
+    
 SceneNode* LightNode::Clone(SceneNode *dstNode)
 {
     if(!dstNode)
@@ -136,6 +142,11 @@ const Color & LightNode::GetDiffuseColor() const
 const Color & LightNode::GetSpecularColor() const
 {
     return specularColor;
+}
+    
+float32 LightNode::GetIntensity() const
+{
+    return intensity;
 }
 
 void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)

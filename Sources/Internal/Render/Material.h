@@ -181,6 +181,7 @@ private:
     int32 uniformMaterialLightDiffuseColor;
     int32 uniformMaterialLightSpecularColor;
     int32 uniformMaterialSpecularShininess;
+    int32 uniformMaterialLightIntensity0;
 	int32 uniformUvOffset;
 	int32 uniformUvScale;
     
