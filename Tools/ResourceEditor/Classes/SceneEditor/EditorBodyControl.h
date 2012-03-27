@@ -296,6 +296,8 @@ protected:
     LandscapeNode *workingLandscape;
     Texture *leSavedTexture;
     Sprite *leMaskSprite;
+	Sprite *leOldMaskSprite;
+	Sprite *leToolSprite;
     void CreateMaskTexture();
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
@@ -340,6 +342,8 @@ protected:
     Vector2 prevDrawPos;
     
     bool isPaintActive;
+
+	Shader * tileMaskEditorShader;
 };
 
 

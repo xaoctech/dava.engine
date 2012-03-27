@@ -1277,12 +1277,7 @@ Polygon2 * Sprite::GetPolygonForFrame(int32 frame)
 	
 float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType)
 {
-	if (valueType <= Y_POSITION_IN_TEXTURE)
-	{
-		return rectsAndOffsets[frame][valueType];
-	}
-	float32 value = rectsAndOffsets[frame][valueType];
-	return value;
+	return rectsAndOffsets[frame][valueType];
 }
 
 void Sprite::PrepareForNewSize()
