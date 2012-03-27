@@ -1,5 +1,10 @@
 #include "HeightmapNode.h"
-#include "bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+
+#if defined (__DAVAENGINE_MACOS__)
+#   include "../bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+#elif defined (__DAVAENGINE_WIN32__)
+#   include "bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+#endif
 
 #include "../EditorScene.h"
 
