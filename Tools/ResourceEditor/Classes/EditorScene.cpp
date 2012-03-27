@@ -34,6 +34,11 @@ EditorScene::EditorScene()
 	broadphase = new btAxisSweep3(worldMin,worldMax);
 	collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfiguration);
 
+	landCollisionConfiguration = new btDefaultCollisionConfiguration();
+	landDispatcher = new btCollisionDispatcher(landCollisionConfiguration);
+	landBroadphase = new btAxisSweep3(worldMin,worldMax);
+	landCollisionWorld = new btCollisionWorld(landDispatcher, landBroadphase, landCollisionConfiguration);
+
 //    RegisterLodLayer(0, 15);
 //    RegisterLodLayer(12, 35);
 //    RegisterLodLayer(31, 1000);
@@ -56,6 +61,11 @@ EditorScene::~EditorScene()
 	SafeDelete(broadphase);
 	SafeDelete(dispatcher);
 	SafeDelete(collisionConfiguration);
+
+	SafeDelete(landCollisionWorld);
+	SafeDelete(landBroadphase);
+	SafeDelete(landDispatcher);
+	SafeDelete(landCollisionConfiguration);
 }
 
 void EditorScene::Update(float32 timeElapsed)
@@ -187,45 +197,27 @@ bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::V
 	btVector3 pos(from.x, from.y, from.z);
     btVector3 to(direction.x, direction.y, direction.z);
     
-    btCollisionWorld::AllHitsRayResultCallback cb(pos, to);
-    collisionWorld->rayTest(pos, to, cb);
+    btCollisionWorld::ClosestRayResultCallback cb(pos, to);
+	uint64 time1 = SystemTimer::Instance()->AbsoluteMS();
+	uint64 time2;
+    landCollisionWorld->rayTest(pos, to, cb);
+	time2 = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("raytest %lld", time2-time1);
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
-		//Logger::Debug("Has Hit");
-		int findedIndex = cb.m_collisionObjects.size() - 1;
-//		if(lastSelectedPhysics)
-//		{
-//			SceneNodeUserData * data = (SceneNodeUserData*)lastSelectedPhysics->GetUserData();
-//			if (data)
-//			{
-//				for (int i = cb.m_collisionObjects.size() - 1; i >= 0 ; i--)
-//				{					
-//					if (data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[i])
-//					{
-//						findedIndex = i;
-//						break;
-//					}
-//				}
-//				while (findedIndex >= 0 && data->bulletObject->GetCollisionObject() == cb.m_collisionObjects[findedIndex])
-//					findedIndex--;
-//				findedIndex = findedIndex % cb.m_collisionObjects.size();
-//			}
-//		}
+		//int findedIndex = cb.m_collisionObjects.size() - 1;
+		//
+		//if (findedIndex == -1)
+		//	findedIndex = cb.m_collisionObjects.size() - 1;
+		//coll = cb.m_collisionObjects[findedIndex];
         
-        
-		//Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
-		
-		if (findedIndex == -1)
-			findedIndex = cb.m_collisionObjects.size() - 1;
-		coll = cb.m_collisionObjects[findedIndex];
-        
-		HeightmapNode *hm = FindHeightmap(this, coll);
-        if(hm)
+		//HeightmapNode *hm = FindHeightmap(this, coll);
+        //if(hm)
         {
-            point.x = cb.m_hitPointWorld[findedIndex].x();
-            point.y = cb.m_hitPointWorld[findedIndex].y();
-            point.z = cb.m_hitPointWorld[findedIndex].z();
+            point.x = cb.m_hitPointWorld.x();
+            point.y = cb.m_hitPointWorld.y();
+            point.z = cb.m_hitPointWorld.z();
             
             return true;
         }

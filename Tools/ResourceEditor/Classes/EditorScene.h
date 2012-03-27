@@ -27,6 +27,7 @@ public:
     virtual void Update(float32 timeElapsed);
 
     btCollisionWorld *collisionWorld;
+	btCollisionWorld *landCollisionWorld;
 	void CheckNodes(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
@@ -61,7 +62,11 @@ protected:
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
     int depth;
-	
+
+	btDefaultCollisionConfiguration* landCollisionConfiguration;
+	btCollisionDispatcher* landDispatcher;
+	btAxisSweep3* landBroadphase;
+
 	SceneNode * selection;
 	SceneNode * proxy;
 	

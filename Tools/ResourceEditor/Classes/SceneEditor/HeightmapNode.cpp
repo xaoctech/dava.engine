@@ -86,7 +86,8 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     collisionObject = new btCollisionObject();
     collisionObject->setWorldTransform(startTransform);
     collisionObject->setCollisionShape(colShape);
-    editorScene->collisionWorld->addCollisionObject(collisionObject);
+    editorScene->landCollisionWorld->addCollisionObject(collisionObject);
+	editorScene->landCollisionWorld->updateAabbs();
     
 
     SafeRelease(heightMap);
@@ -95,7 +96,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
 
 HeightmapNode::~HeightmapNode()
 {
-    editorScene->collisionWorld->removeCollisionObject(collisionObject);
+    editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
     
     SafeDelete(body);
     

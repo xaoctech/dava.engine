@@ -93,6 +93,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 	tileMaskEditorShader = new Shader();
 	tileMaskEditorShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor.shader");
 	tileMaskEditorShader->Recompile();
+
+	wasTileMaskToolUpdate = false;
 }
 
 
@@ -2251,11 +2253,10 @@ bool EditorBodyControl::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &la
 {
     Vector3 from, dir;
     GetCursorVectors(&from, &dir, touchPoint);
-    Vector3 to = from + dir * 1000.0f;
+    Vector3 to = from + dir * 200.f;
     
     Vector3 point;
     bool isIntersect = scene->LandscapeIntersection(from, to, point);
-    //Logger::Debug("isIntersect = %d, point: %4.2f, %4.2f, %4.2f", isIntersect, point.x, point.y, point.z);
 
     if(isIntersect)
     {
@@ -2283,7 +2284,7 @@ void EditorBodyControl::LandscapeEditorInput(DAVA::UIEvent *touch)
                 prevDrawPos = Vector2(-100, -100);
 
                 startPoint = endPoint = point;
-                UpdateTileMask();
+                UpdateTileMaskTool();
             }
         }
         else if(UIEvent::PHASE_DRAG == touch->phase)
@@ -2299,14 +2300,14 @@ void EditorBodyControl::LandscapeEditorInput(DAVA::UIEvent *touch)
                 }
                 
                 endPoint = point;
-                UpdateTileMask();
+                UpdateTileMaskTool();
             }
             else 
             {
                 isPaintActive = false;
                 endPoint = point;
                 
-                UpdateTileMask();
+                UpdateTileMaskTool();
                 prevDrawPos = Vector2(-100, -100);
             }
         }
@@ -2319,7 +2320,7 @@ void EditorBodyControl::LandscapeEditorInput(DAVA::UIEvent *touch)
                 isPaintActive = false;
                 
                 endPoint = point;
-                UpdateTileMask();
+                UpdateTileMaskTool();
                 prevDrawPos = Vector2(-100, -100);
             }
         }
@@ -2332,77 +2333,97 @@ void EditorBodyControl::LandscapeEditorInput(DAVA::UIEvent *touch)
 
 void EditorBodyControl::UpdateTileMask()
 {
-    if(currentTool && currentTool->sprite && currentTool->zoom)
-    {
-        float32 scaleSize = currentTool->sprite->GetWidth() * currentTool->radius * currentTool->zoom * ZOOM_MULTIPLIER;
-        Vector2 deltaPos = endPoint - startPoint;
-        {
-            Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
-            if(pos != prevDrawPos)
-            {
-				int32 colorType;
-				if(leSettings->redMask)
-				{
-					colorType = 0;
-				}
-				else if(leSettings->greenMask)
-				{
-					colorType = 1;
-				}
-				else if(leSettings->blueMask)
-				{
-					colorType = 2;
-				}
-				else if(leSettings->alphaMask)
-				{
-					colorType = 3;
-				}
-				else
-				{
-					return; // no color selected
-				}
+	int32 colorType;
+	if(leSettings->redMask)
+	{
+		colorType = 0;
+	}
+	else if(leSettings->greenMask)
+	{
+		colorType = 1;
+	}
+	else if(leSettings->blueMask)
+	{
+		colorType = 2;
+	}
+	else if(leSettings->alphaMask)
+	{
+		colorType = 3;
+	}
+	else
+	{
+		return; // no color selected
+	}
 
+	RenderManager::Instance()->SetRenderTarget(leMaskSprite);
+
+	srcBlendMode = RenderManager::Instance()->GetSrcBlend();
+	dstBlendMode = RenderManager::Instance()->GetDestBlend();
+	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
+
+	RenderManager::Instance()->SetShader(tileMaskEditorShader);
+	leOldMaskSprite->PrepareSpriteRenderData(0);
+	RenderManager::Instance()->SetRenderData(leOldMaskSprite->spriteRenderObject);
+	RenderManager::Instance()->SetTexture(leOldMaskSprite->GetTexture(), 0);
+	RenderManager::Instance()->SetTexture(leToolSprite->GetTexture(), 1);
+	RenderManager::Instance()->FlushState();
+
+	int32 tex0 = tileMaskEditorShader->FindUniformLocationByName("texture0");
+	tileMaskEditorShader->SetUniformValue(tex0, 0);
+	int32 tex1 = tileMaskEditorShader->FindUniformLocationByName("texture1");
+	tileMaskEditorShader->SetUniformValue(tex1, 1);
+	int32 colorTypeUniform = tileMaskEditorShader->FindUniformLocationByName("colorType");
+	tileMaskEditorShader->SetUniformValue(colorTypeUniform, colorType);
+	int32 intensityUniform = tileMaskEditorShader->FindUniformLocationByName("intensity");
+	tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->intension);
+
+	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
+			
+	RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
+	RenderManager::Instance()->RestoreRenderTarget();
+
+	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, leMaskSprite->GetTexture());
+	Sprite * temp = leOldMaskSprite;
+	leOldMaskSprite = leMaskSprite;
+	leMaskSprite = temp;
+}
+
+void EditorBodyControl::UpdateTileMaskTool()
+{
+	if(currentTool && currentTool->sprite && currentTool->zoom)
+	{
+		float32 scaleSize = currentTool->sprite->GetWidth() * currentTool->radius * currentTool->zoom * ZOOM_MULTIPLIER;
+		Vector2 deltaPos = endPoint - startPoint;
+		{
+			Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+			if(pos != prevDrawPos)
+			{
+				wasTileMaskToolUpdate = true;
 
 				RenderManager::Instance()->SetRenderTarget(leToolSprite);
-				RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 				currentTool->sprite->SetScaleSize(scaleSize, scaleSize);
 				currentTool->sprite->SetPosition(pos);
 				currentTool->sprite->Draw();
 				RenderManager::Instance()->RestoreRenderTarget();
+			}
+			startPoint = endPoint;
+		}
+	}
+}
 
-				RenderManager::Instance()->SetRenderTarget(leMaskSprite);
+void EditorBodyControl::Draw(const UIGeometricData &geometricData)
+{
+	if(wasTileMaskToolUpdate)
+	{
+		UpdateTileMask();
 
-				RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-
-				RenderManager::Instance()->SetShader(tileMaskEditorShader);
-				leOldMaskSprite->PrepareSpriteRenderData(0);
-				RenderManager::Instance()->SetRenderData(leOldMaskSprite->spriteRenderObject);
-				RenderManager::Instance()->SetTexture(leOldMaskSprite->GetTexture(), 0);
-				RenderManager::Instance()->SetTexture(leToolSprite->GetTexture(), 1);
-				RenderManager::Instance()->FlushState();
-
-				int32 tex0 = tileMaskEditorShader->FindUniformLocationByName("texture0");
-				tileMaskEditorShader->SetUniformValue(tex0, 0);
-				int32 tex1 = tileMaskEditorShader->FindUniformLocationByName("texture1");
-				tileMaskEditorShader->SetUniformValue(tex1, 1);
-				int32 colorTypeUniform = tileMaskEditorShader->FindUniformLocationByName("colorType");
-				tileMaskEditorShader->SetUniformValue(colorTypeUniform, colorType);
-				int32 intensityUniform = tileMaskEditorShader->FindUniformLocationByName("intensity");
-				tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->intension);
-
-				RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-			
-				RenderManager::Instance()->SetBlendMode(srcBlendMode, dstBlendMode);
-				RenderManager::Instance()->RestoreRenderTarget();
-
-				workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, leMaskSprite->GetTexture());
-				Sprite * temp = leOldMaskSprite;
-				leOldMaskSprite = leMaskSprite;
-				leMaskSprite = temp;
-            }
-            startPoint = endPoint;
-        }
-    }
+		RenderManager::Instance()->SetRenderTarget(leToolSprite);
+		RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+		RenderManager::Instance()->RestoreRenderTarget();
+		
+		wasTileMaskToolUpdate = false;
+	}
+	
 }
 
 
