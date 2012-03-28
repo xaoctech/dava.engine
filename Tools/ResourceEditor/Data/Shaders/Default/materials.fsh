@@ -20,6 +20,7 @@ varying mediump vec2 varTexCoord1;
 #if defined(PIXEL_LIT)
 uniform sampler2D normalMapTexture;
 uniform float materialSpecularShininess;
+uniform float lightIntensity0; 
 #endif
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
@@ -37,6 +38,7 @@ varying lowp float varSpecularColor;
 varying vec3 varLightVec;
 varying vec3 varHalfVec;
 varying vec3 varEyeVec;
+varying float varPerPixelAttenuation;
 #endif
 
 #if defined(SETUP_LIGHTMAP)
@@ -98,8 +100,11 @@ void main()
     vec3 normal = 2.0 * texture2D (normalMapTexture, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
 
+    
+    float finalAtt = lightIntensity0 / (varPerPixelAttenuation * varPerPixelAttenuation);
+
     // compute diffuse lighting
-    float lambertFactor= max (dot (varLightVec, normal), 0.0);
+    float lambertFactor = max (dot (varLightVec, normal), 0.0) * finalAtt;
 
     // compute ambient
     vec3 color = materialLightAmbientColor + materialLightDiffuseColor * lambertFactor;	
@@ -109,7 +114,7 @@ void main()
 	//if (lambertFactor > 0.0)
 	{
 		// In doom3, specular value comes from a texture 
-		float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
+		float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess) * finalAtt;
 		#if defined(GLOSS)
     		color += materialLightSpecularColor * (shininess * textureColor0.a);
     	#else 

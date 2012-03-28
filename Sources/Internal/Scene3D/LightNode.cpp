@@ -43,7 +43,8 @@ LightNode::LightNode(Scene * _scene)
 	type(TYPE_DIRECTIONAL),
     ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
-    specularColor(1.0f, 1.0f, 1.0f, 1.0f)
+    specularColor(1.0f, 1.0f, 1.0f, 1.0f),
+    intensity(300.0f)
 {
 }
     
@@ -168,6 +169,9 @@ void LightNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	archive->SetFloat("specColor.g", specularColor.g);
 	archive->SetFloat("specColor.b", specularColor.b);
 	archive->SetFloat("specColor.a", specularColor.a);
+    
+    archive->SetFloat("intensity", intensity);
+
 }
 
 void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -190,6 +194,8 @@ void LightNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     specularColor.g = archive->GetFloat("specColor.g", specularColor.g);
     specularColor.b = archive->GetFloat("specColor.b", specularColor.b);
     specularColor.a = archive->GetFloat("specColor.a", specularColor.a);
+    
+    intensity = archive->GetFloat("intensity", intensity);
 }
 
 void LightNode::Draw()
