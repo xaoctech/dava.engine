@@ -157,7 +157,6 @@ void SystemTimer::Start()
 	frameCount++;
 	if(frameCount > 60)
 	{
-		Logger::Debug("frame time = %dms, currtime = %dms", (curTime - startTime) / frameCount, curTime);
 		startTime = curTime;
 		frameCount = 0;
 	}

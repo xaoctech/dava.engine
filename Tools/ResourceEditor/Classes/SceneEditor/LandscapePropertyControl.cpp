@@ -209,6 +209,20 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
                        propertyList->GetFloatPropertyValue("property.landscape.texture1.tiley"));
         landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE1, tiling);
     }
+	if ("property.landscape.texture2.tilex" == forKey || "property.landscape.texture2.tiley" == forKey)
+	{
+		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+		Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture2.tilex"),
+			propertyList->GetFloatPropertyValue("property.landscape.texture2.tiley"));
+		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE2, tiling);
+	}
+	if ("property.landscape.texture3.tilex" == forKey || "property.landscape.texture3.tiley" == forKey)
+	{
+		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+		Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture3.tilex"),
+			propertyList->GetFloatPropertyValue("property.landscape.texture3.tiley"));
+		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE3, tiling);
+	}
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
