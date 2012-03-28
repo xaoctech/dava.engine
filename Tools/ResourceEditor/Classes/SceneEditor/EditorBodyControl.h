@@ -10,24 +10,19 @@
 #include "NodesPropertyControl.h"
 #include "ModificationPopUp.h"
 
-#include "LandscapeToolsPanel.h"
-#include "LandscapeEditorPropertyControl.h"
+#include "LandscapeEditor.h"
 
 using namespace DAVA;
 
 class SceneInfoControl;
-class PaintTool;
 class BeastManager;
 class OutputPanelControl;
-class PaintTool;
-class HeightmapNode;
+class LandscapeToolsPanel;
 class EditorBodyControl: 
         public UIControl, 
         public UIHierarchyDelegate, 
         public NodesPropertyDelegate,
-        public LandscapeToolsPanelDelegate,
-        public LandscapeEditorPropertyControlDelegate,
-        public UIFileSystemDialogDelegate
+        public LandscapeEditorDelegate
 {
     enum eConst
     {
@@ -117,26 +112,16 @@ public:
 	void PopDebugCamera();
 
     void ToggleSceneInfo();
-    void ToggleLandscapeEditor();
-    void CloseLE();
 
 	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
 
-	//Tools Panel delegate
-    virtual void OnToolSelected(PaintTool *newTool);
+    void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
+    
+    void ToggleLandscapeEditor();
 
-    //LE property control delegate
-    virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
-    virtual void MaskTextureWillChanged();
-    virtual void MaskTextureDidChanged();
-
-    // user input for LE
-    virtual void LandscapeEditorInput(UIEvent * touch);
-
-    //file dialog delegate
-    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
-    virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
-
+    //LandscapeEditorDelegate
+    virtual void LandscapeEditorStarted();  //Show LE Controls
+    virtual void LandscapeEditorFinished(); //Hide LE Controls
     
 protected:
 
@@ -177,7 +162,7 @@ protected:
 	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
-	void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
+//	void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
 	
 	
     UIControl *leftPanelDataGraph;
@@ -292,61 +277,10 @@ protected:
     
     //Landscape Editor
     bool savedModificatioMode;
-    HeightmapNode *heightmapNode;
     LandscapeToolsPanel *leToolsPanel;
-    LandscapeNode *workingLandscape;
-    Texture *leSavedTexture;
-    Sprite *leMaskSprite;
-	Sprite *leOldMaskSprite;
-	Sprite *leToolSprite;
-    void CreateMaskTexture();
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
-    
-    UIFileSystemDialog * fileSystemDialog;
-    uint32 fileSystemDialogOpMode;
-    enum DIALOG_OPERATION
-    {
-        DIALOG_OPERATION_NONE = 0,
-        DIALOG_OPERATION_SAVE,
-    };
-    
-    enum eLEConst
-    {
-        ZOOM_MULTIPLIER = 4
-    };
-    
-    enum eLEState
-    {
-        ELE_NONE = -1,
-        ELE_ACTIVE,
-        ELE_CLOSING,
-        ELE_SAVING_MASK,
-        ELE_MASK_SAVED
-    };
-    eLEState leState;
-    
-    void SaveNewMask();
-    void SaveMaskAs(const String &pathToFile, bool closeLE);
-    
-    bool GetLandscapePoint(const Vector2 &touchPoint, Vector2 &landscapePoint);
-	void UpdateTileMaskTool();
-    void UpdateTileMask();
-	bool wasTileMaskToolUpdate;
-    
-    LandscapeEditorSettings *leSettings;
-    PaintTool *currentTool;
-
-    eBlendMode srcBlendMode;
-    eBlendMode dstBlendMode;
-    Color paintColor;
-    Vector2 startPoint;
-    Vector2 endPoint;
-    Vector2 prevDrawPos;
-    
-    bool isPaintActive;
-
-	Shader * tileMaskEditorShader;
+    LandscapeEditor *landscapeEditor;
 };
 
 
