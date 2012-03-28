@@ -32,5 +32,5 @@ float32 PaintTool::IntensionMin()
 
 float32 PaintTool::IntensionMax()
 {
-    return 1.0f;
+    return 0.50f;
 }
