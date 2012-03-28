@@ -148,9 +148,6 @@ protected:
     void CreateLeftPanel();
     void ReleaseLeftPanel();
     
-	void ReleaseHelpPanel();
-	void CreateHelpPanel();
-
 	void PlaceOnLandscape();
 	
     UIControl *leftPanelSceneGraph;
@@ -183,8 +180,6 @@ protected:
     void CreatePropertyPanel();
     void ReleasePropertyPanel();
     void UpdatePropertyPanel();
-	void ToggleHelp(void);
-	void AddHelpText(const wchar_t * text, float32 & y);
 	
 	
 
@@ -223,7 +218,6 @@ protected:
 	Vector3 rotationCenter;
 	bool isDrag;
 	bool isModeModification;
-	DraggableDialog *helpDialog;
 
 	
 	
