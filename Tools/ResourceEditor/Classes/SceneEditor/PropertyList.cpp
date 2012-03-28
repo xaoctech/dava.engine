@@ -236,6 +236,9 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_SLIDER:
             delegate->OnSliderPropertyChanged(this, changedProperty->key, changedProperty->GetSliderValue());
             break;
+        case PropertyCellData::PROP_VALUE_TEXTUREPREVIEW:
+            delegate->OnTexturePreviewPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
+            break;
     }
 }
 
@@ -331,6 +334,9 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
             case PropertyCell::PROP_CELL_SLIDER:
                 c = new PropertySliderCell(this, props[index], size.x);
                 break;
+            case PropertyCell::PROP_CELL_TEXTUREPREVIEW:
+                c = new PropertyTexturePreviewCell(this, props[index], size.x);
+                break;
         }
     }
     else 
@@ -368,6 +374,8 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
             return PropertySubsectionCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_SLIDER:
             return PropertySliderCell::GetHeightForWidth(size.x);
+        case PropertyCell::PROP_CELL_TEXTUREPREVIEW:
+            return PropertyTexturePreviewCell::GetHeightForWidth(size.x);
     }
     return 50;//todo: rework
 }
@@ -579,3 +587,29 @@ float32 PropertyList::GetSliderPropertyValue(const String &propertyName)
     return p->GetSliderValue();
 }
 
+void PropertyList::AddTexturePreviewProperty(const String &propertyName, editableType propEditType)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_TEXTUREPREVIEW);
+    p->cellType = PropertyCell::PROP_CELL_TEXTUREPREVIEW;
+    p->SetBool(false);
+    p->SetTexture(NULL);
+    AddProperty(p, propertyName, propEditType);
+}
+
+void PropertyList::SetTexturePreviewPropertyValue(const String &propertyName, bool newBoolValue, DAVA::Texture *newTexture)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetBool(newBoolValue);
+    p->SetTexture(newTexture);
+    
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+bool PropertyList::GetTexturePreviewPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetBool();   
+}
