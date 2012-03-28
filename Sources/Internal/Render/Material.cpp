@@ -176,7 +176,8 @@ void Material::RebuildShader()
     uniformMaterialLightDiffuseColor = -1;
     uniformMaterialLightSpecularColor = -1;
     uniformMaterialSpecularShininess = -1;
-    uniformMaterialLightIntensity0 = -1;
+    uniformLightIntensity0 = -1;
+    uniformLightAttenuationQ = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -241,7 +242,9 @@ void Material::RebuildShader()
             uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
             uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
             uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
-            uniformMaterialLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
+            uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
+            uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
+            
             break;
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
@@ -254,6 +257,8 @@ void Material::RebuildShader()
             uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
             uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
             uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
+            uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
+            uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
             break;
         default:
             break;
@@ -494,9 +499,13 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
                 shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
             }
             
-            if (uniformMaterialLightIntensity0 != -1)
+            if (uniformLightIntensity0 != -1)
             {
-                shader->SetUniformValue(uniformMaterialLightIntensity0, lightNode0->GetIntensity());
+                shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
+            }
+            if (uniformLightAttenuationQ != -1)
+            {
+                //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
             }
         }
     }
