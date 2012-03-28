@@ -29,6 +29,8 @@ PropertyCellData::PropertyCellData(int _valueType)
     sliderValueMin = 0.f;
     sliderValue = 0.f;
 
+    texture = NULL;
+    
     valueType = _valueType;
 }
 
@@ -40,13 +42,13 @@ int32 PropertyCellData::GetValueType()
 
 void PropertyCellData::SetBool(bool newBool)
 {
-    DVASSERT(valueType == PROP_VALUE_BOOL);
+    DVASSERT((valueType == PROP_VALUE_BOOL) || (valueType == PROP_VALUE_TEXTUREPREVIEW));
     boolValue = newBool;
 }
 
 bool PropertyCellData::GetBool()
 {
-    DVASSERT(valueType == PROP_VALUE_BOOL);
+    DVASSERT((valueType == PROP_VALUE_BOOL) || (valueType == PROP_VALUE_TEXTUREPREVIEW));
     return boolValue;
 }
 
@@ -226,5 +228,17 @@ void PropertyCellData::SetSliderValue(float32 newValue)
 {
     DVASSERT(valueType == PROP_VALUE_SLIDER);
     sliderValue = newValue;
+}
+
+void PropertyCellData::SetTexture(DAVA::Texture *newTexture)
+{
+    DVASSERT(valueType == PROP_VALUE_TEXTUREPREVIEW);
+    texture = newTexture;
+}
+
+Texture * PropertyCellData::GetTexture()
+{
+    DVASSERT(valueType == PROP_VALUE_TEXTUREPREVIEW);
+    return texture;
 }
 
