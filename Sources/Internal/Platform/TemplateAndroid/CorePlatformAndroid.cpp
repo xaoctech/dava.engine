@@ -236,7 +236,7 @@ namespace DAVA
 	}
 
 	static Vector<DAVA::UIEvent> activeTouches;
-	void CoreAndroidPlatform::KeyUp(int keyCode)
+	void CoreAndroidPlatform::KeyUp(int32 keyCode)
 	{
 		Vector<DAVA::UIEvent> touches;
 		Vector<DAVA::UIEvent> emptyTouches;
@@ -259,11 +259,11 @@ namespace DAVA
 		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 	}
 
-	void CoreAndroidPlatform::KeyDown(int keyCode)
+	void CoreAndroidPlatform::KeyDown(int32 keyCode)
 	{
 	}
 
-	int32 MoveTouchsToVector(int action, int id, int x, int y, long time, Vector<UIEvent> *outTouches)
+	int32 MoveTouchsToVector(int32 action, int32 id, float32 x, float32 y, long time, Vector<UIEvent> *outTouches)
 	{
 		int tid = id;//DAVA::UIEvent::BUTTON_1;
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
@@ -293,32 +293,32 @@ namespace DAVA
 		}
 
 
-		if(phase == UIEvent::PHASE_DRAG)
-		{
-			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-			{
-				it->physPoint.x = x;//p.x;
-				it->physPoint.y = y;//p.y;
-				it->phase = phase;
-			}
-		}
-
-		bool isFind = false;
-		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-		{
-			if(it->tid == tid)
-			{
-				isFind = true;
-
-				it->physPoint.x = x;
-				it->physPoint.y = y;
-				it->phase = phase;
-
-				break;
-			}
-		}
-
-		if(!isFind)
+//		if(phase == UIEvent::PHASE_DRAG)
+//		{
+//			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+//			{
+//				it->physPoint.x = x;//p.x;
+//				it->physPoint.y = y;//p.y;
+//				it->phase = phase;
+//			}
+//		}
+//
+//		bool isFind = false;
+//		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+//		{
+//			if(it->tid == tid)
+//			{
+//				isFind = true;
+//
+//				it->physPoint.x = x;
+//				it->physPoint.y = y;
+//				it->phase = phase;
+//
+//				break;
+//			}
+//		}
+//
+//		if(!isFind)
 		{
 			UIEvent newTouch;
 			newTouch.tid = tid;
@@ -328,39 +328,48 @@ namespace DAVA
 
 //			Logger::Debug("[MoveTouchsToVector] x is %d, y is %d", x, y);
 
-			activeTouches.push_back(newTouch);
+//			activeTouches.push_back(newTouch);
+            outTouches->push_back(newTouch);
 		}
 
-		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-		{
-			outTouches->push_back(*it);
-		}
-
-		if(phase == UIEvent::PHASE_ENDED || phase == UIEvent::PHASE_DRAG)
-		{
-			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-			{
-				if(it->tid == tid)
-				{
-					activeTouches.erase(it);
-					break;
-				}
-			}
-		}
+//		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+//		{
+//			outTouches->push_back(*it);
+//		}
+//
+//		if(phase == UIEvent::PHASE_ENDED || phase == UIEvent::PHASE_DRAG)
+//		{
+//			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+//			{
+//				if(it->tid == tid)
+//				{
+//					activeTouches.erase(it);
+//					break;
+//				}
+//			}
+//		}
 		return phase;
 	}
 
-	void CoreAndroidPlatform::OnTouch(int action, int id, int x, int y, long time)
+
+	void CoreAndroidPlatform::OnTouchStart()
 	{
-//		Logger::Debug("[CoreAndroidPlatform::OnTouch] action is %d, x is %d, y is %d, time is %d", action, x, y, time);
+		Logger::Debug("[CoreAndroidPlatform::OnTouchStart] touches.size is %d", touches.size());
+	}
 
-		Vector<DAVA::UIEvent> touches;
+
+	void CoreAndroidPlatform::OnTouch(int32 action, int32 id, float32 x, float32 y, long time)
+	{
+		Logger::Debug("[CoreAndroidPlatform::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
+		touchPhase = MoveTouchsToVector(action, id, x, y, time, &touches);
+	}
+
+	void CoreAndroidPlatform::OnTouchDone()
+	{
+		Logger::Debug("[CoreAndroidPlatform::OnTouchDone] touches.size is %d", touches.size());
+
 		Vector<DAVA::UIEvent> emptyTouches;
-
-		int32 touchPhase = MoveTouchsToVector(action, id, x, y, time, &touches);
-
 		UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
-
 		touches.clear();
 	}
 

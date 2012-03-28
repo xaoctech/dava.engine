@@ -74,6 +74,7 @@ public:
     virtual void WillAppear();
 	virtual void Update(float32 timeElapsed);
     virtual void Input(UIEvent * touch);
+	virtual void Draw(const UIGeometricData &geometricData);
 
     void OpenScene(const String &pathToFile, bool editScene);
     void ReloadRootScene(const String &pathToFile);
@@ -296,6 +297,8 @@ protected:
     LandscapeNode *workingLandscape;
     Texture *leSavedTexture;
     Sprite *leMaskSprite;
+	Sprite *leOldMaskSprite;
+	Sprite *leToolSprite;
     void CreateMaskTexture();
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
@@ -327,7 +330,9 @@ protected:
     void SaveMaskAs(const String &pathToFile, bool closeLE);
     
     bool GetLandscapePoint(const Vector2 &touchPoint, Vector2 &landscapePoint);
+	void UpdateTileMaskTool();
     void UpdateTileMask();
+	bool wasTileMaskToolUpdate;
     
     LandscapeEditorSettings *leSettings;
     PaintTool *currentTool;
@@ -340,6 +345,8 @@ protected:
     Vector2 prevDrawPos;
     
     bool isPaintActive;
+
+	Shader * tileMaskEditorShader;
 };
 
 
