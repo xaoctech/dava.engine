@@ -797,7 +797,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 					
 				case DVKEY_BACKSPACE:
                 {
-					OnRemoveNodeButtonPressed(0,0,0);
+                    bool cmdIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+                    if(cmdIsPressed)
+                    {
+                        OnRemoveNodeButtonPressed(0,0,0);
+                    }
                     break;
                 }
 					
