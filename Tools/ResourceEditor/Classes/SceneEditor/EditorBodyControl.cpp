@@ -24,11 +24,9 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     scene = NULL;
 	
-    isModeModification = false;
     selectedSceneGraphNode = NULL;
     selectedDataGraphNode = NULL;
 	nodesPropertyPanel = 0;
-	btnPlaceOn = 0;
 
 
     ControlsFactory::CusomizeBottomLevelControl(this);
@@ -300,165 +298,18 @@ void EditorBodyControl::ReleaseScene()
 }
 
 
-static const wchar_t * mods[3] = { L"M", L"R", L"S"};
-static const wchar_t * axises[3] = { L"X", L"Y", L"Z"};
-
-#define BUTTON_W 20 
-#define BUTTON_B 5 
-
 void EditorBodyControl::CreateModificationPanel(void)
 {
-	float offx = scene3dView->GetRect(true).x;
-	modState = MOD_MOVE;
-	modAxis = AXIS_X;
-	
-	modificationPanel = ControlsFactory::CreatePanelControl(Rect(offx, 5, 160, 45));
-    modificationPanel->GetBackground()->SetColor(Color(1.0, 1.0, 1.0, 0.2));
-	int i;
-	
-	for (i = 0; i < 3; i++)
-	{
-		btnMod[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, 0, BUTTON_W, BUTTON_W), mods[i]);
-		btnMod[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
-		modificationPanel->AddControl(btnMod[i]);
-
-		btnAxis[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, BUTTON_W + BUTTON_B, BUTTON_W, BUTTON_W), axises[i]);
-		btnAxis[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
-		modificationPanel->AddControl(btnAxis[i]);
-	}
-	UIStaticText * st = new UIStaticText(Rect(55, 0, 70, BUTTON_W));
-    st->SetFont(ControlsFactory::GetFontLight());
-	st->SetText(L"w, e, r");
-    modificationPanel->AddControl(st);
-
-	st = new UIStaticText(Rect(55, BUTTON_W + BUTTON_B, 80, BUTTON_W));
-    st->SetFont(ControlsFactory::GetFontLight());
-	st->SetText(L"5, 6, 7, 8");
-    modificationPanel->AddControl(st);
-
-	
-	btnPlaceOn = ControlsFactory::CreateButton(Rect(115, 0, BUTTON_W, BUTTON_W), L"P");
-	btnPlaceOn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPressed));
-	modificationPanel->AddControl(btnPlaceOn);
-	
-	
-	UpdateModState();
-	
-	btnPopUp = ControlsFactory::CreateButton(Rect(140, 0, BUTTON_W, BUTTON_W), L"#");
-	btnPopUp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModificationPopUpPressed));
-	modificationPanel->AddControl(btnPopUp);
-	
-	modificationPopUp = new ModificationPopUp();
-	
-	btnModeSelection = ControlsFactory::CreateButton(Rect(offx + 170, 5, BUTTON_W, BUTTON_W), L"S");
-	btnModeSelection->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModePressed));
-	AddControl(btnModeSelection);
-
-	btnModeModification = ControlsFactory::CreateButton(Rect(offx + 195, 5, BUTTON_W, BUTTON_W), L"M");
-	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnModePressed));
-	AddControl(btnModeModification);
-	OnModePressed(btnModeSelection, 0, 0);
+    modificationPanel = new ModificationsPanel(this, scene3dView->GetRect());
+    modificationPanel->SetScene(scene);
+    
+    AddControl(modificationPanel);
 }
 
 void EditorBodyControl::ReleaseModificationPanel()
 {
-	for (int i = 0; i < 3; i++)
-	{
-		SafeRelease(btnMod[i]);
-		SafeRelease(btnAxis[i]);
-	}
-	SafeRelease(modificationPanel);
-    SafeRelease(modificationPopUp);
+    SafeRelease(modificationPanel);
 }
-
-
-void EditorBodyControl::OnModePressed(BaseObject * object, void * userData, void * callerData)
-{
-	isModeModification = (object == btnModeModification);
-	
-	if (isModeModification)
-	{
-		btnModeModification->SetState(UIControl::STATE_SELECTED);
-		btnModeSelection->SetState(UIControl::STATE_NORMAL);
-	}
-	else
-	{
-		btnModeModification->SetState(UIControl::STATE_NORMAL);
-		btnModeSelection->SetState(UIControl::STATE_SELECTED);
-	}
-}
-
-void EditorBodyControl::OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData)
-{
-	UIScreen * scr = UIScreenManager::Instance()->GetScreen();
-	if (modificationPopUp->GetParent() == 0)
-	{
-		modificationPopUp->SetSelection(scene->GetProxy());
-		scr->AddControl(modificationPopUp);
-	}
-	else
-	{
-		scr->RemoveControl(modificationPopUp);
-		modificationPopUp->SetSelection(0);
-	}
-}
-
-void EditorBodyControl::OnModificationPressed(BaseObject * object, void * userData, void * callerData)
-{
-	if (object == btnPlaceOn)
-	{
-		PlaceOnLandscape();
-		return;
-	}
-		
-	for (int i = 0; i < 3; i++)
-	{
-		if (object == btnMod[i])
-		{
-			modState = (eModState)i;
-		}
-		if (object == btnAxis[i])
-		{
-			modAxis = (eModAxis)i;
-		}
-	}
-	UpdateModState();
-}
-
-
-void EditorBodyControl::UpdateModState(void)
-{
-	for (int i = 0; i < 3; i++)
-	{
-		btnMod[i]->SetState(UIControl::STATE_NORMAL);
-		btnAxis[i]->SetState(UIControl::STATE_NORMAL);
-	}
-	btnMod[modState]->SetState(UIControl::STATE_SELECTED);
-
-	switch (modAxis) 
-	{
-	case AXIS_X:
-	case AXIS_Y:
-	case AXIS_Z:
-		btnAxis[modAxis]->SetState(UIControl::STATE_SELECTED);
-		break;
-	case AXIS_XY:
-		btnAxis[AXIS_X]->SetState(UIControl::STATE_SELECTED);
-		btnAxis[AXIS_Y]->SetState(UIControl::STATE_SELECTED);
-		break;
-	case AXIS_YZ:
-		btnAxis[AXIS_Y]->SetState(UIControl::STATE_SELECTED);
-		btnAxis[AXIS_Z]->SetState(UIControl::STATE_SELECTED);
-		break;
-	case AXIS_XZ:
-		btnAxis[AXIS_X]->SetState(UIControl::STATE_SELECTED);
-		btnAxis[AXIS_Z]->SetState(UIControl::STATE_SELECTED);
-		break;
-	default:
-		break;
-	}
-}
-
 
 void EditorBodyControl::CreatePropertyPanel()
 {
@@ -480,9 +331,6 @@ void EditorBodyControl::CreatePropertyPanel()
     
     propertyPanelRect.x = propertyPanelRect.y = 0;
     propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
-
-    //nodesPropertyPanel = new NodesPropertyControl(propertyPanelRect, false);
-    //nodesPropertyPanel->SetDelegate(this);
 }
 
 void EditorBodyControl::ReleasePropertyPanel()
@@ -737,11 +585,11 @@ void EditorBodyControl::UpdatePropertyPanel()
     }
 }
 
+
 void EditorBodyControl::PlaceOnLandscape()
 {
 	SceneNode * selection = scene->GetProxy();
-
-	if (selection && isModeModification)
+	if (selection && modificationPanel->IsModificationMode())
 	{
 		Vector3 result;
 		LandscapeNode * ls = scene->GetLandScape(scene);
@@ -781,6 +629,8 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
         if(!tf)
         {
+            modificationPanel->Input(event);
+            
             Camera * newCamera = 0;
             switch(event->tid)
             {
@@ -818,67 +668,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     newCamera = scene->GetCamera(4);
                     break;
 
-                case DVKEY_Q:
-                    modState = MOD_MOVE;
-                    break;
-
-                case DVKEY_E:
-                    modState = MOD_ROTATE;
-                    break;
-
-                case DVKEY_R:
-                    modState = MOD_SCALE;
-                    break;
-
-                case DVKEY_5:
-                {
-                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                    if(!altIsPressed)
-                    {
-                        modAxis = AXIS_X;
-                    }
-                    break;
-                }
-
-                case DVKEY_6:
-                {
-                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                    if(!altIsPressed)
-                    {
-                        modAxis = AXIS_Y;
-                    }
-                    break;
-                }
-
-                case DVKEY_7:
-                {
-                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                    if(!altIsPressed)
-                    {
-                        modAxis = AXIS_Z;
-                    }
-                    break;
-                }
-
-                case DVKEY_8:
-                {
-                    bool altIsPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
-                    if(!altIsPressed)
-                    {
-                        if (modAxis < AXIS_XY) modAxis = AXIS_XY;
-                        else modAxis = (eModAxis)(AXIS_XY + ((modAxis + 1 - AXIS_XY) % 3));
-                    }
-                    
-                    break;
-                }
-
-                case DVKEY_P:
-                {
-					PlaceOnLandscape();
-					break;
-                }
-					
-					
                 default:
                     break;
             }
@@ -888,7 +677,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 scene->SetCurrentCamera(newCamera);
                 scene->SetClipCamera(scene->GetCamera(0));
             }
-			UpdateModState();
         }
 	}
 	
@@ -908,7 +696,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			if (!isDrag)
 			{
 				Vector2 d = event->point - touchStart;
-				if (d.Length() > 5 && isModeModification)
+				if (d.Length() > 5 && modificationPanel->IsModificationMode())
 				{
 					isDrag = true;
 					if (selection && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
@@ -919,7 +707,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 						scene->SetSelection(clone);
 						selection = scene->GetProxy();
                         SelectNodeAtTree(selection);
-//						sceneGraphTree->Refresh();
 					}
 					
 					if (selection)
@@ -949,7 +736,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			}
 			else 
 			{
-				if (selection && isModeModification)
+				if (selection && modificationPanel->IsModificationMode())
 				{
 					PrepareModMatrix(event->point);
 					selection->SetLocalTransform(currTransform);
@@ -1001,18 +788,18 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 void EditorBodyControl::InitMoving(const Vector2 & point)
 {
 	//init planeNormal
-	switch (modAxis) 
+	switch (modificationPanel->GetModAxis()) 
 	{
-		case AXIS_X:
-		case AXIS_Y:
-		case AXIS_XY:
+		case ModificationsPanel::AXIS_X:
+		case ModificationsPanel::AXIS_Y:
+		case ModificationsPanel::AXIS_XY:
 			planeNormal = Vector3(0,0,1);
 			break;
-		case AXIS_Z:
-		case AXIS_YZ:
+		case ModificationsPanel::AXIS_Z:
+		case ModificationsPanel::AXIS_YZ:
 			planeNormal = Vector3(1,0,0);
 			break;
-		case AXIS_XZ:
+		case ModificationsPanel::AXIS_XZ:
 			planeNormal = Vector3(0,1,0);
 			break;
 		default:
@@ -1050,7 +837,7 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 	Matrix4 modification;
 	modification.Identity();
 	
-	if (modState == MOD_MOVE)
+	if (modificationPanel->GetModState() == ModificationsPanel::MOD_MOVE)
 	{
 		Vector3 from, dir;
 		GetCursorVectors(&from, &dir, point);
@@ -1060,17 +847,17 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 		
 		if (result)
 		{
-			switch (modAxis) 
+			switch (modificationPanel->GetModAxis()) 
 			{
-				case AXIS_X:
+				case ModificationsPanel::AXIS_X:
 					currPoint.y = startDragPoint.y;
 					currPoint.z = startDragPoint.z;
 					break;
-				case AXIS_Y:
+				case ModificationsPanel::AXIS_Y:
 					currPoint.x = startDragPoint.x;
 					currPoint.z = startDragPoint.z;
 					break;
-				case AXIS_Z:
+				case ModificationsPanel::AXIS_Z:
 					currPoint.x = startDragPoint.x;
 					currPoint.y = startDragPoint.y;
 					break;
@@ -1081,31 +868,31 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 			modification.CreateTranslation(currPoint - startDragPoint);
 		}
 	}
-	else if (modState == MOD_ROTATE)
+	else if (modificationPanel->GetModState() == ModificationsPanel::MOD_ROTATE)
 	{
 		Matrix4 d;
-		switch (modAxis) 
+		switch (modificationPanel->GetModAxis()) 
 		{
-			case AXIS_X:
-			case AXIS_Y:
-				modification.CreateRotation(vect[modAxis], winy / 100.0f);
+			case ModificationsPanel::AXIS_X:
+			case ModificationsPanel::AXIS_Y:
+				modification.CreateRotation(vect[modificationPanel->GetModAxis()], winy / 100.0f);
 				break;
-			case AXIS_Z:
-				modification.CreateRotation(vect[modAxis], winx / 100.0f);
+			case ModificationsPanel::AXIS_Z:
+				modification.CreateRotation(vect[modificationPanel->GetModAxis()], winx / 100.0f);
 				break;
-			case AXIS_XY:
-				modification.CreateRotation(vect[AXIS_X], winx / 100.0f);
-				d.CreateRotation(vect[AXIS_Y], winy / 100.0f);
+			case ModificationsPanel::AXIS_XY:
+				modification.CreateRotation(vect[ModificationsPanel::AXIS_X], winx / 100.0f);
+				d.CreateRotation(vect[ModificationsPanel::AXIS_Y], winy / 100.0f);
 				modification *= d;
 				break;
-			case AXIS_YZ:
-				modification.CreateRotation(vect[AXIS_Y], winx / 100.0f);
-				d.CreateRotation(vect[AXIS_Z], winy / 100.0f);
+			case ModificationsPanel::AXIS_YZ:
+				modification.CreateRotation(vect[ModificationsPanel::AXIS_Y], winx / 100.0f);
+				d.CreateRotation(vect[ModificationsPanel::AXIS_Z], winy / 100.0f);
 				modification *= d;
 				break;
-			case AXIS_XZ:
-				modification.CreateRotation(vect[AXIS_X], winx / 100.0f);
-				d.CreateRotation(vect[AXIS_Z], winy / 100.0f);
+			case ModificationsPanel::AXIS_XZ:
+				modification.CreateRotation(vect[ModificationsPanel::AXIS_X], winx / 100.0f);
+				d.CreateRotation(vect[ModificationsPanel::AXIS_Z], winy / 100.0f);
 				modification *= d;
 				break;
 			default:
@@ -1114,7 +901,7 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 		modification = (translate1 * modification) * translate2;
 		
 	}
-	else if (modState == MOD_SCALE)
+	else if (modificationPanel->GetModState() == ModificationsPanel::MOD_SCALE)
 	{
 //		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
 		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * (winx/100.0f));
@@ -1128,7 +915,7 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 {
 	UIControl::DrawAfterChilds(geometricData);
 	SceneNode * selection = scene->GetProxy();
-	if (selection && isModeModification)
+	if (selection && modificationPanel->IsModificationMode())
 	{
 		const Rect & rect = scene3dView->GetLastViewportRect();
 		Camera * cam = scene->GetCurrentCamera(); 
@@ -1136,14 +923,14 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 		Vector2 end;
 	
 		const Vector3 & vc = cam->GetPosition();
-		float32 kf = ((vc - rotationCenter).Length() - cam->GetZNear()) * 0.2;
+		float32 kf = ((vc - rotationCenter).Length() - cam->GetZNear()) * 0.2f;
 		
-		for(int i = 0; i < 3; i++)
+		for(int32 i = 0; i < 3; ++i)
 		{
-			if (modAxis == i
-				|| (i == AXIS_X && (modAxis == AXIS_XY || modAxis == AXIS_XZ)) 
-				|| (i == AXIS_Y && (modAxis == AXIS_XY || modAxis == AXIS_YZ)) 
-				|| (i == AXIS_Z && (modAxis == AXIS_XZ || modAxis == AXIS_YZ)))
+			if (modificationPanel->GetModAxis() == i
+				|| (i == ModificationsPanel::AXIS_X && (modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XY || modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XZ)) 
+				|| (i == ModificationsPanel::AXIS_Y && (modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XY || modificationPanel->GetModAxis() == ModificationsPanel::AXIS_YZ)) 
+				|| (i == ModificationsPanel::AXIS_Z && (modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XZ || modificationPanel->GetModAxis() == ModificationsPanel::AXIS_YZ)))
 			{
 				RenderManager::Instance()->SetColor(0, 1.0f, 0, 1.0f);					
 			}
@@ -1157,18 +944,18 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 			RenderHelper::Instance()->DrawLine(start, end);
 
 		
-			if (i == AXIS_X 
-				|| (i == AXIS_Y && modAxis == AXIS_Y)
-				|| (i == AXIS_Y && modAxis == AXIS_YZ)
+			if (i == ModificationsPanel::AXIS_X 
+				|| (i == ModificationsPanel::AXIS_Y && modificationPanel->GetModAxis() == ModificationsPanel::AXIS_Y)
+				|| (i == ModificationsPanel::AXIS_Y && modificationPanel->GetModAxis() == ModificationsPanel::AXIS_YZ)
 				)
 			{
 				axisSign[i] = (start.x > end.x) ? -1.0f: 1.0f;
 			}
-			else if (i == AXIS_Y && modAxis == AXIS_XY)
+			else if (i == ModificationsPanel::AXIS_Y && modificationPanel->GetModAxis() == ModificationsPanel::AXIS_XY)
 			{
 				axisSign[i] = (start.y > end.y) ? -1.0f: 1.0f;				
 			}
-			else if (i == AXIS_Z)
+			else if (i == ModificationsPanel::AXIS_Z)
 			{
 				axisSign[i] = (start.y > end.y) ? -1.0f: 1.0f;
 			}
@@ -1179,20 +966,9 @@ void EditorBodyControl::DrawAfterChilds(const UIGeometricData &geometricData)
 
 void EditorBodyControl::Update(float32 timeElapsed)
 {
+//    modificationPanel->Update(timeElapsed);
+    
 	SceneNode * selection = scene->GetProxy();
-	modificationPopUp->SetSelection(selection);
-	if (isModeModification && selection && modificationPanel->GetParent() == 0)
-	{
-		AddControl(modificationPanel);
-	}
-	else if ((selection == 0 && modificationPanel->GetParent() != 0) || !isModeModification)
-	{
-		RemoveControl(modificationPanel);
-		modificationPopUp->SetSelection(0);
-		if (modificationPopUp->GetParent())
-			modificationPopUp->GetParent()->RemoveControl(modificationPopUp);
-	}
-	
 	if (selection)
 	{
 		rotationCenter = selection->GetWorldTransform().GetTranslationVector();
@@ -1948,13 +1724,9 @@ void EditorBodyControl::LandscapeEditorStarted()
 {
     RemoveControl(sceneInfoControl);
 
-    RemoveControl(modificationPopUp);
     RemoveControl(modificationPanel);
-    RemoveControl(btnModeSelection);
-    RemoveControl(btnModeModification);
-    savedModificatioMode = isModeModification;
-    isModeModification = false;
-
+    savedModificatioMode = modificationPanel->IsModificationMode();
+    
     if(!leToolsPanel->GetParent())
     {
         AddControl(leToolsPanel);
@@ -1969,21 +1741,16 @@ void EditorBodyControl::LandscapeEditorFinished()
 {
     RemoveControl(leToolsPanel);
 
-    if(!btnModeSelection->GetParent())
-    {
-        AddControl(btnModeSelection);
-    }
-    if(!btnModeModification->GetParent())
-    {
-        AddControl(btnModeModification);
-    }
-    
-    isModeModification = savedModificatioMode;
-    UpdateModState();
+    modificationPanel->IsModificationMode(savedModificatioMode);
+    AddControl(modificationPanel);
     
     scene->SetSelection(NULL);
     SelectNodeAtTree(NULL);
 }
 
 
-
+#pragma marlk --ModificationsPanelDelegate
+void EditorBodyControl::OnPlaceOnLandscape()
+{
+    PlaceOnLandscape();
+}

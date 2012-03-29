@@ -26,6 +26,7 @@
 		5C0971F81512206800782FCC /* UIZoomControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F61512206800782FCC /* UIZoomControl.cpp */; };
 		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
 		5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8914A926CA005DDB16 /* OutputManager.cpp */; };
+		5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */; };
 		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
@@ -353,6 +354,8 @@
 		5C170B8714A916B0005DDB16 /* CameraOutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOutputControl.h; sourceTree = "<group>"; };
 		5C170B8914A926CA005DDB16 /* OutputManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputManager.cpp; sourceTree = "<group>"; };
 		5C170B8A14A926CA005DDB16 /* OutputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputManager.h; sourceTree = "<group>"; };
+		5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationsPanel.cpp; sourceTree = "<group>"; };
+		5C1BA9A215249E5900C7FA95 /* ModificationsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModificationsPanel.h; sourceTree = "<group>"; };
 		5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfoControl.cpp; sourceTree = "<group>"; };
 		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
@@ -1082,14 +1085,13 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */,
 				5C8F66FB1523652900859901 /* HelpDialog.cpp */,
 				5C8F66FC1523652900859901 /* HelpDialog.h */,
 				5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */,
 				5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */,
 				5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */,
 				5CD1A27414D0AEE8005E76B5 /* ErrorDialog.h */,
-				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
-				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
 				47809C6F14A4037E00BAA259 /* DraggableDialog.h */,
 				47809C7014A4037E00BAA259 /* DraggableDialog.cpp */,
 				5C439EB5149ABEA900326566 /* ControlsFactory.cpp */,
@@ -1117,6 +1119,17 @@
 				5C25BB82149D384B00776F0C /* ScenePreviewControl.h */,
 			);
 			name = MainScreen;
+			sourceTree = "<group>";
+		};
+		5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */ = {
+			isa = PBXGroup;
+			children = (
+				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
+				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
+				5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */,
+				5C1BA9A215249E5900C7FA95 /* ModificationsPanel.h */,
+			);
+			name = EditorBodyControl;
 			sourceTree = "<group>";
 		};
 		5CD1A26F14D0ACC6005E76B5 /* Utils */ = {
@@ -2269,6 +2282,7 @@
 				5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */,
 				5C8F66FA15230EC100859901 /* LandscapeEditor.cpp in Sources */,
 				5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */,
+				5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
