@@ -8,7 +8,8 @@
 
 #include "SceneNodeIDs.h"
 #include "NodesPropertyControl.h"
-#include "ModificationPopUp.h"
+
+#include "ModificationsPanel.h"
 
 #include "LandscapeEditor.h"
 
@@ -22,7 +23,8 @@ class EditorBodyControl:
         public UIControl, 
         public UIHierarchyDelegate, 
         public NodesPropertyDelegate,
-        public LandscapeEditorDelegate
+        public LandscapeEditorDelegate,
+        public ModificationsPanelDelegate
 {
     enum eConst
     {
@@ -30,24 +32,6 @@ class EditorBodyControl:
         CELL_HEIGHT = 20,
     };
 
-	enum eModState
-    {
-        MOD_MOVE = 0, 
-        MOD_ROTATE,
-        MOD_SCALE
-	};
-
-	enum eModAxis
-    {
-        AXIS_X = 0, 
-        AXIS_Y,
-        AXIS_Z,
-        AXIS_XY,
-        AXIS_YZ,
-        AXIS_XZ,
-		AXIS_COUNT
-	};
-	
 public:
 	
     enum eViewPortIDs
@@ -59,8 +43,6 @@ public:
 
         EVPID_COUNT
     };
-
-    
     
 public:
     EditorBodyControl(const Rect & rect);
@@ -123,17 +105,17 @@ public:
     virtual void LandscapeEditorStarted();  //Show LE Controls
     virtual void LandscapeEditorFinished(); //Hide LE Controls
     
+    //ModificationsPanelDelegate
+    virtual void OnPlaceOnLandscape();
+
+    
 protected:
 
     void ResetSelection();
     void DebugInfo();
     
-	void CreateModificationPanel(void);
+	void CreateModificationPanel();
     void ReleaseModificationPanel();
-	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
-	void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
-	void OnModePressed(BaseObject * object, void * userData, void * callerData);
-	void UpdateModState(void);
 	void PrepareModMatrix(const Vector2 & point);
 
 	
@@ -159,7 +141,6 @@ protected:
 	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
-//	void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
 	
 	
     UIControl *leftPanelDataGraph;
@@ -174,7 +155,6 @@ protected:
     EditorScene * scene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
-//    Max3dCameraController * cameraController;
     WASDCameraController * cameraController;
     // Node preview information
     void CreatePropertyPanel();
@@ -203,23 +183,11 @@ protected:
 	//beast
 	BeastManager * beastManager;
 
-	UIButton *btnMod[3];
-	UIButton *btnAxis[3];
-	UIButton *btnPopUp;
-	UIButton *btnModeSelection;
-	UIButton *btnModeModification;
-	UIButton *btnPlaceOn;
-	
-	UIControl *modificationPanel;
-	eModState modState;
-	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
 	bool isDrag;
-	bool isModeModification;
-
-	
+    ModificationsPanel *modificationPanel;
 	
 	float32 axisSign[3];
 	
@@ -238,7 +206,6 @@ protected:
 	Rect propertyPanelRect;
 	void RecreatePropertiesPanelForNode(SceneNode *node);
 	void RecreatePropertiesPanelForNode(DataNode *node);
-	ModificationPopUp * modificationPopUp;
 	
 
 	//for moving object
