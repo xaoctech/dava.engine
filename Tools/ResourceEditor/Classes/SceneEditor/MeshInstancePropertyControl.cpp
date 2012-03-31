@@ -221,5 +221,5 @@ void MeshInstancePropertyControl::OnConvertToShadowVolume(BaseObject * object, v
 	((MeshInstanceNode*)currentNode)->ConvertToShadowVolume();
 	SceneEditorScreenMain * screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
 	SceneEditorScreenMain::BodyItem * body = screen->FindCurrentBody();
-	body->bodyControl->OnRemoveNodeButtonPressed(0, 0, 0);
+	body->bodyControl->RemoveSelectedSGNode();//OnRemoveNodeButtonPressed(0, 0, 0);
 }

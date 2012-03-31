@@ -27,7 +27,8 @@ public:
         
         TOOLS_HEIGHT = 40,
         TOOL_BUTTON_SIDE = 32,
-
+        
+        CELL_HEIGHT = 20,
     };
     
     enum eColorPickerSizes

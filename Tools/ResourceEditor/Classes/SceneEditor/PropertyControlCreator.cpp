@@ -67,7 +67,7 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties)
 {
-	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
+	return CreateControlForNode(EPCID_DATANODE, rect, createNodeProperties);
 }
 
 NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
@@ -109,6 +109,9 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
                 controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties);
                 break;
 
+            case EPCID_DATANODE:
+                controls[controlID] = new NodesPropertyControl(rect, createNodeProperties);
+                break;
                 
             default:
                 break;

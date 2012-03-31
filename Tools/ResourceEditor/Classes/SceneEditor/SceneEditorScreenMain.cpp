@@ -653,19 +653,21 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ShowDataGraph(false);
 
-    bool areShown = iBody->bodyControl->SceneGraphAreShown();
-    iBody->bodyControl->ShowSceneGraph(!areShown);
+    iBody->bodyControl->ToggleSceneGraph();
+    
+//    bool areShown = iBody->bodyControl->SceneGraphAreShown();
+//    iBody->bodyControl->ShowSceneGraph(!areShown);
 }
 
 void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ShowSceneGraph(false);
-    
-    bool areShown = iBody->bodyControl->DataGraphAreShown();
-    iBody->bodyControl->ShowDataGraph(!areShown);
+
+    iBody->bodyControl->ToggleDataGraph();
+
+//    bool areShown = iBody->bodyControl->DataGraphAreShown();
+//    iBody->bodyControl->ShowDataGraph(!areShown);
 }
 
 
