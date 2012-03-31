@@ -118,6 +118,7 @@ void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode)
                 newNode->Retain();
                 children.insert(it, newNode);
                 newNode->SetParent(this);
+                newNode->SetScene(GetScene());
                 break;
             }
         }
