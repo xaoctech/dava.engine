@@ -13,7 +13,13 @@
 
 #include "LandscapeEditor.h"
 
+#include "GraphBase.h"
+
+
 using namespace DAVA;
+
+class SceneGraph;
+class DataGraph;
 
 class SceneInfoControl;
 class BeastManager;
@@ -21,17 +27,21 @@ class OutputPanelControl;
 class LandscapeToolsPanel;
 class EditorBodyControl: 
         public UIControl, 
-        public UIHierarchyDelegate, 
-        public NodesPropertyDelegate,
+        public GraphBaseDelegate,
         public LandscapeEditorDelegate,
         public ModificationsPanelDelegate
 {
     enum eConst
     {
         SCENE_OFFSET = 10, 
-        CELL_HEIGHT = 20,
     };
 
+    enum ePropertyShowState
+    {
+        EPSS_HIDDEN = 0,
+        EPSS_ONSCREEN,
+    };
+    
 public:
 	
     enum eViewPortIDs
@@ -60,12 +70,8 @@ public:
     void ShowProperties(bool show);
     bool PropertiesAreShown();
 
-    void ShowSceneGraph(bool show);
-    bool SceneGraphAreShown();
-
-    void ShowDataGraph(bool show);
-    bool DataGraphAreShown();
-
+    void ToggleSceneGraph();
+    void ToggleDataGraph();
     
     void UpdateLibraryState(bool isShown, int32 width);
 
@@ -75,14 +81,14 @@ public:
     EditorScene * GetScene();
     void AddNode(SceneNode *node);
     
+    void RemoveSelectedSGNode();
     SceneNode *GetSelectedSGNode(); //Scene Graph node
     
-    virtual void NodesPropertyChanged();
-
+    void RefreshProperties();
+    
     void CreateScene(bool withCameras);
     void ReleaseScene();
     void Refresh();
-    void RefreshProperties();
     
     const String &GetFilePath();
     void SetFilePath(const String &newFilePath);
@@ -95,8 +101,6 @@ public:
 
     void ToggleSceneInfo();
 
-	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
-
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
     void ToggleLandscapeEditor();
@@ -108,71 +112,32 @@ public:
     //ModificationsPanelDelegate
     virtual void OnPlaceOnLandscape();
 
+    //GraphBaseDelegate
+    virtual bool LandscapeEditorActive();
+    virtual void LandscapeEditorPropertiesCreated(LandscapeEditorPropertyControl *propertyControl);
     
 protected:
 
+    void ToggleGraph(GraphBase *graph);
+
     void ResetSelection();
-    void DebugInfo();
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();
 	void PrepareModMatrix(const Vector2 & point);
 
-	
-    virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
-    virtual int32 ChildrenCount(UIHierarchy *forHierarchy, void *forParent);
-    virtual void *ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index);
-    virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node);
-    virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
-    virtual void DragAndDrop(void *who, void *target, int32 mode);
-
-    //left Panel
-    void CreateLeftPanel();
-    void ReleaseLeftPanel();
-    
 	void PlaceOnLandscape();
-	
-    UIControl *leftPanelSceneGraph;
-    UIHierarchy * sceneGraphTree;
-    void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
-    void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
-    void OnBakeMatricesPressed(BaseObject * obj, void *, void *);
-    void OnRefreshSceneGraph(BaseObject * obj, void *, void *);
 	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
 	
 	
-    UIControl *leftPanelDataGraph;
-    UIHierarchy * dataGraphTree;
-
-    Set<DAVA::DataNode *> dataNodes;
-    
-    void RefreshDataGraph(bool force = false);
-    void OnRefreshDataGraph(BaseObject * obj, void *, void *);
-
     //scene controls
     EditorScene * scene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
     WASDCameraController * cameraController;
-    // Node preview information
-    void CreatePropertyPanel();
-    void ReleasePropertyPanel();
-    void UpdatePropertyPanel();
-	
-	
 
-    UIControl *rightPanel;
-    SceneNode * selectedSceneGraphNode;
-    DataNode * selectedDataGraphNode;
-
-    NodesPropertyControl *nodesPropertyPanel;
-    //
-    
-    UIButton *refreshButton;
-    void OnRefreshPressed(BaseObject * obj, void *, void *);
-    
     // touch
     float32 currentTankAngle;
 	bool inTouch;
@@ -202,11 +167,6 @@ protected:
     void ChangeControlWidthLeft(UIControl *c, float32 width);
     
     void SelectNodeAtTree(SceneNode *node);
-
-	Rect propertyPanelRect;
-	void RecreatePropertiesPanelForNode(SceneNode *node);
-	void RecreatePropertiesPanelForNode(DataNode *node);
-	
 
 	//for moving object
 	Vector3 startDragPoint;
@@ -242,6 +202,12 @@ protected:
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
     LandscapeEditor *landscapeEditor;
+    
+    //graps
+    SceneGraph *sceneGraph;
+    DataGraph *dataGraph;
+    GraphBase *currentGraph;
+    ePropertyShowState propertyShowState;
 };
 
 

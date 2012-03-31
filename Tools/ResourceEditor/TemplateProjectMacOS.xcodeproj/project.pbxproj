@@ -47,6 +47,9 @@
 		5CDACB2C151B44640031F8C7 /* PaintTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2A151B44640031F8C7 /* PaintTool.cpp */; };
 		5CDACB2F151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2D151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp */; };
 		5CDE48591518946B004E4353 /* PVRUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDE48571518946B004E4353 /* PVRUtils.cpp */; };
+		5CDFF2711525BE1600FBDFF8 /* GraphBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */; };
+		5CDFF2741525CB2800FBDFF8 /* SceneGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF2721525CB2800FBDFF8 /* SceneGraph.cpp */; };
+		5CDFF2771525DBE500FBDFF8 /* DataGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF2751525DBE500FBDFF8 /* DataGraph.cpp */; };
 		5CE1674F14C4CF9500D2F1D4 /* BoxPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */; };
 		5CE1675214C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675014C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp */; };
 		5CE1675514C4D48C00D2F1D4 /* SpherePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675314C4D48B00D2F1D4 /* SpherePropertyControl.cpp */; };
@@ -395,6 +398,12 @@
 		5CDACB2E151B5AB70031F8C7 /* LandscapeEditorPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorPropertyControl.h; sourceTree = "<group>"; };
 		5CDE48571518946B004E4353 /* PVRUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRUtils.cpp; sourceTree = "<group>"; };
 		5CDE48581518946B004E4353 /* PVRUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRUtils.h; sourceTree = "<group>"; };
+		5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GraphBase.cpp; sourceTree = "<group>"; };
+		5CDFF2701525BE1600FBDFF8 /* GraphBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphBase.h; sourceTree = "<group>"; };
+		5CDFF2721525CB2800FBDFF8 /* SceneGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneGraph.cpp; sourceTree = "<group>"; };
+		5CDFF2731525CB2800FBDFF8 /* SceneGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneGraph.h; sourceTree = "<group>"; };
+		5CDFF2751525DBE500FBDFF8 /* DataGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataGraph.cpp; sourceTree = "<group>"; };
+		5CDFF2761525DBE500FBDFF8 /* DataGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataGraph.h; sourceTree = "<group>"; };
 		5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxPropertyControl.cpp; sourceTree = "<group>"; };
 		5CE1674E14C4CF9500D2F1D4 /* BoxPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoxPropertyControl.h; sourceTree = "<group>"; };
 		5CE1675014C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshInstancePropertyControl.cpp; sourceTree = "<group>"; };
@@ -1124,6 +1133,12 @@
 		5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */ = {
 			isa = PBXGroup;
 			children = (
+				5CDFF2751525DBE500FBDFF8 /* DataGraph.cpp */,
+				5CDFF2761525DBE500FBDFF8 /* DataGraph.h */,
+				5CDFF2721525CB2800FBDFF8 /* SceneGraph.cpp */,
+				5CDFF2731525CB2800FBDFF8 /* SceneGraph.h */,
+				5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */,
+				5CDFF2701525BE1600FBDFF8 /* GraphBase.h */,
 				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
 				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
 				5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */,
@@ -2283,6 +2298,9 @@
 				5C8F66FA15230EC100859901 /* LandscapeEditor.cpp in Sources */,
 				5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */,
 				5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */,
+				5CDFF2711525BE1600FBDFF8 /* GraphBase.cpp in Sources */,
+				5CDFF2741525CB2800FBDFF8 /* SceneGraph.cpp in Sources */,
+				5CDFF2771525DBE500FBDFF8 /* DataGraph.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
