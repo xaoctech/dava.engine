@@ -31,7 +31,7 @@ void SpherePropertyControl::OnFloatPropertyChanged(PropertyList *forList, const 
 {
     if("property.spherenode.radius" == forKey)
     {
-        SphereNode *sphere = dynamic_cast<SphereNode *> (currentNode);
+        SphereNode *sphere = dynamic_cast<SphereNode *> (currentSceneNode);
         sphere->SetRadius(newValue);
     }
 
@@ -42,7 +42,7 @@ void SpherePropertyControl::OnColorPropertyChanged(PropertyList *forList, const 
 {
     if("property.cubenode.color" == forKey)
     {
-        SphereNode *sphere = dynamic_cast<SphereNode *> (currentNode);
+        SphereNode *sphere = dynamic_cast<SphereNode *> (currentSceneNode);
         sphere->SetColor(newColor);
     }
 }

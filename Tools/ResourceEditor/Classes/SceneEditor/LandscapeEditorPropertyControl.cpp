@@ -97,7 +97,7 @@ void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *for
 
 void LandscapeEditorPropertyControl::SetValuesFromSettings()
 {
-    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
 	DVASSERT(landscape);
     
     propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskred", settings->redMask, 
@@ -115,7 +115,7 @@ void LandscapeEditorPropertyControl::ReadFrom(DAVA::SceneNode *sceneNode)
 {
     LandscapePropertyControl::ReadFrom(sceneNode);
     
-    propertyList->AddSection("landscapeeditor.landscapeeditor", true);
+    propertyList->AddSection("landscapeeditor.landscapeeditor", GetHeaderState("landscapeeditor.landscapeeditor", true));
     
     propertyList->AddIntProperty("landscapeeditor.size", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetIntPropertyValue("landscapeeditor.size", settings->maskSize);

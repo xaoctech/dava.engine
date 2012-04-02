@@ -147,7 +147,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->SetFilepathPropertyValue("property.landscape.alphamask", "");
 
 	propertyList->AddIntProperty("lightmap.size");
-	propertyList->SetIntPropertyValue("lightmap.size", currentNode->GetCustomProperties()->GetInt32("lightmap.size", 1024));
+	propertyList->SetIntPropertyValue("lightmap.size", currentSceneNode->GetCustomProperties()->GetInt32("lightmap.size", 1024));
     
 
     propertyList->AddFloatProperty("property.landscape.texture0.tilex");
@@ -176,7 +176,7 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 {
     if("property.landscape.size" == forKey || "property.landscape.height" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
         
         Vector3 size(
                      propertyList->GetFloatPropertyValue("property.landscape.size"),
@@ -197,28 +197,28 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
     }
     if ("property.landscape.texture0.tilex" == forKey || "property.landscape.texture0.tiley" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
         Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture0.tilex"),
                        propertyList->GetFloatPropertyValue("property.landscape.texture0.tiley"));
         landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE0, tiling);
     }
     if ("property.landscape.texture1.tilex" == forKey || "property.landscape.texture1.tiley" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
         Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture1.tilex"),
                        propertyList->GetFloatPropertyValue("property.landscape.texture1.tiley"));
         landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE1, tiling);
     }
 	if ("property.landscape.texture2.tilex" == forKey || "property.landscape.texture2.tiley" == forKey)
 	{
-		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
 		Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture2.tilex"),
 			propertyList->GetFloatPropertyValue("property.landscape.texture2.tiley"));
 		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE2, tiling);
 	}
 	if ("property.landscape.texture3.tilex" == forKey || "property.landscape.texture3.tiley" == forKey)
 	{
-		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
 		Vector2 tiling(propertyList->GetFloatPropertyValue("property.landscape.texture3.tilex"),
 			propertyList->GetFloatPropertyValue("property.landscape.texture3.tiley"));
 		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE3, tiling);
@@ -232,7 +232,7 @@ void LandscapePropertyControl::OnIntPropertyChanged(PropertyList *forList, const
 {
 	if("lightmap.size" == forKey)
 	{
-		currentNode->GetCustomProperties()->SetInt32("lightmap.size", newValue);
+		currentSceneNode->GetCustomProperties()->SetInt32("lightmap.size", newValue);
 	}
 
 	NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
@@ -242,7 +242,7 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 {
     if(EditorSettings::IsValidPath(newValue))
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
         if("property.landscape.heightmap" == forKey)
         {
             Vector3 size(
@@ -319,7 +319,7 @@ void LandscapePropertyControl::OnComboIndexChanged(
 {
     if("property.landscape.renderingmode" == forKey)
     {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
         
         Vector3 size(
                      propertyList->GetFloatPropertyValue("property.landscape.size"),
@@ -376,7 +376,7 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 propertyList->SetFilepathPropertyValue("property.landscape.alphamask", "");
 
                 propertyList->SetFilepathPropertyValue("property.landscape.texture.color", resultPath);
-                LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentNode);
+                LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
                 if(landscape)
                 {
                     Texture::EnableMipmapGeneration();

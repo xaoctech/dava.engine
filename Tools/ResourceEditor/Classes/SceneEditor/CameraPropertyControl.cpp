@@ -51,7 +51,7 @@ void CameraPropertyControl::ReadFrom(SceneNode * sceneNode)
 
 void CameraPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    Camera *camera = dynamic_cast<Camera *> (currentNode);
+    Camera *camera = dynamic_cast<Camera *> (currentSceneNode);
     if(     "property.camera.fov" == forKey 
        ||   "property.camera.znear" == forKey 
        ||   "property.camera.zfar" == forKey)
@@ -89,7 +89,7 @@ void CameraPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const S
 {
     if("property.camera.isortho" == forKey)
     {
-        Camera *camera = dynamic_cast<Camera *> (currentNode);
+        Camera *camera = dynamic_cast<Camera *> (currentSceneNode);
         camera->Setup(
                       propertyList->GetFloatPropertyValue("property.camera.fov"),
                       320.0f / 480.0f,

@@ -107,6 +107,7 @@ materialeditor.specularcolor: "Specular color:"
 materialeditor.diffusecolor: "Diffuse color:"
 materialeditor.specularshininess: "Specular shininess:"
 materialeditor.nomaterials: "No materials."
+materialeditor.isopaque: "Is Opaque"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
@@ -195,6 +196,10 @@ property.landscape.subsection.build_mask: "Merge png texture and alpha mask:"
 #Dynamic lighting
 property.meshinstance.dynamicshadow: "Dynamic lighting"
 property.meshinstance.dynamicshadow.enable: "Cast shadow"
+
+#Material
+property.material: "Material"
+property.material.type: "Material type:"
 
 
 #Settings Dialog

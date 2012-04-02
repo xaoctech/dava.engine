@@ -6,6 +6,8 @@
 #include "CameraPropertyControl.h"
 #include "LandscapePropertyControl.h"
 #include "LandscapeEditorPropertyControl.h"
+#include "MaterialPropertyControl.h"
+
 
 PropertyControlCreator::PropertyControlCreator()
 {
@@ -65,8 +67,14 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
 	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
 
-NodesPropertyControl * PropertyControlCreator::CreateControlForNode(DataNode * sceneNode, const Rect & rect, bool createNodeProperties)
+NodesPropertyControl * PropertyControlCreator::CreateControlForNode(DataNode * dataNode, const Rect & rect, bool createNodeProperties)
 {
+    Material * material = dynamic_cast<Material *>(dataNode);
+	if(material)
+	{
+        return CreateControlForNode(EPCID_MATERIAL, rect, createNodeProperties);
+	}
+    
 	return CreateControlForNode(EPCID_DATANODE, rect, createNodeProperties);
 }
 
@@ -112,6 +120,8 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
             case EPCID_DATANODE:
                 controls[controlID] = new NodesPropertyControl(rect, createNodeProperties);
                 break;
+            case EPCID_MATERIAL:
+                controls[controlID] = new MaterialPropertyControl(rect, createNodeProperties);
                 
             default:
                 break;

@@ -106,6 +106,7 @@ materialeditor.specularcolor: "Specular color:"
 materialeditor.diffusecolor: "Diffuse color:"
 materialeditor.specularshininess: "Specular shininess:"
 materialeditor.nomaterials: "Нет материалов."
+materialeditor.isopaque: "Is Opaque"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
@@ -188,6 +189,14 @@ property.landscape.texture1.tiley: "Texture 1 Tiling Y"
 
 property.landscape.subsection.textures: "Landscape textures: "
 property.landscape.subsection.build_mask: "Merge png texture and alpha mask:"
+
+#Dynamic lighting
+property.meshinstance.dynamicshadow: "Dynamic lighting"
+property.meshinstance.dynamicshadow.enable: "Cast shadow"
+
+#Material
+property.material: "Материал"
+property.material.type: "Тип материала:"
 
 #Settings Dialog
 settings.header: "Настройки"
