@@ -16,11 +16,13 @@
 #include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
 
+#include "HintManager.h"
 #include "HelpDialog.h"
 
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
+    new HintManager();
     
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
@@ -144,6 +146,7 @@ void SceneEditorScreenMain::UnloadResources()
         
     ReleaseTopMenu();
     
+    HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     ErrorNotifier::Instance()->Release();
 }

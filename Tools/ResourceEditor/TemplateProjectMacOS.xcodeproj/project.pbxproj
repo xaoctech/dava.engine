@@ -29,6 +29,7 @@
 		5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */; };
 		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
+		5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C3B6D19152B753200A1414F /* HintManager.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C6BF78514C85A62009297F7 /* libz.dylib */; };
 		5C6ECBD91500B34000A27E71 /* UISliderWithText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */; };
@@ -364,6 +365,8 @@
 		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
+		5C3B6D19152B753200A1414F /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HintManager.cpp; sourceTree = "<group>"; };
+		5C3B6D1A152B753200A1414F /* HintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HintManager.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
 		5C6BF78514C85A62009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1097,6 +1100,8 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5C3B6D19152B753200A1414F /* HintManager.cpp */,
+				5C3B6D1A152B753200A1414F /* HintManager.h */,
 				5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */,
 				5C8F66FB1523652900859901 /* HelpDialog.cpp */,
 				5C8F66FC1523652900859901 /* HelpDialog.h */,
@@ -2307,6 +2312,7 @@
 				5CDFF2741525CB2800FBDFF8 /* SceneGraph.cpp in Sources */,
 				5CDFF2771525DBE500FBDFF8 /* DataGraph.cpp in Sources */,
 				5CC1069C1529BD8C002CE5CE /* MaterialPropertyControl.cpp in Sources */,
+				5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
