@@ -31,6 +31,8 @@ void GraphBase::CreateGraphPanel(const Rect &rect)
 
 void GraphBase::CreatePropertyPanel(const Rect &rect)
 {
+    propertyControl = NULL;
+    
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth(); 
     
     propertyPanelRect = Rect(rect.dx - rightSideWidth, 0, rightSideWidth, rect.dy);
