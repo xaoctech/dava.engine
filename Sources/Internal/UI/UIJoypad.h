@@ -44,6 +44,11 @@ namespace DAVA
 	
 class UIJoypad : public UIControl 
 {
+    enum eTouchID
+    {
+        TOUCH_INVALID_ID = -1
+    };
+    
 public:
 	UIJoypad(const Rect &rect, bool rectInAbsoluteCoordinates = FALSE);
     virtual ~UIJoypad();
