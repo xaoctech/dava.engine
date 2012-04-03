@@ -236,6 +236,7 @@ public:
     
     // TODO: Need comment here
 	bool PlacePoint(const Vector3 & point, Vector3 & result);
+	Vector3 GetPoint(int16 x, int16 y, uint8 height);
 
 protected:	
     
@@ -261,7 +262,6 @@ protected:
     void FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode);
     void MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
 
-    Vector3 GetPoint(int16 x, int16 y, uint8 height);
     void DrawQuad(QuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
     void Draw(QuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
