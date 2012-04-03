@@ -122,6 +122,8 @@ public:
     void OnButton(BaseObject * object, void * userData, void * callerData);
     void OnClear(BaseObject * object, void * userData, void * callerData);
 
+    void OnHint(BaseObject * object, void * userData, void * callerData);
+
 //    virtual void DidAppear();
     
     UIStaticText *pathText;

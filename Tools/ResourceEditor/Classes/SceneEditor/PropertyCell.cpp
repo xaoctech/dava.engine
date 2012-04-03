@@ -14,6 +14,7 @@
 #include "ColorPicker.h"
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
+#include "HintManager.h"
 
 #pragma mark --PropertyCell 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
@@ -296,6 +297,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     pathText->SetFont(font);
     pathText->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
     pathTextContainer->AddControl(pathText);
+    pathTextContainer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnHint));
     AddControl(pathTextContainer);
     
     browseButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2 - xOffset, size.y/2, size.y/2, size.y/2), L"...");
@@ -382,6 +384,11 @@ void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * 
     property->SetString("");
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
+}
+
+void PropertyFilepathCell::OnHint(BaseObject * object, void * userData, void * callerData)
+{
+    HintManager::Instance()->ShowHint(pathText->GetText(), this->GetRect(true));
 }
 
 void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
