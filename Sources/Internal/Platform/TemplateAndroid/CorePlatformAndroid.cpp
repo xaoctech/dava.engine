@@ -263,116 +263,87 @@ namespace DAVA
 	{
 	}
 
-	int32 MoveTouchsToVector(int32 action, int32 id, float32 x, float32 y, long time, Vector<UIEvent> *outTouches)
-	{
-		int tid = id;//DAVA::UIEvent::BUTTON_1;
-		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 
+    
+    UIEvent CoreAndroidPlatform::CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time)
+    {
+		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
 		{
-		case 5:  //ACTION_POINTER_1_DOWN-deprecated
-		case 261: //ACTION_POINTER_2_DOWN-deprecated
-		case 0: //public static final int ACTION_DOWN = 0;
-
-			phase = DAVA::UIEvent::PHASE_BEGAN;
-			break;
-
-		case 262: //ACTION_POINTER_2_UP -deprecated
-		case 6: //ACTION_POINTER_1_UP - deprecated
-		case 1: //public static final int ACTION_UP = 1;
-			phase = DAVA::UIEvent::PHASE_ENDED;
-			break;
-		case 2: //public static final int ACTION_MOVE = 2;
-			phase = DAVA::UIEvent::PHASE_DRAG;
-			break;
-		case 3: //public static final int ACTION_CANCEL = 3;
-			phase = DAVA::UIEvent::PHASE_CANCELLED;
-			break;
-		case 4: //public static final int ACTION_OUTSIDE = 4;
-			break;
+            case 5: //ACTION_POINTER_DOWN
+            case 0: //ACTION_DOWN
+                phase = DAVA::UIEvent::PHASE_BEGAN;
+                break;
+                
+            case 6: //ACTION_POINTER_UP
+            case 1: //ACTION_UP
+                phase = DAVA::UIEvent::PHASE_ENDED;
+                break;
+            case 2: //ACTION_MOVE
+                phase = DAVA::UIEvent::PHASE_DRAG;
+                break;
+                
+            case 3: //ACTION_CANCEL
+                phase = DAVA::UIEvent::PHASE_CANCELLED;
+                break;
+                
+            case 4: //ACTION_OUTSIDE
+                break;
 		}
-
-
-//		if(phase == UIEvent::PHASE_DRAG)
-//		{
-//			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-//			{
-//				it->physPoint.x = x;//p.x;
-//				it->physPoint.y = y;//p.y;
-//				it->phase = phase;
-//			}
-//		}
-//
-//		bool isFind = false;
-//		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-//		{
-//			if(it->tid == tid)
-//			{
-//				isFind = true;
-//
-//				it->physPoint.x = x;
-//				it->physPoint.y = y;
-//				it->phase = phase;
-//
-//				break;
-//			}
-//		}
-//
-//		if(!isFind)
-		{
-			UIEvent newTouch;
-			newTouch.tid = tid;
-			newTouch.physPoint.x = x;
-			newTouch.physPoint.y = y;
-			newTouch.phase = phase;
-
-//			Logger::Debug("[MoveTouchsToVector] x is %d, y is %d", x, y);
-
-//			activeTouches.push_back(newTouch);
-            outTouches->push_back(newTouch);
-		}
-
-//		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-//		{
-//			outTouches->push_back(*it);
-//		}
-//
-//		if(phase == UIEvent::PHASE_ENDED || phase == UIEvent::PHASE_DRAG)
-//		{
-//			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-//			{
-//				if(it->tid == tid)
-//				{
-//					activeTouches.erase(it);
-//					break;
-//				}
-//			}
-//		}
-		return phase;
-	}
-
-
-	void CoreAndroidPlatform::OnTouchStart()
-	{
-		Logger::Debug("[CoreAndroidPlatform::OnTouchStart] touches.size is %d", touches.size());
-	}
-
-
+        
+        UIEvent newTouch;
+        newTouch.tid = id;
+        newTouch.physPoint.x = x;
+        newTouch.physPoint.y = y;
+        newTouch.phase = phase;
+        newTouch.tapCount = 1;
+        
+        return newTouch;
+    }
+    
 	void CoreAndroidPlatform::OnTouch(int32 action, int32 id, float32 x, float32 y, long time)
 	{
-		Logger::Debug("[CoreAndroidPlatform::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
-		touchPhase = MoveTouchsToVector(action, id, x, y, time, &touches);
+//		Logger::Debug("[CoreAndroidPlatform::OnTouch] IN totalTouches.size = %d", totalTouches.size());
+//		Logger::Debug("[CoreAndroidPlatform::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %d", action, id, x, y, time);
+        
+        UIEvent touchEvent = CreateTouchEvent(action, id, x, y, time);
+        Vector<DAVA::UIEvent> activeTouches;
+        activeTouches.push_back(touchEvent);
+        
+
+        bool isFound = false;
+        for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); ++it)
+		{
+            if((*it).tid == touchEvent.tid)
+            {
+                (*it).physPoint.x = touchEvent.physPoint.x;
+                (*it).physPoint.y = touchEvent.physPoint.y;
+                (*it).phase = touchEvent.phase;
+                (*it).tapCount = touchEvent.tapCount;
+                
+                isFound = true;
+            }
+		}
+        if(!isFound)
+        {
+            totalTouches.push_back(touchEvent);
+        }
+
+		UIControlSystem::Instance()->OnInput(touchEvent.phase, activeTouches, totalTouches);
+
+		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); )
+		{
+            if((DAVA::UIEvent::PHASE_ENDED == (*it).phase) || (DAVA::UIEvent::PHASE_CANCELLED == (*it).phase))
+            {
+                it = totalTouches.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+		}
+//		Logger::Debug("[CoreAndroidPlatform::OnTouch] OUT totalTouches.size = %d", totalTouches.size());
 	}
-
-	void CoreAndroidPlatform::OnTouchDone()
-	{
-		Logger::Debug("[CoreAndroidPlatform::OnTouchDone] touches.size is %d", touches.size());
-
-		Vector<DAVA::UIEvent> emptyTouches;
-		UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
-		touches.clear();
-	}
-
 
 	bool CoreAndroidPlatform::DownloadHttpFile(const String & url, const String & documentsPathname)
 	{
