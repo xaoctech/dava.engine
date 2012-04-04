@@ -37,6 +37,9 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
 
     propertyList->AddSection("property.material", GetHeaderState("property.material", true));
     
+    propertyList->AddStringProperty("property.material.name", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetStringPropertyValue("property.material.name", material->GetName());
+    
     Vector<String> materialTypes;
     for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
     {
@@ -73,11 +76,11 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         SetFilepathValue(material, ETT_NORMAL_MAP);
     }
 
-    propertyList->AddBoolProperty("materialeditor.isopaque");
-    propertyList->SetBoolPropertyValue("materialeditor.isopaque", material->GetOpaque());
+    propertyList->AddBoolProperty("property.material.isopaque");
+    propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
     
-    propertyList->AddBoolProperty("materialeditor.twosided");
-    propertyList->SetBoolPropertyValue("materialeditor.twosided", material->GetTwoSided());
+    propertyList->AddBoolProperty("property.material.twosided");
+    propertyList->SetBoolPropertyValue("property.material.twosided", material->GetTwoSided());
     
     if (    (Material::MATERIAL_VERTEX_LIT_TEXTURE == materialType) 
         ||  (Material::MATERIAL_VERTEX_LIT_DECAL == materialType)
@@ -99,11 +102,11 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == materialType)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType))
     {
-        propertyList->AddColorProperty("materialeditor.specularcolor");
-        propertyList->SetColorPropertyValue("materialeditor.specularcolor", material->GetSpecularColor());
+        propertyList->AddColorProperty("property.material.specularcolor");
+        propertyList->SetColorPropertyValue("property.material.specularcolor", material->GetSpecularColor());
         
-        propertyList->AddFloatProperty("materialeditor.specularshininess");
-        propertyList->SetFloatPropertyValue("materialeditor.specularshininess", material->GetShininess());
+        propertyList->AddFloatProperty("property.material.specularshininess");
+        propertyList->SetFloatPropertyValue("property.material.specularshininess", material->GetShininess());
     }
 }
 
@@ -123,43 +126,39 @@ void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
 
 void MaterialPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("materialeditor.isopaque" == forKey)
+    if("property.material.isopaque" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetOpaque(newValue);
     }
-    else if("materialeditor.twosided" == forKey)
+    else if("property.material.twosided" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetTwoSided(newValue);
     }
-    else
-    {
-        NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
-    }
+
+    NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
 
 void MaterialPropertyControl::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
 {
-    if("materialeditor.ambientcolor" == forKey)
+    if("property.material.ambientcolor" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetAmbientColor(newColor);
     }
-    else if("materialeditor.diffusecolor" == forKey)
+    else if("property.material.diffusecolor" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetDiffuseColor(newColor);
     }
-    else if("materialeditor.specularcolor" == forKey)
+    else if("property.material.specularcolor" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetSpecularColor(newColor);
     }
-    else 
-    {
-        PropertyListDelegate::OnColorPropertyChanged(forList, forKey, newColor);
-    }
+
+    PropertyListDelegate::OnColorPropertyChanged(forList, forKey, newColor);
 }
 
 void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
@@ -171,23 +170,19 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
         
         ReadFrom(currentDataNode);
     }
-    else 
-    {
-        NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
-    }
+
+    NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
 }
 
 void MaterialPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
 {
-    if ("materialeditor.specularshininess" == forKey)
+    if ("property.material.specularshininess" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetShininess(newValue);
     }
-    else 
-    {
-        NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
-    }
+
+    NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
 
 void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -208,10 +203,22 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             {
                 propertyList->SetFilepathPropertyValue(textureNames[i], "");
             }
-            return;
+            break;
         }
     }
     
     NodesPropertyControl::OnFilepathPropertyChanged(forList, forKey, newValue);
 }
+
+void MaterialPropertyControl::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+{
+    if("property.material.name" == forKey)
+    {
+        Material *material = dynamic_cast<Material *> (currentDataNode);
+        material->SetName(newValue);
+    }
+
+    NodesPropertyControl::OnStringPropertyChanged(forList, forKey, newValue);
+}
+
 
