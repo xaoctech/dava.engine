@@ -35,8 +35,8 @@ public:
 	virtual ~LandscapeEditorPropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
-    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
+    virtual void OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
 
     void SetDelegate(LandscapeEditorPropertyControlDelegate *newDelegate);
     

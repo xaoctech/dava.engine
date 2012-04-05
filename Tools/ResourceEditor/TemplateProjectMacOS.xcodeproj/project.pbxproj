@@ -26,16 +26,21 @@
 		5C0971F81512206800782FCC /* UIZoomControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F61512206800782FCC /* UIZoomControl.cpp */; };
 		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
 		5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8914A926CA005DDB16 /* OutputManager.cpp */; };
+		5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */; };
 		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
+		5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C3B6D19152B753200A1414F /* HintManager.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C6BF78514C85A62009297F7 /* libz.dylib */; };
 		5C6ECBD91500B34000A27E71 /* UISliderWithText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */; };
 		5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C81C29D14D0480700580500 /* PVRConverter.cpp */; };
 		5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */; };
+		5C8F66FA15230EC100859901 /* LandscapeEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66F815230EC100859901 /* LandscapeEditor.cpp */; };
+		5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66FB1523652900859901 /* HelpDialog.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
 		5CB7FAB514FB5A32000EE8A8 /* TextureTrianglesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */; };
+		5CC1069C1529BD8C002CE5CE /* MaterialPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */; };
 		5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */; };
 		5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */; };
 		5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD509BB14C6CB250089067E /* SettingsDialog.cpp */; };
@@ -44,6 +49,9 @@
 		5CDACB2C151B44640031F8C7 /* PaintTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2A151B44640031F8C7 /* PaintTool.cpp */; };
 		5CDACB2F151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2D151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp */; };
 		5CDE48591518946B004E4353 /* PVRUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDE48571518946B004E4353 /* PVRUtils.cpp */; };
+		5CDFF2711525BE1600FBDFF8 /* GraphBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */; };
+		5CDFF2741525CB2800FBDFF8 /* SceneGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF2721525CB2800FBDFF8 /* SceneGraph.cpp */; };
+		5CDFF2771525DBE500FBDFF8 /* DataGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF2751525DBE500FBDFF8 /* DataGraph.cpp */; };
 		5CE1674F14C4CF9500D2F1D4 /* BoxPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */; };
 		5CE1675214C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675014C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp */; };
 		5CE1675514C4D48C00D2F1D4 /* SpherePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE1675314C4D48B00D2F1D4 /* SpherePropertyControl.cpp */; };
@@ -351,10 +359,14 @@
 		5C170B8714A916B0005DDB16 /* CameraOutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOutputControl.h; sourceTree = "<group>"; };
 		5C170B8914A926CA005DDB16 /* OutputManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputManager.cpp; sourceTree = "<group>"; };
 		5C170B8A14A926CA005DDB16 /* OutputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputManager.h; sourceTree = "<group>"; };
+		5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationsPanel.cpp; sourceTree = "<group>"; };
+		5C1BA9A215249E5900C7FA95 /* ModificationsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModificationsPanel.h; sourceTree = "<group>"; };
 		5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfoControl.cpp; sourceTree = "<group>"; };
 		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
+		5C3B6D19152B753200A1414F /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HintManager.cpp; sourceTree = "<group>"; };
+		5C3B6D1A152B753200A1414F /* HintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HintManager.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
 		5C6BF78514C85A62009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -364,12 +376,18 @@
 		5C81C29E14D0480700580500 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightmapNode.cpp; sourceTree = "<group>"; };
 		5C8F1012151CBB2200800ED7 /* HeightmapNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightmapNode.h; sourceTree = "<group>"; };
+		5C8F66F815230EC100859901 /* LandscapeEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditor.cpp; sourceTree = "<group>"; };
+		5C8F66F915230EC100859901 /* LandscapeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditor.h; sourceTree = "<group>"; };
+		5C8F66FB1523652900859901 /* HelpDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelpDialog.cpp; sourceTree = "<group>"; };
+		5C8F66FC1523652900859901 /* HelpDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelpDialog.h; sourceTree = "<group>"; };
 		5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NodesPropertyControl.cpp; sourceTree = "<group>"; };
 		5CA721A814B73A64000D2851 /* NodesPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodesPropertyControl.h; sourceTree = "<group>"; };
 		5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateNodesDialog.cpp; sourceTree = "<group>"; };
 		5CA721D514B760D9000D2851 /* CreateNodesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNodesDialog.h; sourceTree = "<group>"; };
 		5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureTrianglesDialog.cpp; sourceTree = "<group>"; };
 		5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureTrianglesDialog.h; sourceTree = "<group>"; };
+		5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialPropertyControl.cpp; sourceTree = "<group>"; };
+		5CC1069B1529BD8C002CE5CE /* MaterialPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialPropertyControl.h; sourceTree = "<group>"; };
 		5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneValidator.cpp; sourceTree = "<group>"; };
 		5CD1A27114D0ACE9005E76B5 /* SceneValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneValidator.h; sourceTree = "<group>"; };
 		5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ErrorDialog.cpp; sourceTree = "<group>"; };
@@ -386,6 +404,12 @@
 		5CDACB2E151B5AB70031F8C7 /* LandscapeEditorPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorPropertyControl.h; sourceTree = "<group>"; };
 		5CDE48571518946B004E4353 /* PVRUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRUtils.cpp; sourceTree = "<group>"; };
 		5CDE48581518946B004E4353 /* PVRUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRUtils.h; sourceTree = "<group>"; };
+		5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GraphBase.cpp; sourceTree = "<group>"; };
+		5CDFF2701525BE1600FBDFF8 /* GraphBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphBase.h; sourceTree = "<group>"; };
+		5CDFF2721525CB2800FBDFF8 /* SceneGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneGraph.cpp; sourceTree = "<group>"; };
+		5CDFF2731525CB2800FBDFF8 /* SceneGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneGraph.h; sourceTree = "<group>"; };
+		5CDFF2751525DBE500FBDFF8 /* DataGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataGraph.cpp; sourceTree = "<group>"; };
+		5CDFF2761525DBE500FBDFF8 /* DataGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataGraph.h; sourceTree = "<group>"; };
 		5CE1674D14C4CF9500D2F1D4 /* BoxPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxPropertyControl.cpp; sourceTree = "<group>"; };
 		5CE1674E14C4CF9500D2F1D4 /* BoxPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoxPropertyControl.h; sourceTree = "<group>"; };
 		5CE1675014C4D04E00D2F1D4 /* MeshInstancePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshInstancePropertyControl.cpp; sourceTree = "<group>"; };
@@ -1040,6 +1064,8 @@
 		5C0E983F14BC92FD008188FE /* LandscapeEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5C8F66F815230EC100859901 /* LandscapeEditor.cpp */,
+				5C8F66F915230EC100859901 /* LandscapeEditor.h */,
 				5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */,
 				5C8F1012151CBB2200800ED7 /* HeightmapNode.h */,
 				5CDACB2A151B44640031F8C7 /* PaintTool.cpp */,
@@ -1074,12 +1100,15 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5C3B6D19152B753200A1414F /* HintManager.cpp */,
+				5C3B6D1A152B753200A1414F /* HintManager.h */,
+				5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */,
+				5C8F66FB1523652900859901 /* HelpDialog.cpp */,
+				5C8F66FC1523652900859901 /* HelpDialog.h */,
 				5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */,
 				5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */,
 				5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */,
 				5CD1A27414D0AEE8005E76B5 /* ErrorDialog.h */,
-				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
-				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
 				47809C6F14A4037E00BAA259 /* DraggableDialog.h */,
 				47809C7014A4037E00BAA259 /* DraggableDialog.cpp */,
 				5C439EB5149ABEA900326566 /* ControlsFactory.cpp */,
@@ -1109,6 +1138,23 @@
 			name = MainScreen;
 			sourceTree = "<group>";
 		};
+		5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */ = {
+			isa = PBXGroup;
+			children = (
+				5CDFF2751525DBE500FBDFF8 /* DataGraph.cpp */,
+				5CDFF2761525DBE500FBDFF8 /* DataGraph.h */,
+				5CDFF2721525CB2800FBDFF8 /* SceneGraph.cpp */,
+				5CDFF2731525CB2800FBDFF8 /* SceneGraph.h */,
+				5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */,
+				5CDFF2701525BE1600FBDFF8 /* GraphBase.h */,
+				D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */,
+				D91B83CC14BF12F2002D07B7 /* ModificationPopUp.h */,
+				5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */,
+				5C1BA9A215249E5900C7FA95 /* ModificationsPanel.h */,
+			);
+			name = EditorBodyControl;
+			sourceTree = "<group>";
+		};
 		5CD1A26F14D0ACC6005E76B5 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -1129,6 +1175,8 @@
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
 			isa = PBXGroup;
 			children = (
+				5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */,
+				5CC1069B1529BD8C002CE5CE /* MaterialPropertyControl.h */,
 				5CDACB2D151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp */,
 				5CDACB2E151B5AB70031F8C7 /* LandscapeEditorPropertyControl.h */,
 				5CE1675914C4D65200D2F1D4 /* LandscapePropertyControl.cpp */,
@@ -2257,6 +2305,14 @@
 				5CDACB2C151B44640031F8C7 /* PaintTool.cpp in Sources */,
 				5CDACB2F151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp in Sources */,
 				5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */,
+				5C8F66FA15230EC100859901 /* LandscapeEditor.cpp in Sources */,
+				5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */,
+				5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */,
+				5CDFF2711525BE1600FBDFF8 /* GraphBase.cpp in Sources */,
+				5CDFF2741525CB2800FBDFF8 /* SceneGraph.cpp in Sources */,
+				5CDFF2771525DBE500FBDFF8 /* DataGraph.cpp in Sources */,
+				5CC1069C1529BD8C002CE5CE /* MaterialPropertyControl.cpp in Sources */,
+				5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

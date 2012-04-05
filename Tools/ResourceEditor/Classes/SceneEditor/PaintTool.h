@@ -23,17 +23,23 @@ public:
     
 public:
 
-    PaintTool(eBrushType _type, const String & _spriteName, float32 _solidRadius);
+    PaintTool(eBrushType _type, const String & _spriteName);
     virtual ~PaintTool();
+
+    static float32 ZoomMin();
+    static float32 ZoomMax();
+
+    static float32 IntensionMin();
+    static float32 IntensionMax();
+    
+    
     
     eBrushType brushType;
     String spriteName;
     Sprite *sprite;
     
-    float32 radius;
     float32 intension;
     float32 zoom;
-    float32 solidRadius;
 };
 
 #endif // __PAINT_TOOL_H__

@@ -16,9 +16,13 @@
 #include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
 
+#include "HintManager.h"
+#include "HelpDialog.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
+    new HintManager();
     
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
@@ -110,10 +114,14 @@ void SceneEditorScreenMain::LoadResources()
     InitializeBodyList();
     
     SetupAnimation();
+    
+    helpDialog = new HelpDialog();
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
+    SafeRelease(helpDialog);
+    
     SafeRelease(textureConverterDialog);
     SafeRelease(textureTrianglesDialog);
     SafeRelease(sceneInfoButton);
@@ -138,6 +146,7 @@ void SceneEditorScreenMain::UnloadResources()
         
     ReleaseTopMenu();
     
+    HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     ErrorNotifier::Instance()->Release();
 }
@@ -647,19 +656,21 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ShowDataGraph(false);
 
-    bool areShown = iBody->bodyControl->SceneGraphAreShown();
-    iBody->bodyControl->ShowSceneGraph(!areShown);
+    iBody->bodyControl->ToggleSceneGraph();
+    
+//    bool areShown = iBody->bodyControl->SceneGraphAreShown();
+//    iBody->bodyControl->ShowSceneGraph(!areShown);
 }
 
 void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ShowSceneGraph(false);
-    
-    bool areShown = iBody->bodyControl->DataGraphAreShown();
-    iBody->bodyControl->ShowDataGraph(!areShown);
+
+    iBody->bodyControl->ToggleDataGraph();
+
+//    bool areShown = iBody->bodyControl->DataGraphAreShown();
+//    iBody->bodyControl->ShowDataGraph(!areShown);
 }
 
 
@@ -1110,6 +1121,26 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
                 }
                 EditorSettings::Instance()->SetForceLodLayer(-1);
                 EditorSettings::Instance()->Save();
+            }
+        }
+        
+        //ckecking help
+        if (event->phase == UIEvent::PHASE_KEYCHAR)
+        {
+            UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+            if(!tf)
+            {
+                if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
+                {
+                    if(helpDialog->GetParent())
+                    {
+                        helpDialog->Close();
+                    }
+                    else 
+                    {
+                        helpDialog->Show();
+                    }
+                }
             }
         }
     }

@@ -23,22 +23,11 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
         "~res:/Gfx/LandscapeEditor/Tools/WaterErodeIcon",
     };
     
-    const float32 actualRadius[] = 
-    {
-        0.5f,
-        0.35f,
-        0.7f,
-        0.5f,
-        0.6f,
-        0.6f,
-    };
-    
-    
     int32 x = 0;
     int32 y = (ControlsFactory::TOOLS_HEIGHT - ControlsFactory::TOOL_BUTTON_SIDE) / 2;
     for(int32 i = 0; i < PaintTool::EBT_COUNT; ++i, x += (ControlsFactory::TOOL_BUTTON_SIDE + OFFSET))
     {
-        tools[i] = new PaintTool((PaintTool::eBrushType) i, sprites[i], actualRadius[i]);
+        tools[i] = new PaintTool((PaintTool::eBrushType) i, sprites[i]);
         
         toolButtons[i] = new UIControl(Rect(x, y, ControlsFactory::TOOL_BUTTON_SIDE, ControlsFactory::TOOL_BUTTON_SIDE));
         toolButtons[i]->SetSprite(tools[i]->spriteName, 0);
@@ -47,52 +36,29 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
         AddControl(toolButtons[i]);
     }
     
-    radius = CreateSlider(Rect(rect.dx - SLIDER_WIDTH, 0, 
+    zoom = CreateSlider(Rect(rect.dx - SLIDER_WIDTH, 0, 
                                SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
-    radius->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnRadiusChanged));
+    zoom->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnZoomChanged));
+    zoom->SetMinMaxValue(PaintTool::ZoomMin(), PaintTool::ZoomMax());
+    zoom->SetValue((PaintTool::ZoomMin() + PaintTool::ZoomMax()) / 2.0f);
+    
+    
     intension = CreateSlider(Rect(rect.dx - SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2, 
                                   SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
     intension->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnIntensionChanged));
+    intension->SetMinMaxValue(PaintTool::IntensionMin(), PaintTool::IntensionMax());
+    intension->SetValue((PaintTool::IntensionMin() + PaintTool::IntensionMax()) / 2.0f);
     
-    Rect zoomRect = radius->GetRect();
-    zoomRect.x -= zoomRect.dx / 2;
-    zoomRect.dx *= 2; // create longer zoom bar
-    zoomRect.x -= zoomRect.dx; //
-    
-    zoom = CreateSlider(zoomRect);
-    zoom->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnZoomChanged));
-    
-    AddControl(radius);
     AddControl(intension);
     AddControl(zoom);
     
     AddSliderHeader(zoom, LocalizedString(L"landscapeeditor.zoom"));
-    AddSliderHeader(radius, LocalizedString(L"landscapeeditor.radius"));
     AddSliderHeader(intension, LocalizedString(L"landscapeeditor.intension"));
-    
-//    Rect checkrect = zoom->GetRect();
-//    checkrect.y += checkrect.dy;
-//    checkrect.dx = checkrect.dy;
-//    strightDrawing = new UICheckBox("~res:/Gfx/UI/chekBox", checkrect);
-//    strightDrawing->SetChecked(true, false);
-//    AddControl(strightDrawing);
-//    
-//    Rect checkTextRect = checkrect;
-//    checkTextRect.x = checkrect.x + checkrect.dx + ControlsFactory::OFFSET;
-//    checkTextRect.dx = zoom->GetRect().dx - checkrect.dx - ControlsFactory::OFFSET;
-//    UIStaticText *textControl = new UIStaticText(checkTextRect);
-//    textControl->SetText(LocalizedString(L"landscapeeditor.drawstright"));
-//    textControl->SetFont(ControlsFactory::GetFontLight());
-//    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
-//    AddControl(textControl);
-//    SafeRelease(textControl);
 }
 
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
-//    SafeRelease(strightDrawing);
-    SafeRelease(radius);
     SafeRelease(intension);
     SafeRelease(zoom);
     
@@ -158,10 +124,10 @@ void LandscapeToolsPanel::OnToolSelected(DAVA::BaseObject *object, void *userDat
             selectedTool = tools[i];
             toolButtons[i]->SetDebugDraw(true);
             
-            radius->SetValue(selectedTool->radius);
             intension->SetValue(selectedTool->intension);
+            zoom->SetValue(selectedTool->zoom);
             
-            selectedTool->zoom = zoom->GetValue();
+//            selectedTool->zoom = zoom->GetValue();
         }
         else
         {
@@ -172,14 +138,6 @@ void LandscapeToolsPanel::OnToolSelected(DAVA::BaseObject *object, void *userDat
     if(delegate)
     {
         delegate->OnToolSelected(selectedTool);
-    }
-}
-
-void LandscapeToolsPanel::OnRadiusChanged(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(selectedTool)
-    {
-        selectedTool->radius = radius->GetValue();
     }
 }
 
@@ -203,9 +161,4 @@ PaintTool * LandscapeToolsPanel::CurrentTool()
 {
     return selectedTool;
 }
-
-//bool LandscapeToolsPanel::StrightDrawing()
-//{
-//    return strightDrawing->Checked();
-//}
 

@@ -61,10 +61,7 @@ public:
 	void KeyUp(int32 keyCode);
 	void KeyDown(int32 keyCode);
 
-	void OnTouchStart();
 	void OnTouch(int32 action, int32 id, float32 x, float32 y, long time);
-	void OnTouchDone();
-
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
@@ -86,7 +83,9 @@ private:
 
 	bool foreground;
 
-	Vector<DAVA::UIEvent> touches;
+    UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+    
+	Vector<DAVA::UIEvent> totalTouches;
 	int32 touchPhase;
 
 	AndroidSystemDelegate *androidDelegate;

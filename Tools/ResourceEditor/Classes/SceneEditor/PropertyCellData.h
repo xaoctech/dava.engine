@@ -30,6 +30,7 @@ public:
         PROP_VALUE_COLOR,
         PROP_VALUE_SLIDER,
         PROP_VALUE_SUBSECTION,
+        PROP_VALUE_TEXTUREPREVIEW,
         
         PROP_VALUE_COUNT
     };
@@ -55,6 +56,8 @@ public:
     float32 GetSliderValue();
     float32 GetSliderMinValue();
     float32 GetSliderMaxValue();
+    
+    Texture *GetTexture();
 
     void SetInt(int32 newInt);
     void SetFloat(float32 newFloat);
@@ -72,6 +75,8 @@ public:
     
     void SetSliderValue(float32 newMin, float32 newMax, float32 newValue);
     void SetSliderValue(float32 newValue);
+    
+    void SetTexture(Texture *newTexture);
     
     int32 cellType;
     String key;
@@ -101,6 +106,7 @@ protected:
     float32 sliderValueMin;
     float32 sliderValue;
     
+    Texture *texture;
 };
 
 #endif

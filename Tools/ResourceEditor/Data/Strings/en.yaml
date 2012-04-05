@@ -98,14 +98,8 @@ landscapeeditor.drawstright: "Draw/Clear"
 
 #Material Editor
 materialeditor.materials: "Materials:"
-materialeditor.materialtype: "Material type:"
-materialeditor.twosided: "Two-Sided:"
 materialeditor.selected: "Selected"
 materialeditor.all: "All"
-materialeditor.ambientcolor: "Ambient color:"
-materialeditor.specularcolor: "Specular color:"
-materialeditor.diffusecolor: "Diffuse color:"
-materialeditor.specularshininess: "Specular shininess:"
 materialeditor.nomaterials: "No materials."
 
 #Modification Panel
@@ -126,7 +120,6 @@ property.scenenode.localmatrix: "Local Matrix:"
 property.scenenode.worldmatrix: "World Matrix:"
 property.scenenode.customproperties: "Custom properties"
 property.scenenode.isVisible: "Visible"
-
 
 #LightNode Section
 property.lightnode.light: "Light"
@@ -195,6 +188,17 @@ property.landscape.subsection.build_mask: "Merge png texture and alpha mask:"
 #Dynamic lighting
 property.meshinstance.dynamicshadow: "Dynamic lighting"
 property.meshinstance.dynamicshadow.enable: "Cast shadow"
+
+#Material
+property.material: "Material"
+property.material.type: "Material type:"
+property.material.name: "Name:"
+property.material.isopaque: "Is Opaque"
+property.material.twosided: "Two-Sided:"
+property.material.ambientcolor: "Ambient color:"
+property.material.specularcolor: "Specular color:"
+property.material.diffusecolor: "Diffuse color:"
+property.material.specularshininess: "Specular shininess:"
 
 
 #Settings Dialog

@@ -13,10 +13,10 @@ public:
     ExtendedDialog();
     ~ExtendedDialog();
     
+    virtual void Close();
+
 protected:
 
-    virtual void Close();
-    
     virtual const Rect DialogRect();
     DraggableDialog *draggableDialog;
 };

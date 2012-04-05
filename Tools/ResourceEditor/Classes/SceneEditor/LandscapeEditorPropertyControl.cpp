@@ -29,7 +29,7 @@ LandscapeEditorPropertyControl::~LandscapeEditorPropertyControl()
 }
 
 
-void LandscapeEditorPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+void LandscapeEditorPropertyControl::OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
     if("landscapeeditor.maskred" == forKey)
     {
@@ -73,9 +73,11 @@ void LandscapeEditorPropertyControl::OnBoolPropertyChanged(PropertyList *forList
     }
     else 
     {
-        LandscapePropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
+        LandscapePropertyControl::OnTexturePreviewPropertyChanged(forList, forKey, newValue);
     }
 }
+
+
 
 void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
@@ -95,10 +97,17 @@ void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *for
 
 void LandscapeEditorPropertyControl::SetValuesFromSettings()
 {
-    propertyList->SetBoolPropertyValue("landscapeeditor.maskred", settings->redMask);
-    propertyList->SetBoolPropertyValue("landscapeeditor.maskgreen", settings->greenMask);
-    propertyList->SetBoolPropertyValue("landscapeeditor.maskblue", settings->blueMask);
-    propertyList->SetBoolPropertyValue("landscapeeditor.maskalpha", settings->alphaMask);
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+	DVASSERT(landscape);
+    
+    propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskred", settings->redMask, 
+                                                 landscape->GetTexture(LandscapeNode::TEXTURE_TILE0));
+    propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskgreen", settings->greenMask,
+                                                landscape->GetTexture(LandscapeNode::TEXTURE_TILE1));
+    propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskblue", settings->blueMask,
+                                                 landscape->GetTexture(LandscapeNode::TEXTURE_TILE2));
+    propertyList->SetTexturePreviewPropertyValue("landscapeeditor.maskalpha", settings->alphaMask,
+                                                 landscape->GetTexture(LandscapeNode::TEXTURE_TILE3));
 }
 
 
@@ -106,16 +115,16 @@ void LandscapeEditorPropertyControl::ReadFrom(DAVA::SceneNode *sceneNode)
 {
     LandscapePropertyControl::ReadFrom(sceneNode);
     
-    propertyList->AddSection("landscapeeditor.landscapeeditor", true);
+    propertyList->AddSection("landscapeeditor.landscapeeditor", GetHeaderState("landscapeeditor.landscapeeditor", true));
     
     propertyList->AddIntProperty("landscapeeditor.size", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetIntPropertyValue("landscapeeditor.size", settings->maskSize);
 
-    
-    propertyList->AddBoolProperty("landscapeeditor.maskred", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddBoolProperty("landscapeeditor.maskgreen", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddBoolProperty("landscapeeditor.maskblue", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddBoolProperty("landscapeeditor.maskalpha", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddTexturePreviewProperty("landscapeeditor.maskred", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddTexturePreviewProperty("landscapeeditor.maskgreen", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddTexturePreviewProperty("landscapeeditor.maskblue", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddTexturePreviewProperty("landscapeeditor.maskalpha", PropertyList::PROPERTY_IS_EDITABLE);
+
     SetValuesFromSettings();
 }
 
