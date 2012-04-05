@@ -17,6 +17,7 @@ class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
 class TextureConverterDialog;
+class HelpDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodesDialogDelegeate,
@@ -230,6 +231,8 @@ private:
     
     void ExportToGameAction(int32 actionID);
 	bool useConvertedTextures;
+    
+    HelpDialog *helpDialog;
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

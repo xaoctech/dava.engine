@@ -52,6 +52,7 @@ public:
         PROP_CELL_COLOR,
         PROP_CELL_SUBSECTION,
         PROP_CELL_SLIDER,
+        PROP_CELL_TEXTUREPREVIEW,
 
         
         PROP_CELL_COUNT
@@ -120,6 +121,8 @@ public:
 
     void OnButton(BaseObject * object, void * userData, void * callerData);
     void OnClear(BaseObject * object, void * userData, void * callerData);
+
+    void OnHint(BaseObject * object, void * userData, void * callerData);
 
 //    virtual void DidAppear();
     
@@ -245,6 +248,28 @@ private:
     UIStaticText *minValue;
     UIStaticText *maxValue;
     UISliderWithText *slider;
+};
+
+
+
+class PropertyTexturePreviewCell: public PropertyCell, public UICheckBoxDelegate
+{
+public:
+    
+    PropertyTexturePreviewCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyTexturePreviewCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth);
+    virtual void SetData(PropertyCellData *prop);
+
+    virtual void ValueChanged(bool newValue);
+
+private:
+    
+    void OnClick(BaseObject * owner, void * userData, void * callerData);
+    
+    UIControl *previewControl;
+    UICheckBox *checkBox;
 };
 
 

@@ -20,7 +20,7 @@ class LandscapeToolsPanel: public UIControl
     enum eConst
     {
         OFFSET = 1,
-        SLIDER_WIDTH = 100,
+        SLIDER_WIDTH = 250,
     };
     
 public:
@@ -30,7 +30,6 @@ public:
     virtual void WillAppear();
     
     PaintTool *CurrentTool();
-//    bool StrightDrawing();
 
 protected:
 
@@ -40,17 +39,13 @@ protected:
     PaintTool *tools[PaintTool::EBT_COUNT];
     PaintTool *selectedTool;
 
-    UISlider *radius;
     UISlider *intension;
     UISlider *zoom;
     UISlider * CreateSlider(const Rect & rect);
     void AddSliderHeader(UISlider *slider, const WideString &text);
-	void OnRadiusChanged(BaseObject * object, void * userData, void * callerData);
 	void OnIntensionChanged(BaseObject * object, void * userData, void * callerData);
 	void OnZoomChanged(BaseObject * object, void * userData, void * callerData);
 
-//    UICheckBox *strightDrawing;
-    
     LandscapeToolsPanelDelegate *delegate;
 };
 

@@ -97,14 +97,8 @@ landscapeeditor.drawstright: "Рисовать/Стирать"
 
 #Material Editor
 materialeditor.materials: "Материалы:"
-materialeditor.materialtype: "Тип материала:"
-materialeditor.twosided: "Двусторонний:"
 materialeditor.selected: "Выбранные"
 materialeditor.all: "Все"
-materialeditor.ambientcolor: "Ambient color:"
-materialeditor.specularcolor: "Specular color:"
-materialeditor.diffusecolor: "Diffuse color:"
-materialeditor.specularshininess: "Specular shininess:"
 materialeditor.nomaterials: "Нет материалов."
 
 #Modification Panel
@@ -188,6 +182,21 @@ property.landscape.texture1.tiley: "Texture 1 Tiling Y"
 
 property.landscape.subsection.textures: "Landscape textures: "
 property.landscape.subsection.build_mask: "Merge png texture and alpha mask:"
+
+#Dynamic lighting
+property.meshinstance.dynamicshadow: "Dynamic lighting"
+property.meshinstance.dynamicshadow.enable: "Cast shadow"
+
+#Material
+property.material: "Материал"
+property.material.type: "Тип материала:"
+property.material.name: "Название:"
+property.material.twosided: "Двусторонний:"
+property.material.ambientcolor: "Ambient color:"
+property.material.specularcolor: "Specular color:"
+property.material.diffusecolor: "Diffuse color:"
+property.material.specularshininess: "Specular shininess:"
+property.material.isopaque: "Is Opaque"
 
 #Settings Dialog
 settings.header: "Настройки"
