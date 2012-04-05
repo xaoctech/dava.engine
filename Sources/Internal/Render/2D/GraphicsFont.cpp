@@ -125,7 +125,9 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *cha
 //		else currentX += fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::ACTIVE_WIDTH) * fontScaleCoeff;
 		
 		// BORODA: Probably charSizes should be float??? 
-		if (charSizes)charSizes->push_back((int32)(currentX + sizeFix - prevX));
+		int32 newSize = (int32)(currentX + sizeFix - prevX);
+		newSize = (int32)((float32)newSize*Core::GetVirtualToPhysicalFactor());
+		if (charSizes)charSizes->push_back(newSize);
 		prevX = currentX;
 		prevChIndex = chIndex;
 	}
