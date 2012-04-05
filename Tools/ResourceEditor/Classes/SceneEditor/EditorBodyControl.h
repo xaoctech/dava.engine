@@ -299,6 +299,7 @@ protected:
     Sprite *leMaskSprite;
 	Sprite *leOldMaskSprite;
 	Sprite *leToolSprite;
+	Sprite *leCursorSprite;
     void CreateMaskTexture();
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
