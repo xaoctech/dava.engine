@@ -1371,7 +1371,20 @@ void Sprite::SetClipPolygon(Polygon2 * _clipPolygon)
 {
 	clipPolygon = _clipPolygon;
 }
-	
+
+void Sprite::ConvertToVirtualSize()
+{
+	frameVertices[0][0] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][1] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][2] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][3] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][4] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][5] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][6] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][7] *= Core::Instance()->GetVirtualToPhysicalFactor();
+}
+
+
 void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState)
 {
 	position.x = parentState.position.x + localState.position.x * parentState.scale.x;
