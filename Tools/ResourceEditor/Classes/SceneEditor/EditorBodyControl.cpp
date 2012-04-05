@@ -2057,6 +2057,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     leMaskSprite = NULL;
 	leOldMaskSprite = NULL;
 	leToolSprite = NULL;
+	leCursorSprite = NULL;
     currentTool = NULL;
     heightmapNode = NULL;
     leSettings = NULL;
@@ -2073,6 +2074,7 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 {
     SafeRelease(fileSystemDialog);
     
+	SafeRelease(leCursorSprite);
     SafeRelease(leMaskSprite);
 	SafeRelease(leOldMaskSprite);
 	SafeRelease(leToolSprite);
@@ -2185,6 +2187,7 @@ void EditorBodyControl::CreateMaskTexture()
     leMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, Texture::FORMAT_RGBA8888);
 	leOldMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, Texture::FORMAT_RGBA8888);
 	leToolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, Texture::FORMAT_RGBA8888);
+	leCursorSprite = Sprite::Create("~res:/Gfx/LandscapeEditor/Tools/cursor/");
     
     if(leSavedTexture)
     {
@@ -2363,7 +2366,7 @@ void EditorBodyControl::UpdateTileMask()
 
 	RenderManager::Instance()->SetShader(tileMaskEditorShader);
 	leOldMaskSprite->PrepareSpriteRenderData(0);
-	RenderManager::Instance()->SetRenderData(leOldMaskSprite->spriteRenderObject);
+	RenderManager::Instance()->SetRenderData(leOldMaskSprite->GetRenderDataObject());
 	RenderManager::Instance()->SetTexture(leOldMaskSprite->GetTexture(), 0);
 	RenderManager::Instance()->SetTexture(leToolSprite->GetTexture(), 1);
 	RenderManager::Instance()->FlushState();
