@@ -203,7 +203,28 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 
 void LandscapeEditorColor::InputAction()
 {
-    UpdateTileMaskTool(); 
+    Texture *tex = NULL;
+    if(settings->redMask)
+    {
+        tex = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE0);
+    }
+    else if(settings->greenMask)
+    {
+        tex = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE1);
+    }
+    else if(settings->blueMask)
+    {
+        tex = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE2);
+    }
+    else if(settings->alphaMask)
+    {
+        tex = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE3);
+    }
+    
+    if(tex)
+    {
+        UpdateTileMaskTool(); 
+    }
 }
 
 void LandscapeEditorColor::HideAction()
