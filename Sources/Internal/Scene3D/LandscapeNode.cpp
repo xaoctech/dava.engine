@@ -138,7 +138,6 @@ void LandscapeNode::InitShaders()
     
 void LandscapeNode::ReleaseShaders()
 {
-    renderingMode = RENDERING_MODE_TEXTURE;
     SafeRelease(activeShader);
 
     uniformCameraPosition = -1;
@@ -217,9 +216,9 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
 {
     heightMapPath = heightmapPathname;
     
-    renderingMode = _renderingMode;
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
+    renderingMode = _renderingMode;
     InitShaders(); // init new shaders according to the selected rendering mode
     
     heightmap = Image::CreateFromFile(heightmapPathname);
