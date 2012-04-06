@@ -58,7 +58,6 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     renderingMode = RENDERING_MODE_TEXTURE;
     
     activeShader = 0;
-    
     uniformCameraPosition = -1;
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -139,7 +138,16 @@ void LandscapeNode::InitShaders()
     
 void LandscapeNode::ReleaseShaders()
 {
+    renderingMode = RENDERING_MODE_TEXTURE;
     SafeRelease(activeShader);
+
+    uniformCameraPosition = -1;
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        uniformTextures[k] = -1;
+        uniformTextureTiling[k] = -1;
+    }
+
 }
 
 
@@ -828,6 +836,106 @@ void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
         }*/
     }
 }
+    
+void LandscapeNode::BindMaterial()
+{
+    switch(renderingMode)
+    {
+        case RENDERING_MODE_TEXTURE:
+            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
+            break;
+            
+        case RENDERING_MODE_DETAIL_SHADER:
+        {
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
+            if (textures[TEXTURE_DETAIL])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_DETAIL], 1);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+            
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_DETAIL], 1);
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);
+        }
+            break;
+        case RENDERING_MODE_BLENDED_SHADER:
+        {
+            if (textures[TEXTURE_TILE0])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+            if (textures[TEXTURE_TILE1])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 2);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+        }            
+            break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+        {
+            if (textures[TEXTURE_TILE0])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+            if (textures[TEXTURE_TILE1])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+            if (textures[TEXTURE_TILE2])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
+            if (textures[TEXTURE_TILE3])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
+            if (textures[TEXTURE_TILE_MASK])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
+            
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
+            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
+        }            
+            break;
+    }
+}
+
+void LandscapeNode::UnbindMaterial()
+{
+    switch(renderingMode)
+    {
+        case RENDERING_MODE_TEXTURE:
+            break;
+            
+        case RENDERING_MODE_DETAIL_SHADER:
+        {
+            RenderManager::Instance()->SetTexture(0, 1);
+        }
+            break;
+        case RENDERING_MODE_BLENDED_SHADER:
+        {
+            RenderManager::Instance()->SetTexture(0, 1);
+            RenderManager::Instance()->SetTexture(0, 2);
+        }            
+            break;
+    }    
+}
+
 
 void LandscapeNode::Draw()
 {
@@ -864,80 +972,7 @@ void LandscapeNode::Draw()
     
     fans.clear();
     
-    switch(renderingMode)
-    {
-        case RENDERING_MODE_TEXTURE:
-            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
-        break;
-            
-        case RENDERING_MODE_DETAIL_SHADER:
-        {
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
-            if (textures[TEXTURE_DETAIL])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_DETAIL], 1);
-
-            RenderManager::Instance()->SetShader(activeShader);
-            RenderManager::Instance()->FlushState();
-
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 0);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_DETAIL], 1);
-            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);
-        }
-        break;
-        case RENDERING_MODE_BLENDED_SHADER:
-        {
-            if (textures[TEXTURE_TILE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
-            if (textures[TEXTURE_TILE1])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 2);
-
-            RenderManager::Instance()->SetShader(activeShader);
-            RenderManager::Instance()->FlushState();
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
-            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
-        }            
-        break;
-        case RENDERING_MODE_TILE_MASK_SHADER:
-        {
-            if (textures[TEXTURE_TILE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
-            if (textures[TEXTURE_TILE1])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
-            if (textures[TEXTURE_TILE2])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
-            if (textures[TEXTURE_TILE3])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
-            if (textures[TEXTURE_TILE_MASK])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
-            
-            RenderManager::Instance()->SetShader(activeShader);
-            RenderManager::Instance()->FlushState();
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
-            
-            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
-        }            
-        break;
-    }
+    BindMaterial();
     
     Draw(&quadTreeHead);
     FlushQueue();
@@ -950,24 +985,7 @@ void LandscapeNode::Draw()
     }   
 #endif 
     
-    switch(renderingMode)
-    {
-        case RENDERING_MODE_TEXTURE:
-            break;
-            
-        case RENDERING_MODE_DETAIL_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 1);
-        }
-            break;
-        case RENDERING_MODE_BLENDED_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 1);
-            RenderManager::Instance()->SetTexture(0, 2);
-        }            
-            break;
-    }
-
+    UnbindMaterial();
 
 //#if defined(__DAVAENGINE_MACOS__)
 //    if (debugFlags & DEBUG_DRAW_ALL)
