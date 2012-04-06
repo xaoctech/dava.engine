@@ -62,7 +62,6 @@ public:
 	LandscapeDebugNode(Scene * scene = 0);
 	virtual ~LandscapeDebugNode();
     
-    
     virtual void SetDebugHeightmapImage(Image * _debugHeightmapImage);
   
     /**
@@ -71,7 +70,6 @@ public:
 	virtual void Draw();
 
 protected:	
-    Image * debugHeightmapImage;
     
     Vector<LandscapeVertex> debugVertices;
     Vector<uint32> debugIndices;
