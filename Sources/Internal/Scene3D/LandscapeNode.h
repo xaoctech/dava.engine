@@ -262,6 +262,9 @@ protected:
     void FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode);
     void MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
 
+    void BindMaterial();
+    void UnbindMaterial();
+    
     void DrawQuad(QuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
     void Draw(QuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();

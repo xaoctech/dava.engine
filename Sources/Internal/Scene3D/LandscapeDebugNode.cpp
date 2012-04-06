@@ -54,7 +54,9 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Image * _debugHeightmapImage)
 
     debugVertices.resize(debugHeightmapImage->GetWidth() * debugHeightmapImage->GetHeight());
 	debugIndices.resize(debugHeightmapImage->GetWidth() * debugHeightmapImage->GetHeight() * 6);
-
+    
+    ReleaseShaders();
+    InitShaders();
 }
     
 void LandscapeDebugNode::Draw()
