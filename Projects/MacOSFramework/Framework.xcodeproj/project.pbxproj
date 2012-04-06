@@ -104,6 +104,8 @@
 		FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
 		FE578C621327927C0081BDE9 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
+		FE64B4BB152F0B9400417E73 /* LandscapeDebugNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE64B4B9152F0B9400417E73 /* LandscapeDebugNode.cpp */; };
+		FE64B4BC152F0B9400417E73 /* LandscapeDebugNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE64B4BA152F0B9400417E73 /* LandscapeDebugNode.h */; };
 		FE652C9714A2723B006663FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE652C9614A2723B006663FB /* BaseObject.cpp */; };
 		FE707B1A147588AC0082008F /* SpriteNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE707B19147588AC0082008F /* SpriteNode.cpp */; };
 		FE707B1D147588B60082008F /* BillboardNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE707B1B147588B60082008F /* BillboardNode.cpp */; };
@@ -582,6 +584,8 @@
 		FE578C5D1327927C0081BDE9 /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/oggvorbis/lib/libogg_macos.a; sourceTree = SOURCE_ROOT; };
 		FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbis_macos.a; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = SOURCE_ROOT; };
 		FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile_macos.a; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = SOURCE_ROOT; };
+		FE64B4B9152F0B9400417E73 /* LandscapeDebugNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeDebugNode.cpp; sourceTree = "<group>"; };
+		FE64B4BA152F0B9400417E73 /* LandscapeDebugNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeDebugNode.h; sourceTree = "<group>"; };
 		FE652C9614A2723B006663FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		FE707B19147588AC0082008F /* SpriteNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteNode.cpp; sourceTree = "<group>"; };
 		FE707B1B147588B60082008F /* BillboardNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BillboardNode.cpp; sourceTree = "<group>"; };
@@ -1527,6 +1531,8 @@
 				FE707B19147588AC0082008F /* SpriteNode.cpp */,
 				FECFC1BE12E87E3000C71562 /* SpriteNode.h */,
 				FECFC1BF12E87E3000C71562 /* StateNode.h */,
+				FE64B4B9152F0B9400417E73 /* LandscapeDebugNode.cpp */,
+				FE64B4BA152F0B9400417E73 /* LandscapeDebugNode.h */,
 				FE4A005213EBDC24006E924D /* LandscapeNode.cpp */,
 				FE4A005313EBDC24006E924D /* LandscapeNode.h */,
 				FE707B1B147588B60082008F /* BillboardNode.cpp */,
@@ -1909,6 +1915,7 @@
 				C7783B9114DA998F00877862 /* TextGameObject.h in Headers */,
 				5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */,
 				FE78E87C14E17E7E007DD1AA /* QuadTree.h in Headers */,
+				FE64B4BC152F0B9400417E73 /* LandscapeDebugNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2189,6 +2196,7 @@
 				5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */,
 				FE78E87B14E17E7E007DD1AA /* QuadTree.cpp in Sources */,
 				5C42C98A14E3B3DD00EB3F53 /* XMLParser.cpp in Sources */,
+				FE64B4BB152F0B9400417E73 /* LandscapeDebugNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
