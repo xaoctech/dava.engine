@@ -62,6 +62,7 @@ public:
 	LandscapeDebugNode(Scene * scene = 0);
 	virtual ~LandscapeDebugNode();
     
+    
     virtual void SetDebugHeightmapImage(Image * _debugHeightmapImage);
   
     /**

@@ -207,6 +207,11 @@ void LandscapeNode::SetLods(const Vector4 & lods)
     for (int32 ll = 0; ll < lodLevelsCount; ++ll)
         lodSqDistance[ll] = lodDistance[ll] * lodDistance[ll];
 }
+    
+void LandscapeNode::SetRenderingMode(eRenderingMode _renderingMode)
+{
+    renderingMode = _renderingMode;
+}
 
 void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMode, const String & heightmapPathname, const AABBox3 & _box)
 {

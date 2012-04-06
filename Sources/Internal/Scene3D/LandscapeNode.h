@@ -124,8 +124,21 @@ public:
     };
     
     /**
+        \brief Change rendering mode. 
+        \param[in] renderingMode rendering mode of landscape.
+     */
+    void SetRenderingMode(eRenderingMode _renderingMode);
+    
+    /**
+        \brief Get rendering mode. 
+        \returns rendering mode of landscape.
+     */
+    inline const eRenderingMode GetRenderingMode();
+
+    
+    /**
         \brief Builds landscape from heightmap image and bounding box of this landscape block
-        \param[in] renderingMode rendering mode of landscape/
+        \param[in] renderingMode rendering mode of landscape.
         \param[in] landscapeBox axial-aligned bounding box of the landscape block
      */
     void BuildLandscapeFromHeightmapImage(eRenderingMode renderingMode, const String & heightmapPathname, const AABBox3 & landscapeBox);
@@ -229,7 +242,6 @@ public:
      */
     const String & GetHeightMapPathname();
 
-    inline const eRenderingMode GetRenderingMode();
     
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
