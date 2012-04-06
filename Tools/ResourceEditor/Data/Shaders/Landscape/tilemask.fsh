@@ -1,5 +1,4 @@
 #ifdef GL_ES
-// define default precision for float, vec, mat.
 precision highp float;
 #else
 #define lowp
@@ -20,6 +19,11 @@ varying lowp vec2 varTexCoord1;
 varying lowp vec2 varTexCoord2;
 varying lowp vec2 varTexCoord3;
 
+#ifdef EDITOR_CURSOR
+varying vec2 varTexCoordCursor;
+uniform sampler2D cursorTexture;
+#endif
+
 void main()
 {
     lowp vec3 color0 = texture2D(tileTexture0, varTexCoord0).rgb;
@@ -31,5 +35,12 @@ void main()
     lowp vec4 lightMask = texture2D(colorTexture, varTexCoordOrig);
 
     lowp vec3 color = (mask.r * color0 + mask.g * color1 + mask.b * color2 + mask.a * color3)*lightMask.rgb;
+    
+#ifdef EDITOR_CURSOR
+	vec4 colorCursor = texture2D(cursorTexture, varTexCoordCursor);
+	color *= 1.0-colorCursor.a;
+	color += colorCursor.rgb*colorCursor.a;
+#endif
+
     gl_FragColor = vec4(color, 1.0);
 }

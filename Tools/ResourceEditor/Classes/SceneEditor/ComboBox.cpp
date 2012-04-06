@@ -14,23 +14,13 @@ ComboBox::ComboBox(const Rect &rect, ComboBoxDelegate *comboDelegate, const Vect
 : UIControl(rect)
 {
     delegate = comboDelegate;
-    items = listItems;
-    for (int i = 0; i < items.size(); i++)
-    {
-        indecesMap[items[i]] = i;
-    }
-    int32 sz = Min(8, (int32)items.size());
-    list = new UIList(Rect(0, size.y, size.x, size.y * sz), UIList::ORIENTATION_VERTICAL);
-    list->SetDelegate(this);
-    ControlsFactory::SetScrollbar(list);
-    ControlsFactory::CusomizeListControl(list);
-    
 
-    selectionIndex = 0;
-    comboButton = ControlsFactory::CreateButton(Rect(0,0,size.x,size.y), StringToWString(items[selectionIndex]));
+    list = NULL;
+    comboButton = ControlsFactory::CreateButton(Rect(0,0,size.x,size.y), L"");
     comboButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ComboBox::OnButton));
     AddControl(comboButton);
-    SetSelectedIndex(0, false);
+
+    SetNewItemsSet(listItems);
 }
 
 ComboBox::~ComboBox()
@@ -53,13 +43,26 @@ void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
 {
     indecesMap.clear();
     items = listItems;
+
+    Font *font = ControlsFactory::GetFontLight();
+    listWidth = size.x;
     for (int i = 0; i < items.size(); i++)
     {
+        int32 itemWidth = font->GetStringSize(StringToWString(items[i])).dx;
+        listWidth = Max(listWidth, itemWidth);
+        
         indecesMap[items[i]] = i;
     }
-    int32 sz = Min(8, (int32)items.size());
+    
+    if(listWidth != size.x)
+    {
+        listWidth += (ControlsFactory::OFFSET * 2);
+    }
+    
+//    int32 sz = Min(8, (int32)items.size());
+    int32 sz = (int32)items.size();
     SafeRelease(list);
-    list = new UIList(Rect(0, size.y, size.x, size.y * sz), UIList::ORIENTATION_VERTICAL);
+    list = new UIList(Rect(size.x - listWidth, size.y, listWidth, size.y * sz), UIList::ORIENTATION_VERTICAL);
     list->SetDelegate(this);
     ControlsFactory::SetScrollbar(list);
     ControlsFactory::CusomizeListControl(list);
@@ -115,9 +118,25 @@ void ComboBox::OnButton(BaseObject * object, void * userData, void * callerData)
             parent->BringChildFront(this);
         }
 
-        Rect r = GetRect(true);
-        list->SetPosition(Vector2(r.x, r.y + r.dy));
-        UIScreenManager::Instance()->GetScreen()->AddControl(list);
+        
+        UIScreen *screen = UIScreenManager::Instance()->GetScreen();
+        if(screen)
+        {
+            Rect buttonRect = GetRect(true);
+            Rect screenRect = screen->GetRect(true);
+            
+            int32 toRight = (screenRect.x + screenRect.dx) - (buttonRect.x);
+            if(toRight < listWidth)
+            {
+                list->SetPosition(Vector2(buttonRect.x + buttonRect.dx - listWidth, buttonRect.y + buttonRect.dy));
+            }
+            else 
+            {
+                list->SetPosition(Vector2(buttonRect.x, buttonRect.y + buttonRect.dy));
+            }
+
+            screen->AddControl(list);
+        }
         
         comboButton->SetSelected(true);
         list->Refresh();
@@ -170,7 +189,7 @@ UIListCell *ComboBox::CellAtIndex(UIList *forList, int32 index)
     UIListCell *c = forList->GetReusableCell("Combo cell");
     if (!c) 
     {
-        c = new UIListCell(Rect(0, 0, size.x, size.y), "Combo cell");
+        c = new UIListCell(Rect(0, 0, listWidth, size.y), "Combo cell");
     }
     ControlsFactory::CustomizeButton(c, StringToWString(items[index]));
     if (index == selectionIndex) 

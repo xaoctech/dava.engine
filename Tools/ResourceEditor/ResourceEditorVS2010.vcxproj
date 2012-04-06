@@ -72,7 +72,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;./Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -94,7 +94,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;./Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -437,6 +437,7 @@
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
     <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\DataGraph.h" />
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
@@ -445,16 +446,22 @@
     <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
     <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
+    <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\HintManager.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditor.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
+    <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h" />
+    <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
@@ -467,6 +474,7 @@
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h" />
     <ClInclude Include="Classes\SceneEditor\PVRUtils.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneGraph.h" />
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
@@ -692,6 +700,7 @@
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\DataGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
@@ -700,16 +709,22 @@
     <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
+    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\HintManager.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
+    <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MeshInstancePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
@@ -722,6 +737,7 @@
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp" />
     <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
