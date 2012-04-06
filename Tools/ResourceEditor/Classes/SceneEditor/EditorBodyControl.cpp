@@ -14,7 +14,9 @@
 
 #include "ErrorNotifier.h"
 
-#include "LandscapeToolsPanel.h"
+#include "LandscapeEditorColor.h"
+#include "LandscapeEditorHeightmap.h"
+#include "SceneEditorScreenMain.h"
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
@@ -251,9 +253,9 @@ void EditorBodyControl::PlaceOnLandscape()
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
-    if(landscapeEditor->IsActive())
+    if(LandscapeEditorActive())
     {
-        bool processed = landscapeEditor->Input(event);
+        bool processed = currentLandscapeEditor->Input(event);
         if(!processed)
         {
             cameraController->Input(event);
@@ -451,7 +453,8 @@ void EditorBodyControl::InitMoving(const Vector2 & point)
 	Vector3 from, dir;
 	GetCursorVectors(&from, &dir, point);
 
-	bool result = GetIntersectionVectorWithPlane(from, dir, planeNormal, rotationCenter, startDragPoint);
+//	bool result = 
+    GetIntersectionVectorWithPlane(from, dir, planeNormal, rotationCenter, startDragPoint);
 	
 	Logger::Debug("startDragPoint %f %f %f", startDragPoint.x, startDragPoint.y, startDragPoint.z);
 }	
@@ -1103,9 +1106,9 @@ void EditorBodyControl::PackLightmaps()
 
 void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 {
-    if(landscapeEditor->IsActive())
+    if(LandscapeEditorActive())
     {
-        landscapeEditor->Draw(geometricData);
+        currentLandscapeEditor->Draw(geometricData);
     }
     
     UIControl::Draw(geometricData);
@@ -1115,38 +1118,48 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
 #pragma mark --Landscape Editor
 void EditorBodyControl::CreateLandscapeEditor()
 {
-    landscapeEditor = new LandscapeEditor(this, this);
-    
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    Rect toolsRect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
 
-    Rect rect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
-    leToolsPanel = new LandscapeToolsPanel(landscapeEditor, rect);
+    landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRect);
+    landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
+    
+    currentLandscapeEditor = NULL;
 }
 
 void EditorBodyControl::ReleaseLandscapeEditor()
 {
-    SafeRelease(landscapeEditor);
-    SafeRelease(leToolsPanel);
+    currentLandscapeEditor = NULL;
+    SafeRelease(landscapeEditorColor);
+    SafeRelease(landscapeEditorHeightmap);
 }
 
-void EditorBodyControl::ToggleLandscapeEditor()
+void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
 {
-    if(landscapeEditor)
+    if(currentLandscapeEditor)
     {
-        bool toggle = true;
-        if(!landscapeEditor->IsActive())
+        currentLandscapeEditor->Toggle();
+    }
+    else
+    {
+        if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
         {
-            toggle = landscapeEditor->SetScene(scene);
-            if(toggle)
-            {
-                landscapeEditor->SetPaintTool(leToolsPanel->CurrentTool());
-            }
+            currentLandscapeEditor = landscapeEditorColor;
         }
-            
-        if(toggle)
+        else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
         {
-            landscapeEditor->Toggle();
+            currentLandscapeEditor = landscapeEditorHeightmap;
+        }
+
+        bool ret = currentLandscapeEditor->SetScene(scene);
+        if(ret)
+        {
+            currentLandscapeEditor->Toggle();
+        }
+        else
+        {
+            currentLandscapeEditor = NULL;
         }
     }
 }
@@ -1159,25 +1172,29 @@ void EditorBodyControl::LandscapeEditorStarted()
     RemoveControl(modificationPanel);
     savedModificatioMode = modificationPanel->IsModificationMode();
     
-    if(!leToolsPanel->GetParent())
+    UIControl *toolsPanel = currentLandscapeEditor->GetToolPanel();
+    if(!toolsPanel->GetParent())
     {
-        AddControl(leToolsPanel);
+        AddControl(toolsPanel);
     }
-
-    LandscapeNode *landscape = landscapeEditor->GetLandscape();
+    
+    LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
     scene->SetSelection(landscape);
     SelectNodeAtTree(landscape);
 }
 
 void EditorBodyControl::LandscapeEditorFinished()
 {
-    RemoveControl(leToolsPanel);
+    UIControl *toolsPanel = currentLandscapeEditor->GetToolPanel();
+    RemoveControl(toolsPanel);
 
     modificationPanel->IsModificationMode(savedModificatioMode);
     AddControl(modificationPanel);
     
     scene->SetSelection(NULL);
     SelectNodeAtTree(NULL);
+    
+    currentLandscapeEditor = NULL;
 }
 
 
@@ -1190,11 +1207,10 @@ void EditorBodyControl::OnPlaceOnLandscape()
 #pragma marlk --GraphBaseDelegate
 bool EditorBodyControl::LandscapeEditorActive()
 {
-    return landscapeEditor->IsActive();
+    return (currentLandscapeEditor && currentLandscapeEditor->IsActive());
 }
 
-void EditorBodyControl::LandscapeEditorPropertiesCreated(LandscapeEditorPropertyControl *propertyControl)
-{   
-    propertyControl->SetDelegate(landscapeEditor);
-    landscapeEditor->SetSettings(propertyControl->Settings());
+NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)
+{
+    return currentLandscapeEditor->GetPropertyControl(rect);
 }

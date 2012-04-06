@@ -2,7 +2,7 @@
 #include "ControlsFactory.h"
 
 #include "ModificationPopUp.h"
-#include "EditorScene.h"
+#include "../EditorScene.h"
 
 static const WideString mods[3] = { L"M", L"R", L"S"};
 static const WideString axises[3] = { L"X", L"Y", L"Z"};

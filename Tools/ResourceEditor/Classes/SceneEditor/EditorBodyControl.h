@@ -11,7 +11,7 @@
 
 #include "ModificationsPanel.h"
 
-#include "LandscapeEditor.h"
+#include "LandscapeEditorBase.h"
 
 #include "GraphBase.h"
 
@@ -24,7 +24,8 @@ class DataGraph;
 class SceneInfoControl;
 class BeastManager;
 class OutputPanelControl;
-class LandscapeToolsPanel;
+class LandscapeEditorColor;
+class LandscapeEditorHeightmap;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -103,7 +104,7 @@ public:
 
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
-    void ToggleLandscapeEditor();
+    void ToggleLandscapeEditor(int32 landscapeEditorMode);
 
     //LandscapeEditorDelegate
     virtual void LandscapeEditorStarted();  //Show LE Controls
@@ -114,7 +115,7 @@ public:
 
     //GraphBaseDelegate
     virtual bool LandscapeEditorActive();
-    virtual void LandscapeEditorPropertiesCreated(LandscapeEditorPropertyControl *propertyControl);
+    virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
 protected:
 
@@ -198,10 +199,13 @@ protected:
     
     //Landscape Editor
     bool savedModificatioMode;
-    LandscapeToolsPanel *leToolsPanel;
+//    LandscapeToolsPanel *leToolsPanel;
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
-    LandscapeEditor *landscapeEditor;
+    
+    LandscapeEditorColor *landscapeEditorColor;
+    LandscapeEditorHeightmap *landscapeEditorHeightmap;
+    LandscapeEditorBase *currentLandscapeEditor;
     
     //graps
     SceneGraph *sceneGraph;

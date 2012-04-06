@@ -28,6 +28,8 @@ menu.openproject: "Open Project"
 menu.beast: "Beast"
 menu.beast.fullshade: "Beast fullshade"
 menu.landscape: "Landscape"
+menu.landscape.colormap: "Color Map"
+menu.landscape.heightmap: "Height Map"
 menu.viewport: "View Port"
 menu.viewport.iphone: "iPhone"
 menu.viewport.retina: "Retina"
@@ -95,6 +97,9 @@ landscapeeditor.maskalpha: "Mask Alpha:"
 landscapeeditor.savemask: "Save Mask"
 landscapeeditor.landscapeeditor: "LandscapeEditor"
 landscapeeditor.drawstright: "Draw/Clear"
+landscapeeditor.size: "Size:"
+landscapeeditor.strength: "Strength:"
+
 
 #Material Editor
 materialeditor.materials: "Materials:"
