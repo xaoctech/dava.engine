@@ -63,7 +63,7 @@ public:
 	virtual ~LandscapeDebugNode();
     
     
-    virtual void SetDebugHeightmapImage(Image * _debugHeightmapImage);
+    virtual void SetDebugHeightmapImage(Image * _debugHeightmapImage, const AABBox3 & _box);
   
     /**
         \brief Overloaded draw function to draw landscape.

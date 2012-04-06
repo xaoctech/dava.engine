@@ -37,7 +37,7 @@ void LandscapeEditorHeightmap::CreateMaskTexture()
     SafeRelease(heightImage);
     
     heightImage = Image::CreateFromFile(workingLandscape->GetHeightMapPathname());
-    landscapeDebugNode->SetDebugHeightmapImage(heightImage);
+    landscapeDebugNode->SetDebugHeightmapImage(heightImage, workingLandscape->GetBoundingBox());
 }
 
 

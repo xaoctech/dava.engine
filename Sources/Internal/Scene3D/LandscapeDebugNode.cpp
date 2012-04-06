@@ -46,8 +46,9 @@ LandscapeDebugNode::~LandscapeDebugNode()
     SafeRelease(debugRenderDataObject);
 }
     
-void LandscapeDebugNode::SetDebugHeightmapImage(Image * _debugHeightmapImage)
+void LandscapeDebugNode::SetDebugHeightmapImage(Image * _debugHeightmapImage, const AABBox3 & _box)
 {
+    box = _box;
     heightmap = SafeRetain(_debugHeightmapImage);
 
     debugVertices.resize(heightmap->GetWidth() * heightmap->GetHeight());
@@ -92,6 +93,7 @@ void LandscapeDebugNode::Draw()
     debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord); 
                                      
     RenderManager::Instance()->SetRenderData(debugRenderDataObject);
+    RenderManager::Instance()->FlushState();
     RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->GetWidth() - 1) * (heightmap->GetHeight() - 1) * 6, EIF_32, &debugIndices.front()); 
     
     UnbindMaterial();
