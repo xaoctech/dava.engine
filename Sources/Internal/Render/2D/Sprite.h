@@ -268,6 +268,13 @@ public:
 	 */
     float32 *GetTextureVerts(int32 frame);
 
+	/**
+	\brief Convert sprite size as if it was created by Sprite::Create.
+	Useful when you create sprite by Sprite::CreateFromTexture and want to use it as normal (virtual sized).
+	Converts only first frame.
+	*/
+	void ConvertToVirtualSize();
+
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
 	

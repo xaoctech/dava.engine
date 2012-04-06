@@ -213,6 +213,16 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 			SetTextureLevelInHW(5);
 			previousState->currentTexture[5] = currentTexture[5];
 		}
+		if (changeSet & STATE_CHANGED_TEXTURE6)
+		{
+			SetTextureLevelInHW(6);
+			previousState->currentTexture[6] = currentTexture[6];
+		}
+		if (changeSet & STATE_CHANGED_TEXTURE7)
+		{
+			SetTextureLevelInHW(7);
+			previousState->currentTexture[7] = currentTexture[7];
+		}
 
 		if (changeSet & STATE_CHANGED_STENCIL_REF)
 		{

@@ -1,5 +1,4 @@
 #ifdef GL_ES
-// define default precision for float, vec, mat.
 precision highp float;
 #else
 #define lowp
@@ -22,6 +21,10 @@ varying lowp vec2 varTexCoord1;
 varying lowp vec2 varTexCoord2;
 varying lowp vec2 varTexCoord3;
 
+#ifdef EDITOR_CURSOR
+varying vec2 varTexCoordCursor;
+#endif
+
 void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
@@ -32,4 +35,8 @@ void main()
 	varTexCoord1 = inTexCoord0 * texture1Tiling;
 	varTexCoord2 = inTexCoord0 * texture2Tiling;
 	varTexCoord3 = inTexCoord0 * texture3Tiling;
+	
+#ifdef EDITOR_CURSOR
+	varTexCoordCursor = inTexCoord0;
+#endif
 }
