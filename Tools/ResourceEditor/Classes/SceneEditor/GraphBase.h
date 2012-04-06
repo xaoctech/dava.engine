@@ -6,16 +6,15 @@
 
 using namespace DAVA;
 
-class LandscapeEditorPropertyControl;
 class GraphBaseDelegate
 {
 public:
     virtual bool LandscapeEditorActive() = 0;
-    virtual void LandscapeEditorPropertiesCreated(LandscapeEditorPropertyControl *propertyControl) = 0;
+    virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
 };
 
 //class EditorScene;
-#include "EditorScene.h"
+#include "../EditorScene.h"
 
 class GraphBase: 
         public BaseObject, 
@@ -55,10 +54,7 @@ protected:
     virtual void FillCell(UIHierarchyCell *cell, void *node) = 0;
     virtual void SelectHierarchyNode(UIHierarchyNode * node) = 0;
 
-
-    
     void OnRefreshPropertyControl(BaseObject * object, void * userData, void * callerData);
-
     
     virtual void CreateGraphPanel(const Rect &rect);
     void CreatePropertyPanel(const Rect &rect);

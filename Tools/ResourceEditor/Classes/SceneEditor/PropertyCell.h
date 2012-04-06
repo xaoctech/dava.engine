@@ -124,7 +124,14 @@ public:
 
     void OnHint(BaseObject * object, void * userData, void * callerData);
 
-//    virtual void DidAppear();
+    virtual void Input(UIEvent *currentInput);
+
+    virtual void WillAppear();
+    
+protected:    
+
+    int32 moveCounter;
+//    float32 lastHintTime
     
     UIStaticText *pathText;
     UIControl *pathTextContainer;

@@ -1,7 +1,7 @@
 #include "SceneGraph.h"
 #include "ControlsFactory.h"
 
-#include "EditorScene.h"
+#include "../EditorScene.h"
 #include "EditorSettings.h"
 #include "PropertyControlCreator.h"
 
@@ -153,7 +153,6 @@ void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
             else 
             {
                 workingScene->SetCurrentCamera(cam);
-//                cameraController->SetScene(workingScene);
             }
         }
     }
@@ -192,8 +191,8 @@ void SceneGraph::RecreatePropertiesPanelForNode(SceneNode * node)
     DVASSERT(delegate);
     if(delegate->LandscapeEditorActive())
     {
-        propertyControl = PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(node, propertyPanelRect);
-        delegate->LandscapeEditorPropertiesCreated((LandscapeEditorPropertyControl *)propertyControl);
+        propertyControl = delegate->GetPropertyControl(propertyPanelRect);
+        //PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(node, propertyPanelRect);
     }
     else 
     {

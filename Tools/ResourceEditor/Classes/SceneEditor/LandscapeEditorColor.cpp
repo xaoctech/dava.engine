@@ -1,69 +1,45 @@
-#include "LandscapeEditor.h"
+#include "LandscapeEditorColor.h"
 
-#include "PaintTool.h"
-#include "HeightmapNode.h"
-#include "EditorSettings.h"
-#include "EditorScene.h"
+#include "LandscapeTool.h"
+#include "LandscapeToolsPanelColor.h"
+#include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
+#include "EditorScene.h"
 
-#include "EditorBodyControl.h"
-
-#pragma mark --LandscapeEditor
-LandscapeEditor::LandscapeEditor(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
-    :   delegate(newDelegate)
-    ,   state(ELE_NONE)
-    ,   workingScene(NULL)
-    ,   parent(parentControl)
+#pragma mark --LandscapeEditorColor
+LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
+                                           EditorBodyControl *parentControl, const Rect &toolsRect)
+    :   LandscapeEditorBase(newDelegate, parentControl)
 {
 	wasTileMaskToolUpdate = false;
     tileMaskEditorShader = new Shader();
 	tileMaskEditorShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor.shader");
 	tileMaskEditorShader->Recompile();
 
-    fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
-    fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
-    fileSystemDialog->SetDelegate(this);
-
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String path = keyedArchieve->GetString("3dDataSourcePath", "/");
-    if(path.length())
-    {
-        fileSystemDialog->SetCurrentDir(path);   
-    }
-
-    workingLandscape = NULL;
-    savedTexture = NULL;
     maskSprite = NULL;
 	oldMaskSprite = NULL;
 	toolSprite = NULL;
-    currentTool = NULL;
-    heightmapNode = NULL;
     settings = NULL;
     
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
     dstBlendMode = BLEND_ONE;
     paintColor = Color(1.f, 1.f, 1.f, 1.0f);
+    
+    toolsPanel = new LandscapeToolsPanelColor(this, toolsRect);
 }
 
-LandscapeEditor::~LandscapeEditor()
+LandscapeEditorColor::~LandscapeEditorColor()
 {
-    SafeRelease(heightmapNode);
-    SafeRetain(workingLandscape);
-    SafeRelease(workingScene);
-    
     SafeRelease(tileMaskEditorShader);
 
-    SafeRelease(fileSystemDialog);
-    
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
-    SafeRelease(savedTexture);
 }
 
 
-void LandscapeEditor::Draw(const DAVA::UIGeometricData &geometricData)
+void LandscapeEditorColor::Draw(const DAVA::UIGeometricData &geometricData)
 {
     if(wasTileMaskToolUpdate)
 	{
@@ -77,100 +53,12 @@ void LandscapeEditor::Draw(const DAVA::UIGeometricData &geometricData)
 	}
 }
 
-
-bool LandscapeEditor::SetScene(EditorScene *newScene)
-{
-    SafeRelease(workingScene);
-    
-    workingLandscape = SafeRetain(newScene->GetLandScape(newScene));
-    if(!workingLandscape)
-    {
-        ErrorNotifier::Instance()->ShowError("No landscape at level.");
-        return false;
-    }
-    else if(LandscapeNode::RENDERING_MODE_TILE_MASK_SHADER != workingLandscape->GetRenderingMode()) 
-    {
-        ErrorNotifier::Instance()->ShowError("Rendering mode is not RENDERING_MODE_TILE_MASK_SHADER.");
-        return false;
-    }
-    
-    workingScene = SafeRetain(newScene);
-    return true;
-}
-
-void LandscapeEditor::SetPaintTool(PaintTool *newTool)
-{
-    currentTool = newTool;
-}
-
-void LandscapeEditor::SetSettings(LandscapeEditorSettings *newSettings)
+void LandscapeEditorColor::SetSettings(LandscapeEditorSettings *newSettings)
 {
     settings = newSettings;
 }
 
-LandscapeNode *LandscapeEditor::GetLandscape()
-{
-    return workingLandscape;
-}
-
-bool LandscapeEditor::IsActive()
-{
-    return (ELE_NONE != state);
-}
-
-void LandscapeEditor::Toggle()
-{
-    if(ELE_ACTIVE == state)
-    {
-        state = ELE_CLOSING;
-        
-        SaveNewMask();
-    }
-    else if(ELE_NONE == state)
-    {
-        SafeRelease(heightmapNode);
-        heightmapNode = new HeightmapNode(workingScene);
-        workingScene->AddNode(heightmapNode);
-        
-        isPaintActive = false;
-        
-        state = ELE_ACTIVE;
-        
-        if(delegate)
-        {
-            delegate->LandscapeEditorStarted();
-        }
-
-        CreateMaskTexture();
-    }
-}
-
-void LandscapeEditor::Close()
-{
-    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, savedTexture);
-    SafeRelease(workingLandscape);
-
-    workingScene->RemoveNode(heightmapNode);
-    SafeRelease(heightmapNode);
-
-    SafeRelease(workingScene);
-    
-    SafeRelease(savedTexture);
-    SafeRelease(maskSprite);
-	SafeRelease(oldMaskSprite);
-	SafeRelease(toolSprite);
-    
-    currentTool = NULL;
-    state = ELE_NONE;
-    
-    if(delegate)
-    {
-        delegate->LandscapeEditorFinished();
-    }
-}
-
-
-void LandscapeEditor::CreateMaskTexture()
+void LandscapeEditorColor::CreateMaskTexture()
 {
     SafeRelease(savedTexture);
     savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
@@ -212,135 +100,8 @@ void LandscapeEditor::CreateMaskTexture()
 	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, oldMaskSprite->GetTexture());
 }
 
-void LandscapeEditor::SaveNewMask()
-{
-    state = ELE_SAVING_MASK;
-    
-    if(savedTexture)
-    {
-        String pathToFile = savedTexture->relativePathname;
-        SaveMaskAs(pathToFile, true);
-    }
-    else if(!fileSystemDialog->GetParent())
-    {
-        fileSystemDialog->SetExtensionFilter(".png");
-        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
-        
-        fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
-        
-        fileSystemDialog->Show(UIScreenManager::Instance()->GetScreen());
-        fileSystemDialogOpMode = DIALOG_OPERATION_SAVE;
-    }
-}
 
-void LandscapeEditor::SaveMaskAs(const String &pathToFile, bool closeLE)
-{
-    if(maskSprite)
-    {
-        Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
-        if(img)
-        {
-            img->Save(pathToFile);
-            SafeRelease(img);
-            
-            SafeRelease(savedTexture);
-            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, pathToFile); 
-            savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
-            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, maskSprite->GetTexture());
-        }
-    }
-    
-    if(closeLE)
-    {
-        state = ELE_MASK_SAVED;
-        Close();
-    }
-}
-
-bool LandscapeEditor::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &landscapePoint)
-{
-    Vector3 from, dir;
-    parent->GetCursorVectors(&from, &dir, touchPoint);
-    Vector3 to = from + dir * 200.f;
-    
-    Vector3 point;
-    bool isIntersect = workingScene->LandscapeIntersection(from, to, point);
-    
-    if(isIntersect)
-    {
-        AABBox3 box = workingLandscape->GetBoundingBox();
-        
-        landscapePoint.x = (point.x - box.min.x)* maskSprite->GetWidth() / (box.max.x - box.min.x);
-        landscapePoint.y = (point.y - box.min.y) * maskSprite->GetWidth() / (box.max.y - box.min.y);
-    }
-    
-    return isIntersect;
-}
-
-
-
-bool LandscapeEditor::Input(DAVA::UIEvent *touch)
-{
-    if(UIEvent::BUTTON_1 == touch->tid)
-    {
-        if(UIEvent::PHASE_BEGAN == touch->phase)
-        {
-            Vector2 point;
-            isPaintActive = GetLandscapePoint(touch->point, point);
-            if(isPaintActive)
-            {
-                prevDrawPos = Vector2(-100, -100);
-                
-                startPoint = endPoint = point;
-                UpdateTileMaskTool();
-            }
-            return true;
-        }
-        else if(UIEvent::PHASE_DRAG == touch->phase)
-        {
-            Vector2 point;
-            bool isIntersect = GetLandscapePoint(touch->point, point);
-            if(isIntersect)
-            {
-                if(!isPaintActive)
-                {
-                    isPaintActive = true;
-                    startPoint = point;
-                }
-                
-                endPoint = point;
-                UpdateTileMaskTool();
-            }
-            else 
-            {
-                isPaintActive = false;
-                endPoint = point;
-                
-                UpdateTileMaskTool();
-                prevDrawPos = Vector2(-100, -100);
-            }
-            return true;
-        }
-        else if(UIEvent::PHASE_ENDED == touch->phase)
-        {
-            Vector2 point;
-            GetLandscapePoint(touch->point, point);
-            if(isPaintActive)
-            {
-                isPaintActive = false;
-                
-                endPoint = point;
-                UpdateTileMaskTool();
-                prevDrawPos = Vector2(-100, -100);
-            }
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void LandscapeEditor::UpdateTileMask()
+void LandscapeEditorColor::UpdateTileMask()
 {
 	int32 colorType;
 	if(settings->redMask)
@@ -385,9 +146,7 @@ void LandscapeEditor::UpdateTileMask()
 	tileMaskEditorShader->SetUniformValue(colorTypeUniform, colorType);
 	int32 intensityUniform = tileMaskEditorShader->FindUniformLocationByName("intensity");
     
-//    float32 intension = currentTool->intension * currentTool->intension;
 	tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->intension);
-//	tileMaskEditorShader->SetUniformValue(intensityUniform, intension);
     
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     
@@ -400,7 +159,7 @@ void LandscapeEditor::UpdateTileMask()
 	maskSprite = temp;
 }
 
-void LandscapeEditor::UpdateTileMaskTool()
+void LandscapeEditorColor::UpdateTileMaskTool()
 {
 	if(currentTool && currentTool->sprite && currentTool->zoom)
 	{
@@ -423,54 +182,90 @@ void LandscapeEditor::UpdateTileMaskTool()
 	}
 }
 
-#pragma mark -- LandscapeToolsPanelDelegate
-void LandscapeEditor::OnToolSelected(PaintTool *newTool)
+bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 {
-    currentTool = newTool;
+    bool ret = LandscapeEditorBase::SetScene(newScene);
+    if(ret)
+    {
+        if(LandscapeNode::RENDERING_MODE_TILE_MASK_SHADER != workingLandscape->GetRenderingMode()) 
+        {
+            ErrorNotifier::Instance()->ShowError("Rendering mode is not RENDERING_MODE_TILE_MASK_SHADER.");
+
+            SafeRelease(workingLandscape);
+            SafeRelease(workingScene);
+            
+            ret = false;
+        }
+    }
+    
+    return ret;
 }
 
+void LandscapeEditorColor::InputAction()
+{
+    UpdateTileMaskTool(); 
+}
+
+void LandscapeEditorColor::HideAction()
+{
+    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, savedTexture);
+    
+    SafeRelease(maskSprite);
+	SafeRelease(oldMaskSprite);
+	SafeRelease(toolSprite);
+}
+
+void LandscapeEditorColor::ShowAction()
+{
+    CreateMaskTexture();
+    landscapeSize = maskSprite->GetWidth();
+}
+
+void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
+{
+    if(maskSprite)
+    {
+        Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
+        if(img)
+        {
+            img->Save(pathToFile);
+            SafeRelease(img);
+            
+            SafeRelease(savedTexture);
+            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, pathToFile); 
+            savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
+            workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, maskSprite->GetTexture());
+        }
+    }
+}
+
+NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
+{
+    LandscapeEditorPropertyControl *propsControl = 
+    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect);
+    
+    SetSettings(propsControl->Settings());
+    return propsControl;
+}
+
+
 #pragma mark -- LandscapeEditorPropertyControlDelegate
-void LandscapeEditor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings)
+void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings)
 {
     settings = settings;
 }
 
-void LandscapeEditor::MaskTextureWillChanged()
+void LandscapeEditorColor::MaskTextureWillChanged()
 {
     if(savedTexture)
     {
         String pathToFile = savedTexture->relativePathname;
-        SaveMaskAs(pathToFile, false);
+        SaveTextureAs(pathToFile, false);
     }
 }
 
-void LandscapeEditor::MaskTextureDidChanged()
+void LandscapeEditorColor::MaskTextureDidChanged()
 {
     CreateMaskTexture();
-}
-
-#pragma mark -- UIFileSystemDialogDelegate
-void LandscapeEditor::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
-{
-    switch (fileSystemDialogOpMode) 
-    {
-        case DIALOG_OPERATION_SAVE:
-        {
-            SaveMaskAs(pathToFile, true);
-            break;
-        }
-            
-        default:
-            break;
-    }
-    
-    fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
-}
-
-void LandscapeEditor::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
-{
-    fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
-    
-    Close();
 }
 

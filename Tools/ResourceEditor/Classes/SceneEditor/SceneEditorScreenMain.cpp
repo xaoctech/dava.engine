@@ -200,6 +200,7 @@ void SceneEditorScreenMain::CreateTopMenu()
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
 	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
+    ControlsFactory::CustomizeButtonExpandable(btnLandscape);
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
 	x += dx;
@@ -760,6 +761,12 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             break;
         }
             
+        case MENUID_LANDSCAPE:
+        {
+            ToggleLandscape(itemID);
+            break;
+        }
+            
         default:
             break;
     }
@@ -901,6 +908,25 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 
         }
             
+        case MENUID_LANDSCAPE:
+        {
+            switch (itemID) 
+            {
+                case ELEMID_HEIGHTMAP:
+                    text = LocalizedString(L"menu.landscape.heightmap");
+                    break;
+                    
+                case ELEMID_COLOR_MAP:
+                    text = LocalizedString(L"menu.landscape.colormap");
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            break;
+        }
+            
         default:
             break;
     }
@@ -940,6 +966,12 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         case MENUID_EXPORTTOGAME:
         {
             retCount = EETGMID_COUNT;
+            break;
+        }
+            
+        case MENUID_LANDSCAPE:
+        {
+            retCount = ELEMID_COUNT;
             break;
         }
             
@@ -995,17 +1027,8 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
 
 void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
 {
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleLandscapeEditor();
-    
-//    if(landscapeEditor->GetParent())
-//    {
-//        RemoveControl(landscapeEditor);
-//    }
-//    else
-//    {
-//        AddControl(landscapeEditor);
-//    }
+    menuPopup->InitControl(MENUID_LANDSCAPE, btnLandscape->GetRect());
+    AddControl(menuPopup);
 }
 
 void SceneEditorScreenMain::EditMaterial(Material *material)
@@ -1311,4 +1334,11 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 		SceneNode * child = node->GetChild(ci);
 		ExportLandscapeAndMeshLightmaps(child);
 	}
+}
+
+
+void SceneEditorScreenMain::ToggleLandscape(int32 landscapeEditorMode)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ToggleLandscapeEditor(landscapeEditorMode);
 }

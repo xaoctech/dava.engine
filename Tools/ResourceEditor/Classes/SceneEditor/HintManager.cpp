@@ -82,11 +82,6 @@ void HintManager::ShowHint(const WideString &hintMessage, const DAVA::Rect &cont
                                                                      Interpolation::EASY_IN, 2);
         hintAlphaAnimation->AddEvent(Animation::EVENT_ANIMATION_END, 
                                     Message(this, &HintManager::OnAlphaAnimationDone, hintControl));
-
-        
-        
-        
-        
         hints.push_back(hintControl);
     }
 }

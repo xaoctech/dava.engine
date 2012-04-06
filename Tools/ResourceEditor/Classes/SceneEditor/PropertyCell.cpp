@@ -317,6 +317,8 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     }
     
     SetData(prop);
+    
+    moveCounter = 0;
 }
 
 PropertyFilepathCell::~PropertyFilepathCell()
@@ -384,6 +386,29 @@ void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * 
     property->SetString("");
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
+}
+
+void PropertyFilepathCell::WillAppear()
+{
+    moveCounter = 0;
+    
+    UIListCell::WillAppear();
+}
+
+void PropertyFilepathCell::Input(UIEvent *currentInput)
+{
+    if(currentInput->phase == UIEvent::PHASE_MOVE)
+    {
+        ++moveCounter;
+        Logger::Debug("move");
+    }
+    else 
+    {
+        moveCounter = 0;
+        Logger::Debug("not_move");
+    }
+    
+    UIListCell::Input(currentInput);
 }
 
 void PropertyFilepathCell::OnHint(BaseObject * object, void * userData, void * callerData)
