@@ -45,7 +45,7 @@ UIScreenTransition::UIScreenTransition()
 {
 	duration = 0.7f;
 	interpolationFunc = Interpolation::GetFunction(Interpolation::EASY_IN_EASY_OUT);
-	SetFillBorderOrder(UIScreen::FILL_BORDER_NONE);
+	SetFillBorderOrder(UIScreen::FILL_BORDER_AFTER_DRAW);
 }
 
 UIScreenTransition::~UIScreenTransition()
