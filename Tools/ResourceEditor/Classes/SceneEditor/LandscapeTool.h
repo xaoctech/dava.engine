@@ -52,7 +52,8 @@ public:
     float32 maxStrength;
     float32 maxSize;
     
-    bool releativeDrawing;
+    bool relativeDrawing;
+    bool averageDrawing;
 };
 
 #endif // __PAINT_TOOL_H__

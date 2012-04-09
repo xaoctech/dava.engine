@@ -17,7 +17,8 @@ LandscapeTool::LandscapeTool(eBrushType _type, const String & _spriteName, const
     maxStrength = DefaultStrength();
     strength = 1.f;
     
-    releativeDrawing = true;
+    relativeDrawing = true;
+    averageDrawing = false;
 }
 
 LandscapeTool::~LandscapeTool()

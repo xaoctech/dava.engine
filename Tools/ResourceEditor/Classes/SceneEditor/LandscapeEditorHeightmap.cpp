@@ -7,7 +7,7 @@
 #include "../EditorScene.h"
 
 #include "ImageRasterizer.h"
-
+#include "HeightmapNode.h"
 
 
 #pragma mark --LandscapeEditorHeightmap
@@ -169,29 +169,35 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 
 void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 {
-//    UpdateToolImage();
-
-//    uint64 deltaTime = endTime - startTime;
-//    if(deltaTime)
+    if(currentTool && toolImage && currentTool->strength)
     {
-        if(currentTool && toolImage && currentTool->strength)
+        float32 scaleSize = toolImage->GetWidth();
+        Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+        if(pos != prevDrawPos)
         {
-            float32 scaleSize = toolImage->GetWidth();
-//          Vector2 deltaPos = endPoint - startPoint;
+            wasTileMaskToolUpdate = true;
+            
+            if(currentTool->averageDrawing)
             {
-                Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
-                if(pos != prevDrawPos)
-                {
-                    wasTileMaskToolUpdate = true;
-                    
-                    float32 koef = currentTool->strength * timeElapsed;
-//                    ImageRasterizer::DrawRelative(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
-                    ImageRasterizer::DrawRelativeRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
-//                    ImageRasterizer::DrawAverage(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, deltaTime / 1000.0f);
-                }
-                startPoint = endPoint;
+                ImageRasterizer::DrawAverageRGBA(heightImage, currentTool->image, pos.x, pos.y, scaleSize, scaleSize, timeElapsed);
             }
+            else if(currentTool->relativeDrawing)
+            {
+                float32 koef = currentTool->strength * timeElapsed;
+                ImageRasterizer::DrawRelativeRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+            }
+            else 
+            {
+                float32 koef = currentTool->strength * timeElapsed;
+                ImageRasterizer::DrawAbsoluteRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, 0.f);
+            }
+            
+            workingScene->RemoveNode(heightmapNode);
+            SafeRelease(heightmapNode);
+            heightmapNode = new HeightmapNode(workingScene);
+            workingScene->AddNode(heightmapNode);
         }
+        startPoint = endPoint;
     }
 }
 
@@ -236,6 +242,8 @@ void LandscapeEditorHeightmap::ShowAction()
     
 
     landscapeDebugNode = new LandscapeDebugNode(workingScene);
+    landscapeDebugNode->SetName("Landscape");
+    landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightMapPathname());
     
     landscapeDebugNode->SetRenderingMode(workingLandscape->GetRenderingMode());
     for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)

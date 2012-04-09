@@ -105,9 +105,6 @@ protected:
     Vector2 endPoint;
     Vector2 prevDrawPos;
     
-    uint64 startTime;
-    uint64 endTime;
-    
     LandscapeToolsPanel *toolsPanel;
 };
 

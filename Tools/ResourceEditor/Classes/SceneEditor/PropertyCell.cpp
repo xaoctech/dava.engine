@@ -268,7 +268,7 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::ValueChanged(bool newValue)
+void PropertyBoolCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
@@ -790,7 +790,7 @@ float32 PropertyTexturePreviewCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT * 2;
 }
 
-void PropertyTexturePreviewCell::ValueChanged(bool newValue)
+void PropertyTexturePreviewCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
