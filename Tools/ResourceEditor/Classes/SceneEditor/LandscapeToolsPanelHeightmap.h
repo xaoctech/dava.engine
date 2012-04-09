@@ -4,14 +4,19 @@
 #include "DAVAEngine.h"
 #include "LandscapeToolsPanel.h"
 #include "LandscapeTool.h"
+#include "UICheckBox.h"
 
 using namespace DAVA;
 
-class LandscapeToolsPanelHeightmap: public LandscapeToolsPanel, public UITextFieldDelegate
+class LandscapeToolsPanelHeightmap: 
+    public LandscapeToolsPanel, 
+    public UITextFieldDelegate,
+    public UICheckBoxDelegate
 {
     enum eLocalConst
     {
-        TEXTFIELD_WIDTH = 50
+        TEXTFIELD_WIDTH = 50,
+        TEXT_WIDTH = 100
     };
 
     
@@ -28,10 +33,16 @@ public:
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, 
                                      int32 replacementLength, const WideString & replacementString);
 
+    //UICheckBoxDelegate
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
+
+    
 protected:
 
 	void OnToolSelected(BaseObject * object, void * userData, void * callerData);
 
+    UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
+    
     UIControl *toolButtons[LandscapeTool::EBT_COUNT_COLOR];
     LandscapeTool *tools[LandscapeTool::EBT_COUNT_COLOR];
 
@@ -44,6 +55,8 @@ protected:
     
     UITextField *CreateTextField(const Rect &rect);
     
+    UICheckBox *relative;
+    UICheckBox *average;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_HEIGHTMAP_H__

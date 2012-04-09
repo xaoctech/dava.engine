@@ -70,11 +70,22 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     
     sizeValue->SetText(Format(L"%.3f", LandscapeTool::DefaultSize()));
     strengthValue->SetText(Format(L"%.3f", LandscapeTool::DefaultStrength()));
+    
+    
+    relative = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, 
+                                   ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
+                              LocalizedString(L"landscapeeditor.relative"));
+    average = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT + ControlsFactory::BUTTON_HEIGHT, 
+                                  ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
+                              LocalizedString(L"landscapeeditor.average"));
 }
 
 
 LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
 {
+    SafeRelease(average);
+    SafeRelease(relative);
+    
     SafeRelease(sizeSlider);
     SafeRelease(strengthSlider);
 
@@ -87,6 +98,29 @@ LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
         SafeRelease(tools[i]);
     }
 }
+
+UICheckBox *LandscapeToolsPanelHeightmap::CreateCkeckbox(const Rect &rect, const WideString &text)
+{
+    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
+    checkbox->SetDelegate(this);
+    AddControl(checkbox);
+    
+    Rect textRect;
+    textRect.x = rect.x + rect.dx + ControlsFactory::OFFSET;
+    textRect.y = rect.y;
+    textRect.dx = TEXT_WIDTH;
+    textRect.dy = rect.dy;
+    
+    UIStaticText *textControl = new UIStaticText(textRect);
+    textControl->SetText(text);
+    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
+    AddControl(textControl);
+    SafeRelease(textControl);
+    
+    return checkbox;
+}
+
 
 
 void LandscapeToolsPanelHeightmap::WillAppear()
@@ -115,6 +149,9 @@ void LandscapeToolsPanelHeightmap::OnToolSelected(DAVA::BaseObject *object, void
             
             sizeValue->SetText(Format(L"%.3f", selectedTool->maxSize));
             strengthValue->SetText(Format(L"%.3f", selectedTool->maxStrength));
+            
+            average->SetChecked(selectedTool->averageDrawing, false);
+            relative->SetChecked(selectedTool->relativeDrawing, false);
         }
         else
         {
@@ -232,4 +269,24 @@ bool LandscapeToolsPanelHeightmap::TextFieldKeyPressed(UITextField * textField, 
     return true;
 };
 
-
+#pragma mark  --UICheckBoxDelegate
+void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+{
+    if(forCheckbox == average)
+    {
+        if(newValue)
+        {
+            relative->SetChecked(false, false);
+        }
+    }
+    else if(forCheckbox == relative)
+    {
+        if(newValue)
+        {
+            average->SetChecked(false, false);
+        }
+    }
+    
+    selectedTool->averageDrawing = average->Checked();
+    selectedTool->relativeDrawing = relative->Checked();
+}

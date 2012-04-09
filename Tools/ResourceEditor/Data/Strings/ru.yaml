@@ -98,6 +98,8 @@ landscapeeditor.landscapeeditor: "Редактор ландшафта"
 landscapeeditor.drawstright: "Рисовать/Стирать"
 landscapeeditor.size: "Размер:"
 landscapeeditor.strength: "Сила:"
+landscapeeditor.relative: "Относительно/Абсолютно"
+landscapeeditor.average: "Сгладить"
 
 #Material Editor
 materialeditor.materials: "Материалы:"

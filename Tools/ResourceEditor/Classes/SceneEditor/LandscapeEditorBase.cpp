@@ -26,6 +26,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 
     workingLandscape = NULL;
     workingScene = NULL;
+
+	savedTexture = NULL;
     
     currentTool = NULL;
     heightmapNode = NULL;
@@ -33,7 +35,6 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     toolsPanel = NULL;
     
     landscapeSize = 0;
-	savedTexture = 0;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
