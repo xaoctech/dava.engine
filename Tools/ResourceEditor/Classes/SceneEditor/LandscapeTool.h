@@ -49,6 +49,10 @@ public:
     //height
     float32 strength;
     float32 size;
+    float32 maxStrength;
+    float32 maxSize;
+    
+    bool releativeDrawing;
 };
 
 #endif // __PAINT_TOOL_H__

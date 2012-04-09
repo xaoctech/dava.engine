@@ -57,7 +57,7 @@ void Image::EnableAlphaPremultiplication(bool isEnabled)
 }
 
 
-uint32 Image::GetFormatSize(Image::PixelFormat format)
+uint32 Image::GetFormatSize(PixelFormat format)
 {
 	switch(format)
 	{
@@ -175,7 +175,7 @@ Image * Image::CreateFromFile(const String & pathName)
 	CGImageAlphaInfo		info;
 	CGAffineTransform		transform;
 	CGSize					imageSize;
-	Image::PixelFormat		pixelFormat;
+	PixelFormat		pixelFormat;
 //	bool					sizeToFit = false;
 	
 	CGImageRef image;
@@ -218,10 +218,10 @@ Image * Image::CreateFromFile(const String & pathName)
     
     if(CGColorSpaceGetNumberOfComponents(imageColorSpace) >= 3) 
 	{
-		if(hasAlpha)pixelFormat = Image::FORMAT_RGBA8888;
-		else pixelFormat = Image::FORMAT_RGB565;
+		if(hasAlpha)pixelFormat = FORMAT_RGBA8888;
+		else pixelFormat = FORMAT_RGB565;
 	} else 
-		pixelFormat = Image::FORMAT_A8;
+		pixelFormat = FORMAT_A8;
 	
 	imageSize = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
 	transform = CGAffineTransformIdentity;
@@ -254,21 +254,21 @@ Image * Image::CreateFromFile(const String & pathName)
 //	}
 	switch(pixelFormat) 
 	{		
-		case Image::FORMAT_RGBA8888:
-		case Image::FORMAT_RGBA4444:
+		case FORMAT_RGBA8888:
+		case FORMAT_RGBA4444:
 			colorSpace = CGColorSpaceCreateDeviceRGB();
 			data = new uint8[height * width * 4];
 			context = CGBitmapContextCreate(data, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
 			CGColorSpaceRelease(colorSpace);
 			break;
-		case Image::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			colorSpace = CGColorSpaceCreateDeviceRGB();
 			data = new uint8[height * width * 4];
 			context = CGBitmapContextCreate(data, width, height, 8, 4 * width, colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big);
 			CGColorSpaceRelease(colorSpace);
 			break;
 			
-		case Image::FORMAT_A8:
+		case FORMAT_A8:
 			colorSpace = CGColorSpaceCreateDeviceRGB();
 			data = new uint8[height * width * 4];
 			context = CGBitmapContextCreate(data, width, height, 8, 4 * width, colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big);
@@ -291,7 +291,7 @@ Image * Image::CreateFromFile(const String & pathName)
 	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image)), image);
 	
 	//Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGGBBBBB"
-	if(pixelFormat == Image::FORMAT_RGB565) 
+	if(pixelFormat == FORMAT_RGB565) 
 	{
 		tempData = new uint8[height * width * 2];
 		inPixel32 = (unsigned int*)data;
@@ -302,7 +302,7 @@ Image * Image::CreateFromFile(const String & pathName)
 		data = tempData;
 	}
     
-    if(pixelFormat == Image::FORMAT_A8) 
+    if(pixelFormat == FORMAT_A8) 
 	{
 		tempData = new uint8[height * width];
 		inPixel32 = (unsigned int*)data;
@@ -315,7 +315,7 @@ Image * Image::CreateFromFile(const String & pathName)
 		data = tempData;
 	}
 	
-	/*if(pixelFormat == Texture::FORMAT_RGBA8888) 
+	/*if(pixelFormat == FORMAT_RGBA8888) 
 	 {
 	 //		unsigned char * inAlphaData = (unsigned char *)alphaData;
 	 unsigned int * inOutPixel32 = (unsigned int*)data;
@@ -343,7 +343,7 @@ Image * Image::CreateFromFile(const String & pathName)
 	 }
 	 }*/
 	
-	if(pixelFormat == Image::FORMAT_RGBA4444) 
+	if(pixelFormat == FORMAT_RGBA4444) 
 	{
 		tempData = new uint8[height * width * 2];
 		inPixel32 = (unsigned int*)data;
@@ -411,7 +411,7 @@ Image * Image::CreateFromFile(const String & pathName)
 	}
     if (isAlphaPremultiplicationEnabled)
     {
-        if(davaImage->format == Image::FORMAT_RGBA8888) 
+        if(davaImage->format == FORMAT_RGBA8888) 
         {
             unsigned int * inOutPixel32 = (unsigned int*)davaImage->data;
             for(int i = 0; i < davaImage->width * davaImage->height; ++i)
@@ -500,8 +500,8 @@ void Image::Resize(int32 newWidth, int32 newHeight)
 
 void Image::Save(const String & filename)
 {
-	DVASSERT(format == FORMAT_RGBA8888);
-	LibPngWrapper::WritePngFile(filename.c_str(), width, height, data);
+	DVASSERT(format == FORMAT_RGBA8888 || format == FORMAT_A8);
+	LibPngWrapper::WritePngFile(filename.c_str(), width, height, data, format);
 }
 
 

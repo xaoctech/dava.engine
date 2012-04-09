@@ -72,9 +72,9 @@ void LandscapeEditorColor::CreateMaskTexture()
         texSize = savedTexture->width;
     }
     
-    maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, Texture::FORMAT_RGBA8888);
-	oldMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, Texture::FORMAT_RGBA8888);
-	toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, Texture::FORMAT_RGBA8888);
+    maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+	oldMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+	toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
     
     if(savedTexture)
     {
@@ -164,7 +164,7 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 	if(currentTool && currentTool->sprite && currentTool->zoom)
 	{
 		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->zoom * currentTool->zoom);
-		Vector2 deltaPos = endPoint - startPoint;
+//		Vector2 deltaPos = endPoint - startPoint;
 		{
 			Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
 			if(pos != prevDrawPos)
@@ -201,7 +201,7 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
     return ret;
 }
 
-void LandscapeEditorColor::InputAction()
+void LandscapeEditorColor::InputAction(int32 phase)
 {
     Texture *tex = NULL;
     if(settings->redMask)
