@@ -33,6 +33,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     toolsPanel = NULL;
     
     landscapeSize = 0;
+
+	savedTexture = 0;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()

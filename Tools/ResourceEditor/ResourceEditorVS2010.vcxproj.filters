@@ -731,9 +731,6 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PaintTool.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\DataGraph.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
@@ -746,9 +743,6 @@
     <ClCompile Include="Classes\SceneEditor\HintManager.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditor.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
@@ -756,6 +750,24 @@
       <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeTool.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1802,9 +1814,6 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PaintTool.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\DataGraph.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
@@ -1817,9 +1826,6 @@
     <ClInclude Include="Classes\SceneEditor\HintManager.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditor.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
@@ -1827,6 +1833,24 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneGraph.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeTool.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
