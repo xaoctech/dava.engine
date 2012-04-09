@@ -113,8 +113,8 @@ void LandscapeToolsPanelHeightmap::OnToolSelected(DAVA::BaseObject *object, void
             sizeSlider->SetValue(selectedTool->size);
             strengthSlider->SetValue(selectedTool->strength);
             
-            sizeValue->SetText(Format(L"%.3f", selectedTool->size));
-            strengthValue->SetText(Format(L"%.3f", selectedTool->strength));
+            sizeValue->SetText(Format(L"%.3f", selectedTool->maxSize));
+            strengthValue->SetText(Format(L"%.3f", selectedTool->maxStrength));
         }
         else
         {
@@ -173,26 +173,28 @@ void LandscapeToolsPanelHeightmap::TextFieldLostFocus(UITextField * textField)
         float32 value = atof(WStringToString(sizeValue->GetText()).c_str());
         
         sizeSlider->SetMinMaxValue(0.f, value);
-        
+        selectedTool->maxSize = value;
         if(value < selectedTool->size)
         {
             selectedTool->size = value;
-            sizeSlider->SetValue(selectedTool->size);
         }
+        sizeSlider->SetValue(selectedTool->size);
     }
     else if(textField == strengthValue)
     {
         float32 value = fabsf(atof(WStringToString(strengthValue->GetText()).c_str()));
-        strengthSlider->SetMinMaxValue(-value, value);
 
+        strengthSlider->SetMinMaxValue(-value, value);
+        selectedTool->maxStrength = value;
         if(value < selectedTool->strength)
         {
+            selectedTool->strength = value;
         }
         else if(selectedTool->strength < -value)
         {
             selectedTool->strength = -value;
-            strengthSlider->SetValue(selectedTool->strength);
         }
+        strengthSlider->SetValue(selectedTool->strength);
     }
 }
 

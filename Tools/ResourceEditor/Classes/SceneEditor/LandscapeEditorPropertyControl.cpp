@@ -9,7 +9,7 @@ LandscapeEditorSettings::LandscapeEditorSettings()
 
 void LandscapeEditorSettings::ResetAll()
 {
-    redMask = false;
+    redMask = true;
     greenMask = false;
     blueMask = false;
     alphaMask = false;

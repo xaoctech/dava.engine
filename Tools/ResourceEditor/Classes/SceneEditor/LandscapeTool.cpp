@@ -12,8 +12,12 @@ LandscapeTool::LandscapeTool(eBrushType _type, const String & _spriteName, const
     intension = (IntensionMax() + IntensionMin()) / 2.0f;
     zoom = (ZoomMax() + ZoomMin()) / 2.0f;
     
-    size = DefaultSize() / 2;
-    strength = DefaultStrength();
+    maxSize = DefaultSize();
+    size = DefaultSize() / 2.f;
+    maxStrength = DefaultStrength();
+    strength = 1.f;
+    
+    releativeDrawing = true;
 }
 
 LandscapeTool::~LandscapeTool()
@@ -44,10 +48,10 @@ float32 LandscapeTool::IntensionMax()
 
 float32 LandscapeTool::DefaultStrength()
 {
-    return 10.0f;
+    return 3.0f;
 }
 
 float32 LandscapeTool::DefaultSize()
 {
-    return 10.0f;
+    return 60.0f;
 }

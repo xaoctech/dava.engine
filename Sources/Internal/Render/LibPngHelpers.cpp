@@ -175,14 +175,14 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 		png_set_strip_16(png_ptr);
 	}
 
-	image->format = Image::FORMAT_RGBA8888;
+	image->format = FORMAT_RGBA8888;
 	if(color_type == PNG_COLOR_TYPE_GRAY)
 	{
-		image->format = Image::FORMAT_A8;
+		image->format = FORMAT_A8;
 	}
 	else if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA) 
 	{
-		image->format = Image::FORMAT_A8;
+		image->format = FORMAT_A8;
 		png_set_strip_alpha(png_ptr);
 	}
 	else if(color_type == PNG_COLOR_TYPE_PALETTE) 
@@ -248,20 +248,32 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 
 
 
-void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data)
+void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
 	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
-	png_byte color_type = PNG_COLOR_TYPE_RGBA;
-	png_byte bit_depth = 8;
 	png_color_8 sig_bit;
 	
 	png_structp png_ptr;
 	png_infop info_ptr;
-	
+    
+    
+	png_byte color_type = PNG_COLOR_TYPE_RGBA;
+	png_byte bit_depth = 8;
+    
+    int32 bytes_for_color = 4;
+    if(FORMAT_A8 == format)
+    {
+        color_type = PNG_COLOR_TYPE_GRAY;//_ALPHA;
+        bytes_for_color = 1;
+    }
+    
 	png_bytep * row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+    
+    
 	for (int y = 0; y < height; y++)
 	{
-		row_pointers[y] = (png_byte*) &data[y * width * 4];
+//		row_pointers[y] = (png_byte*) &data[y * width * 4];
+		row_pointers[y] = (png_byte*) &data[y * width * bytes_for_color];
 	}
 	
 	
@@ -307,19 +319,37 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
 		//abort_("[write_png_file] Error during writing header");
 		return;
 	}
+    
+    if(FORMAT_A8 == format)
+    {
+//        png_set_invert_alpha(png_ptr);
+    }
 	
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 				 bit_depth, color_type, PNG_INTERLACE_NONE,
 				 PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	
 	
-	sig_bit.red = 8;
-	sig_bit.green = 8;
-	sig_bit.blue = 8;
-	sig_bit.alpha = 8;
+    if(FORMAT_A8 == format)
+    {
+        sig_bit.red = 0;
+        sig_bit.green = 0;
+        sig_bit.blue = 0;
+        
+        sig_bit.gray = 8;
+        sig_bit.alpha = 8;
+    }
+    else 
+    {
+        sig_bit.red = 8;
+        sig_bit.green = 8;
+        sig_bit.blue = 8;
+        sig_bit.alpha = 8;
+    }
 
 	png_set_sBIT(png_ptr, info_ptr, &sig_bit);
-		
+
+    
 	png_write_info(png_ptr, info_ptr);
 	png_set_shift(png_ptr, &sig_bit);
 	png_set_packing(png_ptr);
@@ -354,6 +384,7 @@ PngImage::PngImage()
 :	width(0)
 ,	height(0)
 ,	data(0)
+,   format(FORMAT_INVALID)
 {
 		
 }
@@ -363,6 +394,7 @@ PngImage::~PngImage()
 	SafeDeleteArray(data);
 	width = 0;
 	height = 0;
+    format = FORMAT_INVALID;
 }
 
 bool PngImage::Load(const char * filename)
@@ -373,7 +405,7 @@ bool PngImage::Load(const char * filename)
 
 bool PngImage::Save(const char * filename)
 {
-	LibPngWrapper::WritePngFile(filename, width, height, data);
+	LibPngWrapper::WritePngFile(filename, width, height, data, format);
 	return true;
 }
 
@@ -425,9 +457,10 @@ bool PngImage::CreateFromFBOSprite(Sprite * fboSprite)
 	width = fboSprite->GetTexture()->GetWidth();
 	height = fboSprite->GetTexture()->GetHeight();
 	data = new uint8[width * 4 * height];
-
+    format = fboSprite->GetTexture()->format;    
+    
 	Texture * texture = fboSprite->GetTexture();
-	if (texture->format == Texture::FORMAT_RGBA8888)
+	if (texture->format == FORMAT_RGBA8888)
 	{
 		//glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
 		//glBindTexture(GL_TEXTURE_2D, texture->id);

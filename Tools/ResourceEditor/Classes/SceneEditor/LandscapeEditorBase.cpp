@@ -33,7 +33,6 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     toolsPanel = NULL;
     
     landscapeSize = 0;
-
 	savedTexture = 0;
 }
 
@@ -55,6 +54,9 @@ void LandscapeEditorBase::Draw(const DAVA::UIGeometricData &geometricData)
 {
 }
 
+void LandscapeEditorBase::Update(float32 timeElapsed)
+{
+}
 
 bool LandscapeEditorBase::SetScene(EditorScene *newScene)
 {
@@ -171,7 +173,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
                 prevDrawPos = Vector2(-100, -100);
                 startPoint = endPoint = point;
                 
-                InputAction();
+                InputAction(touch->phase);
             }
             return true;
         }
@@ -188,15 +190,14 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
                 }
                 
                 endPoint = point;
-                
-                InputAction();
+                InputAction(touch->phase);
             }
             else 
             {
                 isPaintActive = false;
                 endPoint = point;
   
-                InputAction();
+                InputAction(touch->phase);
                 prevDrawPos = Vector2(-100, -100);
             }
             return true;
@@ -211,7 +212,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
                 
                 endPoint = point;
                 
-                InputAction();
+                InputAction(touch->phase);
                 prevDrawPos = Vector2(-100, -100);
             }
             return true;

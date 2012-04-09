@@ -39,7 +39,7 @@ public:
 
 protected:
 
-    virtual void InputAction();
+    virtual void InputAction(int32 phase);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);

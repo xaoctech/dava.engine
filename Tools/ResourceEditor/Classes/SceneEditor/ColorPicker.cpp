@@ -6,7 +6,7 @@
 ColorDetailControl::ColorDetailControl(const Rect &rect)
 :   UIControl(rect)
 {
-    colorMap = Sprite::CreateAsRenderTarget(rect.dx, rect.dy, Texture::FORMAT_RGBA8888);
+    colorMap = Sprite::CreateAsRenderTarget(rect.dx, rect.dy, FORMAT_RGBA8888);
     SetSprite(colorMap, 0);
     
     selectedColor = Color(1.0f, 1.0f, 1.0f, 1.0f);

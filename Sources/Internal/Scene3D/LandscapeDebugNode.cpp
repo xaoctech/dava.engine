@@ -99,6 +99,12 @@ void LandscapeDebugNode::Draw()
     UnbindMaterial();
 }
     
+void LandscapeDebugNode::SetHeightmapPath(const String &path)
+{
+    heightMapPath = path;
+}
+
+    
 };
 
 
