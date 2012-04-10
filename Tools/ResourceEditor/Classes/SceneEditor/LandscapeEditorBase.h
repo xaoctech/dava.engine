@@ -58,7 +58,7 @@ public:
     
     LandscapeNode *GetLandscape();
     
-    UIControl *GetToolPanel();
+    LandscapeToolsPanel *GetToolPanel();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
     
     //file dialog delegate
@@ -95,7 +95,7 @@ protected:
 
     LandscapeTool *currentTool;
 
-    Texture *savedTexture;
+    String savedPath;
     int32 landscapeSize;
 
     EditorScene *workingScene;    

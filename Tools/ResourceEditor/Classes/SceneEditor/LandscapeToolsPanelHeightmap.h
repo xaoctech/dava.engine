@@ -24,8 +24,6 @@ public:
     LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanelHeightmap();
     
-    virtual void WillAppear();
-    
     //UITextFieldDelegate
     virtual void TextFieldShouldReturn(UITextField * textField);
     virtual void TextFieldShouldCancel(UITextField * textField);
@@ -36,16 +34,14 @@ public:
     //UICheckBoxDelegate
     virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
-    
+    //LandscapeToolsSelectionDelegate
+    virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
+
 protected:
 
-	void OnToolSelected(BaseObject * object, void * userData, void * callerData);
 
     UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
     
-    UIControl *toolButtons[LandscapeTool::EBT_COUNT_COLOR];
-    LandscapeTool *tools[LandscapeTool::EBT_COUNT_COLOR];
-
     UISlider *sizeSlider;
     UITextField *sizeValue;
     UISlider *strengthSlider;

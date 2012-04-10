@@ -24,6 +24,7 @@
 		5C0971F21511DEAC00782FCC /* TextureConverterCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F01511DEAC00782FCC /* TextureConverterCell.cpp */; };
 		5C0971F51511FE5400782FCC /* ErrorNotifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F31511FE5400782FCC /* ErrorNotifier.cpp */; };
 		5C0971F81512206800782FCC /* UIZoomControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F61512206800782FCC /* UIZoomControl.cpp */; };
+		5C0CD38E1534329F00BF9C84 /* LandscapeToolsSelection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0CD38C1534329F00BF9C84 /* LandscapeToolsSelection.cpp */; };
 		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
 		5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8914A926CA005DDB16 /* OutputManager.cpp */; };
 		5C1A035D152D9AED00B624BB /* LandscapeEditorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1A035B152D9AED00B624BB /* LandscapeEditorBase.cpp */; };
@@ -360,6 +361,8 @@
 		5C0971F41511FE5400782FCC /* ErrorNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorNotifier.h; sourceTree = "<group>"; };
 		5C0971F61512206800782FCC /* UIZoomControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIZoomControl.cpp; sourceTree = "<group>"; };
 		5C0971F71512206800782FCC /* UIZoomControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIZoomControl.h; sourceTree = "<group>"; };
+		5C0CD38C1534329F00BF9C84 /* LandscapeToolsSelection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeToolsSelection.cpp; sourceTree = "<group>"; };
+		5C0CD38D1534329F00BF9C84 /* LandscapeToolsSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeToolsSelection.h; sourceTree = "<group>"; };
 		5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraOutputControl.cpp; sourceTree = "<group>"; };
 		5C170B8714A916B0005DDB16 /* CameraOutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOutputControl.h; sourceTree = "<group>"; };
 		5C170B8914A926CA005DDB16 /* OutputManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputManager.cpp; sourceTree = "<group>"; };
@@ -1097,6 +1100,8 @@
 				5C5C3942152DC69300BA0B9F /* LandscapeToolsPanelColor.h */,
 				5CDACB27151B44040031F8C7 /* LandscapeToolsPanel.cpp */,
 				5CDACB28151B44040031F8C7 /* LandscapeToolsPanel.h */,
+				5C0CD38C1534329F00BF9C84 /* LandscapeToolsSelection.cpp */,
+				5C0CD38D1534329F00BF9C84 /* LandscapeToolsSelection.h */,
 			);
 			name = LandscapeEditor;
 			sourceTree = "<group>";
@@ -2343,6 +2348,7 @@
 				5C7A35DD152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp in Sources */,
 				5C7A35E0152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp in Sources */,
 				5CBF5FA5152F3E5200107D6B /* ImageRasterizer.cpp in Sources */,
+				5C0CD38E1534329F00BF9C84 /* LandscapeToolsSelection.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

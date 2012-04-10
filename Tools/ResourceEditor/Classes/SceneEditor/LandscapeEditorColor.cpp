@@ -19,6 +19,7 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     maskSprite = NULL;
 	oldMaskSprite = NULL;
 	toolSprite = NULL;
+    savedTexture = NULL;
     settings = NULL;
     
     //init draw params
@@ -33,6 +34,8 @@ LandscapeEditorColor::~LandscapeEditorColor()
 {
     SafeRelease(tileMaskEditorShader);
 
+    SafeRelease(savedTexture);
+    
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
@@ -53,15 +56,18 @@ void LandscapeEditorColor::Draw(const DAVA::UIGeometricData &geometricData)
 	}
 }
 
-void LandscapeEditorColor::SetSettings(LandscapeEditorSettings *newSettings)
-{
-    settings = newSettings;
-}
-
 void LandscapeEditorColor::CreateMaskTexture()
 {
     SafeRelease(savedTexture);
     savedTexture = SafeRetain(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
+    if(savedTexture)
+    {
+        savedPath = savedTexture->relativePathname;
+    }
+    else 
+    {
+        savedPath = "";
+    }
     
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
@@ -265,15 +271,15 @@ NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
     LandscapeEditorPropertyControl *propsControl = 
     (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect);
     
-    SetSettings(propsControl->Settings());
+    LandscapeEditorSettingsChanged(propsControl->Settings());
     return propsControl;
 }
 
 
 #pragma mark -- LandscapeEditorPropertyControlDelegate
-void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings)
+void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
 {
-    settings = settings;
+    settings = newSettings;
 }
 
 void LandscapeEditorColor::MaskTextureWillChanged()
