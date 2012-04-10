@@ -16,7 +16,7 @@ class LandscapeToolsPanelHeightmap:
     enum eLocalConst
     {
         TEXTFIELD_WIDTH = 50,
-        TEXT_WIDTH = 100
+        TEXT_WIDTH = 50
     };
 
     
