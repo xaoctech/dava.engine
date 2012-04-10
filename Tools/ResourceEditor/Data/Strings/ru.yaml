@@ -100,6 +100,7 @@ landscapeeditor.size: "Размер:"
 landscapeeditor.strength: "Сила:"
 landscapeeditor.relative: "Относительно/Абсолютно"
 landscapeeditor.average: "Сгладить"
+landscapeeditor.height: "Абсолютная высота"
 
 #Material Editor
 materialeditor.materials: "Материалы:"

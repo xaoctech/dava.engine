@@ -53,6 +53,8 @@ protected:
     
     UICheckBox *relative;
     UICheckBox *average;
+    
+    UITextField *heightValue;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_HEIGHTMAP_H__

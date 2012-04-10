@@ -176,7 +176,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
             else 
             {
                 float32 koef = currentTool->strength * timeElapsed;
-                ImageRasterizer::DrawAbsoluteRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, 0.f);
+                ImageRasterizer::DrawAbsoluteRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
             }
             
             workingScene->RemoveNode(heightmapNode);
@@ -229,7 +229,6 @@ void LandscapeEditorHeightmap::HideAction()
 void LandscapeEditorHeightmap::ShowAction()
 {
     workingScene->RemoveNode(workingLandscape);
-    
 
     landscapeDebugNode = new LandscapeDebugNode(workingScene);
     landscapeDebugNode->SetName("Landscape");
