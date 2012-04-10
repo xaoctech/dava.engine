@@ -25,10 +25,7 @@ public:
     
 	virtual void Draw(const UIGeometricData &geometricData);
 
-    void SetSettings(LandscapeEditorSettings *newSettings);
-    
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
-    
     
     virtual bool SetScene(EditorScene *newScene);
     
@@ -39,7 +36,7 @@ public:
 
 protected:
 
-    virtual void InputAction();
+    virtual void InputAction(int32 phase);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
@@ -54,6 +51,8 @@ protected:
 	Sprite *oldMaskSprite;
 	Sprite *toolSprite;
     
+    Texture *savedTexture;
+
 	bool wasTileMaskToolUpdate;
     
     LandscapeEditorSettings *settings;

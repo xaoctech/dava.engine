@@ -361,14 +361,14 @@ Sprite* Sprite::Create(const String &spriteName)
 	return spr;
 }
 
-Sprite* Sprite::CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded)
+Sprite* Sprite::CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded)
 {
 	Sprite * sprite = new Sprite();
 	sprite->InitAsRenderTarget(sprWidth, sprHeight, textureFormat, contentScaleIncluded);
 	return sprite;
 }
 
-void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded)
+void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded)
 {
 	if (!contentScaleIncluded)
 	{

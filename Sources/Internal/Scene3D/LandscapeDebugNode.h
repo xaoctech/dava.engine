@@ -70,6 +70,8 @@ public:
      */
 	virtual void Draw();
 
+    void SetHeightmapPath(const String &path);
+    
 protected:	
     
     Vector<LandscapeVertex> debugVertices;

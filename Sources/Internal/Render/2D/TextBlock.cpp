@@ -204,7 +204,7 @@ Sprite * TextBlock::GetSprite()
 	DVASSERT(sprite);
 	if (!sprite) 
 	{
-		sprite = Sprite::CreateAsRenderTarget(8, 8, Texture::FORMAT_RGBA4444);
+		sprite = Sprite::CreateAsRenderTarget(8, 8, FORMAT_RGBA4444);
 	}
 	return sprite;
 }
@@ -613,7 +613,7 @@ void TextBlock::Prepare()
 		{
 			//omg 8888!
 			RenderManager::Instance()->LockNonMain();
-			sprite = Sprite::CreateAsRenderTarget(finalW, finalH, Texture::FORMAT_RGBA8888);
+			sprite = Sprite::CreateAsRenderTarget(finalW, finalH, FORMAT_RGBA8888);
 			if (sprite && sprite->GetTexture())
 			{
 				if (!isMultilineEnabled)
@@ -646,7 +646,7 @@ void TextBlock::Prepare()
 				}
 			}
 			
-			Texture *tex = Texture::CreateTextFromData(Texture::FORMAT_RGBA4444, (uint8*)buf, dx, dy, addInfo.c_str());
+			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, dx, dy, addInfo.c_str());
 			delete[] buf;
 			sprite = Sprite::CreateFromTexture(tex, 0, 0, finalW, finalH);
 			SafeRelease(tex);

@@ -145,8 +145,8 @@ void TextureFormatDialog::OnConvert(DAVA::BaseObject *owner, void *userData, voi
         {
             const int32 formats[] = 
             {
-                Texture::FORMAT_PVR4,
-                Texture::FORMAT_PVR2
+                FORMAT_PVR4,
+                FORMAT_PVR2
             };
             delegate->OnFormatSelected(formats[currentPVRButton], mipmapEnabled->Checked());
         }

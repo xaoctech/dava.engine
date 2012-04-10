@@ -50,18 +50,6 @@ class Image;
 class Texture : public RenderResource
 {
 public:
-	enum PixelFormat
-	{
-		FORMAT_INVALID = 0,
-		FORMAT_RGBA8888 = 1,		
-		FORMAT_RGB565,				 
-		FORMAT_RGBA4444,			
-		FORMAT_A8,
-		FORMAT_PVR4,
-		FORMAT_PVR2,
-		
-		FORMAT_CLOSEST = 256
-	};
 	
 	enum TextureWrap
 	{
@@ -146,9 +134,9 @@ public:
         can use the following code
      
         \code
-        Texture::SetDefaultRGBAFormat(Texture::FORMAT_RGBA4444);
+        Texture::SetDefaultRGBAFormat(FORMAT_RGBA4444);
         texRGBA4444 = Texture::CreateFromFile("~res:/Scenes/Textures/texture.png");
-        Texture::SetDefaultRGBAFormat(Texture::FORMAT_RGBA8888);
+        Texture::SetDefaultRGBAFormat(FORMAT_RGBA8888);
         \endcode
      */
 	static void SetDefaultRGBAFormat(PixelFormat format);

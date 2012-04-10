@@ -128,8 +128,8 @@ public:
 	 
 	 \return sprite pointer or 0 if it will be impossible to create such render target
 	 */	
-	static Sprite* CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded = false);
-	void InitAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded = false);
+	static Sprite* CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded = false);
+	void InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded = false);
 	
 	/*
 		\brief Function to create sprite
@@ -283,7 +283,7 @@ public:
 	
 protected:
 	Sprite();
-	Sprite(int32 sprWidth, int32 sprHeight, Texture::PixelFormat format);
+	Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);
 	virtual ~Sprite();
 
 	/** 

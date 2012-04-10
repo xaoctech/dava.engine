@@ -3,10 +3,10 @@
 
 #include "DAVAEngine.h"
 #include "LandscapeToolsPanel.h"
-#include "LandscapeTool.h"
 
 using namespace DAVA;
 
+class LandscapeTool;
 class LandscapeToolsPanelColor: public LandscapeToolsPanel
 {
     
@@ -14,14 +14,10 @@ public:
     LandscapeToolsPanelColor(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanelColor();
     
-    virtual void WillAppear();
+    //LandscapeToolsSelectionDelegate
+    virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
     
 protected:
-
-	void OnToolSelected(BaseObject * object, void * userData, void * callerData);
-
-    UIControl *toolButtons[LandscapeTool::EBT_COUNT_COLOR];
-    LandscapeTool *tools[LandscapeTool::EBT_COUNT_COLOR];
 
     UISlider *intension;
     UISlider *zoom;
