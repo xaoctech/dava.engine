@@ -250,6 +250,12 @@ public:
 	bool PlacePoint(const Vector3 & point, Vector3 & result);
 	Vector3 GetPoint(int16 x, int16 y, uint8 height);
 
+	void CursorEnable();
+	void CursorDisable();
+	void SetCursorTexture(Texture * texture);
+	void SetCursorPosition(const Vector2 & position);
+	void SetCursorScale(float32 scale);
+
 protected:	
     
     class LandscapeQuad
@@ -319,6 +325,23 @@ protected:
     Vector2 textureTiling[TEXTURE_COUNT];
     
     Shader * activeShader;
+
+	struct CursorMode
+	{
+		bool enabled;
+		Shader * shader;
+		Texture * texture;
+		Vector2 position;
+		float32 scale;
+
+		int32 uniformTexture;
+		int32 uniformPosition;
+		int32 uniformScale;
+
+		void Draw();
+	};
+	CursorMode cursorMode;
+
 //    Shader * singleTextureShader;
 //    Shader * detailShader;
 //    Shader * blendedShader;

@@ -176,6 +176,10 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 				currentTool->sprite->SetPosition(pos);
 				currentTool->sprite->Draw();
 				RenderManager::Instance()->RestoreRenderTarget();
+
+				workingLandscape->SetCursorTexture(cursorTexture);
+				workingLandscape->SetCursorPosition(pos);
+				workingLandscape->SetCursorScale(scaleSize);
 			}
 			startPoint = endPoint;
 		}
@@ -234,12 +238,16 @@ void LandscapeEditorColor::HideAction()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+
+	workingLandscape->CursorDisable();
 }
 
 void LandscapeEditorColor::ShowAction()
 {
     CreateMaskTexture();
     landscapeSize = maskSprite->GetWidth();
+
+	workingLandscape->CursorEnable();
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
