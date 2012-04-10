@@ -58,6 +58,8 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     renderingMode = RENDERING_MODE_TEXTURE;
     
     activeShader = 0;
+	cursorMode.enabled = false;
+	cursorMode.shader = 0;
     uniformCameraPosition = -1;
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -139,6 +141,7 @@ void LandscapeNode::InitShaders()
 void LandscapeNode::ReleaseShaders()
 {
     SafeRelease(activeShader);
+	SafeRelease(cursorMode.shader);
 
     uniformCameraPosition = -1;
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -978,9 +981,9 @@ void LandscapeNode::Draw()
     
     BindMaterial();
     
-    Draw(&quadTreeHead);
-    FlushQueue();
-    DrawFans();
+	Draw(&quadTreeHead);
+	FlushQueue();
+	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
     if (debugFlags & DEBUG_DRAW_ALL)
@@ -988,6 +991,24 @@ void LandscapeNode::Draw()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }   
 #endif 
+
+	//TODO: maybe swap with UnbindMaterial()
+	if(cursorMode.enabled)
+	{
+		if(cursorMode.texture)
+		{
+			RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+			glDepthFunc(GL_LEQUAL);
+			fans.clear();
+			cursorMode.Draw();
+			ClearQueue();
+			Draw(&quadTreeHead);
+			FlushQueue();
+			DrawFans();
+			glDepthFunc(GL_LESS);
+		}
+	}
     
     UnbindMaterial();
 
@@ -1135,5 +1156,56 @@ const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel 
 {
     return textureNames[level];
 }
-    
+
+void LandscapeNode::CursorEnable()
+{
+	cursorMode.enabled = true;
+	cursorMode.texture = 0;
+	if(!cursorMode.shader)
+	{
+		cursorMode.shader = new Shader();
+		cursorMode.shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
+		cursorMode.shader->Recompile();
+
+		cursorMode.uniformTexture = cursorMode.shader->FindUniformLocationByName("texture0");
+		cursorMode.uniformPosition = cursorMode.shader->FindUniformLocationByName("position");
+		cursorMode.uniformScale = cursorMode.shader->FindUniformLocationByName("scale");
+	}
+}
+
+void LandscapeNode::CursorDisable()
+{
+	cursorMode.enabled = false;
+}
+
+void LandscapeNode::SetCursorTexture(Texture * texture)
+{
+	cursorMode.texture = texture;
+}
+
+void LandscapeNode::SetCursorPosition(const Vector2 & position)
+{
+	cursorMode.position = position/textures[TEXTURE_TILE_MASK]->GetWidth();
+}
+
+void LandscapeNode::SetCursorScale(float32 scale)
+{
+	cursorMode.scale = scale;
+}
+
+void LandscapeNode::CursorMode::Draw()
+{
+	if(!texture)
+	{
+		return;
+	}
+
+	RenderManager::Instance()->SetTexture(texture, 0);
+	RenderManager::Instance()->SetShader(shader);
+	RenderManager::Instance()->FlushState();
+	shader->SetUniformValue(uniformTexture, 0);
+	shader->SetUniformValue(uniformPosition, position);
+	shader->SetUniformValue(uniformScale, scale);
+}
+
 };

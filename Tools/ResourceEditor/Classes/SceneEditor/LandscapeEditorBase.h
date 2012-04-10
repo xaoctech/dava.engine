@@ -105,6 +105,8 @@ protected:
     Vector2 prevDrawPos;
     
     LandscapeToolsPanel *toolsPanel;
+
+	Texture * cursorTexture;
 };
 
 
