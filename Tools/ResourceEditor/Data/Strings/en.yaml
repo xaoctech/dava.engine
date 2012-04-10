@@ -99,9 +99,9 @@ landscapeeditor.landscapeeditor: "LandscapeEditor"
 landscapeeditor.drawstright: "Draw/Clear"
 landscapeeditor.size: "Size:"
 landscapeeditor.strength: "Strength:"
-landscapeeditor.relative: "Relative/Absolute"
+landscapeeditor.relative: "Rel/Abs"
 landscapeeditor.average: "Average"
-landscapeeditor.height: "Absolute height"
+landscapeeditor.height: "Height"
 
 
 #Material Editor

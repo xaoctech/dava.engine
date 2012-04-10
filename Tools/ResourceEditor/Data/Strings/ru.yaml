@@ -98,9 +98,9 @@ landscapeeditor.landscapeeditor: "Редактор ландшафта"
 landscapeeditor.drawstright: "Рисовать/Стирать"
 landscapeeditor.size: "Размер:"
 landscapeeditor.strength: "Сила:"
-landscapeeditor.relative: "Относительно/Абсолютно"
+landscapeeditor.relative: "Отн/Абс"
 landscapeeditor.average: "Сгладить"
-landscapeeditor.height: "Абсолютная высота"
+landscapeeditor.height: "Высота"
 
 #Material Editor
 materialeditor.materials: "Материалы:"

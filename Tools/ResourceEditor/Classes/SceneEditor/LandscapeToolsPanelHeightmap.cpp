@@ -43,19 +43,17 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(strengthSlider);
     
     
-    
-        
     AddSliderHeader(sizeSlider, LocalizedString(L"landscapeeditor.size"));
     AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
     
     sizeValue->SetText(Format(L"%.3f", LandscapeTool::DefaultSize()));
     strengthValue->SetText(Format(L"%.3f", LandscapeTool::DefaultStrength()));
     
-    
-    relative = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, 
+    int32 x = toolIcon->GetRect().x + toolIcon->GetRect().dx;
+    relative = CreateCkeckbox(Rect(x, 0, 
                                    ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
                               LocalizedString(L"landscapeeditor.relative"));
-    average = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT + ControlsFactory::BUTTON_HEIGHT, 
+    average = CreateCkeckbox(Rect(x, ControlsFactory::BUTTON_HEIGHT, 
                                   ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
                               LocalizedString(L"landscapeeditor.average"));
     
