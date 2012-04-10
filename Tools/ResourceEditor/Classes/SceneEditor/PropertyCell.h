@@ -100,7 +100,7 @@ public:
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
 
-    virtual void ValueChanged(bool newValue);
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
     
 protected:    
 
@@ -269,7 +269,7 @@ public:
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
 
-    virtual void ValueChanged(bool newValue);
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
 private:
     

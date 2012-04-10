@@ -4,22 +4,25 @@
 #include "DAVAEngine.h"
 #include "LandscapeToolsPanel.h"
 #include "LandscapeTool.h"
+#include "UICheckBox.h"
 
 using namespace DAVA;
 
-class LandscapeToolsPanelHeightmap: public LandscapeToolsPanel, public UITextFieldDelegate
+class LandscapeToolsPanelHeightmap: 
+    public LandscapeToolsPanel, 
+    public UITextFieldDelegate,
+    public UICheckBoxDelegate
 {
     enum eLocalConst
     {
-        TEXTFIELD_WIDTH = 50
+        TEXTFIELD_WIDTH = 50,
+        TEXT_WIDTH = 50
     };
 
     
 public:
     LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanelHeightmap();
-    
-    virtual void WillAppear();
     
     //UITextFieldDelegate
     virtual void TextFieldShouldReturn(UITextField * textField);
@@ -28,13 +31,17 @@ public:
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, 
                                      int32 replacementLength, const WideString & replacementString);
 
+    //UICheckBoxDelegate
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
+
+    //LandscapeToolsSelectionDelegate
+    virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
+
 protected:
 
-	void OnToolSelected(BaseObject * object, void * userData, void * callerData);
 
-    UIControl *toolButtons[LandscapeTool::EBT_COUNT_COLOR];
-    LandscapeTool *tools[LandscapeTool::EBT_COUNT_COLOR];
-
+    UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
+    
     UISlider *sizeSlider;
     UITextField *sizeValue;
     UISlider *strengthSlider;
@@ -44,6 +51,10 @@ protected:
     
     UITextField *CreateTextField(const Rect &rect);
     
+    UICheckBox *relative;
+    UICheckBox *average;
+    
+    UITextField *heightValue;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_HEIGHTMAP_H__

@@ -381,6 +381,7 @@ void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * 
             r.y = listHolder->GetRect().dy - r.dy - ControlsFactory::BUTTON_HEIGHT;
             
             deletionList = new UIList(r, UIList::ORIENTATION_VERTICAL);
+            ControlsFactory::SetScrollbar(deletionList);
             ControlsFactory::CustomizePropertyCell(deletionList, false);
             
             deletionList->SetDelegate(this);

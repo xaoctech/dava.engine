@@ -6,7 +6,7 @@
 
 LightmapsPacker::LightmapsPacker()
 {
-	compressFormat = Texture::FORMAT_PVR4;
+	compressFormat = FORMAT_PVR4;
 }
 
 LightmapsPacker::~LightmapsPacker()
@@ -69,7 +69,7 @@ void LightmapsPacker::ParseSpriteDescriptors()
 
 		readSize = file->ReadLine(buf, sizeof(buf)); //texture name
 		String originalTextureName = outputDir + "/" + String(buf, readSize);
-		if(Texture::FORMAT_PVR4 == compressFormat || Texture::FORMAT_PVR2 == compressFormat)
+		if(FORMAT_PVR4 == compressFormat || FORMAT_PVR2 == compressFormat)
 		{
 			data.textureName = FileSystem::Instance()->ReplaceExtension(originalTextureName, ".pvr");
 		}
