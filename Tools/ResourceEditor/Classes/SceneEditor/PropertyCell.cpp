@@ -268,7 +268,7 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::ValueChanged(bool newValue)
+void PropertyBoolCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
@@ -765,13 +765,17 @@ void PropertyTexturePreviewCell::SetData(PropertyCellData *prop)
             checkBox->SetChecked(prop->GetBool(), false);
             Texture *tex = prop->GetTexture();
             
-            uint32 width = DAVA::Min(tex->width, (uint32)previewControl->GetSize().x);
-            uint32 height = DAVA::Min(tex->height, (uint32)previewControl->GetSize().y);
-            Sprite *previewSprite = Sprite::CreateFromTexture(tex, 0, 0, width, height);
+            if(tex)
+            {
+                uint32 width = DAVA::Min(tex->width, (uint32)previewControl->GetSize().x);
+                uint32 height = DAVA::Min(tex->height, (uint32)previewControl->GetSize().y);
+                Sprite *previewSprite = Sprite::CreateFromTexture(tex, 0, 0, width, height);
+                
+                previewControl->SetSprite(previewSprite, 0);
+                
+                SafeRelease(previewSprite);
+            }
             
-            previewControl->SetSprite(previewSprite, 0);
-            
-            SafeRelease(previewSprite);
             
             break;
         }
@@ -786,7 +790,7 @@ float32 PropertyTexturePreviewCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT * 2;
 }
 
-void PropertyTexturePreviewCell::ValueChanged(bool newValue)
+void PropertyTexturePreviewCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);

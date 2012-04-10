@@ -1,19 +1,54 @@
 #include "LandscapeTool.h"
 
-LandscapeTool::LandscapeTool(eBrushType _type, const String & _spriteName, const String & _imageName)
+LandscapeTool::LandscapeTool(int32 _toolID, const String & _imageName)
 {
-    brushType = _type;
-    spriteName = _spriteName;
-    sprite = Sprite::Create(spriteName);
+    toolID = _toolID;
     
     imageName = _imageName;
     image = Image::CreateFromFile(imageName);
     
+    
+    RenderManager::Instance()->LockNonMain();
+    
+    int32 sideSize = image->width;
+    sprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
+    
+    Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
+                                              image->GetWidth(), image->GetHeight());
+    
+    Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, image->GetWidth(), image->GetHeight());
+    
+    RenderManager::Instance()->SetRenderTarget(sprite);
+    
+    RenderManager::Instance()->SetColor(Color::Black());
+    RenderHelper::Instance()->FillRect(Rect(0, 0, sideSize, sideSize));
+    
+    RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+    RenderManager::Instance()->SetColor(Color::White());
+    
+    srcSprite->SetScaleSize(sideSize, sideSize);
+    srcSprite->SetPosition(Vector2(0, 0));
+    srcSprite->Draw();
+    RenderManager::Instance()->RestoreRenderTarget();
+    
+    
+    SafeRelease(srcSprite);
+    SafeRelease(srcTex);
+    
+    RenderManager::Instance()->UnlockNonMain();
+    
     intension = (IntensionMax() + IntensionMin()) / 2.0f;
     zoom = (ZoomMax() + ZoomMin()) / 2.0f;
     
-    size = DefaultSize() / 2;
-    strength = DefaultStrength();
+    maxSize = DefaultSize();
+    size = DefaultSize() / 2.f;
+    maxStrength = DefaultStrength();
+    strength = 1.f;
+    
+    height = 0.0f;
+    
+    relativeDrawing = true;
+    averageDrawing = false;
 }
 
 LandscapeTool::~LandscapeTool()
@@ -44,10 +79,10 @@ float32 LandscapeTool::IntensionMax()
 
 float32 LandscapeTool::DefaultStrength()
 {
-    return 10.0f;
+    return 3.0f;
 }
 
 float32 LandscapeTool::DefaultSize()
 {
-    return 10.0f;
+    return 60.0f;
 }

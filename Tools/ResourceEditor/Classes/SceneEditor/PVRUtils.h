@@ -32,9 +32,9 @@ public:
 	virtual ~PVRUtils();
 
     bool GetPVRHeader(PVRHeader *header, const String &path);
-    Texture::PixelFormat GetPVRFormat(int32 format);
+    PixelFormat GetPVRFormat(int32 format);
 
-    Texture::PixelFormat GetPVRFormat(const String &path);
+    PixelFormat GetPVRFormat(const String &path);
     uint32 GetPVRDataLength(const String &path);
     
     static WideString SizeInBytesToWideString(float32 size);

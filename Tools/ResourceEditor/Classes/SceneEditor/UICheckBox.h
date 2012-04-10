@@ -5,11 +5,12 @@
 
 using namespace DAVA;
 
+class UICheckBox;
 class UICheckBoxDelegate
 {
 public:
     
-    virtual void ValueChanged(bool newValue) = 0;
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue) = 0;
 };
 
 class UICheckBox : public UIControl

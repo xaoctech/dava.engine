@@ -936,6 +936,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1618,6 +1621,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp">
       <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -85,7 +85,7 @@ void TextureConverterCell::SetTexture(const String &texturePath)
             PVRUtils::PVRHeader pvrHeader = {0};
             PVRUtils::Instance()->GetPVRHeader(&pvrHeader, pvrPath);
 
-            Texture::PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
+            PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
 
             String pvrFormat = Texture::GetPixelFormatString(format);
             textureFormat->SetText(StringToWString(pngFormat + "/" + pvrFormat));
@@ -104,7 +104,7 @@ void TextureConverterCell::SetTexture(const String &texturePath)
         PVRUtils::PVRHeader pvrHeader = {0};
         PVRUtils::Instance()->GetPVRHeader(&pvrHeader, textureWorkingPath);
 
-        Texture::PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
+        PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
         String pvrFormat = Texture::GetPixelFormatString(format);
         textureSize->SetText(PVRUtils::SizeInBytesToWideString(pvrHeader.dataLength));
 

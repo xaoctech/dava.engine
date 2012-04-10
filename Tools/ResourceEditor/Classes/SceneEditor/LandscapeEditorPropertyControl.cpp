@@ -20,6 +20,7 @@ LandscapeEditorPropertyControl::LandscapeEditorPropertyControl(const Rect & rect
     :	LandscapePropertyControl(rect, createNodeProperties)
 {
     settings = new LandscapeEditorSettings();
+    settings->redMask = true;
     delegate = NULL;
 }
 
