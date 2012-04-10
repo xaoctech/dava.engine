@@ -28,10 +28,23 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     strengthSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanelHeightmap::OnStrengthChanged));
     strengthSlider->SetMinMaxValue(-LandscapeTool::DefaultStrength(), LandscapeTool::DefaultStrength());
     strengthSlider->SetValue(0.0f);
+
+    Rect lineRect;
+    lineRect.x = strengthSlider->GetRect().x + strengthSlider->GetRect().dx/2;
+    lineRect.dx = 2;
+    lineRect.y = strengthSlider->GetRect().y - 2;
+    lineRect.dy = strengthSlider->GetRect().dy + 4;
+    UIControl *line = ControlsFactory::CreateLine(lineRect);
+    AddControl(line);
+    SafeRelease(line);
+
     
     AddControl(sizeSlider);
     AddControl(strengthSlider);
     
+    
+    
+        
     AddSliderHeader(sizeSlider, LocalizedString(L"landscapeeditor.size"));
     AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
     
