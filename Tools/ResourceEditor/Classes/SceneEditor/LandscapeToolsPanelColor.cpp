@@ -54,9 +54,9 @@ void LandscapeToolsPanelColor::OnZoomChanged(DAVA::BaseObject *object, void *use
 #pragma mark  --LandscapeToolsSelectionDelegate
 void LandscapeToolsPanelColor::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
 {
-    intension->SetValue(newTool->intension);
-    zoom->SetValue(newTool->zoom);
-
+    newTool->intension = intension->GetValue();
+    newTool->zoom = zoom->GetValue();
+    
     LandscapeToolsPanel::OnToolSelected(forControl, newTool);
 }
 

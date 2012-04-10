@@ -37,6 +37,7 @@ public:
     float32 size;
     float32 maxStrength;
     float32 maxSize;
+    float32 height;
     
     bool relativeDrawing;
     bool averageDrawing;

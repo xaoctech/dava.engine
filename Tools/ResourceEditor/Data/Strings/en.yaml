@@ -101,6 +101,7 @@ landscapeeditor.size: "Size:"
 landscapeeditor.strength: "Strength:"
 landscapeeditor.relative: "Relative/Absolute"
 landscapeeditor.average: "Average"
+landscapeeditor.height: "Absolute height"
 
 
 #Material Editor
