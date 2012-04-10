@@ -62,12 +62,12 @@ void UIScreenTransition::CreateRenderTargets()
 	
 	renderTargetPrevScreen = Sprite::CreateAsRenderTarget(
 		(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 
-		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), Texture::FORMAT_RGB565);
+		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), FORMAT_RGB565);
 	renderTargetPrevScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 	
 	renderTargetNextScreen = Sprite::CreateAsRenderTarget(
 		(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 
-		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), Texture::FORMAT_RGB565);
+		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), FORMAT_RGB565);
 	renderTargetNextScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 }
 

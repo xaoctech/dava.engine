@@ -2,10 +2,10 @@
 #define __LANDSCAPE_TOOLS_PANEL_H__
 
 #include "DAVAEngine.h"
+#include "LandscapeToolsSelection.h"
 
 using namespace DAVA;
 
-class LandscapeTool;
 class LandscapeToolsPanelDelegate
 {
 public: 
@@ -14,7 +14,10 @@ public:
     virtual void OnToolsPanelClose() = 0;
 };
 
-class LandscapeToolsPanel: public UIControl
+class LandscapeToolsPanel: 
+    public UIControl,
+    public LandscapeToolsSelectionDelegate
+
 {
 protected:
     
@@ -28,18 +31,29 @@ public:
     LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanel();
     
+    virtual void WillAppear();
+    
     LandscapeTool *CurrentTool();
+    void SetSelectionPanel(LandscapeToolsSelection *newPanel);
+    
+    //LandscapeToolsSelectionDelegate
+    virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
 
 protected:
 
     UISlider * CreateSlider(const Rect & rect);
     void AddSliderHeader(UISlider *slider, const WideString &text);
 
-    LandscapeToolsPanelDelegate *delegate;
-    LandscapeTool *selectedTool;
-    
     void OnClose(BaseObject * object, void * userData, void * callerData);
+    void OnSelectTool(BaseObject * object, void * userData, void * callerData);
+
     
+    LandscapeToolsPanelDelegate *delegate;
+    
+    UIControl *toolIcon;
+    LandscapeTool *selectedTool;
+
+    LandscapeToolsSelection *selectionPanel;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_H__

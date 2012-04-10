@@ -15,11 +15,18 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnClose));
     AddControl(closeButton);
     SafeRelease(closeButton);
+    
+    toolIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+    toolIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnSelectTool));
+    AddControl(toolIcon);
+    
+    selectionPanel = NULL;
 }
 
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
+    SafeRelease(toolIcon);
 }
 
 UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
@@ -59,6 +66,15 @@ LandscapeTool * LandscapeToolsPanel::CurrentTool()
     return selectedTool;
 }
 
+void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
+{
+    selectionPanel = newPanel;
+    if(selectionPanel)
+    {
+        selectionPanel->SetDelegate(this);
+    }
+}
+
 void LandscapeToolsPanel::OnClose(DAVA::BaseObject *object, void *userData, void *callerData)
 {
     if(delegate)
@@ -66,3 +82,41 @@ void LandscapeToolsPanel::OnClose(DAVA::BaseObject *object, void *userData, void
         delegate->OnToolsPanelClose();
     }
 }
+
+void LandscapeToolsPanel::OnSelectTool(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectionPanel)
+    {
+        selectionPanel->Show();
+    }
+}
+
+void LandscapeToolsPanel::WillAppear()
+{
+    if(selectionPanel)
+    {
+        selectedTool = selectionPanel->Tool();
+        if(selectedTool)
+        {
+            toolIcon->SetSprite(selectedTool->sprite, 0);
+        }
+        else 
+        {
+            toolIcon->SetSprite(NULL, 0);
+        }
+    }
+}
+
+#pragma mark  --LandscapeToolsSelectionDelegate
+void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
+{
+    DVASSERT(newTool);
+    selectedTool = newTool;
+    toolIcon->SetSprite(selectedTool->sprite, 0);
+    
+    if(delegate)
+    {
+        delegate->OnToolSelected(newTool);
+    }
+}
+

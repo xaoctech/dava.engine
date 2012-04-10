@@ -26,6 +26,7 @@ class BeastManager;
 class OutputPanelControl;
 class LandscapeEditorColor;
 class LandscapeEditorHeightmap;
+class LandscapeToolsSelection;
 class EditorBodyControl: 
         public UIControl, 
         public GraphBaseDelegate,
@@ -199,13 +200,13 @@ protected:
     
     //Landscape Editor
     bool savedModificatioMode;
-//    LandscapeToolsPanel *leToolsPanel;
     void CreateLandscapeEditor();
     void ReleaseLandscapeEditor();
     
     LandscapeEditorColor *landscapeEditorColor;
     LandscapeEditorHeightmap *landscapeEditorHeightmap;
     LandscapeEditorBase *currentLandscapeEditor;
+    LandscapeToolsSelection *landscapeToolsSelection;
     
     //graps
     SceneGraph *sceneGraph;

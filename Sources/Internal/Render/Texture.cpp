@@ -260,16 +260,16 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 	
 	switch(format) 
 	{
-		case Texture::FORMAT_RGBA8888:
+		case FORMAT_RGBA8888:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, _data));
 			break;
-		case Texture::FORMAT_A8:
+		case FORMAT_A8:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGBA4444:
+		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
 			break;
 		default:
@@ -295,7 +295,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
 	// \todo instead of hardcoding transformations, use ImageConvert.
 	int32 pixelSizeInBits = GetPixelFormatSize(format);
-	if (format ==  Texture::FORMAT_RGBA8888)
+	if (format ==  FORMAT_RGBA8888)
 	{
 		//int32 pitchInBytes = 
 
@@ -373,16 +373,16 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 		
 	switch(texture->format) 
 	{
-		case Texture::FORMAT_RGBA8888:
+		case FORMAT_RGBA8888:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture->width, texture->height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, _data));
 			break;
-		case Texture::FORMAT_A8:
+		case FORMAT_A8:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, texture->width, texture->height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGBA4444:
+		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
 			break;
 		default:
@@ -449,7 +449,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 
 	for (uint32 i = 1; i < texture->id->GetLevelCount(); ++i)
 	{
-		ImageConvert::DownscaleTwiceBillinear((Image::PixelFormat)texture->format, (Image::PixelFormat)texture->format, 
+		ImageConvert::DownscaleTwiceBillinear((PixelFormat)texture->format, (PixelFormat)texture->format, 
 			prevMipData, mipMapWidth << 1, mipMapHeight << 1, (mipMapWidth << 1) * GetPixelFormatSize(texture->format) / 8,
 			currentMipData, mipMapWidth, mipMapHeight, mipMapWidth * GetPixelFormatSize(texture->format) / 8);
 
@@ -640,7 +640,7 @@ void Texture::UsePvrMipmaps()
 void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
 {
 	Image * image = Image::CreateFromFile(pathName);
-	if ((Texture::PixelFormat)image->GetPixelFormat() != format)
+	if ((PixelFormat)image->GetPixelFormat() != format)
 	{
 		Logger::Error("Texture::LoadMipMapFromFile - format of file texture different from this texture"); 
 		SafeRelease(image);
@@ -668,7 +668,7 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	}
 	
 	RenderManager::Instance()->LockNonMain();
-	texture = Texture::CreateFromData((Texture::PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+	texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
 	texture->relativePathname = pathName;
     texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
@@ -895,8 +895,8 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
 
 		texture->width = width;
 		texture->height = height;
-		if (formatFlags == kPVRTextureFlagTypePVRTC_4)texture->format = Texture::FORMAT_PVR4;
-		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)texture->format = Texture::FORMAT_PVR2;
+		if (formatFlags == kPVRTextureFlagTypePVRTC_4)texture->format = FORMAT_PVR4;
+		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)texture->format = FORMAT_PVR2;
 		
 		RENDER_VERIFY(glGenTextures(1, &texture->id));
 		
@@ -1160,14 +1160,14 @@ void Texture::DumpTextures()
 	Logger::Info("============================================================");
 }
 	
-Texture::PixelFormat Texture::defaultRGBAFormat = Texture::FORMAT_RGBA8888;
+PixelFormat Texture::defaultRGBAFormat = FORMAT_RGBA8888;
 
 void Texture::SetDefaultRGBAFormat(PixelFormat format)
 {
 	defaultRGBAFormat = format;
 }
 
-Texture::PixelFormat Texture::GetDefaultRGBAFormat()
+PixelFormat Texture::GetDefaultRGBAFormat()
 {
 	return defaultRGBAFormat;
 }
@@ -1255,16 +1255,16 @@ void Texture::SaveToSystemMemory()
 				RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 				switch(format) 
 				{
-				case Texture::FORMAT_RGBA8888:
+				case FORMAT_RGBA8888:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 					break;
-				case Texture::FORMAT_RGB565:
+				case FORMAT_RGB565:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)savedData));
 					break;
-				case Texture::FORMAT_A8:
+				case FORMAT_A8:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 					break;
-				case Texture::FORMAT_RGBA4444:
+				case FORMAT_RGBA4444:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
 					break;
 				}
@@ -1415,16 +1415,16 @@ void Texture::InvalidateFromSavedData()
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 	switch(format) 
 	{
-		case Texture::FORMAT_RGBA8888:
+		case FORMAT_RGBA8888:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 			break;
-		case Texture::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)savedData));
 			break;
-		case Texture::FORMAT_A8:
+		case FORMAT_A8:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 			break;
-		case Texture::FORMAT_RGBA4444:
+		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
 			break;
 	}
@@ -1473,26 +1473,7 @@ void Texture::InvalidateFromFile()
     
 Image * Texture::ReadDataToImage()
 {
-    Image::PixelFormat imageFormat = Image::FORMAT_RGBA8888;
-    switch (format) {
-        case FORMAT_RGBA8888:
-            imageFormat = Image::FORMAT_RGBA8888;
-            break;
-        case FORMAT_RGB565:
-            imageFormat = Image::FORMAT_RGB565;
-            break;
-        case FORMAT_RGBA4444:
-            imageFormat = Image::FORMAT_RGBA4444;
-            break;
-        case FORMAT_A8:
-            imageFormat = Image::FORMAT_A8;
-            break;
-            
-        default:
-            return NULL;
-    }
-    
-    Image *image = Image::Create(width, height, imageFormat);
+    Image *image = Image::Create(width, height, format);
     uint8 *imageData = image->GetData();
     
 #if defined(__DAVAENGINE_OPENGL__)
@@ -1516,16 +1497,16 @@ Image * Texture::ReadDataToImage()
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     switch(format) 
     {
-        case Texture::FORMAT_RGBA8888:
+        case FORMAT_RGBA8888:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
             break;
-        case Texture::FORMAT_RGB565:
+        case FORMAT_RGB565:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)imageData));
             break;
-        case Texture::FORMAT_A8:
+        case FORMAT_A8:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
             break;
-        case Texture::FORMAT_RGBA4444:
+        case FORMAT_RGBA4444:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)imageData));
             break;
     }
@@ -1566,7 +1547,8 @@ Image * Texture::CreateImageFromMemory()
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, Texture::FORMAT_RGBA8888);
+//        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
         Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);

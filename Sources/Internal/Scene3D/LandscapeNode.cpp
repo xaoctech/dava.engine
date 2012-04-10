@@ -226,7 +226,7 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     
     heightmap = Image::CreateFromFile(heightmapPathname);
     
-    if (heightmap->GetPixelFormat() != Image::FORMAT_A8)
+    if (heightmap->GetPixelFormat() != FORMAT_A8)
     {
         Logger::Error("Image for landscape should be grayscale");
         SafeRelease(heightmap);

@@ -7,23 +7,10 @@ using namespace DAVA;
 
 class LandscapeTool: public BaseObject
 {
-public:
-
-    enum eBrushType
-    {
-        EBT_STANDART = 0,
-        EBT_SPIKE,
-        EBT_CIRCLE,
-        EBT_NOISE,
-        EBT_ERODE,
-        EBT_WATER_ERODE,
-        
-        EBT_COUNT_COLOR
-    };
     
 public:
 
-    LandscapeTool(eBrushType _type, const String & _spriteName, const String & _imageName);
+    LandscapeTool(int32 _toolID, const String & _imageName);
     virtual ~LandscapeTool();
 
     static float32 ZoomMin();
@@ -35,12 +22,11 @@ public:
     static float32 DefaultStrength();
     static float32 DefaultSize();
 
-    eBrushType brushType;
-    String spriteName;
-    Sprite *sprite;
+    int32 toolID;
     
     String imageName;
     Image *image;
+    Sprite *sprite;
     
     //color
     float32 intension;
@@ -49,6 +35,12 @@ public:
     //height
     float32 strength;
     float32 size;
+    float32 maxStrength;
+    float32 maxSize;
+    float32 height;
+    
+    bool relativeDrawing;
+    bool averageDrawing;
 };
 
 #endif // __PAINT_TOOL_H__

@@ -46,7 +46,8 @@ public:
     LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl); 
     virtual ~LandscapeEditorBase();
     
-	virtual void Draw(const UIGeometricData &geometricData) = 0;
+	virtual void Draw(const UIGeometricData &geometricData);
+    virtual void Update(float32 timeElapsed);
     bool Input(UIEvent * touch);
 
     virtual bool SetScene(EditorScene *newScene);
@@ -57,7 +58,7 @@ public:
     
     LandscapeNode *GetLandscape();
     
-    UIControl *GetToolPanel();
+    LandscapeToolsPanel *GetToolPanel();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect) = 0;
     
     //file dialog delegate
@@ -73,7 +74,7 @@ protected:
     void SaveTexture();
     void SaveTextureAs(const String &pathToFile, bool closeLE);
 
-    virtual void InputAction() = 0;
+    virtual void InputAction(int32 phase) = 0;
     virtual void HideAction() = 0;
     virtual void ShowAction() = 0;
     virtual void SaveTextureAction(const String &pathToFile) = 0;
@@ -94,7 +95,7 @@ protected:
 
     LandscapeTool *currentTool;
 
-    Texture *savedTexture;
+    String savedPath;
     int32 landscapeSize;
 
     EditorScene *workingScene;    

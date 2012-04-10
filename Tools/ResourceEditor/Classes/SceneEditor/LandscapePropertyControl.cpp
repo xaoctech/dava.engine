@@ -349,8 +349,8 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
     
     if(lightMap && alphaMask)
     {
-        if(     (lightMap->GetPixelFormat() == Image::FORMAT_RGBA8888)
-           &&   (alphaMask->GetPixelFormat() == Image::FORMAT_RGBA8888))
+        if(     (lightMap->GetPixelFormat() == FORMAT_RGBA8888)
+           &&   (alphaMask->GetPixelFormat() == FORMAT_RGBA8888))
         {
             if(     (lightMap->GetHeight() == alphaMask->GetHeight()) 
                &&   (lightMap->GetWidth() == alphaMask->GetWidth()) )

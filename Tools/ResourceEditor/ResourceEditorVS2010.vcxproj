@@ -450,6 +450,7 @@
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
     <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
     <ClInclude Include="Classes\SceneEditor\HintManager.h" />
+    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h" />
@@ -459,6 +460,7 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
@@ -717,6 +719,7 @@
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\HintManager.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp" />
@@ -726,6 +729,7 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />

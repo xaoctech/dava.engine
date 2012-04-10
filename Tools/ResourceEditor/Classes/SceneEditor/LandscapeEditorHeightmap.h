@@ -23,12 +23,17 @@ public:
     virtual ~LandscapeEditorHeightmap();
     
     virtual void Draw(const UIGeometricData &geometricData);
+    virtual void Update(float32 timeElapsed);
 
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
+    
+    //Tools Panel delegate
+    virtual void OnToolSelected(LandscapeTool *newTool);
+
 protected:
 
-    virtual void InputAction();
+    virtual void InputAction(int32 phase);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
@@ -36,12 +41,17 @@ protected:
     
     void CreateMaskTexture();
 
-	void UpdateTileMaskTool();
+	void UpdateTileMaskTool(float32 timeElapsed);
+    void UpdateToolImage();
+    
+    bool editingIsEnabled;
     
 	bool wasTileMaskToolUpdate;
 
     LandscapeDebugNode *landscapeDebugNode;
     Image *heightImage;
+    
+    Image *toolImage;
 };
 
 
