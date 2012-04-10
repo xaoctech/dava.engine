@@ -27,7 +27,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     workingLandscape = NULL;
     workingScene = NULL;
 
-	savedTexture = NULL;
+    savedPath = "";
     
     currentTool = NULL;
     heightmapNode = NULL;
@@ -39,6 +39,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 
 LandscapeEditorBase::~LandscapeEditorBase()
 {
+    savedPath = "";
+    
     SafeRelease(toolsPanel);
     
     SafeRelease(heightmapNode);
@@ -46,8 +48,6 @@ LandscapeEditorBase::~LandscapeEditorBase()
     SafeRelease(workingScene);
     
     SafeRelease(fileSystemDialog);
-    
-    SafeRelease(savedTexture);
 }
 
 
@@ -107,7 +107,7 @@ void LandscapeEditorBase::Toggle()
         
         isPaintActive = false;
         
-        currentTool = toolsPanel->CurrentTool();
+        SetTool(toolsPanel->CurrentTool());
         
         if(delegate)
         {
@@ -128,7 +128,7 @@ void LandscapeEditorBase::Close()
 
     SafeRelease(workingScene);
     
-    currentTool = NULL;
+//    currentTool = NULL;
     state = ELE_NONE;
     
     if(delegate)
@@ -227,10 +227,9 @@ void LandscapeEditorBase::SaveTexture()
 {
     state = ELE_SAVING_TEXTURE;
     
-    if(savedTexture)
+    if(savedPath.length())
     {
-        String pathToFile = savedTexture->relativePathname;
-        SaveTextureAs(pathToFile, true);
+        SaveTextureAs(savedPath, true);
     }
     else if(!fileSystemDialog->GetParent())
     {
@@ -255,7 +254,7 @@ void LandscapeEditorBase::SaveTextureAs(const String &pathToFile, bool closeLE)
     }
 }
 
-UIControl * LandscapeEditorBase::GetToolPanel()
+LandscapeToolsPanel * LandscapeEditorBase::GetToolPanel()
 {
     return toolsPanel;
 }
@@ -263,7 +262,7 @@ UIControl * LandscapeEditorBase::GetToolPanel()
 #pragma mark -- LandscapeToolsPanelDelegate
 void LandscapeEditorBase::OnToolSelected(LandscapeTool *newTool)
 {
-    currentTool = newTool;
+    SetTool(newTool);
 }
 
 void LandscapeEditorBase::OnToolsPanelClose()
@@ -279,6 +278,7 @@ void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const St
     {
         case DIALOG_OPERATION_SAVE:
         {
+            savedPath = pathToFile;
             SaveTextureAs(pathToFile, true);
             break;
         }

@@ -17,6 +17,8 @@
 #include "LandscapeEditorColor.h"
 #include "LandscapeEditorHeightmap.h"
 #include "SceneEditorScreenMain.h"
+#include "LandscapeToolsSelection.h"
+
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
@@ -1130,6 +1132,14 @@ void EditorBodyControl::CreateLandscapeEditor()
 
     landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRectColor);
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRectHeightMap);
+
+    
+    Rect rect = GetRect();
+    landscapeToolsSelection = new LandscapeToolsSelection(NULL, 
+                                                          Rect(leftSideWidth, rect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT, 
+                                                               rect.dx - leftSideWidth - rightSideWidth, 
+                                                               ControlsFactory::OUTPUT_PANEL_HEIGHT));
+    landscapeToolsSelection->SetBodyControl(this);
     
     currentLandscapeEditor = NULL;
 }
@@ -1139,6 +1149,7 @@ void EditorBodyControl::ReleaseLandscapeEditor()
     currentLandscapeEditor = NULL;
     SafeRelease(landscapeEditorColor);
     SafeRelease(landscapeEditorHeightmap);
+    SafeRelease(landscapeToolsSelection);
 }
 
 void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
@@ -1161,6 +1172,7 @@ void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
         bool ret = currentLandscapeEditor->SetScene(scene);
         if(ret)
         {
+            currentLandscapeEditor->GetToolPanel()->SetSelectionPanel(landscapeToolsSelection);
             currentLandscapeEditor->Toggle();
         }
         else
@@ -1187,10 +1199,14 @@ void EditorBodyControl::LandscapeEditorStarted()
     LandscapeNode *landscape = currentLandscapeEditor->GetLandscape();
     scene->SetSelection(landscape);
     SelectNodeAtTree(landscape);
+    
+    landscapeToolsSelection->Show();
 }
 
 void EditorBodyControl::LandscapeEditorFinished()
 {
+    landscapeToolsSelection->Close();
+
     UIControl *toolsPanel = currentLandscapeEditor->GetToolPanel();
     RemoveControl(toolsPanel);
 

@@ -1,44 +1,11 @@
 #include "LandscapeToolsPanelHeightmap.h"
 #include "ControlsFactory.h"
+#include "LandscapeTool.h"
 
 #pragma mark  --LandscapeToolsPanelHeightmap
 LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   LandscapeToolsPanel(newDelegate, rect)
 {
-    const String sprites[] = 
-    {
-        "~res:/Gfx/LandscapeEditor/Tools/RadialGradientIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/SpikeGradientIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/CircleIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/NoiseIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/ErodeIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/WaterErodeIcon",
-    };
-    
-    const String images[] = 
-    {
-        "~res:/LandscapeEditor/Tools/RadialGradientIcon.png",
-        "~res:/LandscapeEditor/Tools/SpikeGradientIcon.png",
-        "~res:/LandscapeEditor/Tools/CircleIcon.png",
-        "~res:/LandscapeEditor/Tools/NoiseIcon.png",
-        "~res:/LandscapeEditor/Tools/ErodeIcon.png",
-        "~res:/LandscapeEditor/Tools/WaterErodeIcon.png",
-    };
-
-    
-    int32 x = 0;
-    int32 y = (ControlsFactory::TOOLS_HEIGHT - ControlsFactory::TOOL_BUTTON_SIDE) / 2;
-    for(int32 i = 0; i < LandscapeTool::EBT_COUNT_COLOR; ++i, x += (ControlsFactory::TOOL_BUTTON_SIDE + OFFSET))
-    {
-        tools[i] = new LandscapeTool((LandscapeTool::eBrushType) i, sprites[i], images[i]);
-        
-        toolButtons[i] = new UIControl(Rect(x, y, ControlsFactory::TOOL_BUTTON_SIDE, ControlsFactory::TOOL_BUTTON_SIDE));
-        toolButtons[i]->SetSprite(tools[i]->spriteName, 0);
-        toolButtons[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanelHeightmap::OnToolSelected));
-        
-        AddControl(toolButtons[i]);
-    }
-    
     Rect sizeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH, 
                   0, TEXTFIELD_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2);
     sizeValue = CreateTextField(sizeRect);
@@ -91,12 +58,6 @@ LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
 
     SafeRelease(sizeValue);
     SafeRelease(strengthValue);
-
-    for(int32 i = 0; i < LandscapeTool::EBT_COUNT_COLOR; ++i)
-    {
-        SafeRelease(toolButtons[i]);
-        SafeRelease(tools[i]);
-    }
 }
 
 UICheckBox *LandscapeToolsPanelHeightmap::CreateCkeckbox(const Rect &rect, const WideString &text)
@@ -119,50 +80,6 @@ UICheckBox *LandscapeToolsPanelHeightmap::CreateCkeckbox(const Rect &rect, const
     SafeRelease(textControl);
     
     return checkbox;
-}
-
-
-
-void LandscapeToolsPanelHeightmap::WillAppear()
-{
-    if(!selectedTool)
-    {
-        toolButtons[0]->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
-    }
-    
-    UIControl::WillAppear();
-}
-
-void LandscapeToolsPanelHeightmap::OnToolSelected(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    UIControl *button = (UIControl *)object;
-    
-    for(int32 i = 0; i < LandscapeTool::EBT_COUNT_COLOR; ++i)
-    {
-        if(button == toolButtons[i])
-        {
-            selectedTool = tools[i];
-            toolButtons[i]->SetDebugDraw(true);
-            
-            sizeSlider->SetValue(selectedTool->size);
-            strengthSlider->SetValue(selectedTool->strength);
-            
-            sizeValue->SetText(Format(L"%.3f", selectedTool->maxSize));
-            strengthValue->SetText(Format(L"%.3f", selectedTool->maxStrength));
-            
-            average->SetChecked(selectedTool->averageDrawing, false);
-            relative->SetChecked(selectedTool->relativeDrawing, false);
-        }
-        else
-        {
-            toolButtons[i]->SetDebugDraw(false);
-        }
-    }
-    
-    if(delegate)
-    {
-        delegate->OnToolSelected(selectedTool);
-    }
 }
 
 void LandscapeToolsPanelHeightmap::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
@@ -290,3 +207,19 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
     selectedTool->averageDrawing = average->Checked();
     selectedTool->relativeDrawing = relative->Checked();
 }
+
+#pragma mark  --LandscapeToolsSelectionDelegate
+void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
+{
+    sizeSlider->SetValue(newTool->size);
+    strengthSlider->SetValue(newTool->strength);
+    
+    sizeValue->SetText(Format(L"%.3f", newTool->maxSize));
+    strengthValue->SetText(Format(L"%.3f", newTool->maxStrength));
+    
+    average->SetChecked(newTool->averageDrawing, false);
+    relative->SetChecked(newTool->relativeDrawing, false);
+    
+    LandscapeToolsPanel::OnToolSelected(forControl, newTool);
+}
+

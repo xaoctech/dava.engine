@@ -9,7 +9,7 @@ LandscapeEditorSettings::LandscapeEditorSettings()
 
 void LandscapeEditorSettings::ResetAll()
 {
-    redMask = true;
+    redMask = false;
     greenMask = false;
     blueMask = false;
     alphaMask = false;
@@ -20,6 +20,7 @@ LandscapeEditorPropertyControl::LandscapeEditorPropertyControl(const Rect & rect
     :	LandscapePropertyControl(rect, createNodeProperties)
 {
     settings = new LandscapeEditorSettings();
+    settings->redMask = true;
     delegate = NULL;
 }
 

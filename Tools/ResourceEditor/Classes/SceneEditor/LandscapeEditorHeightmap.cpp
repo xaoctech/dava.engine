@@ -22,15 +22,10 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     toolImage = NULL;
     
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
-
-    drawSprite = NULL;
 }
 
 LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
 {
-    SafeRelease(drawSprite);
-    
-    
     SafeRelease(toolImage);
     SafeRelease(heightImage);
     SafeRelease(landscapeDebugNode);
@@ -103,6 +98,8 @@ void LandscapeEditorHeightmap::CreateMaskTexture()
     SafeRelease(heightImage);
     
     heightImage = Image::CreateFromFile(workingLandscape->GetHeightMapPathname());
+    savedPath = workingLandscape->GetHeightMapPathname();
+    
     landscapeDebugNode->SetDebugHeightmapImage(heightImage, workingLandscape->GetBoundingBox());
     
     landscapeSize = heightImage->GetWidth();
@@ -122,13 +119,9 @@ void LandscapeEditorHeightmap::UpdateToolImage()
     {
         RenderManager::Instance()->LockNonMain();
 
-//        toolImage = SafeRetain(currentTool->image);
         Image *image = currentTool->image;
         
         int32 sideSize = currentTool->size;
-//        int32 sideSize = image->GetWidth();
-        
-//        Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_A8);
         Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
 
         Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
@@ -151,12 +144,6 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         RenderManager::Instance()->RestoreRenderTarget();
 
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
-        
-        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/3d/test.png");
-        currentTool->image->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/3d/test1.png");
-        
-//        drawSprite = SafeRetain(srcSprite);
-        drawSprite = SafeRetain(dstSprite);
         
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
@@ -231,6 +218,9 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(toolImage);
     
     workingScene->AddNode(workingLandscape);
+    workingLandscape->BuildLandscapeFromHeightmapImage(workingLandscape->GetRenderingMode(), 
+                                                       workingLandscape->GetHeightMapPathname(), 
+                                                       workingLandscape->GetBoundingBox());
     
     workingScene->RemoveNode(landscapeDebugNode);
     SafeRelease(landscapeDebugNode);
@@ -267,7 +257,6 @@ void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
     {
         heightImage->Save(pathToFile);
         SafeRelease(heightImage);
-        SafeRelease(savedTexture);
     }
 }
 

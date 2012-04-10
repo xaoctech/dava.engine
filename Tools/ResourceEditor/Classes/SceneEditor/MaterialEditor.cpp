@@ -43,6 +43,7 @@ MaterialEditor::MaterialEditor()
                                     materialListWidth, size.y - ControlsFactory::BUTTON_HEIGHT * 2), 
                                UIList::ORIENTATION_VERTICAL);
     materialsList->SetDelegate(this);
+    ControlsFactory::SetScrollbar(materialsList);
     ControlsFactory::CusomizeListControl(materialsList);
     AddControl(materialsList);
     UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, ControlsFactory::BUTTON_HEIGHT));

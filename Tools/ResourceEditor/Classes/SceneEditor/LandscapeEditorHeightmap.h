@@ -52,8 +52,6 @@ protected:
     Image *heightImage;
     
     Image *toolImage;
-    
-    Sprite *drawSprite;
 };
 
 
