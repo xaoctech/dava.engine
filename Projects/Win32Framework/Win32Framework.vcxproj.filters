@@ -939,9 +939,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="LandscapeCursor.h">
-      <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
