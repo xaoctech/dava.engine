@@ -214,6 +214,7 @@ public:
         STATE_CHANGED_CULLMODE = 1 << 3,
         STATE_CHANGED_SHADER = 1 << 4,
         STATE_CHANGED_ALPHA_FUNC = 1 << 5,
+		STATE_CHANGED_DEPTH_FUNC = 1 << 6,
     
         STATE_CHANGED_TEXTURE0 = 1 << 8,        
         STATE_CHANGED_TEXTURE1 = 1 << 9,        
@@ -281,6 +282,7 @@ public:
     eFace cullMode;
     eCmpFunc alphaFunc;
     uint8    alphaFuncCmpValue;
+	eCmpFunc depthFunc;
 
 	struct StencilState
 	{
@@ -325,6 +327,9 @@ public:
     // ALPHA
     inline void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
 
+	// DEPTH
+	inline void SetDepthFunc(eCmpFunc func);
+
 	// STENCIL
 	inline void SetStencilRef(int32 ref);
 	inline void SetStencilMask(uint32 mask);
@@ -340,6 +345,7 @@ public:
     inline void SetBlendModeInHW();
     inline void SetDepthTestInHW();
     inline void SetDepthWriteInHW();
+	inline void SetDepthFuncInHW();
     inline void SetCullInHW();
     inline void SetCullModeInHW();
     inline void SetColorInHW();
@@ -458,6 +464,15 @@ inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
         alphaFuncCmpValue = newCmpValue;
         changeSet |= STATE_CHANGED_ALPHA_FUNC;
     }
+}
+
+inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
+{
+	if(depthFunc != func)
+	{
+		depthFunc = func;
+		changeSet |= STATE_CHANGED_DEPTH_FUNC;
+	}
 }
     
 inline eBlendMode RenderStateBlock::GetSrcBlend()
