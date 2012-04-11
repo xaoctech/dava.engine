@@ -72,7 +72,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;./Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -83,12 +83,13 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Win32Framework.lib;CORE_DB_Magick++_.lib;CORE_DB_magick_.lib;CORE_DB_bzlib_.lib;CORE_DB_coders_.lib;CORE_DB_filters_.lib;CORE_DB_jbig_.lib;CORE_DB_jp2_.lib;CORE_DB_jpeg_.lib;CORE_DB_lcms_.lib;CORE_DB_libxml_.lib;CORE_DB_png_.lib;CORE_DB_tiff_.lib;CORE_DB_ttf_.lib;CORE_DB_wand_.lib;CORE_DB_wmf_.lib;CORE_DB_xlib_.lib;CORE_DB_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;user32.lib;gdi32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;FColladaVS2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Debug Win32;../../../dava.resourceeditor.beast/beast/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Win32Framework.lib;CORE_RL_Magick++_.lib;CORE_RL_magick_.lib;CORE_RL_bzlib_.lib;CORE_RL_coders_.lib;CORE_RL_filters_.lib;CORE_RL_jbig_.lib;CORE_RL_jp2_.lib;CORE_RL_jpeg_.lib;CORE_RL_lcms_.lib;CORE_RL_libxml_.lib;CORE_RL_png_.lib;CORE_RL_tiff_.lib;CORE_RL_ttf_.lib;CORE_RL_wand_.lib;CORE_RL_wmf_.lib;CORE_RL_xlib_.lib;CORE_RL_zlib_.lib;X11.lib;Xext.lib;kernel32.lib;user32.lib;gdi32.lib;odbc32.lib;odbccp32.lib;ole32.lib;oleaut32.lib;winmm.lib;wsock32.lib;advapi32.lib;FColladaVS2010.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);./../../Libs/ImageMagick-6.7.4-Windows/VisualMagick/lib;./../ColladaConverter/Collada15/External/Cg/lib;./../ColladaConverter/Collada15/FCollada/Output/Release Win32;../../../dava.resourceeditor.beast/beast/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -450,6 +451,7 @@
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
     <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
     <ClInclude Include="Classes\SceneEditor\HintManager.h" />
+    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h" />
@@ -459,6 +461,7 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
@@ -717,6 +720,7 @@
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\HintManager.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp" />
@@ -726,6 +730,7 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />

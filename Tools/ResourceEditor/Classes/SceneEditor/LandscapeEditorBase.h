@@ -78,6 +78,7 @@ protected:
     virtual void HideAction() = 0;
     virtual void ShowAction() = 0;
     virtual void SaveTextureAction(const String &pathToFile) = 0;
+	virtual void UpdateCursor() = 0;
     
     void Close();
     LandscapeEditorDelegate *delegate;
@@ -106,6 +107,14 @@ protected:
     Vector2 prevDrawPos;
     
     LandscapeToolsPanel *toolsPanel;
+
+	Texture * cursorTexture;
+
+	struct CursorMode
+	{
+
+	};
+	CursorMode cursorMode;
 };
 
 

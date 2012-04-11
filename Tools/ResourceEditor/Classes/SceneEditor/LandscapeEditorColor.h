@@ -40,6 +40,7 @@ protected:
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
+	virtual void UpdateCursor();
 
     
     void CreateMaskTexture();

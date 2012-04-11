@@ -291,7 +291,7 @@ public:
     
     void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
     void SetCullMode(eFace cullFace);
-
+	void SetDepthFunc(eCmpFunc func);
     
     
     void SetRenderData(RenderDataObject * object);

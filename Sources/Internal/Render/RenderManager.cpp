@@ -794,5 +794,10 @@ RenderStateBlock * RenderManager::State()
 	return &RenderManager::Instance()->currentState;
 }
 
+void RenderManager::SetDepthFunc(eCmpFunc func)
+{
+	currentState.SetDepthFunc(func);
+}
+
 	
 };

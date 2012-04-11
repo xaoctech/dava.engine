@@ -188,6 +188,21 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 	}
 }
 
+
+void LandscapeEditorColor::UpdateCursor()
+{
+	if(currentTool && currentTool->sprite && currentTool->zoom)
+	{
+		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->zoom * currentTool->zoom);
+		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+
+		workingLandscape->SetCursorTexture(cursorTexture);
+		workingLandscape->SetBigTextureSize(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetCursorPosition(pos);
+		workingLandscape->SetCursorScale(scaleSize);
+	}
+}
+
 bool LandscapeEditorColor::SetScene(EditorScene *newScene)
 {
     bool ret = LandscapeEditorBase::SetScene(newScene);
@@ -240,12 +255,16 @@ void LandscapeEditorColor::HideAction()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+
+	workingLandscape->CursorDisable();
 }
 
 void LandscapeEditorColor::ShowAction()
 {
     CreateMaskTexture();
     landscapeSize = maskSprite->GetWidth();
+
+	workingLandscape->CursorEnable();
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
@@ -295,4 +314,5 @@ void LandscapeEditorColor::MaskTextureDidChanged()
 {
     CreateMaskTexture();
 }
+
 

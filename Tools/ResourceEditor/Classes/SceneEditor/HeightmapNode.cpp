@@ -96,7 +96,11 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
 
 HeightmapNode::~HeightmapNode()
 {
-    editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
+	if(editorScene->landCollisionWorld)
+	{
+		    editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
+	}
+
     
     SafeDelete(body);
     
