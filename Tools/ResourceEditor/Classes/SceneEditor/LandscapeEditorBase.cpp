@@ -168,6 +168,11 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
 
 bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 {
+	Vector2 point;
+	GetLandscapePoint(touch->point, point);
+	startPoint = endPoint = point;
+	UpdateCursor();
+	
     if(UIEvent::BUTTON_1 == touch->tid)
     {
         if(UIEvent::PHASE_BEGAN == touch->phase)
