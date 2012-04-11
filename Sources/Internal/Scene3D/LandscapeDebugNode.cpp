@@ -102,12 +102,12 @@ void LandscapeDebugNode::Draw()
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		glDepthFunc(GL_LEQUAL);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
 		cursor->Prepare();
 
 		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->GetWidth() - 1) * (heightmap->GetHeight() - 1) * 6, EIF_32, &debugIndices.front()); 
 
-		glDepthFunc(GL_LESS);
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
 		RenderManager::Instance()->SetBlendMode(src, dst);
 	}

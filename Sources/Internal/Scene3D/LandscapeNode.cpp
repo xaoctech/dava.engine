@@ -997,14 +997,14 @@ void LandscapeNode::Draw()
 		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		glDepthFunc(GL_LEQUAL);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
 		fans.clear();
 		cursor->Prepare();
 		ClearQueue();
 		Draw(&quadTreeHead);
 		FlushQueue();
 		DrawFans();
-		glDepthFunc(GL_LESS);
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
 		RenderManager::Instance()->SetBlendMode(src, dst);
 	}
