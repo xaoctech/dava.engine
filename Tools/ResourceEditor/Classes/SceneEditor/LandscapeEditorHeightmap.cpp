@@ -183,6 +183,11 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
             SafeRelease(heightmapNode);
             heightmapNode = new HeightmapNode(workingScene);
             workingScene->AddNode(heightmapNode);
+
+			landscapeDebugNode->SetCursorTexture(cursorTexture);
+			landscapeDebugNode->SetBigTextureSize(heightImage->GetWidth());
+			landscapeDebugNode->SetCursorPosition(pos);
+			landscapeDebugNode->SetCursorScale(scaleSize);
         }
         startPoint = endPoint;
     }
@@ -215,6 +220,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase)
 
 void LandscapeEditorHeightmap::HideAction()
 {
+	landscapeDebugNode->CursorDisable();
     SafeRelease(toolImage);
     
     workingScene->AddNode(workingLandscape);
@@ -248,6 +254,8 @@ void LandscapeEditorHeightmap::ShowAction()
     
     
     CreateMaskTexture();
+
+	landscapeDebugNode->CursorEnable();
 }
 
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)

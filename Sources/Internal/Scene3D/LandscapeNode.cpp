@@ -58,8 +58,7 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     renderingMode = RENDERING_MODE_TEXTURE;
     
     activeShader = 0;
-	cursorMode.enabled = false;
-	cursorMode.shader = 0;
+	cursor = 0;
     uniformCameraPosition = -1;
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -81,6 +80,7 @@ LandscapeNode::~LandscapeNode()
     }
     SafeDeleteArray(indices);
     SafeRelease(heightmap);
+	SafeDelete(cursor);
 }
     
 void LandscapeNode::InitShaders()
@@ -141,7 +141,6 @@ void LandscapeNode::InitShaders()
 void LandscapeNode::ReleaseShaders()
 {
     SafeRelease(activeShader);
-	SafeRelease(cursorMode.shader);
 
     uniformCameraPosition = -1;
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -992,22 +991,22 @@ void LandscapeNode::Draw()
     }   
 #endif 
 
-	//TODO: maybe swap with UnbindMaterial()
-	if(cursorMode.enabled)
+	if(cursor)
 	{
-		if(cursorMode.texture)
-		{
-			RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-			glDepthFunc(GL_LEQUAL);
-			fans.clear();
-			cursorMode.Draw();
-			ClearQueue();
-			Draw(&quadTreeHead);
-			FlushQueue();
-			DrawFans();
-			glDepthFunc(GL_LESS);
-		}
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		glDepthFunc(GL_LEQUAL);
+		fans.clear();
+		cursor->Prepare();
+		ClearQueue();
+		Draw(&quadTreeHead);
+		FlushQueue();
+		DrawFans();
+		glDepthFunc(GL_LESS);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(src, dst);
 	}
     
     UnbindMaterial();
@@ -1159,53 +1158,33 @@ const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel 
 
 void LandscapeNode::CursorEnable()
 {
-	cursorMode.enabled = true;
-	cursorMode.texture = 0;
-	if(!cursorMode.shader)
-	{
-		cursorMode.shader = new Shader();
-		cursorMode.shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
-		cursorMode.shader->Recompile();
-
-		cursorMode.uniformTexture = cursorMode.shader->FindUniformLocationByName("texture0");
-		cursorMode.uniformPosition = cursorMode.shader->FindUniformLocationByName("position");
-		cursorMode.uniformScale = cursorMode.shader->FindUniformLocationByName("scale");
-	}
+	DVASSERT(0 == cursor);
+	cursor = new LandscapeCursor();
 }
 
 void LandscapeNode::CursorDisable()
 {
-	cursorMode.enabled = false;
+	SafeDelete(cursor);
 }
 
 void LandscapeNode::SetCursorTexture(Texture * texture)
 {
-	cursorMode.texture = texture;
+	cursor->SetCursorTexture(texture);
 }
 
 void LandscapeNode::SetCursorPosition(const Vector2 & position)
 {
-	cursorMode.position = position/textures[TEXTURE_TILE_MASK]->GetWidth();
+	cursor->SetPosition(position);
 }
 
 void LandscapeNode::SetCursorScale(float32 scale)
 {
-	cursorMode.scale = scale;
+	cursor->SetScale(scale);
 }
 
-void LandscapeNode::CursorMode::Draw()
+void LandscapeNode::SetBigTextureSize(float32 bigSize)
 {
-	if(!texture)
-	{
-		return;
-	}
-
-	RenderManager::Instance()->SetTexture(texture, 0);
-	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->FlushState();
-	shader->SetUniformValue(uniformTexture, 0);
-	shader->SetUniformValue(uniformPosition, position);
-	shader->SetUniformValue(uniformScale, scale);
+	cursor->SetBigTextureSize(bigSize);
 }
 
 };

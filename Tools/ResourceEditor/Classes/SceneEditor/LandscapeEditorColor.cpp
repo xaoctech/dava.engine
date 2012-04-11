@@ -184,6 +184,7 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 				RenderManager::Instance()->RestoreRenderTarget();
 
 				workingLandscape->SetCursorTexture(cursorTexture);
+				workingLandscape->SetBigTextureSize(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
 				workingLandscape->SetCursorPosition(pos);
 				workingLandscape->SetCursorScale(scaleSize);
 			}

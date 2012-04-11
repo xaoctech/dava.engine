@@ -108,6 +108,12 @@ protected:
     LandscapeToolsPanel *toolsPanel;
 
 	Texture * cursorTexture;
+
+	struct CursorMode
+	{
+
+	};
+	CursorMode cursorMode;
 };
 
 
