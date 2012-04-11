@@ -35,6 +35,9 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     toolsPanel = NULL;
     
     landscapeSize = 0;
+
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
@@ -48,6 +51,8 @@ LandscapeEditorBase::~LandscapeEditorBase()
     SafeRelease(workingScene);
     
     SafeRelease(fileSystemDialog);
+
+	SafeRelease(cursorTexture);
 }
 
 
@@ -163,6 +168,11 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
 
 bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 {
+	Vector2 point;
+	GetLandscapePoint(touch->point, point);
+	startPoint = endPoint = point;
+	UpdateCursor();
+	
     if(UIEvent::BUTTON_1 == touch->tid)
     {
         if(UIEvent::PHASE_BEGAN == touch->phase)

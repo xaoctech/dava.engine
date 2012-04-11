@@ -52,7 +52,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;C:\Program Files\OpenAL 1.1 SDK\include;C:\Program Files (x86)\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -297,6 +297,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
@@ -535,6 +536,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />

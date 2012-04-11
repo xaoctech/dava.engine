@@ -58,6 +58,7 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     renderingMode = RENDERING_MODE_TEXTURE;
     
     activeShader = 0;
+	cursor = 0;
     uniformCameraPosition = -1;
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -79,6 +80,7 @@ LandscapeNode::~LandscapeNode()
     }
     SafeDeleteArray(indices);
     SafeRelease(heightmap);
+	SafeDelete(cursor);
 }
     
 void LandscapeNode::InitShaders()
@@ -978,9 +980,9 @@ void LandscapeNode::Draw()
     
     BindMaterial();
     
-    Draw(&quadTreeHead);
-    FlushQueue();
-    DrawFans();
+	Draw(&quadTreeHead);
+	FlushQueue();
+	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
     if (debugFlags & DEBUG_DRAW_ALL)
@@ -988,6 +990,24 @@ void LandscapeNode::Draw()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }   
 #endif 
+
+	if(cursor)
+	{
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
+		fans.clear();
+		cursor->Prepare();
+		ClearQueue();
+		Draw(&quadTreeHead);
+		FlushQueue();
+		DrawFans();
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(src, dst);
+	}
     
     UnbindMaterial();
 
@@ -1135,5 +1155,36 @@ const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel 
 {
     return textureNames[level];
 }
-    
+
+void LandscapeNode::CursorEnable()
+{
+	DVASSERT(0 == cursor);
+	cursor = new LandscapeCursor();
+}
+
+void LandscapeNode::CursorDisable()
+{
+	SafeDelete(cursor);
+}
+
+void LandscapeNode::SetCursorTexture(Texture * texture)
+{
+	cursor->SetCursorTexture(texture);
+}
+
+void LandscapeNode::SetCursorPosition(const Vector2 & position)
+{
+	cursor->SetPosition(position);
+}
+
+void LandscapeNode::SetCursorScale(float32 scale)
+{
+	cursor->SetScale(scale);
+}
+
+void LandscapeNode::SetBigTextureSize(float32 bigSize)
+{
+	cursor->SetBigTextureSize(bigSize);
+}
+
 };

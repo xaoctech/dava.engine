@@ -36,6 +36,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Frustum.h"
+#include "Scene3D/LandscapeCursor.h"
 
 
 namespace DAVA
@@ -250,6 +251,13 @@ public:
 	bool PlacePoint(const Vector3 & point, Vector3 & result);
 	Vector3 GetPoint(int16 x, int16 y, uint8 height);
 
+	void CursorEnable();
+	void CursorDisable();
+	void SetCursorTexture(Texture * texture);
+	void SetBigTextureSize(float32 bigSize);
+	void SetCursorPosition(const Vector2 & position);
+	void SetCursorScale(float32 scale);
+
 protected:	
     
     class LandscapeQuad
@@ -319,6 +327,9 @@ protected:
     Vector2 textureTiling[TEXTURE_COUNT];
     
     Shader * activeShader;
+
+	LandscapeCursor * cursor;
+
 //    Shader * singleTextureShader;
 //    Shader * detailShader;
 //    Shader * blendedShader;

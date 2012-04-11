@@ -378,7 +378,7 @@ void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat
 
 	Texture *t = Texture::CreateFBO((int32)ceilf(sprWidth), (int32)ceilf(sprHeight), textureFormat);
 	
-	this->InitFromTexture(t, 0, 0, sprWidth, sprHeight, true);
+	this->InitFromTexture(t, 0, 0, sprWidth, sprHeight, -1, -1, true);
 	
 	t->Release();
 	
@@ -397,11 +397,20 @@ Sprite* Sprite::CreateFromTexture(Texture *fromTexture, int32 xOffset, int32 yOf
 	DVASSERT(fromTexture);
 	Sprite *spr = new Sprite();
 	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
-	spr->InitFromTexture(fromTexture, xOffset, yOffset, sprWidth, sprHeight, contentScaleIncluded);
+	spr->InitFromTexture(fromTexture, xOffset, yOffset, sprWidth, sprHeight, -1, -1, contentScaleIncluded);
 	return spr;
 }
 
-void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded)
+Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTexture, const Vector2 & textureRegionOffset, const Vector2 & textureRegionSize)
+{
+	DVASSERT(fromTexture);
+	Sprite *spr = new Sprite();
+	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
+	spr->InitFromTexture(fromTexture, textureRegionOffset.x, textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, spriteSize.x, spriteSize.y, false);
+	return spr;
+}
+
+void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded)
 {
 	if (!contentScaleIncluded) 
 	{

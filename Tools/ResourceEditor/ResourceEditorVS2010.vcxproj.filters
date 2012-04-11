@@ -770,6 +770,12 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1851,6 +1857,12 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
