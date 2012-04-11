@@ -36,7 +36,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     
     landscapeSize = 0;
 
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor.png");
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
 }
 

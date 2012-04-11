@@ -369,7 +369,6 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\StringFormat.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\UTF8Utils.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Utils.h" />
-    <ClInclude Include="LandscapeCursor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp" />
