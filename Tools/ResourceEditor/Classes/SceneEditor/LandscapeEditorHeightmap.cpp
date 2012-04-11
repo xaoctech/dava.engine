@@ -183,14 +183,23 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
             SafeRelease(heightmapNode);
             heightmapNode = new HeightmapNode(workingScene);
             workingScene->AddNode(heightmapNode);
-
-			landscapeDebugNode->SetCursorTexture(cursorTexture);
-			landscapeDebugNode->SetBigTextureSize(heightImage->GetWidth());
-			landscapeDebugNode->SetCursorPosition(pos);
-			landscapeDebugNode->SetCursorScale(scaleSize);
         }
         startPoint = endPoint;
     }
+}
+
+void LandscapeEditorHeightmap::UpdateCursor()
+{
+	if(currentTool && toolImage)
+	{
+		float32 scaleSize = currentTool->size;
+		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+
+		landscapeDebugNode->SetCursorTexture(cursorTexture);
+		landscapeDebugNode->SetBigTextureSize(heightImage->GetWidth());
+		landscapeDebugNode->SetCursorPosition(pos);
+		landscapeDebugNode->SetCursorScale(scaleSize);
+	}
 }
 
 void LandscapeEditorHeightmap::InputAction(int32 phase)
@@ -281,5 +290,7 @@ void LandscapeEditorHeightmap::OnToolSelected(LandscapeTool *newTool)
     LandscapeEditorBase::OnToolSelected(newTool);
     SafeRelease(toolImage);
 }
+
+
 
 
