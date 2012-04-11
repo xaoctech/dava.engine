@@ -36,6 +36,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Frustum.h"
+#include "Scene3D/LandscapeCursor.h"
 
 
 namespace DAVA
@@ -253,6 +254,7 @@ public:
 	void CursorEnable();
 	void CursorDisable();
 	void SetCursorTexture(Texture * texture);
+	void SetBigTextureSize(float32 bigSize);
 	void SetCursorPosition(const Vector2 & position);
 	void SetCursorScale(float32 scale);
 
@@ -326,21 +328,7 @@ protected:
     
     Shader * activeShader;
 
-	struct CursorMode
-	{
-		bool enabled;
-		Shader * shader;
-		Texture * texture;
-		Vector2 position;
-		float32 scale;
-
-		int32 uniformTexture;
-		int32 uniformPosition;
-		int32 uniformScale;
-
-		void Draw();
-	};
-	CursorMode cursorMode;
+	LandscapeCursor * cursor;
 
 //    Shader * singleTextureShader;
 //    Shader * detailShader;
