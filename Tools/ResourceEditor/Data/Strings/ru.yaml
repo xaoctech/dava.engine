@@ -82,9 +82,6 @@ createproperty.type: "Тип:"
 createproperty.name: "Имя:"
 
 #Landscape Editor
-landscapeeditor.zoom: "Увеличение:"
-landscapeeditor.radius: "Радиус:"
-landscapeeditor.intension: "Интенсивность:"
 landscapeeditor.size: "Размер маски:"
 landscapeeditor.texture0: "Texture0:"
 landscapeeditor.texture1: "Texture1/Detail:"

@@ -103,7 +103,7 @@ public:
     
     
     SceneFileV2();
-    ~SceneFileV2();
+    virtual ~SceneFileV2();
     
     eError SaveScene(const String & filename, Scene * _scene);
     eError LoadScene(const String & filename, Scene * _scene);

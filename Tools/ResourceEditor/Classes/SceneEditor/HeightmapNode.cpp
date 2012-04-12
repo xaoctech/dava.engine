@@ -3,28 +3,35 @@
 
 #include "../EditorScene.h"
 
+#include "Scene3D/Heightmap.h"
+
+
+
 HeightmapNode::HeightmapNode(EditorScene * _scene)
     :   SceneNode(_scene)
     ,   position(0,0,0)
     ,   rotation(0)
 {
+    SetName("HeightmapNode");
+    
     editorScene = _scene;
     SetVisible(true);
     
     renderData = NULL;
     
     land = (LandscapeNode*)scene->FindByName("Landscape");
+    DVASSERT(land);
     
-    heightMap = Image::CreateFromFile(land->GetHeightMapPathname());
+    Heightmap *heightmap = land->GetHeightmap();
 
-    uint8 *dt = (uint8 *)heightMap->GetData();
-    size.x = heightMap->GetWidth();
-    size.y = heightMap->GetHeight();
-    for (int32 y = 0; y < heightMap->GetHeight(); y++) 
+    uint8 *dt = (uint8 *)heightmap->Data();
+    size.x = heightmap->Size();
+    size.y = heightmap->Size();
+    for (int32 y = 0; y < heightmap->Size(); y++) 
     {
-        for (int32 x = 0; x < heightMap->GetWidth(); x++) 
+        for (int32 x = 0; x < heightmap->Size(); x++) 
         {
-            hmap.push_back(dt[(x + (y) * heightMap->GetWidth())]);
+            hmap.push_back(dt[(x + (y) * heightmap->Size())]);
         }
     }
 	
@@ -34,7 +41,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     landSize = transformedBox.max - transformedBox.min;
     
     sizeInMeters = landSize.x;
-    areaScale = sizeInMeters / heightMap->GetWidth();
+    areaScale = sizeInMeters / heightmap->Size();
     maxHeight = landSize.z / 255.f * 65535.f;
 
     
@@ -42,7 +49,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
 	bool flipQuadEdges = true;
     
     
-	colShape = new btHeightfieldTerrainShape(heightMap->GetWidth(), heightMap->GetHeight()
+	colShape = new btHeightfieldTerrainShape(heightmap->Size(), heightmap->Size()
                                                                                 , &hmap.front(), maxHeight
                                                                                 , 2, useFloatDatam
                                                                                 , flipQuadEdges);
@@ -88,9 +95,6 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     collisionObject->setCollisionShape(colShape);
     editorScene->landCollisionWorld->addCollisionObject(collisionObject);
 	editorScene->landCollisionWorld->updateAabbs();
-    
-
-    SafeRelease(heightMap);
 }
 
 

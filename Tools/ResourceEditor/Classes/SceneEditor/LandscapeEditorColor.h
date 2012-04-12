@@ -13,10 +13,6 @@ class LandscapeEditorColor
     ,   public LandscapeEditorPropertyControlDelegate
 
 {
-    enum eLEConst
-    {
-        ZOOM_MULTIPLIER = 4
-    };
     
 public:
     

@@ -47,7 +47,6 @@ protected:
     
     RenderDataObject *renderData;
 
-    Image *heightMap;
     Vector<uint8> hmap;
     
     Vector<float32> verts;

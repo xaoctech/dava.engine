@@ -32,11 +32,15 @@
 		5C77AB7D14C7509D00E92D28 /* libpng_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77AB7C14C7509D00E92D28 /* libpng_macos.a */; };
 		5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */; };
 		5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */; };
+		5C82288815360BDE004D3F2D /* LandscapeCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */; };
+		5C82288915360BDE004D3F2D /* LandscapeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C82288715360BDE004D3F2D /* LandscapeCursor.h */; };
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
 		5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */; };
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
 		5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */; };
 		5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */; };
+		5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEA312A1535A325008E35F5 /* Heightmap.cpp */; };
+		5CEA312D1535A325008E35F5 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEA312B1535A325008E35F5 /* Heightmap.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -511,11 +515,15 @@
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
 		5C78D5BC14DADFA300A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
+		5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeCursor.cpp; sourceTree = "<group>"; };
+		5C82288715360BDE004D3F2D /* LandscapeCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeCursor.h; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
 		5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
+		5CEA312A1535A325008E35F5 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
+		5CEA312B1535A325008E35F5 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
@@ -1480,6 +1488,10 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */,
+				5C82288715360BDE004D3F2D /* LandscapeCursor.h */,
+				5CEA312A1535A325008E35F5 /* Heightmap.cpp */,
+				5CEA312B1535A325008E35F5 /* Heightmap.h */,
 				FE78E87914E17E7D007DD1AA /* QuadTree.cpp */,
 				FE78E87A14E17E7D007DD1AA /* QuadTree.h */,
 				5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */,
@@ -1916,6 +1928,8 @@
 				5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */,
 				FE78E87C14E17E7E007DD1AA /* QuadTree.h in Headers */,
 				FE64B4BC152F0B9400417E73 /* LandscapeDebugNode.h in Headers */,
+				5CEA312D1535A325008E35F5 /* Heightmap.h in Headers */,
+				5C82288915360BDE004D3F2D /* LandscapeCursor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2197,6 +2211,8 @@
 				FE78E87B14E17E7E007DD1AA /* QuadTree.cpp in Sources */,
 				5C42C98A14E3B3DD00EB3F53 /* XMLParser.cpp in Sources */,
 				FE64B4BB152F0B9400417E73 /* LandscapeDebugNode.cpp in Sources */,
+				5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */,
+				5C82288815360BDE004D3F2D /* LandscapeCursor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
