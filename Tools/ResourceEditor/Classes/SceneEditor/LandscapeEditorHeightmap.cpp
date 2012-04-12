@@ -21,7 +21,16 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     toolImage = NULL;
     
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
+    
+    
+    Image *img1 = Image::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16.png");
+    if(img1)
+    {
+        img1->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16_copy.png");
+        SafeRelease(img1);
+    }
 }
+
 
 LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
 {
@@ -100,17 +109,23 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
         {
             wasTileMaskToolUpdate = true;
             
-            float32 koef = (currentTool->strength * currentTool->strength * timeElapsed);
             if(currentTool->averageDrawing)
             {
+                float32 koef = fabsf(currentTool->strength * timeElapsed / currentTool->maxStrength);
                 ImageRasterizer::DrawAverageRGBA(heightmap, currentTool->image, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else if(currentTool->relativeDrawing)
             {
+                float32 koef = (currentTool->strength * timeElapsed);
+                if(inverseDrawingEnabled)
+                {
+                    koef = -koef;
+                }
                 ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else 
             {
+                float32 koef = (currentTool->strength * timeElapsed);
                 ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
             }
             
@@ -202,7 +217,7 @@ void LandscapeEditorHeightmap::ShowAction()
     savedPath = workingLandscape->GetHeightMapPathname();
     landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
-    landscapeSize = heightmap->Size();
+    landscapeSize = heightmap->Size() - 1;
 
 	landscapeDebugNode->CursorEnable();
 }

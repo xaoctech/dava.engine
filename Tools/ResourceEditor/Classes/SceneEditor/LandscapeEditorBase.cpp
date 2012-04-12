@@ -12,6 +12,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     ,   state(ELE_NONE)
     ,   workingScene(NULL)
     ,   parent(parentControl)
+    ,   inverseDrawingEnabled(false)
+    ,   touchID(INVALID_TOUCH_ID)
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -104,13 +106,13 @@ void LandscapeEditorBase::Toggle()
     }
     else if(ELE_NONE == state)
     {
+        touchID = INVALID_TOUCH_ID;
+        
         SafeRelease(heightmapNode);
         heightmapNode = new HeightmapNode(workingScene);
         workingScene->AddNode(heightmapNode);
                 
         state = ELE_ACTIVE;
-        
-        isPaintActive = false;
         
         SetTool(toolsPanel->CurrentTool());
         
@@ -169,67 +171,49 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
 bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 {
 	Vector2 point;
-	GetLandscapePoint(touch->point, point);
+	bool isIntersect = GetLandscapePoint(touch->point, point);
 	startPoint = endPoint = point;
 	UpdateCursor();
 	
-    if(UIEvent::BUTTON_1 == touch->tid)
+    if(INVALID_TOUCH_ID == touchID || touchID == touch->tid)
     {
-        if(UIEvent::PHASE_BEGAN == touch->phase)
+        if(UIEvent::BUTTON_1 == touch->tid || UIEvent::BUTTON_3 == touch->tid)
         {
-            Vector2 point;
-            isPaintActive = GetLandscapePoint(touch->point, point);
-            if(isPaintActive)
+            inverseDrawingEnabled = (UIEvent::BUTTON_3 == touch->tid);
+            
+            if(UIEvent::PHASE_BEGAN == touch->phase)
             {
-                prevDrawPos = Vector2(-100, -100);
-                startPoint = endPoint = point;
-                
-                InputAction(touch->phase);
-            }
-            return true;
-        }
-        else if(UIEvent::PHASE_DRAG == touch->phase)
-        {
-            Vector2 point;
-            bool isIntersect = GetLandscapePoint(touch->point, point);
-            if(isIntersect)
-            {
-                if(!isPaintActive)
+                touchID = touch->tid;
+                if(isIntersect)
                 {
-                    isPaintActive = true;
-                    startPoint = point;
+                    prevDrawPos = Vector2(-100, -100);
+                    InputAction(touch->phase);
                 }
-                
-                endPoint = point;
-                InputAction(touch->phase);
+                return true;
             }
-            else 
+            else if(UIEvent::PHASE_DRAG == touch->phase)
             {
-                isPaintActive = false;
-                endPoint = point;
-  
                 InputAction(touch->phase);
-                prevDrawPos = Vector2(-100, -100);
+                if(!isIntersect)
+                {
+                    prevDrawPos = Vector2(-100, -100);
+                }
+                return true;
             }
-            return true;
-        }
-        else if(UIEvent::PHASE_ENDED == touch->phase)
-        {
-            Vector2 point;
-            GetLandscapePoint(touch->point, point);
-            if(isPaintActive)
+            else if(UIEvent::PHASE_ENDED == touch->phase || UIEvent::PHASE_CANCELLED == touch->phase)
             {
-                isPaintActive = false;
+                touchID = INVALID_TOUCH_ID;
                 
-                endPoint = point;
-                
-                InputAction(touch->phase);
-                prevDrawPos = Vector2(-100, -100);
+                if(isIntersect)
+                {
+                    InputAction(touch->phase);
+                    prevDrawPos = Vector2(-100, -100);
+                }
+                return true;
             }
-            return true;
         }
     }
-
+    
     return false;
 }
 

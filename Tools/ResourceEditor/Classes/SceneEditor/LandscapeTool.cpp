@@ -75,7 +75,7 @@ float32 LandscapeTool::StrengthColorMax()
 
 float32 LandscapeTool::StrengthHeightMax()
 {
-    return 30.0f;
+    return 100.0f;
 }
 
 float32 LandscapeTool::SizeHeightMax()
@@ -85,7 +85,7 @@ float32 LandscapeTool::SizeHeightMax()
 
 float32 LandscapeTool::DefaultStrengthHeight()
 {
-    return 10.f;
+    return 50.f;
 }
 
 float32 LandscapeTool::DefaultSizeHeight()
