@@ -188,6 +188,8 @@ UIControl * LandscapeToolsSelection::GetToolControl(int32 indexAtRow, DAVA::UILi
     {
         c = new UIControl(Rect(indexAtRow * ControlsFactory::TOOLS_HEIGHT, 0, 
                                ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+        c->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+        
         c->SetName(controlName);
         cell->AddControl(c);
     }
