@@ -23,69 +23,53 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
-#define __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
+
+#ifndef __DAVAENGINE_HEIGHT_MAP_H__
+#define __DAVAENGINE_HEIGHT_MAP_H__
 
 #include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
-#include "Scene3D/Frustum.h"
-#include "Scene3D/LandscapeNode.h"
 
 namespace DAVA
 {
-
-class Scene;
+    
 class Image;
-class Texture;
-class RenderDataObject;
-class Shader;
-class SceneFileV2;
-class Heightmap;
-
-
-/**    
-    \brief Implementation of cdlod algorithm to render landscapes
-    This class is base of the landscape code on all platforms
-    Landscape node is always axial aligned for simplicity of frustum culling calculations
-    Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
- */ 
-
-class LandscapeDebugNode : public LandscapeNode
+class Heightmap: public BaseObject
 {
-public:	
-	LandscapeDebugNode(Scene * scene = 0);
-	virtual ~LandscapeDebugNode();
-    
-    
-    virtual void SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box);
-  
-    /**
-        \brief Overloaded draw function to draw landscape.
-     */
-	virtual void Draw();
+public:
 
-    void SetHeightmapPath(const String &path);
+    enum eHightmapConst
+    {
+        MAX_VALUE = 65535,   //(2^16 - 1)
+        IMAGE_CORRECTION = MAX_VALUE / 255 //(2^8 - 1)
+    };
+
     
-protected:	
+    Heightmap();
+	virtual ~Heightmap();
     
-    Vector<LandscapeVertex> debugVertices;
-    Vector<uint32> debugIndices;
-    RenderDataObject * debugRenderDataObject;
+    void BuildFromImage(Image *image);
+    
+    void Save(const String &filePathname);
+    bool Load(const String &filePathname);
+    
+    uint16 * Data();
+    int32 Size();
+    
+    int32 GetTileSize();
+    void SetTileSize(int32 newSize);
+    
+    static const String FileExtension();
+
+protected:
+
+    void ReleaseData();
+    
+	uint16 *data;
+    int32 size;
+    int32 tileSize;
 };
 
-    
 };
 
-#endif // __DAVAENGINE_LANDSCAPE_NODE_H__
-
-
-
-
-
+#endif //__DAVAENGINE_HEIGHT_MAP_H__

@@ -83,9 +83,6 @@ createproperty.type: "Type:"
 createproperty.name: "Name:"
 
 #Landscape Editor
-landscapeeditor.zoom: "Zoom:"
-landscapeeditor.radius: "Radius:"
-landscapeeditor.intension: "Intension"
 landscapeeditor.size: "Mask Size:"
 landscapeeditor.texture0: "Texture0:"
 landscapeeditor.texture1: "Texture1/Detail:"

@@ -2,6 +2,9 @@
 
 #include "ControlsFactory.h"
 
+#include "Scene3D/Heightmap.h"
+
+
 EditorSettings::EditorSettings()
 {
     settings = new KeyedArchive();
@@ -38,7 +41,8 @@ bool EditorSettings::IsValidPath(const String &path)
     
     size_t posPng = path.find(".png");
     size_t posPvr = path.find(".pvr");
-    return ((String::npos != posPng) || (String::npos != posPvr));
+    size_t posHeightmap = path.find(Heightmap::FileExtension());
+    return ((String::npos != posPng) || (String::npos != posPvr) || (String::npos != posHeightmap));
 }
 
 float32 EditorSettings::GetCameraSpeed()

@@ -16,19 +16,6 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     strengthValue = CreateTextField(strengthRect);
     AddControl(strengthValue);
     
-    
-    sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH,
-                                   0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
-    sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanelHeightmap::OnSizeChanged));
-    sizeSlider->SetMinMaxValue(0.f, LandscapeTool::DefaultSize());
-    sizeSlider->SetValue(LandscapeTool::DefaultSize() / 2.0f);
-    
-    strengthSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH, 
-                                       ControlsFactory::TOOLS_HEIGHT / 2, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
-    strengthSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanelHeightmap::OnStrengthChanged));
-    strengthSlider->SetMinMaxValue(-LandscapeTool::DefaultStrength(), LandscapeTool::DefaultStrength());
-    strengthSlider->SetValue(0.0f);
-
     Rect lineRect;
     lineRect.x = strengthSlider->GetRect().x + strengthSlider->GetRect().dx/2;
     lineRect.dx = 2;
@@ -38,17 +25,6 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(line);
     SafeRelease(line);
 
-    
-    AddControl(sizeSlider);
-    AddControl(strengthSlider);
-    
-    
-    AddSliderHeader(sizeSlider, LocalizedString(L"landscapeeditor.size"));
-    AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
-    
-    sizeValue->SetText(Format(L"%.3f", LandscapeTool::DefaultSize()));
-    strengthValue->SetText(Format(L"%.3f", LandscapeTool::DefaultStrength()));
-    
     int32 x = toolIcon->GetRect().x + toolIcon->GetRect().dx;
     relative = CreateCkeckbox(Rect(x, 0, 
                                    ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
@@ -77,8 +53,16 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     SafeRelease(textControl);
 
     
+    sizeValue->SetText(Format(L"%.3f", LandscapeTool::SizeHeightMax()));
+    strengthValue->SetText(Format(L"%.3f", LandscapeTool::StrengthHeightMax()));
+    
     relative->SetChecked(true, false);
-    strengthSlider->SetValue(1.0f);
+
+    sizeSlider->SetMinMaxValue(0.f, LandscapeTool::SizeHeightMax());
+    sizeSlider->SetValue(LandscapeTool::DefaultSizeHeight());
+
+    strengthSlider->SetMinMaxValue(-LandscapeTool::StrengthHeightMax(), LandscapeTool::StrengthHeightMax());
+    strengthSlider->SetValue(LandscapeTool::DefaultStrengthHeight());
 }
 
 
@@ -89,9 +73,6 @@ LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
     SafeRelease(average);
     SafeRelease(relative);
     
-    SafeRelease(sizeSlider);
-    SafeRelease(strengthSlider);
-
     SafeRelease(sizeValue);
     SafeRelease(strengthValue);
 }
@@ -118,21 +99,6 @@ UICheckBox *LandscapeToolsPanelHeightmap::CreateCkeckbox(const Rect &rect, const
     return checkbox;
 }
 
-void LandscapeToolsPanelHeightmap::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(selectedTool)
-    {
-        selectedTool->strength = strengthSlider->GetValue();
-    }
-}
-
-void LandscapeToolsPanelHeightmap::OnSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(selectedTool)
-    {
-        selectedTool->size = sizeSlider->GetValue();
-    }
-}
 
 UITextField *LandscapeToolsPanelHeightmap::CreateTextField(const Rect &rect)
 {
@@ -255,8 +221,6 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
 #pragma mark  --LandscapeToolsSelectionDelegate
 void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
 {
-    newTool->size = sizeSlider->GetValue();
-    newTool->strength = strengthSlider->GetValue();
     newTool->height = fabsf(atof(WStringToString(heightValue->GetText()).c_str()));
     newTool->averageDrawing = average->Checked();
     newTool->relativeDrawing = relative->Checked();

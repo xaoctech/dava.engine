@@ -25,6 +25,9 @@ protected:
     {
         OFFSET = 1,
         SLIDER_WIDTH = 250,
+        
+        TEXTFIELD_WIDTH = 50,
+        TEXT_WIDTH = 50
     };
     
 public:
@@ -53,6 +56,12 @@ protected:
     UIControl *toolIcon;
     LandscapeTool *selectedTool;
 
+    UISlider *sizeSlider;
+    UISlider *strengthSlider;
+	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
+	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
+
+    
     LandscapeToolsSelection *selectionPanel;
 };
 
