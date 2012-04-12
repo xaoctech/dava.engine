@@ -22,13 +22,12 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
     
-    
-    Image *img1 = Image::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16.png");
-    if(img1)
-    {
-        img1->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16_copy.png");
-        SafeRelease(img1);
-    }
+//    Image *img1 = Image::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16.png");
+//    if(img1)
+//    {
+//        img1->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16_copy.png");
+//        SafeRelease(img1);
+//    }
 }
 
 

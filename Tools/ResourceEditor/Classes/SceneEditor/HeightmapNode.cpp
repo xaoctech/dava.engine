@@ -143,7 +143,6 @@ float32 HeightmapNode::GetSizeInMeters()
 }
 
 
-
 void HeightmapNode::Draw()
 {
 	if (!GetVisible())return;
@@ -160,7 +159,7 @@ void HeightmapNode::Draw()
 
     
     RenderManager::Instance()->SetColor(0.2f, 0.2f, 0.7f, 0.2f);
-    RenderManager::Instance()->AppendState(Rendgit erStateBlock::STATE_BLEND);
+    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
     RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
     
 	RenderManager::Instance()->FlushState();
