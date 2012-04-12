@@ -48,7 +48,7 @@ class Texture;
 class RenderDataObject;
 class Shader;
 class SceneFileV2;
-
+class Heightmap;
     
 template<class T>
 class QuadTreeNode
@@ -249,7 +249,7 @@ public:
     
     // TODO: Need comment here
 	bool PlacePoint(const Vector3 & point, Vector3 & result);
-	Vector3 GetPoint(int16 x, int16 y, uint8 height);
+	Vector3 GetPoint(int16 x, int16 y, uint16 height);
 
 	void CursorEnable();
 	void CursorDisable();
@@ -258,6 +258,8 @@ public:
 	void SetCursorPosition(const Vector2 & position);
 	void SetCursorScale(float32 scale);
 
+    Heightmap *GetHeightmap();
+    
 protected:	
     
     class LandscapeQuad
@@ -289,7 +291,6 @@ protected:
     void Draw(QuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
 
-    Image *     heightmap;
     AABBox3     box;
     
     int8 AllocateRDOQuad(LandscapeQuad * quad);
@@ -341,7 +342,9 @@ protected:
     void FlushQueue();
     void ClearQueue();
     
-    String heightMapPath;
+    bool BuildHeightmap();
+    Heightmap *heightmap;
+    String heightmapPath;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()

@@ -13,13 +13,7 @@ class LandscapeToolsPanelHeightmap:
     public UITextFieldDelegate,
     public UICheckBoxDelegate
 {
-    enum eLocalConst
-    {
-        TEXTFIELD_WIDTH = 50,
-        TEXT_WIDTH = 50
-    };
 
-    
 public:
     LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanelHeightmap();
@@ -42,12 +36,8 @@ protected:
 
     UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
     
-    UISlider *sizeSlider;
     UITextField *sizeValue;
-    UISlider *strengthSlider;
     UITextField *strengthValue;
-	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
-	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
     
     UITextField *CreateTextField(const Rect &rect);
     

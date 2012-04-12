@@ -5,6 +5,7 @@
 #include "LandscapeEditorBase.h"
 #include "LandscapeToolsPanel.h"
 #include "Scene3D/LandscapeDebugNode.h"
+#include "Scene3D/Heightmap.h"
 
 using namespace DAVA;
 
@@ -12,21 +13,15 @@ class EditorScene;
 class LandscapeEditorHeightmap
     :   public LandscapeEditorBase
 {
-    enum eLEConst
-    {
-        ZOOM_MULTIPLIER = 4
-    };
     
 public:
     
     LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl, const Rect &toolsRect); 
     virtual ~LandscapeEditorHeightmap();
     
-    virtual void Draw(const UIGeometricData &geometricData);
     virtual void Update(float32 timeElapsed);
 
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
-    
     
     //Tools Panel delegate
     virtual void OnToolSelected(LandscapeTool *newTool);
@@ -40,8 +35,6 @@ protected:
 	virtual void UpdateCursor();
 
     
-    void CreateMaskTexture();
-
 	void UpdateTileMaskTool(float32 timeElapsed);
     void UpdateToolImage();
     
@@ -50,7 +43,7 @@ protected:
 	bool wasTileMaskToolUpdate;
 
     LandscapeDebugNode *landscapeDebugNode;
-    Image *heightImage;
+    Heightmap *heightmap;
     
     Image *toolImage;
 };

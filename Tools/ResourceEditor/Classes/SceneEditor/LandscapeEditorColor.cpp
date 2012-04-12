@@ -152,7 +152,7 @@ void LandscapeEditorColor::UpdateTileMask()
 	tileMaskEditorShader->SetUniformValue(colorTypeUniform, colorType);
 	int32 intensityUniform = tileMaskEditorShader->FindUniformLocationByName("intensity");
     
-	tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->intension);
+	tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->strength);
     
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     
@@ -167,9 +167,9 @@ void LandscapeEditorColor::UpdateTileMask()
 
 void LandscapeEditorColor::UpdateTileMaskTool()
 {
-	if(currentTool && currentTool->sprite && currentTool->zoom)
+	if(currentTool && currentTool->sprite && currentTool->size)
 	{
-		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->zoom * currentTool->zoom);
+		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
 //		Vector2 deltaPos = endPoint - startPoint;
 		{
 			Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
@@ -191,9 +191,9 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 
 void LandscapeEditorColor::UpdateCursor()
 {
-	if(currentTool && currentTool->sprite && currentTool->zoom)
+	if(currentTool && currentTool->sprite && currentTool->size)
 	{
-		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->zoom * currentTool->zoom);
+		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
 		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);

@@ -38,6 +38,8 @@
 #include "Platform/SystemTimer.h"
 #include "Utils/StringFormat.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Scene3D/Heightmap.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -46,10 +48,10 @@ REGISTER_CLASS(LandscapeNode);
 	
 LandscapeNode::LandscapeNode(Scene * _scene)
 	: SceneNode(_scene)
-    , heightmap(0)
+//    , heightmap(0)
     , indices(0)
 {
-    heightMapPath = "";
+    heightmapPath = "";
     
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)
         textures[t] = 0;
@@ -67,6 +69,8 @@ LandscapeNode::LandscapeNode(Scene * _scene)
         uniformTextureTiling[k] = -1;
         textureTiling[k] = Vector2(1.0f, 1.0f);
     }
+    
+    heightmap = new Heightmap();
 }
 
 LandscapeNode::~LandscapeNode()
@@ -79,6 +83,7 @@ LandscapeNode::~LandscapeNode()
         SafeRelease(textures[t]);
     }
     SafeDeleteArray(indices);
+
     SafeRelease(heightmap);
 	SafeDelete(cursor);
 }
@@ -162,8 +167,9 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     for (int32 y = quad->y; y < quad->y + quad->size + 1; ++y)
         for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
         {
-            landscapeVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
-            landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+            landscapeVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
+            landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
+
 //            landscapeVertices[index].texCoord *= 10.0f;
             //Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].position.x, landscapeVertices[index].position.y);
             index++;
@@ -216,28 +222,33 @@ void LandscapeNode::SetRenderingMode(eRenderingMode _renderingMode)
 
 void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMode, const String & heightmapPathname, const AABBox3 & _box)
 {
-    heightMapPath = heightmapPathname;
+    heightmapPath = heightmapPathname;
     
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
     renderingMode = _renderingMode;
     InitShaders(); // init new shaders according to the selected rendering mode
     
-    heightmap = Image::CreateFromFile(heightmapPathname);
     
-    if (heightmap->GetPixelFormat() != FORMAT_A8)
-    {
-        Logger::Error("Image for landscape should be grayscale");
-        SafeRelease(heightmap);
-        return;
-    }
+//    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+//    Image *image = Image::CreateFromFile(heightmapPathname);
+//    if (image->GetPixelFormat() != FORMAT_A8)
+//    {
+//        Logger::Error("Image for landscape should be grayscale");
+//        SafeRelease(image);
+//        return;
+//    }
+//    
+//    DVASSERT(image->GetWidth() == image->GetHeight());
+//    heightmap->BuildFromImage(image);
+//    SafeRelease(image);
+    BuildHeightmap();
+    
     box = _box;    
-    
-    DVASSERT(heightmap->GetWidth() == heightmap->GetHeight());
 
     quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
     //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
-    quadTreeHead.data.size = heightmap->GetWidth() - 1; 
+    quadTreeHead.data.size = heightmap->Size() - 1; 
     quadTreeHead.data.rdoQuad = -1;
     
     SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
@@ -254,6 +265,40 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
 }
 
+bool LandscapeNode::BuildHeightmap()
+{
+    bool retValue = false;
+    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    if(".png" == extension)
+    {
+        Image *image = Image::CreateFromFile(heightmapPath);
+        if(image)
+        {
+            if (image->GetPixelFormat() != FORMAT_A8)
+            {
+                Logger::Error("Image for landscape should be grayscale");
+            }
+            else 
+            {
+                DVASSERT(image->GetWidth() == image->GetHeight());
+                heightmap->BuildFromImage(image);
+                retValue = true;
+            }
+            SafeRelease(image);
+        }
+    }
+    else if(Heightmap::FileExtension() == extension)
+    {
+        retValue = heightmap->Load(heightmapPath);
+    }
+    else 
+    {
+        DVASSERT(false && "wrong extension");
+    }
+
+    return retValue;
+}
+    
 /*
     level 0 = full landscape
     level 1 = first set of quads
@@ -263,12 +308,12 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
  */
     
 //float32 LandscapeNode::BitmapHeightToReal(uint8 height)
-Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint8 height)
+Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint16 height)
 {
     Vector3 res;
-    res.x = (box.min.x + (float32)x / (float32)(heightmap->GetWidth() - 1) * (box.max.x - box.min.x));
-    res.y = (box.min.y + (float32)y / (float32)(heightmap->GetHeight() - 1) * (box.max.y - box.min.y));
-    res.z = (box.min.z + ((float32)height / 255.0f) * (box.max.z - box.min.z));
+    res.x = (box.min.x + (float32)x / (float32)(heightmap->Size() - 1) * (box.max.x - box.min.x));
+    res.y = (box.min.y + (float32)y / (float32)(heightmap->Size() - 1) * (box.max.y - box.min.y));
+    res.z = (box.min.z + ((float32)height / (float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z));
     return res;
 };
 
@@ -282,20 +327,20 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
 	{
 		return false;
 	}
-	float32 ww = (float32)(heightmap->GetWidth() - 1);
-	float32 hh = (float32)(heightmap->GetHeight() - 1);
+	float32 ww = (float32)(heightmap->Size() - 1);
+	float32 hh = (float32)(heightmap->Size() - 1);
 	
 	int32 x = (int32)((point.x - box.min.x) * ww / (box.max.x - box.min.x));
 	int32 y = (int32)((point.y - box.min.y) * hh / (box.max.x - box.min.x));
 	
-	uint8 * data = heightmap->GetData();
-	int32 imW = heightmap->GetWidth();
+	uint16 * data = heightmap->Data();
+	int32 imW = heightmap->Size();
 	
 	int32 summ = data[y * imW + x] + data[y * imW + x + 1] + data[(y + 1) * imW + x] + data[(y + 1) * imW + x + 1];
 	
 	result.x = point.x;
 	result.y = point.y;
-	result.z = (box.min.z + ((float32)summ / (255.0f * 4.0f)) * (box.max.z - box.min.z));
+	result.z = (box.min.z + ((float32)summ / ((float32)Heightmap::MAX_VALUE * 4.0f)) * (box.max.z - box.min.z));
 
 	return true;
 };
@@ -328,11 +373,11 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     if (currentNode->data.size == 2)
     {
         // compute node bounding box
-        uint8 * data = heightmap->GetData();
+        uint16 * data = heightmap->Data();
         for (int16 x = currentNode->data.x; x <= currentNode->data.x + currentNode->data.size; ++x)
             for (int16 y = currentNode->data.y; y <= currentNode->data.y + currentNode->data.size; ++y)
             {
-                uint8 value = data[heightmap->GetWidth() * y + x];
+                uint16 value = data[heightmap->Size() * y + x];
                 Vector3 pos = GetPoint(x, y, value);
                 
                 currentNode->data.bbox.AddPoint(pos);
@@ -1044,16 +1089,16 @@ void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vec
 	{
 		for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
 		{
-			landscapeVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
-			landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+			landscapeVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
+			landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
 			index++;
 		}
 	}
 
-	indices.resize(heightmap->GetWidth()*heightmap->GetHeight()*6);
+	indices.resize(heightmap->Size()*heightmap->Size()*6);
 	int32 step = 1;
 	int32 indexIndex = 0;
-	int32 quadWidth = heightmap->GetWidth();
+	int32 quadWidth = heightmap->Size();
 	for(int32 y = 0; y < currentNode->data.size-1; y += step)
 	{
 		for(int32 x = 0; x < currentNode->data.size-1; x += step)
@@ -1090,13 +1135,23 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
 
 const String & LandscapeNode::GetHeightMapPathname()
 {
-    return heightMapPath;
+    return heightmapPath;
 }
     
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Save(archive, sceneFile);
-    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightMapPath));
+        
+    //TODO: remove code in future. Need for transition from *.png to *.heightmap
+    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    if(Heightmap::FileExtension() != extension)
+    {
+        heightmapPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
+        heightmap->Save(heightmapPath);
+    }
+    //
+    
+    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
     archive->SetInt32("renderingMode", renderingMode);
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -1185,6 +1240,11 @@ void LandscapeNode::SetCursorScale(float32 scale)
 void LandscapeNode::SetBigTextureSize(float32 bigSize)
 {
 	cursor->SetBigTextureSize(bigSize);
+}
+    
+Heightmap * LandscapeNode::GetHeightmap()
+{
+    return heightmap;
 }
 
 };
