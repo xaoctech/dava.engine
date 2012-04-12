@@ -9,7 +9,6 @@
 #include "ImageRasterizer.h"
 #include "HeightmapNode.h"
 
-
 #pragma mark --LandscapeEditorHeightmap
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -18,7 +17,7 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
 	wasTileMaskToolUpdate = false;
 
     landscapeDebugNode = NULL;
-    heightImage = NULL;
+    heightmap = NULL;
     toolImage = NULL;
     
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
@@ -26,60 +25,9 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
 
 LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
 {
+    SafeRelease(heightmap);
     SafeRelease(toolImage);
-    SafeRelease(heightImage);
     SafeRelease(landscapeDebugNode);
-}
-
-void LandscapeEditorHeightmap::Draw(const UIGeometricData &geometricData)
-{
-//    if(drawSprite)
-//    {
-//        RenderManager::Instance()->SetColor(Color::Black());
-//        RenderHelper::Instance()->FillRect(Rect(0, 0, 50, 50));
-//
-//        RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-//
-//        RenderManager::Instance()->SetColor(Color::White());
-//
-//        drawSprite->SetPosition(0, 0);
-//        drawSprite->SetScaleSize(50, 50);
-//        drawSprite->Draw();
-//    }
-    
-//    if(toolImage)
-//    {
-//        RenderManager::Instance()->LockNonMain();
-//        
-//        Texture *tex = Texture::CreateFromData((PixelFormat)toolImage->GetPixelFormat(), toolImage->GetData(), 
-//                                               toolImage->GetWidth(), toolImage->GetHeight());
-//        
-//        Sprite *sprite = Sprite::CreateFromTexture(tex, 0, 0, toolImage->GetWidth(), toolImage->GetHeight());
-//        
-//        eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-//        eBlendMode dest = RenderManager::Instance()->GetDestBlend();
-//        RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-//
-//        RenderManager::Instance()->SetColor(Color::Black());
-//        RenderHelper::Instance()->FillRect(Rect(0, 0, 50, 50));
-//
-//        
-//        RenderManager::Instance()->SetColor(Color::White());
-//        
-//        sprite->SetPosition(Vector2(0, 0));
-//        sprite->SetScaleSize(50, 50);
-//        sprite->Draw();
-//        
-//        RenderManager::Instance()->SetBlendMode(src, dest);
-//        
-//        
-//        SafeRelease(sprite);
-//        SafeRelease(tex);
-//        
-//        RenderManager::Instance()->UnlockNonMain();
-//    }
-    
-    LandscapeEditorBase::Draw(geometricData);
 }
 
 void LandscapeEditorHeightmap::Update(float32 timeElapsed)
@@ -90,19 +38,6 @@ void LandscapeEditorHeightmap::Update(float32 timeElapsed)
     }
     
     LandscapeEditorBase::Update(timeElapsed);
-}
-
-
-void LandscapeEditorHeightmap::CreateMaskTexture()
-{
-    SafeRelease(heightImage);
-    
-    heightImage = Image::CreateFromFile(workingLandscape->GetHeightMapPathname());
-    savedPath = workingLandscape->GetHeightMapPathname();
-    
-    landscapeDebugNode->SetDebugHeightmapImage(heightImage, workingLandscape->GetBoundingBox());
-    
-    landscapeSize = heightImage->GetWidth();
 }
 
 void LandscapeEditorHeightmap::UpdateToolImage()
@@ -123,27 +58,28 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         
         int32 sideSize = currentTool->size;
         Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
-
         Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                                   image->GetWidth(), image->GetHeight());
-        
         Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, image->GetWidth(), image->GetHeight());
         
         RenderManager::Instance()->SetRenderTarget(dstSprite);
 
         RenderManager::Instance()->SetColor(Color::Black());
-        RenderHelper::Instance()->FillRect(Rect(0, 0, sideSize, sideSize));
+        RenderHelper::Instance()->FillRect(Rect(0, 0, dstSprite->GetTexture()->GetWidth(), dstSprite->GetTexture()->GetHeight()));
 
-        
         RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
         RenderManager::Instance()->SetColor(Color::White());
 
         srcSprite->SetScaleSize(sideSize, sideSize);
-        srcSprite->SetPosition(Vector2(0, 0));
+        srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0, 
+                                       (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0));
         srcSprite->Draw();
         RenderManager::Instance()->RestoreRenderTarget();
 
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
+  
+//TODO: for debug        
+//        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
         
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
@@ -164,19 +100,18 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
         {
             wasTileMaskToolUpdate = true;
             
+            float32 koef = (currentTool->strength * currentTool->strength * timeElapsed);
             if(currentTool->averageDrawing)
             {
-                ImageRasterizer::DrawAverageRGBA(heightImage, currentTool->image, pos.x, pos.y, scaleSize, scaleSize, timeElapsed);
+                ImageRasterizer::DrawAverageRGBA(heightmap, currentTool->image, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else if(currentTool->relativeDrawing)
             {
-                float32 koef = currentTool->strength * timeElapsed;
-                ImageRasterizer::DrawRelativeRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+                ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else 
             {
-                float32 koef = currentTool->strength * timeElapsed;
-                ImageRasterizer::DrawAbsoluteRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
+                ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
             }
             
             workingScene->RemoveNode(heightmapNode);
@@ -196,7 +131,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
 
 		landscapeDebugNode->SetCursorTexture(cursorTexture);
-		landscapeDebugNode->SetBigTextureSize(heightImage->GetWidth());
+		landscapeDebugNode->SetBigTextureSize(heightmap->Size());
 		landscapeDebugNode->SetCursorPosition(pos);
 		landscapeDebugNode->SetCursorScale(scaleSize);
 	}
@@ -223,8 +158,6 @@ void LandscapeEditorHeightmap::InputAction(int32 phase)
         default:
             break;
     }
-    
-//    UpdateTileMaskTool(); 
 }
 
 void LandscapeEditorHeightmap::HideAction()
@@ -234,11 +167,14 @@ void LandscapeEditorHeightmap::HideAction()
     
     workingScene->AddNode(workingLandscape);
     workingLandscape->BuildLandscapeFromHeightmapImage(workingLandscape->GetRenderingMode(), 
-                                                       workingLandscape->GetHeightMapPathname(), 
+//                                                       workingLandscape->GetHeightMapPathname(), 
+                                                       savedPath,
                                                        workingLandscape->GetBoundingBox());
     
     workingScene->RemoveNode(landscapeDebugNode);
     SafeRelease(landscapeDebugNode);
+    
+    SafeRelease(heightmap);
 }
 
 void LandscapeEditorHeightmap::ShowAction()
@@ -260,19 +196,29 @@ void LandscapeEditorHeightmap::ShowAction()
     }
 
     workingScene->AddNode(landscapeDebugNode);
+
+
+    heightmap = SafeRetain(workingLandscape->GetHeightmap());
+    savedPath = workingLandscape->GetHeightMapPathname();
+    landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
-    
-    CreateMaskTexture();
+    landscapeSize = heightmap->Size();
 
 	landscapeDebugNode->CursorEnable();
 }
 
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 {
-    if(heightImage)
+    if(heightmap)
     {
-        heightImage->Save(pathToFile);
-        SafeRelease(heightImage);
+        String heightmapPath = pathToFile;
+        String extension = FileSystem::Instance()->GetExtension(pathToFile);
+        if(Heightmap::FileExtension() != extension)
+        {
+            heightmapPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
+        }
+        savedPath = heightmapPath;
+        heightmap->Save(heightmapPath);
     }
 }
 

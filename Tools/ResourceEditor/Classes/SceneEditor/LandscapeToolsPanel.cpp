@@ -10,6 +10,8 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
 {
     ControlsFactory::CustomizeDialogFreeSpace(this);
     
+    selectionPanel = NULL;
+
     Rect closeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT);
     UIButton *closeButton = ControlsFactory::CreateCloseWindowButton(closeRect);
     closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnClose));
@@ -20,12 +22,27 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     toolIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnSelectTool));
     AddControl(toolIcon);
     
-    selectionPanel = NULL;
+    
+    sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH,
+                                   0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnSizeChanged));
+    AddControl(sizeSlider);
+    
+    strengthSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH, 
+                                       ControlsFactory::TOOLS_HEIGHT / 2, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    strengthSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnStrengthChanged));
+    AddControl(strengthSlider);
+    
+    AddSliderHeader(sizeSlider, LocalizedString(L"landscapeeditor.size"));
+    AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
 }
 
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
+    SafeRelease(strengthSlider);
+    SafeRelease(sizeSlider);
+
     SafeRelease(toolIcon);
 }
 
@@ -107,10 +124,32 @@ void LandscapeToolsPanel::WillAppear()
     }
 }
 
+void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedTool)
+    {
+        selectedTool->strength = strengthSlider->GetValue();
+    }
+}
+
+void LandscapeToolsPanel::OnSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedTool)
+    {
+        selectedTool->size = sizeSlider->GetValue();
+    }
+}
+
+
 #pragma mark  --LandscapeToolsSelectionDelegate
 void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
 {
     DVASSERT(newTool);
+    
+    newTool->size = sizeSlider->GetValue();
+    newTool->strength = strengthSlider->GetValue();
+
+    
     selectedTool = newTool;
     toolIcon->SetSprite(selectedTool->sprite, 0);
     

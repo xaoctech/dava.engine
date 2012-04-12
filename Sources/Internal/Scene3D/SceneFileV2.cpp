@@ -166,7 +166,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 4;
+    header.version = 5;
     header.nodeCount = _scene->GetChildrenCount();
     
     file->Write(&header, sizeof(Header));
