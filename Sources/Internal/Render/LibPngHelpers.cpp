@@ -169,20 +169,34 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) 
 		png_set_gray_1_2_4_to_8(png_ptr);
 
-	if(bit_depth > 8) 
-	{
-		DVASSERT_MSG(0, "bit_depth > 8");
-		png_set_strip_16(png_ptr);
-	}
+//	if(bit_depth > 8) 
+//	{
+//		DVASSERT_MSG(0, "bit_depth > 8");
+//		png_set_strip_16(png_ptr);
+//	}
 
 	image->format = FORMAT_RGBA8888;
 	if(color_type == PNG_COLOR_TYPE_GRAY)
 	{
-		image->format = FORMAT_A8;
+        if(16 == bit_depth)
+        {
+            image->format = FORMAT_A16;
+        }
+        else 
+        {
+            image->format = FORMAT_A8;
+        }
 	}
 	else if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA) 
 	{
-		image->format = FORMAT_A8;
+        if(16 == bit_depth)
+        {
+            image->format = FORMAT_A16;
+        }
+        else 
+        {
+            image->format = FORMAT_A8;
+        }
 		png_set_strip_alpha(png_ptr);
 	}
 	else if(color_type == PNG_COLOR_TYPE_PALETTE) 
@@ -263,8 +277,14 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
     int32 bytes_for_color = 4;
     if(FORMAT_A8 == format)
     {
-        color_type = PNG_COLOR_TYPE_GRAY;//_ALPHA;
+        color_type = PNG_COLOR_TYPE_GRAY;
         bytes_for_color = 1;
+    }
+    else if(FORMAT_A16 == format)
+    {
+        bit_depth = 16;
+        color_type = PNG_COLOR_TYPE_GRAY;
+        bytes_for_color = 2;
     }
     
 	png_bytep * row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
@@ -320,10 +340,6 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
 		return;
 	}
     
-    if(FORMAT_A8 == format)
-    {
-//        png_set_invert_alpha(png_ptr);
-    }
 	
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 				 bit_depth, color_type, PNG_INTERLACE_NONE,
@@ -337,6 +353,15 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
         sig_bit.blue = 0;
         
         sig_bit.gray = 8;
+        sig_bit.alpha = 8;
+    }
+    else if(FORMAT_A16 == format)
+    {
+        sig_bit.red = 0;
+        sig_bit.green = 0;
+        sig_bit.blue = 0;
+        
+        sig_bit.gray = 16;
         sig_bit.alpha = 8;
     }
     else 

@@ -221,10 +221,13 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
 #pragma mark  --LandscapeToolsSelectionDelegate
 void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
 {
-    newTool->height = fabsf(atof(WStringToString(heightValue->GetText()).c_str()));
+    newTool->height = atof(WStringToString(heightValue->GetText()).c_str());
     newTool->averageDrawing = average->Checked();
     newTool->relativeDrawing = relative->Checked();
     
+    newTool->maxStrength = fabsf(atof(WStringToString(strengthValue->GetText()).c_str()));
+    newTool->maxSize = fabsf(atof(WStringToString(sizeValue->GetText()).c_str()));
+
     LandscapeToolsPanel::OnToolSelected(forControl, newTool);
 }
 
