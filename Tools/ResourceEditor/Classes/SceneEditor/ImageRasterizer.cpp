@@ -8,7 +8,6 @@ void ImageRasterizer::DrawRelative(Heightmap *dst, Image *src, int32 x, int32 y,
         uint16 *dstData = dst->Data();
         uint8 *srcData = src->data;
         
-        
         uint32 cntX,cntY;
         
         int32 yAddSrc;
@@ -122,7 +121,7 @@ void ImageRasterizer::DrawAverage(Heightmap *dst, Image *mask, int32 x, int32 y,
         uint8 *maskDataSaved = maskData;
         uint16 *dstDataSaved = dstData;
         
-        float32 average = 0.0f;
+        float64 average = 0.0f;
         int32 count = 0;
         
         for(cntY = height; cntY > 0; cntY--)
@@ -188,10 +187,10 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
         maskData += (srcOffset * 4);
         dstData += dstOffset;
         
-        uint8 *maskDataSaved = maskData;
         uint16 *dstDataSaved = dstData;
+        uint8 *maskDataSaved = maskData;
         
-        float64 average = 0.0f;
+        uint64 average = 0;
         int32 count = 0;
         
         yAddSrc *= 4;
@@ -222,7 +221,7 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
                 {
                     if(*maskDataSaved)
                     {
-                        *dstDataSaved = *dstDataSaved + (average - *dstDataSaved) * k;
+                        *dstDataSaved = (uint16)((int32)*dstDataSaved + (int32)(average - *dstDataSaved) * k);
                     }
                     
                     maskDataSaved += 4;

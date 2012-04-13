@@ -47,7 +47,7 @@ protected:
     
     RenderDataObject *renderData;
 
-    Vector<uint8> hmap;
+    Vector<uint16> hmap;
     
     Vector<float32> verts;
     Vector<float32> colors;

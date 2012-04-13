@@ -40,6 +40,11 @@ class LandscapeEditorBase
         DIALOG_OPERATION_SAVE,
     };
 
+    enum eConst
+    {
+        INVALID_TOUCH_ID = -1,
+    };
+    
     
 public:
     
@@ -89,7 +94,6 @@ protected:
     uint32 fileSystemDialogOpMode;
     
     eLEState state;
-    bool isPaintActive;
 
     HeightmapNode *heightmapNode;
     LandscapeNode *workingLandscape;
@@ -108,6 +112,9 @@ protected:
     
     LandscapeToolsPanel *toolsPanel;
 
+    bool inverseDrawingEnabled;
+    int32 touchID;
+    
 	Texture * cursorTexture;
 
 	struct CursorMode
