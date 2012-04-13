@@ -24,7 +24,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     
     Heightmap *heightmap = land->GetHeightmap();
 
-    uint8 *dt = (uint8 *)heightmap->Data();
+    uint16 *dt = heightmap->Data();
     size.x = heightmap->Size();
     size.y = heightmap->Size();
     for (int32 y = 0; y < heightmap->Size(); y++) 
@@ -42,19 +42,27 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     
     sizeInMeters = landSize.x;
     areaScale = sizeInMeters / heightmap->Size();
-    maxHeight = landSize.z / 255.f * 65535.f;
+    maxHeight = landSize.z;// / 255.f * 65535.f;
 
     
     bool useFloatDatam = false;
 	bool flipQuadEdges = true;
     
     
-	colShape = new btHeightfieldTerrainShape(heightmap->Size(), heightmap->Size()
-                                                                                , &hmap.front(), maxHeight
-                                                                                , 2, useFloatDatam
-                                                                                , flipQuadEdges);
+//	colShape = new btHeightfieldTerrainShape(heightmap->Size(), heightmap->Size()
+//                                                                                , &hmap.front(), maxHeight
+//                                                                                , 2, useFloatDatam
+//                                                                                , flipQuadEdges);
+
+    btScalar heightScale = maxHeight / 65535.f;
+    float32 minHeight = 0.0f;
+    colShape = new btHeightfieldTerrainShape(heightmap->Size(), heightmap->Size()
+                                             , &hmap.front(), heightScale, minHeight, maxHeight
+                                             , 2, PHY_SHORT
+                                             , flipQuadEdges);
+
     
-    colShape->setLocalScaling(btVector3(areaScale, areaScale, 1.0));
+    colShape->setLocalScaling(btVector3(areaScale, areaScale, 1.0f));
     
     
     /// Create Dynamic Objects
@@ -78,7 +86,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     motionSate = new btDefaultMotionState(startTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,motionSate,colShape,localInertia);
-    rbInfo.m_friction = 0.9;
+    rbInfo.m_friction = 0.9f;
     body = new btRigidBody(rbInfo);
     
 //    editorScene->dynamicsWorld->addRigidBody(body);
@@ -87,7 +95,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     btVector3 mx;
     body->getAabb(mn, mx);
     btVector3 sz = mx - mn;
-    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
+//    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
 
     
     collisionObject = new btCollisionObject();
@@ -102,7 +110,7 @@ HeightmapNode::~HeightmapNode()
 {
 	if(editorScene->landCollisionWorld)
 	{
-		    editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
+        editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
 	}
 
     
@@ -135,7 +143,6 @@ float32 HeightmapNode::GetSizeInMeters()
 }
 
 
-
 void HeightmapNode::Draw()
 {
 	if (!GetVisible())return;
@@ -151,7 +158,7 @@ void HeightmapNode::Draw()
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 
     
-    RenderManager::Instance()->SetColor(0.2, 0.2, 0.7, 0.2);
+    RenderManager::Instance()->SetColor(0.2f, 0.2f, 0.7f, 0.2f);
     RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
     RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
     
