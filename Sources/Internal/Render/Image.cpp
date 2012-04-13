@@ -63,16 +63,14 @@ uint32 Image::GetFormatSize(PixelFormat format)
 	{
 	case FORMAT_RGBA8888:
 		return 4;
-		break;
 	case FORMAT_RGB565: 
 		return 2;
-		break;
 	case FORMAT_RGBA4444:
 		return 2;
-		break;
 	case FORMAT_A8:
 		return 1;
-		break;
+    case FORMAT_A16:
+        return 2;
 	default:
 		Logger::Error("Image::Create trying to retrieve size of wrong format");
 		return 0;
@@ -100,25 +98,38 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 	image->width = width;
 	image->height = height;
 	image->format = format;
-	
-	switch(format)
-	{
-		case FORMAT_RGBA8888:
-			image->data = new uint8[width * height * 4];
-			break;
-		case FORMAT_RGB565: 
-			image->data = new uint8[width * height * 2];
-			break;
-		case FORMAT_RGBA4444:
-			image->data = new uint8[width * height * 2];
-			break;
-        case FORMAT_A8:
-			image->data = new uint8[width * height];
-			break;
-		default:
-			Logger::Error("Image::Create trying to create image with wrong format");
-			break;
-	}
+    
+    int32 formatSize = GetFormatSize(format);
+    if(formatSize)
+    {
+        image->data = new uint8[width * height * formatSize];
+    }
+    else 
+    {
+        Logger::Error("Image::Create trying to create image with wrong format");
+    }
+    
+//	switch(format)
+//	{
+//		case FORMAT_RGBA8888:
+//			image->data = new uint8[width * height * 4];
+//			break;
+//		case FORMAT_RGB565: 
+//			image->data = new uint8[width * height * 2];
+//			break;
+//		case FORMAT_RGBA4444:
+//			image->data = new uint8[width * height * 2];
+//			break;
+//        case FORMAT_A8:
+//			image->data = new uint8[width * height];
+//			break;
+//        case FORMAT_A16:
+//			image->data = new uint8[width * height * 2];
+//			break;
+//		default:
+//			Logger::Error("Image::Create trying to create image with wrong format");
+//			break;
+//	}
 	return image;
 }
 
@@ -276,7 +287,12 @@ Image * Image::CreateFromFile(const String & pathName)
 
 			//data = new uint8[height * width * 4];
 			//context = CGBitmapContextCreate(data, width, height, 8, width, NULL, kCGImageAlphaOnly);
-			break;				
+			break;		
+            
+        case FORMAT_A16:
+            DVASSERT(false && "Need to realize.")
+            return 0;
+            
 		default:
 			return 0;
 	}
@@ -403,7 +419,6 @@ Image * Image::CreateFromFile(const String & pathName)
 Image * Image::CreateFromFile(const String & pathName)
 {
 	Image * davaImage = new Image();
-//	if (1 != LibPngWrapper::ReadPngFile(FileSystem::Instance()->SystemPathForFrameworkPath(pathName).c_str(), davaImage))
 	if (1 != LibPngWrapper::ReadPngFile(pathName.c_str(), davaImage))
 	{
 		SafeRelease(davaImage);
@@ -500,7 +515,7 @@ void Image::Resize(int32 newWidth, int32 newHeight)
 
 void Image::Save(const String & filename)
 {
-	DVASSERT(format == FORMAT_RGBA8888 || format == FORMAT_A8);
+	DVASSERT((FORMAT_RGBA8888 == format) || (FORMAT_A8 == format) || (FORMAT_A16 == format));
 	LibPngWrapper::WritePngFile(filename.c_str(), width, height, data, format);
 }
 

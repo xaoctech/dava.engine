@@ -127,6 +127,7 @@ enum PixelFormat
     FORMAT_A8,
     FORMAT_PVR4,
     FORMAT_PVR2,
+    FORMAT_A16,
     
     FORMAT_CLOSEST = 256
 };
