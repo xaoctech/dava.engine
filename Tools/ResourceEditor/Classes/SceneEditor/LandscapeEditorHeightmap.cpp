@@ -59,7 +59,8 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         RenderManager::Instance()->LockNonMain();
 
         Image *image = currentTool->image;
-        float32 sideSize = currentTool->size;
+//        int32 sideSize = currentTool->size;
+		int32 sideSize = (currentTool->size + 0.5f);
         Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
         Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                                   image->GetWidth(), image->GetHeight());
@@ -82,7 +83,7 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
   
 //TODO: for debug        
-//        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
+        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
         
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
@@ -97,7 +98,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 {
     if(currentTool && toolImage && currentTool->strength)
     {
-        float32 scaleSize = toolImage->GetWidth();
+        int32 scaleSize = toolImage->GetWidth();
         Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
         {
             float32 koef = (currentTool->strength * timeElapsed);
@@ -132,7 +133,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 {
 	if(currentTool && toolImage)
 	{
-		float32 scaleSize = currentTool->size;
+		int32 scaleSize = (currentTool->size + 0.5f);
 		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
 
 		landscapeDebugNode->SetCursorTexture(cursorTexture);
