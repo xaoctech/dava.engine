@@ -43,7 +43,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     sizeInMeters = landSize.x;
     areaScale = sizeInMeters / heightmap->Size();
     maxHeight = landSize.z;// / 255.f * 65535.f;
-
+    
     
     bool useFloatDatam = false;
 	bool flipQuadEdges = true;
@@ -80,7 +80,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     
     startTransform.setOrigin(btVector3( btScalar(position.x),
                                        btScalar(position.y),
-                                       btScalar(maxHeight/2 + position.z)));
+                                       btScalar(maxHeight/2.0f + position.z)));
     
     
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
@@ -89,8 +89,6 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     rbInfo.m_friction = 0.9f;
     body = new btRigidBody(rbInfo);
     
-//    editorScene->dynamicsWorld->addRigidBody(body);
-
     btVector3 mn;
     btVector3 mx;
     body->getAabb(mn, mx);
@@ -150,26 +148,26 @@ void HeightmapNode::Draw()
 
     return;
 
-	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
-    
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
-
-    RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-
-    
-    RenderManager::Instance()->SetColor(0.2f, 0.2f, 0.7f, 0.2f);
-    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
-    
-	RenderManager::Instance()->FlushState();
-	
-    RenderManager::Instance()->SetRenderData(renderData);
-	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, verts.size()/3);
-	
-
-    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
-    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
-    
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+//	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+//	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
+//    
+//    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
+//
+//    RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+//
+//    
+//    RenderManager::Instance()->SetColor(0.2f, 0.2f, 0.7f, 0.2f);
+//    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+//    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
+//    
+//	RenderManager::Instance()->FlushState();
+//	
+//    RenderManager::Instance()->SetRenderData(renderData);
+//	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, verts.size()/3);
+//	
+//
+//    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+//    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
+//    
+//    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 }

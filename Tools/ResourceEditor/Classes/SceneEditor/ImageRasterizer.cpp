@@ -151,7 +151,17 @@ void ImageRasterizer::DrawAverage(Heightmap *dst, Image *mask, int32 x, int32 y,
                 {
                     if(*maskDataSaved)
                     {
-                        *dstDataSaved = *dstDataSaved + (average - *dstDataSaved) * k;
+                        float32 newValue = *dstDataSaved + (average - *dstDataSaved) * k;
+                        if(newValue < 0.f)
+                        {
+                            newValue = 0.f;
+                        }
+                        else if(Heightmap::MAX_VALUE < newValue)
+                        {
+                            newValue = Heightmap::MAX_VALUE;
+                        }
+                        
+                        *dstDataSaved = newValue;
                     }
                     
                     maskDataSaved++;
@@ -190,7 +200,7 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
         uint16 *dstDataSaved = dstData;
         uint8 *maskDataSaved = maskData;
         
-        uint64 average = 0;
+        float64 average = 0;
         int32 count = 0;
         
         yAddSrc *= 4;
@@ -221,7 +231,17 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
                 {
                     if(*maskDataSaved)
                     {
-                        *dstDataSaved = (uint16)((int32)*dstDataSaved + (int32)(average - *dstDataSaved) * k);
+                        float64 newValue = (float64)*dstDataSaved + (float64)(average - *dstDataSaved) * k;
+                        if(newValue < 0.f)
+                        {
+                            newValue = 0.f;
+                        }
+                        else if(Heightmap::MAX_VALUE < newValue)
+                        {
+                            newValue = Heightmap::MAX_VALUE;
+                        }
+                      
+                        *dstDataSaved = newValue;
                     }
                     
                     maskDataSaved += 4;
