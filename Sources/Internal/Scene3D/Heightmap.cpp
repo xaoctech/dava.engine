@@ -67,9 +67,21 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
 
     uint16 *dstData = data;
     uint8 *srcData = image->data;
-    for(int32 i = size*size - 1; i >= 0; --i)
+    
+    if(FORMAT_A16 == image->format)
     {
-        *dstData++ = *srcData++ * IMAGE_CORRECTION;
+        Memcpy(dstData, srcData, size*size*sizeof(uint16));
+    }
+    else if(FORMAT_A8 == image->format)
+    {
+        for(int32 i = size*size - 1; i >= 0; --i)
+        {
+            *dstData++ = *srcData++ * IMAGE_CORRECTION;
+        }
+    }
+    else 
+    {
+        Logger::Error("Heightmap build from wrong formatted image: format = %d", image->format);
     }
 }
   
