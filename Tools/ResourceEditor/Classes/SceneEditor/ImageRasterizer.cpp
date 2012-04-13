@@ -200,7 +200,8 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
         uint16 *dstDataSaved = dstData;
         uint8 *maskDataSaved = maskData;
         
-        float64 average = 0;
+        float64 average = 0.f;
+        float64 maskMax = 0.f;
         int32 count = 0;
         
         yAddSrc *= 4;
@@ -210,6 +211,8 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
             {
                 if(*maskData)
                 {
+                    maskMax = Max(maskMax, (float64)*maskData);
+                    
                     average += *dstData;
                     ++count;
                 }
@@ -221,7 +224,7 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
             dstData += yAddDst;
         }
         
-        if(count && k)
+        if(count && k && maskMax)
         {
             average /= count;
             
@@ -231,7 +234,8 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
                 {
                     if(*maskDataSaved)
                     {
-                        float64 newValue = (float64)*dstDataSaved + (float64)(average - *dstDataSaved) * k;
+                        float64 newValue = (float64)*dstDataSaved + 
+                            (float64)(average - *dstDataSaved) * k * ((float64)*maskDataSaved / maskMax);
                         if(newValue < 0.f)
                         {
                             newValue = 0.f;
