@@ -40,7 +40,7 @@ Stats::Stats()
 {
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     globalId = 0;
-    statsOutputFrameCount = -1;
+    skipFrameCount = -1;
     frame = 0;
 #endif
 }
@@ -140,9 +140,9 @@ void Stats::EndTimeMeasure(const String & eventName, BaseObject * owner)
 #endif
 }
     
-void Stats::EnableStatsOutputEventNFrame(int32 _statsOutputFrameCount)
+void Stats::EnableStatsOutputEventNFrame(int32 _skipFrameCount)
 {
-    statsOutputFrameCount = _statsOutputFrameCount;
+    skipFrameCount = _skipFrameCount;
 }
 
 void Stats::BeginFrame()
@@ -172,9 +172,9 @@ void Stats::EndFrame()
     events.clear();
     
     
-    if (statsOutputFrameCount != -1)
+    if (skipFrameCount != -1)
     {
-        if (frame > statsOutputFrameCount)
+        if (frame > skipFrameCount)
         {
             int32 size = sortedNames.size();
             for (int32 k = 0; k < size; ++k)
