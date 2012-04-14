@@ -36,38 +36,50 @@
 #include "Base/BaseMath.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
+#include "Scene3D/BVHierarchy.h"
 #include <deque>
 
 namespace DAVA
 {
 class Material;
 class MeshInstanceNode;
+class QuadTree;
     
-class QuadTreeNode
+class QuadTreeNode 
 {
 public:
+    // be careful it's not a BaseObject to avoid unnecessary data store
+    QuadTreeNode(const AABBox3 & bbox);
+    virtual ~QuadTreeNode();
     
+    inline const AABBox3 & GetBoundingBox() { return bbox; };
     
+private:
+    AABBox3 bbox;
+    QuadTreeNode * children[4];
+    Vector<MeshInstanceNode*> objectsInside;
+    friend class QuadTree;
 };
 
-class QuadTree : public BaseObject
+class QuadTree : public BVHierarchy
 {
 public:
     QuadTree();
     virtual ~QuadTree();
     
-    void Build(Scene * scene);
-    
-    void Update(float32 timeElapsed);
-
-    void Draw(); 
+    virtual void Build(Scene * scene);
+    virtual void Update(float32 timeElapsed);
+    virtual void Draw(); 
 private:
+    void BuildRecursive(QuadTreeNode * node, List<MeshInstanceNode*> & meshNodes);
+    
+    QuadTreeNode * head;
     Map<Material*, Set<MeshInstanceNode*> > nodesForRender;
 };
 
 };
 
-#endif // __DAVAENGINE_SCENEMANAGER_H__
+#endif // __DAVAENGINE_QUADTREE_H__
 
 
 
