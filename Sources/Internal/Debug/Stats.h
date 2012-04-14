@@ -38,20 +38,93 @@
 namespace DAVA
 {
 
+/**
+    \brief Class to measure performance in framework code. 
+ 
+    This class can help you to determine the bottlenecks of your code and measure the functions pefromance. 
+ 
+    First step is initialization: 
+    \code
+    Scene::Scene()
+    {
+        Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
+        Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
+        Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
+    }
+    \endcode
+    
+    Second step is measurement code: 
+    \code
+    void Scene::Update(float timeElapsed)
+    {
+        Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
+        // .. function code
+        Stats::Instance()->EndTimeMeasure("Scene.Update", this);
+    }
+    
+    void Scene::Draw()
+    {
+        Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
+        // .. function code
+        Stats::Instance()->EndTimeMeasure("Scene.Draw", this);
+    }   
+    \endcode
+ 
+    Third step is initialization of output somewhere in your code: 
+    \code
+    void GameCore::OnAppStarted()
+    {
+        // show statistics every 30 frame, to avoid slowdown because of logger messages
+        Stats::Instance()->EnableStatsOutputEventNFrame(30);
+    }
+ 
+    \endcode
+    
+ 
+ */
 class Stats : public StaticSingleton<Stats>
 {
 public:
     Stats();
     virtual ~Stats();
     
+    /**
+        \brief Register name of tracking event, and it's description.
+        \param[in] eventName name of the tracking event.
+        \param[in] eventDescription description of the tracking event. 
+     */
     void RegisterEvent(const String & eventName, const String & eventDescription);
+    
+    /**
+        \brief Begin time measure for the particular event and object instance. 
+        \param[in] eventName name of event we want to begin tracking for.
+        \param[in] owner pointer to instance we want to begin tracking for. 
+    */
     void BeginTimeMeasure(const String & eventName, BaseObject * owner);
+    
+    /**
+        \brief End time measure for the particular event and object instance. 
+        \param[in] eventName name of event we want to begin tracking for.
+        \param[in] owner pointer to instance we want to begin tracking for. 
+     */
     void EndTimeMeasure(const String & eventName, BaseObject * owner);
     
+    /**
+        \brief Function enables automatic output of measured values to log, every N frames. 
+        \param[in] skipFrameCount number of frames we should skip before next debug print to log.
+     */
+    void EnableStatsOutputEventNFrame(int32 skipFrameCount);
+
+    /**
+        \brief System function that is called from ApplicationCore::BeginFrame, to initialize the state of the statistics singleton.
+     */
     void BeginFrame();
+
+    /**
+        \brief System function that is called from ApplicationCore::EndFrame, to finalize the state of the statistics singleton and output debug information.
+     */
     void EndFrame();
     
-    void EnableStatsOutputEventNFrame(int32 statsOutputFrameCount);
 private:
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     struct Event
@@ -67,7 +140,7 @@ private:
         BaseObject * owner;
     };
     int32 frame;
-    int32 statsOutputFrameCount;
+    int32 skipFrameCount;
     
     uint32 globalId;
     
