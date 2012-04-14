@@ -14,20 +14,13 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
 {
-	wasTileMaskToolUpdate = false;
-
     landscapeDebugNode = NULL;
     heightmap = NULL;
     toolImage = NULL;
     
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
     
-//    Image *img1 = Image::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16.png");
-//    if(img1)
-//    {
-//        img1->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/heit_lm_1_a16_copy.png");
-//        SafeRelease(img1);
-//    }
+    prevToolSize = 0.f;
 }
 
 
@@ -52,7 +45,8 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 {
     if(toolImage && currentTool)
     {
-        if(toolImage->width != currentTool->size)
+//        if(toolImage->width != currentTool->size)
+        if(prevToolSize != currentTool->size)
         {
             SafeRelease(toolImage);
         }
@@ -60,11 +54,13 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 
     if(currentTool && !toolImage)
     {
+        prevToolSize = currentTool->size;
+
         RenderManager::Instance()->LockNonMain();
 
         Image *image = currentTool->image;
-        
-        int32 sideSize = currentTool->size;
+//        int32 sideSize = currentTool->size;
+		int32 sideSize = (currentTool->size + 0.5f);
         Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
         Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                                   image->GetWidth(), image->GetHeight());
@@ -79,15 +75,15 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         RenderManager::Instance()->SetColor(Color::White());
 
         srcSprite->SetScaleSize(sideSize, sideSize);
-        srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0, 
-                                       (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0));
+        srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f, 
+                                       (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
         srcSprite->Draw();
         RenderManager::Instance()->RestoreRenderTarget();
 
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
   
 //TODO: for debug        
-//        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
+        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
         
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
@@ -102,20 +98,17 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 {
     if(currentTool && toolImage && currentTool->strength)
     {
-        float32 scaleSize = toolImage->GetWidth();
+        int32 scaleSize = toolImage->GetWidth();
         Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
-        if(pos != prevDrawPos)
         {
-            wasTileMaskToolUpdate = true;
-            
+            float32 koef = (currentTool->strength * timeElapsed);
             if(currentTool->averageDrawing)
             {
-                float32 koef = fabsf(currentTool->strength * timeElapsed / currentTool->maxStrength);
-                ImageRasterizer::DrawAverageRGBA(heightmap, currentTool->image, pos.x, pos.y, scaleSize, scaleSize, koef);
+                koef = fabsf(koef / currentTool->maxStrength);
+                ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else if(currentTool->relativeDrawing)
             {
-                float32 koef = (currentTool->strength * timeElapsed);
                 if(inverseDrawingEnabled)
                 {
                     koef = -koef;
@@ -124,7 +117,6 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
             }
             else 
             {
-                float32 koef = (currentTool->strength * timeElapsed);
                 ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
             }
             
@@ -141,7 +133,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 {
 	if(currentTool && toolImage)
 	{
-		float32 scaleSize = currentTool->size;
+		int32 scaleSize = (currentTool->size + 0.5f);
 		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
 
 		landscapeDebugNode->SetCursorTexture(cursorTexture);
@@ -181,7 +173,6 @@ void LandscapeEditorHeightmap::HideAction()
     
     workingScene->AddNode(workingLandscape);
     workingLandscape->BuildLandscapeFromHeightmapImage(workingLandscape->GetRenderingMode(), 
-//                                                       workingLandscape->GetHeightMapPathname(), 
                                                        savedPath,
                                                        workingLandscape->GetBoundingBox());
     
@@ -193,6 +184,8 @@ void LandscapeEditorHeightmap::HideAction()
 
 void LandscapeEditorHeightmap::ShowAction()
 {
+    prevToolSize = 0.f;
+    
     workingScene->RemoveNode(workingLandscape);
 
     landscapeDebugNode = new LandscapeDebugNode(workingScene);
@@ -216,7 +209,7 @@ void LandscapeEditorHeightmap::ShowAction()
     savedPath = workingLandscape->GetHeightMapPathname();
     landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
-    landscapeSize = heightmap->Size() - 1;
+    landscapeSize = heightmap->Size();
 
 	landscapeDebugNode->CursorEnable();
 }
