@@ -46,6 +46,7 @@ protected:
     Heightmap *heightmap;
     
     Image *toolImage;
+    float32 prevToolSize;
 };
 
 

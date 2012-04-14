@@ -44,8 +44,8 @@
 #include "Scene3D/ShadowRect.h"
 #include "Scene3D/LightNode.h"
 #include "Scene3D/BVHierarchy.h"
-
 #include "Debug/Stats.h"
+#include "Render/Image.h"
 
 namespace DAVA 
 {
@@ -392,7 +392,9 @@ void Scene::Update(float timeElapsed)
 void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
-    
+	//Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
+	//RenderManager::Instance()->SetRenderTarget(fboSprite);
+	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
     nodeCounter = 0;
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -467,8 +469,12 @@ void Scene::Draw()
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
-    
+
     Stats::Instance()->EndTimeMeasure("Scene.Draw", this);
+	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
+	//RENDER_VERIFY(glReadPixels(0, 0, 512, 512, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image->data));
+	//image->Save("img.png");
+	//RenderManager::Instance()->RestoreRenderTarget();
 }
 
 	
