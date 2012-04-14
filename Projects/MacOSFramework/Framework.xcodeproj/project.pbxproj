@@ -430,6 +430,12 @@
 		FED7B06A13451C2F0032144E /* MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = FED7B06813451C2F0032144E /* MD5.h */; };
 		FEDDC95D1429E5040004BF1A /* UIFileSystemDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC95B1429E5040004BF1A /* UIFileSystemDialog.cpp */; };
 		FEDDC95E1429E5040004BF1A /* UIFileSystemDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = FEDDC95C1429E5040004BF1A /* UIFileSystemDialog.h */; };
+		FEE76B9115376C7E00784D5F /* BVHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEE76B8F15376C7E00784D5F /* BVHierarchy.cpp */; };
+		FEE76B9215376C7E00784D5F /* BVHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = FEE76B9015376C7E00784D5F /* BVHierarchy.h */; };
+		FEE76B95153851CB00784D5F /* Stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEE76B93153851CB00784D5F /* Stats.cpp */; };
+		FEE76B96153851CB00784D5F /* Stats.h in Headers */ = {isa = PBXBuildFile; fileRef = FEE76B94153851CB00784D5F /* Stats.h */; };
+		FEE76B99153A053E00784D5F /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEE76B97153A053E00784D5F /* ImposterNode.cpp */; };
+		FEE76B9A153A053E00784D5F /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FEE76B98153A053E00784D5F /* ImposterNode.h */; };
 		FEEB6E7C131BC61C00958ACB /* Replay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEEB6E7A131BC61C00958ACB /* Replay.cpp */; };
 		FEEB6E7D131BC61C00958ACB /* Replay.h in Headers */ = {isa = PBXBuildFile; fileRef = FEEB6E7B131BC61C00958ACB /* Replay.h */; };
 		FEF4E23212CD3C1F004B850E /* libBox2D_MacOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4E22C12CD3BED004B850E /* libBox2D_MacOS.a */; };
@@ -916,6 +922,12 @@
 		FED7B06813451C2F0032144E /* MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MD5.h; sourceTree = "<group>"; };
 		FEDDC95B1429E5040004BF1A /* UIFileSystemDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIFileSystemDialog.cpp; sourceTree = "<group>"; };
 		FEDDC95C1429E5040004BF1A /* UIFileSystemDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIFileSystemDialog.h; sourceTree = "<group>"; };
+		FEE76B8F15376C7E00784D5F /* BVHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVHierarchy.cpp; sourceTree = "<group>"; };
+		FEE76B9015376C7E00784D5F /* BVHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVHierarchy.h; sourceTree = "<group>"; };
+		FEE76B93153851CB00784D5F /* Stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stats.cpp; sourceTree = "<group>"; };
+		FEE76B94153851CB00784D5F /* Stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stats.h; sourceTree = "<group>"; };
+		FEE76B97153A053E00784D5F /* ImposterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterNode.cpp; sourceTree = "<group>"; };
+		FEE76B98153A053E00784D5F /* ImposterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterNode.h; sourceTree = "<group>"; };
 		FEEB6E7A131BC61C00958ACB /* Replay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Replay.cpp; sourceTree = "<group>"; };
 		FEEB6E7B131BC61C00958ACB /* Replay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Replay.h; sourceTree = "<group>"; };
 		FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1210,6 +1222,8 @@
 		FECFC0DF12E87E3000C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FEE76B93153851CB00784D5F /* Stats.cpp */,
+				FEE76B94153851CB00784D5F /* Stats.h */,
 				FECFC0E012E87E3000C71562 /* DVAssert.h */,
 				FECFC0E112E87E3000C71562 /* List.h */,
 				FECFC0E212E87E3000C71562 /* ListAllocator.h */,
@@ -1488,10 +1502,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
-				5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */,
-				5C82288715360BDE004D3F2D /* LandscapeCursor.h */,
-				5CEA312A1535A325008E35F5 /* Heightmap.cpp */,
-				5CEA312B1535A325008E35F5 /* Heightmap.h */,
+				FEE76B8F15376C7E00784D5F /* BVHierarchy.cpp */,
+				FEE76B9015376C7E00784D5F /* BVHierarchy.h */,
 				FE78E87914E17E7D007DD1AA /* QuadTree.cpp */,
 				FE78E87A14E17E7D007DD1AA /* QuadTree.h */,
 				5C78D5BB14DADFA300A0BB1C /* ShadowRect.cpp */,
@@ -1547,10 +1559,16 @@
 				FE64B4BA152F0B9400417E73 /* LandscapeDebugNode.h */,
 				FE4A005213EBDC24006E924D /* LandscapeNode.cpp */,
 				FE4A005313EBDC24006E924D /* LandscapeNode.h */,
+				5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */,
+				5C82288715360BDE004D3F2D /* LandscapeCursor.h */,
+				5CEA312A1535A325008E35F5 /* Heightmap.cpp */,
+				5CEA312B1535A325008E35F5 /* Heightmap.h */,
 				FE707B1B147588B60082008F /* BillboardNode.cpp */,
 				FE707B1C147588B60082008F /* BillboardNode.h */,
 				47C138AC14D05BBA00525771 /* LodNode.h */,
 				47C138AD14D05BBA00525771 /* LodNode.cpp */,
+				FEE76B97153A053E00784D5F /* ImposterNode.cpp */,
+				FEE76B98153A053E00784D5F /* ImposterNode.h */,
 			);
 			path = Scene3D;
 			sourceTree = "<group>";
@@ -1930,6 +1948,9 @@
 				FE64B4BC152F0B9400417E73 /* LandscapeDebugNode.h in Headers */,
 				5CEA312D1535A325008E35F5 /* Heightmap.h in Headers */,
 				5C82288915360BDE004D3F2D /* LandscapeCursor.h in Headers */,
+				FEE76B9215376C7E00784D5F /* BVHierarchy.h in Headers */,
+				FEE76B96153851CB00784D5F /* Stats.h in Headers */,
+				FEE76B9A153A053E00784D5F /* ImposterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2213,6 +2234,9 @@
 				FE64B4BB152F0B9400417E73 /* LandscapeDebugNode.cpp in Sources */,
 				5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */,
 				5C82288815360BDE004D3F2D /* LandscapeCursor.cpp in Sources */,
+				FEE76B9115376C7E00784D5F /* BVHierarchy.cpp in Sources */,
+				FEE76B95153851CB00784D5F /* Stats.cpp in Sources */,
+				FEE76B99153A053E00784D5F /* ImposterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
