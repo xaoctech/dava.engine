@@ -90,7 +90,7 @@ public:
 	bool IsIntersectsWithBox(const AABBox2 & box);
 	
 	//! \brief check if point inside bbox
-	inline bool IsInside(const Vector2 & pt);
+	inline bool IsInside(const Vector2 & pt) const;
 	
 	//! \brief get center
 	inline Vector2 GetCenter();
@@ -176,7 +176,7 @@ inline bool IsIntersectLine(const Vector2 & l1, const Vector2 &l2)
 }
 
 //! \brief check if point inside bbox
-inline bool AABBox2::IsInside(const Vector2 & pt)
+inline bool AABBox2::IsInside(const Vector2 & pt) const
 {
 	if (
 		(min.x <= pt.x)

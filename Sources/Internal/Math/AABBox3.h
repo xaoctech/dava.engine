@@ -89,8 +89,14 @@ public:
 	//! \brief check if bounding box intersect ray
 	bool IsIntersectsWithRay(Ray3 & r, float32 & tmin, float32 & tmax, float32 t0 = 0.0f, float32 t1 = 1.0f);
 
-	//! \brief check if point inside bbox
-	inline bool IsInside(const Vector3 & pt);
+	//! \brief check if point inside bbox.
+	inline bool IsInside(const Vector3 & pt) const;
+
+	/** 
+        \brief Function checks if testBox is fully inside this bounding box. 
+        \returns true if testBox is fully inside current bounding box, false otherwise. 
+     */
+	inline bool IsInside(const AABBox3 & testBox) const;
 	
 	//! \brief get center
 	inline Vector3 GetCenter();
@@ -186,8 +192,7 @@ inline bool IsIntersectLine(const Vector3 & l1, const Vector3 &l2)
 	return false;
 }
 
-//! \brief check if point inside bbox
-inline bool AABBox3::IsInside(const Vector3 & pt)
+inline bool AABBox3::IsInside(const Vector3 & pt) const
 {
 	if (
 		(min.x <= pt.x)
@@ -199,6 +204,22 @@ inline bool AABBox3::IsInside(const Vector3 & pt)
 
 	return false;
 }
+    
+inline bool AABBox3::IsInside(const AABBox3 & testBox) const
+{
+	if (
+            (min.x <= testBox.min.x)
+		&&  (min.y <= testBox.min.y)
+		&&  (min.z <= testBox.min.z)
+		&&  (testBox.max.x <= max.x)
+		&&  (testBox.max.y <= max.y)
+		&&  (testBox.max.z <= max.z))return true;
+    
+    return false;
+}
+
+    
+    
 
 //! \brief copy operator of bounding box class
 inline AABBox3 & AABBox3::operator =(const AABBox3 & _bbox)
