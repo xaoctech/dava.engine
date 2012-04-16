@@ -109,7 +109,7 @@ void LandscapeEditorBase::Toggle()
         touchID = INVALID_TOUCH_ID;
         
         SafeRelease(heightmapNode);
-        heightmapNode = new HeightmapNode(workingScene);
+        heightmapNode = new HeightmapNode(workingScene, workingLandscape);
         workingScene->AddNode(heightmapNode);
                 
         state = ELE_ACTIVE;
@@ -160,8 +160,8 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
         AABBox3 box = workingLandscape->GetBoundingBox();
             
         //TODO: use 
-        landscapePoint.x = (point.x - box.min.x) * landscapeSize / (box.max.x - box.min.x);
-        landscapePoint.y = (point.y - box.min.y) * landscapeSize / (box.max.y - box.min.y);
+        landscapePoint.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
+        landscapePoint.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
     }
     
     return isIntersect;
@@ -172,6 +172,10 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 {
 	Vector2 point;
 	bool isIntersect = GetLandscapePoint(touch->point, point);
+    
+    point.x = (int32)point.x;
+    point.y = (int32)point.y;
+    
 	startPoint = endPoint = point;
 	UpdateCursor();
 	

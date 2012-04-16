@@ -45,7 +45,6 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 {
     if(toolImage && currentTool)
     {
-//        if(toolImage->width != currentTool->size)
         if(prevToolSize != currentTool->size)
         {
             SafeRelease(toolImage);
@@ -59,8 +58,7 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         RenderManager::Instance()->LockNonMain();
 
         Image *image = currentTool->image;
-//        int32 sideSize = currentTool->size;
-		int32 sideSize = (currentTool->size + 0.5f);
+        int32 sideSize = currentTool->size;
         Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
         Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                                   image->GetWidth(), image->GetHeight());
@@ -83,7 +81,7 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
   
 //TODO: for debug        
-        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
+//        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
         
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
@@ -120,10 +118,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
                 ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
             }
             
-            workingScene->RemoveNode(heightmapNode);
-            SafeRelease(heightmapNode);
-            heightmapNode = new HeightmapNode(workingScene);
-            workingScene->AddNode(heightmapNode);
+            heightmapNode->UpdateHeightmapRect(Rect(pos.x, pos.y, scaleSize, scaleSize));
         }
         startPoint = endPoint;
     }
@@ -131,15 +126,20 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 
 void LandscapeEditorHeightmap::UpdateCursor()
 {
-	if(currentTool && toolImage)
+	if(currentTool)// && toolImage)
 	{
-		int32 scaleSize = (currentTool->size + 0.5f);
+		int32 scaleSize = currentTool->size;
 		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
 
 		landscapeDebugNode->SetCursorTexture(cursorTexture);
-		landscapeDebugNode->SetBigTextureSize(heightmap->Size());
+		landscapeDebugNode->SetBigTextureSize(landscapeSize);
 		landscapeDebugNode->SetCursorPosition(pos);
 		landscapeDebugNode->SetCursorScale(scaleSize);
+        
+        heightmapNode->cursor->SetCursorTexture(cursorTexture);
+		heightmapNode->cursor->SetBigTextureSize(landscapeSize);
+		heightmapNode->cursor->SetPosition(pos);
+		heightmapNode->cursor->SetScale(scaleSize);
 	}
 }
 
