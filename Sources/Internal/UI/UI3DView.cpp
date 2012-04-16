@@ -161,5 +161,18 @@ void UI3DView::Draw(const UIGeometricData & geometricData)
     if (scene)
         scene->Draw();
 }
+    
+void UI3DView::SetSize(const DAVA::Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+    
+    if(scene)
+    {
+        for (int32 k = 0; k < scene->GetCameraCount(); ++k)
+        {
+            scene->GetCamera(k)->SetAspect(size.dy / size.dx);
+        }
+    }
+}
 
 }
