@@ -27,71 +27,38 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
+#include "Scene3D/BVHierarchy.h"
+#include "Scene3D/Scene.h"
 
-namespace DAVA 
+namespace DAVA
 {
-
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+    
+BVHierarchy::BVHierarchy()
+{
+    
+}
+    
+BVHierarchy::~BVHierarchy()
 {
 }
 
-ApplicationCore::~ApplicationCore()
+void BVHierarchy::Build(Scene * scene)
 {
-	
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
-{
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);
-	UIControlSystem::Instance()->Update();
+
 }
 
-void ApplicationCore::Draw()
+void BVHierarchy::Update(float32 timeElapsed)
 {
-	UIControlSystem::Instance()->Draw();	
+    
 }
 
-void ApplicationCore::BeginFrame()
+void BVHierarchy::Draw()
 {
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
-
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+    
 }
-
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
-}
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-
-
+  
 };
+
+
+
+

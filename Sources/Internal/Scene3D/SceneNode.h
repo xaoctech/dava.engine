@@ -263,17 +263,36 @@ public:
      */
     KeyedArchive *GetCustomProperties();
     
-    /*
+    /**
         \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
-    
+    /**
+        \brief Function to get data nodes of requested type to specific container you provide.
+     */
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
+    
+    /**
+        \brief Function to get child nodes of requested type and move them to specific container you provide.
+        For example if you want to get a list of MeshInstanceNodes you should do the following.
+        \code   
+        #include "Scene3D/SceneNode.h"
+        #include "Scene3D/MeshInstanceNode.h"  // You should include MeshInstanceNode because SceneNode class do not know the type of node you want to convert to. 
+        
+        void YourClass::YourFunction()
+        {
+            List<MeshInstanceNode*> meshNodes;
+            scene->GetChildNodes(meshNodes);
+        }
+        \endcode
+     */
+    template<template <typename> class Container, class T>
+	void GetChildNodes(Container<T> & container);
         
     /**
-        \brief this function is called after scene is loaded from file
-        You can perform additional initialization here
+        \brief This function is called after scene is loaded from file.
+        You can perform additional initialization here.
      */
     virtual void SceneDidLoaded();
     
@@ -449,6 +468,27 @@ void SceneNode::GetDataNodes(Container<T> & container)
         T res = dynamic_cast<T> (obj);
         if (res)
             container.push_back(res);
+    }	
+}
+    
+template<template <typename> class Container, class T>
+void SceneNode::GetChildNodes(Container<T> & container)
+{
+    container.clear();
+    
+    //Set<DataNode*> objects;
+    //GetDataNodes(objects);
+    
+    Vector<SceneNode*>::const_iterator end = children.end();
+    for (Vector<SceneNode*>::iterator t = children.begin(); t != end; ++t)
+    {
+        SceneNode* obj = *t;
+        
+        T res = dynamic_cast<T> (obj);
+        if (res)
+            container.push_back(res);
+        
+        obj->GetChildNodes(container);
     }	
 }
 

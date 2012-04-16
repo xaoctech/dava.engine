@@ -56,6 +56,8 @@ class ShadowVolumeNode;
 class ProxyNode;
 class LightNode;
 class ShadowRect;
+class QuadTree;
+class BVHierarchy;
 	
 /** 
     \ingroup scene3d
@@ -104,6 +106,16 @@ public:
     
     
 //    DataNode * GetScenes();
+    
+    
+    
+    
+    
+    
+    
+    void SetBVHierarchy(BVHierarchy * bvHierarchy);
+    
+    
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -222,8 +234,6 @@ private:
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     Map<String, ProxyNode*> rootNodes;
-
-    // Vector<SceneNode*> alphaObjectQueue;
     
     Vector<LodLayer> lodLayers;
     int32 forceLodLayer;
@@ -235,6 +245,8 @@ private:
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
 	ShadowRect * shadowRect;
+    
+    BVHierarchy * bvHierarchy;
 
     friend class SceneNode;
 };
