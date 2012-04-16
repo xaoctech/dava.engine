@@ -61,6 +61,13 @@ public:
         \param[in] isOrtho is camera will be with orthographic projection or perspective. By default it's false so camera will be with perspective projection.
      */
 	void Setup(float32 fovyInDegrees, float32 aspectYdivX, float32 zNear, float32 zFar, bool isOrtho = false);
+
+	/**
+        \brief Setup camera with basic camera params.
+		This function set all parameters for the camera. All these parameters will be applied in case if camera Set function will be called.
+	*/
+	void Setup(float32 xmin, float32 xmax, float32 ymin, float32 ymax, float32 znear, float32 zfar);
+
     /**
         \brief Function change fov in camera.
         You can use this function in many cases. For example you can use it when you want to change zoom of camera in your game. 

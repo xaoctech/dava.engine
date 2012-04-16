@@ -26,3 +26,76 @@
 =====================================================================================*/
 
 #include "ImposterNode.h"
+
+namespace DAVA
+{
+
+ImposterNode::ImposterNode(Scene * scene)
+:	SceneNode(scene)
+{
+	renderData = new RenderDataObject();
+	renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &verts.front());
+}
+
+ImposterNode::~ImposterNode()
+{
+	SafeRelease(renderData);
+}
+
+void ImposterNode::Update(float32 timeElapsed)
+{
+	float32 dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
+	dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+
+	if(dst > 300.f)
+	{
+		//switch to imposter
+		UpdateImposter();
+	}
+}
+
+void ImposterNode::UpdateImposter()
+{
+	DVASSERT(1 == GetChildrenCount());
+
+	SceneNode * child = GetChild(0);
+	AABBox3 bbox = child->GetWTMaximumBoundingBox();
+	Vector3 bboxVertices[8];
+	Vector2 screenVertices[8];
+	bbox.GetCorners(bboxVertices);
+
+	const Rect & viewport = RenderManager::Instance()->GetViewport();
+	Camera * camera = scene->GetCurrentCamera();
+
+	AABBox2 screenBounds;
+	for(int32 i = 0; i < 8; ++i)
+	{
+		screenVertices[i] = camera->GetOnScreenPosition(bboxVertices[i], viewport);
+		screenBounds.AddPoint(screenVertices[i]);
+	}
+
+	Vector3 screenBillboardVertices[4];
+	screenBillboardVertices[0] = Vector3(screenBounds.min.x, screenBounds.min.y, bbox.min.z);
+	screenBillboardVertices[1] = Vector3(screenBounds.max.x, screenBounds.min.y, bbox.min.z);
+	screenBillboardVertices[2] = Vector3(screenBounds.max.x, screenBounds.max.y, bbox.min.z);
+	screenBillboardVertices[3] = Vector3(screenBounds.min.x, screenBounds.max.y, bbox.min.z);
+
+	center = Vector3();
+	for(int32 i = 0; i < 4; ++i)
+	{
+		imposterVertices[i] = camera->UnProject(screenBillboardVertices[i].x, screenBillboardVertices[i].y, screenBillboardVertices[i].z, viewport);
+		center += imposterVertices[i];
+	}
+	center /= 4.f;
+
+	direction = camera->GetPosition()-center;
+	direction.Normalize();
+
+	Camera * imposterCamera = new Camera();
+	float32 nearPlane = (center-camera->GetPosition()).Length();
+	//float32 farPlane = nearPlane + 
+
+	SafeRelease(imposterCamera);
+}
+
+}

@@ -29,13 +29,28 @@
 #define __IMPOSTER_NODE_H__
 
 #include "Scene3D/Scene.h"
+#include "Render/RenderDataObject.h"
 
 namespace DAVA
 {
 
 class ImposterNode : public SceneNode
 {
+public:
+	ImposterNode(Scene * scene);
+	virtual ~ImposterNode();
 
+	virtual void Update(float32 timeElapsed);
+
+	void UpdateImposter();
+
+public:
+	Vector3 imposterVertices[4];
+	RenderDataObject * renderData;
+
+	Vector<float32> verts;
+	Vector3 center;
+	Vector3 direction;
 };
 
 };
