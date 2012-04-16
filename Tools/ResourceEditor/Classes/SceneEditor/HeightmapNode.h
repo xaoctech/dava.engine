@@ -16,11 +16,12 @@
 using namespace DAVA;
 class btHeightfieldTerrainShape;
 class EditorScene;
+//class Heightmap;
 class HeightmapNode : public SceneNode
 {
 public:
     
-    HeightmapNode(EditorScene * _scene);
+    HeightmapNode(EditorScene * _scene, LandscapeNode *land);
     virtual ~HeightmapNode();
 
     const Vector3 &GetSize();
@@ -31,6 +32,10 @@ public:
     virtual void	Draw();
     
     btCollisionObject *collisionObject;
+
+    void UpdateHeightmapRect(const Rect &rect);
+    
+    LandscapeCursor * cursor;
 
 protected:
     
@@ -45,12 +50,17 @@ protected:
     btHeightfieldTerrainShape* colShape;
     btDefaultMotionState *motionSate;
     
-    RenderDataObject *renderData;
-
-    Vector<uint16> hmap;
+    void SetValueToMap(int16 x, int16 y, float32 height, const AABBox3 &box);
     
-    Vector<float32> verts;
-    Vector<float32> colors;
+    Vector<float32> hmap;
+
+    Heightmap *heightmap;
+    Texture *heightmapTexture;
+    Vector3 GetPoint(int16 x, int16 y, float32 height, const AABBox3 &transformedBox);
+    Vector<LandscapeNode::LandscapeVertex> debugVertices;
+    Vector<uint32> debugIndices;
+    RenderDataObject * renderDataObject;
+    
     Vector3 size;
     
     Vector3 position;
