@@ -51,6 +51,11 @@ void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
             node->GetParent()->RemoveNode(node);
         }
     }
+	for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+	{
+		SceneNode * node = *it;
+		SafeRelease(node);
+	}
     emptyNodesForDeletion.clear();
 }
 
@@ -111,7 +116,7 @@ void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
         SceneNode * parent = sceneNode->GetParent();
         if (parent)
         {
-            emptyNodesForDeletion.insert(sceneNode);
+            emptyNodesForDeletion.insert(SafeRetain(sceneNode));
         }
     }
 }
