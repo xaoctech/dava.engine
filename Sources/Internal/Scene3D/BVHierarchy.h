@@ -27,71 +27,35 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
+#ifndef __DAVAENGINE_BVHIERARCHY_H__
+#define __DAVAENGINE_BVHIERARCHY_H__
 
-namespace DAVA 
+#include "Base/BaseObject.h"
+#include "Base/StaticSingleton.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
+
+namespace DAVA
 {
+class Scene;
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+class BVHierarchy : public BaseObject
 {
-}
-
-ApplicationCore::~ApplicationCore()
-{
-	
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
-{
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);
-	UIControlSystem::Instance()->Update();
-}
-
-void ApplicationCore::Draw()
-{
-	UIControlSystem::Instance()->Draw();	
-}
-
-void ApplicationCore::BeginFrame()
-{
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
-
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
-}
-
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
-}
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-
+public:
+    BVHierarchy();
+    virtual ~BVHierarchy();
+    
+    virtual void Build(Scene * scene);
+    virtual void Update(float32 timeElapsed);
+    virtual void Draw(); 
+};
 
 };
+
+#endif // __DAVAENGINE_BVHIERARCHY_H__
+
+
+
+
+
