@@ -39,16 +39,27 @@
 namespace DAVA
 {
 class Scene;
-
+class SceneNode;
+class MeshInstanceNode;
+    
+/**
+    \brief Basic visibility determination structure that just handle the vector of all scene objects, and determine who is visible by frustum check of every object. 
+ */
 class BVHierarchy : public BaseObject
 {
 public:
     BVHierarchy();
     virtual ~BVHierarchy();
     
-    virtual void Build(Scene * scene);
-    virtual void Update(float32 timeElapsed);
-    virtual void Draw(); 
+    virtual void ChangeScene(Scene * scene);
+
+    virtual void RegisterNode(SceneNode * node);
+    virtual void UnregisterNode(SceneNode * node);
+    
+    virtual void Cull();
+private:
+    Vector<MeshInstanceNode*> meshInstances;
+    Scene * scene;
 };
 
 };

@@ -33,19 +33,23 @@
 #include "Render/Material.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/AnimatedMesh.h"
+#include "Render/Image.h"
+
+#include "Platform/SystemTimer.h"
+#include "FileSystem/FileSystem.h"
+#include "Debug/Stats.h"
+
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
-#include "Platform/SystemTimer.h"
-#include "FileSystem/FileSystem.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/ShadowRect.h"
 #include "Scene3D/LightNode.h"
 #include "Scene3D/BVHierarchy.h"
-#include "Debug/Stats.h"
-#include "Render/Image.h"
+#include "Scene3D/MeshInstanceNode.h"
+
 
 namespace DAVA 
 {
@@ -58,8 +62,10 @@ Scene::Scene()
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
 	,	shadowRect(0)
-    ,   bvHierarchy(0)
 {   
+    bvHierarchy = new BVHierarchy();
+    bvHierarchy->ChangeScene(this);
+    
     Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
     Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
     Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
@@ -98,7 +104,13 @@ void Scene::RegisterNode(SceneNode * node)
 {
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
+    {
         lights.insert(light);
+
+    }
+    
+    if (bvHierarchy)
+        bvHierarchy->RegisterNode(node);
 }
 
 void Scene::UnregisterNode(SceneNode * node)
@@ -106,7 +118,9 @@ void Scene::UnregisterNode(SceneNode * node)
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
         lights.erase(light);
-        
+    
+    if (bvHierarchy)
+        bvHierarchy->UnregisterNode(node);
 }
 
 Scene * Scene::GetScene()
@@ -114,37 +128,7 @@ Scene * Scene::GetScene()
     return this;
 }
     
-//int32 Scene::GetMaterialCount()
-//{
-//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-//    List<DataNode*> dataNodes;
-//    GetDataNodes(dataNodes);
-//    
-//    int32 matCount = 0;
-//    const List<DataNode*>::iterator & end = dataNodes.end(); 
-//    for (List<DataNode*>::iterator it = dataNodes.begin(); it != end; ++it)
-//    {
-//        if (dynamic_cast<Material*>(*it))
-//            matCount++;
-//    }
-//    return matCount;
-//}
-//
-//Material * Scene::GetMaterial(int32 index)
-//{
-//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-//	return dynamic_cast<Material*>(materials->GetChild(index));
-//}
 
-//int32 Scene::GetStaticMeshCount()
-//{
-//    return (int32)staticMeshes->GetChildrenCount();
-//}
-//
-//StaticMesh * Scene::GetStaticMesh(int32 index)
-//{
-//	return dynamic_cast<StaticMesh*>(staticMeshes->GetChild(index));
-//}
     
 void Scene::AddAnimatedMesh(AnimatedMesh * mesh)
 {
@@ -308,6 +292,22 @@ void Scene::ReleaseRootNode(SceneNode *nodeToRelease)
 //        }
 //	}
 }
+    
+    
+void Scene::SetBVHierarchy(BVHierarchy * _bvHierarchy)
+{
+    if (bvHierarchy)
+    {
+        bvHierarchy->ChangeScene(0);
+        SafeRelease(bvHierarchy);
+    }
+    bvHierarchy = SafeRetain(_bvHierarchy);
+}
+    
+BVHierarchy * Scene::GetBVHierarchy()
+{
+    return bvHierarchy;
+}
 
     
 void Scene::SetupTestLighting()
@@ -392,7 +392,9 @@ void Scene::Update(float timeElapsed)
 void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
-	//Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
+
+    
+    //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
 	//RenderManager::Instance()->SetRenderTarget(fboSprite);
 	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
     nodeCounter = 0;
@@ -405,16 +407,15 @@ void Scene::Draw()
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->ClearDepthBuffer();
     
-
-    
-	SetupTestLighting();
 	
     if (currentCamera)
     {
         currentCamera->Set();
     }
+    bvHierarchy->Cull();
 
-	SceneNode::Draw();
+    SceneNode::Draw();
+    
 
 	if(shadowVolumes.size() > 0)
 	{

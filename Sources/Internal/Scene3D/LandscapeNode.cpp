@@ -41,6 +41,8 @@
 #include "Scene3D/Heightmap.h"
 #include "FileSystem/FileSystem.h"
 
+#include "Debug/Stats.h"
+
 namespace DAVA
 {
 REGISTER_CLASS(LandscapeNode);
@@ -71,6 +73,10 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     }
     
     heightmap = new Heightmap();
+    
+    Stats::Instance()->RegisterEvent("LandscapeNode", "Everything related to LandscapeNode");
+    Stats::Instance()->RegisterEvent("LandscapeNode.Update", "Time spent in LandscapeNode Update");
+    Stats::Instance()->RegisterEvent("LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
 }
 
 LandscapeNode::~LandscapeNode()
@@ -262,7 +268,7 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
     Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
     Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
-    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
+    Logger::Debug("sizeof(LandQuadTreeNode): %d bytes", sizeof(LandQuadTreeNode<LandscapeQuad>));
 }
 
 bool LandscapeNode::BuildHeightmap()
@@ -347,9 +353,9 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
 	
 	
 	
-void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels)
+void LandscapeNode::RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels)
 {
-    allocatedMemoryForQuads += sizeof(QuadTreeNode<LandscapeQuad>);
+    allocatedMemoryForQuads += sizeof(LandQuadTreeNode<LandscapeQuad>);
     currentNode->data.lod = level;
     
     // if we have parrent get rdo quad 
@@ -399,28 +405,28 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     // We should be able to divide landscape by 2 here
     DVASSERT((size & 1) == 0);
 
-    QuadTreeNode<LandscapeQuad> * child0 = &currentNode->childs[0];
+    LandQuadTreeNode<LandscapeQuad> * child0 = &currentNode->childs[0];
     child0->data.x = minIndexX;
     child0->data.y = minIndexY;
     //child0->data.xbuf = bufMinIndexX;
     //child0->data.ybuf = bufMinIndexY;
     child0->data.size = size / 2;
     
-    QuadTreeNode<LandscapeQuad> * child1 = &currentNode->childs[1];
+    LandQuadTreeNode<LandscapeQuad> * child1 = &currentNode->childs[1];
     child1->data.x = minIndexX + size / 2;
     child1->data.y = minIndexY;
     //child1->data.xbuf = bufMinIndexX + size / 2;
     //child1->data.ybuf = bufMinIndexY;
     child1->data.size = size / 2;
 
-    QuadTreeNode<LandscapeQuad> * child2 = &currentNode->childs[2];
+    LandQuadTreeNode<LandscapeQuad> * child2 = &currentNode->childs[2];
     child2->data.x = minIndexX;
     child2->data.y = minIndexY + size / 2;
     //child2->data.xbuf = bufMinIndexX;
     //child2->data.ybuf = bufMinIndexY + size / 2;
     child2->data.size = size / 2;
 
-    QuadTreeNode<LandscapeQuad> * child3 = &currentNode->childs[3];
+    LandQuadTreeNode<LandscapeQuad> * child3 = &currentNode->childs[3];
     child3->data.x = minIndexX + size / 2;
     child3->data.y = minIndexY + size / 2;
     //child3->data.xbuf = bufMinIndexX + size / 2;
@@ -429,7 +435,7 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     
     for (int32 index = 0; index < 4; ++index)
     {
-        QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+        LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
         child->parent = currentNode;
         RecursiveBuild(child, level + 1, maxLevels);
         
@@ -460,7 +466,7 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     *********
  */
 
-QuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(QuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize)
+LandQuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(LandQuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize)
 {
     if ((currentNode->data.x <= quadX) && (quadX < currentNode->data.x + currentNode->data.size))
         if ((currentNode->data.y <= quadY) && (quadY < currentNode->data.y + currentNode->data.size))
@@ -470,8 +476,8 @@ QuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(QuadT
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-                QuadTreeNode<LandscapeQuad> * result = FindNodeWithXY(child, quadX, quadY, quadSize);
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * result = FindNodeWithXY(child, quadX, quadY, quadSize);
                 if (result)
                     return result;
             } 
@@ -484,7 +490,7 @@ QuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(QuadT
     return 0;
 }
     
-void LandscapeNode::FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode)
+void LandscapeNode::FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     currentNode->neighbours[LEFT] = FindNodeWithXY(&quadTreeHead, currentNode->data.x - 1, currentNode->data.y, currentNode->data.size);
     currentNode->neighbours[RIGHT] = FindNodeWithXY(&quadTreeHead, currentNode->data.x + currentNode->data.size, currentNode->data.y, currentNode->data.size);
@@ -495,13 +501,13 @@ void LandscapeNode::FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode)
     {
         for (int32 index = 0; index < 4; ++index)
         {
-            QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
             FindNeighbours(child);
         }
     }
 }
 
-void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 & depth)
+void LandscapeNode::MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 & depth)
 {
     if (--depth <= 0)
     {
@@ -513,7 +519,7 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
     {
         for (int32 index = 0; index < 4; ++index)
         {
-            QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
             MarkFrames(child, depth);
         }
     }
@@ -578,7 +584,7 @@ void LandscapeNode::ClearQueue()
     queueDrawIndices = indices;
 }
 
-void LandscapeNode::DrawQuad(QuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
+void LandscapeNode::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
 {
     int32 depth = currentNode->data.size / (1 << lod);
     if (depth == 1)
@@ -629,11 +635,11 @@ void LandscapeNode::DrawFans()
     
     ClearQueue();
     
-    List<QuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
-    for (List<QuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
+    List<LandQuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
+    for (List<LandQuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
     {
         //uint16 * drawIndices = indices;
-        QuadTreeNode<LandscapeQuad>* node = *t;
+        LandQuadTreeNode<LandscapeQuad>* node = *t;
         
         //RenderManager::Instance()->SetRenderData(landscapeRDOArray[node->data.rdoQuad]);
         
@@ -711,11 +717,11 @@ void LandscapeNode::DrawFans()
     FlushQueue();
     
 /*  DRAW TRIANGLE FANS
-    List<QuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
-    for (List<QuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
+    List<LandQuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
+    for (List<LandQuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
     {
         uint16 * drawIndices = indices;
-        QuadTreeNode<LandscapeQuad>* node = *t;
+        LandQuadTreeNode<LandscapeQuad>* node = *t;
         
         RenderManager::Instance()->SetRenderData(landscapeRDOArray[node->data.rdoQuad]);
 
@@ -754,7 +760,7 @@ void LandscapeNode::DrawFans()
  */
 }  
     
-void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
+void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;
@@ -771,7 +777,7 @@ void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
                 Draw(child); 
             }
         }
@@ -876,7 +882,7 @@ void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
                 Draw(child); 
             }
         }
@@ -999,6 +1005,8 @@ void LandscapeNode::Draw()
     }
 #endif
     
+    SceneNode::Draw();
+    
     RenderManager::Instance()->ResetColor();
 
     ClearQueue();
@@ -1079,7 +1087,7 @@ void LandscapeNode::Draw()
 
 void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vector<int32> & indices)
 {
-	QuadTreeNode<LandscapeQuad> * currentNode = &quadTreeHead;
+	LandQuadTreeNode<LandscapeQuad> * currentNode = &quadTreeHead;
 	LandscapeQuad * quad = &currentNode->data;
 	
 	landscapeVertices.resize((quad->size + 1) * (quad->size + 1));

@@ -137,8 +137,9 @@ void MeshInstanceNode::Draw()
 //        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //    }    
 
-    if (!scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox))
+    if (flags & NODE_CLIPPED_THIS_FRAME)
     {
+        // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
         return;
     }
 		
