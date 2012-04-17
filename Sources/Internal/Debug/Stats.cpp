@@ -149,7 +149,9 @@ void Stats::EndTimeMeasure(const String & eventName, BaseObject * owner)
     
 void Stats::EnableStatsOutputEventNFrame(int32 _skipFrameCount)
 {
+#if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
     skipFrameCount = _skipFrameCount;
+#endif
 }
 
 void Stats::BeginFrame()

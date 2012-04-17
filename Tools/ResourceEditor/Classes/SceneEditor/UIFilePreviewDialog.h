@@ -28,47 +28,35 @@
         * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_UI_3D_VIEW__
-#define __DAVAENGINE_UI_3D_VIEW__
+#ifndef __UI_FILE_PREVIEW_DIALOG_H__
+#define __UI_FILE_PREVIEW_DIALOG_H__
 
-#include "Base/BaseTypes.h"
-#include "UI/UIControl.h"
+#include "DAVAEngine.h"
 
-namespace DAVA 
+using namespace DAVA;
+
+class UIFilePreviewDialog: public UIFileSystemDialog
 {
-/**
-    \ingroup controlsystem
-    \brief This control allow to put 3D View into any place of 2D hierarchy
- */
-
-class Scene;
-class UI3DView : public UIControl 
-{
+    enum eConst
+    {
+        PREVIEW_WIDTH = 200
+    };
+    
 public:
-	UI3DView(const Rect &rect, bool rectInAbsoluteCoordinates = FALSE);
-    virtual ~UI3DView();
-    
-    void SetScene(Scene * scene);
-    Scene * GetScene() const;
+    UIFilePreviewDialog(const String &_fontPath);
+    virtual ~UIFilePreviewDialog();
 
-    virtual void AddControl(UIControl *control);
-    virtual void Update(float32 timeElapsed);
-    virtual void Draw(const UIGeometricData &geometricData);
-    virtual void SystemDraw(const UIGeometricData &geometricData);
+    //UIListDelegate
+	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
+    virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
 
-	inline const Rect & GetLastViewportRect()
-	{
-		return viewportRc;
-	}
-
-    virtual void SetSize(const Vector2 &newSize);
-    
-    
 protected:
-    Scene * scene;
-	Rect viewportRc;
-};
-	
+    
+    void UpdatePreview(int32 unitIndex);
+    
+    UIControl *preview;
+    
+    
 };
 
-#endif
+#endif // __UI_FILE_PREVIEW_DIALOG_H__

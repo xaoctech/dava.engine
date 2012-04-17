@@ -122,6 +122,18 @@ void Camera::Setup(float32 fovyInDegrees, float32 aspectYdivX, float32 zNear, fl
 	Recalc();
 }
 
+void Camera::Setup(float32 _xmin, float32 _xmax, float32 _ymin, float32 _ymax, float32 _znear, float32 _zfar)
+{
+	flags |= REQUIRE_REBUILD_PROJECTION;
+
+	xmin = _xmin;
+	xmax = _xmax;
+	ymin = _ymin;
+	ymax = _ymax;
+	znear = _znear;
+	zfar = _zfar;
+}
+
 void Camera::Recalc()
 {
 	ymax = znear * tanf(fovy * PI / 360.0f);

@@ -52,7 +52,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;C:\Program Files\OpenAL 1.1 SDK\include;C:\Program Files (x86)\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
     <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\Animation.h" />
@@ -293,6 +294,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
@@ -441,6 +443,7 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />
@@ -534,6 +537,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />

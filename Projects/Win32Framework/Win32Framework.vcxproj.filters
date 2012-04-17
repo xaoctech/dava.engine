@@ -948,6 +948,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h">
+      <Filter>Internal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1641,6 +1647,12 @@
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp">
+      <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
