@@ -998,7 +998,7 @@ void LandscapeNode::Draw()
 {
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
-#if defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_OPENGL__)
     if (debugFlags & DEBUG_DRAW_ALL)
     {
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
