@@ -181,7 +181,7 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 				currentTool->sprite->SetScaleSize(scaleSize, scaleSize);
 				currentTool->sprite->SetPosition(pos);
 				currentTool->sprite->Draw();
-				RenderManager::Instance()->RestoreRenderTarget();
+                RenderManager::Instance()->RestoreRenderTarget();
 			}
 			startPoint = endPoint;
 		}

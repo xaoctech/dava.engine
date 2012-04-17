@@ -15,6 +15,7 @@
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
 #include "HintManager.h"
+#include "UIFilePreviewDialog.h"
 
 #pragma mark --PropertyCell 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
@@ -358,7 +359,7 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     {
         return;
     }
-    dialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    dialog = new UIFilePreviewDialog("~res:/Fonts/MyriadPro-Regular.otf");
     dialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
     dialog->SetDelegate(this);
     dialog->SetTitle(keyName->GetText());

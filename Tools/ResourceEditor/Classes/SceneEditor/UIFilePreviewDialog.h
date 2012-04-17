@@ -25,32 +25,38 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Alexey 'Hottych' Prosin
 =====================================================================================*/
 
-/*
-	__DAVAENGINE_IPHONE__ this define must be set in preprocessor macros for all projects that compiled using DAVAEngine for iPhone
- */
+#ifndef __UI_FILE_PREVIEW_DIALOG_H__
+#define __UI_FILE_PREVIEW_DIALOG_H__
 
-#ifndef __DAVAENGINE_CONFIG_H__
-#define __DAVAENGINE_CONFIG_H__
+#include "DAVAEngine.h"
 
-//#define ENABLE_MEMORY_MANAGER
-//#define CHECK_MEMORY_OVERRUNS 1 // number of 4 byte blocks used to check memory overrun
+using namespace DAVA;
 
-//#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
+class UIFilePreviewDialog: public UIFileSystemDialog
+{
+    enum eConst
+    {
+        PREVIEW_WIDTH = 200
+    };
+    
+public:
+    UIFilePreviewDialog(const String &_fontPath);
+    virtual ~UIFilePreviewDialog();
 
-//#define ENABLE_CONTROL_EDIT //allows to drug'n'drop controls for position editing
+    //UIListDelegate
+	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
+    virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
 
-//#define SHOW_FRAME_TIME	// shows milliseconds per fame
+protected:
+    
+    void UpdatePreview(int32 unitIndex);
+    
+    UIControl *preview;
+    
+    
+};
 
-//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
-//#define __DAVAENGINE_DIRECTX9__
-#define __DAVAENGINE_OPENGL__
-
-
-// This flag allow to enable debug stats 
-#define __DAVAENGINE_ENABLE_DEBUG_STATS__
-
-#endif // __DAVAENGINE_CONFIG_H__
-
+#endif // __UI_FILE_PREVIEW_DIALOG_H__
