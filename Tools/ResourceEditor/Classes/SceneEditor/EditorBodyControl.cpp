@@ -700,7 +700,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-            
+                        
             Camera *currCamera = scene->GetCurrentCamera();
             if(currCamera)
             {
