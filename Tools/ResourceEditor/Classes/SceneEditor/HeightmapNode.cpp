@@ -61,17 +61,16 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     size.y = heightmap->Size();
     hmap.resize(heightmap->Size() * heightmap->Size());
 
-    btScalar heightScale = maxHeight / 65536.f;
-    int32 index = 0;
 	for (int32 y = 0; y < heightmap->Size(); ++y)
 	{
 		for (int32 x = 0; x < heightmap->Size(); ++x)
 		{
-            float32 mapValue = dt[(x + (y) * heightmap->Size())] * heightScale;
+            int32 index = x + (y) * heightmap->Size();
+            float32 mapValue = dt[index] * heightScale;
             SetValueToMap(x, y, mapValue, transformedBox);
             
-			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
-			index++;
+			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), 
+                                                    (float32)y / (float32)(heightmap->Size() - 1));           
 		}
 	}
 
@@ -108,11 +107,11 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     rbInfo.m_friction = 0.9f;
     body = new btRigidBody(rbInfo);
     
-    btVector3 mn;
-    btVector3 mx;
-    body->getAabb(mn, mx);
-    btVector3 sz = mx - mn;
-    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
+//    btVector3 mn;
+//    btVector3 mx;
+//    body->getAabb(mn, mx);
+//    btVector3 sz = mx - mn;
+//    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
 
     collisionObject = new btCollisionObject();
     collisionObject->setWorldTransform(startTransform);
@@ -166,7 +165,6 @@ void HeightmapNode::UpdateHeightmapRect(const Rect &rect)
     int32 endY = Min(rect.y + rect.dy, heightmap->Size() - 1.0f);
 
     uint16 *dt = heightmap->Data();
-    btScalar heightScale = maxHeight / 65535.f;
     for (int32 yy = y; yy < endY; ++yy)
     {
 		for (int32 xx = x; xx < endX; ++xx)

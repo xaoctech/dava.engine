@@ -191,7 +191,6 @@ void SceneEditorScreenMain::CreateTopMenu()
     ControlsFactory::CustomizeButtonExpandable(btnCreate);
     x += dx;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.new"));
-    ControlsFactory::CustomizeButtonExpandable(btnNew);
     x += dx;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.openproject"));
 #ifdef __DAVAENGINE_BEAST__
@@ -203,6 +202,7 @@ void SceneEditorScreenMain::CreateTopMenu()
     ControlsFactory::CustomizeButtonExpandable(btnLandscape);
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
+    ControlsFactory::CustomizeButtonExpandable(btnViewPortSize);
 	x += dx;
 	btnTextureConverter = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.textureconvertor"));
     
@@ -419,8 +419,9 @@ void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnNewPressed(BaseObject * obj, void *, void *)
 {
-    menuPopup->InitControl(MENUID_NEW, btnNew->GetRect());
-    AddControl(menuPopup);
+    bodies[0]->bodyControl->ReleaseScene();
+    bodies[0]->bodyControl->CreateScene(true);
+    bodies[0]->bodyControl->Refresh();
 }
 
 
@@ -716,30 +717,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             AddControl(nodeDialog);
             break;
         }
-            
-        case MENUID_NEW:
-        {
-            switch (itemID) 
-            {
-                case ENMID_ENPTYSCENE:
-                    bodies[0]->bodyControl->ReleaseScene();
-                    bodies[0]->bodyControl->CreateScene(false);
-                    bodies[0]->bodyControl->Refresh();
-                    break;
-                    
-                case ENMID_SCENE_WITH_CAMERA:
-                    bodies[0]->bodyControl->ReleaseScene();
-                    bodies[0]->bodyControl->CreateScene(true);
-                    bodies[0]->bodyControl->Refresh();
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-        }
-            
+                        
         case MENUID_VIEWPORT:
         {
             BodyItem *iBody = FindCurrentBody();
@@ -847,25 +825,6 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             break;
         }
             
-        case MENUID_NEW:
-        {
-            switch (itemID) 
-            {
-                case ENMID_ENPTYSCENE:
-                    text = LocalizedString(L"menu.new.emptyscene");
-                    break;
-                    
-                case ENMID_SCENE_WITH_CAMERA:
-                    text = LocalizedString(L"menu.new.scenewithcamera");
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-        }
-            
         case MENUID_VIEWPORT:
         {
             switch (itemID)
@@ -911,7 +870,7 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                 default:
                     break;
             }
-
+            break;
         }
             
         case MENUID_LANDSCAPE:
@@ -954,12 +913,6 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         case MENUID_CREATENODE:
         {
             retCount = ECNID_COUNT;
-            break;
-        }
-            
-        case MENUID_NEW:
-        {
-            retCount = ENMID_COUNT;
             break;
         }
             

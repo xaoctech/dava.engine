@@ -43,7 +43,8 @@ protected:
     
     float32 areaScale;
     float32 maxHeight;
-    
+    float32 heightScale;
+
     btRigidBody* body;
     
     

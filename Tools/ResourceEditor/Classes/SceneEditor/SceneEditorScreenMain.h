@@ -46,19 +46,11 @@ class SceneEditorScreenMain:
     {
         MENUID_OPEN = 100,
         MENUID_CREATENODE = 200,
-        MENUID_NEW = 300,
-        MENUID_VIEWPORT = 400,
-        MENUID_EXPORTTOGAME = 500,
-        MENUID_LANDSCAPE = 600
+        MENUID_VIEWPORT = 300,
+        MENUID_EXPORTTOGAME = 400,
+        MENUID_LANDSCAPE = 500
     };
     
-    enum eNewMenuIDS
-    {
-        ENMID_ENPTYSCENE = 0,
-        ENMID_SCENE_WITH_CAMERA,
-        
-        ENMID_COUNT
-    };
     
     enum eOpenMenuIDS
     {
