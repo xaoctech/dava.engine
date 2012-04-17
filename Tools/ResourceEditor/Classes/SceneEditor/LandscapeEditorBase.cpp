@@ -181,9 +181,9 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 	
     if(INVALID_TOUCH_ID == touchID || touchID == touch->tid)
     {
-        if(UIEvent::BUTTON_1 == touch->tid || UIEvent::BUTTON_3 == touch->tid)
+        if(UIEvent::BUTTON_1 == touch->tid)
         {
-            inverseDrawingEnabled = (UIEvent::BUTTON_3 == touch->tid);
+            inverseDrawingEnabled = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
             
             if(UIEvent::PHASE_BEGAN == touch->phase)
             {
