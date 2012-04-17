@@ -832,6 +832,12 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                     text = LocalizedString(L"menu.createnode.camera");
                     break;
                 }
+
+				case ECNID_IMPOSTER:
+				{
+					text = LocalizedString(L"menu.createnode.imposter");
+					break;
+				}
                     
                 default:
                     break;

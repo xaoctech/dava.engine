@@ -474,6 +474,9 @@ public:
 		\returns pointer to custom cursor or null if there is no cursor set by default.
 	 */
 	virtual Cursor * GetCursor();
+
+	void SetHWRenderTarget(Sprite *renderTarget);
+	uint32 fboViewFramebuffer;
 	
 protected:
     //
@@ -533,7 +536,6 @@ protected:
 
 	// fbo data
 	uint32 fboViewRenderbuffer;
-	uint32 fboViewFramebuffer;
 
 	// state information
 //	Color oldColor;                 // UNIFORM - can be used or not used by RenderEffect
@@ -614,7 +616,6 @@ protected:
 	
 	Rect currentClip;
 	
-	void SetHWRenderTarget(Sprite *renderTarget);
 	void SetHWClip(const Rect &rect);
 
 	void SetNewRenderEffect(RenderEffect *renderEffect);

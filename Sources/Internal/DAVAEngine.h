@@ -197,6 +197,7 @@
 #include "Scene3D/LightNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
+#include "Scene3D/ImposterNode.h"
 
 
 // Application core 

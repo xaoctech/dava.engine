@@ -376,7 +376,7 @@ void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat
 		sprHeight = sprHeight * Core::GetVirtualToPhysicalFactor();
 	}
 
-	Texture *t = Texture::CreateFBO((int32)ceilf(sprWidth), (int32)ceilf(sprHeight), textureFormat);
+	Texture *t = Texture::CreateFBO((int32)ceilf(sprWidth), (int32)ceilf(sprHeight), textureFormat, Texture::DEPTH_NONE);
 	
 	this->InitFromTexture(t, 0, 0, sprWidth, sprHeight, -1, -1, true);
 	
