@@ -60,6 +60,13 @@ bool CompareFunc(std::pair<String, uint32> & a, std::pair<String, uint32> & b)
 void Stats::RegisterEvent(const String & eventName, const String & eventDescription)
 {
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
+    
+    Map<String, uint32>::iterator it = eventIds.find(eventName);
+    if (it != eventIds.end())
+    {
+        // if event already exists return.
+        return;
+    }
 
     EventDescription eventDesc;
     

@@ -29,33 +29,77 @@
 =====================================================================================*/
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/MeshInstanceNode.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
     
 BVHierarchy::BVHierarchy()
 {
-    
+    Stats::Instance()->RegisterEvent("BVHierarchy.Cull", "Time spent in hierarchy culling");
 }
     
 BVHierarchy::~BVHierarchy()
 {
-}
-
-void BVHierarchy::Build(Scene * scene)
-{
 
 }
-
-void BVHierarchy::Update(float32 timeElapsed)
-{
     
+void BVHierarchy::ChangeScene(Scene * _scene)
+{
+    scene = _scene;
+}   
+
+void BVHierarchy::RegisterNode(SceneNode * node)
+{
+    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+    if (meshInstance)
+    {
+        meshInstances.push_back(meshInstance);
+    }
+}
+    
+void BVHierarchy::UnregisterNode(SceneNode * node)
+{
+    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+    if (meshInstance)
+    {
+        uint32 size = (uint32)meshInstances.size();
+        uint32 pos = 0;
+        for (pos = 0; pos < size; ++pos)
+        {
+            if (meshInstances[pos] == meshInstance)
+            {
+                meshInstances[pos] = meshInstances[size - 1];
+                meshInstances.pop_back();
+                break;
+            }
+        }
+    }
 }
 
-void BVHierarchy::Draw()
+void BVHierarchy::Cull()
 {
+    Stats::Instance()->BeginTimeMeasure("BVHierarchy.Cull", this);
+    // Bruce force frustum culling
+    int32 objectsCulled = 0;
     
+    Frustum * frustum = scene->GetClipCamera()->GetFrustum();
+    uint32 size = meshInstances.size();
+    for (uint32 pos = 0; pos < size; ++pos)
+    {
+        MeshInstanceNode * node = meshInstances[pos];
+        node->RemoveFlag(SceneNode::NODE_CLIPPED_THIS_FRAME);
+        if (!frustum->IsInside(node->GetWorldTransformedBox()))
+        {
+            node->AddFlag(SceneNode::NODE_CLIPPED_THIS_FRAME);
+            objectsCulled++;
+        }
+    }
+    Stats::Instance()->EndTimeMeasure("BVHierarchy.Cull", this);
+    //Logger::Debug("Objects: %d Objects Drawn: %d", size, (size - objectsCulled));
 }
+
   
 };
 

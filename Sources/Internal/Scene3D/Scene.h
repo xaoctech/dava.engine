@@ -37,7 +37,6 @@
 #include "Scene3D/Camera.h"
 #include "Scene3D/LightNode.h"
 
-
 namespace DAVA
 {
 
@@ -57,6 +56,7 @@ class ProxyNode;
 class LightNode;
 class ShadowRect;
 class QuadTree;
+class MeshInstanceNode;
 class BVHierarchy;
 	
 /** 
@@ -107,14 +107,8 @@ public:
     
 //    DataNode * GetScenes();
     
-    
-    
-    
-    
-    
-    
     void SetBVHierarchy(BVHierarchy * bvHierarchy);
-    
+    BVHierarchy * GetBVHierarchy();
     
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
@@ -233,8 +227,10 @@ private:
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
+    
     Map<String, ProxyNode*> rootNodes;
     
+    // TODO: move to nodes
     Vector<LodLayer> lodLayers;
     int32 forceLodLayer;
 

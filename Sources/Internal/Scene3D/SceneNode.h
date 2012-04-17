@@ -167,9 +167,15 @@ public:
         NODE_WORLD_MATRIX_ACTUAL = 1, // if this flag set this means we do not need to rebuild worldMatrix
         NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
         NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
-        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
-        NODE_LOCAL_MATRIX_IDENTITY = 1 << 4,
+        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node.
+        NODE_LOCAL_MATRIX_IDENTITY = 1 << 4, // local matrix of this node is identity. Used to avoid unnecessary computations.
         
+        BOUNDING_VOLUME_AABB = 1 << 5,  // node has axial aligned bounding box.
+        BOUNDING_VOLUME_OOB = 1 << 6,   // node has object oriented bounding box.
+        BOUNDING_VOLUME_SPHERE = 1 << 7,    // node has bounding sphere.
+
+        NODE_CLIPPED_PREV_FRAME = 1 << 8, // 
+        NODE_CLIPPED_THIS_FRAME = 1 << 9, // 
         
         // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
         SCENE_LIGHTS_MODIFIED = 1 << 31,
@@ -473,12 +479,7 @@ void SceneNode::GetDataNodes(Container<T> & container)
     
 template<template <typename> class Container, class T>
 void SceneNode::GetChildNodes(Container<T> & container)
-{
-    container.clear();
-    
-    //Set<DataNode*> objects;
-    //GetDataNodes(objects);
-    
+{    
     Vector<SceneNode*>::const_iterator end = children.end();
     for (Vector<SceneNode*>::iterator t = children.begin(); t != end; ++t)
     {
