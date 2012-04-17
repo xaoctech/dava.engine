@@ -54,7 +54,8 @@ output.clear: "Очистить"
 scenegraph.lookatobject: "Look at Object"
 scenegraph.removeobject: "Удалить объект"
 scenegraph.debugflags: "Debug Flags"
-scenegraph.bakemetrics: "Bake Metrices"
+scenegraph.bakematrices: "Bake Matrices"
+scenegraph.buildquadtree: "Build Quad Tree"
 
 #Library
 library.refresh: "ОБновить библиотеку"
