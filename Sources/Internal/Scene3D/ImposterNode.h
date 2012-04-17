@@ -37,16 +37,18 @@ namespace DAVA
 class ImposterNode : public SceneNode
 {
 public:
-	ImposterNode(Scene * scene);
+	ImposterNode(Scene * scene = 0);
 	virtual ~ImposterNode();
 
 	virtual void Update(float32 timeElapsed);
+	virtual void Draw();
 
 	void UpdateImposter();
 
 public:
 	Vector3 imposterVertices[4];
 	RenderDataObject * renderData;
+	Texture * fbo;
 
 	Vector<float32> verts;
 	Vector3 center;

@@ -174,6 +174,7 @@ Texture::Texture()
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_INVALID)
+,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
@@ -1017,7 +1018,7 @@ int32 Texture::Release()
 	return BaseObject::Release();
 }
 	
-Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
+Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
 	int i;
 	int dx = w;
@@ -1054,6 +1055,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 
 	Texture *tx = Texture::CreateFromData(format, NULL, dx, dy);
 	DVASSERT(tx);
+
+	tx->depthFormat = _depthFormat;
 	 
 	// Now setup a texture to render to
 	BindTexture(tx->id);
@@ -1081,13 +1084,26 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 #if defined(__DAVAENGINE_WIN32__)    
 	if(GLEW_EXT_framebuffer_object)
 	{
-#endif //#if defined(__DAVAENGINE_WIN32__)        
+#endif //#if defined(__DAVAENGINE_WIN32__)  
+		if(DEPTH_RENDERBUFFER == _depthFormat)
+		{
+			glGenRenderbuffersEXT(1, &tx->rboID);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, tx->rboID);
+			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, dx, dy);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+		}
+
 		RENDER_VERIFY(glGenFramebuffersEXT(1, &tx->fboID));
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
         BindFBO(tx->fboID);
-	
+
 		// And attach it to the FBO so we can render to it
 		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tx->id, 0));
+
+		if(DEPTH_RENDERBUFFER == _depthFormat)
+		{
+			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, tx->rboID);
+		}
 	
 		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)

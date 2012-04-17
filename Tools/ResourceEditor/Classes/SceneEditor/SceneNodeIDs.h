@@ -9,6 +9,7 @@ enum eCreateNodeIds
     ECNID_BOX, 
     ECNID_SPHERE, 
     ECNID_CAMERA, 
+	ECNID_IMPOSTER,
     
     ECNID_COUNT
 };

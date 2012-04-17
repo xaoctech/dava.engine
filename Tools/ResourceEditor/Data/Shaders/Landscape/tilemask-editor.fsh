@@ -25,7 +25,7 @@ void main()
 	}
 	else if(1 == colorType)//g
 	{
-		outColor.g = colorMaskOld.g+texture2D(texture1, varTexCoord0).g*intensity;
+		outColor.g = colorMaskOld.g+texture2D(texture1, varTexCoord0).r*intensity;
 		outColor.g = min(outColor.g, 1.0);
 		float freeColors = 1.0-outColor.g;
 		float usedColors = colorMaskOld.r+colorMaskOld.b+colorMaskOld.a;
@@ -34,7 +34,7 @@ void main()
 	}
 	else if(2 == colorType)//b
 	{
-		outColor.b = colorMaskOld.b+texture2D(texture1, varTexCoord0).b*intensity;
+		outColor.b = colorMaskOld.b+texture2D(texture1, varTexCoord0).r*intensity;
 		outColor.b = min(outColor.b, 1.0);
 		float freeColors = 1.0-outColor.b;
 		float usedColors = colorMaskOld.r+colorMaskOld.g+colorMaskOld.a;
@@ -43,7 +43,7 @@ void main()
 	}
 	else if(3 == colorType)//a
 	{
-		outColor.a = colorMaskOld.a+texture2D(texture1, varTexCoord0).a*intensity;
+		outColor.a = colorMaskOld.a+texture2D(texture1, varTexCoord0).r*intensity;
 		outColor.a = min(outColor.a, 1.0);
 		float freeColors = 1.0-outColor.a;
 		float usedColors = colorMaskOld.r+colorMaskOld.g+colorMaskOld.b;
