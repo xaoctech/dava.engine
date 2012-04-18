@@ -25,10 +25,12 @@ public:
     
     //Tools Panel delegate
     virtual void OnToolSelected(LandscapeTool *newTool);
+    virtual void OnShowGrid(bool show);
 
+    
 protected:
 
-    virtual void InputAction(int32 phase);
+    virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);

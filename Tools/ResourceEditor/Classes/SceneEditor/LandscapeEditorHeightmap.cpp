@@ -143,7 +143,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 	}
 }
 
-void LandscapeEditorHeightmap::InputAction(int32 phase)
+void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 {
     switch(phase)
     {
@@ -152,6 +152,20 @@ void LandscapeEditorHeightmap::InputAction(int32 phase)
             editingIsEnabled = true;
             UpdateToolImage();
 
+            break;
+        }
+            
+        case UIEvent::PHASE_DRAG:
+        {
+            if(editingIsEnabled && !intersects)
+            {
+                editingIsEnabled = false;
+            }
+            else if(!editingIsEnabled && intersects)
+            {
+                editingIsEnabled = true;
+                UpdateToolImage();
+            }
             break;
         }
 
@@ -172,6 +186,7 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(toolImage);
     
     workingScene->AddNode(workingLandscape);
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(workingLandscape->GetRenderingMode(), 
                                                        savedPath,
                                                        workingLandscape->GetBoundingBox());
@@ -191,7 +206,8 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapeDebugNode = new LandscapeDebugNode(workingScene);
     landscapeDebugNode->SetName("Landscape");
     landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightMapPathname());
-    
+    landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
+
     landscapeDebugNode->SetRenderingMode(workingLandscape->GetRenderingMode());
     for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)
     {
@@ -244,6 +260,14 @@ void LandscapeEditorHeightmap::OnToolSelected(LandscapeTool *newTool)
     SafeRelease(toolImage);
 }
 
-
+void LandscapeEditorHeightmap::OnShowGrid(bool show)
+{
+    LandscapeEditorBase::OnShowGrid(show);
+    
+    if(landscapeDebugNode)
+    {
+        landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
+    }
+}
 
 

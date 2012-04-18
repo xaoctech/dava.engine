@@ -77,28 +77,6 @@ LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
     SafeRelease(strengthValue);
 }
 
-UICheckBox *LandscapeToolsPanelHeightmap::CreateCkeckbox(const Rect &rect, const WideString &text)
-{
-    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
-    checkbox->SetDelegate(this);
-    AddControl(checkbox);
-    
-    Rect textRect;
-    textRect.x = rect.x + rect.dx + ControlsFactory::OFFSET;
-    textRect.y = rect.y;
-    textRect.dx = TEXT_WIDTH;
-    textRect.dy = rect.dy;
-    
-    UIStaticText *textControl = new UIStaticText(textRect);
-    textControl->SetText(text);
-    textControl->SetFont(ControlsFactory::GetFontLight());
-    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
-    AddControl(textControl);
-    SafeRelease(textControl);
-    
-    return checkbox;
-}
-
 
 UITextField *LandscapeToolsPanelHeightmap::CreateTextField(const Rect &rect)
 {
@@ -199,6 +177,8 @@ bool LandscapeToolsPanelHeightmap::TextFieldKeyPressed(UITextField * textField, 
 #pragma mark  --UICheckBoxDelegate
 void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
+    LandscapeToolsPanel::ValueChanged(forCheckbox, newValue);
+
     if(forCheckbox == average)
     {
         if(newValue)
@@ -214,8 +194,11 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
         }
     }
     
-    selectedTool->averageDrawing = average->Checked();
-    selectedTool->relativeDrawing = relative->Checked();
+    if(selectedTool)
+    {
+        selectedTool->averageDrawing = average->Checked();
+        selectedTool->relativeDrawing = relative->Checked();
+    }
 }
 
 #pragma mark  --LandscapeToolsSelectionDelegate

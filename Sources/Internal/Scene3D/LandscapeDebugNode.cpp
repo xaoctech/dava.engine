@@ -63,6 +63,14 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage
 
 void LandscapeDebugNode::Draw()
 {
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_GRID)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+    
     BindMaterial();
 
 	int32 index = 0;
@@ -100,6 +108,15 @@ void LandscapeDebugNode::Draw()
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
 
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_ALL)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+    
 	if(cursor)
 	{
 		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);

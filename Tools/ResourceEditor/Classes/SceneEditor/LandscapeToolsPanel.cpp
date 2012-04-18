@@ -24,6 +24,11 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddControl(toolIcon);
     
     
+    showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+                              LocalizedString(L"landscapeeditor.showgrid"));
+    
+    
+    
     sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH,
                                    0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
     sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnSizeChanged));
@@ -79,6 +84,29 @@ void LandscapeToolsPanel::AddSliderHeader(UISlider *slider, const WideString &te
     SafeRelease(textControl);
 }
 
+UICheckBox *LandscapeToolsPanel::CreateCkeckbox(const Rect &rect, const WideString &text)
+{
+    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
+    checkbox->SetDelegate(this);
+    AddControl(checkbox);
+    
+    Rect textRect;
+    textRect.x = rect.x + rect.dx + ControlsFactory::OFFSET;
+    textRect.y = rect.y;
+    textRect.dx = TEXT_WIDTH;
+    textRect.dy = rect.dy;
+    
+    UIStaticText *textControl = new UIStaticText(textRect);
+    textControl->SetText(text);
+    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
+    AddControl(textControl);
+    SafeRelease(textControl);
+    
+    return checkbox;
+}
+
+
 LandscapeTool * LandscapeToolsPanel::CurrentTool()
 {
     return selectedTool;
@@ -123,6 +151,8 @@ void LandscapeToolsPanel::WillAppear()
             toolIcon->SetSprite(NULL, 0);
         }
     }
+    
+    showGrid->SetChecked(showGrid->Checked(), true);
 }
 
 void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
@@ -157,6 +187,18 @@ void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, L
     if(delegate)
     {
         delegate->OnToolSelected(newTool);
+    }
+}
+
+#pragma mark  --UICheckBoxDelegate
+void LandscapeToolsPanel::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+{
+    if(forCheckbox == showGrid)
+    {
+        if(delegate)
+        {
+            delegate->OnShowGrid(showGrid->Checked());
+        }
     }
 }
 
