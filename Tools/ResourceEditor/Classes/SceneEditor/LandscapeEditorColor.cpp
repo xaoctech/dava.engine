@@ -222,7 +222,7 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
     return ret;
 }
 
-void LandscapeEditorColor::InputAction(int32 phase)
+void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
 {
     Texture *tex = NULL;
     if(settings->redMask)
@@ -314,5 +314,3 @@ void LandscapeEditorColor::MaskTextureDidChanged()
 {
     CreateMaskTexture();
 }
-
-

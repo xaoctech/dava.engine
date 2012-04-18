@@ -3,6 +3,7 @@
 
 #include "DAVAEngine.h"
 #include "LandscapeToolsSelection.h"
+#include "UICheckBox.h"
 
 using namespace DAVA;
 
@@ -12,11 +13,13 @@ public:
     
     virtual void OnToolSelected(LandscapeTool *newTool) = 0;
     virtual void OnToolsPanelClose() = 0;
+    virtual void OnShowGrid(bool show) = 0;
 };
 
 class LandscapeToolsPanel: 
     public UIControl,
-    public LandscapeToolsSelectionDelegate
+    public LandscapeToolsSelectionDelegate,
+    public UICheckBoxDelegate
 
 {
 protected:
@@ -42,11 +45,17 @@ public:
     //LandscapeToolsSelectionDelegate
     virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
 
+    //UICheckBoxDelegate
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
+
 protected:
 
     UISlider * CreateSlider(const Rect & rect);
     void AddSliderHeader(UISlider *slider, const WideString &text);
 
+    UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
+
+    
     void OnClose(BaseObject * object, void * userData, void * callerData);
     void OnSelectTool(BaseObject * object, void * userData, void * callerData);
 
@@ -61,6 +70,7 @@ protected:
 	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
 	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
 
+    UICheckBox *showGrid;
     
     LandscapeToolsSelection *selectionPanel;
 };

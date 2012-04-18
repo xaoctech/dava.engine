@@ -4,14 +4,12 @@
 #include "DAVAEngine.h"
 #include "LandscapeToolsPanel.h"
 #include "LandscapeTool.h"
-#include "UICheckBox.h"
 
 using namespace DAVA;
 
 class LandscapeToolsPanelHeightmap: 
     public LandscapeToolsPanel, 
-    public UITextFieldDelegate,
-    public UICheckBoxDelegate
+    public UITextFieldDelegate
 {
 
 public:
@@ -33,8 +31,6 @@ public:
 
 protected:
 
-
-    UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
     
     UITextField *sizeValue;
     UITextField *strengthValue;
