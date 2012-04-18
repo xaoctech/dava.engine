@@ -51,6 +51,7 @@ public:
 	Texture * fbo;
 
 	Vector<float32> verts;
+	Vector<float32> texCoords;
 	Vector3 center;
 	Vector3 direction;
 };
