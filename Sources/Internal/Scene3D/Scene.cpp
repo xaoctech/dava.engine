@@ -269,10 +269,13 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
     }
     else if(ext == ".sc2")
     {
+        uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
         SceneFileV2 *file = new SceneFileV2();
-        file->EnableDebugLog(true);
+        file->EnableDebugLog(false);
         file->LoadScene(rootNodePath.c_str(), this);
         SafeRelease(file);
+        uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+        Logger::Info("[GETROOTNODE TIME] %dms", (endTime - startTime));
     }
     
 	it = rootNodes.find(rootNodePath);

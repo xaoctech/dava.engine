@@ -282,7 +282,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
         {
             String filename = sceneFile->AbsoluteToRelative(names[k]);
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
-            Logger::Debug("--- save material texture: %s", filename.c_str());
+            
+            if(sceneFile->DebugLogEnabled())
+                Logger::Debug("--- save material texture: %s", filename.c_str());
         }
     }
     
@@ -318,7 +320,8 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 			}
 
             names[k] = absolutePathname;
-            Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
+            if(sceneFile->DebugLogEnabled())
+                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
             textures[k] = Texture::CreateFromFile(names[k]);
             if (textures[k])

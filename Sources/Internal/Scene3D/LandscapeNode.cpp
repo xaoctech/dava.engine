@@ -48,7 +48,6 @@ REGISTER_CLASS(LandscapeNode);
 	
 LandscapeNode::LandscapeNode(Scene * _scene)
 	: SceneNode(_scene)
-//    , heightmap(0)
     , indices(0)
 {
     heightmapPath = "";
@@ -159,7 +158,7 @@ void LandscapeNode::ReleaseShaders()
 
 int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
 {
-    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
+//    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
     DVASSERT(quad->size == RENDER_QUAD_WIDTH - 1);
     LandscapeVertex * landscapeVertices = new LandscapeVertex[(quad->size + 1) * (quad->size + 1)];
     
@@ -186,7 +185,7 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     
     landscapeRDOArray.push_back(landscapeRDO);
     
-    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
+//    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
     
     return (int8)landscapeRDOArray.size() - 1;
 }
@@ -259,10 +258,10 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     
     indices = new uint16[INDEX_ARRAY_COUNT];
     
-    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
-    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
-    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
-    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
+//    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
+//    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
+//    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
+//    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
 }
 
 bool LandscapeNode::BuildHeightmap()
@@ -992,12 +991,12 @@ void LandscapeNode::Draw()
 {
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
-#if defined(__DAVAENGINE_MACOS__)
-    if (debugFlags & DEBUG_DRAW_ALL)
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_GRID)
     {
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-#endif
+#endif //#if defined(__DAVAENGINE_OPENGL__)
     
     RenderManager::Instance()->ResetColor();
 
@@ -1158,7 +1157,9 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         String path = textureNames[k];
         String relPath  = sceneFile->AbsoluteToRelative(path);
-        Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
+        
+        if(sceneFile->DebugLogEnabled())
+            Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
@@ -1185,7 +1186,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         String textureName = archive->GetString(Format("tex_%d", k));
         String absPath = sceneFile->RelativeToAbsolute(textureName);
-        Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
+        if(sceneFile->DebugLogEnabled())
+            Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
 
         if (sceneFile->GetVersion() >= 4)
         {

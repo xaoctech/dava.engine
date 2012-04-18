@@ -110,6 +110,11 @@ void SceneFileV2::EnableDebugLog(bool _isDebugLogEnabled)
 {
     isDebugLogEnabled = _isDebugLogEnabled;
 }
+
+bool SceneFileV2::DebugLogEnabled()
+{
+    return isDebugLogEnabled;
+}
     
 Material * SceneFileV2::GetMaterial(int32 index)
 {
@@ -172,8 +177,11 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
     file->Write(&header, sizeof(Header));
     
     // save data objects
-    Logger::Debug("+ save data objects");
-    Logger::Debug("- save file path: %s", rootNodePath.c_str());
+    if(isDebugLogEnabled)
+    {
+        Logger::Debug("+ save data objects");
+        Logger::Debug("- save file path: %s", rootNodePath.c_str());
+    }
     
 //    // Process file paths
 //    for (int32 mi = 0; mi < _scene->GetMaterials()->GetChildrenCount(); ++mi)
@@ -200,7 +208,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const String & filename, DAVA::Scene 
         SaveDataNode(*it, file);
     
     // save hierarchy
-    Logger::Debug("+ save hierarchy");
+    if(isDebugLogEnabled)
+        Logger::Debug("+ save hierarchy");
 
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {
@@ -244,7 +253,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
         return GetError();
     }
     
-    Logger::Debug("+ load data objects");
+    if(isDebugLogEnabled)
+        Logger::Debug("+ load data objects");
 
     if (GetVersion() >= 2)
     {
@@ -255,8 +265,9 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
             LoadDataNode(0, file);
     }
     
-    Logger::Debug("+ load hierarchy");
-    
+    if(isDebugLogEnabled)
+        Logger::Debug("+ load hierarchy");
+        
     SceneNode * rootNode = new SceneNode(_scene);
     rootNode->SetName(rootNodeName);
     for (int ci = 0; ci < header.nodeCount; ++ci)
@@ -439,7 +450,10 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
 void SceneFileV2::AddToNodeMap(DataNode * node)
 {
     uint64 ptr = node->GetPreviousPointer();
-    Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
+    
+    if(isDebugLogEnabled)
+        Logger::Debug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
+    
     dataNodes[ptr] = SafeRetain(node);
 }
     

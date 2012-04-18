@@ -285,11 +285,14 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
 
             Scene * scene = iBody->bodyControl->GetScene();
 
-
+            uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
             SceneFileV2 * file = new SceneFileV2();
-            file->EnableDebugLog(true);
+            file->EnableDebugLog(false);
             file->SaveScene(pathToFile, scene);
             SafeRelease(file);
+            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+            Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
+
 			iBody->bodyControl->PopDebugCamera();			
             break;
         }
