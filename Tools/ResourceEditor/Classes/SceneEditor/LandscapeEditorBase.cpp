@@ -138,7 +138,6 @@ void LandscapeEditorBase::Close()
 
     SafeRelease(workingScene);
     
-//    currentTool = NULL;
     state = ELE_NONE;
     
     if(delegate)

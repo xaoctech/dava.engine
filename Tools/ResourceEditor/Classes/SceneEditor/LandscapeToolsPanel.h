@@ -20,7 +20,6 @@ class LandscapeToolsPanel:
     public UIControl,
     public LandscapeToolsSelectionDelegate,
     public UICheckBoxDelegate
-
 {
 protected:
     
@@ -50,6 +49,9 @@ public:
 
 protected:
 
+    virtual void ToolIconSelected(UIControl *focused);
+
+    
     UISlider * CreateSlider(const Rect & rect);
     void AddSliderHeader(UISlider *slider, const WideString &text);
 
@@ -57,13 +59,14 @@ protected:
 
     
     void OnClose(BaseObject * object, void * userData, void * callerData);
-    void OnSelectTool(BaseObject * object, void * userData, void * callerData);
+    void OnBrushTool(BaseObject * object, void * userData, void * callerData);
 
     
     LandscapeToolsPanelDelegate *delegate;
     
-    UIControl *toolIcon;
+    UIControl *brushIcon;
     LandscapeTool *selectedTool;
+    LandscapeTool *selectedBrushTool;
 
     UISlider *sizeSlider;
     UISlider *strengthSlider;
@@ -73,6 +76,7 @@ protected:
     UICheckBox *showGrid;
     
     LandscapeToolsSelection *selectionPanel;
+    
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_H__
