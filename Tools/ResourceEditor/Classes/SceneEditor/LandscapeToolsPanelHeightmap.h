@@ -23,6 +23,9 @@ public:
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, 
                                      int32 replacementLength, const WideString & replacementString);
 
+    
+    virtual void Update(float32 timeElapsed);
+    
     //UICheckBoxDelegate
     virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
@@ -30,6 +33,9 @@ public:
     virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
 
 protected:
+
+    void OnDropperTool(BaseObject * object, void * userData, void * callerData);
+    virtual void ToolIconSelected(UIControl *focused);
 
     
     UITextField *sizeValue;
@@ -41,6 +47,11 @@ protected:
     UICheckBox *average;
     
     UITextField *heightValue;
+    
+    UIControl *dropperIcon;
+    LandscapeTool *dropperTool;
+    
+    float32 prevHeightValue;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_HEIGHTMAP_H__

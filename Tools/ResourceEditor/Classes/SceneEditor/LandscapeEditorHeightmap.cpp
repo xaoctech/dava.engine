@@ -35,7 +35,17 @@ void LandscapeEditorHeightmap::Update(float32 timeElapsed)
 {
     if(editingIsEnabled)
     {
-        UpdateTileMaskTool(timeElapsed);
+        if(currentTool)
+        {
+            if(LandscapeTool::TOOL_BRUSH == currentTool->type)
+            {
+                UpdateTileMaskTool(timeElapsed);
+            }
+            else if(LandscapeTool::TOOL_DROPPER == currentTool->type)
+            {
+                ProcessHeightDropper();
+            }
+        }
     }
     
     LandscapeEditorBase::Update(timeElapsed);
@@ -94,7 +104,7 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 
 void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 {
-    if(currentTool && toolImage && currentTool->strength)
+    if(toolImage && currentTool->strength && LandscapeTool::TOOL_BRUSH == currentTool->type)
     {
         int32 scaleSize = toolImage->GetWidth();
         Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
@@ -115,7 +125,16 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
             }
             else 
             {
-                ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
+                Vector3 landSize;
+                AABBox3 transformedBox;
+                workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+                landSize = transformedBox.max - transformedBox.min;
+                
+                int32 index = startPoint.x + startPoint.y * heightmap->Size();
+                float32 maxHeight = landSize.z;
+                float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
+                
+                ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
             }
             
             heightmapNode->UpdateHeightmapRect(Rect(pos.x, pos.y, scaleSize, scaleSize));
@@ -124,9 +143,22 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
     }
 }
 
+void LandscapeEditorHeightmap::ProcessHeightDropper()
+{
+    Vector3 landSize;
+    AABBox3 transformedBox;
+    workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+    landSize = transformedBox.max - transformedBox.min;
+
+    int32 index = startPoint.x + startPoint.y * heightmap->Size();
+    float32 height = heightmap->Data()[index];
+    float32 maxHeight = landSize.z;
+    currentTool->height = height / Heightmap::MAX_VALUE * maxHeight;
+}
+
 void LandscapeEditorHeightmap::UpdateCursor()
 {
-	if(currentTool)// && toolImage)
+	if(currentTool)
 	{
 		int32 scaleSize = currentTool->size;
 		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;

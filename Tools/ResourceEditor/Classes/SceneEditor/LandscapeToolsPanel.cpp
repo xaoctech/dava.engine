@@ -5,6 +5,7 @@
 
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
+    ,   selectedBrushTool(NULL)
     ,   selectedTool(NULL)
     ,   delegate(newDelegate)
 {
@@ -18,10 +19,10 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddControl(closeButton);
     SafeRelease(closeButton);
     
-    toolIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
-    toolIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnSelectTool));
-    toolIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
-    AddControl(toolIcon);
+    brushIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+    brushIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnBrushTool));
+    brushIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+    AddControl(brushIcon);
     
     
     showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
@@ -49,7 +50,7 @@ LandscapeToolsPanel::~LandscapeToolsPanel()
     SafeRelease(strengthSlider);
     SafeRelease(sizeSlider);
 
-    SafeRelease(toolIcon);
+    SafeRelease(brushIcon);
 }
 
 UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
@@ -129,27 +130,42 @@ void LandscapeToolsPanel::OnClose(DAVA::BaseObject *object, void *userData, void
     }
 }
 
-void LandscapeToolsPanel::OnSelectTool(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanel::OnBrushTool(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    if(selectionPanel)
+    if(selectedTool == selectedBrushTool)
     {
-        selectionPanel->Show();
+        if(selectionPanel)
+        {
+            selectionPanel->Show();
+        }
     }
+    else 
+    {
+        selectedTool = selectedBrushTool;
+        if(delegate)
+        {
+            delegate->OnToolSelected(selectedTool);
+        }
+    }
+    
+    ToolIconSelected(brushIcon);
 }
 
 void LandscapeToolsPanel::WillAppear()
 {
     if(selectionPanel)
     {
-        selectedTool = selectionPanel->Tool();
-        if(selectedTool)
+        selectedBrushTool = selectionPanel->Tool();
+        selectedTool = selectedBrushTool;
+        if(selectedBrushTool)
         {
-            toolIcon->SetSprite(selectedTool->sprite, 0);
+            brushIcon->SetSprite(selectedBrushTool->sprite, 0);
         }
         else 
         {
-            toolIcon->SetSprite(NULL, 0);
+            brushIcon->SetSprite(NULL, 0);
         }
+        ToolIconSelected(brushIcon);
     }
     
     showGrid->SetChecked(showGrid->Checked(), true);
@@ -157,19 +173,25 @@ void LandscapeToolsPanel::WillAppear()
 
 void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    if(selectedTool)
+    if(selectedBrushTool)
     {
-        selectedTool->strength = strengthSlider->GetValue();
+        selectedBrushTool->strength = strengthSlider->GetValue();
     }
 }
 
 void LandscapeToolsPanel::OnSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    if(selectedTool)
+    if(selectedBrushTool)
     {
-        selectedTool->size = sizeSlider->GetValue();
+        selectedBrushTool->size = sizeSlider->GetValue();
     }
 }
+
+void LandscapeToolsPanel::ToolIconSelected(UIControl *focused)
+{
+    brushIcon->SetDebugDraw(focused == brushIcon);
+}
+
 
 
 #pragma mark  --LandscapeToolsSelectionDelegate
@@ -181,8 +203,9 @@ void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, L
     newTool->strength = strengthSlider->GetValue();
 
     
-    selectedTool = newTool;
-    toolIcon->SetSprite(selectedTool->sprite, 0);
+    selectedBrushTool = newTool;
+    selectedTool = selectedBrushTool;
+    brushIcon->SetSprite(selectedBrushTool->sprite, 0);
     
     if(delegate)
     {

@@ -39,6 +39,7 @@ protected:
     
 	void UpdateTileMaskTool(float32 timeElapsed);
     void UpdateToolImage();
+    void ProcessHeightDropper();
     
     bool editingIsEnabled;
     

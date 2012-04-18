@@ -108,7 +108,7 @@ void LandscapeToolsSelection::EnumerateTools()
         
         if(".png" == extension)
         {
-            LandscapeTool *tool = new LandscapeTool(toolID, toolsPath + filename);
+            LandscapeTool *tool = new LandscapeTool(toolID, LandscapeTool::TOOL_BRUSH, toolsPath + filename);
             ++toolID;
             
             tools.push_back(tool);
