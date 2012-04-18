@@ -1,8 +1,9 @@
 #include "LandscapeTool.h"
 
-LandscapeTool::LandscapeTool(int32 _toolID, const String & _imageName)
+LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageName)
 {
-    toolID = _toolID;
+    toolID = _ID;
+    type = _type;
     
     imageName = _imageName;
     image = Image::CreateFromFile(imageName);

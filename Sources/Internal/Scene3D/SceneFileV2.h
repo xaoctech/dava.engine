@@ -109,6 +109,7 @@ public:
     eError LoadScene(const String & filename, Scene * _scene);
 
     void EnableDebugLog(bool _isDebugLogEnabled);
+    bool DebugLogEnabled();
     void EnableSaveForGame(bool _isSaveForGame);
     
     const String & GetScenePath();

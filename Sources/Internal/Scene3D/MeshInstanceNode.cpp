@@ -401,7 +401,9 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
             if (material && mesh)
             {
-                Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                if(sceneFile->DebugLogEnabled())
+                    Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                
                 AddPolygonGroup(mesh, pgIndex, material);
             }
         }
@@ -425,7 +427,8 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
                     if (material && mesh)
                     {
-                        Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                        if(sceneFile->DebugLogEnabled())
+                            Logger::Debug("+ assign material: %s", material->GetName().c_str());
                         
                         AddPolygonGroup(mesh, pgIndex, material);
                     }
@@ -602,7 +605,7 @@ void MeshInstanceNode::BakeTransforms()
         else
         {
             canBakeEverything = false; 
-            Logger::Debug("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
+            Logger::Warning("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
         }
     }   
     if (canBakeEverything)
