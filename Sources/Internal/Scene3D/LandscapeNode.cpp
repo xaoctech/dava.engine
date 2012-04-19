@@ -990,6 +990,16 @@ void LandscapeNode::UnbindMaterial()
             RenderManager::Instance()->SetTexture(0, 2);
         }            
             break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+        {
+            RenderManager::Instance()->SetTexture(0, 0);
+            RenderManager::Instance()->SetTexture(0, 1);
+            RenderManager::Instance()->SetTexture(0, 2);
+            RenderManager::Instance()->SetTexture(0, 3);
+            RenderManager::Instance()->SetTexture(0, 4);
+            RenderManager::Instance()->SetTexture(0, 5);
+        }
+        break;
     }    
 }
 
