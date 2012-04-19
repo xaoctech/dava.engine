@@ -37,10 +37,9 @@ REGISTER_CLASS(ImposterNode);
 ImposterNode::ImposterNode(Scene * scene)
 :	SceneNode(scene)
 {
+	state = STATE_3D;
 	renderData = 0;
 	fbo = Texture::CreateFBO(512, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
-
-	wasRender = false;
 }
 
 ImposterNode::~ImposterNode()
@@ -61,21 +60,23 @@ void ImposterNode::Draw()
 		DVASSERT(GetChildrenCount() == 1);
 		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBox();
 		Vector3 bboxCenter = bbox.GetCenter();
-		float32 dst = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
-		dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+		float32 distanceSquare = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
+		distanceSquare *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
 
-		if(dst > 1000 && !wasRender)
+		if((STATE_3D == state))
 		{
-			wasRender = true;
-			//switch to imposter
-			UpdateImposter();
-		}
-		else if(!wasRender)
-		{
-			SceneNode::Draw();
+			if(distanceSquare > 300)
+			{
+				UpdateImposter();
+				state = STATE_IMPOSTER;
+			}
+			else
+			{
+				SceneNode::Draw();
+			}
 		}
 
-		if(wasRender)
+		if(STATE_IMPOSTER == state)
 		{
 			Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 			const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
@@ -84,14 +85,14 @@ void ImposterNode::Draw()
 			meshFinalMatrix = /*worldTransform **/ cameraMatrix;
 
 			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
-			RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
+			RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 
 			RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, 1.f);
 			
 			//RenderManager::Instance()->SetState(/*RenderStateBlock::STATE_BLEND |*/ RenderStateBlock::STATE_TEXTURE0/* | RenderStateBlock::STATE_CULL*/);
 			RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
 			//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-			//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+			RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
 			eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 			eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
@@ -103,16 +104,35 @@ void ImposterNode::Draw()
 			RenderManager::Instance()->FlushState();
 			RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 
+			//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
 			RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 			RenderManager::Instance()->SetBlendMode(src, dst);
 
 			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
+
+			if(distanceSquare < 300)
+			{
+				state = STATE_3D;
+			}
+			else
+			{
+				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
+				newDirection.Normalize();
+				if(newDirection.DotProduct(direction) < 0.99999f)
+				{
+					UpdateImposter();
+				}
+			}
 		}
 	}
 }
 
 void ImposterNode::UpdateImposter()
 {
+	SafeRelease(renderData);
+	verts.clear();
+	texCoords.clear();
+
 	SceneNode * child = GetChild(0);
 	AABBox3 bbox = child->GetWTMaximumBoundingBox();
 	Vector3 bboxVertices[8];
@@ -208,8 +228,8 @@ void ImposterNode::UpdateImposter()
 
 	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
 
-	Image * img = fbo->CreateImageFromMemory();
-	img->Save("imposter.png");
+	//Image * img = fbo->CreateImageFromMemory();
+	//img->Save("imposter.png");
 	RenderManager::Instance()->SetViewport(oldViewport, true);
 	camera->Set();
 	

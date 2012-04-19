@@ -47,6 +47,12 @@ public:
 	void UpdateImposter();
 
 public:
+	enum eState
+	{
+		STATE_3D = 0,
+		STATE_IMPOSTER
+	};
+
 	Vector3 imposterVertices[4];
 	RenderDataObject * renderData;
 	Texture * fbo;
@@ -56,7 +62,7 @@ public:
 	Vector3 center;
 	Vector3 direction;
 
-	bool wasRender;
+	eState state;
 };
 
 };
