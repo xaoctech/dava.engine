@@ -42,6 +42,7 @@ public:
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
 	void UpdateImposter();
 
@@ -54,6 +55,8 @@ public:
 	Vector<float32> texCoords;
 	Vector3 center;
 	Vector3 direction;
+
+	bool wasRender;
 };
 
 };
