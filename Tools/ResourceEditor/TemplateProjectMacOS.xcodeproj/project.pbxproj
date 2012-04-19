@@ -2501,6 +2501,7 @@
 					"./../../Libs/ImageMagick-6.6.9/lib/",
 					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
