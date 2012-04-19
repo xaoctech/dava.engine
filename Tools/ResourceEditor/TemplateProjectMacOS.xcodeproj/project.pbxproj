@@ -31,6 +31,7 @@
 		5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */; };
 		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
+		5C287E95153F213100ACA345 /* UNDOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C287E93153F213100ACA345 /* UNDOManager.cpp */; };
 		5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C3B6D19152B753200A1414F /* HintManager.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
 		5C5C3943152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C3941152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp */; };
@@ -376,6 +377,8 @@
 		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
+		5C287E93153F213100ACA345 /* UNDOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UNDOManager.cpp; sourceTree = "<group>"; };
+		5C287E94153F213100ACA345 /* UNDOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UNDOManager.h; sourceTree = "<group>"; };
 		5C3B6D19152B753200A1414F /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HintManager.cpp; sourceTree = "<group>"; };
 		5C3B6D1A152B753200A1414F /* HintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HintManager.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
@@ -1193,6 +1196,8 @@
 		5CD1A26F14D0ACC6005E76B5 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				5C287E93153F213100ACA345 /* UNDOManager.cpp */,
+				5C287E94153F213100ACA345 /* UNDOManager.h */,
 				5CDE48571518946B004E4353 /* PVRUtils.cpp */,
 				5CDE48581518946B004E4353 /* PVRUtils.h */,
 				5C0971F31511FE5400782FCC /* ErrorNotifier.cpp */,
@@ -2355,6 +2360,7 @@
 				5CBF5FA5152F3E5200107D6B /* ImageRasterizer.cpp in Sources */,
 				5C0CD38E1534329F00BF9C84 /* LandscapeToolsSelection.cpp in Sources */,
 				5CF9DD1B153C9C2D001E4F9F /* UIFilePreviewDialog.cpp in Sources */,
+				5C287E95153F213100ACA345 /* UNDOManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2495,6 +2501,7 @@
 					"./../../Libs/ImageMagick-6.6.9/lib/",
 					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",

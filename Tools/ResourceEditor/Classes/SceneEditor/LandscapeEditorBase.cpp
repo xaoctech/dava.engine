@@ -220,6 +220,15 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
         }
     }
     
+    if(UIEvent::PHASE_KEYCHAR == touch->phase)
+    {
+        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        {
+            UndoAction();
+            return true;
+        }
+    }
+    
     return false;
 }
 

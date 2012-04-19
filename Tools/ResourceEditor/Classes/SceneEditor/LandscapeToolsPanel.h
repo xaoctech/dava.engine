@@ -37,7 +37,8 @@ public:
     virtual ~LandscapeToolsPanel();
     
     virtual void WillAppear();
-    
+    virtual void Input(UIEvent *currentInput);
+
     LandscapeTool *CurrentTool();
     void SetSelectionPanel(LandscapeToolsSelection *newPanel);
     

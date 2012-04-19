@@ -19,10 +19,13 @@
 #include "HintManager.h"
 #include "HelpDialog.h"
 
+#include "UNDOManager.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
     new HintManager();
+    new UNDOManager();
     
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
@@ -149,6 +152,7 @@ void SceneEditorScreenMain::UnloadResources()
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     ErrorNotifier::Instance()->Release();
+    UNDOManager::Instance()->Release();
 }
 
 
