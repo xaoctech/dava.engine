@@ -21,6 +21,7 @@ menu.createnode.servicenode: "Service Node"
 menu.createnode.box: "Box"
 menu.createnode.sphere: "Sphere"
 menu.createnode.camera: "Camera"
+menu.createnode.imposter: "Imposter"
 menu.new: "New Scene"
 menu.new.emptyscene: "Empty Scene"
 menu.new.scenewithcamera: "Scene+Camera"
@@ -79,6 +80,7 @@ createnode.servicenode: "Create service node"
 createnode.box: "Create box node"
 createnode.sphere: "Create sphere node"
 createnode.camera: "Create camera"
+createnode.imposter: "Create imposter"
 
 #Create Property Dialog
 createproperty.type: "Type:"
@@ -101,7 +103,7 @@ landscapeeditor.strength: "Strength:"
 landscapeeditor.relative: "Rel/Abs"
 landscapeeditor.average: "Average"
 landscapeeditor.height: "Height"
-
+landscapeeditor.showgrid: "Grid"
 
 #Material Editor
 materialeditor.materials: "Materials:"

@@ -19,10 +19,13 @@
 #include "HintManager.h"
 #include "HelpDialog.h"
 
+#include "UNDOManager.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
     new HintManager();
+    new UNDOManager();
     
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
@@ -149,6 +152,7 @@ void SceneEditorScreenMain::UnloadResources()
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     ErrorNotifier::Instance()->Release();
+    UNDOManager::Instance()->Release();
 }
 
 
@@ -285,11 +289,14 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
 
             Scene * scene = iBody->bodyControl->GetScene();
 
-
+            uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
             SceneFileV2 * file = new SceneFileV2();
-            file->EnableDebugLog(true);
+            file->EnableDebugLog(false);
             file->SaveScene(pathToFile, scene);
             SafeRelease(file);
+            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+            Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
+
 			iBody->bodyControl->PopDebugCamera();			
             break;
         }
@@ -810,6 +817,12 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                     text = LocalizedString(L"menu.createnode.camera");
                     break;
                 }
+
+				case ECNID_IMPOSTER:
+				{
+					text = LocalizedString(L"menu.createnode.imposter");
+					break;
+				}
                     
                 default:
                     break;

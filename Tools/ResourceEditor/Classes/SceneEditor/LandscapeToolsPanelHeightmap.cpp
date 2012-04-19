@@ -25,19 +25,20 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(line);
     SafeRelease(line);
 
-    int32 x = toolIcon->GetRect().x + toolIcon->GetRect().dx;
-    relative = CreateCkeckbox(Rect(x, 0, 
-                                   ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
+    int32 x = ControlsFactory::TOOLS_HEIGHT/2 + ControlsFactory::OFFSET + TEXT_WIDTH;
+    relative = CreateCkeckbox(Rect(x, ControlsFactory::TOOLS_HEIGHT, 
+                                   ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.relative"));
-    average = CreateCkeckbox(Rect(x, ControlsFactory::BUTTON_HEIGHT, 
-                                  ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), 
+    x += (ControlsFactory::TOOLS_HEIGHT/2 + ControlsFactory::OFFSET + TEXT_WIDTH);
+    average = CreateCkeckbox(Rect(x, ControlsFactory::TOOLS_HEIGHT, 
+                                  ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.average"));
     
     Rect heightRect;
-    heightRect.x = relative->GetRect().x + relative->GetRect().dx + TEXT_WIDTH + ControlsFactory::OFFSET + ControlsFactory::OFFSET/2.0;
-    heightRect.y = relative->GetRect().y;
+    heightRect.x = average->GetRect().x + average->GetRect().dx + TEXT_WIDTH + ControlsFactory::OFFSET + ControlsFactory::OFFSET/2.0;
+    heightRect.y = average->GetRect().y;
     heightRect.dx = TEXTFIELD_WIDTH;
-    heightRect.dy = relative->GetRect().dy;
+    heightRect.dy = average->GetRect().dy;
     heightValue = CreateTextField(Rect(heightRect));
     heightValue->SetText(L"0");
     AddControl(heightValue);
@@ -52,6 +53,19 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(textControl);
     SafeRelease(textControl);
 
+    
+    dropperTool = new LandscapeTool(-1, LandscapeTool::TOOL_DROPPER, "~res:/LandscapeEditor/SpecialTools/dropper.png");
+    dropperTool->size = 1.0f;
+    dropperTool->height = prevHeightValue = 0.f;
+    
+    Rect dropperRect = brushIcon->GetRect();
+    dropperRect.x = (dropperRect.x + dropperRect.dx + ControlsFactory::OFFSET);
+    dropperIcon = new UIControl(dropperRect);
+    dropperIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanelHeightmap::OnDropperTool));
+    dropperIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+    dropperIcon->SetSprite(dropperTool->sprite, 0);
+    AddControl(dropperIcon);
+    
     
     sizeValue->SetText(Format(L"%.3f", LandscapeTool::SizeHeightMax()));
     strengthValue->SetText(Format(L"%.3f", LandscapeTool::StrengthHeightMax()));
@@ -68,6 +82,9 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
 
 LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
 {
+    SafeRelease(dropperIcon);
+    SafeRelease(dropperTool);
+
     SafeRelease(heightValue);
     
     SafeRelease(average);
@@ -75,28 +92,6 @@ LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
     
     SafeRelease(sizeValue);
     SafeRelease(strengthValue);
-}
-
-UICheckBox *LandscapeToolsPanelHeightmap::CreateCkeckbox(const Rect &rect, const WideString &text)
-{
-    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
-    checkbox->SetDelegate(this);
-    AddControl(checkbox);
-    
-    Rect textRect;
-    textRect.x = rect.x + rect.dx + ControlsFactory::OFFSET;
-    textRect.y = rect.y;
-    textRect.dx = TEXT_WIDTH;
-    textRect.dy = rect.dy;
-    
-    UIStaticText *textControl = new UIStaticText(textRect);
-    textControl->SetText(text);
-    textControl->SetFont(ControlsFactory::GetFontLight());
-    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
-    AddControl(textControl);
-    SafeRelease(textControl);
-    
-    return checkbox;
 }
 
 
@@ -110,6 +105,49 @@ UITextField *LandscapeToolsPanelHeightmap::CreateTextField(const Rect &rect)
     
     return tf;
 }
+
+void LandscapeToolsPanelHeightmap::OnDropperTool(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    selectedTool = dropperTool;
+    if(delegate)
+    {
+        delegate->OnToolSelected(selectedTool);
+    }
+    
+    if(average->Checked())
+    {
+        average->SetChecked(false, true);
+    }
+    if(relative->Checked())
+    {
+        relative->SetChecked(false, true);
+    }
+    
+    ToolIconSelected(dropperIcon);
+}
+
+void LandscapeToolsPanelHeightmap::Update(float32 timeElapsed)
+{
+    if(dropperTool->height != prevHeightValue)
+    {
+        prevHeightValue = dropperTool->height;
+        heightValue->SetText(Format(L"%.3f", dropperTool->height));
+        
+        if(selectedBrushTool)
+        {
+            selectedBrushTool->height = dropperTool->height;
+        }
+    }
+    
+    LandscapeToolsPanel::Update(timeElapsed);
+}
+
+void LandscapeToolsPanelHeightmap::ToolIconSelected(UIControl *focused)
+{
+    dropperIcon->SetDebugDraw(focused == dropperIcon);
+    LandscapeToolsPanel::ToolIconSelected(focused);
+}
+
 
 #pragma mark  --UITextFieldDelegate
 void LandscapeToolsPanelHeightmap::TextFieldShouldReturn(UITextField * textField)
@@ -129,35 +167,37 @@ void LandscapeToolsPanelHeightmap::TextFieldLostFocus(UITextField * textField)
         float32 value = atof(WStringToString(sizeValue->GetText()).c_str());
         
         sizeSlider->SetMinMaxValue(0.f, value);
-        selectedTool->maxSize = value;
-        if(value < selectedTool->size)
+        selectedBrushTool->maxSize = value;
+        if(value < selectedBrushTool->size)
         {
-            selectedTool->size = value;
+            selectedBrushTool->size = value;
         }
-        sizeSlider->SetValue(selectedTool->size);
+        sizeSlider->SetValue(selectedBrushTool->size);
     }
     else if(textField == strengthValue)
     {
         float32 value = fabsf(atof(WStringToString(strengthValue->GetText()).c_str()));
 
         strengthSlider->SetMinMaxValue(-value, value);
-        selectedTool->maxStrength = value;
-        if(value < selectedTool->strength)
+        selectedBrushTool->maxStrength = value;
+        if(value < selectedBrushTool->strength)
         {
-            selectedTool->strength = value;
+            selectedBrushTool->strength = value;
         }
-        else if(selectedTool->strength < -value)
+        else if(selectedBrushTool->strength < -value)
         {
-            selectedTool->strength = -value;
+            selectedBrushTool->strength = -value;
         }
-        strengthSlider->SetValue(selectedTool->strength);
+        strengthSlider->SetValue(selectedBrushTool->strength);
     }
     else if(heightValue)
     {
-        float32 value = fabsf(atof(WStringToString(heightValue->GetText()).c_str()));
-        if(selectedTool)
+        prevHeightValue = fabsf(atof(WStringToString(heightValue->GetText()).c_str()));
+        dropperTool->height = prevHeightValue;
+
+        if(selectedBrushTool)
         {
-            selectedTool->height = value;
+            selectedBrushTool->height = prevHeightValue;
         }
     }
 }
@@ -199,6 +239,8 @@ bool LandscapeToolsPanelHeightmap::TextFieldKeyPressed(UITextField * textField, 
 #pragma mark  --UICheckBoxDelegate
 void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
+    LandscapeToolsPanel::ValueChanged(forCheckbox, newValue);
+
     if(forCheckbox == average)
     {
         if(newValue)
@@ -214,8 +256,11 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
         }
     }
     
-    selectedTool->averageDrawing = average->Checked();
-    selectedTool->relativeDrawing = relative->Checked();
+    if(selectedBrushTool)
+    {
+        selectedBrushTool->averageDrawing = average->Checked();
+        selectedBrushTool->relativeDrawing = relative->Checked();
+    }
 }
 
 #pragma mark  --LandscapeToolsSelectionDelegate

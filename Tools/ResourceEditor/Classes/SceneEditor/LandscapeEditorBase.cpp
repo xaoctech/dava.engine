@@ -128,6 +128,9 @@ void LandscapeEditorBase::Toggle()
 void LandscapeEditorBase::Close()
 {
     HideAction();
+    
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    
     SafeRelease(workingLandscape);
 
     workingScene->RemoveNode(heightmapNode);
@@ -135,7 +138,6 @@ void LandscapeEditorBase::Close()
 
     SafeRelease(workingScene);
     
-//    currentTool = NULL;
     state = ELE_NONE;
     
     if(delegate)
@@ -191,13 +193,13 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
                 if(isIntersect)
                 {
                     prevDrawPos = Vector2(-100, -100);
-                    InputAction(touch->phase);
+                    InputAction(touch->phase, isIntersect);
                 }
                 return true;
             }
             else if(UIEvent::PHASE_DRAG == touch->phase)
             {
-                InputAction(touch->phase);
+                InputAction(touch->phase, isIntersect);
                 if(!isIntersect)
                 {
                     prevDrawPos = Vector2(-100, -100);
@@ -210,11 +212,20 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
                 
                 if(isIntersect)
                 {
-                    InputAction(touch->phase);
+                    InputAction(touch->phase, isIntersect);
                     prevDrawPos = Vector2(-100, -100);
                 }
                 return true;
             }
+        }
+    }
+    
+    if(UIEvent::PHASE_KEYCHAR == touch->phase)
+    {
+        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        {
+            UndoAction();
+            return true;
         }
     }
     
@@ -266,6 +277,25 @@ void LandscapeEditorBase::OnToolSelected(LandscapeTool *newTool)
 void LandscapeEditorBase::OnToolsPanelClose()
 {
     Toggle();
+}
+
+void LandscapeEditorBase::OnShowGrid(bool show)
+{
+    if(workingLandscape)
+    {
+        if(show)
+        {
+            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
+        }
+        else 
+        {
+            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+        }
+    }
+    else 
+    {
+        DVASSERT(false);
+    }
 }
 
 

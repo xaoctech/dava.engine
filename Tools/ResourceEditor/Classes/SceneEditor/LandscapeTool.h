@@ -10,7 +10,13 @@ class LandscapeTool: public BaseObject
     
 public:
 
-    LandscapeTool(int32 _toolID, const String & _imageName);
+    enum eToolType
+    {
+        TOOL_BRUSH = 0,
+        TOOL_DROPPER
+    };
+    
+    LandscapeTool(int32 _ID, eToolType _type, const String & _imageName);
     virtual ~LandscapeTool();
 
     static float32 SizeColorMin();
@@ -40,6 +46,8 @@ public:
     
     bool relativeDrawing;
     bool averageDrawing;
+    
+    eToolType type;
 };
 
 #endif // __PAINT_TOOL_H__

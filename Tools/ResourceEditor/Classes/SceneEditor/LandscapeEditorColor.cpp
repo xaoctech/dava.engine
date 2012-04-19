@@ -222,7 +222,7 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
     return ret;
 }
 
-void LandscapeEditorColor::InputAction(int32 phase)
+void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
 {
     Texture *tex = NULL;
     if(settings->redMask)
@@ -265,6 +265,11 @@ void LandscapeEditorColor::ShowAction()
     landscapeSize = maskSprite->GetWidth();
 
 	workingLandscape->CursorEnable();
+}
+
+void LandscapeEditorColor::UndoAction()
+{
+    
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
@@ -314,5 +319,3 @@ void LandscapeEditorColor::MaskTextureDidChanged()
 {
     CreateMaskTexture();
 }
-
-

@@ -57,6 +57,12 @@ public:
 		WRAP_CLAMP,
 		WRAP_REPEAT,
 	};
+
+	enum DepthFormat
+	{
+		DEPTH_NONE = 0,
+		DEPTH_RENDERBUFFER
+	};
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static const int MAX_WIDTH = 1024;
@@ -116,9 +122,10 @@ public:
         \param[in] width width of the fbo
         \param[in] height height of the fbo
         \param[in] format format of the fbo
+		\param[in] useDepthbuffer if set to true, addition depthbuffer will be created for this fbo
         \todo reorder variables in function, and make format variable first to make it similar to CreateFromData function.
      */
-	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format);
+	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
     /**
         \brief Function to load specific mip-map level from file
@@ -224,8 +231,10 @@ public:							// properties for fast access
 //	uint32		imageHeight;	// image height
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		fboID;			// id of frame buffer object
+	uint32		rboID;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	PixelFormat format;			// texture format 
+	DepthFormat depthFormat;
 	bool		isRenderTarget;
 
     bool isMimMapTexture;
