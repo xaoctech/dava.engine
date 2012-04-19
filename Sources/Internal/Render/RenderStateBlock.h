@@ -296,7 +296,7 @@ public:
 	};
 	StencilState stencilState;
     
-    static const uint32 MAX_TEXTURE_LEVELS = 6;
+    static const uint32 MAX_TEXTURE_LEVELS = 8;
     Texture * currentTexture[MAX_TEXTURE_LEVELS];
     Shader * shader;
     
