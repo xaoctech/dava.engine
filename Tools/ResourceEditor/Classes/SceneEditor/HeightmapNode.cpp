@@ -28,6 +28,7 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     sizeInMeters = landSize.x;
     areaScale = sizeInMeters / heightmap->Size();
     maxHeight = landSize.z;
+    heightScale = maxHeight / 65535.f;
     float32 minHeight = 0.0f;
 
     heightmapTexture = Texture::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/lm_l2.png");//heit_l2.png");
