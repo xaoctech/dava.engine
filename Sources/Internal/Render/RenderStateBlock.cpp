@@ -439,7 +439,13 @@ inline void RenderStateBlock::SetAlphaTestInHW()
 
 inline void RenderStateBlock::SetAlphaTestFuncInHW()
 {
-     RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
+    if (renderer == Core::RENDERER_OPENGL)
+    {
+        RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], (float32)alphaFuncCmpValue / 255.0f) );
+    }else
+    {
+        RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
+    }
 }
 
 inline void RenderStateBlock::SetDepthFuncInHW()
