@@ -1261,26 +1261,26 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
 void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 {
 	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
-	//if(land) 
-	//{
-	//	ExportTexture(land->GetHeightMapPathname());
-	//	for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
-	//	{
-	//		Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
-	//		if(t) 
-	//		{
-	//			ExportTexture(t->relativePathname);
-	//			if(useConvertedTextures)
-	//			{
-	//				ExportTexture(m->names[Material::TEXTURE_DIFFUSE]);
-	//			}
-	//			else
-	//			{
-	//				ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
-	//			}
-	//		}
-	//	}
-	//}
+    if(land) 
+    {
+        ExportTexture(land->GetHeightMapPathname());
+        for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+        {
+            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+            if(t) 
+            {
+                ExportTexture(t->relativePathname);
+//                if(useConvertedTextures)
+//                {
+//                    ExportTexture(t->names[Material::TEXTURE_DIFFUSE]);
+//                }
+//                else
+//                {
+//                    ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+//                }
+            }
+        }
+    }
 
 	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
 	{
