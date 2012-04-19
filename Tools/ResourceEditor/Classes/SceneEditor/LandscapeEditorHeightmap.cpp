@@ -9,6 +9,8 @@
 #include "ImageRasterizer.h"
 #include "HeightmapNode.h"
 
+#include "UNDOManager.h"
+
 #pragma mark --LandscapeEditorHeightmap
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -182,6 +184,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
         case UIEvent::PHASE_BEGAN:
         {
             editingIsEnabled = true;
+            UNDOManager::Instance()->SaveHightmap(heightmap);
             UpdateToolImage();
 
             break;
@@ -196,6 +199,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
             else if(!editingIsEnabled && intersects)
             {
                 editingIsEnabled = true;
+                UNDOManager::Instance()->SaveHightmap(heightmap);
                 UpdateToolImage();
             }
             break;
@@ -260,6 +264,16 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapeSize = heightmap->Size();
 
 	landscapeDebugNode->CursorEnable();
+}
+
+void LandscapeEditorHeightmap::UndoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
+    if(UNDOAction::ACTION_HEIGHTMAP == type)
+    {
+        UNDOManager::Instance()->UndoHeightmap(heightmap);
+        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+    }
 }
 
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
