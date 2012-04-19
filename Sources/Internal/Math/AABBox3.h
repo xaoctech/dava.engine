@@ -73,7 +73,7 @@ public:
 	//! in another case bounding box become larger
 	//! \param pt point to add
 	inline void AddPoint(const Vector3 & pt);
-	inline void AddAABBox(AABBox3 & bbox);
+	inline void AddAABBox(const AABBox3 & bbox);
 	
 	//! \brief check if bounding box intersect other bounding box
 	//! \param box another bounding box
@@ -152,7 +152,7 @@ inline void AABBox3::AddPoint(const Vector3 & pt)
 		max.z = pt.z;
 }
 	
-inline void AABBox3::AddAABBox(AABBox3 & bbox)
+inline void AABBox3::AddAABBox(const AABBox3 & bbox)
 {
 	AddPoint(bbox.min);
 	AddPoint(bbox.max);

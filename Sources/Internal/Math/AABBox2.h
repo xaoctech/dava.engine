@@ -73,7 +73,7 @@ public:
 	//! in another case bounding box become larger
 	//! \param pt point to add
 	inline void AddPoint(const Vector2 & pt);
-	inline void AddAABBox(AABBox2 & bbox);
+	inline void AddAABBox(const AABBox2 & bbox);
 	
 	//! \brief make bounding box empty
 	inline void Empty();
@@ -144,7 +144,7 @@ inline void AABBox2::AddPoint(const Vector2 & pt)
 		max.y = pt.y;
 }
 	
-inline void AABBox2::AddAABBox(AABBox2 & bbox)
+inline void AABBox2::AddAABBox(const AABBox2 & bbox)
 {
 	AddPoint(bbox.min);
 	AddPoint(bbox.max);

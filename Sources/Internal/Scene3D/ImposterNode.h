@@ -42,10 +42,17 @@ public:
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
 	void UpdateImposter();
 
 public:
+	enum eState
+	{
+		STATE_3D = 0,
+		STATE_IMPOSTER
+	};
+
 	Vector3 imposterVertices[4];
 	RenderDataObject * renderData;
 	Texture * fbo;
@@ -54,6 +61,8 @@ public:
 	Vector<float32> texCoords;
 	Vector3 center;
 	Vector3 direction;
+
+	eState state;
 };
 
 };

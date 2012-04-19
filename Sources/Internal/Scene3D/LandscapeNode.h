@@ -51,29 +51,29 @@ class SceneFileV2;
 class Heightmap;
     
 template<class T>
-class QuadTreeNode
+class LandQuadTreeNode
 {
 public:
-    QuadTreeNode()
+    LandQuadTreeNode()
     {
         childs = 0;
         parent = 0;
         for (int32 k = 0; k < 4; ++k)
             neighbours[k] = 0;
     }
-    ~QuadTreeNode()
+    ~LandQuadTreeNode()
     {
         SafeDeleteArray(childs);
     }
     
     void AllocChilds()
     {
-        childs = new QuadTreeNode[4];
+        childs = new LandQuadTreeNode[4];
     }
     
-    QuadTreeNode * childs;  // It's array of 4 child nodes
-    QuadTreeNode * parent;
-    QuadTreeNode * neighbours[4]; 
+    LandQuadTreeNode * childs;  // It's array of 4 child nodes
+    LandQuadTreeNode * parent;
+    LandQuadTreeNode * neighbours[4]; 
     T data;
 };
     
@@ -279,16 +279,16 @@ protected:
     static const int32 INDEX_ARRAY_COUNT = RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6;
     
 
-    void RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels);
-    QuadTreeNode<LandscapeQuad> * FindNodeWithXY(QuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize);
-    void FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode);
-    void MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
+    void RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels);
+    LandQuadTreeNode<LandscapeQuad> * FindNodeWithXY(LandQuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize);
+    void FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode);
+    void MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
 
     void BindMaterial();
     void UnbindMaterial();
     
-    void DrawQuad(QuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
-    void Draw(QuadTreeNode<LandscapeQuad> * currentNode);
+    void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
+    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
 
     AABBox3     box;
@@ -307,9 +307,9 @@ protected:
     float32 lodDistance[8]; //
     float32 lodSqDistance[8];
     
-    QuadTreeNode<LandscapeQuad> quadTreeHead;
+    LandQuadTreeNode<LandscapeQuad> quadTreeHead;
 
-    List<QuadTreeNode<LandscapeQuad>*> fans;
+    List<LandQuadTreeNode<LandscapeQuad>*> fans;
     
     int32 allocatedMemoryForQuads;
     

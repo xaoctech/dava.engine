@@ -47,6 +47,7 @@ public:
 	void Delete(T * _item);
 
 	void AddToCache(int size);
+    void Reset();
 private:
 	void CreateNewDataBlock();
 	void DeallocateMemory();
@@ -64,7 +65,7 @@ public:
 	
 	T * New() { return data->New(); };
 	void Delete(T * _item) { return data->Delete(_item); };
-
+    void Reset() { data->Reset(); };
 private:
 	DynamicObjectCacheData<T> * data;
 };
@@ -87,6 +88,22 @@ void DynamicObjectCacheData<T>::CreateNewDataBlock()
 	{
 		cache.push_back(&block[k]);
 	}
+    
+}
+    
+template <class T> 
+void DynamicObjectCacheData<T>::Reset()
+{
+    cache.clear();
+    typename List<T*>::iterator end = blocks.end();
+    for (typename List<T*>::iterator bit = blocks.begin(); bit != end; ++bit)
+    {
+        T * block = *bit;
+        for (int k = 0; k < size; ++k)
+        {
+            cache.push_back(&block[k]);
+        }
+    }
 }
 	
 template <class T> 
@@ -124,7 +141,7 @@ T * DynamicObjectCacheData<T>::New()
 	
 	DVASSERT(cache.size() > 0);
 	
-	object = cache.front();
+	object = cache.front(); //new (cache.front()) T;
 	cache.pop_front();
 	return object;
 }
