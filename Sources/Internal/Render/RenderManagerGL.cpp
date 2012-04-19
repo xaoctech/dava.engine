@@ -730,6 +730,14 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	currentRenderTarget = renderTarget;
 }
 
+void RenderManager::SetHWRenderTarget(Texture * renderTarget)
+{
+	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
+	BindFBO(renderTarget->fboID);
+	SetViewport(Rect(0, 0, renderTarget->width, renderTarget->height), true);
+	RemoveClip();
+}
+
     
 void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
 {

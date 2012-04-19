@@ -368,6 +368,13 @@ public:
 	virtual void SetRenderTarget(Sprite *renderTarget);
 
 	/** 
+	 \brief Sets the texture to use as a render target. Texture should be created with CreateFBO method.
+			Call RestoreRenderTarget when you finish drawing to your texture 
+	 \param[in] renderTarget - Render target texture.
+	 */
+	void SetRenderTarget(Texture * renderTarget);
+
+	/** 
         \brief Restores the previous render target
 	 */
 	virtual void RestoreRenderTarget();
@@ -474,6 +481,8 @@ public:
 		\returns pointer to custom cursor or null if there is no cursor set by default.
 	 */
 	virtual Cursor * GetCursor();
+
+	uint32 fboViewFramebuffer;
 	
 protected:
     //
@@ -533,7 +542,6 @@ protected:
 
 	// fbo data
 	uint32 fboViewRenderbuffer;
-	uint32 fboViewFramebuffer;
 
 	// state information
 //	Color oldColor;                 // UNIFORM - can be used or not used by RenderEffect
@@ -614,9 +622,9 @@ protected:
 	
 	Rect currentClip;
 	
-	void SetHWRenderTarget(Sprite *renderTarget);
 	void SetHWClip(const Rect &rect);
-
+	void SetHWRenderTarget(Sprite *renderTarget);
+	void SetHWRenderTarget(Texture * renderTarget);
 	void SetNewRenderEffect(RenderEffect *renderEffect);
 	
 	bool debugEnabled;
