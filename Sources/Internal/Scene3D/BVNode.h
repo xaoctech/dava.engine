@@ -27,63 +27,43 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_QUADTREE_H__
-#define __DAVAENGINE_QUADTREE_H__
+#ifndef __DAVAENGINE_BVNODE_H__
+#define __DAVAENGINE_BVNODE_H__
 
 #include "Base/BaseObject.h"
 #include "Base/StaticSingleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/DynamicObjectCache.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNodeAnimationKey.h"
-#include "Scene3D/BVHierarchy.h"
-#include <deque>
+#include "Scene3D/SceneNode.h"
 
 namespace DAVA
 {
-class Material;
-class MeshInstanceNode;
-class QuadTree;
+class Scene;
+
     
-class QuadTreeNode 
+/**
+    \brief Node that supports some bounding volumes. 
+ 
+    Currently there are only axial-aligned bounding boxes supported but later we plan to add other structures like OOBs and bounding spheres.
+ */
+class BVNode : public SceneNode
 {
 public:
-    // be careful it's not a BaseObject to avoid unnecessary data store
-    QuadTreeNode();
-    virtual ~QuadTreeNode();
+    BVNode();
+    virtual ~BVNode();
     
-    void SetBoundingBox(const AABBox3 & _bbox);
-    inline const AABBox3 & GetBoundingBox() const { return bbox; };
-    void DebugDraw();
-private:
-    AABBox3 bbox;
-    QuadTreeNode * children[4];
-    Vector<MeshInstanceNode*> objectsInside;
-    friend class QuadTree;
-};
-
-class QuadTree : public BVHierarchy
-{
-public:
-    QuadTree();
-    virtual ~QuadTree();
-    
-    virtual void Build(Scene * scene);
-    virtual void Update(float32 timeElapsed);
-    virtual void Draw(); 
-private:
-    void BuildRecursive(QuadTreeNode * node, List<MeshInstanceNode*> & meshNodes);
-    
-    int32 nodeCount;
-    DynamicObjectCacheData<QuadTreeNode> cache;
-    QuadTreeNode * head;
-    Map<Material*, Set<MeshInstanceNode*> > nodesForRender;
+    enum
+    {
+        TYPE_AABB = 1,
+    //    TYPE_OOB = 2,         // written for future
+    //    TYPE_SPHERE = 4,      // written for future
+    };
+        
 };
 
 };
 
-#endif // __DAVAENGINE_QUADTREE_H__
+#endif // __DAVAENGINE_BVHIERARCHY_H__
 
 
 

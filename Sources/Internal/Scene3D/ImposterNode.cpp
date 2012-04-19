@@ -37,6 +37,7 @@ REGISTER_CLASS(ImposterNode);
 ImposterNode::ImposterNode(Scene * scene)
 :	SceneNode(scene)
 {
+	state = STATE_3D;
 	renderData = 0;
 	fbo = Texture::CreateFBO(512, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
 }
@@ -59,22 +60,23 @@ void ImposterNode::Draw()
 		DVASSERT(GetChildrenCount() == 1);
 		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBox();
 		Vector3 bboxCenter = bbox.GetCenter();
-		float32 dst = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
-		dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+		float32 distanceSquare = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
+		distanceSquare *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
 
-		static bool wasRender = false;
-		if(dst > 300.f && !wasRender)
+		if((STATE_3D == state))
 		{
-			wasRender = true;
-			//switch to imposter
-			UpdateImposter();
-		}
-		else if(!wasRender)
-		{
-			SceneNode::Draw();
+			if(distanceSquare > 300)
+			{
+				UpdateImposter();
+				state = STATE_IMPOSTER;
+			}
+			else
+			{
+				SceneNode::Draw();
+			}
 		}
 
-		if(wasRender)
+		if(STATE_IMPOSTER == state)
 		{
 			Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 			const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
@@ -86,7 +88,7 @@ void ImposterNode::Draw()
 			RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 
 			RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, 1.f);
-
+			
 			//RenderManager::Instance()->SetState(/*RenderStateBlock::STATE_BLEND |*/ RenderStateBlock::STATE_TEXTURE0/* | RenderStateBlock::STATE_CULL*/);
 			RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
 			//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
@@ -102,16 +104,35 @@ void ImposterNode::Draw()
 			RenderManager::Instance()->FlushState();
 			RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 
+			//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
 			RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 			RenderManager::Instance()->SetBlendMode(src, dst);
 
 			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
+
+			if(distanceSquare < 300)
+			{
+				state = STATE_3D;
+			}
+			else
+			{
+				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
+				newDirection.Normalize();
+				if(newDirection.DotProduct(direction) < 0.99999f)
+				{
+					UpdateImposter();
+				}
+			}
 		}
 	}
 }
 
 void ImposterNode::UpdateImposter()
 {
+	SafeRelease(renderData);
+	verts.clear();
+	texCoords.clear();
+
 	SceneNode * child = GetChild(0);
 	AABBox3 bbox = child->GetWTMaximumBoundingBox();
 	Vector3 bboxVertices[8];
@@ -144,7 +165,8 @@ void ImposterNode::UpdateImposter()
 	screenBillboardVertices[3] = Vector3(screenBounds.max.x, screenBounds.max.y, screenBounds.min.z);
 
 	center = Vector3();
-	mvp.Inverse();
+	Matrix4 invMvp = mvp;
+	invMvp.Inverse();
 	for(int32 i = 0; i < 4; ++i)
 	{
 		//unproject
@@ -154,7 +176,7 @@ void ImposterNode::UpdateImposter()
 		out.z = 2.f*screenBillboardVertices[i].z-1.f;
 		out.w = 1.f;
 
-		out = out*mvp;
+		out = out*invMvp;
 		DVASSERT(out.w != 0.f);
 
 		out.x /= out.w;
@@ -169,15 +191,29 @@ void ImposterNode::UpdateImposter()
 	direction = camera->GetPosition()-center;
 	direction.Normalize();
 
+	Vector3 * nearestPoint;
+	Vector3 cameraPos = camera->GetPosition();
+	float32 minRange = 1000000000.f;
+	//added
+	for(int32 i = 0; i < 8; ++i)
+	{
+		float32 sRange = (bboxVertices[i]-cameraPos).SquareLength();
+		if(sRange < minRange)
+		{
+			minRange = sRange;
+			nearestPoint = &bboxVertices[i];
+		}
+	}
+
 	Camera * imposterCamera = new Camera();
-	float32 nearPlane = (center-camera->GetPosition()).Length();
+	float32 nearPlane = (center-cameraPos).Length();
 	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
 	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
 	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
-	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+15.f);
-	//imposterCamera->Setup(70, 1.33f, 1, 1000);
+	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
+	//imposterCamera->Setup(70, 1.33f, nearPlane, 1000);
 	imposterCamera->SetTarget(center);
-	imposterCamera->SetPosition(camera->GetPosition());
+	imposterCamera->SetPosition(cameraPos);
 	imposterCamera->SetUp(camera->GetUp());
 	imposterCamera->SetLeft(camera->GetLeft());
 	
@@ -190,10 +226,10 @@ void ImposterNode::UpdateImposter()
 
 	child->Draw();
 
-	//BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
 
-	Image * img = fbo->CreateImageFromMemory();
-	img->Save("imposter.png");
+	//Image * img = fbo->CreateImageFromMemory();
+	//img->Save("imposter.png");
 	RenderManager::Instance()->SetViewport(oldViewport, true);
 	camera->Set();
 	
@@ -230,6 +266,18 @@ void ImposterNode::UpdateImposter()
 	renderData = new RenderDataObject();
 	renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &(verts[0]));
 	renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &(texCoords[0]));
+}
+
+SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		dstNode = new ImposterNode(scene);
+	}
+
+	SceneNode::Clone(dstNode);
+
+	return dstNode;
 }
 
 }

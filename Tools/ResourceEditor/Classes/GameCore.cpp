@@ -39,6 +39,8 @@ GameCore::~GameCore()
 void GameCore::OnAppStarted()
 {
 	RenderManager::Instance()->SetFPS(30);
+    
+    Stats::Instance()->EnableStatsOutputEventNFrame(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");

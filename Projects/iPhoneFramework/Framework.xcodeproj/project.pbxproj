@@ -107,6 +107,16 @@
 		FE5DB8A413B8D62400C00F98 /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5DB8A013B8D62400C00F98 /* Shader.h */; };
 		FE5DB8A513B8D62400C00F98 /* ShaderDX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB8A113B8D62400C00F98 /* ShaderDX.cpp */; };
 		FE5DB8A613B8D62400C00F98 /* ShaderGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB8A213B8D62400C00F98 /* ShaderGL.cpp */; };
+		FE5E166A153DA0870047FAC5 /* Stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1668153DA0870047FAC5 /* Stats.cpp */; };
+		FE5E166B153DA0870047FAC5 /* Stats.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1669153DA0870047FAC5 /* Stats.h */; };
+		FE5E166F153DA0E60047FAC5 /* LandscapeCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E166D153DA0E60047FAC5 /* LandscapeCursor.cpp */; };
+		FE5E1670153DA0E60047FAC5 /* LandscapeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E166E153DA0E60047FAC5 /* LandscapeCursor.h */; };
+		FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */; };
+		FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */; };
+		FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1673153DA10A0047FAC5 /* BVNode.cpp */; };
+		FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1674153DA10A0047FAC5 /* BVNode.h */; };
+		FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1675153DA10A0047FAC5 /* QuadTree.cpp */; };
+		FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1676153DA10A0047FAC5 /* QuadTree.h */; };
 		FE879F5814504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE879F5614504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp */; };
 		FE879F5914504A1800F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = FE879F5714504A1800F889E5 /* TextureMulColorAlphaTestEffect.h */; };
 		FE9C216812E9A254005C397A /* Circle.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9C216612E9A254005C397A /* Circle.h */; };
@@ -562,6 +572,16 @@
 		FE5DB8A013B8D62400C00F98 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		FE5DB8A113B8D62400C00F98 /* ShaderDX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderDX.cpp; sourceTree = "<group>"; };
 		FE5DB8A213B8D62400C00F98 /* ShaderGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderGL.cpp; sourceTree = "<group>"; };
+		FE5E1668153DA0870047FAC5 /* Stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stats.cpp; sourceTree = "<group>"; };
+		FE5E1669153DA0870047FAC5 /* Stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stats.h; sourceTree = "<group>"; };
+		FE5E166D153DA0E60047FAC5 /* LandscapeCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeCursor.cpp; sourceTree = "<group>"; };
+		FE5E166E153DA0E60047FAC5 /* LandscapeCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeCursor.h; sourceTree = "<group>"; };
+		FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVHierarchy.cpp; sourceTree = "<group>"; };
+		FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVHierarchy.h; sourceTree = "<group>"; };
+		FE5E1673153DA10A0047FAC5 /* BVNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVNode.cpp; sourceTree = "<group>"; };
+		FE5E1674153DA10A0047FAC5 /* BVNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVNode.h; sourceTree = "<group>"; };
+		FE5E1675153DA10A0047FAC5 /* QuadTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QuadTree.cpp; sourceTree = "<group>"; };
+		FE5E1676153DA10A0047FAC5 /* QuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadTree.h; sourceTree = "<group>"; };
 		FE879F5614504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureMulColorAlphaTestEffect.cpp; sourceTree = "<group>"; };
 		FE879F5714504A1800F889E5 /* TextureMulColorAlphaTestEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureMulColorAlphaTestEffect.h; sourceTree = "<group>"; };
 		FE9C216612E9A254005C397A /* Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Circle.h; sourceTree = "<group>"; };
@@ -1101,6 +1121,8 @@
 		FECFB36312E5904400C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FE5E1668153DA0870047FAC5 /* Stats.cpp */,
+				FE5E1669153DA0870047FAC5 /* Stats.h */,
 				FECFB36412E5904400C71562 /* DVAssert.h */,
 				FECFB36512E5904400C71562 /* List.h */,
 				FECFB36612E5904400C71562 /* ListAllocator.h */,
@@ -1387,6 +1409,12 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */,
+				FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */,
+				FE5E1673153DA10A0047FAC5 /* BVNode.cpp */,
+				FE5E1674153DA10A0047FAC5 /* BVNode.h */,
+				FE5E1675153DA10A0047FAC5 /* QuadTree.cpp */,
+				FE5E1676153DA10A0047FAC5 /* QuadTree.h */,
 				5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */,
 				5CFE6D1B1536FB8E005DA604 /* Heightmap.h */,
 				5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */,
@@ -1415,6 +1443,8 @@
 				FECFB41A12E5904400C71562 /* BoneNode.h */,
 				FE044F53140EEB7F002A6D27 /* Frustum.cpp */,
 				FE044F54140EEB7F002A6D27 /* Frustum.h */,
+				FE5E166D153DA0E60047FAC5 /* LandscapeCursor.cpp */,
+				FE5E166E153DA0E60047FAC5 /* LandscapeCursor.h */,
 				FE044F55140EEB7F002A6D27 /* LandscapeNode.cpp */,
 				FE044F56140EEB7F002A6D27 /* LandscapeNode.h */,
 				FE4E01E313AAA9D00013464E /* Camera.cpp */,
@@ -1808,6 +1838,11 @@
 				5C5C18DA14D716F000DC6DC3 /* EdgeAdjacency.h in Headers */,
 				5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */,
 				5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */,
+				FE5E166B153DA0870047FAC5 /* Stats.h in Headers */,
+				FE5E1670153DA0E60047FAC5 /* LandscapeCursor.h in Headers */,
+				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
+				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
+				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2081,6 +2116,11 @@
 				5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */,
 				5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */,
 				5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */,
+				FE5E166A153DA0870047FAC5 /* Stats.cpp in Sources */,
+				FE5E166F153DA0E60047FAC5 /* LandscapeCursor.cpp in Sources */,
+				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
+				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
+				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
