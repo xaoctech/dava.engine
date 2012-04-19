@@ -51,6 +51,10 @@ protected:
     UIControl *dropperIcon;
     LandscapeTool *dropperTool;
     
+    UISlider *averageStrength;
+    void OnAverageSizeChanged(BaseObject * object, void * userData, void * callerData);
+
+    
     float32 prevHeightValue;
 };
 

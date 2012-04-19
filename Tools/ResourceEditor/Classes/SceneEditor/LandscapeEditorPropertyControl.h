@@ -24,14 +24,21 @@ class LandscapeEditorPropertyControlDelegate
 {
 public: 
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings) = 0;
-    virtual void MaskTextureWillChanged() = 0;
-    virtual void MaskTextureDidChanged() = 0;
+    virtual void TextureWillChanged() = 0;
+    virtual void TextureDidChanged() = 0;
 };
 
 class LandscapeEditorPropertyControl: public LandscapePropertyControl
 {
 public:
-	LandscapeEditorPropertyControl(const Rect & rect, bool createNodeProperties);
+    
+    enum eEditorMode
+    {
+        MASK_EDITOR_MODE = 0,
+        HEIGHT_EDITOR_MODE        
+    };
+    
+	LandscapeEditorPropertyControl(const Rect & rect, bool createNodeProperties, eEditorMode mode);
 	virtual ~LandscapeEditorPropertyControl();
 
 	virtual void ReadFrom(SceneNode * sceneNode);
@@ -48,6 +55,8 @@ protected:
     
     LandscapeEditorSettings *settings;
     LandscapeEditorPropertyControlDelegate *delegate;
+    
+    eEditorMode editorMode;
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__
