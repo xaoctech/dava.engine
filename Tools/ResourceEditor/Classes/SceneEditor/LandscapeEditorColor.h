@@ -27,8 +27,8 @@ public:
     
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
-    virtual void MaskTextureWillChanged();
-    virtual void MaskTextureDidChanged();
+    virtual void TextureWillChanged();
+    virtual void TextureDidChanged();
     
 protected:
 

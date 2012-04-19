@@ -104,6 +104,7 @@ landscapeeditor.relative: "Rel/Abs"
 landscapeeditor.average: "Average"
 landscapeeditor.height: "Height"
 landscapeeditor.showgrid: "Grid"
+landscapeeditor.averagestrength: "Av.strength:"
 
 #Material Editor
 materialeditor.materials: "Materials:"
