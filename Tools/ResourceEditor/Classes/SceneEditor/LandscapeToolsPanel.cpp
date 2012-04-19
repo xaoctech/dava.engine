@@ -171,6 +171,31 @@ void LandscapeToolsPanel::WillAppear()
     showGrid->SetChecked(showGrid->Checked(), true);
 }
 
+void LandscapeToolsPanel::Input(DAVA::UIEvent *currentInput)
+{
+    if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
+    { 
+       if('+' == currentInput->keyChar) 
+       {
+           float32 sz = sizeSlider->GetValue();
+           float32 maxVal = sizeSlider->GetMaxValue();
+           
+           sz += maxVal * 0.05f;
+           sizeSlider->SetValue(Min(sz, maxVal));
+           sizeSlider->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+       }
+       else if('-' == currentInput->keyChar)
+       {
+           float32 sz = sizeSlider->GetValue();
+           float32 maxVal = sizeSlider->GetMaxValue();
+           
+           sz -= maxVal * 0.05f;
+           sizeSlider->SetValue(Max(sz, sizeSlider->GetMinValue()));
+           sizeSlider->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+       }
+    }
+}
+
 void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
 {
     if(selectedBrushTool)
