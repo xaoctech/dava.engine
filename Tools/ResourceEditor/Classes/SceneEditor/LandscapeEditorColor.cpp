@@ -267,6 +267,11 @@ void LandscapeEditorColor::ShowAction()
 	workingLandscape->CursorEnable();
 }
 
+void LandscapeEditorColor::UndoAction()
+{
+    
+}
+
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 {
     if(maskSprite)

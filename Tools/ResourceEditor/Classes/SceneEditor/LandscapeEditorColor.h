@@ -37,6 +37,7 @@ protected:
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
+    virtual void UndoAction();
 
     
     void CreateMaskTexture();

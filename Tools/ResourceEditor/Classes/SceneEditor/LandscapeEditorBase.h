@@ -85,6 +85,7 @@ protected:
     virtual void ShowAction() = 0;
     virtual void SaveTextureAction(const String &pathToFile) = 0;
 	virtual void UpdateCursor() = 0;
+    virtual void UndoAction() = 0;
     
     void Close();
     LandscapeEditorDelegate *delegate;
