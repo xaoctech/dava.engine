@@ -25,17 +25,17 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(line);
     SafeRelease(line);
 
-    int32 x = ControlsFactory::TOOLS_HEIGHT/2 + ControlsFactory::OFFSET + TEXT_WIDTH;
+    int32 x = ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH;
     relative = CreateCkeckbox(Rect(x, ControlsFactory::TOOLS_HEIGHT, 
                                    ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.relative"));
-    x += (ControlsFactory::TOOLS_HEIGHT/2 + ControlsFactory::OFFSET + TEXT_WIDTH);
+    x += (ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH);
     average = CreateCkeckbox(Rect(x, ControlsFactory::TOOLS_HEIGHT, 
                                   ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.average"));
     
     Rect heightRect;
-    heightRect.x = average->GetRect().x + average->GetRect().dx + TEXT_WIDTH + ControlsFactory::OFFSET + ControlsFactory::OFFSET/2.0;
+    heightRect.x = average->GetRect().x + average->GetRect().dx + TEXT_WIDTH + OFFSET + ControlsFactory::OFFSET/2.0;
     heightRect.y = average->GetRect().y;
     heightRect.dx = TEXTFIELD_WIDTH;
     heightRect.dy = average->GetRect().dy;
@@ -52,6 +52,12 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
     AddControl(textControl);
     SafeRelease(textControl);
+    
+    averageStrength = CreateSlider(Rect(heightRect.x + heightRect.dx + TEXT_WIDTH, heightRect.y, 
+                                        SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    averageStrength->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanelHeightmap::OnAverageSizeChanged));
+    AddControl(averageStrength);
+    AddSliderHeader(averageStrength, LocalizedString(L"landscapeeditor.averagestrength"));
 
     
     dropperTool = new LandscapeTool(-1, LandscapeTool::TOOL_DROPPER, "~res:/LandscapeEditor/SpecialTools/dropper.png");
@@ -77,6 +83,9 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
 
     strengthSlider->SetMinMaxValue(-LandscapeTool::StrengthHeightMax(), LandscapeTool::StrengthHeightMax());
     strengthSlider->SetValue(LandscapeTool::DefaultStrengthHeight());
+    
+    averageStrength->SetMinMaxValue(0.f, 1.f);
+    averageStrength->SetValue(0.5f);
 }
 
 
@@ -126,17 +135,23 @@ void LandscapeToolsPanelHeightmap::OnDropperTool(DAVA::BaseObject *object, void 
     ToolIconSelected(dropperIcon);
 }
 
+void LandscapeToolsPanelHeightmap::OnAverageSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    selectedTool->averageStrength = averageStrength->GetValue();
+}
+
 void LandscapeToolsPanelHeightmap::Update(float32 timeElapsed)
 {
-    if(dropperTool->height != prevHeightValue)
+    if(selectedTool->height != prevHeightValue)
     {
-        prevHeightValue = dropperTool->height;
-        heightValue->SetText(Format(L"%.3f", dropperTool->height));
+        prevHeightValue = selectedTool->height;
+        heightValue->SetText(Format(L"%.3f", selectedTool->height));
         
         if(selectedBrushTool)
         {
-            selectedBrushTool->height = dropperTool->height;
+            selectedBrushTool->height = selectedTool->height;
         }
+        dropperTool->height = selectedTool->height;
     }
     
     LandscapeToolsPanel::Update(timeElapsed);
@@ -190,7 +205,7 @@ void LandscapeToolsPanelHeightmap::TextFieldLostFocus(UITextField * textField)
         }
         strengthSlider->SetValue(selectedBrushTool->strength);
     }
-    else if(heightValue)
+    else if(textField == heightValue)
     {
         prevHeightValue = fabsf(atof(WStringToString(heightValue->GetText()).c_str()));
         dropperTool->height = prevHeightValue;
@@ -272,6 +287,7 @@ void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forC
     
     newTool->maxStrength = fabsf(atof(WStringToString(strengthValue->GetText()).c_str()));
     newTool->maxSize = fabsf(atof(WStringToString(sizeValue->GetText()).c_str()));
+    newTool->averageStrength = averageStrength->GetValue();
 
     LandscapeToolsPanel::OnToolSelected(forControl, newTool);
 }

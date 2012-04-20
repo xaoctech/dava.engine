@@ -28,7 +28,7 @@ protected:
         OFFSET = 1,
         SLIDER_WIDTH = 250,
         
-        TEXTFIELD_WIDTH = 50,
+        TEXTFIELD_WIDTH = 40,
         TEXT_WIDTH = 50
     };
     
