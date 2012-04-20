@@ -227,6 +227,11 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
             UndoAction();
             return true;
         }
+        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
+        {
+            RedoAction();
+            return true;
+        }
     }
     
     return false;
