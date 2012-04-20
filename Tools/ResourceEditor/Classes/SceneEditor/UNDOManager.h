@@ -29,6 +29,12 @@ class UNDOManager: public Singleton<UNDOManager>
         UNDO_HISTORY_SIZE = 50
     };
     
+    enum eActionDirection
+    {
+        DIRECTION_NONE = -1,
+        DIRECTION_UNDO,
+        DIRECTION_REDO
+    };
     
 public:
  
@@ -37,18 +43,30 @@ public:
 
     void SaveHightmap(Heightmap *heightmap);
     void UndoHeightmap(Heightmap *heightmap);
+    void RedoHeightmap(Heightmap *heightmap);
     
     UNDOAction::eActionType GetLastUNDOAction();
+    UNDOAction::eActionType GetFirstREDOAction();
+    
+    void ClearHistory(UNDOAction::eActionType forAction);
 
 protected:
 
+    void ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::eActionType forAction);
+    void ReleaseHistory(List<UNDOAction *> &actionsHistory);
+    
+    UNDOAction *CreateHeightmapAction(Heightmap *heightmap);
+    
+    
     String TimeString();
     
     void CheckHistoryLength();
     
-    List<UNDOAction *>actionsHistory;
+    List<UNDOAction *>actionsHistoryUNDO;
+    List<UNDOAction *>actionsHistoryREDO;
     int32 actionCounter;
     
+    eActionDirection actionDirection;
 };
 
 
