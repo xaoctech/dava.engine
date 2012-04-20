@@ -92,7 +92,7 @@ UICheckBox *LandscapeToolsPanel::CreateCkeckbox(const Rect &rect, const WideStri
     AddControl(checkbox);
     
     Rect textRect;
-    textRect.x = rect.x + rect.dx + ControlsFactory::OFFSET;
+    textRect.x = rect.x + rect.dx + OFFSET;
     textRect.y = rect.y;
     textRect.dx = TEXT_WIDTH;
     textRect.dy = rect.dy;
