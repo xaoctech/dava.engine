@@ -203,8 +203,9 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
         {
             case UIEvent::PHASE_BEGAN:
             {
-                editingIsEnabled = true;
                 UNDOManager::Instance()->SaveHightmap(heightmap);
+
+                editingIsEnabled = true;
                 UpdateToolImage();
                 
                 break;
@@ -218,8 +219,9 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                 }
                 else if(!editingIsEnabled && intersects)
                 {
-                    editingIsEnabled = true;
                     UNDOManager::Instance()->SaveHightmap(heightmap);
+                
+                    editingIsEnabled = true;
                     UpdateToolImage();
                 }
                 break;
@@ -252,6 +254,8 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(landscapeDebugNode);
     
     SafeRelease(heightmap);
+    
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
 }
 
 void LandscapeEditorHeightmap::ShowAction()
@@ -297,6 +301,18 @@ void LandscapeEditorHeightmap::UndoAction()
     }
 }
 
+void LandscapeEditorHeightmap::RedoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
+    if(UNDOAction::ACTION_HEIGHTMAP == type)
+    {
+        UNDOManager::Instance()->RedoHeightmap(heightmap);
+        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+    }
+}
+
+
+
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 {
     if(heightmap)
@@ -338,7 +354,7 @@ void LandscapeEditorHeightmap::TextureWillChanged()
 
 void LandscapeEditorHeightmap::TextureDidChanged()
 {
-//TODO: Clear history
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
     
     SafeRelease(heightmap);
     heightmap = SafeRetain(workingLandscape->GetHeightmap());
