@@ -176,6 +176,7 @@ public:
 
         NODE_CLIPPED_PREV_FRAME = 1 << 8, // 
         NODE_CLIPPED_THIS_FRAME = 1 << 9, // 
+        NODE_INVALID = 1 << 10,  // THIS NODE not passed some of verification stages and marked as invalid. Such nodes shouldn't be drawn.
         
         // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
         SCENE_LIGHTS_MODIFIED = 1 << 31,
