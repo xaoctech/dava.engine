@@ -67,7 +67,7 @@ void ImposterNode::Draw()
 		{
 			if(distanceSquare > 300)
 			{
-				UpdateImposter();
+				UpdateImposter(false);
 				state = STATE_IMPOSTER;
 			}
 			else
@@ -81,6 +81,22 @@ void ImposterNode::Draw()
 			Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 			const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
 			Matrix4 meshFinalMatrix;
+
+			//Matrix4 inverse(Matrix4::IDENTITY);
+
+			//inverse._00 = cameraMatrix._00;
+			//inverse._01 = cameraMatrix._10;
+			//inverse._02 = cameraMatrix._20;
+
+			//inverse._10 = cameraMatrix._01;
+			//inverse._11 = cameraMatrix._11;
+			//inverse._12 = cameraMatrix._21;
+
+			//inverse._20 = cameraMatrix._02;
+			//inverse._21 = cameraMatrix._12;
+			//inverse._22 = cameraMatrix._22;
+
+			//meshFinalMatrix = inverse * worldTransform * modelViewMatrix;
 
 			meshFinalMatrix = /*worldTransform **/ cameraMatrix;
 
@@ -118,16 +134,20 @@ void ImposterNode::Draw()
 			{
 				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
 				newDirection.Normalize();
-				if(newDirection.DotProduct(direction) < 0.99999f)
+				if(newDirection.DotProduct(direction) < 0.996f)
 				{
-					UpdateImposter();
+					UpdateImposter(false);
+				}
+				else
+				{
+					UpdateImposter(true);
 				}
 			}
 		}
 	}
 }
 
-void ImposterNode::UpdateImposter()
+void ImposterNode::UpdateImposter(bool onlyGeometry)
 {
 	SafeRelease(renderData);
 	verts.clear();
@@ -200,46 +220,38 @@ void ImposterNode::UpdateImposter()
 	}
 	center /= 4.f;
 
-	direction = camera->GetPosition()-center;
-	direction.Normalize();
+	if(!onlyGeometry)
+	{
+		direction = camera->GetPosition()-center;
+		direction.Normalize();
 
-	//Vector3 * nearestPoint;
-	//
-	//float32 minRange = 1000000000.f;
-	////added
-	//for(int32 i = 0; i < 8; ++i)
-	//{
-	//	float32 sRange = (bboxVertices[i]-cameraPos).SquareLength();
-	//	if(sRange < minRange)
-	//	{
-	//		minRange = sRange;
-	//		nearestPoint = &bboxVertices[i];
-	//	}
-	//}
+		float32 nearPlane = (center-cameraPos).Length();
+		float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
+		float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
+		float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
+		imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
 
-	float32 nearPlane = (center-cameraPos).Length();
-	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
-	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
-	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
-	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
-	
-	Rect oldViewport = RenderManager::Instance()->GetViewport();
+		Rect oldViewport = RenderManager::Instance()->GetViewport();
 
-	RenderManager::Instance()->SetRenderTarget(fbo);
-	imposterCamera->SetTarget(center);
-	imposterCamera->Set();
-	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
-	RenderManager::Instance()->ClearDepthBuffer();
+		RenderManager::Instance()->SetRenderTarget(fbo);
+		imposterCamera->SetTarget(center);
+		imposterCamera->Set();
+		RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
+		RenderManager::Instance()->ClearDepthBuffer();
 
-	child->Draw();
+		child->Draw();
 
-	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+#ifdef __DAVAENGINE_OPENGL__
+		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+#endif
 
-	//Image * img = fbo->CreateImageFromMemory();
-	//img->Save("imposter.png");
-	RenderManager::Instance()->SetViewport(oldViewport, true);
+		//Image * img = fbo->CreateImageFromMemory();
+		//img->Save("imposter.png");
+		RenderManager::Instance()->SetViewport(oldViewport, true);
+		
+	}
+
 	camera->Set();
-	
 	SafeRelease(imposterCamera);
 
 	verts.push_back(imposterVertices[0].x);

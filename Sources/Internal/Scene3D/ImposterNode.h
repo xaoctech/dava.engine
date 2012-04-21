@@ -44,7 +44,7 @@ public:
 	virtual void Draw();
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
-	void UpdateImposter();
+	void UpdateImposter(bool onlyGeometry);
 
 public:
 	enum eState
