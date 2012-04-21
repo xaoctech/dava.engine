@@ -43,6 +43,7 @@ protected:
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
     virtual void UndoAction();
+    virtual void RedoAction();
 
     
 	void UpdateTileMaskTool(float32 timeElapsed);
