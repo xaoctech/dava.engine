@@ -415,7 +415,8 @@ void Scene::Draw()
     {
         currentCamera->Set();
     }
-    bvHierarchy->Cull();
+    if (bvHierarchy)
+        bvHierarchy->Cull();
 
     SceneNode::Draw();
     
