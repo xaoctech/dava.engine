@@ -228,7 +228,8 @@ Texture::~Texture()
 
 	if(rboID != (uint32)-1)
 	{
-		//TODO: check for OpenGL ES
+		//TODO: check for OpenGL ES.
+
 		RENDER_VERIFY(glDeleteRenderbuffersEXT(1, &rboID));
 	}
 	
