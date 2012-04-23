@@ -28,6 +28,7 @@
 #include "ImposterNode.h"
 #include "Utils/Utils.h"
 #include "Render/Image.h"
+#include "Platform/SystemTimer.h"
 
 namespace DAVA
 {
@@ -65,7 +66,7 @@ void ImposterNode::Draw()
 
 		if((STATE_3D == state))
 		{
-			if(distanceSquare > 300)
+			if(distanceSquare > 900)
 			{
 				UpdateImposter(false);
 				state = STATE_IMPOSTER;
@@ -81,22 +82,6 @@ void ImposterNode::Draw()
 			Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 			const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
 			Matrix4 meshFinalMatrix;
-
-			//Matrix4 inverse(Matrix4::IDENTITY);
-
-			//inverse._00 = cameraMatrix._00;
-			//inverse._01 = cameraMatrix._10;
-			//inverse._02 = cameraMatrix._20;
-
-			//inverse._10 = cameraMatrix._01;
-			//inverse._11 = cameraMatrix._11;
-			//inverse._12 = cameraMatrix._21;
-
-			//inverse._20 = cameraMatrix._02;
-			//inverse._21 = cameraMatrix._12;
-			//inverse._22 = cameraMatrix._22;
-
-			//meshFinalMatrix = inverse * worldTransform * modelViewMatrix;
 
 			meshFinalMatrix = /*worldTransform **/ cameraMatrix;
 
@@ -126,7 +111,7 @@ void ImposterNode::Draw()
 
 			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
 
-			if(distanceSquare < 300)
+			if(distanceSquare < 900)
 			{
 				state = STATE_3D;
 			}
@@ -149,9 +134,7 @@ void ImposterNode::Draw()
 
 void ImposterNode::UpdateImposter(bool onlyGeometry)
 {
-	SafeRelease(renderData);
-	verts.clear();
-	texCoords.clear();
+	uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
 	Camera * camera = scene->GetCurrentCamera();
 	Camera * imposterCamera = new Camera();
@@ -254,6 +237,36 @@ void ImposterNode::UpdateImposter(bool onlyGeometry)
 	camera->Set();
 	SafeRelease(imposterCamera);
 
+	ClearGeometry();
+	CreateGeometry();
+
+	uint64 time2 = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("imp time %d", time2-time);
+}
+
+SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		dstNode = new ImposterNode(scene);
+	}
+
+	SceneNode::Clone(dstNode);
+
+	return dstNode;
+}
+
+void ImposterNode::ClearGeometry()
+{
+	SafeRelease(renderData);
+	verts.clear();
+	texCoords.clear();
+}
+
+void ImposterNode::CreateGeometry()
+{
+	DVASSERT(verts.empty() && texCoords.empty() && !renderData);
+
 	verts.push_back(imposterVertices[0].x);
 	verts.push_back(imposterVertices[0].y);
 	verts.push_back(imposterVertices[0].z);
@@ -285,18 +298,6 @@ void ImposterNode::UpdateImposter(bool onlyGeometry)
 	renderData = new RenderDataObject();
 	renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &(verts[0]));
 	renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &(texCoords[0]));
-}
-
-SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
-{
-	if (!dstNode) 
-	{
-		dstNode = new ImposterNode(scene);
-	}
-
-	SceneNode::Clone(dstNode);
-
-	return dstNode;
 }
 
 }

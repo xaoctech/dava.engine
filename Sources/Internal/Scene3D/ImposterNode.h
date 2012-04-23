@@ -47,6 +47,9 @@ public:
 	void UpdateImposter(bool onlyGeometry);
 
 public:
+	void ClearGeometry();
+	void CreateGeometry();
+
 	enum eState
 	{
 		STATE_3D = 0,

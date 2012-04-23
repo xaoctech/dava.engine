@@ -300,6 +300,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h" />
@@ -543,6 +544,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp" />
