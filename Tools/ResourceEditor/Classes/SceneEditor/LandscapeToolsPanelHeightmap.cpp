@@ -60,6 +60,10 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddSliderHeader(averageStrength, LocalizedString(L"landscapeeditor.averagestrength"));
 
     
+    showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+                              LocalizedString(L"landscapeeditor.showgrid"));
+
+    
     dropperTool = new LandscapeTool(-1, LandscapeTool::TOOL_DROPPER, "~res:/LandscapeEditor/SpecialTools/dropper.png");
     dropperTool->size = 1.0f;
     dropperTool->height = prevHeightValue = 0.f;
@@ -101,6 +105,13 @@ LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
     
     SafeRelease(sizeValue);
     SafeRelease(strengthValue);
+}
+
+void LandscapeToolsPanelHeightmap::WillAppear()
+{
+    LandscapeToolsPanel::WillAppear();
+        
+    showGrid->SetChecked(showGrid->Checked(), true);
 }
 
 
@@ -270,7 +281,14 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
             average->SetChecked(false, false);
         }
     }
-    
+    else if(forCheckbox == showGrid)
+    {
+        if(delegate)
+        {
+            delegate->OnShowGrid(showGrid->Checked());
+        }
+    }
+
     if(selectedBrushTool)
     {
         selectedBrushTool->averageDrawing = average->Checked();
