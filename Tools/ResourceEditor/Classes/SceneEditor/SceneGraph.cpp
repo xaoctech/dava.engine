@@ -173,6 +173,12 @@ void SceneGraph::UpdatePropertyPanel()
     if(workingNode && (NULL != graphTree->GetParent()))
     {
 		RecreatePropertiesPanelForNode(workingNode);
+        
+        if(propertyControl->GetParent() && propertyControl->GetParent() != propertyPanel)
+        {
+            propertyControl->GetParent()->RemoveControl(propertyControl);
+        }
+        
         if(!propertyControl->GetParent())
         {
             propertyPanel->AddControl(propertyControl);
