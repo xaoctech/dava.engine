@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		16906A1A1541B00600DBCFAC /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16906A121541B00600DBCFAC /* DLCSystem.cpp */; };
+		16906A1B1541B00600DBCFAC /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 16906A131541B00600DBCFAC /* DLCSystem.h */; };
+		16906A1C1541B00600DBCFAC /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16906A141541B00600DBCFAC /* DLCSystemTests.cpp */; };
+		16906A1D1541B00600DBCFAC /* DLCSystemTests.h in Headers */ = {isa = PBXBuildFile; fileRef = 16906A151541B00600DBCFAC /* DLCSystemTests.h */; };
+		16906A1E1541B00600DBCFAC /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16906A161541B00600DBCFAC /* DLCUnpacker.cpp */; };
+		16906A1F1541B00600DBCFAC /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 16906A171541B00600DBCFAC /* DLCUnpacker.h */; };
+		16906A201541B00600DBCFAC /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16906A181541B00600DBCFAC /* FileDownloader.cpp */; };
+		16906A211541B00600DBCFAC /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 16906A191541B00600DBCFAC /* FileDownloader.h */; };
+		16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */; };
 		4730931113A7E08200C28765 /* UIHierarchyNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4730930F13A7E08200C28765 /* UIHierarchyNode.h */; };
 		4730931213A7E08200C28765 /* UIHierarchyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4730931013A7E08200C28765 /* UIHierarchyNode.cpp */; };
 		473DB5B0139E87C3007F2498 /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 473DB5AE139E87C3007F2498 /* UIScrollBar.h */; };
@@ -480,6 +489,15 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		16906A121541B00600DBCFAC /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCSystem.cpp; sourceTree = "<group>"; };
+		16906A131541B00600DBCFAC /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCSystem.h; sourceTree = "<group>"; };
+		16906A141541B00600DBCFAC /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCSystemTests.cpp; sourceTree = "<group>"; };
+		16906A151541B00600DBCFAC /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCSystemTests.h; sourceTree = "<group>"; };
+		16906A161541B00600DBCFAC /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCUnpacker.cpp; sourceTree = "<group>"; };
+		16906A171541B00600DBCFAC /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCUnpacker.h; sourceTree = "<group>"; };
+		16906A181541B00600DBCFAC /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileDownloader.cpp; sourceTree = "<group>"; };
+		16906A191541B00600DBCFAC /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDownloader.h; sourceTree = "<group>"; };
+		16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		3239C08413E301A7002CBBF2 /* Bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitstream.cpp; sourceTree = "<group>"; };
 		3239C08513E301A7002CBBF2 /* Bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bitstream.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = "<group>"; };
@@ -955,6 +973,7 @@
 				FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */,
 				FE578C621327927C0081BDE9 /* libvorbisfile_macos.a in Frameworks */,
 				EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */,
+				16E520F11541C3CD0066BFB1 /* libcurl_ios_mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -976,6 +995,7 @@
 				5C42C98314E3AFA400EB3F53 /* libxml_macos.a */,
 				5C6BF78214C85A2A009297F7 /* libz.dylib */,
 				5C77AB7C14C7509D00E92D28 /* libpng_macos.a */,
+				16E520F01541C3CD0066BFB1 /* libcurl_ios_mac.a */,
 				FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */,
 				FECFABB612E58B7800C71562 /* External */,
 				FECFC0A512E87E3000C71562 /* Internal */,
@@ -1009,6 +1029,21 @@
 				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		16906A111541B00600DBCFAC /* DLC */ = {
+			isa = PBXGroup;
+			children = (
+				16906A121541B00600DBCFAC /* DLCSystem.cpp */,
+				16906A131541B00600DBCFAC /* DLCSystem.h */,
+				16906A181541B00600DBCFAC /* FileDownloader.cpp */,
+				16906A191541B00600DBCFAC /* FileDownloader.h */,
+				16906A161541B00600DBCFAC /* DLCUnpacker.cpp */,
+				16906A171541B00600DBCFAC /* DLCUnpacker.h */,
+				16906A141541B00600DBCFAC /* DLCSystemTests.cpp */,
+				16906A151541B00600DBCFAC /* DLCSystemTests.h */,
+			);
+			path = DLC;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -1098,6 +1133,7 @@
 				FECFC0DE12E87E3000C71562 /* DAVAEngine.h */,
 				FECFC0DF12E87E3000C71562 /* Debug */,
 				FECFC0E512E87E3000C71562 /* FileSystem */,
+				16906A111541B00600DBCFAC /* DLC */,
 				FECFC10212E87E3000C71562 /* Input */,
 				FEFD182C1305D49C0050D7E6 /* Math */,
 				FECFC12312E87E3000C71562 /* Network */,
@@ -1909,6 +1945,10 @@
 				C7783B9114DA998F00877862 /* TextGameObject.h in Headers */,
 				5C78D5BE14DADFA300A0BB1C /* ShadowRect.h in Headers */,
 				FE78E87C14E17E7E007DD1AA /* QuadTree.h in Headers */,
+				16906A1B1541B00600DBCFAC /* DLCSystem.h in Headers */,
+				16906A1D1541B00600DBCFAC /* DLCSystemTests.h in Headers */,
+				16906A1F1541B00600DBCFAC /* DLCUnpacker.h in Headers */,
+				16906A211541B00600DBCFAC /* FileDownloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2189,6 +2229,10 @@
 				5C78D5BD14DADFA300A0BB1C /* ShadowRect.cpp in Sources */,
 				FE78E87B14E17E7E007DD1AA /* QuadTree.cpp in Sources */,
 				5C42C98A14E3B3DD00EB3F53 /* XMLParser.cpp in Sources */,
+				16906A1A1541B00600DBCFAC /* DLCSystem.cpp in Sources */,
+				16906A1C1541B00600DBCFAC /* DLCSystemTests.cpp in Sources */,
+				16906A1E1541B00600DBCFAC /* DLCUnpacker.cpp in Sources */,
+				16906A201541B00600DBCFAC /* FileDownloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
