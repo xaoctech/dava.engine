@@ -26,7 +26,7 @@
 =====================================================================================*/
 #include "ResourceArchive.h"
 #ifdef LINUX
-#include "MacTypes.h"
+//#include "MacTypes.h"
 #endif
 
 namespace Log
