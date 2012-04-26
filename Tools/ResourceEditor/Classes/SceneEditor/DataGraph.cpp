@@ -52,7 +52,13 @@ void DataGraph::CreateGraphPanel(const Rect &rect)
 void DataGraph::FillCell(UIHierarchyCell *cell, void *node)
 {
     DataNode *n = (DataNode *)node;
-    cell->text->SetText(StringToWString(n->GetName()));
+    UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
+    text->SetText(StringToWString(n->GetName()));
+    
+    UIControl *icon = cell->FindByName("_Icon_");
+    icon->SetSprite("~res:/Gfx/UI/SceneNode/datanode", 0);
+
+//    cell->text->SetText(StringToWString(n->GetName()));
     if(n == workingNode)
     {
         cell->SetSelected(true, false);
@@ -160,7 +166,6 @@ void * DataGraph::ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32
     {
         return ((DataNode*)forParent)->GetChild(index);
     }
-    
     
     Set<DataNode *>::const_iterator it = dataNodes.begin();
     Set<DataNode *>::const_iterator endIt = dataNodes.end();

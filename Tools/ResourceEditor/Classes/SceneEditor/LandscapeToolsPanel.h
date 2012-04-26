@@ -73,8 +73,6 @@ protected:
     UISlider *strengthSlider;
 	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
 	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
-
-    UICheckBox *showGrid;
     
     LandscapeToolsSelection *selectionPanel;
     

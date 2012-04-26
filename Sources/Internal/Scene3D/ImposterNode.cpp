@@ -119,8 +119,6 @@ void ImposterNode::GeneralDraw()
 
 void ImposterNode::UpdateImposter()
 {
-	uint64 time = SystemTimer::Instance()->AbsoluteMS();
-
 	Camera * camera = scene->GetCurrentCamera();
 	Camera * imposterCamera = new Camera();
 	Vector3 cameraPos = camera->GetPosition();
@@ -226,9 +224,6 @@ void ImposterNode::UpdateImposter()
 
 	ClearGeometry();
 	CreateGeometry();
-
-	uint64 time2 = SystemTimer::Instance()->AbsoluteMS();
-	Logger::Debug("imp time %d", time2-time);
 }
 
 void ImposterNode::DrawImposter()

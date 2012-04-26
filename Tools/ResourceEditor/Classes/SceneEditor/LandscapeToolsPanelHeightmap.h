@@ -16,6 +16,9 @@ public:
     LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanelHeightmap();
     
+    virtual void WillAppear();
+    virtual void Update(float32 timeElapsed);
+
     //UITextFieldDelegate
     virtual void TextFieldShouldReturn(UITextField * textField);
     virtual void TextFieldShouldCancel(UITextField * textField);
@@ -23,9 +26,7 @@ public:
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, 
                                      int32 replacementLength, const WideString & replacementString);
 
-    
-    virtual void Update(float32 timeElapsed);
-    
+
     //UICheckBoxDelegate
     virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
@@ -54,6 +55,7 @@ protected:
     UISlider *averageStrength;
     void OnAverageSizeChanged(BaseObject * object, void * userData, void * callerData);
 
+    UICheckBox *showGrid;
     
     float32 prevHeightValue;
 };
