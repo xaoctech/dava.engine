@@ -141,12 +141,13 @@ public:
 	
 	//! Additional functions
 	inline Vector3	CrossProduct(const Vector3 & _v) const;
+	inline void CrossProduct( const Vector3& v1, const Vector3& v2 );
 	inline float32	DotProduct(const Vector3 & _v) const;
 	inline void		Lerp(const Vector3 & _v1, const Vector3 & _v2, float32 t);
 
 	//! On functions
-	inline float32 SquareLength();
-	inline float32 Length();
+	inline float32 SquareLength()  const;
+	inline float32 Length() const;
 	inline void Normalize();
 	inline void Clamp(float32 min, float32 max);
 
@@ -525,12 +526,21 @@ inline Vector3 Vector3::CrossProduct(const Vector3 & v) const
 	return Vector3(y * v.z - v.y * z, z * v.x - x * v.z, x * v.y - y * v.x);
 }
 
+inline void Vector3::CrossProduct( const Vector3& v1, const Vector3& v2 )
+{
+	// TODO: This is wrong if &v1 or &v2 is this.
+	x = (v1.y * v2.z) - (v1.z * v2.y);
+	y = (v1.z * v2.x) - (v1.x * v2.z);
+	z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+
 //! On functions
-inline float32 Vector3::SquareLength()
+inline float32 Vector3::SquareLength() const
 {
 	return x * x + y * y + z * z;
 }
-inline float32 Vector3::Length()
+inline float32 Vector3::Length() const
 {
 	return sqrtf(SquareLength());
 }
