@@ -41,20 +41,19 @@ ImposterNode::ImposterNode(Scene * scene)
 	state = STATE_3D;
 	renderData = 0;
 	fbo = Texture::CreateFBO(512, 512, FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
+	manager = 0;
+	isReady = false;
+	RegisterInScene();
 }
 
 ImposterNode::~ImposterNode()
 {
+	UnregisterInScene();
 	SafeRelease(fbo);
 	SafeRelease(renderData);
 }
 
-void ImposterNode::Update(float32 timeElapsed)
-{
-	SceneNode::Update(timeElapsed);
-}
-
-void ImposterNode::Draw()
+void ImposterNode::UpdateState()
 {
 	if(GetChildrenCount() > 0)
 	{
@@ -68,71 +67,57 @@ void ImposterNode::Draw()
 		{
 			if(distanceSquare > 900)
 			{
-				UpdateImposter(false);
-				state = STATE_IMPOSTER;
+				AskForRedraw();
 			}
 			else
 			{
-				SceneNode::Draw();
+				isReady = false;
 			}
 		}
 
 		if(STATE_IMPOSTER == state)
 		{
-			Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-			const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
-			Matrix4 meshFinalMatrix;
-
-			meshFinalMatrix = /*worldTransform **/ cameraMatrix;
-
-			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
-			RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
-
-			RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, 1.f);
-			
-			//RenderManager::Instance()->SetState(/*RenderStateBlock::STATE_BLEND |*/ RenderStateBlock::STATE_TEXTURE0/* | RenderStateBlock::STATE_CULL*/);
-			RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-			//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-			//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-			eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-			eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-
-			RenderManager::Instance()->SetTexture(fbo);
-
-			RenderManager::Instance()->SetRenderData(renderData);
-
-			RenderManager::Instance()->FlushState();
-			RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-
-			//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
-			RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-			RenderManager::Instance()->SetBlendMode(src, dst);
-
-			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
-
 			if(distanceSquare < 900)
 			{
+				isReady = false;
 				state = STATE_3D;
 			}
 			else
 			{
 				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
 				newDirection.Normalize();
-				if(newDirection.DotProduct(direction) < 0.996f)
+				if(newDirection.DotProduct(direction) < 0.99999f)
 				{
-					UpdateImposter(false);
-				}
-				else
-				{
-					UpdateImposter(true);
+					AskForRedraw();
 				}
 			}
 		}
 	}
 }
 
-void ImposterNode::UpdateImposter(bool onlyGeometry)
+void ImposterNode::Draw()
+{
+
+}
+
+void ImposterNode::GeneralDraw()
+{
+	if(STATE_REDRAW_APPROVED == state)
+	{
+		UpdateImposter();
+	}
+
+	if(IsImposterReady())
+	{
+		DrawImposter();
+	}
+	else
+	{
+		SceneNode::Draw();
+	}
+}
+
+void ImposterNode::UpdateImposter()
 {
 	uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -203,7 +188,7 @@ void ImposterNode::UpdateImposter(bool onlyGeometry)
 	}
 	center /= 4.f;
 
-	if(!onlyGeometry)
+	if(IsRedrawApproved())
 	{
 		direction = camera->GetPosition()-center;
 		direction.Normalize();
@@ -232,6 +217,8 @@ void ImposterNode::UpdateImposter(bool onlyGeometry)
 		//img->Save("imposter.png");
 		RenderManager::Instance()->SetViewport(oldViewport, true);
 		
+		isReady = true;
+		state = STATE_IMPOSTER;
 	}
 
 	camera->Set();
@@ -242,6 +229,41 @@ void ImposterNode::UpdateImposter(bool onlyGeometry)
 
 	uint64 time2 = SystemTimer::Instance()->AbsoluteMS();
 	Logger::Debug("imp time %d", time2-time);
+}
+
+void ImposterNode::DrawImposter()
+{
+	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+	const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
+	Matrix4 meshFinalMatrix;
+
+	meshFinalMatrix = /*worldTransform **/ cameraMatrix;
+
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
+	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
+
+	RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, 1.f);
+
+	//RenderManager::Instance()->SetState(/*RenderStateBlock::STATE_BLEND |*/ RenderStateBlock::STATE_TEXTURE0/* | RenderStateBlock::STATE_CULL*/);
+	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+	//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
+	//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+	eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+
+	RenderManager::Instance()->SetTexture(fbo);
+
+	RenderManager::Instance()->SetRenderData(renderData);
+
+	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
+
+	//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);
+	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+	RenderManager::Instance()->SetBlendMode(src, dst);
+
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix);
 }
 
 SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
@@ -298,6 +320,55 @@ void ImposterNode::CreateGeometry()
 	renderData = new RenderDataObject();
 	renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &(verts[0]));
 	renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &(texCoords[0]));
+}
+
+void ImposterNode::SetScene(Scene * _scene)
+{
+	SceneNode::SetScene(_scene);
+	RegisterInScene();
+}
+
+void ImposterNode::RegisterInScene()
+{
+	if(scene)
+	{
+		scene->RegisterImposter(this);
+	}
+}
+
+void ImposterNode::UnregisterInScene()
+{
+	scene->UnregisterImposter(this);
+}
+
+void ImposterNode::AskForRedraw()
+{
+	state = STATE_ASK_FOR_REDRAW;
+}
+
+bool ImposterNode::IsRedrawApproved()
+{
+	return (STATE_REDRAW_APPROVED == state);
+}
+
+bool ImposterNode::IsImposterReady()
+{
+	return isReady;
+}
+
+void ImposterNode::OnAddedToQueue()
+{
+	state = STATE_QUEUED;
+}
+
+bool ImposterNode::IsAskingForRedraw()
+{
+	return (STATE_ASK_FOR_REDRAW == state);
+}
+
+void ImposterNode::ApproveRedraw()
+{
+	state = STATE_REDRAW_APPROVED;
 }
 
 }
