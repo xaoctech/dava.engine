@@ -63,6 +63,9 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage
 
 void LandscapeDebugNode::Draw()
 {
+    if(0 == heightmap->Size())
+        return;
+    
 #if defined(__DAVAENGINE_OPENGL__)
     if (debugFlags & DEBUG_DRAW_GRID)
     {
@@ -73,7 +76,7 @@ void LandscapeDebugNode::Draw()
     
     BindMaterial();
 
-	int32 index = 0;
+    int32 index = 0;
 	for (int32 y = 0; y < heightmap->Size(); ++y)
 	{
 		for (int32 x = 0; x < heightmap->Size(); ++x)

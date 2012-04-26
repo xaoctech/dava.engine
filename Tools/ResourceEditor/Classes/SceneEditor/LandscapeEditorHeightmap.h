@@ -6,12 +6,14 @@
 #include "LandscapeToolsPanel.h"
 #include "Scene3D/LandscapeDebugNode.h"
 #include "Scene3D/Heightmap.h"
+#include "LandscapeEditorPropertyControl.h"
 
 using namespace DAVA;
 
 class EditorScene;
 class LandscapeEditorHeightmap
     :   public LandscapeEditorBase
+    ,   public LandscapeEditorPropertyControlDelegate
 {
     
 public:
@@ -27,6 +29,11 @@ public:
     virtual void OnToolSelected(LandscapeTool *newTool);
     virtual void OnShowGrid(bool show);
 
+    //LE property control delegate
+    virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
+    virtual void TextureWillChanged();
+    virtual void TextureDidChanged();
+
     
 protected:
 
@@ -36,11 +43,12 @@ protected:
     virtual void SaveTextureAction(const String &pathToFile);
 	virtual void UpdateCursor();
     virtual void UndoAction();
+    virtual void RedoAction();
 
     
 	void UpdateTileMaskTool(float32 timeElapsed);
     void UpdateToolImage();
-    void ProcessHeightDropper();
+    float32 GetDropperHeight();
     
     bool editingIsEnabled;
     

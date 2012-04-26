@@ -211,7 +211,6 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 	{
-		DVASSERT_MSG(0, "png_set_tRNS_to_alpha");
 		png_set_tRNS_to_alpha(png_ptr);
 	}
 

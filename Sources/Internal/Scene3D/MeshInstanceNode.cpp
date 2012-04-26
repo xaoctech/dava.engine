@@ -87,6 +87,8 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
+	ClearLightmaps();
+
     for (int32 idx = 0; idx < (int32)polygroups.size(); ++idx)
     {
         SafeRelease(polygroups[idx]);

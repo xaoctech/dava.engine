@@ -272,6 +272,11 @@ void LandscapeEditorColor::UndoAction()
     
 }
 
+void LandscapeEditorColor::RedoAction()
+{
+    
+}
+
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 {
     if(maskSprite)
@@ -293,8 +298,10 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 {
     LandscapeEditorPropertyControl *propsControl = 
-    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect);
+    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
     
+    propsControl->SetDelegate(this);
+
     LandscapeEditorSettingsChanged(propsControl->Settings());
     return propsControl;
 }
@@ -306,16 +313,15 @@ void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSetting
     settings = newSettings;
 }
 
-void LandscapeEditorColor::MaskTextureWillChanged()
+void LandscapeEditorColor::TextureWillChanged()
 {
-    if(savedTexture)
+    if(savedPath.length())
     {
-        String pathToFile = savedTexture->relativePathname;
-        SaveTextureAs(pathToFile, false);
+        SaveTextureAction(savedPath);
     }
 }
 
-void LandscapeEditorColor::MaskTextureDidChanged()
+void LandscapeEditorColor::TextureDidChanged()
 {
     CreateMaskTexture();
 }

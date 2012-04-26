@@ -187,6 +187,7 @@ Texture::Texture()
 
 #ifdef __DAVAENGINE_OPENGL__
 	fboID = -1;
+	rboID = -1;
 #endif
 
     
@@ -223,8 +224,17 @@ Texture::~Texture()
 		SafeDeleteArray(savedData);
 		savedDataSize = 0;
 #endif// #if defined(__DAVAENGINE_ANDROID__)
-
     }
+
+	if(rboID != (uint32)-1)
+	{
+		//TODO: check for OpenGL ES
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+		RENDER_VERIFY(glDeleteRenderbuffersOES(1, &rboID));
+#else //Non ES platforms
+		RENDER_VERIFY(glDeleteRenderbuffersEXT(1, &rboID));
+#endif //PLATFORMS
+	}
 	
 	if(id)
 	{

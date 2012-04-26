@@ -43,6 +43,8 @@ LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageNa
     maxStrength = 0.f;
     strength = 0.f;
     height = 0.0f;
+    averageStrength = 0.f;
+
     
     relativeDrawing = true;
     averageDrawing = false;

@@ -28,7 +28,7 @@ protected:
         OFFSET = 1,
         SLIDER_WIDTH = 250,
         
-        TEXTFIELD_WIDTH = 50,
+        TEXTFIELD_WIDTH = 40,
         TEXT_WIDTH = 50
     };
     
@@ -73,8 +73,6 @@ protected:
     UISlider *strengthSlider;
 	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
 	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
-
-    UICheckBox *showGrid;
     
     LandscapeToolsSelection *selectionPanel;
     
