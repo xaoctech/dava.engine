@@ -51,7 +51,7 @@ void UICheckBox::SetChecked( bool _checked, bool needDelegateCall)
     
     if(checkboxDelegate && needDelegateCall)
     {
-        checkboxDelegate->ValueChanged(checked);
+        checkboxDelegate->ValueChanged(this, checked);
     }
 }
 

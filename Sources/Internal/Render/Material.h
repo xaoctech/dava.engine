@@ -96,6 +96,15 @@ public:
     Material(Scene * _scene = 0);
     virtual ~Material();
     
+    
+    enum eValidationResult
+    {
+        VALIDATE_COMPATIBLE = 1,
+        VALIDATE_INCOMPATIBLE,
+    };
+    
+    eValidationResult Validate(PolygonGroup * polygonGroup);
+    
     virtual void SetScene(Scene * _scene);
    
 	virtual int32 Release();

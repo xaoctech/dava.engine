@@ -29,7 +29,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddFloatProperty("property.landscape.height", PropertyList::PROPERTY_IS_EDITABLE); 
     
     propertyList->AddComboProperty("property.landscape.renderingmode", renderingModes);
-    propertyList->AddFilepathProperty("property.landscape.heightmap", ".png;.pvr", false, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("property.landscape.heightmap", ".png;.heightmap", false, PropertyList::PROPERTY_IS_EDITABLE);
     
     propertyList->AddSubsection("property.landscape.subsection.textures");
     propertyList->AddFilepathProperty("property.landscape.texture.color", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
@@ -349,8 +349,8 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
     
     if(lightMap && alphaMask)
     {
-        if(     (lightMap->GetPixelFormat() == Image::FORMAT_RGBA8888)
-           &&   (alphaMask->GetPixelFormat() == Image::FORMAT_RGBA8888))
+        if(     (lightMap->GetPixelFormat() == FORMAT_RGBA8888)
+           &&   (alphaMask->GetPixelFormat() == FORMAT_RGBA8888))
         {
             if(     (lightMap->GetHeight() == alphaMask->GetHeight()) 
                &&   (lightMap->GetWidth() == alphaMask->GetWidth()) )

@@ -24,28 +24,36 @@
 		5C0971F21511DEAC00782FCC /* TextureConverterCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F01511DEAC00782FCC /* TextureConverterCell.cpp */; };
 		5C0971F51511FE5400782FCC /* ErrorNotifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F31511FE5400782FCC /* ErrorNotifier.cpp */; };
 		5C0971F81512206800782FCC /* UIZoomControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0971F61512206800782FCC /* UIZoomControl.cpp */; };
+		5C0CD38E1534329F00BF9C84 /* LandscapeToolsSelection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0CD38C1534329F00BF9C84 /* LandscapeToolsSelection.cpp */; };
 		5C170B8814A916B0005DDB16 /* CameraOutputControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */; };
 		5C170B8B14A926CA005DDB16 /* OutputManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C170B8914A926CA005DDB16 /* OutputManager.cpp */; };
+		5C1A035D152D9AED00B624BB /* LandscapeEditorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1A035B152D9AED00B624BB /* LandscapeEditorBase.cpp */; };
 		5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */; };
 		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
+		5C287E95153F213100ACA345 /* UNDOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C287E93153F213100ACA345 /* UNDOManager.cpp */; };
+		5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C3B6D19152B753200A1414F /* HintManager.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
+		5C5C3943152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C3941152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp */; };
 		5C6BF78614C85A63009297F7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C6BF78514C85A62009297F7 /* libz.dylib */; };
 		5C6ECBD91500B34000A27E71 /* UISliderWithText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */; };
+		5C7A35DD152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7A35DB152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp */; };
+		5C7A35E0152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7A35DE152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp */; };
 		5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C81C29D14D0480700580500 /* PVRConverter.cpp */; };
 		5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */; };
-		5C8F66FA15230EC100859901 /* LandscapeEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66F815230EC100859901 /* LandscapeEditor.cpp */; };
+		5C8F66FA15230EC100859901 /* LandscapeEditorColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66F815230EC100859901 /* LandscapeEditorColor.cpp */; };
 		5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66FB1523652900859901 /* HelpDialog.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
 		5CB7FAB514FB5A32000EE8A8 /* TextureTrianglesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */; };
+		5CBF5FA5152F3E5200107D6B /* ImageRasterizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF5FA3152F3E5200107D6B /* ImageRasterizer.cpp */; };
 		5CC1069C1529BD8C002CE5CE /* MaterialPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */; };
 		5CD1A27214D0ACE9005E76B5 /* SceneValidator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */; };
 		5CD1A27514D0AEE9005E76B5 /* ErrorDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD1A27314D0AEE8005E76B5 /* ErrorDialog.cpp */; };
 		5CD509BD14C6CB250089067E /* SettingsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD509BB14C6CB250089067E /* SettingsDialog.cpp */; };
 		5CD6295F14BB1ABF00795FCA /* CreatePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD6295D14BB1ABF00795FCA /* CreatePropertyControl.cpp */; };
 		5CDACB29151B44040031F8C7 /* LandscapeToolsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB27151B44040031F8C7 /* LandscapeToolsPanel.cpp */; };
-		5CDACB2C151B44640031F8C7 /* PaintTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2A151B44640031F8C7 /* PaintTool.cpp */; };
+		5CDACB2C151B44640031F8C7 /* LandscapeTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2A151B44640031F8C7 /* LandscapeTool.cpp */; };
 		5CDACB2F151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDACB2D151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp */; };
 		5CDE48591518946B004E4353 /* PVRUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDE48571518946B004E4353 /* PVRUtils.cpp */; };
 		5CDFF2711525BE1600FBDFF8 /* GraphBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFF26F1525BE1600FBDFF8 /* GraphBase.cpp */; };
@@ -62,6 +70,7 @@
 		5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */; };
 		5CE81F3A14CEBA0A0066C7E1 /* ExtendedDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */; };
 		5CECF98A151476D600FFAE80 /* LightmapsPacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CECF988151476D600FFAE80 /* LightmapsPacker.cpp */; };
+		5CF9DD1B153C9C2D001E4F9F /* UIFilePreviewDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF9DD19153C9C2D001E4F9F /* UIFilePreviewDialog.cpp */; };
 		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D91B83CD14BF12F2002D07B7 /* ModificationPopUp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D91B83CB14BF12F2002D07B7 /* ModificationPopUp.cpp */; };
@@ -354,27 +363,41 @@
 		5C0971F41511FE5400782FCC /* ErrorNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorNotifier.h; sourceTree = "<group>"; };
 		5C0971F61512206800782FCC /* UIZoomControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIZoomControl.cpp; sourceTree = "<group>"; };
 		5C0971F71512206800782FCC /* UIZoomControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIZoomControl.h; sourceTree = "<group>"; };
+		5C0CD38C1534329F00BF9C84 /* LandscapeToolsSelection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeToolsSelection.cpp; sourceTree = "<group>"; };
+		5C0CD38D1534329F00BF9C84 /* LandscapeToolsSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeToolsSelection.h; sourceTree = "<group>"; };
 		5C170B8614A916B0005DDB16 /* CameraOutputControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraOutputControl.cpp; sourceTree = "<group>"; };
 		5C170B8714A916B0005DDB16 /* CameraOutputControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraOutputControl.h; sourceTree = "<group>"; };
 		5C170B8914A926CA005DDB16 /* OutputManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputManager.cpp; sourceTree = "<group>"; };
 		5C170B8A14A926CA005DDB16 /* OutputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputManager.h; sourceTree = "<group>"; };
+		5C1A035B152D9AED00B624BB /* LandscapeEditorBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorBase.cpp; sourceTree = "<group>"; };
+		5C1A035C152D9AED00B624BB /* LandscapeEditorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorBase.h; sourceTree = "<group>"; };
 		5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModificationsPanel.cpp; sourceTree = "<group>"; };
 		5C1BA9A215249E5900C7FA95 /* ModificationsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModificationsPanel.h; sourceTree = "<group>"; };
 		5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneInfoControl.cpp; sourceTree = "<group>"; };
 		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
+		5C287E93153F213100ACA345 /* UNDOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UNDOManager.cpp; sourceTree = "<group>"; };
+		5C287E94153F213100ACA345 /* UNDOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UNDOManager.h; sourceTree = "<group>"; };
+		5C3B6D19152B753200A1414F /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HintManager.cpp; sourceTree = "<group>"; };
+		5C3B6D1A152B753200A1414F /* HintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HintManager.h; sourceTree = "<group>"; };
 		5C439EB5149ABEA900326566 /* ControlsFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlsFactory.cpp; sourceTree = "<group>"; };
 		5C439EB6149ABEA900326566 /* ControlsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlsFactory.h; sourceTree = "<group>"; };
+		5C5C3941152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeToolsPanelColor.cpp; sourceTree = "<group>"; };
+		5C5C3942152DC69300BA0B9F /* LandscapeToolsPanelColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeToolsPanelColor.h; sourceTree = "<group>"; };
 		5C6BF78514C85A62009297F7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UISliderWithText.cpp; sourceTree = "<group>"; };
 		5C6ECBD81500B34000A27E71 /* UISliderWithText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISliderWithText.h; sourceTree = "<group>"; };
+		5C7A35DB152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeToolsPanelHeightmap.cpp; sourceTree = "<group>"; };
+		5C7A35DC152F08720054FCA1 /* LandscapeToolsPanelHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeToolsPanelHeightmap.h; sourceTree = "<group>"; };
+		5C7A35DE152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorHeightmap.cpp; sourceTree = "<group>"; };
+		5C7A35DF152F095E0054FCA1 /* LandscapeEditorHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorHeightmap.h; sourceTree = "<group>"; };
 		5C81C29D14D0480700580500 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
 		5C81C29E14D0480700580500 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightmapNode.cpp; sourceTree = "<group>"; };
 		5C8F1012151CBB2200800ED7 /* HeightmapNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightmapNode.h; sourceTree = "<group>"; };
-		5C8F66F815230EC100859901 /* LandscapeEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditor.cpp; sourceTree = "<group>"; };
-		5C8F66F915230EC100859901 /* LandscapeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditor.h; sourceTree = "<group>"; };
+		5C8F66F815230EC100859901 /* LandscapeEditorColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorColor.cpp; sourceTree = "<group>"; };
+		5C8F66F915230EC100859901 /* LandscapeEditorColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorColor.h; sourceTree = "<group>"; };
 		5C8F66FB1523652900859901 /* HelpDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelpDialog.cpp; sourceTree = "<group>"; };
 		5C8F66FC1523652900859901 /* HelpDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelpDialog.h; sourceTree = "<group>"; };
 		5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NodesPropertyControl.cpp; sourceTree = "<group>"; };
@@ -383,6 +406,8 @@
 		5CA721D514B760D9000D2851 /* CreateNodesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNodesDialog.h; sourceTree = "<group>"; };
 		5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureTrianglesDialog.cpp; sourceTree = "<group>"; };
 		5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureTrianglesDialog.h; sourceTree = "<group>"; };
+		5CBF5FA3152F3E5200107D6B /* ImageRasterizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageRasterizer.cpp; sourceTree = "<group>"; };
+		5CBF5FA4152F3E5200107D6B /* ImageRasterizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRasterizer.h; sourceTree = "<group>"; };
 		5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialPropertyControl.cpp; sourceTree = "<group>"; };
 		5CC1069B1529BD8C002CE5CE /* MaterialPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialPropertyControl.h; sourceTree = "<group>"; };
 		5CD1A27014D0ACE9005E76B5 /* SceneValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneValidator.cpp; sourceTree = "<group>"; };
@@ -395,8 +420,8 @@
 		5CD6295E14BB1ABF00795FCA /* CreatePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePropertyControl.h; sourceTree = "<group>"; };
 		5CDACB27151B44040031F8C7 /* LandscapeToolsPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeToolsPanel.cpp; sourceTree = "<group>"; };
 		5CDACB28151B44040031F8C7 /* LandscapeToolsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeToolsPanel.h; sourceTree = "<group>"; };
-		5CDACB2A151B44640031F8C7 /* PaintTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PaintTool.cpp; sourceTree = "<group>"; };
-		5CDACB2B151B44640031F8C7 /* PaintTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaintTool.h; sourceTree = "<group>"; };
+		5CDACB2A151B44640031F8C7 /* LandscapeTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTool.cpp; sourceTree = "<group>"; };
+		5CDACB2B151B44640031F8C7 /* LandscapeTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTool.h; sourceTree = "<group>"; };
 		5CDACB2D151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorPropertyControl.cpp; sourceTree = "<group>"; };
 		5CDACB2E151B5AB70031F8C7 /* LandscapeEditorPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorPropertyControl.h; sourceTree = "<group>"; };
 		5CDE48571518946B004E4353 /* PVRUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRUtils.cpp; sourceTree = "<group>"; };
@@ -432,6 +457,8 @@
 		5CE81F3B14CEE8660066C7E1 /* ColorPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerDelegate.h; sourceTree = "<group>"; };
 		5CECF988151476D600FFAE80 /* LightmapsPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LightmapsPacker.cpp; path = Classes/LightmapsPacker.cpp; sourceTree = SOURCE_ROOT; };
 		5CECF989151476D600FFAE80 /* LightmapsPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LightmapsPacker.h; path = Classes/LightmapsPacker.h; sourceTree = SOURCE_ROOT; };
+		5CF9DD19153C9C2D001E4F9F /* UIFilePreviewDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIFilePreviewDialog.cpp; sourceTree = "<group>"; };
+		5CF9DD1A153C9C2D001E4F9F /* UIFilePreviewDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIFilePreviewDialog.h; sourceTree = "<group>"; };
 		5CFAF30E14A6334100355DCF /* UICheckBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UICheckBox.cpp; sourceTree = "<group>"; };
 		5CFAF30F14A6334100355DCF /* UICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBox.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TemplateProjectMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1061,14 +1088,26 @@
 		5C0E983F14BC92FD008188FE /* LandscapeEditor */ = {
 			isa = PBXGroup;
 			children = (
-				5C8F66F815230EC100859901 /* LandscapeEditor.cpp */,
-				5C8F66F915230EC100859901 /* LandscapeEditor.h */,
+				5CBF5FA3152F3E5200107D6B /* ImageRasterizer.cpp */,
+				5CBF5FA4152F3E5200107D6B /* ImageRasterizer.h */,
+				5C7A35DE152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp */,
+				5C7A35DF152F095E0054FCA1 /* LandscapeEditorHeightmap.h */,
+				5C8F66F815230EC100859901 /* LandscapeEditorColor.cpp */,
+				5C8F66F915230EC100859901 /* LandscapeEditorColor.h */,
+				5C1A035B152D9AED00B624BB /* LandscapeEditorBase.cpp */,
+				5C1A035C152D9AED00B624BB /* LandscapeEditorBase.h */,
 				5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */,
 				5C8F1012151CBB2200800ED7 /* HeightmapNode.h */,
-				5CDACB2A151B44640031F8C7 /* PaintTool.cpp */,
-				5CDACB2B151B44640031F8C7 /* PaintTool.h */,
+				5CDACB2A151B44640031F8C7 /* LandscapeTool.cpp */,
+				5CDACB2B151B44640031F8C7 /* LandscapeTool.h */,
+				5C7A35DB152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp */,
+				5C7A35DC152F08720054FCA1 /* LandscapeToolsPanelHeightmap.h */,
+				5C5C3941152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp */,
+				5C5C3942152DC69300BA0B9F /* LandscapeToolsPanelColor.h */,
 				5CDACB27151B44040031F8C7 /* LandscapeToolsPanel.cpp */,
 				5CDACB28151B44040031F8C7 /* LandscapeToolsPanel.h */,
+				5C0CD38C1534329F00BF9C84 /* LandscapeToolsSelection.cpp */,
+				5C0CD38D1534329F00BF9C84 /* LandscapeToolsSelection.h */,
 			);
 			name = LandscapeEditor;
 			sourceTree = "<group>";
@@ -1097,6 +1136,10 @@
 		5C0E984114BC936F008188FE /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
+				5CF9DD19153C9C2D001E4F9F /* UIFilePreviewDialog.cpp */,
+				5CF9DD1A153C9C2D001E4F9F /* UIFilePreviewDialog.h */,
+				5C3B6D19152B753200A1414F /* HintManager.cpp */,
+				5C3B6D1A152B753200A1414F /* HintManager.h */,
 				5C1BA9A015249E3F00C7FA95 /* EditorBodyControl */,
 				5C8F66FB1523652900859901 /* HelpDialog.cpp */,
 				5C8F66FC1523652900859901 /* HelpDialog.h */,
@@ -1153,6 +1196,8 @@
 		5CD1A26F14D0ACC6005E76B5 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				5C287E93153F213100ACA345 /* UNDOManager.cpp */,
+				5C287E94153F213100ACA345 /* UNDOManager.h */,
 				5CDE48571518946B004E4353 /* PVRUtils.cpp */,
 				5CDE48581518946B004E4353 /* PVRUtils.h */,
 				5C0971F31511FE5400782FCC /* ErrorNotifier.cpp */,
@@ -2297,16 +2342,25 @@
 				5CECF98A151476D600FFAE80 /* LightmapsPacker.cpp in Sources */,
 				5CDE48591518946B004E4353 /* PVRUtils.cpp in Sources */,
 				5CDACB29151B44040031F8C7 /* LandscapeToolsPanel.cpp in Sources */,
-				5CDACB2C151B44640031F8C7 /* PaintTool.cpp in Sources */,
+				5CDACB2C151B44640031F8C7 /* LandscapeTool.cpp in Sources */,
 				5CDACB2F151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp in Sources */,
 				5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */,
-				5C8F66FA15230EC100859901 /* LandscapeEditor.cpp in Sources */,
+				5C8F66FA15230EC100859901 /* LandscapeEditorColor.cpp in Sources */,
 				5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */,
 				5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */,
 				5CDFF2711525BE1600FBDFF8 /* GraphBase.cpp in Sources */,
 				5CDFF2741525CB2800FBDFF8 /* SceneGraph.cpp in Sources */,
 				5CDFF2771525DBE500FBDFF8 /* DataGraph.cpp in Sources */,
 				5CC1069C1529BD8C002CE5CE /* MaterialPropertyControl.cpp in Sources */,
+				5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */,
+				5C1A035D152D9AED00B624BB /* LandscapeEditorBase.cpp in Sources */,
+				5C5C3943152DC69300BA0B9F /* LandscapeToolsPanelColor.cpp in Sources */,
+				5C7A35DD152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp in Sources */,
+				5C7A35E0152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp in Sources */,
+				5CBF5FA5152F3E5200107D6B /* ImageRasterizer.cpp in Sources */,
+				5C0CD38E1534329F00BF9C84 /* LandscapeToolsSelection.cpp in Sources */,
+				5CF9DD1B153C9C2D001E4F9F /* UIFilePreviewDialog.cpp in Sources */,
+				5C287E95153F213100ACA345 /* UNDOManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2447,6 +2501,7 @@
 					"./../../Libs/ImageMagick-6.6.9/lib/",
 					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",

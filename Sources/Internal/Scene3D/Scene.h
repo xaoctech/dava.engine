@@ -37,7 +37,6 @@
 #include "Scene3D/Camera.h"
 #include "Scene3D/LightNode.h"
 
-
 namespace DAVA
 {
 
@@ -56,6 +55,11 @@ class ShadowVolumeNode;
 class ProxyNode;
 class LightNode;
 class ShadowRect;
+class QuadTree;
+class MeshInstanceNode;
+class BVHierarchy;
+class ImposterManager;
+class ImposterNode;
 	
 /** 
     \ingroup scene3d
@@ -104,6 +108,10 @@ public:
     
     
 //    DataNode * GetScenes();
+    
+    void SetBVHierarchy(BVHierarchy * bvHierarchy);
+    BVHierarchy * GetBVHierarchy();
+    
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -206,6 +214,10 @@ public:
     
     Set<LightNode*> & GetLights();
     LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
+
+	void RegisterImposter(ImposterNode * imposter);
+
+	void UnregisterImposter(ImposterNode * imposter);
     
 private:	
     
@@ -221,10 +233,10 @@ private:
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
-    Map<String, ProxyNode*> rootNodes;
-
-    // Vector<SceneNode*> alphaObjectQueue;
     
+    Map<String, ProxyNode*> rootNodes;
+    
+    // TODO: move to nodes
     Vector<LodLayer> lodLayers;
     int32 forceLodLayer;
 
@@ -235,6 +247,10 @@ private:
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
 	ShadowRect * shadowRect;
+    
+    BVHierarchy * bvHierarchy;
+
+	ImposterManager * imposterManager;
 
     friend class SceneNode;
 };

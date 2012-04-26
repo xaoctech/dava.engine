@@ -249,8 +249,8 @@ bool SceneFile::ReadTexture()
 	DAVA::Texture * texture = DAVA::Texture::CreateFromFile(tname);//textureDef.name);//0;
 	if (texture)
 	{
-		if ((texture->format != DAVA::Texture::FORMAT_PVR4) &&
-			(texture->format != DAVA::Texture::FORMAT_PVR2))
+		if ((texture->format != DAVA::FORMAT_PVR4) &&
+			(texture->format != DAVA::FORMAT_PVR2))
 		{
 			texture->GenerateMipmaps();
 		}
@@ -271,7 +271,7 @@ bool SceneFile::ReadTexture()
             textureData[k + 2] = 0xFF; 
             textureData[k + 3] = 0xFF; 
         }
-        texture = Texture::CreateFromData(Texture::FORMAT_RGBA8888, textureData, 8, 8);
+        texture = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
         texture->GenerateMipmaps();
         SafeDeleteArray(textureData);
 	}
@@ -354,7 +354,7 @@ bool SceneFile::ReadMaterial()
             textureData[k + 2] = 0xFF; 
             textureData[k + 3] = 0xFF; 
         }
-        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromData(Texture::FORMAT_RGBA8888, textureData, 8, 8);
+        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
         mat->textures[Material::TEXTURE_DIFFUSE]->GenerateMipmaps();
         SafeDeleteArray(textureData);
     }

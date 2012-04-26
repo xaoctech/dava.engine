@@ -1236,6 +1236,11 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	currentRenderTarget = renderTarget;
 }
 
+void RenderManager::SetHWRenderTarget(Texture * renderTarget)
+{
+
+}
+
 //void RenderManager::SetDrawOffset(const Vector2 &offset)
 //{
 //	Matrix4 m;

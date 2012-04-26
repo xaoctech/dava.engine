@@ -41,7 +41,6 @@ UIListCell *ErrorDialog::CellAtIndex(UIList *list, int32 index)
     }
     
     Font *font = ControlsFactory::GetFontError();
-    
     c->SetStateFont(UIControl::STATE_NORMAL, font);
     
     int32 i = 0;
@@ -50,6 +49,8 @@ UIListCell *ErrorDialog::CellAtIndex(UIList *list, int32 index)
         if(i == index)
         {
             c->SetStateText(UIControl::STATE_NORMAL, StringToWString(*it));
+            UIStaticText *st = c->GetStateTextControl(UIControl::STATE_NORMAL);
+            st->SetFittingOption(TextBlock::FITTING_REDUCE);
             break;
         }
     }
@@ -59,7 +60,7 @@ UIListCell *ErrorDialog::CellAtIndex(UIList *list, int32 index)
 
 int32 ErrorDialog::CellHeight(UIList * list, int32 index)
 {
-    return ControlsFactory::ERROR_MESSAGE_HEIGHT;
+    return (ControlsFactory::ERROR_MESSAGE_HEIGHT);
 }
 
 void ErrorDialog::Show(const Set<String> &newErrorMessages)

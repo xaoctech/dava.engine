@@ -46,18 +46,11 @@ class SceneEditorScreenMain:
     {
         MENUID_OPEN = 100,
         MENUID_CREATENODE = 200,
-        MENUID_NEW = 300,
-        MENUID_VIEWPORT = 400,
-        MENUID_EXPORTTOGAME,
+        MENUID_VIEWPORT = 300,
+        MENUID_EXPORTTOGAME = 400,
+        MENUID_LANDSCAPE = 500
     };
     
-    enum eNewMenuIDS
-    {
-        ENMID_ENPTYSCENE = 0,
-        ENMID_SCENE_WITH_CAMERA,
-        
-        ENMID_COUNT
-    };
     
     enum eOpenMenuIDS
     {
@@ -76,6 +69,15 @@ class SceneEditorScreenMain:
         EETGMID_COUNT
     };
 
+public:
+    enum eLandscapeEditorModeIDS
+    {
+        ELEMID_HEIGHTMAP = 0,
+        ELEMID_COLOR_MAP,
+        
+        ELEMID_COUNT
+    };
+    
 
 public:
     
@@ -233,6 +235,10 @@ private:
 	bool useConvertedTextures;
     
     HelpDialog *helpDialog;
+    
+    //LandscsapeEditor
+    void ToggleLandscape(int32 landscapeEditorMode);
+
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

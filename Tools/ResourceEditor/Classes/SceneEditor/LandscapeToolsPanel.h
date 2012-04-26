@@ -2,7 +2,8 @@
 #define __LANDSCAPE_TOOLS_PANEL_H__
 
 #include "DAVAEngine.h"
-#include "PaintTool.h"
+#include "LandscapeToolsSelection.h"
+#include "UICheckBox.h"
 
 using namespace DAVA;
 
@@ -10,17 +11,25 @@ class LandscapeToolsPanelDelegate
 {
 public: 
     
-    virtual void OnToolSelected(PaintTool *newTool) = 0;
+    virtual void OnToolSelected(LandscapeTool *newTool) = 0;
+    virtual void OnToolsPanelClose() = 0;
+    virtual void OnShowGrid(bool show) = 0;
 };
 
-class PaintTool;
-class UICheckBox;
-class LandscapeToolsPanel: public UIControl
+class LandscapeToolsPanel: 
+    public UIControl,
+    public LandscapeToolsSelectionDelegate,
+    public UICheckBoxDelegate
 {
+protected:
+    
     enum eConst
     {
         OFFSET = 1,
         SLIDER_WIDTH = 250,
+        
+        TEXTFIELD_WIDTH = 40,
+        TEXT_WIDTH = 50
     };
     
 public:
@@ -28,25 +37,45 @@ public:
     virtual ~LandscapeToolsPanel();
     
     virtual void WillAppear();
+    virtual void Input(UIEvent *currentInput);
+
+    LandscapeTool *CurrentTool();
+    void SetSelectionPanel(LandscapeToolsSelection *newPanel);
     
-    PaintTool *CurrentTool();
+    //LandscapeToolsSelectionDelegate
+    virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
+
+    //UICheckBoxDelegate
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
 protected:
 
-	void OnToolSelected(BaseObject * object, void * userData, void * callerData);
+    virtual void ToolIconSelected(UIControl *focused);
 
-    UIControl *toolButtons[PaintTool::EBT_COUNT];
-    PaintTool *tools[PaintTool::EBT_COUNT];
-    PaintTool *selectedTool;
-
-    UISlider *intension;
-    UISlider *zoom;
+    
     UISlider * CreateSlider(const Rect & rect);
     void AddSliderHeader(UISlider *slider, const WideString &text);
-	void OnIntensionChanged(BaseObject * object, void * userData, void * callerData);
-	void OnZoomChanged(BaseObject * object, void * userData, void * callerData);
 
+    UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
+
+    
+    void OnClose(BaseObject * object, void * userData, void * callerData);
+    void OnBrushTool(BaseObject * object, void * userData, void * callerData);
+
+    
     LandscapeToolsPanelDelegate *delegate;
+    
+    UIControl *brushIcon;
+    LandscapeTool *selectedTool;
+    LandscapeTool *selectedBrushTool;
+
+    UISlider *sizeSlider;
+    UISlider *strengthSlider;
+	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
+	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
+    
+    LandscapeToolsSelection *selectionPanel;
+    
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_H__

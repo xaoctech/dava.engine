@@ -16,11 +16,16 @@
 #include "PropertyControlCreator.h"
 #include "ErrorNotifier.h"
 
+#include "HintManager.h"
 #include "HelpDialog.h"
+
+#include "UNDOManager.h"
 
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
+    new HintManager();
+    new UNDOManager();
     
     //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
@@ -144,8 +149,10 @@ void SceneEditorScreenMain::UnloadResources()
         
     ReleaseTopMenu();
     
+    HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     ErrorNotifier::Instance()->Release();
+    UNDOManager::Instance()->Release();
 }
 
 
@@ -188,7 +195,6 @@ void SceneEditorScreenMain::CreateTopMenu()
     ControlsFactory::CustomizeButtonExpandable(btnCreate);
     x += dx;
     btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.new"));
-    ControlsFactory::CustomizeButtonExpandable(btnNew);
     x += dx;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.openproject"));
 #ifdef __DAVAENGINE_BEAST__
@@ -197,8 +203,10 @@ void SceneEditorScreenMain::CreateTopMenu()
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
 	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
+    ControlsFactory::CustomizeButtonExpandable(btnLandscape);
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
+    ControlsFactory::CustomizeButtonExpandable(btnViewPortSize);
 	x += dx;
 	btnTextureConverter = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.textureconvertor"));
     
@@ -281,11 +289,14 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
 
             Scene * scene = iBody->bodyControl->GetScene();
 
-
+            uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
             SceneFileV2 * file = new SceneFileV2();
-            file->EnableDebugLog(true);
+            file->EnableDebugLog(false);
             file->SaveScene(pathToFile, scene);
             SafeRelease(file);
+            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+            Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
+
 			iBody->bodyControl->PopDebugCamera();			
             break;
         }
@@ -415,8 +426,9 @@ void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnNewPressed(BaseObject * obj, void *, void *)
 {
-    menuPopup->InitControl(MENUID_NEW, btnNew->GetRect());
-    AddControl(menuPopup);
+    bodies[0]->bodyControl->ReleaseScene();
+    bodies[0]->bodyControl->CreateScene(true);
+    bodies[0]->bodyControl->Refresh();
 }
 
 
@@ -712,30 +724,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             AddControl(nodeDialog);
             break;
         }
-            
-        case MENUID_NEW:
-        {
-            switch (itemID) 
-            {
-                case ENMID_ENPTYSCENE:
-                    bodies[0]->bodyControl->ReleaseScene();
-                    bodies[0]->bodyControl->CreateScene(false);
-                    bodies[0]->bodyControl->Refresh();
-                    break;
-                    
-                case ENMID_SCENE_WITH_CAMERA:
-                    bodies[0]->bodyControl->ReleaseScene();
-                    bodies[0]->bodyControl->CreateScene(true);
-                    bodies[0]->bodyControl->Refresh();
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-        }
-            
+                        
         case MENUID_VIEWPORT:
         {
             BodyItem *iBody = FindCurrentBody();
@@ -754,6 +743,12 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
         case MENUID_EXPORTTOGAME:
         {
             ExportToGameAction(itemID);
+            break;
+        }
+            
+        case MENUID_LANDSCAPE:
+        {
+            ToggleLandscape(itemID);
             break;
         }
             
@@ -822,30 +817,17 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                     text = LocalizedString(L"menu.createnode.camera");
                     break;
                 }
+
+				case ECNID_IMPOSTER:
+				{
+					text = LocalizedString(L"menu.createnode.imposter");
+					break;
+				}
                     
                 default:
                     break;
             }
             
-            
-            break;
-        }
-            
-        case MENUID_NEW:
-        {
-            switch (itemID) 
-            {
-                case ENMID_ENPTYSCENE:
-                    text = LocalizedString(L"menu.new.emptyscene");
-                    break;
-                    
-                case ENMID_SCENE_WITH_CAMERA:
-                    text = LocalizedString(L"menu.new.scenewithcamera");
-                    break;
-                    
-                default:
-                    break;
-            }
             
             break;
         }
@@ -895,7 +877,26 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                 default:
                     break;
             }
-
+            break;
+        }
+            
+        case MENUID_LANDSCAPE:
+        {
+            switch (itemID) 
+            {
+                case ELEMID_HEIGHTMAP:
+                    text = LocalizedString(L"menu.landscape.heightmap");
+                    break;
+                    
+                case ELEMID_COLOR_MAP:
+                    text = LocalizedString(L"menu.landscape.colormap");
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            break;
         }
             
         default:
@@ -922,12 +923,6 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
             break;
         }
             
-        case MENUID_NEW:
-        {
-            retCount = ENMID_COUNT;
-            break;
-        }
-            
         case MENUID_VIEWPORT:
         {
             retCount = EditorBodyControl::EVPID_COUNT;
@@ -937,6 +932,12 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         case MENUID_EXPORTTOGAME:
         {
             retCount = EETGMID_COUNT;
+            break;
+        }
+            
+        case MENUID_LANDSCAPE:
+        {
+            retCount = ELEMID_COUNT;
             break;
         }
             
@@ -992,17 +993,8 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
 
 void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
 {
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleLandscapeEditor();
-    
-//    if(landscapeEditor->GetParent())
-//    {
-//        RemoveControl(landscapeEditor);
-//    }
-//    else
-//    {
-//        AddControl(landscapeEditor);
-//    }
+    menuPopup->InitControl(MENUID_LANDSCAPE, btnLandscape->GetRect());
+    AddControl(menuPopup);
 }
 
 void SceneEditorScreenMain::EditMaterial(Material *material)
@@ -1282,30 +1274,51 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
 void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 {
 	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
-	//if(land) 
-	//{
-	//	ExportTexture(land->GetHeightMapPathname());
-	//	for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
-	//	{
-	//		Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
-	//		if(t) 
-	//		{
-	//			ExportTexture(t->relativePathname);
-	//			if(useConvertedTextures)
-	//			{
-	//				ExportTexture(m->names[Material::TEXTURE_DIFFUSE]);
-	//			}
-	//			else
-	//			{
-	//				ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
-	//			}
-	//		}
-	//	}
-	//}
+    if(land) 
+    {
+        ExportTexture(land->GetHeightMapPathname());
+        for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+        {
+            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+            if(t) 
+            {
+                ExportTexture(t->relativePathname);
+//                if(useConvertedTextures)
+//                {
+//                    ExportTexture(t->names[Material::TEXTURE_DIFFUSE]);
+//                }
+//                else
+//                {
+//                    ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+//                }
+            }
+        }
+    }
+    // PNG / PVR conversion question??? Save lightmaps as beast batched the lightmaps ignoring settings
+    // TODO: what to do? 
+    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+    if (meshInstance)
+    {
+        for (int32 li = 0; li < meshInstance->GetLightmapCount(); ++li)
+        {
+            MeshInstanceNode::LightmapData * ld = meshInstance->GetLightmapDataForIndex(li);
+            if (ld)
+            {
+                ExportTexture(ld->lightmapName);  
+            }
+        }
+    }
 
 	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
 	{
 		SceneNode * child = node->GetChild(ci);
 		ExportLandscapeAndMeshLightmaps(child);
 	}
+}
+
+
+void SceneEditorScreenMain::ToggleLandscape(int32 landscapeEditorMode)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->ToggleLandscapeEditor(landscapeEditorMode);
 }

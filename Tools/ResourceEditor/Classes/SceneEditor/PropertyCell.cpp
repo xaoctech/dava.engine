@@ -14,6 +14,8 @@
 #include "ColorPicker.h"
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
+#include "HintManager.h"
+#include "UIFilePreviewDialog.h"
 
 #pragma mark --PropertyCell 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
@@ -267,7 +269,7 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::ValueChanged(bool newValue)
+void PropertyBoolCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
@@ -296,6 +298,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     pathText->SetFont(font);
     pathText->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
     pathTextContainer->AddControl(pathText);
+    pathTextContainer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnHint));
     AddControl(pathTextContainer);
     
     browseButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2 - xOffset, size.y/2, size.y/2, size.y/2), L"...");
@@ -315,6 +318,8 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     }
     
     SetData(prop);
+    
+    moveCounter = 0;
 }
 
 PropertyFilepathCell::~PropertyFilepathCell()
@@ -354,7 +359,7 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     {
         return;
     }
-    dialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    dialog = new UIFilePreviewDialog("~res:/Fonts/MyriadPro-Regular.otf");
     dialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
     dialog->SetDelegate(this);
     dialog->SetTitle(keyName->GetText());
@@ -382,6 +387,34 @@ void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * 
     property->SetString("");
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
+}
+
+void PropertyFilepathCell::WillAppear()
+{
+    moveCounter = 0;
+    
+    UIListCell::WillAppear();
+}
+
+void PropertyFilepathCell::Input(UIEvent *currentInput)
+{
+    if(currentInput->phase == UIEvent::PHASE_MOVE)
+    {
+        ++moveCounter;
+//        Logger::Debug("move");
+    }
+    else 
+    {
+        moveCounter = 0;
+//        Logger::Debug("not_move");
+    }
+    
+    UIListCell::Input(currentInput);
+}
+
+void PropertyFilepathCell::OnHint(BaseObject * object, void * userData, void * callerData)
+{
+    HintManager::Instance()->ShowHint(pathText->GetText(), this->GetRect(true));
 }
 
 void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
@@ -733,13 +766,17 @@ void PropertyTexturePreviewCell::SetData(PropertyCellData *prop)
             checkBox->SetChecked(prop->GetBool(), false);
             Texture *tex = prop->GetTexture();
             
-            uint32 width = DAVA::Min(tex->width, (uint32)previewControl->GetSize().x);
-            uint32 height = DAVA::Min(tex->height, (uint32)previewControl->GetSize().y);
-            Sprite *previewSprite = Sprite::CreateFromTexture(tex, 0, 0, width, height);
+            if(tex)
+            {
+                uint32 width = DAVA::Min(tex->width, (uint32)previewControl->GetSize().x);
+                uint32 height = DAVA::Min(tex->height, (uint32)previewControl->GetSize().y);
+                Sprite *previewSprite = Sprite::CreateFromTexture(tex, 0, 0, width, height);
+                
+                previewControl->SetSprite(previewSprite, 0);
+                
+                SafeRelease(previewSprite);
+            }
             
-            previewControl->SetSprite(previewSprite, 0);
-            
-            SafeRelease(previewSprite);
             
             break;
         }
@@ -754,7 +791,7 @@ float32 PropertyTexturePreviewCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT * 2;
 }
 
-void PropertyTexturePreviewCell::ValueChanged(bool newValue)
+void PropertyTexturePreviewCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);

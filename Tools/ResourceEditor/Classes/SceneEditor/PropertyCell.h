@@ -100,7 +100,7 @@ public:
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
 
-    virtual void ValueChanged(bool newValue);
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
     
 protected:    
 
@@ -122,7 +122,16 @@ public:
     void OnButton(BaseObject * object, void * userData, void * callerData);
     void OnClear(BaseObject * object, void * userData, void * callerData);
 
-//    virtual void DidAppear();
+    void OnHint(BaseObject * object, void * userData, void * callerData);
+
+    virtual void Input(UIEvent *currentInput);
+
+    virtual void WillAppear();
+    
+protected:    
+
+    int32 moveCounter;
+//    float32 lastHintTime
     
     UIStaticText *pathText;
     UIControl *pathTextContainer;
@@ -260,7 +269,7 @@ public:
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
 
-    virtual void ValueChanged(bool newValue);
+    virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
 private:
     
