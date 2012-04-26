@@ -1294,6 +1294,20 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
             }
         }
     }
+    // PNG / PVR conversion question??? Save lightmaps as beast batched the lightmaps ignoring settings
+    // TODO: what to do? 
+    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+    if (meshInstance)
+    {
+        for (int32 li = 0; li < meshInstance->GetLightmapCount(); ++li)
+        {
+            MeshInstanceNode::LightmapData * ld = meshInstance->GetLightmapDataForIndex(li);
+            if (ld)
+            {
+                ExportTexture(ld->lightmapName);  
+            }
+        }
+    }
 
 	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
 	{

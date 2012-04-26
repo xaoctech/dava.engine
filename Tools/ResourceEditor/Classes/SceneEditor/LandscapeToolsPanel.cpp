@@ -25,11 +25,6 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     AddControl(brushIcon);
     
     
-    showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
-                              LocalizedString(L"landscapeeditor.showgrid"));
-    
-    
-    
     sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH,
                                    0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
     sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnSizeChanged));
@@ -167,8 +162,6 @@ void LandscapeToolsPanel::WillAppear()
         }
         ToolIconSelected(brushIcon);
     }
-    
-    showGrid->SetChecked(showGrid->Checked(), true);
 }
 
 void LandscapeToolsPanel::Input(DAVA::UIEvent *currentInput)
@@ -241,12 +234,5 @@ void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, L
 #pragma mark  --UICheckBoxDelegate
 void LandscapeToolsPanel::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
-    if(forCheckbox == showGrid)
-    {
-        if(delegate)
-        {
-            delegate->OnShowGrid(showGrid->Checked());
-        }
-    }
 }
 

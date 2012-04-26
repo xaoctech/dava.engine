@@ -471,7 +471,7 @@ void RenderManager::FlushState()
 {
 	PrepareRealMatrix();
     AttachRenderData(currentState.shader);
-    
+
     currentState.Flush(&hardwareState);
 }
 
@@ -899,7 +899,15 @@ void RenderManager::AttachRenderData(Shader * shader)
 #endif 
         //}
         
+        
         int32 size = (int32)currentRenderData->streamArray.size();
+        
+        //DVASSERT(size >= shader->GetAttributeCount() && "Shader attribute count higher than model attribute count");
+        if (size < shader->GetAttributeCount())
+        {
+            // Logger::Error("Shader attribute count higher than model attribute count");
+        }
+        
         for (int32 k = 0; k < size; ++k)
         {
             RenderDataStream * stream = currentRenderData->streamArray[k];

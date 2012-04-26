@@ -128,7 +128,13 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
 void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
 {
     SceneNode *n = (SceneNode *)node;
-    cell->text->SetText(StringToWString(n->GetName()));
+    UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
+    text->SetText(StringToWString(n->GetName()));
+    
+    UIControl *icon = cell->FindByName("_Icon_");
+    icon->SetSprite("~res:/Gfx/UI/SceneNode/scenenode", 0);
+    
+//    cell->text->SetText(StringToWString(n->GetName()));
     if(n == workingNode)
     {
         cell->SetSelected(true, false);
@@ -173,6 +179,12 @@ void SceneGraph::UpdatePropertyPanel()
     if(workingNode && (NULL != graphTree->GetParent()))
     {
 		RecreatePropertiesPanelForNode(workingNode);
+        
+        if(propertyControl->GetParent() && propertyControl->GetParent() != propertyPanel)
+        {
+            propertyControl->GetParent()->RemoveControl(propertyControl);
+        }
+        
         if(!propertyControl->GetParent())
         {
             propertyPanel->AddControl(propertyControl);
