@@ -10,6 +10,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		FE7569131541CBE500EDC0E4 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE7569111541CBB500EDC0E4 /* libFramework.a */; };
 		FE76D9EE1163F2F0009E83B6 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */; };
 		FE76D9EF1163F2F0009E83B6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9ED1163F2F0009E83B6 /* OpenGLES.framework */; };
 		FE76D9F71163F304009E83B6 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE76D9F51163F304009E83B6 /* AVFoundation.framework */; };
@@ -27,16 +28,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C40C6F11520C2A60049875D /* PBXContainerItemProxy */ = {
+		FE7569101541CBB500EDC0E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5C40C6C81520C1550049875D /* Framework.xcodeproj */;
+			containerPortal = FE7569051541CBB400EDC0E4 /* Framework.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = Framework;
 		};
-		5C40C6F41520C2CE0049875D /* PBXContainerItemProxy */ = {
+		FE7569141541CBFC00EDC0E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5C40C6C81520C1550049875D /* Framework.xcodeproj */;
+			containerPortal = FE7569051541CBB400EDC0E4 /* Framework.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = Framework;
@@ -49,8 +50,8 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectiPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectiPhone_Prefix.pch; sourceTree = "<group>"; };
-		5C40C6C81520C1550049875D /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../dava.framework/Projects/iPhoneFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* TemplateProjectiPhone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TemplateProjectiPhone-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		FE7569051541CBB400EDC0E4 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../dava.framework/Projects/iPhoneFramework/Framework.xcodeproj; sourceTree = "<group>"; };
 		FE76D9EC1163F2F0009E83B6 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		FE76D9ED1163F2F0009E83B6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		FE76D9F51163F304009E83B6 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -77,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE7569131541CBE500EDC0E4 /* libFramework.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -118,7 +120,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				5C40C6C81520C1550049875D /* Framework.xcodeproj */,
+				FE7569051541CBB400EDC0E4 /* Framework.xcodeproj */,
 				FEFCD63312AE78D90060A1A1 /* Data */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -166,10 +168,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		5C40C6EE1520C2A60049875D /* Products */ = {
+		FE7569061541CBB400EDC0E4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5C40C6F21520C2A60049875D /* libFramework.a */,
+				FE7569111541CBB500EDC0E4 /* libFramework.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,7 +191,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				5C40C6F51520C2CE0049875D /* PBXTargetDependency */,
+				FE7569151541CBFC00EDC0E4 /* PBXTargetDependency */,
 			);
 			name = TemplateProjectiPhone;
 			productName = TemplateProjectiPhone;
@@ -215,8 +217,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 5C40C6EE1520C2A60049875D /* Products */;
-					ProjectRef = 5C40C6C81520C1550049875D /* Framework.xcodeproj */;
+					ProductGroup = FE7569061541CBB400EDC0E4 /* Products */;
+					ProjectRef = FE7569051541CBB400EDC0E4 /* Framework.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -227,11 +229,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		5C40C6F21520C2A60049875D /* libFramework.a */ = {
+		FE7569111541CBB500EDC0E4 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libFramework.a;
-			remoteRef = 5C40C6F11520C2A60049875D /* PBXContainerItemProxy */;
+			remoteRef = FE7569101541CBB500EDC0E4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -280,10 +282,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C40C6F51520C2CE0049875D /* PBXTargetDependency */ = {
+		FE7569151541CBFC00EDC0E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Framework;
-			targetProxy = 5C40C6F41520C2CE0049875D /* PBXContainerItemProxy */;
+			targetProxy = FE7569141541CBFC00EDC0E4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -318,7 +320,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Vitaliy Borodovsky (MS45DK374J)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_DEBUG;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -329,17 +331,13 @@
 					./../dava.framework/Sources/External,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = (
-					./../dava.framework/Libs/libs,
-					"$(SRCROOT)/../dava.framework/Projects/iPhoneFramework/build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
-				);
+				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
 				OTHER_LDFLAGS = (
-					"-lFramework",
 					"-ObjC",
 					"-lz",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1806687B-2E4A-46C6-B885-FFE5BB283826";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -347,7 +345,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_THUMB_SUPPORT = YES;
@@ -359,16 +357,13 @@
 					./../dava.framework/Sources/External,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = (
-					./../dava.framework/Libs/libs,
-					"$(SRCROOT)/../dava.framework/Projects/iPhoneFramework/build/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)",
-				);
+				LIBRARY_SEARCH_PATHS = ./../dava.framework/Libs/libs;
 				OTHER_LDFLAGS = (
-					"-lFramework",
 					"-ObjC",
 					"-lz",
 				);
 				PREBINDING = NO;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
