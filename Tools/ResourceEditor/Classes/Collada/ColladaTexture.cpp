@@ -101,7 +101,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
         int32 height = image->GetHeight();
         int32 width = image->GetWidth();
 
-        if (image->GetPixelFormat() == Image::FORMAT_RGBA8888)
+        if (image->GetPixelFormat() == FORMAT_RGBA8888)
         {
             for (int32 y = 0; y < height; ++y)
             {

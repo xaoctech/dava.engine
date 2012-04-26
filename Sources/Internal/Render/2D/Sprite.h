@@ -128,8 +128,8 @@ public:
 	 
 	 \return sprite pointer or 0 if it will be impossible to create such render target
 	 */	
-	static Sprite* CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded = false);
-	void InitAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded = false);
+	static Sprite* CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded = false);
+	void InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded = false);
 	
 	/*
 		\brief Function to create sprite
@@ -152,7 +152,10 @@ public:
 	 \return sprite pointer or 0 if it will be impossible to create such render target
 	 */	
 	static Sprite* CreateFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded = false);
-	void InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded = false);
+
+	static Sprite* CreateFromTexture(const Vector2 & spriteSize, Texture * fromTexture, const Vector2 & textureRegionOffset, const Vector2 & textureRegionSize);
+
+	void InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded = false);
 
 
     /*
@@ -268,12 +271,19 @@ public:
 	 */
     float32 *GetTextureVerts(int32 frame);
 
+	/**
+	\brief Convert sprite size as if it was created by Sprite::Create.
+	Useful when you create sprite by Sprite::CreateFromTexture and want to use it as normal (virtual sized).
+	Converts only first frame.
+	*/
+	void ConvertToVirtualSize();
+
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
 	
 protected:
 	Sprite();
-	Sprite(int32 sprWidth, int32 sprHeight, Texture::PixelFormat format);
+	Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);
 	virtual ~Sprite();
 
 	/** 

@@ -1,74 +1,52 @@
 #include "LandscapeToolsPanel.h"
 
 #include "ControlsFactory.h"
-#include "EditorSettings.h"
-
-#include "UICheckBox.h"
-
+#include "LandscapeTool.h"
 
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
+    ,   selectedBrushTool(NULL)
     ,   selectedTool(NULL)
     ,   delegate(newDelegate)
 {
     ControlsFactory::CustomizeDialogFreeSpace(this);
     
-    const String sprites[] = 
-    {
-        "~res:/Gfx/LandscapeEditor/Tools/RadialGradientIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/SpikeGradientIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/CircleIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/NoiseIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/ErodeIcon",
-        "~res:/Gfx/LandscapeEditor/Tools/WaterErodeIcon",
-    };
+    selectionPanel = NULL;
+
+    Rect closeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT);
+    UIButton *closeButton = ControlsFactory::CreateCloseWindowButton(closeRect);
+    closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnClose));
+    AddControl(closeButton);
+    SafeRelease(closeButton);
     
-    int32 x = 0;
-    int32 y = (ControlsFactory::TOOLS_HEIGHT - ControlsFactory::TOOL_BUTTON_SIDE) / 2;
-    for(int32 i = 0; i < PaintTool::EBT_COUNT; ++i, x += (ControlsFactory::TOOL_BUTTON_SIDE + OFFSET))
-    {
-        tools[i] = new PaintTool((PaintTool::eBrushType) i, sprites[i]);
-        
-        toolButtons[i] = new UIControl(Rect(x, y, ControlsFactory::TOOL_BUTTON_SIDE, ControlsFactory::TOOL_BUTTON_SIDE));
-        toolButtons[i]->SetSprite(tools[i]->spriteName, 0);
-        toolButtons[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnToolSelected));
-        
-        AddControl(toolButtons[i]);
-    }
-    
-    zoom = CreateSlider(Rect(rect.dx - SLIDER_WIDTH, 0, 
-                               SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
-    zoom->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnZoomChanged));
-    zoom->SetMinMaxValue(PaintTool::ZoomMin(), PaintTool::ZoomMax());
-    zoom->SetValue((PaintTool::ZoomMin() + PaintTool::ZoomMax()) / 2.0f);
+    brushIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+    brushIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnBrushTool));
+    brushIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+    AddControl(brushIcon);
     
     
-    intension = CreateSlider(Rect(rect.dx - SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2, 
-                                  SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
-    intension->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnIntensionChanged));
-    intension->SetMinMaxValue(PaintTool::IntensionMin(), PaintTool::IntensionMax());
-    intension->SetValue((PaintTool::IntensionMin() + PaintTool::IntensionMax()) / 2.0f);
+    sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH,
+                                   0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnSizeChanged));
+    AddControl(sizeSlider);
     
-    AddControl(intension);
-    AddControl(zoom);
+    strengthSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH, 
+                                       ControlsFactory::TOOLS_HEIGHT / 2, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    strengthSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnStrengthChanged));
+    AddControl(strengthSlider);
     
-    AddSliderHeader(zoom, LocalizedString(L"landscapeeditor.zoom"));
-    AddSliderHeader(intension, LocalizedString(L"landscapeeditor.intension"));
+    AddSliderHeader(sizeSlider, LocalizedString(L"landscapeeditor.size"));
+    AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
 }
 
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
-    SafeRelease(intension);
-    SafeRelease(zoom);
-    
-    for(int32 i = 0; i < PaintTool::EBT_COUNT; ++i)
-    {
-        SafeRelease(toolButtons[i]);
-        SafeRelease(tools[i]);
-    }
-}
+    SafeRelease(strengthSlider);
+    SafeRelease(sizeSlider);
 
+    SafeRelease(brushIcon);
+}
 
 UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
 {
@@ -102,63 +80,159 @@ void LandscapeToolsPanel::AddSliderHeader(UISlider *slider, const WideString &te
     SafeRelease(textControl);
 }
 
+UICheckBox *LandscapeToolsPanel::CreateCkeckbox(const Rect &rect, const WideString &text)
+{
+    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
+    checkbox->SetDelegate(this);
+    AddControl(checkbox);
+    
+    Rect textRect;
+    textRect.x = rect.x + rect.dx + OFFSET;
+    textRect.y = rect.y;
+    textRect.dx = TEXT_WIDTH;
+    textRect.dy = rect.dy;
+    
+    UIStaticText *textControl = new UIStaticText(textRect);
+    textControl->SetText(text);
+    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
+    AddControl(textControl);
+    SafeRelease(textControl);
+    
+    return checkbox;
+}
+
+
+LandscapeTool * LandscapeToolsPanel::CurrentTool()
+{
+    return selectedTool;
+}
+
+void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
+{
+    selectionPanel = newPanel;
+    if(selectionPanel)
+    {
+        selectionPanel->SetDelegate(this);
+    }
+}
+
+void LandscapeToolsPanel::OnClose(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(delegate)
+    {
+        delegate->OnToolsPanelClose();
+    }
+}
+
+void LandscapeToolsPanel::OnBrushTool(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedTool == selectedBrushTool)
+    {
+        if(selectionPanel)
+        {
+            selectionPanel->Show();
+        }
+    }
+    else 
+    {
+        selectedTool = selectedBrushTool;
+        if(delegate)
+        {
+            delegate->OnToolSelected(selectedTool);
+        }
+    }
+    
+    ToolIconSelected(brushIcon);
+}
 
 void LandscapeToolsPanel::WillAppear()
 {
-    if(!selectedTool)
+    if(selectionPanel)
     {
-        toolButtons[0]->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+        selectedBrushTool = selectionPanel->Tool();
+        selectedTool = selectedBrushTool;
+        if(selectedBrushTool)
+        {
+            brushIcon->SetSprite(selectedBrushTool->sprite, 0);
+        }
+        else 
+        {
+            brushIcon->SetSprite(NULL, 0);
+        }
+        ToolIconSelected(brushIcon);
     }
-    
-    UIControl::WillAppear();
 }
 
-void LandscapeToolsPanel::OnToolSelected(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanel::Input(DAVA::UIEvent *currentInput)
 {
-    UIControl *button = (UIControl *)object;
-    
-    for(int32 i = 0; i < PaintTool::EBT_COUNT; ++i)
-    {
-        if(button == toolButtons[i])
-        {
-            selectedTool = tools[i];
-            toolButtons[i]->SetDebugDraw(true);
-            
-            intension->SetValue(selectedTool->intension);
-            zoom->SetValue(selectedTool->zoom);
-            
-//            selectedTool->zoom = zoom->GetValue();
-        }
-        else
-        {
-            toolButtons[i]->SetDebugDraw(false);
-        }
+    if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
+    { 
+       if('+' == currentInput->keyChar) 
+       {
+           float32 sz = sizeSlider->GetValue();
+           float32 maxVal = sizeSlider->GetMaxValue();
+           
+           sz += maxVal * 0.05f;
+           sizeSlider->SetValue(Min(sz, maxVal));
+           sizeSlider->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+       }
+       else if('-' == currentInput->keyChar)
+       {
+           float32 sz = sizeSlider->GetValue();
+           float32 maxVal = sizeSlider->GetMaxValue();
+           
+           sz -= maxVal * 0.05f;
+           sizeSlider->SetValue(Max(sz, sizeSlider->GetMinValue()));
+           sizeSlider->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+       }
     }
+}
+
+void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedBrushTool)
+    {
+        selectedBrushTool->strength = strengthSlider->GetValue();
+    }
+}
+
+void LandscapeToolsPanel::OnSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedBrushTool)
+    {
+        selectedBrushTool->size = sizeSlider->GetValue();
+    }
+}
+
+void LandscapeToolsPanel::ToolIconSelected(UIControl *focused)
+{
+    brushIcon->SetDebugDraw(focused == brushIcon);
+}
+
+
+
+#pragma mark  --LandscapeToolsSelectionDelegate
+void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
+{
+    DVASSERT(newTool);
+    
+    newTool->size = sizeSlider->GetValue();
+    newTool->strength = strengthSlider->GetValue();
+
+    
+    selectedBrushTool = newTool;
+    selectedTool = selectedBrushTool;
+    brushIcon->SetSprite(selectedBrushTool->sprite, 0);
     
     if(delegate)
     {
-        delegate->OnToolSelected(selectedTool);
+        delegate->OnToolSelected(newTool);
     }
 }
 
-void LandscapeToolsPanel::OnIntensionChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+#pragma mark  --UICheckBoxDelegate
+void LandscapeToolsPanel::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
-    if(selectedTool)
-    {
-        selectedTool->intension = intension->GetValue();
-    }
-}
-
-void LandscapeToolsPanel::OnZoomChanged(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(selectedTool)
-    {
-        selectedTool->zoom = zoom->GetValue();
-    }
-}
-
-PaintTool * LandscapeToolsPanel::CurrentTool()
-{
-    return selectedTool;
 }
 

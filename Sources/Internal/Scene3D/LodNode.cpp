@@ -337,7 +337,7 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
         size_t size = ld.nodes.size();
         for (size_t idx = 0; idx < size; ++idx)
         {
-            for (int i = 0; i < children.size(); i++) 
+            for (int i = 0; i < (int)children.size(); i++) 
             {
                 if(children[i] == ld.nodes[idx])
                 {
@@ -377,7 +377,7 @@ void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
         for (size_t idx = 0; idx < size; ++idx)
         {
-            for (int i = 0; i < children.size(); i++) 
+            for (int i = 0; i < (int)children.size(); i++) 
             {
                 if(children[i] == ld.nodes[idx])
                 {

@@ -71,17 +71,17 @@ bool PVRUtils::GetPVRHeader(PVRHeader *header, const String &path)
     return false;
 }
 
-Texture::PixelFormat PVRUtils::GetPVRFormat(int32 format)
+PixelFormat PVRUtils::GetPVRFormat(int32 format)
 {
-    Texture::PixelFormat retFormat = Texture::FORMAT_INVALID;
+    PixelFormat retFormat = FORMAT_INVALID;
     uint32 formatFlags = format & PVR_TEXTURE_FLAG_TYPE_MASK;
     if(kPVRTextureFlagTypePVRTC_4 == formatFlags)
     {
-        retFormat = Texture::FORMAT_PVR4;
+        retFormat = FORMAT_PVR4;
     }
     else if(kPVRTextureFlagTypePVRTC_2 == formatFlags)
     {
-        retFormat = Texture::FORMAT_PVR2;
+        retFormat = FORMAT_PVR2;
     }
     
     return retFormat;
@@ -99,7 +99,7 @@ uint32 PVRUtils::GetPVRDataLength(const String &path)
     return 0;
 }
 
-Texture::PixelFormat PVRUtils::GetPVRFormat(const String &path)
+PixelFormat PVRUtils::GetPVRFormat(const String &path)
 {
     PVRHeader header;
     bool ret = GetPVRHeader(&header, path);
@@ -108,7 +108,7 @@ Texture::PixelFormat PVRUtils::GetPVRFormat(const String &path)
         return GetPVRFormat(header.flags);
     }
     
-    return Texture::FORMAT_INVALID;
+    return FORMAT_INVALID;
 }
 
 WideString PVRUtils::SizeInBytesToWideString(float32 size)

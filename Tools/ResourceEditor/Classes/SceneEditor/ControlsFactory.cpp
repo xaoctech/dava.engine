@@ -276,10 +276,10 @@ void ControlsFactory::CustomizeListCellAlternative(UIListCell *c, const WideStri
 
 void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 {
-    Font *font = GetFontDark();
-    
-    c->text->SetFont(font);
-    c->text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
+//    Font *font = GetFontDark();
+//    
+//    c->text->SetFont(font);
+//    c->text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
     
 //    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);

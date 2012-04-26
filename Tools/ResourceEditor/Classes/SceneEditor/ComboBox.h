@@ -65,6 +65,8 @@ protected:
     
     int32 selectionIndex;
     
+    int32 listWidth;
+    
 };
 
 #endif

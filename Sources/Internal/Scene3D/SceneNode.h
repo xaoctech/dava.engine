@@ -167,9 +167,16 @@ public:
         NODE_WORLD_MATRIX_ACTUAL = 1, // if this flag set this means we do not need to rebuild worldMatrix
         NODE_VISIBLE = 1 << 1, // is node and subnodes should draw
         NODE_UPDATABLE = 1 << 2, // is node and subnodes should updates. This flag is updated by the engine and can be changed at any time. Flag is always rise up on node loading
-        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node
-        NODE_LOCAL_MATRIX_IDENTITY = 1 << 4,
+        NODE_IS_LOD_PART = 1 << 3, // node is part of a LOD node.
+        NODE_LOCAL_MATRIX_IDENTITY = 1 << 4, // local matrix of this node is identity. Used to avoid unnecessary computations.
         
+        BOUNDING_VOLUME_AABB = 1 << 5,  // node has axial aligned bounding box.
+        BOUNDING_VOLUME_OOB = 1 << 6,   // node has object oriented bounding box.
+        BOUNDING_VOLUME_SPHERE = 1 << 7,    // node has bounding sphere.
+
+        NODE_CLIPPED_PREV_FRAME = 1 << 8, // 
+        NODE_CLIPPED_THIS_FRAME = 1 << 9, // 
+        NODE_INVALID = 1 << 10,  // THIS NODE not passed some of verification stages and marked as invalid. Such nodes shouldn't be drawn.
         
         // I decided to put scene flags here to avoid 2 variables. But probably we can create additional variable later if it'll be required.
         SCENE_LIGHTS_MODIFIED = 1 << 31,
@@ -201,6 +208,7 @@ public:
 		DEBUG_DRAW_AABOX_CORNERS = 4,
 		DEBUG_DRAW_LIGHT_NODE = 8,
         DEBUG_DRAW_NORMALS = 16,
+        DEBUG_DRAW_GRID = 32,
         DEBUG_DRAW_ALL = 0xFFFFFFFF,
 	};
 	/**
@@ -263,17 +271,36 @@ public:
      */
     KeyedArchive *GetCustomProperties();
     
-    /*
+    /**
         \brief This function should be implemented in each node that have data nodes inside it.
      */
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
-    
+    /**
+        \brief Function to get data nodes of requested type to specific container you provide.
+     */
     template<template <typename> class Container, class T>
 	void GetDataNodes(Container<T> & container);
+    
+    /**
+        \brief Function to get child nodes of requested type and move them to specific container you provide.
+        For example if you want to get a list of MeshInstanceNodes you should do the following.
+        \code   
+        #include "Scene3D/SceneNode.h"
+        #include "Scene3D/MeshInstanceNode.h"  // You should include MeshInstanceNode because SceneNode class do not know the type of node you want to convert to. 
+        
+        void YourClass::YourFunction()
+        {
+            List<MeshInstanceNode*> meshNodes;
+            scene->GetChildNodes(meshNodes);
+        }
+        \endcode
+     */
+    template<template <typename> class Container, class T>
+	void GetChildNodes(Container<T> & container);
         
     /**
-        \brief this function is called after scene is loaded from file
-        You can perform additional initialization here
+        \brief This function is called after scene is loaded from file.
+        You can perform additional initialization here.
      */
     virtual void SceneDidLoaded();
     
@@ -449,6 +476,22 @@ void SceneNode::GetDataNodes(Container<T> & container)
         T res = dynamic_cast<T> (obj);
         if (res)
             container.push_back(res);
+    }	
+}
+    
+template<template <typename> class Container, class T>
+void SceneNode::GetChildNodes(Container<T> & container)
+{    
+    Vector<SceneNode*>::const_iterator end = children.end();
+    for (Vector<SceneNode*>::iterator t = children.begin(); t != end; ++t)
+    {
+        SceneNode* obj = *t;
+        
+        T res = dynamic_cast<T> (obj);
+        if (res)
+            container.push_back(res);
+        
+        obj->GetChildNodes(container);
     }	
 }
 

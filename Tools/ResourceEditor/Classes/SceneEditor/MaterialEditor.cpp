@@ -11,21 +11,12 @@
 #include "ControlsFactory.h"
 #include "SceneValidator.h"
 
+#include "MaterialPropertyControl.h"
+
 static const float32 materialListPart = 0.33;
 static const float32 previewHeightPart = 0.5;
 
-static const String textureNames[] = {
-    "Diffuse texture"
-    , "Decal texture"
-    , "Detail texture"
-    , "Normal map"};
-
-static const int32 textureTypes[] = {
-    Material::TEXTURE_DIFFUSE
-    , Material::TEXTURE_DECAL
-    , Material::TEXTURE_DETAIL
-    , Material::TEXTURE_NORMALMAP};
-
+#pragma mark  --MaterialEditor
 MaterialEditor::MaterialEditor()
 : DraggableDialog(Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3))
 {//todo: create draggable dealog
@@ -52,6 +43,7 @@ MaterialEditor::MaterialEditor()
                                     materialListWidth, size.y - ControlsFactory::BUTTON_HEIGHT * 2), 
                                UIList::ORIENTATION_VERTICAL);
     materialsList->SetDelegate(this);
+    ControlsFactory::SetScrollbar(materialsList);
     ControlsFactory::CusomizeListControl(materialsList);
     AddControl(materialsList);
     UIStaticText *text = new UIStaticText(Rect(0, 0, size.x * materialListPart, ControlsFactory::BUTTON_HEIGHT));
@@ -65,7 +57,6 @@ MaterialEditor::MaterialEditor()
     noMaterials->SetFont(ControlsFactory::GetFontLight());
     noMaterials->SetText(LocalizedString(L"materialeditor.nomaterials"));
     
-    
     selectedMaterial = -1;
     lastSelection = NULL;
     Vector<String> v;
@@ -74,65 +65,13 @@ MaterialEditor::MaterialEditor()
         v.push_back(Material::GetTypeName((Material::eType)i));
     }
     
-    
-    comboboxName = new UIStaticText(Rect(size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20));
-    comboboxName->SetFont(ControlsFactory::GetFontLight());
-    comboboxName->SetText(LocalizedString(L"materialeditor.materialtype"));
-    comboboxName->SetAlign(ALIGN_RIGHT|ALIGN_VCENTER);
-    AddControl(comboboxName);
-
-    materialTypes = new ComboBox(Rect(size.x - size.x * materialListPart, size.y * previewHeightPart, size.x * materialListPart, 20), this, v);
-    AddControl(materialTypes);
-    
-    for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
-    {
-        materialProps[i] = new PropertyList(Rect(size.x * materialListPart, size.y * previewHeightPart + 25, size.x - size.x * materialListPart, size.y - size.y * previewHeightPart - 25), this);
-        materialProps[i]->AddStringProperty("Name");
-
-        materialProps[i]->AddFilepathProperty(textureNames[ME_DIFFUSE], ".png;.pvr");
-        if (i == Material::MATERIAL_UNLIT_TEXTURE_DECAL
-            || i == Material::MATERIAL_VERTEX_LIT_DECAL)
-        {
-            materialProps[i]->AddFilepathProperty(textureNames[ME_DECAL], ".png;.pvr");
-        }
-
-        if (i == Material::MATERIAL_UNLIT_TEXTURE_DETAIL
-            || i == Material::MATERIAL_VERTEX_LIT_DETAIL)
-        {
-            materialProps[i]->AddFilepathProperty(textureNames[ME_DETAIL], ".png;.pvr");
-        }
-
-        if (i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP)
-        {
-            materialProps[i]->AddFilepathProperty(textureNames[ME_NORMAL_MAP], ".png;.pvr");
-        }
-        
-        materialProps[i]->AddBoolProperty("Is Opaque");
-        materialProps[i]->AddBoolProperty("materialeditor.twosided");
-        
-        if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
-            || i == Material::MATERIAL_VERTEX_LIT_DECAL
-            || i == Material::MATERIAL_VERTEX_LIT_DETAIL
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP)
-        {
-            materialProps[i]->AddColorProperty("materialeditor.ambientcolor");
-            materialProps[i]->AddColorProperty("materialeditor.diffusecolor");
-        }
-
-        if (i == Material::MATERIAL_VERTEX_LIT_TEXTURE
-            || i == Material::MATERIAL_VERTEX_LIT_DECAL
-            || i == Material::MATERIAL_VERTEX_LIT_DETAIL
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR
-            || i == Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP)
-        {
-            materialProps[i]->AddColorProperty("materialeditor.specularcolor");
-            materialProps[i]->AddFloatProperty("materialeditor.specularshininess");
-        }
-    }
+    materialProps = new MaterialPropertyControl(Rect(size.x * materialListPart, 
+                                                      size.y * previewHeightPart, 
+                                                      size.x - size.x * materialListPart, 
+                                                      size.y - size.y * previewHeightPart),
+                                                 false);
+    materialProps->SetDelegate(this);
+    AddControl(materialProps);
 }
 
 MaterialEditor::~MaterialEditor()
@@ -156,8 +95,8 @@ MaterialEditor::~MaterialEditor()
     SafeRelease(btnSelected);
     SafeRelease(btnAll);
     SafeRelease(materialsList);
-    SafeRelease(comboboxName);
-    SafeRelease(materialTypes);
+    
+    SafeRelease(materialProps);
 }
 
 void MaterialEditor::UpdateInternalMaterialsVector()
@@ -243,6 +182,8 @@ void MaterialEditor::EditMaterial(Scene *newWorkingScene, Material *newWorkingMa
     SafeRelease(workingScene);
     
     workingScene = SafeRetain(newWorkingScene);
+    materialProps->SetWorkingScene(workingScene);
+
     workingMaterial = SafeRetain(newWorkingMaterial);
     
     UdpateButtons(NULL != workingMaterial);
@@ -264,6 +205,8 @@ void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorki
     SafeRelease(workingScene);
 
     workingScene = SafeRetain(newWorkingScene);
+    materialProps->SetWorkingScene(workingScene);
+
     workingSceneNode = SafeRetain(newWorkingSceneNode);
 
     UdpateButtons(NULL != workingSceneNode);
@@ -276,149 +219,29 @@ void MaterialEditor::OnButton(BaseObject * object, void * userData, void * calle
 {
 }
 
-void MaterialEditor::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
-{
-    if (forComboBox == materialTypes) 
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        if(mat)
-        {
-            mat->SetType((Material::eType)itemIndex);
-            PreparePropertiesForMaterialType(mat->type);
-        }
-    }
-}
-
-
-void MaterialEditor::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
-{
-    if (forKey == "Name") 
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        if(mat)
-        {
-            mat->SetName(newValue);
-            materialsList->Refresh();
-        }
-    }
-}
-
-void MaterialEditor::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
-{    
-    if ("materialeditor.specularshininess" == forKey)
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        mat->SetShininess(newValue);
-    }
-}
-
-void MaterialEditor::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
-{
-    if("materialeditor.ambientcolor" == forKey)
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        mat->SetAmbientColor(newColor);
-    }
-    else if("materialeditor.diffusecolor" == forKey)
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        mat->SetDiffuseColor(newColor);
-    }
-    else if("materialeditor.specularcolor" == forKey)
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        mat->SetSpecularColor(newColor);
-    }
-}
-
-void MaterialEditor::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
-{
-}
-
-void MaterialEditor::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
-{
-    if(forKey == "Is Opaque")
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        if(mat)
-        {
-            mat->SetOpaque(newValue);
-        }
-    }
-    else if("materialeditor.twosided" == forKey)
-    {
-        Material *mat = GetMaterial(selectedMaterial);
-        if(mat)
-        {
-            mat->SetTwoSided(newValue);
-        }
-    }
-}
-
-void MaterialEditor::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
-{
-    for (int i = 0; i < ME_TEX_COUNT; i++) 
-    {
-        if (forKey == textureNames[i]) 
-        {
-            Material *mat = GetMaterial(selectedMaterial);
-            if(mat)
-            {
-                mat->SetTexture((Material::eTextureLevel)textureTypes[i], newValue);
-                Texture *tx = mat->textures[textureTypes[i]];
-                if(tx)
-                {
-                    SceneValidator::Instance()->ValidateTexture(tx);
-                }
-                else 
-                {
-                    materialProps[mat->type]->SetFilepathPropertyValue(textureNames[i], "");
-                }
-            }
-
-            break;
-        }
-    }
-}
-
-
 void MaterialEditor::SelectMaterial(int materialIndex)
 {
     Material *mat = GetMaterial(materialIndex);
     if(mat)
     {
         selectedMaterial = materialIndex;
-        
-        if(!materialTypes->GetParent())
-        {
-            AddControl(materialTypes);
-            AddControl(comboboxName);
-        }
+
         if(noMaterials->GetParent())
         {
             RemoveControl(noMaterials);
         }
 
         PreparePropertiesForMaterialType(mat->type);
-        materialTypes->SetSelectedIndex(mat->type, false);
     }
     else
     {
         selectedMaterial = -1;
         
-        for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
+        if (materialProps->GetParent())
         {
-            if (materialProps[i]->GetParent())
-            {
-                RemoveControl(materialProps[i]);
-            }
+            RemoveControl(materialProps);
         }
-        
-        if(materialTypes->GetParent())
-        {
-            RemoveControl(materialTypes);
-            RemoveControl(comboboxName);
-        }
+
         if(!noMaterials->GetParent())
         {
             AddControl(noMaterials);
@@ -428,62 +251,15 @@ void MaterialEditor::SelectMaterial(int materialIndex)
 
 void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
 {
-    for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
+    if(!materialProps->GetParent())
     {
-        if (materialProps[i]->GetParent())
-        {
-            RemoveControl(materialProps[i]);
-        }
+        AddControl(materialProps);
     }
-    AddControl(materialProps[materialType]);
-    
-    PropertyList *currentList = materialProps[materialType];
     
     Material *mat = GetMaterial(selectedMaterial);
     if(mat)
     {
-        currentList->SetStringPropertyValue("Name", mat->GetName());
-        for (int i = 0; i < ME_TEX_COUNT; i++) 
-        {
-            if (currentList->IsPropertyAvaliable(textureNames[i]))
-            {
-                if (mat->textures[textureTypes[i]])
-                {
-                    currentList->SetFilepathPropertyValue(textureNames[i], mat->names[textureTypes[i]]);
-                }
-                else 
-                {
-                    currentList->SetFilepathPropertyValue(textureNames[i], "");
-                }
-            }
-        }
-        
-        
-        currentList->SetBoolPropertyValue("Is Opaque", mat->GetOpaque());
-        currentList->SetBoolPropertyValue("materialeditor.twosided", mat->GetTwoSided());
-
-        if(currentList->IsPropertyAvaliable("materialeditor.ambientcolor"))
-        {
-            currentList->SetColorPropertyValue("materialeditor.ambientcolor", 
-                                               mat->GetAmbientColor());
-        }
-        
-        if(currentList->IsPropertyAvaliable("materialeditor.diffusecolor"))
-        {
-            currentList->SetColorPropertyValue("materialeditor.diffusecolor", 
-                                               mat->GetDiffuseColor());
-        }
-        
-        if(currentList->IsPropertyAvaliable("materialeditor.specularcolor"))
-        {
-            currentList->SetColorPropertyValue("materialeditor.specularcolor", 
-                                               mat->GetSpecularColor());
-        }
-        
-        if(currentList->IsPropertyAvaliable("materialeditor.specularshininess"))
-        {
-            currentList->SetFloatPropertyValue("materialeditor.specularshininess", mat->GetShininess());
-        }
+        materialProps->ReadFrom(mat);
     }    
 }
 
@@ -658,4 +434,10 @@ Material * MaterialEditor::GetMaterial(int32 index)
         }
     }
     return mat;
+}
+
+#pragma mark  --NodesPropertyDelegate
+void MaterialEditor::NodesPropertyChanged()
+{
+    RefreshList();
 }

@@ -37,6 +37,8 @@
 #include "Base/BaseMath.h"
 #include "Utils/StringFormat.h"
 
+#include "Debug/Stats.h"
+
 #include "FileSystem/Logger.h"
 #include "Platform/SystemTimer.h"
 
@@ -197,6 +199,9 @@
 #include "Scene3D/LightNode.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
+#include "Scene3D/BVHierarchy.h"
+#include "Scene3D/QuadTree.h"
+#include "Scene3D/ImposterNode.h"
 
 
 // Application core 

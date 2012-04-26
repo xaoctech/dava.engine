@@ -143,6 +143,12 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
             sceneNode = new Camera(scene);
             sceneNode->SetName("Camera");
             break;
+
+		case ECNID_IMPOSTER:
+			SetHeader(LocalizedString(L"createnode.imposter"));
+			sceneNode = new ImposterNode(scene);
+			sceneNode->SetName("Imposter");
+			break;
             
         default:
             break;

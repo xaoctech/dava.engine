@@ -73,7 +73,7 @@ public:
 	//! in another case bounding box become larger
 	//! \param pt point to add
 	inline void AddPoint(const Vector2 & pt);
-	inline void AddAABBox(AABBox2 & bbox);
+	inline void AddAABBox(const AABBox2 & bbox);
 	
 	//! \brief make bounding box empty
 	inline void Empty();
@@ -90,7 +90,7 @@ public:
 	bool IsIntersectsWithBox(const AABBox2 & box);
 	
 	//! \brief check if point inside bbox
-	inline bool IsInside(const Vector2 & pt);
+	inline bool IsInside(const Vector2 & pt) const;
 	
 	//! \brief get center
 	inline Vector2 GetCenter();
@@ -144,7 +144,7 @@ inline void AABBox2::AddPoint(const Vector2 & pt)
 		max.y = pt.y;
 }
 	
-inline void AABBox2::AddAABBox(AABBox2 & bbox)
+inline void AABBox2::AddAABBox(const AABBox2 & bbox)
 {
 	AddPoint(bbox.min);
 	AddPoint(bbox.max);
@@ -176,7 +176,7 @@ inline bool IsIntersectLine(const Vector2 & l1, const Vector2 &l2)
 }
 
 //! \brief check if point inside bbox
-inline bool AABBox2::IsInside(const Vector2 & pt)
+inline bool AABBox2::IsInside(const Vector2 & pt) const
 {
 	if (
 		(min.x <= pt.x)

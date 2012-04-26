@@ -361,14 +361,14 @@ Sprite* Sprite::Create(const String &spriteName)
 	return spr;
 }
 
-Sprite* Sprite::CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded)
+Sprite* Sprite::CreateAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded)
 {
 	Sprite * sprite = new Sprite();
 	sprite->InitAsRenderTarget(sprWidth, sprHeight, textureFormat, contentScaleIncluded);
 	return sprite;
 }
 
-void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::PixelFormat textureFormat, bool contentScaleIncluded)
+void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, PixelFormat textureFormat, bool contentScaleIncluded)
 {
 	if (!contentScaleIncluded)
 	{
@@ -376,9 +376,9 @@ void Sprite::InitAsRenderTarget(float32 sprWidth, float32 sprHeight, Texture::Pi
 		sprHeight = sprHeight * Core::GetVirtualToPhysicalFactor();
 	}
 
-	Texture *t = Texture::CreateFBO((int32)ceilf(sprWidth), (int32)ceilf(sprHeight), textureFormat);
+	Texture *t = Texture::CreateFBO((int32)ceilf(sprWidth), (int32)ceilf(sprHeight), textureFormat, Texture::DEPTH_NONE);
 	
-	this->InitFromTexture(t, 0, 0, sprWidth, sprHeight, true);
+	this->InitFromTexture(t, 0, 0, sprWidth, sprHeight, -1, -1, true);
 	
 	t->Release();
 	
@@ -397,11 +397,20 @@ Sprite* Sprite::CreateFromTexture(Texture *fromTexture, int32 xOffset, int32 yOf
 	DVASSERT(fromTexture);
 	Sprite *spr = new Sprite();
 	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
-	spr->InitFromTexture(fromTexture, xOffset, yOffset, sprWidth, sprHeight, contentScaleIncluded);
+	spr->InitFromTexture(fromTexture, xOffset, yOffset, sprWidth, sprHeight, -1, -1, contentScaleIncluded);
 	return spr;
 }
 
-void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded)
+Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTexture, const Vector2 & textureRegionOffset, const Vector2 & textureRegionSize)
+{
+	DVASSERT(fromTexture);
+	Sprite *spr = new Sprite();
+	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
+	spr->InitFromTexture(fromTexture, textureRegionOffset.x, textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, spriteSize.x, spriteSize.y, false);
+	return spr;
+}
+
+void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded)
 {
 	if (!contentScaleIncluded) 
 	{
@@ -1371,7 +1380,20 @@ void Sprite::SetClipPolygon(Polygon2 * _clipPolygon)
 {
 	clipPolygon = _clipPolygon;
 }
-	
+
+void Sprite::ConvertToVirtualSize()
+{
+	frameVertices[0][0] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][1] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][2] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][3] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][4] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][5] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][6] *= Core::Instance()->GetVirtualToPhysicalFactor();
+	frameVertices[0][7] *= Core::Instance()->GetVirtualToPhysicalFactor();
+}
+
+
 void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState)
 {
 	position.x = parentState.position.x + localState.position.x * parentState.scale.x;

@@ -34,6 +34,7 @@ protected:
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
     void OnBakeMatricesPressed(BaseObject * obj, void *, void *);
+    void OnBuildQuadTreePressed(BaseObject * obj, void *, void *);
     void OnRefreshGraph(BaseObject * obj, void *, void *);
 
     void RecreatePropertiesPanelForNode(SceneNode *node);

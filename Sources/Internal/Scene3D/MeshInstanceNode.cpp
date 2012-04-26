@@ -87,6 +87,8 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
+	ClearLightmaps();
+
     for (int32 idx = 0; idx < (int32)polygroups.size(); ++idx)
     {
         SafeRelease(polygroups[idx]);
@@ -128,8 +130,9 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     
 void MeshInstanceNode::Draw()
 {
-	if (!(flags&SceneNode::NODE_VISIBLE))return;
-        
+#if 1
+    if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
+
 //    if (GetFullName() == String("MaxScene->node-Cylinder01->VisualSceneNode14->instance_0"))
 //    {
 //        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -137,8 +140,9 @@ void MeshInstanceNode::Draw()
 //        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //    }    
 
-    if (!scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox))
+    if (flags & NODE_CLIPPED_THIS_FRAME)
     {
+        // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
         return;
     }
 		
@@ -185,7 +189,12 @@ void MeshInstanceNode::Draw()
 				polygroup->material->SetSetupLightmapSize(GetCustomProperties()->GetInt32(DAVA::Format("#%d.lightmap.size", k), 128));
 			}
         }
-        
+
+//        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+//        {
+//            polygroup->material->type = Material::MATERIAL_UNLIT_TEXTURE;
+//        }
+//        if (polygroup->material->type != Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
         polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
     }
 	
@@ -279,6 +288,7 @@ void MeshInstanceNode::Draw()
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 
 	SceneNode::Draw();
+#endif
 }
 
 
@@ -401,7 +411,9 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
             if (material && mesh)
             {
-                Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                if(sceneFile->DebugLogEnabled())
+                    Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                
                 AddPolygonGroup(mesh, pgIndex, material);
             }
         }
@@ -425,7 +437,8 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
                     if (material && mesh)
                     {
-                        Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                        if(sceneFile->DebugLogEnabled())
+                            Logger::Debug("+ assign material: %s", material->GetName().c_str());
                         
                         AddPolygonGroup(mesh, pgIndex, material);
                     }
@@ -602,7 +615,7 @@ void MeshInstanceNode::BakeTransforms()
         else
         {
             canBakeEverything = false; 
-            Logger::Debug("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
+            Logger::Warning("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
         }
     }   
     if (canBakeEverything)
