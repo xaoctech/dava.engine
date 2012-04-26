@@ -516,8 +516,9 @@ void Camera::Draw()
 
 Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport)
 {
-	
-	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
+//	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
+    
+    Matrix4 finalMatrix = GetUniformProjModelMatrix();
 	finalMatrix.Inverse();		
 
 	Vector4 in(winx, winy, winz, 1.0f);

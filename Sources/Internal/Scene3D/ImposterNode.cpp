@@ -39,7 +39,7 @@ ImposterNode::ImposterNode(Scene * scene)
 {
 	state = STATE_3D;
 	renderData = 0;
-	fbo = Texture::CreateFBO(512, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
+	fbo = Texture::CreateFBO(512, 512, FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
 }
 
 ImposterNode::~ImposterNode()
@@ -67,7 +67,7 @@ void ImposterNode::Draw()
 		{
 			if(distanceSquare > 300)
 			{
-				UpdateImposter();
+				UpdateImposter(false);
 				state = STATE_IMPOSTER;
 			}
 			else
@@ -82,17 +82,33 @@ void ImposterNode::Draw()
 			const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
 			Matrix4 meshFinalMatrix;
 
+			//Matrix4 inverse(Matrix4::IDENTITY);
+
+			//inverse._00 = cameraMatrix._00;
+			//inverse._01 = cameraMatrix._10;
+			//inverse._02 = cameraMatrix._20;
+
+			//inverse._10 = cameraMatrix._01;
+			//inverse._11 = cameraMatrix._11;
+			//inverse._12 = cameraMatrix._21;
+
+			//inverse._20 = cameraMatrix._02;
+			//inverse._21 = cameraMatrix._12;
+			//inverse._22 = cameraMatrix._22;
+
+			//meshFinalMatrix = inverse * worldTransform * modelViewMatrix;
+
 			meshFinalMatrix = /*worldTransform **/ cameraMatrix;
 
 			RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
-			RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+			RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
 
 			RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, 1.f);
 			
 			//RenderManager::Instance()->SetState(/*RenderStateBlock::STATE_BLEND |*/ RenderStateBlock::STATE_TEXTURE0/* | RenderStateBlock::STATE_CULL*/);
 			RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
 			//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-			RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+			//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
 			eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 			eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 			RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
@@ -118,20 +134,28 @@ void ImposterNode::Draw()
 			{
 				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
 				newDirection.Normalize();
-				if(newDirection.DotProduct(direction) < 0.99999f)
+				if(newDirection.DotProduct(direction) < 0.996f)
 				{
-					UpdateImposter();
+					UpdateImposter(false);
+				}
+				else
+				{
+					UpdateImposter(true);
 				}
 			}
 		}
 	}
 }
 
-void ImposterNode::UpdateImposter()
+void ImposterNode::UpdateImposter(bool onlyGeometry)
 {
 	SafeRelease(renderData);
 	verts.clear();
 	texCoords.clear();
+
+	Camera * camera = scene->GetCurrentCamera();
+	Camera * imposterCamera = new Camera();
+	Vector3 cameraPos = camera->GetPosition();
 
 	SceneNode * child = GetChild(0);
 	AABBox3 bbox = child->GetWTMaximumBoundingBox();
@@ -139,10 +163,18 @@ void ImposterNode::UpdateImposter()
 	Vector3 screenVertices[8];
 	bbox.GetCorners(bboxVertices);
 
-	Rect viewport = RenderManager::Instance()->GetViewport();
-	Camera * camera = scene->GetCurrentCamera();
+	imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
+	imposterCamera->SetTarget(bbox.GetCenter());
+	imposterCamera->SetPosition(cameraPos);
+	imposterCamera->SetUp(camera->GetUp());
+	imposterCamera->SetLeft(camera->GetLeft());
+	imposterCamera->Set();
 
-	Matrix4 mvp = camera->GetUniformProjModelMatrix();
+
+	Rect viewport = RenderManager::Instance()->GetViewport();
+	
+
+	Matrix4 mvp = imposterCamera->GetUniformProjModelMatrix();
 
 	AABBox3 screenBounds;
 	for(int32 i = 0; i < 8; ++i)
@@ -188,51 +220,38 @@ void ImposterNode::UpdateImposter()
 	}
 	center /= 4.f;
 
-	direction = camera->GetPosition()-center;
-	direction.Normalize();
-
-	Vector3 * nearestPoint;
-	Vector3 cameraPos = camera->GetPosition();
-	float32 minRange = 1000000000.f;
-	//added
-	for(int32 i = 0; i < 8; ++i)
+	if(!onlyGeometry)
 	{
-		float32 sRange = (bboxVertices[i]-cameraPos).SquareLength();
-		if(sRange < minRange)
-		{
-			minRange = sRange;
-			nearestPoint = &bboxVertices[i];
-		}
+		direction = camera->GetPosition()-center;
+		direction.Normalize();
+
+		float32 nearPlane = (center-cameraPos).Length();
+		float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
+		float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
+		float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
+		imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
+
+		Rect oldViewport = RenderManager::Instance()->GetViewport();
+
+		RenderManager::Instance()->SetRenderTarget(fbo);
+		imposterCamera->SetTarget(center);
+		imposterCamera->Set();
+		RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
+		RenderManager::Instance()->ClearDepthBuffer();
+
+		child->Draw();
+
+#ifdef __DAVAENGINE_OPENGL__
+		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+#endif
+
+		//Image * img = fbo->CreateImageFromMemory();
+		//img->Save("imposter.png");
+		RenderManager::Instance()->SetViewport(oldViewport, true);
+		
 	}
 
-	Camera * imposterCamera = new Camera();
-	float32 nearPlane = (center-cameraPos).Length();
-	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
-	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
-	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
-	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
-	//imposterCamera->Setup(70, 1.33f, nearPlane, 1000);
-	imposterCamera->SetTarget(center);
-	imposterCamera->SetPosition(cameraPos);
-	imposterCamera->SetUp(camera->GetUp());
-	imposterCamera->SetLeft(camera->GetLeft());
-	
-	Rect oldViewport = RenderManager::Instance()->GetViewport();
-
-	RenderManager::Instance()->SetRenderTarget(fbo);
-	imposterCamera->Set();
-	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
-	RenderManager::Instance()->ClearDepthBuffer();
-
-	child->Draw();
-
-	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
-
-	//Image * img = fbo->CreateImageFromMemory();
-	//img->Save("imposter.png");
-	RenderManager::Instance()->SetViewport(oldViewport, true);
 	camera->Set();
-	
 	SafeRelease(imposterCamera);
 
 	verts.push_back(imposterVertices[0].x);

@@ -100,6 +100,7 @@ landscapeeditor.relative: "Отн/Абс"
 landscapeeditor.average: "Сгладить"
 landscapeeditor.height: "Высота"
 landscapeeditor.showgrid: "Сетка"
+landscapeeditor.averagestrength: "Ср.сила:"
 
 #Material Editor
 materialeditor.materials: "Материалы:"

@@ -45,7 +45,7 @@ void LandscapeEditorHeightmap::Update(float32 timeElapsed)
             }
             else if(LandscapeTool::TOOL_DROPPER == currentTool->type)
             {
-                ProcessHeightDropper();
+                currentTool->height = GetDropperHeight();
             }
         }
     }
@@ -111,14 +111,14 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
         int32 scaleSize = toolImage->GetWidth();
         Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
         {
-            float32 koef = (currentTool->strength * timeElapsed);
             if(currentTool->averageDrawing)
             {
-                koef = fabsf(koef / currentTool->maxStrength);
+                float32 koef = (currentTool->averageStrength * timeElapsed);
                 ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else if(currentTool->relativeDrawing)
             {
+                float32 koef = (currentTool->strength * timeElapsed);
                 if(inverseDrawingEnabled)
                 {
                     koef = -koef;
@@ -132,10 +132,10 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
                 workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
                 landSize = transformedBox.max - transformedBox.min;
                 
-                int32 index = startPoint.x + startPoint.y * heightmap->Size();
                 float32 maxHeight = landSize.z;
                 float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
                 
+                float32 koef = (currentTool->averageStrength * timeElapsed);
                 ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
             }
             
@@ -145,7 +145,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
     }
 }
 
-void LandscapeEditorHeightmap::ProcessHeightDropper()
+float32 LandscapeEditorHeightmap::GetDropperHeight()
 {
     Vector3 landSize;
     AABBox3 transformedBox;
@@ -155,7 +155,7 @@ void LandscapeEditorHeightmap::ProcessHeightDropper()
     int32 index = startPoint.x + startPoint.y * heightmap->Size();
     float32 height = heightmap->Data()[index];
     float32 maxHeight = landSize.z;
-    currentTool->height = height / Heightmap::MAX_VALUE * maxHeight;
+    return (height / Heightmap::MAX_VALUE * maxHeight);
 }
 
 void LandscapeEditorHeightmap::UpdateCursor()
@@ -179,40 +179,63 @@ void LandscapeEditorHeightmap::UpdateCursor()
 
 void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
 {
-    switch(phase)
+    bool dropper = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+    if(dropper)
     {
-        case UIEvent::PHASE_BEGAN:
+        switch(phase)
         {
-            editingIsEnabled = true;
-            UNDOManager::Instance()->SaveHightmap(heightmap);
-            UpdateToolImage();
-
-            break;
+            case UIEvent::PHASE_BEGAN:
+            case UIEvent::PHASE_DRAG:
+            case UIEvent::PHASE_ENDED:
+            {
+                currentTool->height = GetDropperHeight();
+                break;
+            }
+                
+            default:
+                break;
         }
-            
-        case UIEvent::PHASE_DRAG:
+
+    }
+    else 
+    {
+        switch(phase)
         {
-            if(editingIsEnabled && !intersects)
+            case UIEvent::PHASE_BEGAN:
+            {
+                UNDOManager::Instance()->SaveHightmap(heightmap);
+
+                editingIsEnabled = true;
+                UpdateToolImage();
+                
+                break;
+            }
+                
+            case UIEvent::PHASE_DRAG:
+            {
+                if(editingIsEnabled && !intersects)
+                {
+                    editingIsEnabled = false;
+                }
+                else if(!editingIsEnabled && intersects)
+                {
+                    UNDOManager::Instance()->SaveHightmap(heightmap);
+                
+                    editingIsEnabled = true;
+                    UpdateToolImage();
+                }
+                break;
+            }
+                
+            case UIEvent::PHASE_ENDED:
             {
                 editingIsEnabled = false;
+                break;
             }
-            else if(!editingIsEnabled && intersects)
-            {
-                editingIsEnabled = true;
-                UNDOManager::Instance()->SaveHightmap(heightmap);
-                UpdateToolImage();
-            }
-            break;
+                
+            default:
+                break;
         }
-
-        case UIEvent::PHASE_ENDED:
-        {
-            editingIsEnabled = false;
-            break;
-        }
-            
-        default:
-            break;
     }
 }
 
@@ -231,6 +254,8 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(landscapeDebugNode);
     
     SafeRelease(heightmap);
+    
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
 }
 
 void LandscapeEditorHeightmap::ShowAction()
@@ -276,6 +301,18 @@ void LandscapeEditorHeightmap::UndoAction()
     }
 }
 
+void LandscapeEditorHeightmap::RedoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
+    if(UNDOAction::ACTION_HEIGHTMAP == type)
+    {
+        UNDOManager::Instance()->RedoHeightmap(heightmap);
+        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+    }
+}
+
+
+
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 {
     if(heightmap)
@@ -293,10 +330,38 @@ void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 
 NodesPropertyControl *LandscapeEditorHeightmap::GetPropertyControl(const Rect &rect)
 {
-    NodesPropertyControl *propsControl = 
-    PropertyControlCreator::Instance()->CreateControlForNode(workingLandscape, rect, false);
+    LandscapeEditorPropertyControl *propsControl = 
+    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
+    
+    propsControl->SetDelegate(this);
     
     return propsControl;
+}
+
+
+#pragma mark -- LandscapeEditorPropertyControlDelegate
+void LandscapeEditorHeightmap::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
+{
+}
+
+void LandscapeEditorHeightmap::TextureWillChanged()
+{
+    if(savedPath.length())
+    {
+        SaveTextureAction(savedPath);
+    }
+}
+
+void LandscapeEditorHeightmap::TextureDidChanged()
+{
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
+    
+    SafeRelease(heightmap);
+    heightmap = SafeRetain(workingLandscape->GetHeightmap());
+    savedPath = workingLandscape->GetHeightMapPathname();
+    landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
+    
+    landscapeSize = heightmap->Size();
 }
 
 #pragma mark  --LandscapeToolsPanelDelegate
@@ -315,5 +380,3 @@ void LandscapeEditorHeightmap::OnShowGrid(bool show)
         landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
     }
 }
-
-
