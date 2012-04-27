@@ -46,6 +46,7 @@ protected:
     
     UICheckBox *relative;
     UICheckBox *average;
+    UICheckBox *absoluteDropper;
     
     UITextField *heightValue;
     

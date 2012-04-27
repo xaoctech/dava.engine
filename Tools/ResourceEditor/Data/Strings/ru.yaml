@@ -105,6 +105,7 @@ landscapeeditor.average: "Сгладить"
 landscapeeditor.height: "Высота"
 landscapeeditor.showgrid: "Сетка"
 landscapeeditor.averagestrength: "Ср.сила:"
+landscapeeditor.absolutedropper: "Абс&Пипетка"
 
 #Material Editor
 materialeditor.materials: "Материалы:"

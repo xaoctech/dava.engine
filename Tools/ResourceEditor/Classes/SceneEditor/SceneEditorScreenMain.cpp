@@ -27,7 +27,6 @@ void SceneEditorScreenMain::LoadResources()
     new HintManager();
     new UNDOManager();
     
-    //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
@@ -202,8 +201,9 @@ void SceneEditorScreenMain::CreateTopMenu()
 	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast"));
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
-	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
-    ControlsFactory::CustomizeButtonExpandable(btnLandscape);
+	btnLandscapeHeightmap = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.heightmap"));
+	x += dx;
+	btnLandscapeColor = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.colormap"));
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
     ControlsFactory::CustomizeButtonExpandable(btnViewPortSize);
@@ -222,7 +222,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	AddControl(btnBeast);
 #endif
-    AddControl(btnLandscape);
+    AddControl(btnLandscapeHeightmap);
+    AddControl(btnLandscapeColor);
     AddControl(btnViewPortSize);
     AddControl(btnTextureConverter);
     
@@ -237,7 +238,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	btnBeast->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
 #endif// #ifdef __DAVAENGINE_BEAST__
-	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapePressed));
+	btnLandscapeHeightmap->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapeHeightmapPressed));
+	btnLandscapeColor->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapeColorPressed));
 	btnViewPortSize->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnViewPortSize));
 	btnTextureConverter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnTextureConverter));
 }
@@ -254,7 +256,8 @@ void SceneEditorScreenMain::ReleaseTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	SafeRelease(btnBeast);
 #endif// #ifdef __DAVAENGINE_BEAST__
-    SafeRelease(btnLandscape);
+    SafeRelease(btnLandscapeHeightmap);
+    SafeRelease(btnLandscapeColor);
     SafeRelease(btnViewPortSize);
     SafeRelease(btnTextureConverter);
 }
@@ -748,12 +751,6 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             break;
         }
             
-        case MENUID_LANDSCAPE:
-        {
-            ToggleLandscape(itemID);
-            break;
-        }
-            
         default:
             break;
     }
@@ -889,25 +886,6 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             break;
         }
             
-        case MENUID_LANDSCAPE:
-        {
-            switch (itemID) 
-            {
-                case ELEMID_HEIGHTMAP:
-                    text = LocalizedString(L"menu.landscape.heightmap");
-                    break;
-                    
-                case ELEMID_COLOR_MAP:
-                    text = LocalizedString(L"menu.landscape.colormap");
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-        }
-            
         default:
             break;
     }
@@ -941,12 +919,6 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         case MENUID_EXPORTTOGAME:
         {
             retCount = EETGMID_COUNT;
-            break;
-        }
-            
-        case MENUID_LANDSCAPE:
-        {
-            retCount = ELEMID_COUNT;
             break;
         }
             
@@ -990,20 +962,30 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
 
 void SceneEditorScreenMain::ReleaseNodeDialogs()
 {
-//    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
-//    {
-//        SafeRelease(nodeDialogs[iDlg]);
-//    }
-
     SafeRelease(nodeDialog);
-    
     SafeRelease(dialogBack);
 }
 
-void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnLandscapeHeightmapPressed(BaseObject * obj, void *, void *)
 {
-    menuPopup->InitControl(MENUID_LANDSCAPE, btnLandscape->GetRect());
-    AddControl(menuPopup);
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_HEIGHTMAP);
+    if(ret)
+    {
+        bool selected = btnLandscapeHeightmap->GetSelected();
+        btnLandscapeHeightmap->SetSelected(!selected);
+    }
+}
+
+void SceneEditorScreenMain::OnLandscapeColorPressed(BaseObject * obj, void *, void *)
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_COLOR_MAP);
+    if(ret)
+    {
+        bool selected = btnLandscapeColor->GetSelected();
+        btnLandscapeColor->SetSelected(!selected);
+    }
 }
 
 void SceneEditorScreenMain::EditMaterial(Material *material)
@@ -1325,11 +1307,4 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 		SceneNode * child = node->GetChild(ci);
 		ExportLandscapeAndMeshLightmaps(child);
 	}
-}
-
-
-void SceneEditorScreenMain::ToggleLandscape(int32 landscapeEditorMode)
-{
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleLandscapeEditor(landscapeEditorMode);
 }

@@ -1152,22 +1152,28 @@ void EditorBodyControl::ReleaseLandscapeEditor()
     SafeRelease(landscapeToolsSelection);
 }
 
-void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
+bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
 {
-    if(currentLandscapeEditor)
+    LandscapeEditorBase *requestedEditor = NULL;
+    if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorColor;
+    }
+    else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorHeightmap;
+    }
+    
+    if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
+        return false;
+    
+    if(currentLandscapeEditor == requestedEditor)
     {
         currentLandscapeEditor->Toggle();
     }
     else
     {
-        if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
-        {
-            currentLandscapeEditor = landscapeEditorColor;
-        }
-        else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
-        {
-            currentLandscapeEditor = landscapeEditorHeightmap;
-        }
+        currentLandscapeEditor = requestedEditor;
 
         bool ret = currentLandscapeEditor->SetScene(scene);
         if(ret)
@@ -1178,8 +1184,10 @@ void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
         else
         {
             currentLandscapeEditor = NULL;
+            return false;
         }
     }
+    return true;
 }
 
 #pragma mark --LandscapeEditorDelegate

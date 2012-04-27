@@ -47,6 +47,7 @@ public:
     
     bool relativeDrawing;
     bool averageDrawing;
+    bool absoluteDropperDrawing;
     
     eToolType type;
 };
