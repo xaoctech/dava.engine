@@ -45,6 +45,7 @@ class KeyedArchive : public BaseObject
 {
 public:
 	KeyedArchive();
+	KeyedArchive(const KeyedArchive &arc);
 	virtual ~KeyedArchive();
 	
 	/**
@@ -124,6 +125,13 @@ public:
         \param[in] value we want to set for this key
 	 */
 	KeyedArchive * GetArchiveFromByteArray(const String & key);
+
+    /**
+     \brief Function to get archive from archive.
+     \param[in] key string key
+     \param[in] defaultValue we want to set for this key
+	 */
+	KeyedArchive * GetArchive(const String & key, KeyedArchive * defaultValue);
     
     /*
         \brief Function to get object from byte array.
@@ -139,7 +147,7 @@ public:
 		\param[in] key string key
 		\returns value of variable or default VariantType class if value isn't available
 	 */
-	const VariantType & GetVariant(const String & key);
+	VariantType *GetVariant(const String & key);
 	
 	/**
 		\brief Function to set variable in archive.
@@ -186,17 +194,24 @@ public:
 	 */
 	void SetByteArray(const String & key, const uint8 * value, int32 arraySize);
 	/**
-		\brief Function to set variable in archive.
+		\brief Function to set variable in archive. Variant value is copying inside this method
 		\param[in] key string key
 		\param[in] value we want to set for this key
 	 */
-	void SetVariant(const String & key, const VariantType & value);
+	void SetVariant(const String & key, VariantType *value);
 	/**
         \brief Function to set another keyed archive as kye for this archive.
         \param[in] key string key
         \param[in] value we want to set for this key
 	 */
 	void SetByteArrayFromArchive(const String & key, KeyedArchive * archive);
+
+	/**
+     \brief Function to set another keyed archive as kye for this archive.
+     \param[in] key string key
+     \param[in] value we want to set for this key
+	 */
+	void SetArchive(const String & key, KeyedArchive * archive);
     
     /**
         \brief Function to set value from template type to byte array.  
@@ -245,8 +260,14 @@ public:
      \brief Function to get all data of archive.
      \returns map of VariantType class with names
 	 */
-    const Map<String, VariantType> & GetArchieveData();
+    const Map<String, VariantType*> & GetArchieveData();
 
+	/**
+     \brief Function to get all data of archive.
+     \returns map of VariantType class with names
+	 */
+    const Map<String, VariantType*> & GetArchieveData() const;
+    
     
 
 //	yaml
@@ -263,7 +284,7 @@ public:
 // 	bool SaveToYaml(const String & pathName);
 
 private:
-	Map<String, VariantType> objectMap;
+	Map<String, VariantType*> objectMap;
 };
     
 // Implementation 
