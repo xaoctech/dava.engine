@@ -40,7 +40,7 @@ ImposterNode::ImposterNode(Scene * scene)
 {
 	state = STATE_3D;
 	renderData = 0;
-	fbo = Texture::CreateFBO(512, 512, FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
+	fbo = 0;
 	manager = 0;
 	isReady = false;
 	RegisterInScene();
@@ -86,7 +86,7 @@ void ImposterNode::UpdateState()
 			{
 				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
 				newDirection.Normalize();
-				if(newDirection.DotProduct(direction) < 0.99999f)
+				if(newDirection.DotProduct(direction) < 0.996f)
 				{
 					AskForRedraw();
 				}
@@ -128,6 +128,7 @@ void ImposterNode::UpdateImposter()
 	Vector3 bboxVertices[8];
 	Vector3 screenVertices[8];
 	bbox.GetCorners(bboxVertices);
+	Vector3 bboxCenter = bbox.GetCenter();
 
 	imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
 	imposterCamera->SetTarget(bbox.GetCenter());
@@ -155,6 +156,16 @@ void ImposterNode::UpdateImposter()
 		screenVertices[i] = Vector3(pv.x, pv.y, pv.z);
 		screenBounds.AddPoint(screenVertices[i]);
 	}
+
+	//bbox project
+	Vector4 pv(bboxCenter);
+	pv = pv*mvp;
+	//pv.x = (viewport.dx * 0.5f) * (1.f + pv.x/pv.w)+viewport.x;
+	//pv.y = (viewport.dy * 0.5f) * (1.f + pv.y/pv.w)+viewport.y;
+	pv.z = (pv.z/pv.w + 1.f) * 0.5f;
+	float32 bboxCenterZ = pv.z;
+
+	Vector2 screenSize = Vector2(screenBounds.max.x-screenBounds.min.x, screenBounds.max.y-screenBounds.min.y);
 
 	Vector3 screenBillboardVertices[4];
 	screenBillboardVertices[0] = Vector3(screenBounds.min.x, screenBounds.min.y, screenBounds.min.z);
@@ -186,8 +197,12 @@ void ImposterNode::UpdateImposter()
 	}
 	center /= 4.f;
 
-	if(IsRedrawApproved())
+
+
+	//if(IsRedrawApproved())
 	{
+		RecreateFbo(screenSize);
+
 		direction = camera->GetPosition()-center;
 		direction.Normalize();
 
@@ -217,6 +232,30 @@ void ImposterNode::UpdateImposter()
 		
 		isReady = true;
 		state = STATE_IMPOSTER;
+	}
+
+	//unproject
+	screenBillboardVertices[0] = Vector3(screenBounds.min.x, screenBounds.min.y, bboxCenterZ);
+	screenBillboardVertices[1] = Vector3(screenBounds.max.x, screenBounds.min.y, bboxCenterZ);
+	screenBillboardVertices[2] = Vector3(screenBounds.min.x, screenBounds.max.y, bboxCenterZ);
+	screenBillboardVertices[3] = Vector3(screenBounds.max.x, screenBounds.max.y, bboxCenterZ);
+	for(int32 i = 0; i < 4; ++i)
+	{
+		//unproject
+		Vector4 out;
+		out.x = 2.f*(screenBillboardVertices[i].x-viewport.x)/viewport.dx-1.f;
+		out.y = 2.f*(screenBillboardVertices[i].y-viewport.y)/viewport.dy-1.f;
+		out.z = 2.f*screenBillboardVertices[i].z-1.f;
+		out.w = 1.f;
+
+		out = out*invMvp;
+		DVASSERT(out.w != 0.f);
+
+		out.x /= out.w;
+		out.y /= out.w;
+		out.z /= out.w;
+
+		imposterVertices[i] = Vector3(out.x, out.y, out.z);
 	}
 
 	camera->Set();
@@ -364,6 +403,12 @@ bool ImposterNode::IsAskingForRedraw()
 void ImposterNode::ApproveRedraw()
 {
 	state = STATE_REDRAW_APPROVED;
+}
+
+void ImposterNode::RecreateFbo(const Vector2 & size)
+{
+	SafeRelease(fbo);
+	fbo = Texture::CreateFBO((uint32)(size.x*1.2f), (uint32)(size.y*1.2f), FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
 }
 
 }
