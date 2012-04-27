@@ -66,6 +66,14 @@ private:
 class MeshInstanceNode : public SceneNode
 {
 public:	
+	struct LightmapData
+	{
+		Texture * lightmap;
+		String lightmapName;
+		Vector2 uvOffset;
+		Vector2 uvScale;
+	};
+
 	MeshInstanceNode(Scene * _scene = 0);
 	~MeshInstanceNode();
 	
@@ -77,7 +85,8 @@ public:
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible();
 	
-	inline AABBox3 & GetBoundingBox();
+	inline const AABBox3 & GetBoundingBox() const;
+    inline const AABBox3 & GetWorldTransformedBox() const; 
 	
     Vector<PolygonGroupWithMaterial*> & GetPolygonGroups();
     	
@@ -112,7 +121,7 @@ public:
 
         \param[in] lightmapName path to texture
 	 */
-	void AddLightmap(const String & lightmapName);
+	void AddLightmap(int32 polygonGroupIndex, const LightmapData & lightmapData);
 
 	/**
         \brief Delete all lightmaps for this MeshInstance. 
@@ -131,7 +140,7 @@ public:
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
 
-    Texture * GetLightmapForIndex(int32 index);
+	LightmapData * GetLightmapDataForIndex(int32 index);
     int32 GetLightmapCount();
 
     /**
@@ -141,7 +150,7 @@ public:
     
     /**
         \brief Register nearest node to this MeshInstanceNode.
-        MeshInstance can have own criterias of detection on which light nodes are intresting for this particular mesh and which are not.
+        MeshInstance can have own criteria of detection on which light nodes are interesting for this particular mesh and which are not.
      */
     virtual void RegisterNearestLight(LightNode * node);
 
@@ -157,18 +166,17 @@ protected:
 	AABBox3 bbox;
     AABBox3 transformedBox;
     
-	struct LightmapData
-	{
-		Texture * lightmap;
-		String lightmapName;
-	};
 	Vector<LightmapData> lightmaps;
 
 };
 	
-inline AABBox3 & MeshInstanceNode::GetBoundingBox()
+inline const AABBox3 & MeshInstanceNode::GetBoundingBox() const
 {
 	return bbox;
+}
+inline const AABBox3 & MeshInstanceNode::GetWorldTransformedBox() const
+{
+    return transformedBox;
 }
 
 };

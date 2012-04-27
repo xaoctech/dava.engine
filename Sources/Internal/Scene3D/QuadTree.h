@@ -34,40 +34,56 @@
 #include "Base/StaticSingleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/DynamicObjectCache.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
+#include "Scene3D/BVHierarchy.h"
 #include <deque>
 
 namespace DAVA
 {
 class Material;
 class MeshInstanceNode;
+class QuadTree;
     
-class QuadTreeNode
+class QuadTreeNode 
 {
 public:
+    // be careful it's not a BaseObject to avoid unnecessary data store
+    QuadTreeNode();
+    virtual ~QuadTreeNode();
     
-    
+    void SetBoundingBox(const AABBox3 & _bbox);
+    inline const AABBox3 & GetBoundingBox() const { return bbox; };
+    void DebugDraw();
+private:
+    AABBox3 bbox;
+    QuadTreeNode * children[4];
+    Vector<MeshInstanceNode*> objectsInside;
+    friend class QuadTree;
 };
 
-class QuadTree : public BaseObject
+class QuadTree : public BVHierarchy
 {
 public:
     QuadTree();
     virtual ~QuadTree();
     
-    void Build(Scene * scene);
-    
-    void Update(float32 timeElapsed);
-
-    void Draw(); 
+    virtual void Build(Scene * scene);
+    virtual void Update(float32 timeElapsed);
+    virtual void Draw(); 
 private:
+    void BuildRecursive(QuadTreeNode * node, List<MeshInstanceNode*> & meshNodes);
+    
+    int32 nodeCount;
+    DynamicObjectCacheData<QuadTreeNode> cache;
+    QuadTreeNode * head;
     Map<Material*, Set<MeshInstanceNode*> > nodesForRender;
 };
 
 };
 
-#endif // __DAVAENGINE_SCENEMANAGER_H__
+#endif // __DAVAENGINE_QUADTREE_H__
 
 
 

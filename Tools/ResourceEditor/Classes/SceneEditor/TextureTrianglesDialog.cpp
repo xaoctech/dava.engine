@@ -129,7 +129,7 @@ void TextureTrianglesDialog::FillRenderTarget(int32 textureIndex)
         if(workingPolygonGroup->vertexFormat & IndexFlags[textureIndex])
         {
             Vector2 usedSize = texturePreview->GetSize();
-            previewSprite = Sprite::CreateAsRenderTarget(usedSize.x, usedSize.y, Texture::FORMAT_RGBA8888);
+            previewSprite = Sprite::CreateAsRenderTarget(usedSize.x, usedSize.y, FORMAT_RGBA8888);
             
             RenderManager::Instance()->SetRenderTarget(previewSprite);
             RenderManager::Instance()->SetColor(Color::Black());

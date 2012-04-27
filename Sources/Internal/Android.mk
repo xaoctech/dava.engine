@@ -44,6 +44,7 @@ LOCAL_SRC_FILES :=  \
                     Core/Core.cpp \
                     \
                     Debug/MemoryManager.cpp \
+                    Debug/Stats.cpp \
                     Debug/Replay.cpp \
                     \
                     FileSystem/Bitstream.cpp \
@@ -150,10 +151,13 @@ LOCAL_SRC_FILES :=  \
                     \
                     Scene3D/BillboardNode.cpp \
                     Scene3D/BoneNode.cpp \
+                    Scene3D/BVHierarchy.cpp \
                     Scene3D/Camera.cpp \
                     Scene3D/CubeNode.cpp \
                     Scene3D/DataNode.cpp \
+                    Scene3D/heightmap.cpp \
                     Scene3D/Frustum.cpp \
+                    Scene3D/LandscapeCursor.cpp \
                     Scene3D/LandscapeNode.cpp \
                     Scene3D/LightNode.cpp \
                     Scene3D/LodNode.cpp \
@@ -222,7 +226,7 @@ LOCAL_SRC_FILES :=  \
                     Utils/Utils.cpp \
 
 # set build flags
-LOCAL_CFLAGS := -frtti -g -O0 -DGL_GLEXT_PROTOTYPES=1
+LOCAL_CFLAGS := -frtti -g -O2 -DGL_GLEXT_PROTOTYPES=1
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)

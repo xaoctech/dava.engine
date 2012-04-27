@@ -21,7 +21,7 @@ class ModificationPopUp : public DraggableDialog, public PropertyListDelegate
 public:
         
     ModificationPopUp();
-    ~ModificationPopUp();
+    virtual ~ModificationPopUp();
 	
     void OnButton(BaseObject * object, void * userData, void * callerData);
 	inline void SetSelection(SceneNode * _selection)

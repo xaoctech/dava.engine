@@ -30,7 +30,7 @@
 #ifndef __DAVAENGINE_MATRIX_H__
 #define __DAVAENGINE_MATRIX_H__
 
-#include "Neon/NeonMath.h"
+//#include "Neon/NeonMath.h"
 #include "Math/Matrix3.h"
 
 namespace DAVA
@@ -494,11 +494,11 @@ inline bool	Matrix4::Inverse()
     
 inline Matrix4 Matrix4::operator *(const Matrix4 & m) const
 {
-#ifdef _ARM_ARCH_7
-    Matrix4 res;
-    NEON_Matrix4Mul(this->data, m.data, res.data);
-    return res;
-#else 
+//#ifdef _ARM_ARCH_7
+//    Matrix4 res;
+//    NEON_Matrix4Mul(this->data, m.data, res.data);
+//    return res;
+//#else 
 	return Matrix4( _00 * m._00 + _01 * m._10 + _02 * m._20 + _03 * m._30,		
                    _00 * m._01 + _01 * m._11 + _02 * m._21 + _03 * m._31,		
                    _00 * m._02 + _01 * m._12 + _02 * m._22 + _03 * m._32,  
@@ -518,7 +518,7 @@ inline Matrix4 Matrix4::operator *(const Matrix4 & m) const
                    _30 * m._01 + _31 * m._11 + _32 * m._21 + _33 * m._31,		
                    _30 * m._02 + _31 * m._12 + _32 * m._22 + _33 * m._32, 
                    _30 * m._03 + _31 * m._13 + _32 * m._23 + _33 * m._33); 
-#endif
+//#endif
 }
 
 inline const Matrix4 & Matrix4::operator *=(const Matrix4 & m)

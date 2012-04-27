@@ -45,6 +45,8 @@
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */; };
+		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
@@ -101,12 +103,20 @@
 		FE578B5413278D730081BDE9 /* SoundSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = FE578B4113278D730081BDE9 /* SoundSystem.h */; };
 		FE578B5513278D730081BDE9 /* SoundWVProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE578B4213278D730081BDE9 /* SoundWVProvider.cpp */; };
 		FE578B5613278D730081BDE9 /* SoundWVProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FE578B4313278D730081BDE9 /* SoundWVProvider.h */; };
-		FE57C487142BD33600060A75 /* NeonMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE57C485142BD33600060A75 /* NeonMath.cpp */; };
-		FE57C488142BD33600060A75 /* NeonMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FE57C486142BD33600060A75 /* NeonMath.h */; };
 		FE5DB8A313B8D62400C00F98 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB89F13B8D62400C00F98 /* Shader.cpp */; };
 		FE5DB8A413B8D62400C00F98 /* Shader.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5DB8A013B8D62400C00F98 /* Shader.h */; };
 		FE5DB8A513B8D62400C00F98 /* ShaderDX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB8A113B8D62400C00F98 /* ShaderDX.cpp */; };
 		FE5DB8A613B8D62400C00F98 /* ShaderGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5DB8A213B8D62400C00F98 /* ShaderGL.cpp */; };
+		FE5E166A153DA0870047FAC5 /* Stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1668153DA0870047FAC5 /* Stats.cpp */; };
+		FE5E166B153DA0870047FAC5 /* Stats.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1669153DA0870047FAC5 /* Stats.h */; };
+		FE5E166F153DA0E60047FAC5 /* LandscapeCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E166D153DA0E60047FAC5 /* LandscapeCursor.cpp */; };
+		FE5E1670153DA0E60047FAC5 /* LandscapeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E166E153DA0E60047FAC5 /* LandscapeCursor.h */; };
+		FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */; };
+		FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */; };
+		FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1673153DA10A0047FAC5 /* BVNode.cpp */; };
+		FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1674153DA10A0047FAC5 /* BVNode.h */; };
+		FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE5E1675153DA10A0047FAC5 /* QuadTree.cpp */; };
+		FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1676153DA10A0047FAC5 /* QuadTree.h */; };
 		FE879F5814504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE879F5614504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp */; };
 		FE879F5914504A1800F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = FE879F5714504A1800F889E5 /* TextureMulColorAlphaTestEffect.h */; };
 		FE9C216812E9A254005C397A /* Circle.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9C216612E9A254005C397A /* Circle.h */; };
@@ -498,6 +508,8 @@
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
+		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -556,12 +568,20 @@
 		FE578B4113278D730081BDE9 /* SoundSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundSystem.h; sourceTree = "<group>"; };
 		FE578B4213278D730081BDE9 /* SoundWVProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundWVProvider.cpp; sourceTree = "<group>"; };
 		FE578B4313278D730081BDE9 /* SoundWVProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundWVProvider.h; sourceTree = "<group>"; };
-		FE57C485142BD33600060A75 /* NeonMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NeonMath.cpp; sourceTree = "<group>"; };
-		FE57C486142BD33600060A75 /* NeonMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeonMath.h; sourceTree = "<group>"; };
 		FE5DB89F13B8D62400C00F98 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		FE5DB8A013B8D62400C00F98 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		FE5DB8A113B8D62400C00F98 /* ShaderDX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderDX.cpp; sourceTree = "<group>"; };
 		FE5DB8A213B8D62400C00F98 /* ShaderGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderGL.cpp; sourceTree = "<group>"; };
+		FE5E1668153DA0870047FAC5 /* Stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stats.cpp; sourceTree = "<group>"; };
+		FE5E1669153DA0870047FAC5 /* Stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stats.h; sourceTree = "<group>"; };
+		FE5E166D153DA0E60047FAC5 /* LandscapeCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeCursor.cpp; sourceTree = "<group>"; };
+		FE5E166E153DA0E60047FAC5 /* LandscapeCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeCursor.h; sourceTree = "<group>"; };
+		FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVHierarchy.cpp; sourceTree = "<group>"; };
+		FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVHierarchy.h; sourceTree = "<group>"; };
+		FE5E1673153DA10A0047FAC5 /* BVNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVNode.cpp; sourceTree = "<group>"; };
+		FE5E1674153DA10A0047FAC5 /* BVNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BVNode.h; sourceTree = "<group>"; };
+		FE5E1675153DA10A0047FAC5 /* QuadTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QuadTree.cpp; sourceTree = "<group>"; };
+		FE5E1676153DA10A0047FAC5 /* QuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadTree.h; sourceTree = "<group>"; };
 		FE879F5614504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureMulColorAlphaTestEffect.cpp; sourceTree = "<group>"; };
 		FE879F5714504A1800F889E5 /* TextureMulColorAlphaTestEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureMulColorAlphaTestEffect.h; sourceTree = "<group>"; };
 		FE9C216612E9A254005C397A /* Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Circle.h; sourceTree = "<group>"; };
@@ -980,15 +1000,6 @@
 			path = Sound;
 			sourceTree = "<group>";
 		};
-		FE57C484142BD33600060A75 /* Neon */ = {
-			isa = PBXGroup;
-			children = (
-				FE57C485142BD33600060A75 /* NeonMath.cpp */,
-				FE57C486142BD33600060A75 /* NeonMath.h */,
-			);
-			path = Neon;
-			sourceTree = "<group>";
-		};
 		FECFB1D912E5904400C71562 /* External */ = {
 			isa = PBXGroup;
 			children = (
@@ -1110,6 +1121,8 @@
 		FECFB36312E5904400C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FE5E1668153DA0870047FAC5 /* Stats.cpp */,
+				FE5E1669153DA0870047FAC5 /* Stats.h */,
 				FECFB36412E5904400C71562 /* DVAssert.h */,
 				FECFB36512E5904400C71562 /* List.h */,
 				FECFB36612E5904400C71562 /* ListAllocator.h */,
@@ -1177,7 +1190,6 @@
 		FECFB38C12E5904400C71562 /* Math */ = {
 			isa = PBXGroup;
 			children = (
-				FE57C484142BD33600060A75 /* Neon */,
 				FE9C216612E9A254005C397A /* Circle.h */,
 				FE9C216712E9A254005C397A /* Sphere.h */,
 				FECFB38D12E5904400C71562 /* AABBox2.cpp */,
@@ -1300,9 +1312,9 @@
 				FECFB3F212E5904400C71562 /* Light.h */,
 				FECFB3F312E5904400C71562 /* Material.h */,
 				FEE98EFA146948C000EEAEFC /* Material.cpp */,
-				FEE98EFD146948C900EEAEFC /* UberShader.cpp */,
 				FEE98EFE146948C900EEAEFC /* UberShader.h */,
 				FECFB3F612E5904400C71562 /* RenderEffect.cpp */,
+				FEE98EFD146948C900EEAEFC /* UberShader.cpp */,
 				FECFB3F712E5904400C71562 /* RenderEffect.h */,
 				FECFB3F812E5904400C71562 /* RenderGrayscaleEffect.cpp */,
 				FECFB3F912E5904400C71562 /* RenderGrayscaleEffect.h */,
@@ -1397,6 +1409,14 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */,
+				FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */,
+				FE5E1673153DA10A0047FAC5 /* BVNode.cpp */,
+				FE5E1674153DA10A0047FAC5 /* BVNode.h */,
+				FE5E1675153DA10A0047FAC5 /* QuadTree.cpp */,
+				FE5E1676153DA10A0047FAC5 /* QuadTree.h */,
+				5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */,
+				5CFE6D1B1536FB8E005DA604 /* Heightmap.h */,
 				5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */,
 				5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */,
 				5C5C18D214D7168300DC6DC3 /* LodNode.cpp */,
@@ -1423,6 +1443,8 @@
 				FECFB41A12E5904400C71562 /* BoneNode.h */,
 				FE044F53140EEB7F002A6D27 /* Frustum.cpp */,
 				FE044F54140EEB7F002A6D27 /* Frustum.h */,
+				FE5E166D153DA0E60047FAC5 /* LandscapeCursor.cpp */,
+				FE5E166E153DA0E60047FAC5 /* LandscapeCursor.h */,
 				FE044F55140EEB7F002A6D27 /* LandscapeNode.cpp */,
 				FE044F56140EEB7F002A6D27 /* LandscapeNode.h */,
 				FE4E01E313AAA9D00013464E /* Camera.cpp */,
@@ -1796,7 +1818,6 @@
 				FE044F18140EE8F1002A6D27 /* MusicIos.h in Headers */,
 				FE044F58140EEB7F002A6D27 /* Frustum.h in Headers */,
 				FE044F5A140EEB7F002A6D27 /* LandscapeNode.h in Headers */,
-				FE57C488142BD33600060A75 /* NeonMath.h in Headers */,
 				FE127708144444E80082901E /* UIScrollBar.h in Headers */,
 				FE879F5914504A1800F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */,
 				FEE98F00146948C900EEAEFC /* UberShader.h in Headers */,
@@ -1816,6 +1837,12 @@
 				5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */,
 				5C5C18DA14D716F000DC6DC3 /* EdgeAdjacency.h in Headers */,
 				5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */,
+				5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */,
+				FE5E166B153DA0870047FAC5 /* Stats.h in Headers */,
+				FE5E1670153DA0E60047FAC5 /* LandscapeCursor.h in Headers */,
+				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
+				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
+				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2067,7 +2094,6 @@
 				FE044F57140EEB7F002A6D27 /* Frustum.cpp in Sources */,
 				FE044F59140EEB7F002A6D27 /* LandscapeNode.cpp in Sources */,
 				47F00E7F140FE6C10014D904 /* SpriteNode.cpp in Sources */,
-				FE57C487142BD33600060A75 /* NeonMath.cpp in Sources */,
 				FE127707144444E80082901E /* UIScrollBar.cpp in Sources */,
 				FE879F5814504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */,
 				FEE98EFB146948C000EEAEFC /* Material.cpp in Sources */,
@@ -2089,6 +2115,12 @@
 				5C5C18D414D7168300DC6DC3 /* LodNode.cpp in Sources */,
 				5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */,
 				5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */,
+				5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */,
+				FE5E166A153DA0870047FAC5 /* Stats.cpp in Sources */,
+				FE5E166F153DA0E60047FAC5 /* LandscapeCursor.cpp in Sources */,
+				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
+				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
+				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

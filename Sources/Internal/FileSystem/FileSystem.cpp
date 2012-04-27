@@ -149,15 +149,15 @@ namespace DAVA
 		return FilepathRelativeToBundle(relativePathname.c_str());
 	}
 
-	const char * FilepathInDocuments(const char * documentsPath, const char * relativePathname)
-	{
-		return Format("%s/Documents%s", documentsPath, relativePathname);
-	}
-
-	const char * FilepathInDocuments(const String & documetsPath, const String & relativePathname)
-	{
-		return FilepathInDocuments(documetsPath.c_str(), relativePathname.c_str());
-	}
+//	const char * FilepathInDocuments(const char * documentsPath, const char * relativePathname)
+//	{
+//		return Format("%s/Documents%s", documentsPath, relativePathname);
+//	}
+//
+//	const char * FilepathInDocuments(const String & documetsPath, const String & relativePathname)
+//	{
+//		return FilepathInDocuments(documetsPath.c_str(), relativePathname.c_str());
+//	}
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
@@ -218,11 +218,15 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 		pos     = path.find_first_of(delims, lastPos);
 	}
 	
-#if defined(__DAVAENGINE_WIN32__)
 	String dir = "";
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	String dir = "/";
-#endif //PLATFORMS
+
+#ifndef __DAVAENGINE_WIN32__
+    size_t find = path.find(":");
+    if(find == path.npos)
+	{
+        dir = "/";
+    }
+#endif
 	
 	for (size_t k = 0; k < tokens.size(); ++k)
 	{
@@ -408,10 +412,9 @@ uint32 FileSystem::DeleteDirectoryFiles(const String & path, bool isRecursive)
 File *FileSystem::CreateFileForFrameworkPath(const String & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
+    String::size_type find = frameworkPath.find("~res:");
 
-	size_t find = frameworkPath.find("~res:");
-
-	if(find != frameworkPath.npos)
+	if(String::npos != find)
 	{
 		return File::CreateFromSystemPath(APKArchive, SystemPathForFrameworkPath(frameworkPath));
 	}

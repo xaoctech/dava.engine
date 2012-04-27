@@ -1,20 +1,20 @@
 #include "SceneValidator.h"
-#include "ErrorDialog.h"
+#include "ErrorNotifier.h"
 #include "EditorSettings.h"
 #include "SceneInfoControl.h"
+
+#include "PVRUtils.h"
 
 SceneValidator::SceneValidator()
 {
     sceneTextureCount = 0;
     sceneTextureMemory = 0;
 
-    errorDialog = NULL;
     infoControl = NULL;
 }
 
 SceneValidator::~SceneValidator()
 {
-    SafeRelease(errorDialog);
     SafeRelease(infoControl);
 }
 
@@ -51,6 +51,11 @@ void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
             node->GetParent()->RemoveNode(node);
         }
     }
+	for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+	{
+		SceneNode * node = *it;
+		SafeRelease(node);
+	}
     emptyNodesForDeletion.clear();
 }
 
@@ -111,7 +116,7 @@ void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
         SceneNode * parent = sceneNode->GetParent();
         if (parent)
         {
-            emptyNodesForDeletion.insert(sceneNode);
+            emptyNodesForDeletion.insert(SafeRetain(sceneNode));
         }
     }
 }
@@ -135,7 +140,7 @@ void SceneValidator::ValidateTextureInternal(Texture *texture)
     if(IsntPower2(texture->GetWidth()) || IsntPower2(texture->GetHeight()))
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
-        errorMessages.insert("Wrongsize of " + path);
+        errorMessages.insert("Wrong size of " + path);
     }
 }
 
@@ -168,26 +173,33 @@ bool SceneValidator::IsntPower2(int32 num)
 
 void SceneValidator::ShowErrors()
 {
-    if(!errorDialog)
-    {
-        errorDialog = new ErrorDialog();
-    }
-    errorDialog->Show(errorMessages);
+    ErrorNotifier::Instance()->ShowError(errorMessages);
 }
 
 void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)
 {
+    meshNode->RemoveFlag(SceneNode::NODE_INVALID);
+    
     const Vector<PolygonGroupWithMaterial*> & polygroups = meshNode->GetPolygonGroups();
     //Vector<Material *>materials = meshNode->GetMaterials();
     for(int32 iMat = 0; iMat < polygroups.size(); ++iMat)
     {
-        ValidateMaterialInternal(polygroups[iMat]->GetMaterial());
+        Material * material = polygroups[iMat]->GetMaterial();
+
+        ValidateMaterialInternal(material);
+
+        if (material->Validate(polygroups[iMat]->GetPolygonGroup()) == Material::VALIDATE_INCOMPATIBLE)
+        {
+            meshNode->AddFlag(SceneNode::NODE_INVALID);
+            errorMessages.insert(Format("Material: %s incompatible with node:%s.", material->GetName().c_str(), meshNode->GetFullName().c_str()));
+            errorMessages.insert("For lightmapped objects check second coordinate set. For normalmapped check tangents, binormals.");
+        }
     }
     
     int32 lightmapCont = meshNode->GetLightmapCount();
     for(int32 iLight = 0; iLight < lightmapCont; ++iLight)
     {
-        ValidateTextureInternal(meshNode->GetLightmapForIndex(iLight));
+        ValidateTextureInternal(meshNode->GetLightmapDataForIndex(iLight)->lightmap);
     }
 }
 
@@ -225,7 +237,17 @@ void SceneValidator::EnumerateSceneTextures()
 		Texture *t = it->second;
         if(String::npos != t->relativePathname.find(projectPath))
         {
-            sceneTextureMemory += t->GetDataSize();
+            String::size_type pvrpngPos = t->relativePathname.find(".pvr.png");
+            if(String::npos != pvrpngPos)
+            {
+                String pvrPath = FileSystem::ReplaceExtension(t->relativePathname, "");
+                sceneTextureMemory += PVRUtils::Instance()->GetPVRDataLength(pvrPath);
+            }
+            else 
+            {
+                sceneTextureMemory += t->GetDataSize();
+            }
+            
             ++sceneTextureCount;
         }
 	}

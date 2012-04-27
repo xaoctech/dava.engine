@@ -194,25 +194,28 @@ void WASDCameraController::Input(UIEvent * event)
             case DVKEY_Z:
             {
 				SceneNode * sel = selection;
-				if (sel == 0)
-				{
-					sel = currScene;
-				}
-				if (dynamic_cast<Camera*>(sel))
-					break;				
-				AABBox3 box = sel->GetWTMaximumBoundingBox();						
-				float32 boxSize = ((box.max - box.min).Length());
-				
-				const Vector3 & pos = camera->GetPosition();
-				const Vector3 & targ = camera->GetTarget();
-				
-				Vector3 dir = targ - pos;
-				dir.Normalize();
-				
-				const Vector3 & c = box.GetCenter();
-				
-				camera->SetTarget(c);
-				camera->SetPosition(c - (dir * boxSize));
+//				if (sel == 0)
+//				{
+//					sel = currScene;
+//				}
+                if (sel)
+                {
+                    if (dynamic_cast<Camera*>(sel))
+                        break;				
+                    AABBox3 box = sel->GetWTMaximumBoundingBox();						
+                    float32 boxSize = ((box.max - box.min).Length());
+                    
+                    const Vector3 & pos = camera->GetPosition();
+                    const Vector3 & targ = camera->GetTarget();
+                    
+                    Vector3 dir = targ - pos;
+                    dir.Normalize();
+                    
+                    const Vector3 & c = box.GetCenter();
+                    
+                    camera->SetTarget(c);
+                    camera->SetPosition(c - (dir * boxSize));
+                }
 				break;
 			}
             case DVKEY_T:

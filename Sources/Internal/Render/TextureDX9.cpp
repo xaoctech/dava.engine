@@ -113,7 +113,7 @@ void Texture::SaveToSystemMemory()
 
 #if 0
 		//Image * image = new Image();
-		Image * image = image->Create(width, height, Image::FORMAT_RGBA8888);
+		Image * image = image->Create(width, height, FORMAT_RGBA8888);
 		D3DLOCKED_RECT rect;
 		hr = saveTexture->LockRect(0, &rect, 0, 0);
 		if (FAILED(hr))
@@ -122,7 +122,7 @@ void Texture::SaveToSystemMemory()
 			return;
 		}
 		int32 pixelSizeInBits = GetPixelFormatSize(format);
-		if (format ==  Texture::FORMAT_RGBA8888)
+		if (format ==  FORMAT_RGBA8888)
 		{
 			//int32 pitchInBytes = 
 

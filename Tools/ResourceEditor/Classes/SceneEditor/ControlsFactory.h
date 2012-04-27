@@ -21,6 +21,14 @@ public:
         OFFSET = 10,
         
         ERROR_MESSAGE_HEIGHT = 30,
+        
+        TEXTURE_PREVIEW_HEIGHT = 100,
+        TEXTURE_PREVIEW_WIDTH = 200,
+        
+        TOOLS_HEIGHT = 40,
+        TOOL_BUTTON_SIDE = 32,
+        
+        CELL_HEIGHT = 20,
     };
     
     enum eColorPickerSizes
@@ -39,11 +47,14 @@ public:
     static UIButton *CreateButton(const Rect & rect, const WideString &buttonText);
     static void CustomizeButton(UIButton *btn, const WideString &buttonText);
 
+    static void CustomizeButtonExpandable(UIButton *btn);
+
     static UIButton *CreateImageButton(const Rect & rect, const String &imagePath);
     static void CustomizeImageButton(UIButton *btn, const String &imagePath);
     
     static UIButton *CreateCloseWindowButton(const Rect & rect);
     static void CustomizeCloseWindowButton(UIButton *btn);
+
     
     static Font* GetFontLight();
     static Font* GetFontDark();

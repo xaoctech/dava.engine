@@ -182,11 +182,15 @@ public:
         STATE_TEXTURE1 = 1 << 9,            // fixed func only / in programmable pipeline only checks for consistency
         STATE_TEXTURE2 = 1 << 10,            // fixed func only / in programmable pipeline only checks for consistency
         STATE_TEXTURE3 = 1 << 11,            // fixed func only / in programmable pipeline only checks for consistency
+		STATE_TEXTURE4 = 1 << 12,
+		STATE_TEXTURE5 = 1 << 13,
+		STATE_TEXTURE6 = 1 << 14,
+		STATE_TEXTURE7 = 1 << 15,
         
-        STATE_COLORMASK_RED =  1 << 12,
-        STATE_COLORMASK_GREEN = 1 << 13,
-        STATE_COLORMASK_BLUE = 1 << 14,
-        STATE_COLORMASK_ALPHA = 1 << 15,
+        STATE_COLORMASK_RED =  1 << 15,
+        STATE_COLORMASK_GREEN = 1 << 17,
+        STATE_COLORMASK_BLUE = 1 << 18,
+        STATE_COLORMASK_ALPHA = 1 << 19,
         STATE_COLORMASK_ALL = (STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA),
         
         // 4 bits for sourceBlendFactor
@@ -210,18 +214,23 @@ public:
         STATE_CHANGED_CULLMODE = 1 << 3,
         STATE_CHANGED_SHADER = 1 << 4,
         STATE_CHANGED_ALPHA_FUNC = 1 << 5,
+		STATE_CHANGED_DEPTH_FUNC = 1 << 6,
     
         STATE_CHANGED_TEXTURE0 = 1 << 8,        
         STATE_CHANGED_TEXTURE1 = 1 << 9,        
         STATE_CHANGED_TEXTURE2 = 1 << 10,        
         STATE_CHANGED_TEXTURE3 = 1 << 11,
+		STATE_CHANGED_TEXTURE4 = 1 << 12,
+		STATE_CHANGED_TEXTURE5 = 1 << 13,
+		STATE_CHANGED_TEXTURE6 = 1 << 14,
+		STATE_CHANGED_TEXTURE7 = 1 << 15,
 
-		STATE_CHANGED_STENCIL_REF = 1 << 12,
-		STATE_CHANGED_STENCIL_MASK = 1 << 13,
-		STATE_CHANGED_STENCIL_FUNC = 1 << 14,
-		STATE_CHANGED_STENCIL_PASS = 1 << 15,
-		STATE_CHANGED_STENCIL_FAIL = 1 << 16,
-		STATE_CHANGED_STENCIL_ZFAIL = 1 << 17,
+		STATE_CHANGED_STENCIL_REF = 1 << 16,
+		STATE_CHANGED_STENCIL_MASK = 1 << 17,
+		STATE_CHANGED_STENCIL_FUNC = 1 << 18,
+		STATE_CHANGED_STENCIL_PASS = 1 << 19,
+		STATE_CHANGED_STENCIL_FAIL = 1 << 20,
+		STATE_CHANGED_STENCIL_ZFAIL = 1 << 21,
     };
     /*
         algorithm: 
@@ -273,6 +282,7 @@ public:
     eFace cullMode;
     eCmpFunc alphaFunc;
     uint8    alphaFuncCmpValue;
+	eCmpFunc depthFunc;
 
 	struct StencilState
 	{
@@ -286,7 +296,7 @@ public:
 	};
 	StencilState stencilState;
     
-    static const uint32 MAX_TEXTURE_LEVELS = 4;
+    static const uint32 MAX_TEXTURE_LEVELS = 8;
     Texture * currentTexture[MAX_TEXTURE_LEVELS];
     Shader * shader;
     
@@ -317,6 +327,9 @@ public:
     // ALPHA
     inline void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
 
+	// DEPTH
+	inline void SetDepthFunc(eCmpFunc func);
+
 	// STENCIL
 	inline void SetStencilRef(int32 ref);
 	inline void SetStencilMask(uint32 mask);
@@ -332,6 +345,7 @@ public:
     inline void SetBlendModeInHW();
     inline void SetDepthTestInHW();
     inline void SetDepthWriteInHW();
+	inline void SetDepthFuncInHW();
     inline void SetCullInHW();
     inline void SetCullModeInHW();
     inline void SetColorInHW();
@@ -450,6 +464,15 @@ inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
         alphaFuncCmpValue = newCmpValue;
         changeSet |= STATE_CHANGED_ALPHA_FUNC;
     }
+}
+
+inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
+{
+	if(depthFunc != func)
+	{
+		depthFunc = func;
+		changeSet |= STATE_CHANGED_DEPTH_FUNC;
+	}
 }
     
 inline eBlendMode RenderStateBlock::GetSrcBlend()

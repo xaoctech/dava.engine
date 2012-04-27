@@ -50,24 +50,18 @@ class Image;
 class Texture : public RenderResource
 {
 public:
-	enum PixelFormat
-	{
-		FORMAT_INVALID = 0,
-		FORMAT_RGBA8888 = 1,		
-		FORMAT_RGB565,				 
-		FORMAT_RGBA4444,			
-		FORMAT_A8,
-		FORMAT_PVR4,
-		FORMAT_PVR2,
-		
-		FORMAT_CLOSEST = 256
-	};
 	
 	enum TextureWrap
 	{
 		WRAP_CLAMP_TO_EDGE = 0,
 		WRAP_CLAMP,
 		WRAP_REPEAT,
+	};
+
+	enum DepthFormat
+	{
+		DEPTH_NONE = 0,
+		DEPTH_RENDERBUFFER
 	};
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -128,9 +122,10 @@ public:
         \param[in] width width of the fbo
         \param[in] height height of the fbo
         \param[in] format format of the fbo
+		\param[in] useDepthbuffer if set to true, addition depthbuffer will be created for this fbo
         \todo reorder variables in function, and make format variable first to make it similar to CreateFromData function.
      */
-	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format);
+	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
     /**
         \brief Function to load specific mip-map level from file
@@ -146,9 +141,9 @@ public:
         can use the following code
      
         \code
-        Texture::SetDefaultRGBAFormat(Texture::FORMAT_RGBA4444);
+        Texture::SetDefaultRGBAFormat(FORMAT_RGBA4444);
         texRGBA4444 = Texture::CreateFromFile("~res:/Scenes/Textures/texture.png");
-        Texture::SetDefaultRGBAFormat(Texture::FORMAT_RGBA8888);
+        Texture::SetDefaultRGBAFormat(FORMAT_RGBA8888);
         \endcode
      */
 	static void SetDefaultRGBAFormat(PixelFormat format);
@@ -165,6 +160,7 @@ public:
 	static void DisableMipmapGeneration();
     static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
 	void GenerateMipmaps();
+	void GeneratePixelesation();
 	
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
 
@@ -194,7 +190,7 @@ public:							// properties for fast access
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-#if defined(__DAVAENGINE_ANDROID__) 
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	bool		 renderTargetModified;
     bool         renderTargetAutosave;
 
@@ -209,7 +205,6 @@ public:							// properties for fast access
     void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
     void SaveData(uint8 * data, int32 dataSize);
     
-
 	uint8 *savedData;
 	int32 savedDataSize;
 #endif //#if defined(__DAVAENGINE_ANDROID__) 
@@ -236,9 +231,15 @@ public:							// properties for fast access
 //	uint32		imageHeight;	// image height
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		fboID;			// id of frame buffer object
+	uint32		rboID;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	PixelFormat format;			// texture format 
+	DepthFormat depthFormat;
 	bool		isRenderTarget;
+
+    bool isMimMapTexture;
+	bool isAlphaPremultiplied;
+
 
 	void SetDebugInfo(const String & _debugInfo);
 

@@ -152,6 +152,16 @@ void SystemTimer::Start()
 #elif defined (__DAVAENGINE_ANDROID__)
 	delta = ElapsedSec();
 
+#ifdef SHOW_FRAME_TIME
+	curTime = AbsoluteMS();
+	frameCount++;
+	if(frameCount > 60)
+	{
+		startTime = curTime;
+		frameCount = 0;
+	}
+#endif //#ifdef SHOW_FRAME_TIME
+
 	if(delta < 0.001f)
 	{
 		delta = 0.001f;
@@ -165,16 +175,6 @@ void SystemTimer::Start()
 
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	delta = ElapsedSec();
-#ifdef SHOW_FRAME_TIME
-	curTime = AbsoluteMS();
-	frameCount++;
-	if(frameCount > 60)
-	{
-		Logger::Debug("frame time = %dms", (curTime - startTime) / frameCount);
-		startTime = curTime;
-		frameCount = 0;
-	}
-#endif //#ifdef SHOW_FRAME_TIME
 	if(delta < 0.001f)
 	{
 		delta = 0.001f;
@@ -187,6 +187,17 @@ void SystemTimer::Start()
 #else //PLATFORMS
 	//other platforms
 #endif //PLATFORMS
+
+#ifdef SHOW_FRAME_TIME
+	curTime = AbsoluteMS();
+	frameCount++;
+	if(frameCount > 60)
+	{
+		Logger::Debug("frame time = %dms", (curTime - startTime) / frameCount);
+		startTime = curTime;
+		frameCount = 0;
+	}
+#endif //#ifdef SHOW_FRAME_TIME
 	
 	stampTime = AbsoluteMS();
 }
@@ -251,7 +262,7 @@ uint64 SystemTimer::AbsoluteMS()
 	}
 
 #elif defined(__DAVAENGINE_ANDROID__)
-	return 0;
+	return GetTickCount();
 #elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	uint64_t numer = timebase.numer;
 	uint64_t denom = timebase.denom;

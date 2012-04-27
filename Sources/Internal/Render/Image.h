@@ -41,14 +41,6 @@ namespace DAVA
 class Image : public BaseObject
 {
 public:
-	enum PixelFormat
-	{
-		FORMAT_INVALID = 0,
-		FORMAT_RGBA8888 = 1,
-		FORMAT_RGB565, 
-		FORMAT_RGBA4444,
-		FORMAT_A8,
-	};
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	static const int MAX_WIDTH = 1024;
 	static const int MIN_WIDTH = 8;
@@ -78,7 +70,7 @@ public:
 	inline PixelFormat GetPixelFormat();
 	inline bool  IsAlphaPremultiplied();
 
-	static uint32 GetFormatSize(Image::PixelFormat format); 
+	static uint32 GetFormatSize(PixelFormat format); 
 
 	void ConvertToFormat(PixelFormat format, bool isAlphaPremultiplied = true);
 	
@@ -123,7 +115,7 @@ uint8 * Image::GetData()
 {
 	return data;
 }
-Image::PixelFormat Image::GetPixelFormat()
+PixelFormat Image::GetPixelFormat()
 {
 	return format;
 }

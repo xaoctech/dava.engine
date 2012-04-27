@@ -9,6 +9,7 @@
 #include "../AppScreens.h"
 #include "EditorBodyControl.h"
 #include "EditorLightNode.h"
+#include "EditorSettings.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     :   DraggableDialog(rect)
@@ -143,6 +144,23 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
             sceneNode = new Camera(scene);
             sceneNode->SetName("Camera");
             break;
+
+		case ECNID_IMPOSTER:
+			SetHeader(LocalizedString(L"createnode.imposter"));
+			sceneNode = new ImposterNode(scene);
+			sceneNode->SetName("Imposter");
+			break;
+
+//        case ECNID_LODNODE:
+//			SetHeader(LocalizedString(L"createnode.lodnode"));
+//			sceneNode = new LodNode(scene);
+//            for(int32 iLayer = 0; iLayer < LodNode::MAX_LOD_LAYERS; ++iLayer)
+//            {
+//                ((LodNode *)sceneNode)->SetLodLayerDistance(iLayer, EditorSettings::Instance()->GetLodLayerDistance(iLayer));
+//            }
+//            
+//			sceneNode->SetName("LodNode");
+//			break;
             
         default:
             break;

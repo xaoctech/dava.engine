@@ -12,11 +12,12 @@
 
 using namespace DAVA;
 
-class LandscapeEditorControl;
 class EditorBodyControl;
 class MaterialEditor;
 class SettingsDialog;
 class TextureTrianglesDialog;
+class TextureConverterDialog;
+class HelpDialog;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodesDialogDelegeate,
@@ -45,17 +46,10 @@ class SceneEditorScreenMain:
     {
         MENUID_OPEN = 100,
         MENUID_CREATENODE = 200,
-        MENUID_NEW = 300,
-        MENUID_VIEWPORT = 400,
+        MENUID_VIEWPORT = 300,
+        MENUID_EXPORTTOGAME = 400,
     };
     
-    enum eNewMenuIDS
-    {
-        ENMID_ENPTYSCENE = 0,
-        ENMID_SCENE_WITH_CAMERA,
-        
-        ENMID_COUNT
-    };
     
     enum eOpenMenuIDS
     {
@@ -63,6 +57,24 @@ class SceneEditorScreenMain:
         EOMID_OPENLAST_STARTINDEX,
         
         EOMID_COUNT
+    };
+
+    enum eExportToGameMenuIDS
+    {
+        EETGMID_PNG = 0,
+        EETGMID_PVR,
+        EETGMID_DXT,
+        
+        EETGMID_COUNT
+    };
+
+public:
+    enum eLandscapeEditorModeIDS
+    {
+        ELEMID_HEIGHTMAP = 0,
+        ELEMID_COLOR_MAP,
+        
+        ELEMID_COUNT
     };
     
 
@@ -127,9 +139,10 @@ private:
     UIButton * btnNew;
     UIButton * btnProject;
 	UIButton * btnBeast;
-	UIButton * btnBeastFullshade;
-	UIButton * btnLandscape;
+	UIButton * btnLandscapeHeightmap;
+	UIButton * btnLandscapeColor;
 	UIButton * btnViewPortSize;
+    UIButton * btnTextureConverter;
 
     
     void OnOpenPressed(BaseObject * obj, void *, void *);
@@ -140,8 +153,10 @@ private:
     void OnNewPressed(BaseObject * obj, void *, void *);
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
 	void OnBeastPressed(BaseObject * obj, void *, void *);
-	void OnLandscapePressed(BaseObject * obj, void *, void *);
+	void OnLandscapeHeightmapPressed(BaseObject * obj, void *, void *);
+	void OnLandscapeColorPressed(BaseObject * obj, void *, void *);
     void OnViewPortSize(BaseObject * obj, void *, void *);
+    void OnTextureConverter(BaseObject * obj, void *, void *);
     
 
     //Body list
@@ -185,19 +200,16 @@ private:
     void OnSceneInfoPressed(BaseObject * obj, void *, void *);
     
 
-    void NodeExportPreparation(SceneNode *node);//expand this methods if you need to expand export functionality
+    void ExportLandscapeAndMeshLightmaps(SceneNode *node);//expand this methods if you need to expand export functionality
     void ExportTexture(const String &textureDataSourcePath);
     
     // menu
     MenuPopupControl *menuPopup;
 
     //create node dialog
-//    CreateNodeDialog *nodeDialog;
     CreateNodesDialog *nodeDialog;
     
     MaterialEditor *materialEditor;
-//    CreateNodeDialog *nodeDialogs[ECNID_COUNT];
-//    int32 currentNodeDialog;
     void InitializeNodeDialogs();
     void ReleaseNodeDialogs();
     
@@ -207,17 +219,20 @@ private:
     void ShowOpenFileDialog();
     void ShowOpenLastDialog();
     void OpenFileAtScene(const String &pathToFile);
-
-    //Landscape
-    LandscapeEditorControl *landscapeEditor;
     
     void OnSettingsPressed(BaseObject * obj, void *, void *);
     SettingsDialog *settingsDialog;
     
     TextureTrianglesDialog *textureTrianglesDialog;
+    TextureConverterDialog *textureConverterDialog;
     
     // general
     Font *font;
+    
+    void ExportToGameAction(int32 actionID);
+	bool useConvertedTextures;
+    
+    HelpDialog *helpDialog;
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

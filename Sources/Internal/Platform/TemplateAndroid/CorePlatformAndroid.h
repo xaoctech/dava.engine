@@ -58,11 +58,10 @@ public:
 	void OnCreateActivity();
 	void OnDestroyActivity();
 
-	void KeyUp(int keyCode);
-	void KeyDown(int keyCode);
+	void KeyUp(int32 keyCode);
+	void KeyDown(int32 keyCode);
 
-	void OnTouch(int action, int id, int x, int y, long time);
-
+	void OnTouch(int32 action, int32 id, float32 x, float32 y, long time);
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
@@ -83,6 +82,11 @@ private:
 	bool renderIsActive;
 
 	bool foreground;
+
+    UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+    
+	Vector<DAVA::UIEvent> totalTouches;
+	int32 touchPhase;
 
 	AndroidSystemDelegate *androidDelegate;
 };

@@ -27,7 +27,8 @@ public:
 	~DefinitionFile();
 	
 	void ClearPackedFrames();
-	
+	void LoadPNG(const String & fullname, const String & processDirectoryPath);
+
 	std::string filename;
 	int			frameCount;
 	int			spriteWidth;

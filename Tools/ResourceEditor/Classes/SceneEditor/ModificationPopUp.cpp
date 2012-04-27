@@ -32,7 +32,6 @@ ModificationPopUp::ModificationPopUp()
 	btnReset = ControlsFactory::CreateButton(Rect(0, 130, 80, 20), L"Reset");
 	btnReset->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationPopUp::OnReset));
 	AddControl(btnReset);
-
 }
 
 ModificationPopUp::~ModificationPopUp()
@@ -48,7 +47,9 @@ void ModificationPopUp::OnFloatPropertyChanged(PropertyList *forList, const Stri
 		Matrix4 modification;
 		modification.Identity();
 	
-		modification.CreateTranslation(Vector3(forList->GetFloatPropertyValue("x"), forList->GetFloatPropertyValue("y"), forList->GetFloatPropertyValue("z")));	
+		modification.CreateTranslation(Vector3(forList->GetFloatPropertyValue("x"), 
+                                               forList->GetFloatPropertyValue("y"), 
+                                               forList->GetFloatPropertyValue("z")));	
 		selection->SetLocalTransform(selection->GetLocalTransform() * modification);
 
 		forList->SetFloatPropertyValue("x", 0.0f);

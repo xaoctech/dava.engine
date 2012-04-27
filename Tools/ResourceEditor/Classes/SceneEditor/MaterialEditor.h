@@ -12,28 +12,17 @@
 
 #include "DAVAEngine.h"
 #include "DraggableDialog.h"
-#include "PropertyList.h"
-#include "ComboBox.h"
+#include "MaterialPropertyControl.h"
 
 using namespace DAVA;
 
 class ComboBox;
-class MaterialEditor : public DraggableDialog, public UIListDelegate, public ComboBoxDelegate, public PropertyListDelegate
+class MaterialEditor: public DraggableDialog, public UIListDelegate, public NodesPropertyDelegate
 {
 public:
     
-    enum eTextureType 
-    {
-        ME_DIFFUSE = 0,
-        ME_DECAL,
-        ME_DETAIL,
-        ME_NORMAL_MAP,
-        
-        ME_TEX_COUNT
-    };
-    
     MaterialEditor();
-    ~MaterialEditor();
+    virtual ~MaterialEditor();
     
     void SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorkingSceneNode);
     void EditMaterial(Scene *newWorkingScene, Material *newWorkingMaterial);
@@ -52,25 +41,18 @@ public:
 	virtual int32 CellHeight(UIList *forList, int32 index);//calls only for vertical orientation
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
     
-    virtual void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex);
-
-	virtual void OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
-	virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
-	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
-	virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
-	virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
-    virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor);
-
     void SelectMaterial(int materialIndex);
     void PreparePropertiesForMaterialType(int materialType);
+
+    //NodesPropertyDelegate
+    virtual void NodesPropertyChanged();
     
 protected:
     
     Vector<Material*> materials;
-    
     UIList *materialsList;
-    ComboBox *materialTypes;
-    PropertyList *materialProps[Material::MATERIAL_TYPES_COUNT];
+
+    MaterialPropertyControl *materialProps;
     
     Scene *workingScene;
     SceneNode *workingSceneNode;
@@ -81,7 +63,6 @@ protected:
     UIListCell *lastSelection;
     
     UIStaticText *noMaterials;
-    UIStaticText *comboboxName;
     
     //===============
     enum eDisplayMode

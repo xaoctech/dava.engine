@@ -64,6 +64,11 @@ public:
 	
 	Logger();
 	virtual ~Logger();
+
+	//! Enables/disables logging to file. Disabled by default.
+	//! \param filename: name of log file. Empty string disables logging to file, 
+	//! non-empty creates log file in working directory.
+	virtual void SetLogFilename(const String & filename);
 	
 	//! Returns the current set log level.
 	virtual eLogLevel GetLogLevel();
@@ -113,6 +118,7 @@ public:
     
 protected:	
 	const char8 * GetLogLevelString(eLogLevel ll);
+	String logFilename;
 	
 private:
 	eLogLevel logLevel;

@@ -54,6 +54,7 @@ public:
     /**
      */
     void SetScene(Scene * _scene);
+    inline Scene * GetScene() { return scene; };
     
     /**
         \brief Set name of this particular node.

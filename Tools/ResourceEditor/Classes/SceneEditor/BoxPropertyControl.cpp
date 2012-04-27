@@ -37,7 +37,7 @@ void BoxPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const Str
         ||  "property.cubenode.width" == forKey 
         ||  "property.cubenode.depth" == forKey)
     {
-        CubeNode *cube = dynamic_cast<CubeNode *> (currentNode);
+        CubeNode *cube = dynamic_cast<CubeNode *> (currentSceneNode);
         Vector3 size(
                      propertyList->GetFloatPropertyValue("property.cubenode.length"),
                      propertyList->GetFloatPropertyValue("property.cubenode.width"),
@@ -53,7 +53,7 @@ void BoxPropertyControl::OnColorPropertyChanged(PropertyList *forList, const Str
 {
     if("property.cubenode.color" == forKey)
     {
-        CubeNode *cube = dynamic_cast<CubeNode *> (currentNode);
+        CubeNode *cube = dynamic_cast<CubeNode *> (currentSceneNode);
         cube->SetColor(newColor);
     }
 }

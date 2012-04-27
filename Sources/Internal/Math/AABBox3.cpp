@@ -131,9 +131,7 @@ void AABBox3::GetCorners(Vector3 * cornersArray)
     cornersArray[5].Set(max.x, max.y, min.z);
     cornersArray[6].Set(max.x, min.y, max.z);
     cornersArray[7].Set(min.x, max.y, max.z);
-}
-
-    
+} 
     
     
 };
