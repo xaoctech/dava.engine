@@ -1374,16 +1374,27 @@ void Sprite::SetClipPolygon(Polygon2 * _clipPolygon)
 
 void Sprite::ConvertToVirtualSize()
 {
-	frameVertices[0][0] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][1] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][2] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][3] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][4] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][5] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][6] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][7] *= Core::Instance()->GetVirtualToPhysicalFactor();
+    float32 virtualToPhysicalFactor = Core::Instance()->GetVirtualToPhysicalFactor();
+    float32 resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(GetResourceSizeIndex());
+    
+	frameVertices[0][0] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][1] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][2] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][3] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][4] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][5] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][6] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][7] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+    
+    texCoords[0][0] *= resourceToVirtualFactor;
+    texCoords[0][1] *= resourceToVirtualFactor;
+    texCoords[0][2] *= resourceToVirtualFactor;
+    texCoords[0][3] *= resourceToVirtualFactor;
+    texCoords[0][4] *= resourceToVirtualFactor;
+    texCoords[0][5] *= resourceToVirtualFactor;
+    texCoords[0][6] *= resourceToVirtualFactor;
+    texCoords[0][7] *= resourceToVirtualFactor;
 }
-
 
 void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState)
 {
