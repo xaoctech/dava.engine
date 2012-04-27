@@ -13,10 +13,6 @@ class LandscapeEditorColor
     ,   public LandscapeEditorPropertyControlDelegate
 
 {
-    enum eLEConst
-    {
-        ZOOM_MULTIPLIER = 4
-    };
     
 public:
     
@@ -31,18 +27,22 @@ public:
     
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
-    virtual void MaskTextureWillChanged();
-    virtual void MaskTextureDidChanged();
-
+    virtual void TextureWillChanged();
+    virtual void TextureDidChanged();
+    
 protected:
 
-    virtual void InputAction(int32 phase);
+    virtual void InputAction(int32 phase, bool intersects);
     virtual void HideAction();
     virtual void ShowAction();
     virtual void SaveTextureAction(const String &pathToFile);
+	virtual void UpdateCursor();
+    virtual void UndoAction();
+    virtual void RedoAction();
 
     
     void CreateMaskTexture();
+    void CreateMaskFromTexture(Texture *tex);
 
 	void UpdateTileMaskTool();
     void UpdateTileMask();
@@ -62,6 +62,7 @@ protected:
     Color paintColor;
     
 	Shader * tileMaskEditorShader;
+    bool editingIsEnabled;
 };
 
 

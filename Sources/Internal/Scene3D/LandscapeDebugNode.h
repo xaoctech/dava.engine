@@ -47,6 +47,7 @@ class Texture;
 class RenderDataObject;
 class Shader;
 class SceneFileV2;
+class Heightmap;
 
 
 /**    
@@ -63,7 +64,7 @@ public:
 	virtual ~LandscapeDebugNode();
     
     
-    virtual void SetDebugHeightmapImage(Image * _debugHeightmapImage, const AABBox3 & _box);
+    virtual void SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box);
   
     /**
         \brief Overloaded draw function to draw landscape.
@@ -73,6 +74,8 @@ public:
     void SetHeightmapPath(const String &path);
     
 protected:	
+    
+    void DrawLandscape();
     
     Vector<LandscapeVertex> debugVertices;
     Vector<uint32> debugIndices;

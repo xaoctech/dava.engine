@@ -15,6 +15,7 @@
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
 #include "HintManager.h"
+#include "UIFilePreviewDialog.h"
 
 #pragma mark --PropertyCell 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
@@ -358,7 +359,7 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     {
         return;
     }
-    dialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    dialog = new UIFilePreviewDialog("~res:/Fonts/MyriadPro-Regular.otf");
     dialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
     dialog->SetDelegate(this);
     dialog->SetTitle(keyName->GetText());
@@ -400,12 +401,12 @@ void PropertyFilepathCell::Input(UIEvent *currentInput)
     if(currentInput->phase == UIEvent::PHASE_MOVE)
     {
         ++moveCounter;
-        Logger::Debug("move");
+//        Logger::Debug("move");
     }
     else 
     {
         moveCounter = 0;
-        Logger::Debug("not_move");
+//        Logger::Debug("not_move");
     }
     
     UIListCell::Input(currentInput);
@@ -670,16 +671,27 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
     keyName->size.y = GetHeightForWidth(width)/2;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
     
-    float32 textWidth = 50;
-    minValue = new UIStaticText(Rect(0, keyName->size.y, textWidth, keyName->size.y));
-    minValue->SetFont(ControlsFactory::GetFontLight());
-    minValue->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
-    AddControl(minValue);
+    bool showEdges = prop->GetBool();
+    float32 textWidth = 0.f;
+    if(showEdges)
+    {
+        textWidth = 50.f;
 
-    maxValue = new UIStaticText(Rect(width - textWidth, keyName->size.y, textWidth, keyName->size.y));
-    maxValue->SetFont(ControlsFactory::GetFontLight());
-    maxValue->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
-    AddControl(maxValue);
+        minValue = new UIStaticText(Rect(0, keyName->size.y, textWidth, keyName->size.y));
+        minValue->SetFont(ControlsFactory::GetFontLight());
+        minValue->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+        AddControl(minValue);
+
+        maxValue = new UIStaticText(Rect(width - textWidth, keyName->size.y, textWidth, keyName->size.y));
+        maxValue->SetFont(ControlsFactory::GetFontLight());
+        maxValue->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+        AddControl(maxValue);
+    }
+    else 
+    {
+        minValue = NULL;
+        maxValue = NULL;
+    }
 
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
     slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
@@ -718,8 +730,15 @@ void PropertySliderCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
     
-    minValue->SetText(Format(L"%f", prop->GetSliderMinValue()));
-    maxValue->SetText(Format(L"%f", prop->GetSliderMaxValue()));
+    if(minValue)
+    {
+        minValue->SetText(Format(L"%f", prop->GetSliderMinValue()));
+    }
+    
+    if(maxValue)
+    {
+        maxValue->SetText(Format(L"%f", prop->GetSliderMaxValue()));
+    }
     
     slider->SetMinMaxValue(prop->GetSliderMinValue(), prop->GetSliderMaxValue());
     slider->SetValue(prop->GetSliderValue());
@@ -730,7 +749,6 @@ void PropertySliderCell::SetData(PropertyCellData *prop)
 PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
-//    keyName->size.x = width/KEY_NAME_DEVIDER;
     keyName->size.x = GetHeightForWidth(width) / 2;
     keyName->size.y = GetHeightForWidth(width) / 2;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
@@ -802,4 +820,72 @@ void PropertyTexturePreviewCell::OnClick(DAVA::BaseObject *owner, void *userData
 {
     bool checked = checkBox->Checked();
     checkBox->SetChecked(!checked, true);
+}
+
+#pragma mark  --PropertyDistanceCell
+//class PropertyDistanceCell: public PropertyCell, public LodDistanceControlDelegate
+//{
+//public:
+//    
+//    PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+//    virtual ~PropertyDistanceCell();
+//    
+//    static float32 GetHeightForWidth(float32 currentWidth);
+//    virtual void SetData(PropertyCellData *prop);
+//    
+//    virtual void DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value) = 0;
+//    
+//private:
+//    
+//    void OnClick(BaseObject * owner, void * userData, void * callerData);
+//    
+//    LodDistanceControl *distanceControl;
+//};
+
+PropertyDistanceCell::PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
+:   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width, 0)), prop)
+{
+    keyName->size.x = width;
+    keyName->size.y = CELL_HEIGHT;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+    
+    distanceControl = new LodDistanceControl(this, Rect(0, CELL_HEIGHT, width, GetHeightForWidth(width, 0) - CELL_HEIGHT));
+    AddControl(distanceControl);
+
+    SetData(prop);
+}
+
+PropertyDistanceCell::~PropertyDistanceCell()
+{
+    SafeRelease(distanceControl);
+}
+
+void PropertyDistanceCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_DISTANCE:
+        {
+            distanceControl->SetDistances(prop->GetDistances(), prop->GetDistancesCount());
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+float32 PropertyDistanceCell::GetHeightForWidth(float32 currentWidth, int32 count)
+{
+    return CELL_HEIGHT + (count + 1) * ControlsFactory::BUTTON_HEIGHT;
+}
+
+void PropertyDistanceCell::DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value)
+{
+    property->SetDistance(value, index);
+    
+//    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
 }

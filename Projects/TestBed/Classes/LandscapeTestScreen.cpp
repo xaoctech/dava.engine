@@ -56,7 +56,7 @@ void LandscapeTestScreen::LoadResources()
     AABBox3 box(Vector3(445.0f / 2.0f, 445.0f / 2.0f, 0), Vector3(-445.0f / 2.0f, -445.0f / 2.0f, 50.0f));
     
     //node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
-#if 1
+#if 0
 	node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_DETAIL_SHADER, "~res:/Landscape/hmp2_1.png", box);
     
     Texture::EnableMipmapGeneration();
@@ -72,12 +72,15 @@ void LandscapeTestScreen::LoadResources()
 //     node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
 //     Texture::DisableMipmapGeneration();
 #else
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_BLENDED_SHADER, "~res:/Landscape/hmp2_1.png", box);
+    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_TILE_MASK_SHADER, "~res:/Landscape/hmp2_1.png", box);
     
     Texture::EnableMipmapGeneration();
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE0, "~res:/Landscape/blend/d.png");
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTURE1, "~res:/Landscape/blend/s.png");
-    node->SetTexture(LandscapeNode::TEXTURE_TEXTUREMASK, "~res:/Landscape/blend/mask.png");
+    node->SetTexture(LandscapeNode::TEXTURE_COLOR, "~res:/Landscape/diffuse.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TILE0, "~res:/Landscape/blend/d.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TILE1, "~res:/Landscape/blend/s.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TILE2, "~res:/Landscape/blend/d.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TILE3, "~res:/Landscape/blend/s.png");
+    node->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, "~res:/Landscape/blend/mask.png");
     Texture::DisableMipmapGeneration();
 #endif
     

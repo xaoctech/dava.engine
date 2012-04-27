@@ -371,7 +371,7 @@ void SceneNode::Update(float32 timeElapsed)
 
 void SceneNode::Draw()
 {
-	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE))return;
+	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
 
 	//uint32 size = (uint32)children.size();
     const Vector<SceneNode*>::iterator & itEnd = children.end();
@@ -483,6 +483,9 @@ String SceneNode::GetFullName()
 
 String SceneNode::RecursiveBuildFullName(SceneNode * node, SceneNode * endNode)
 {
+    if (!node)
+        return "";
+        
     if (node->GetParent() != endNode)
     {
         return RecursiveBuildFullName(node->GetParent(), endNode) + String("->") + node->name; 

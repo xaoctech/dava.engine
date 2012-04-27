@@ -7,6 +7,7 @@
 #include "LandscapePropertyControl.h"
 #include "LandscapeEditorPropertyControl.h"
 #include "MaterialPropertyControl.h"
+#include "LodNodePropertyControl.h"
 
 
 PropertyControlCreator::PropertyControlCreator()
@@ -63,6 +64,12 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
     {
         return CreateControlForNode(EPCID_MESH, rect, createNodeProperties);
     }
+    
+    LodNode *lodNode = dynamic_cast<LodNode*>(sceneNode);
+    if(lodNode)
+    {
+        return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
+    }
 
 	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
@@ -112,9 +119,17 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
             case EPCID_NODE:
                 controls[controlID] = new NodesPropertyControl(rect, createNodeProperties);
                 break;
+            case EPCID_LODNODE:
+                controls[controlID] = new LodNodePropertyControl(rect, createNodeProperties);
+                break;
 
-            case EPCID_LANDSCAPE_EDITOR:
-                controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties);
+
+            case EPCID_LANDSCAPE_EDITOR_MASK:
+                controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
+                break;
+
+            case EPCID_LANDSCAPE_EDITOR_HEIGHT:
+                controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
                 break;
 
             case EPCID_DATANODE:
@@ -132,8 +147,17 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
     return controls[controlID];
 }
 
-NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(SceneNode * sceneNode, const Rect & rect)
+NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(SceneNode * sceneNode, const Rect & rect, LandscapeEditorPropertyControl::eEditorMode mode)
 {
-	return CreateControlForNode(EPCID_LANDSCAPE_EDITOR, rect, false);
+    if(LandscapeEditorPropertyControl::MASK_EDITOR_MODE == mode)
+    {
+        return CreateControlForNode(EPCID_LANDSCAPE_EDITOR_MASK, rect, false);
+    }
+    else if(LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE == mode)
+    {
+        return CreateControlForNode(EPCID_LANDSCAPE_EDITOR_HEIGHT, rect, false);
+    }
+
+    return NULL;
 }
 

@@ -220,11 +220,13 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 	
 	String dir = "";
 
+#ifndef __DAVAENGINE_WIN32__
     size_t find = path.find(":");
     if(find == path.npos)
 	{
         dir = "/";
     }
+#endif
 	
 	for (size_t k = 0; k < tokens.size(); ++k)
 	{

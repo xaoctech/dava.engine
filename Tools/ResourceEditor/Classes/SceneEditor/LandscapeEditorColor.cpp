@@ -6,6 +6,8 @@
 #include "ErrorNotifier.h"
 #include "EditorScene.h"
 
+#include "UNDOManager.h"
+
 #pragma mark --LandscapeEditorColor
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -28,6 +30,8 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
     paintColor = Color(1.f, 1.f, 1.f, 1.0f);
     
     toolsPanel = new LandscapeToolsPanelColor(this, toolsRect);
+
+    editingIsEnabled = false;
 }
 
 LandscapeEditorColor::~LandscapeEditorColor()
@@ -69,25 +73,34 @@ void LandscapeEditorColor::CreateMaskTexture()
         savedPath = "";
     }
     
+    CreateMaskFromTexture(savedTexture);
+    
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_TILEMASK);
+    UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+}
+
+void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
+{
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
+    SafeRelease(toolSprite);
     
     int32 texSize = settings->maskSize;
-    if(savedTexture)
+    if(tex)
     {
-        texSize = savedTexture->width;
+        texSize = tex->width;
     }
     
     maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
 	oldMaskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
-	toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
+    toolSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
     
-    if(savedTexture)
+    if(tex)
     {
         RenderManager::Instance()->LockNonMain();
         
-        Sprite *oldMask = Sprite::CreateFromTexture(savedTexture, 0, 0, savedTexture->width, savedTexture->height);
-
+        Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->height);
+        
         RenderManager::Instance()->SetRenderTarget(oldMaskSprite);
         oldMask->SetPosition(0.f, 0.f);
         oldMask->Draw();
@@ -97,14 +110,15 @@ void LandscapeEditorColor::CreateMaskTexture()
         oldMask->SetPosition(0.f, 0.f);
         oldMask->Draw();
         RenderManager::Instance()->RestoreRenderTarget();
-
+        
         SafeRelease(oldMask);
-
+        
         RenderManager::Instance()->UnlockNonMain();
     }
     
 	workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, oldMaskSprite->GetTexture());
 }
+
 
 
 void LandscapeEditorColor::UpdateTileMask()
@@ -152,7 +166,7 @@ void LandscapeEditorColor::UpdateTileMask()
 	tileMaskEditorShader->SetUniformValue(colorTypeUniform, colorType);
 	int32 intensityUniform = tileMaskEditorShader->FindUniformLocationByName("intensity");
     
-	tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->intension);
+	tileMaskEditorShader->SetUniformValue(intensityUniform, currentTool->strength);
     
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     
@@ -167,9 +181,9 @@ void LandscapeEditorColor::UpdateTileMask()
 
 void LandscapeEditorColor::UpdateTileMaskTool()
 {
-	if(currentTool && currentTool->sprite && currentTool->zoom)
+	if(currentTool && currentTool->sprite && currentTool->size)
 	{
-		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->zoom * currentTool->zoom);
+		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
 //		Vector2 deltaPos = endPoint - startPoint;
 		{
 			Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
@@ -181,10 +195,25 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 				currentTool->sprite->SetScaleSize(scaleSize, scaleSize);
 				currentTool->sprite->SetPosition(pos);
 				currentTool->sprite->Draw();
-				RenderManager::Instance()->RestoreRenderTarget();
+                RenderManager::Instance()->RestoreRenderTarget();
 			}
 			startPoint = endPoint;
 		}
+	}
+}
+
+
+void LandscapeEditorColor::UpdateCursor()
+{
+	if(currentTool && currentTool->sprite && currentTool->size)
+	{
+		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
+		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+
+		workingLandscape->SetCursorTexture(cursorTexture);
+		workingLandscape->SetBigTextureSize(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetCursorPosition(pos);
+		workingLandscape->SetCursorScale(scaleSize);
 	}
 }
 
@@ -207,8 +236,43 @@ bool LandscapeEditorColor::SetScene(EditorScene *newScene)
     return ret;
 }
 
-void LandscapeEditorColor::InputAction(int32 phase)
+void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
 {
+    switch(phase)
+    {
+        case UIEvent::PHASE_BEGAN:
+        {
+            editingIsEnabled = true;
+            break;
+        }
+            
+        case UIEvent::PHASE_DRAG:
+        {
+            if(editingIsEnabled && !intersects)
+            {
+                editingIsEnabled = false;
+                UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+            }
+            else if(!editingIsEnabled && intersects)
+            {
+                editingIsEnabled = true;
+            }
+            break;
+        }
+            
+        case UIEvent::PHASE_ENDED:
+        {
+            editingIsEnabled = false;
+            UNDOManager::Instance()->SaveTilemask(maskSprite->GetTexture());
+            break;
+        }
+            
+        default:
+            break;
+    }
+    
+    
+    
     Texture *tex = NULL;
     if(settings->redMask)
     {
@@ -240,12 +304,50 @@ void LandscapeEditorColor::HideAction()
     SafeRelease(maskSprite);
 	SafeRelease(oldMaskSprite);
 	SafeRelease(toolSprite);
+
+	workingLandscape->CursorDisable();
 }
 
 void LandscapeEditorColor::ShowAction()
 {
     CreateMaskTexture();
     landscapeSize = maskSprite->GetWidth();
+
+	workingLandscape->CursorEnable();
+}
+
+void LandscapeEditorColor::UndoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
+    if(UNDOAction::ACTION_TILEMASK == type)
+    {
+        Image::EnableAlphaPremultiplication(false);
+        
+        Texture *tex = UNDOManager::Instance()->UndoTilemask(maskSprite->GetTexture());
+        
+        Image::EnableAlphaPremultiplication(true);
+        tex->GenerateMipmaps();
+        tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+
+        CreateMaskFromTexture(tex);
+    }
+}
+
+void LandscapeEditorColor::RedoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
+    if(UNDOAction::ACTION_TILEMASK == type)
+    {
+        Image::EnableAlphaPremultiplication(false);
+        
+        Texture *tex = UNDOManager::Instance()->RedoTilemask(maskSprite->GetTexture());
+        
+        Image::EnableAlphaPremultiplication(true);
+        tex->GenerateMipmaps();
+        tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+
+        CreateMaskFromTexture(tex);
+    }
 }
 
 void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
@@ -269,8 +371,10 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
 NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 {
     LandscapeEditorPropertyControl *propsControl = 
-    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect);
+    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);
     
+    propsControl->SetDelegate(this);
+
     LandscapeEditorSettingsChanged(propsControl->Settings());
     return propsControl;
 }
@@ -282,17 +386,15 @@ void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSetting
     settings = newSettings;
 }
 
-void LandscapeEditorColor::MaskTextureWillChanged()
+void LandscapeEditorColor::TextureWillChanged()
 {
-    if(savedTexture)
+    if(savedPath.length())
     {
-        String pathToFile = savedTexture->relativePathname;
-        SaveTextureAs(pathToFile, false);
+        SaveTextureAction(savedPath);
     }
 }
 
-void LandscapeEditorColor::MaskTextureDidChanged()
+void LandscapeEditorColor::TextureDidChanged()
 {
     CreateMaskTexture();
 }
-

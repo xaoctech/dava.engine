@@ -123,6 +123,8 @@ int32 Texture::GetPixelFormatSize(PixelFormat format)
 		return 4;
 	case FORMAT_PVR2:
 		return 2;
+    case FORMAT_A16:
+        return 16;
 	default:
 		return 0;
 	};
@@ -145,6 +147,8 @@ const char * Texture::GetPixelFormatString(PixelFormat format)
             return "FORMAT_PVR4";
         case FORMAT_PVR2:
             return "FORMAT_PVR2";
+        case FORMAT_A16:
+            return "FORMAT_A16";
         default:
             return "WRONG FORMAT";
 	};
@@ -170,6 +174,7 @@ Texture::Texture()
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_INVALID)
+,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
@@ -182,6 +187,7 @@ Texture::Texture()
 
 #ifdef __DAVAENGINE_OPENGL__
 	fboID = -1;
+	rboID = -1;
 #endif
 
     
@@ -218,8 +224,16 @@ Texture::~Texture()
 		SafeDeleteArray(savedData);
 		savedDataSize = 0;
 #endif// #if defined(__DAVAENGINE_ANDROID__)
-
     }
+
+	if(rboID != (uint32)-1)
+	{
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+		RENDER_VERIFY(glDeleteRenderbuffersOES(1, &rboID));
+#else //Non ES platforms
+		RENDER_VERIFY(glDeleteRenderbuffersEXT(1, &rboID));
+#endif //PLATFORMS
+	}
 	
 	if(id)
 	{
@@ -271,6 +285,9 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 			break;
 		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
+			break;
+		case FORMAT_A16:
+			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, _data));
 			break;
 		default:
 			return;
@@ -384,6 +401,9 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 			break;
 		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
+			break;
+		case FORMAT_A16:
+			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, texture->width, texture->height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, _data));
 			break;
 		default:
 			SafeRelease(texture);
@@ -1007,7 +1027,7 @@ int32 Texture::Release()
 	return BaseObject::Release();
 }
 	
-Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
+Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
 	int i;
 	int dx = w;
@@ -1044,6 +1064,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 
 	Texture *tx = Texture::CreateFromData(format, NULL, dx, dy);
 	DVASSERT(tx);
+
+	tx->depthFormat = _depthFormat;
 	 
 	// Now setup a texture to render to
 	BindTexture(tx->id);
@@ -1071,13 +1093,26 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 #if defined(__DAVAENGINE_WIN32__)    
 	if(GLEW_EXT_framebuffer_object)
 	{
-#endif //#if defined(__DAVAENGINE_WIN32__)        
+#endif //#if defined(__DAVAENGINE_WIN32__)  
+		if(DEPTH_RENDERBUFFER == _depthFormat)
+		{
+			glGenRenderbuffersEXT(1, &tx->rboID);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, tx->rboID);
+			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, dx, dy);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+		}
+
 		RENDER_VERIFY(glGenFramebuffersEXT(1, &tx->fboID));
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
         BindFBO(tx->fboID);
-	
+
 		// And attach it to the FBO so we can render to it
 		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tx->id, 0));
+
+		if(DEPTH_RENDERBUFFER == _depthFormat)
+		{
+			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, tx->rboID);
+		}
 	
 		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
@@ -1152,6 +1187,9 @@ void Texture::DumpTextures()
 			case FORMAT_A8:
 				allocSize += t->width * t->height;
 				break;
+			case FORMAT_A16:
+				allocSize += t->width * t->height * 2;
+				break;
 			default:
 				break;
 		}
@@ -1212,6 +1250,10 @@ int32 Texture::FormatMultiplier(PixelFormat format)
 		return 2;
 	case FORMAT_RGBA4444:
 		return 2;
+    case FORMAT_A16:
+        return 2;
+    case FORMAT_A8:
+        return 1;
 	}
 
 	return 4;
@@ -1267,6 +1309,9 @@ void Texture::SaveToSystemMemory()
 				case FORMAT_RGBA4444:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
 					break;
+                case FORMAT_A16:
+                    RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
+                    break;
 				}
 
 				BindFBO(saveFBO);
@@ -1427,7 +1472,13 @@ void Texture::InvalidateFromSavedData()
 		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
 			break;
+		case FORMAT_A16:
+			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
+			break;
+        default:
+            break;
 	}
+    
 
 
 	GLint wrapMode = GL_CLAMP_TO_EDGE;
@@ -1509,6 +1560,11 @@ Image * Texture::ReadDataToImage()
         case FORMAT_RGBA4444:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)imageData));
             break;
+        case FORMAT_A16:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)imageData));
+            break;
+        default:
+            break;
     }
     
 //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
@@ -1587,6 +1643,9 @@ int32 Texture::GetDataSize()
             break;
         case FORMAT_A8:
             allocSize = width * height;
+            break;
+        case FORMAT_A16:
+            allocSize = width * height * 2;
             break;
         default:
             break;

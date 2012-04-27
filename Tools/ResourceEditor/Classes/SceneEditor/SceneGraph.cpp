@@ -71,7 +71,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     GraphBase::CreateGraphPanel(rect);
     
     Rect graphRect = graphPanel->GetRect();
-    graphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 5);
+    graphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 6);
     graphTree = new UIHierarchy(graphRect);
     ControlsFactory::CusomizeListControl(graphTree);
     ControlsFactory::SetScrollbar(graphTree);
@@ -96,31 +96,45 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
                                                                       LocalizedString(L"scenegraph.debugflags"));
     y += ControlsFactory::BUTTON_HEIGHT;
     UIButton * bakeMatrices = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
-                                                            LocalizedString(L"scenegraph.bakemetrics"));
+                                                            LocalizedString(L"scenegraph.bakematrices"));
+    
+    y += ControlsFactory::BUTTON_HEIGHT;
+    UIButton * buildQuadTree = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
+                                                            LocalizedString(L"scenegraph.buildquadtree"));
+    
     
     refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRefreshGraph));
     lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnLookAtButtonPressed));
     removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRemoveNodeButtonPressed));
     enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnEnableDebugFlagsPressed));
     bakeMatrices->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBakeMatricesPressed));
+    buildQuadTree->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBuildQuadTreePressed));
     
     graphPanel->AddControl(refreshSceneGraphButton);
     graphPanel->AddControl(lookAtButton);
     graphPanel->AddControl(removeNodeButton);
     graphPanel->AddControl(enableDebugFlagsButton);
     graphPanel->AddControl(bakeMatrices);
+    graphPanel->AddControl(buildQuadTree);
     
     SafeRelease(refreshSceneGraphButton);
     SafeRelease(lookAtButton);
     SafeRelease(removeNodeButton);
     SafeRelease(enableDebugFlagsButton);
     SafeRelease(bakeMatrices);
+    SafeRelease(buildQuadTree);
 }
 
 void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
 {
     SceneNode *n = (SceneNode *)node;
-    cell->text->SetText(StringToWString(n->GetName()));
+    UIStaticText *text =  (UIStaticText *)cell->FindByName("_Text_");
+    text->SetText(StringToWString(n->GetName()));
+    
+    UIControl *icon = cell->FindByName("_Icon_");
+    icon->SetSprite("~res:/Gfx/UI/SceneNode/scenenode", 0);
+    
+//    cell->text->SetText(StringToWString(n->GetName()));
     if(n == workingNode)
     {
         cell->SetSelected(true, false);
@@ -165,6 +179,12 @@ void SceneGraph::UpdatePropertyPanel()
     if(workingNode && (NULL != graphTree->GetParent()))
     {
 		RecreatePropertiesPanelForNode(workingNode);
+        
+        if(propertyControl->GetParent() && propertyControl->GetParent() != propertyPanel)
+        {
+            propertyControl->GetParent()->RemoveControl(propertyControl);
+        }
+        
         if(!propertyControl->GetParent())
         {
             propertyPanel->AddControl(propertyControl);
@@ -229,6 +249,26 @@ void SceneGraph::OnBakeMatricesPressed(BaseObject * obj, void *, void *)
     if (workingNode)
     {
         workingNode->BakeTransforms();
+    }
+// TODO: if node is not selected scene should be selected by default ??? or probably we should show 
+//    else
+//    {
+//        scene->BakeTransforms(); 
+//    }
+}
+
+void SceneGraph::OnBuildQuadTreePressed(BaseObject * obj, void *, void *)
+{
+    if (workingNode)
+    {
+//        Scene * scene = workingNode->GetScene();
+//        QuadTree * quadTree = dynamic_cast<QuadTree*>(scene->GetBVHierarchy());
+//        if (!quadTree)
+//        {
+//            quadTree = new QuadTree();
+//            scene->SetBVHierarchy(quadTree);
+//        }
+//        quadTree->Build(scene);
     }
 }
 

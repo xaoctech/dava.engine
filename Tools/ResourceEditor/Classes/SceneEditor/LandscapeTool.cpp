@@ -1,8 +1,9 @@
 #include "LandscapeTool.h"
 
-LandscapeTool::LandscapeTool(int32 _toolID, const String & _imageName)
+LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageName)
 {
-    toolID = _toolID;
+    toolID = _ID;
+    type = _type;
     
     imageName = _imageName;
     image = Image::CreateFromFile(imageName);
@@ -37,18 +38,17 @@ LandscapeTool::LandscapeTool(int32 _toolID, const String & _imageName)
     
     RenderManager::Instance()->UnlockNonMain();
     
-    intension = (IntensionMax() + IntensionMin()) / 2.0f;
-    zoom = (ZoomMax() + ZoomMin()) / 2.0f;
-    
-    maxSize = DefaultSize();
-    size = DefaultSize() / 2.f;
-    maxStrength = DefaultStrength();
-    strength = 1.f;
-    
+    maxSize = 0.f;
+    size = 0.f;
+    maxStrength = 0.f;
+    strength = 0.f;
     height = 0.0f;
+    averageStrength = 0.f;
+
     
     relativeDrawing = true;
     averageDrawing = false;
+    absoluteDropperDrawing = false;
 }
 
 LandscapeTool::~LandscapeTool()
@@ -57,32 +57,42 @@ LandscapeTool::~LandscapeTool()
     SafeRelease(sprite);
 }
 
-float32 LandscapeTool::ZoomMin()
+float32 LandscapeTool::SizeColorMin()
 {
     return 0.2f;
 }
 
-float32 LandscapeTool::ZoomMax()
+float32 LandscapeTool::SizeColorMax()
 {
     return 2.0f;
 }
 
-float32 LandscapeTool::IntensionMin()
+float32 LandscapeTool::StrengthColorMin()
 {
     return 0.0f;
 }
 
-float32 LandscapeTool::IntensionMax()
+float32 LandscapeTool::StrengthColorMax()
 {
     return 0.50f;
 }
 
-float32 LandscapeTool::DefaultStrength()
+float32 LandscapeTool::StrengthHeightMax()
 {
-    return 3.0f;
+    return 30;
 }
 
-float32 LandscapeTool::DefaultSize()
+float32 LandscapeTool::SizeHeightMax()
 {
     return 60.0f;
+}
+
+float32 LandscapeTool::DefaultStrengthHeight()
+{
+    return 15.f;
+}
+
+float32 LandscapeTool::DefaultSizeHeight()
+{
+    return SizeHeightMax() / 2.0f;
 }

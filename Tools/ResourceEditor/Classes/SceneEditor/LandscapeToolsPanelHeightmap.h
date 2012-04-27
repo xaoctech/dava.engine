@@ -4,32 +4,28 @@
 #include "DAVAEngine.h"
 #include "LandscapeToolsPanel.h"
 #include "LandscapeTool.h"
-#include "UICheckBox.h"
 
 using namespace DAVA;
 
 class LandscapeToolsPanelHeightmap: 
     public LandscapeToolsPanel, 
-    public UITextFieldDelegate,
-    public UICheckBoxDelegate
+    public UITextFieldDelegate
 {
-    enum eLocalConst
-    {
-        TEXTFIELD_WIDTH = 50,
-        TEXT_WIDTH = 100
-    };
 
-    
 public:
     LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
     virtual ~LandscapeToolsPanelHeightmap();
     
+    virtual void WillAppear();
+    virtual void Update(float32 timeElapsed);
+
     //UITextFieldDelegate
     virtual void TextFieldShouldReturn(UITextField * textField);
     virtual void TextFieldShouldCancel(UITextField * textField);
     virtual void TextFieldLostFocus(UITextField * textField);
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, 
                                      int32 replacementLength, const WideString & replacementString);
+
 
     //UICheckBoxDelegate
     virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
@@ -39,22 +35,30 @@ public:
 
 protected:
 
+    void OnDropperTool(BaseObject * object, void * userData, void * callerData);
+    virtual void ToolIconSelected(UIControl *focused);
 
-    UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
     
-    UISlider *sizeSlider;
     UITextField *sizeValue;
-    UISlider *strengthSlider;
     UITextField *strengthValue;
-	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
-	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
     
     UITextField *CreateTextField(const Rect &rect);
     
     UICheckBox *relative;
     UICheckBox *average;
+    UICheckBox *absoluteDropper;
     
     UITextField *heightValue;
+    
+    UIControl *dropperIcon;
+    LandscapeTool *dropperTool;
+    
+    UISlider *averageStrength;
+    void OnAverageSizeChanged(BaseObject * object, void * userData, void * callerData);
+
+    UICheckBox *showGrid;
+    
+    float32 prevHeightValue;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_HEIGHTMAP_H__
