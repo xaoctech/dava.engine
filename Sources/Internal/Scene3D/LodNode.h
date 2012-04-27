@@ -42,12 +42,38 @@ class SceneFileV2;
     
 class LodNode : public SceneNode
 {
+    
 public:	
+
+    enum eConst
+    {
+        MAX_LOD_LAYERS = 4,
+        INVALID_DISTANCE = -1,
+        INVALID_LOD_LAYER = -1,
+        MIN_LOD_DISTANCE = 0,
+        MAX_LOD_DISTANCE = 500
+    };
+
+    struct LodDistance
+    {
+        float32 distance;
+
+        float32 nearDistance;
+        float32 farDistance;
+        
+        float32 nearDistanceSq;
+        float32 farDistanceSq;
+        
+        LodDistance();
+        void SetDistance(float32 newDistance);
+        void SetNearDistance(float32 newDistance);
+        void SetFarDistance(float32 newDistance);
+    };
     
     struct LodData
     {
         LodData()
-        :layer(-1)
+        :layer(INVALID_LOD_LAYER)
         ,isDummy(false)
         {
         }
@@ -58,7 +84,7 @@ public:
     };
     
 	LodNode(Scene * _scene = 0);
-	~LodNode();
+	virtual ~LodNode();
 	
     
     virtual void	AddNodeInLayer(SceneNode * node, int32 layer);//adds new node and registers this node as a LOD layer
@@ -89,6 +115,38 @@ public:
 	int32 GetMaxLodLayer();
 
 
+    /**
+     \brief Sets lod layer thet would be forcely used in the whole scene.
+     \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
+	 */
+    void SetForceLodLayer(int32 layer);
+    int32 GetForceLodLayer();
+
+    /**
+     \brief Sets distance that will be used for lod instead of layer
+     \param[in] newForceDistance distance to set on foк lod node. Use -1 to disable forced lod layer distance.
+	 */
+    void SetForceLodLayerDistance(float32 newForceDistance);
+    float32 GetForceLodLayerDistance();
+
+    
+    /**
+     \brief Registers LOD layer into the LodNode.
+     \param[in] layerNum is the layer index
+     \param[in] distance near view distance for the layer
+	 */
+    void SetLodLayerDistance(int32 layerNum, float32 distance);
+    
+    
+    inline int32 GetLodLayersCount();
+    inline float32 GetLodLayerDistance(int32 layerNum);
+    inline float32 GetLodLayerNear(int32 layerNum);
+    inline float32 GetLodLayerFar(int32 layerNum);
+    inline float32 GetLodLayerNearSquare(int32 layerNum);
+    inline float32 GetLodLayerFarSquare(int32 layerNum);
+
+    static float32 GetDefaultDistance(int32 layer);
+
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
@@ -103,7 +161,41 @@ protected:
     
     int lastLodUpdateFrame;
 
+    LodDistance lodLayersArray[MAX_LOD_LAYERS];
+    int32 forceLodLayer;
+    float32 forceDistance;
+    float32 forceDistanceSq;
 };
+    
+int32 LodNode::GetLodLayersCount()
+{
+    return GetChildrenCount();
+}
+
+float32 LodNode::GetLodLayerDistance(int32 layerNum)
+{
+    return lodLayersArray[layerNum].distance;
+}
+
+float32 LodNode::GetLodLayerNear(int32 layerNum)
+{
+    return lodLayersArray[layerNum].nearDistance;
+}
+
+float32 LodNode::GetLodLayerFar(int32 layerNum)
+{
+    return lodLayersArray[layerNum].farDistance;
+}
+
+float32 LodNode::GetLodLayerNearSquare(int32 layerNum)
+{
+    return lodLayersArray[layerNum].nearDistanceSq;
+}
+
+float32 LodNode::GetLodLayerFarSquare(int32 layerNum)
+{
+    return lodLayersArray[layerNum].farDistanceSq;
+}
 	
 };
 

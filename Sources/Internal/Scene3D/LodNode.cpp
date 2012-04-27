@@ -39,8 +39,46 @@
 
 namespace DAVA 
 {
+
+#pragma mark  --LodDistance
+LodNode::LodDistance::LodDistance()
+{
+    distance = nearDistance = nearDistanceSq = farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
+}
     
+void LodNode::LodDistance::SetDistance(float32 newDistance)
+{
+    distance = newDistance;
+}
     
+void LodNode::LodDistance::SetNearDistance(float32 newDistance)
+{
+    if(INVALID_DISTANCE == newDistance)
+    {
+        nearDistance = nearDistanceSq = (float32) INVALID_DISTANCE;
+    }
+    else 
+    {
+        nearDistance = newDistance;
+        nearDistanceSq = nearDistance * nearDistance;
+    }
+}
+
+void LodNode::LodDistance::SetFarDistance(float32 newDistance)
+{
+    if(INVALID_DISTANCE == newDistance)
+    {
+        farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
+    }
+    else 
+    {
+        farDistance = newDistance;
+        farDistanceSq = farDistance * farDistance;
+    }
+}
+    
+
+#pragma mark  --LodNode
 REGISTER_CLASS(LodNode);
     
 
@@ -48,8 +86,18 @@ LodNode::LodNode(Scene * _scene)
 :	SceneNode(_scene)
 ,   currentLod(NULL)
 ,   lastLodUpdateFrame(0)
+,   forceLodLayer(INVALID_LOD_LAYER)
+,   forceDistance(INVALID_DISTANCE)
+,   forceDistanceSq(INVALID_DISTANCE)
+    
 {
-	
+    lodLayersArray[0].SetDistance(0.0f);
+    lodLayersArray[0].SetNearDistance(0.0f);
+    
+    for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
+    {
+        lodLayersArray[iLayer].SetFarDistance(MAX_LOD_DISTANCE * 2);
+    }
 }
 	
 LodNode::~LodNode()
@@ -147,7 +195,6 @@ void LodNode::RegisterIndexInLayer(int32 nodeIndex, int32 layer)
     ld->indexes.push_back(nodeIndex);
 }
 
-    
 void LodNode::RemoveNode(SceneNode * node)
 {
     SceneNode::RemoveNode(node);
@@ -161,6 +208,7 @@ void LodNode::RemoveNode(SceneNode * node)
             {
                 node->RemoveFlagRecursive(SceneNode::NODE_IS_LOD_PART);
                 i->nodes.erase(it);
+                
                 return;
             }
         }
@@ -212,11 +260,11 @@ void LodNode::RecheckLod()
 //#define LOD_DEBUG
     if (!currentLod)return;
 
-    if (scene->GetForceLodLayer() != -1) 
+    if (INVALID_LOD_LAYER != forceLodLayer) 
     {
         for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
         {
-            if (it->layer >= scene->GetForceLodLayer())
+            if (it->layer >= forceLodLayer)
             {
                 currentLod = &(*it);
                 return;
@@ -229,13 +277,22 @@ void LodNode::RecheckLod()
     int32 cl = currentLod->layer;
 #endif
     {
-        float32 dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
-        dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
-        if (dst > scene->GetLodLayerFarSquare(currentLod->layer) || dst < scene->GetLodLayerNearSquare(currentLod->layer))
+        float32 dst = 0.f;
+        if(INVALID_DISTANCE == forceDistance)
+        {
+            dst = (scene->GetCurrentCamera()->GetPosition() - GetWorldTransform().GetTranslationVector()).SquareLength();
+            dst *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+        }
+        else 
+        {
+            dst = forceDistanceSq;
+        }
+        
+        if (dst > GetLodLayerFarSquare(currentLod->layer) || dst < GetLodLayerNearSquare(currentLod->layer))
         {
             for (List<LodData>::iterator it = lodLayers.begin(); it != lodLayers.end(); it++)
             {
-                if (dst >= scene->GetLodLayerNearSquare(it->layer))
+                if (dst >= GetLodLayerNearSquare(it->layer))
                 {
                     currentLod = &(*it);
                 }
@@ -357,6 +414,21 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
         }
         lodIdx++;
     }
+    
+    //Lod values
+    for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
+    {
+        nd->lodLayersArray[iLayer].distance = lodLayersArray[iLayer].distance;
+        nd->lodLayersArray[iLayer].nearDistance = lodLayersArray[iLayer].nearDistance;
+        nd->lodLayersArray[iLayer].nearDistanceSq = lodLayersArray[iLayer].nearDistanceSq;
+        nd->lodLayersArray[iLayer].farDistance = lodLayersArray[iLayer].farDistance;
+        nd->lodLayersArray[iLayer].farDistanceSq = lodLayersArray[iLayer].farDistanceSq;
+    }
+    
+    nd->forceDistance = forceDistance;
+    nd->forceDistanceSq = forceDistanceSq;
+    nd->forceLodLayer = forceLodLayer;
+    
     return dstNode;
 }
     /**
@@ -386,6 +458,9 @@ void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
                 }
             }
         }
+        
+        archive->SetFloat(Format("lod%d_dist", lodIdx), GetLodLayerDistance(lodIdx));
+        
         lodIdx++;
     }
 }
@@ -402,13 +477,19 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     for (int32 lodIdx = 0; lodIdx < lodCount; ++lodIdx)
     {
         int32 layer = archive->GetInt32(Format("lod%d_layer", lodIdx), 0);
-        size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);
+        size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);    //TODO: why size_t? int32?
         for (size_t idx = 0; idx < size; ++idx)
         {
-            
             int32 index  = archive->GetInt32(Format("l%d_%d_ni", lodIdx, idx), 0);
             RegisterIndexInLayer(index, layer);
         }
+        
+        float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), INVALID_DISTANCE);
+        if(INVALID_DISTANCE == distance) 
+        {
+            distance = GetDefaultDistance(lodIdx); 
+        }
+        SetLodLayerDistance(lodIdx, distance);
     }
 }
     
@@ -453,6 +534,66 @@ int32 LodNode::GetMaxLodLayer()
 	}
 
 	return ret;
+}
+
+void LodNode::SetForceLodLayer(int32 layer)
+{
+    forceLodLayer = layer;
+}
+int32 LodNode::GetForceLodLayer()
+{
+    return forceLodLayer;
+}
+
+void LodNode::SetLodLayerDistance(int32 layerNum, float32 distance)
+{
+    DVASSERT(layerNum < MAX_LOD_LAYERS);
+    
+    if(INVALID_DISTANCE != distance)
+    {
+        float32 nearDistance = distance * 0.95f;
+        float32 farDistance = distance * 1.05f;
+        
+        if(GetLodLayersCount() - 1 == layerNum)
+        {
+            lodLayersArray[layerNum].SetFarDistance(MAX_LOD_DISTANCE * 2);
+        }
+        if(layerNum)
+        {
+            lodLayersArray[layerNum-1].SetFarDistance(farDistance);
+        }
+
+        lodLayersArray[layerNum].SetDistance(distance);
+        lodLayersArray[layerNum].SetNearDistance(nearDistance);
+    }
+    else 
+    {
+        lodLayersArray[layerNum].SetDistance(distance);
+    }
+}
+    
+float32 LodNode::GetDefaultDistance(int32 layer)
+{
+    float32 distance = MIN_LOD_DISTANCE + ((float32)(MAX_LOD_DISTANCE - MIN_LOD_DISTANCE) / MAX_LOD_LAYERS) * layer;
+    return distance;
+}
+
+void LodNode::SetForceLodLayerDistance(float32 newForceDistance)
+{
+    forceDistance = newForceDistance;
+    if(INVALID_DISTANCE == forceDistance)
+    {
+        forceDistanceSq = INVALID_DISTANCE;
+    }
+    else 
+    {
+        forceDistanceSq = forceDistance * forceDistance;
+    }
+}
+
+float32 LodNode::GetForceLodLayerDistance()
+{
+    return forceDistance;
 }
 
     

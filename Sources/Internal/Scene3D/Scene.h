@@ -74,17 +74,17 @@ class Scene : public SceneNode
 {
 public:	
     
-    struct LodLayer
-    {
-        float32 nearDistance;
-        float32 farDistance;
-
-        float32 nearDistanceSq;
-        float32 farDistanceSq;
-    };
+//    struct LodLayer
+//    {
+//        float32 nearDistance;
+//        float32 farDistance;
+//
+//        float32 nearDistanceSq;
+//        float32 farDistanceSq;
+//    };
     
 	Scene();
-	~Scene();
+	virtual ~Scene();
 	
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
@@ -178,34 +178,34 @@ public:
     void SetClipCamera(Camera * clipCamera);
     Camera * GetClipCamera() const;
     
-    /**
-        \brief Registers LOD layer into the scene.
-        \param[in] nearDistance near view distance fro the layer
-        \param[in] farDistance far view distance fro the layer
-        \returns Serial number of the layer
-	 */
-    int32 RegisterLodLayer(float32 nearDistance, float32 farDistance);
-    /**
-        \brief Sets lod layer thet would be forcely used in the whole scene.
-        \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
-	 */
-    void SetForceLodLayer(int32 layer);
-    int32 GetForceLodLayer();
-
-    /**
-     \brief Registers LOD layer into the scene.
-     \param[in] nearDistance near view distance fro the layer
-     \param[in] farDistance far view distance fro the layer
-     \returns Serial number of the layer
-	 */
-    void ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance);
-
-    
-    inline int32 GetLodLayersCount();
-    inline float32 GetLodLayerNear(int32 layerNum);
-    inline float32 GetLodLayerFar(int32 layerNum);
-    inline float32 GetLodLayerNearSquare(int32 layerNum);
-    inline float32 GetLodLayerFarSquare(int32 layerNum);
+//    /**
+//        \brief Registers LOD layer into the scene.
+//        \param[in] nearDistance near view distance fro the layer
+//        \param[in] farDistance far view distance fro the layer
+//        \returns Serial number of the layer
+//	 */
+//    int32 RegisterLodLayer(float32 nearDistance, float32 farDistance);
+//    /**
+//        \brief Sets lod layer thet would be forcely used in the whole scene.
+//        \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
+//	 */
+//    void SetForceLodLayer(int32 layer);
+//    int32 GetForceLodLayer();
+//
+//    /**
+//     \brief Registers LOD layer into the scene.
+//     \param[in] nearDistance near view distance fro the layer
+//     \param[in] farDistance far view distance fro the layer
+//     \returns Serial number of the layer
+//	 */
+//    void ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance);
+//
+//    
+//    inline int32 GetLodLayersCount();
+//    inline float32 GetLodLayerNear(int32 layerNum);
+//    inline float32 GetLodLayerFar(int32 layerNum);
+//    inline float32 GetLodLayerNearSquare(int32 layerNum);
+//    inline float32 GetLodLayerFarSquare(int32 layerNum);
 
     //void Save(KeyedArchive * archive);
     //void Load(KeyedArchive * archive);
@@ -236,9 +236,9 @@ private:
     
     Map<String, ProxyNode*> rootNodes;
     
-    // TODO: move to nodes
-    Vector<LodLayer> lodLayers;
-    int32 forceLodLayer;
+//    // TODO: move to nodes
+//    Vector<LodLayer> lodLayers;
+//    int32 forceLodLayer;
 
     
     Camera * currentCamera;
@@ -273,30 +273,30 @@ int32 Scene::GetCameraCount()
 }
 
     
-int32 Scene::GetLodLayersCount()
-{
-    return (int32)lodLayers.size();
-}
-
-float32 Scene::GetLodLayerNear(int32 layerNum)
-{
-    return lodLayers[layerNum].nearDistance;
-}
-
-float32 Scene::GetLodLayerFar(int32 layerNum)
-{
-    return lodLayers[layerNum].farDistance;
-}
-
-float32 Scene::GetLodLayerNearSquare(int32 layerNum)
-{
-    return lodLayers[layerNum].nearDistanceSq;
-}
-
-float32 Scene::GetLodLayerFarSquare(int32 layerNum)
-{
-    return lodLayers[layerNum].farDistanceSq;
-}
+//int32 Scene::GetLodLayersCount()
+//{
+//    return (int32)lodLayers.size();
+//}
+//
+//float32 Scene::GetLodLayerNear(int32 layerNum)
+//{
+//    return lodLayers[layerNum].nearDistance;
+//}
+//
+//float32 Scene::GetLodLayerFar(int32 layerNum)
+//{
+//    return lodLayers[layerNum].farDistance;
+//}
+//
+//float32 Scene::GetLodLayerNearSquare(int32 layerNum)
+//{
+//    return lodLayers[layerNum].nearDistanceSq;
+//}
+//
+//float32 Scene::GetLodLayerFarSquare(int32 layerNum)
+//{
+//    return lodLayers[layerNum].farDistanceSq;
+//}
     
 
 };
