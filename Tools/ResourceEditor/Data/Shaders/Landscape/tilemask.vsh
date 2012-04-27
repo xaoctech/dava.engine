@@ -10,16 +10,16 @@ attribute vec4 inPosition;
 attribute vec2 inTexCoord0;
 
 uniform mat4 modelViewProjectionMatrix;
-uniform lowp vec2 texture0Tiling;
-uniform lowp vec2 texture1Tiling;
-uniform lowp vec2 texture2Tiling;
-uniform lowp vec2 texture3Tiling;
+uniform mediump vec2 texture0Tiling;
+uniform mediump vec2 texture1Tiling;
+uniform mediump vec2 texture2Tiling;
+uniform mediump vec2 texture3Tiling;
 
-varying lowp vec2 varTexCoordOrig;
-varying lowp vec2 varTexCoord0;
-varying lowp vec2 varTexCoord1;
-varying lowp vec2 varTexCoord2;
-varying lowp vec2 varTexCoord3;
+varying mediump vec2 varTexCoordOrig;
+varying mediump vec2 varTexCoord0;
+varying mediump vec2 varTexCoord1;
+varying mediump vec2 varTexCoord2;
+varying mediump vec2 varTexCoord3;
 
 #ifdef EDITOR_CURSOR
 varying vec2 varTexCoordCursor;

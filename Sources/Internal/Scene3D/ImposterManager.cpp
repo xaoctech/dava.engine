@@ -25,71 +25,92 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __IMPOSTER_NODE_H__
-#define __IMPOSTER_NODE_H__
-
-#include "Scene3D/Scene.h"
-#include "Render/RenderDataObject.h"
+#include "ImposterManager.h"
+#include "Scene3D/ImposterNode.h"
 
 namespace DAVA
 {
 
-class ImposterManager;
-
-class ImposterNode : public SceneNode
+ImposterManager::ImposterManager()
 {
-public:
-	enum eState
+
+}
+
+ImposterManager::~ImposterManager()
+{
+
+}
+
+bool ImposterManager::IsEmpty()
+{
+	return imposters.empty();
+}
+
+void ImposterManager::Update(float32 frameTime)
+{
+	List<ImposterNode*>::iterator end = imposters.end();
+	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
 	{
-		STATE_3D = 0,
-		STATE_IMPOSTER,
-		STATE_ASK_FOR_REDRAW,
-		STATE_QUEUED,
-		STATE_REDRAW_APPROVED
-	};
+		ImposterNode * node = *iter;
+		node->UpdateState();
+		if(node->IsAskingForRedraw())
+		{
+			AddToQueue(node);
+		}
+	}
 
-	ImposterNode(Scene * scene = 0);
-	virtual ~ImposterNode();
+	ProcessQueue();
+}
 
-	void UpdateState();
-	virtual void Draw();
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-	virtual void SetScene(Scene * _scene);
+void ImposterManager::ProcessQueue()
+{
+	if(!queue.empty())
+	{
+		ImposterNode * node = queue.front();
+		queue.pop_front();
 
-	void UpdateImposter();
-	void GeneralDraw();
-	void DrawImposter();
+		node->ApproveRedraw();
+	}
+}
 
-	bool IsAskingForRedraw();
-	void OnAddedToQueue();
-	void ApproveRedraw();
+void ImposterManager::Draw()
+{
+	List<ImposterNode*>::iterator end = imposters.end();
+	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
+	{
+		(*iter)->GeneralDraw();
+	}
+}
 
-private:
-	void AskForRedraw();
-	void ClearGeometry();
-	void CreateGeometry();
-	void RegisterInScene();
-	void UnregisterInScene();
-	
-	bool IsRedrawApproved();
-	bool IsImposterReady();
+void ImposterManager::Add(ImposterNode * node)
+{
+	//Add can be called multiple times for one node, because ImposterNode::SetScene can be called multiple times
+	List<ImposterNode*>::iterator iter = find(imposters.begin(), imposters.end(), node);
+	if(imposters.end() == iter)
+	{
+		imposters.push_back(node);
+	}
+}
 
-	bool isReady;
+void ImposterManager::Remove(ImposterNode * node)
+{
+	List<ImposterNode*>::iterator iter = find(imposters.begin(), imposters.end(), node);
+	if(imposters.end() == iter)
+	{
+		Logger::Error("ImposterManager::Remove node not found");
+	}
+	else
+	{
+		imposters.erase(iter);
+	}
+}
 
-	Vector3 imposterVertices[4];
-	RenderDataObject * renderData;
-	Texture * fbo;
+void ImposterManager::AddToQueue(ImposterNode * node)
+{
+	queue.push_back(node);
+	node->OnAddedToQueue();
+}
 
-	Vector<float32> verts;
-	Vector<float32> texCoords;
-	Vector3 center;
-	Vector3 direction;
 
-	eState state;
 
-	ImposterManager * manager;
 };
-
-};
-
-#endif //__IMPOSTER_NODE_H__

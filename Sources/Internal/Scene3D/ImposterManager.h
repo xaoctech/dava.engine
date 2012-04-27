@@ -25,71 +25,38 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __IMPOSTER_NODE_H__
-#define __IMPOSTER_NODE_H__
+#ifndef __IMPOSTER_MANAGER_H__
+#define __IMPOSTER_MANAGER_H__
 
-#include "Scene3D/Scene.h"
-#include "Render/RenderDataObject.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
 
 namespace DAVA
 {
 
-class ImposterManager;
+class ImposterNode;
 
-class ImposterNode : public SceneNode
+class ImposterManager : public BaseObject
 {
 public:
-	enum eState
-	{
-		STATE_3D = 0,
-		STATE_IMPOSTER,
-		STATE_ASK_FOR_REDRAW,
-		STATE_QUEUED,
-		STATE_REDRAW_APPROVED
-	};
+	ImposterManager();
+	virtual ~ImposterManager();
 
-	ImposterNode(Scene * scene = 0);
-	virtual ~ImposterNode();
+	bool IsEmpty();
+	void Add(ImposterNode * node);
+	void Remove(ImposterNode * node);
 
-	void UpdateState();
-	virtual void Draw();
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-	virtual void SetScene(Scene * _scene);
-
-	void UpdateImposter();
-	void GeneralDraw();
-	void DrawImposter();
-
-	bool IsAskingForRedraw();
-	void OnAddedToQueue();
-	void ApproveRedraw();
+	void Update(float32 frameTime);
+	void Draw();
 
 private:
-	void AskForRedraw();
-	void ClearGeometry();
-	void CreateGeometry();
-	void RegisterInScene();
-	void UnregisterInScene();
-	
-	bool IsRedrawApproved();
-	bool IsImposterReady();
+	List<ImposterNode*> imposters;
+	Deque<ImposterNode*> queue;
 
-	bool isReady;
-
-	Vector3 imposterVertices[4];
-	RenderDataObject * renderData;
-	Texture * fbo;
-
-	Vector<float32> verts;
-	Vector<float32> texCoords;
-	Vector3 center;
-	Vector3 direction;
-
-	eState state;
-
-	ImposterManager * manager;
+	void AddToQueue(ImposterNode * node);
+	void ProcessQueue();
 };
 
 };
 
-#endif //__IMPOSTER_NODE_H__
+#endif //__IMPOSTER_MANAGER_H__

@@ -167,6 +167,37 @@ Material::~Material()
 {
 }
     
+    
+Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
+{
+    RebuildShader();
+    /*
+        General check if number of attributes in shader is 
+     */
+    int32 format = polygonGroup->GetFormat();
+    int32 formatBitCount = 0; // number of attributes in polygroup available in the shader
+    for (int bit = 1; bit <= EVF_HIGHER_BIT; bit <<= 1)
+    {
+        if (format & bit)
+        {
+            if (shader->GetAttributeIndex((eVertexFormat)bit) != -1)
+                formatBitCount++;
+        }
+    }
+    // Check if we have more attributes 
+    if (shader->GetAttributeCount() > formatBitCount)
+    {
+        //shader->Get
+        
+        
+        
+        return VALIDATE_INCOMPATIBLE;
+    }
+    
+    
+    return VALIDATE_COMPATIBLE;
+}
+
 void Material::RebuildShader()
 {
     uniformTexture0 = -1;
@@ -178,6 +209,8 @@ void Material::RebuildShader()
     uniformMaterialSpecularShininess = -1;
     uniformLightIntensity0 = -1;
     uniformLightAttenuationQ = -1;
+    uniformUvOffset = -1;
+    uniformUvScale = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -467,8 +500,10 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 
 	if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
-		shader->SetUniformValue(uniformUvOffset, uvOffset);
-		shader->SetUniformValue(uniformUvScale, uvScale);
+        if (uniformUvOffset != -1)
+            shader->SetUniformValue(uniformUvOffset, uvOffset);
+		if (uniformUvScale != -1)
+            shader->SetUniformValue(uniformUvScale, uvScale);
 	}
 	
 

@@ -85,6 +85,7 @@ public:
     static void Unbind();
     virtual int32 FindUniformLocationByName(const String & name);
     int32 GetAttributeIndex(eVertexFormat vertexFormat);
+    int32 GetAttributeCount();
     
     
     void SetUniformValue(int32 uniformLocation, int32 value);
