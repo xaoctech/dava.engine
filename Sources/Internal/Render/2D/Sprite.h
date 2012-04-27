@@ -225,14 +225,6 @@ public:
 
 	
 	const String GetName() { return relativePathname; }
-	
-	/** 
-		 \brief	Return polygon for give frame in sprite. These polygons can be used for different purposes but the main purpose is 
-			Easy export of collision detection polygons for the sprite-based objects
-		 \param frame number of frame we looking a polygon for
-		 \return ptr to polygon in case if it available, 0 in case if there is no poly for this sprite
-	*/
-	Polygon2 * GetPolygonForFrame(int32 frame);
 
 	/** 
 		\brief Function to get rect & offset of sprite frame position in texture
@@ -314,10 +306,6 @@ protected:
 	float32 **texCoords;
 
 //	float32 **originalVertices;
-
-	Polygon2 *polyArray;
-	int32	*polyIndeces;
-	int32	polygonsCount;
 
 	Polygon2 * clipPolygon;
 		
