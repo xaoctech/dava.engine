@@ -188,7 +188,11 @@ void LodDistanceControl::Input(UIEvent *currentInput)
                 
                 for(int32 iSlider = 0; iSlider < count - 1; ++iSlider)
                 {
-                    if(sliders[iSlider]->GetRect().PointInside(point))
+                    Rect intersectionRect = sliders[iSlider]->GetRect();
+                    intersectionRect.x -= 1;
+                    intersectionRect.dx += 2;
+                    
+                    if(intersectionRect.PointInside(point))
                     {
                         activeSlider = sliders[iSlider];
                         
