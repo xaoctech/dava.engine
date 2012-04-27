@@ -782,6 +782,12 @@
     <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1875,6 +1881,12 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UNDOManager.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
