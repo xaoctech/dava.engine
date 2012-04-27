@@ -54,7 +54,7 @@ void main()
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
 #endif
 #if defined(OPAQUE)
-    if (textureColor0.a < 0.9)discard;
+    if (textureColor0.a < 0.1)discard;
 #endif
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
