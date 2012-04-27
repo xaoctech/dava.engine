@@ -464,6 +464,8 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
@@ -735,6 +737,8 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
