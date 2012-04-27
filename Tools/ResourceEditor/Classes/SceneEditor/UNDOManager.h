@@ -11,7 +11,8 @@ public:
     enum eActionType
     {
         ACTION_NONE = -1,
-        ACTION_HEIGHTMAP = 0
+        ACTION_HEIGHTMAP = 0,
+        ACTION_TILEMASK
     };
     
     UNDOAction();
@@ -29,13 +30,6 @@ class UNDOManager: public Singleton<UNDOManager>
         UNDO_HISTORY_SIZE = 50
     };
     
-    enum eActionDirection
-    {
-        DIRECTION_NONE = -1,
-        DIRECTION_UNDO,
-        DIRECTION_REDO
-    };
-    
 public:
  
     UNDOManager();
@@ -44,6 +38,11 @@ public:
     void SaveHightmap(Heightmap *heightmap);
     void UndoHeightmap(Heightmap *heightmap);
     void RedoHeightmap(Heightmap *heightmap);
+
+    void SaveTilemask(Texture *tilemask);
+    Texture * UndoTilemask(Texture *tilemask);
+    Texture * RedoTilemask(Texture *tilemask);
+
     
     UNDOAction::eActionType GetLastUNDOAction();
     UNDOAction::eActionType GetFirstREDOAction();
@@ -56,6 +55,7 @@ protected:
     void ReleaseHistory(List<UNDOAction *> &actionsHistory);
     
     UNDOAction *CreateHeightmapAction(Heightmap *heightmap);
+    UNDOAction *CreateTilemaskAction(Texture *tilemask);
     
     
     String TimeString();
@@ -64,9 +64,8 @@ protected:
     
     List<UNDOAction *>actionsHistoryUNDO;
     List<UNDOAction *>actionsHistoryREDO;
-    int32 actionCounter;
     
-    eActionDirection actionDirection;
+    int32 actionCounter;
 };
 
 
