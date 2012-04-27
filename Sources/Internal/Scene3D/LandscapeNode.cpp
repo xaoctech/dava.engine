@@ -954,19 +954,40 @@ void LandscapeNode::BindMaterial()
             
             RenderManager::Instance()->SetShader(activeShader);
             RenderManager::Instance()->FlushState();
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
             
-            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
-        }            
+            if (uniformTextures[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+
+            if (uniformTextures[TEXTURE_TILE1] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+            
+            if (uniformTextures[TEXTURE_TILE2] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
+            
+            if (uniformTextures[TEXTURE_TILE3] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
+
+            if (uniformTextures[TEXTURE_TILE_MASK] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
+
+            if (uniformTextures[TEXTURE_COLOR] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
+            
+            if (uniformCameraPosition != -1)
+                activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            
+            if (uniformTextureTiling[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+            
+            if (uniformTextureTiling[TEXTURE_TILE1] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+            
+            if (uniformTextureTiling[TEXTURE_TILE2] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
+            
+            if (uniformTextureTiling[TEXTURE_TILE3] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
+            }            
             break;
     }
 }

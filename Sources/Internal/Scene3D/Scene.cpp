@@ -49,6 +49,8 @@
 #include "Scene3D/LightNode.h"
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/MeshInstanceNode.h"
+#include "Scene3D/ImposterManager.h"
+#include "Scene3D/ImposterNode.h"
 
 
 namespace DAVA 
@@ -62,6 +64,7 @@ Scene::Scene()
     ,   clipCamera(0)
     ,   forceLodLayer(-1)
 	,	shadowRect(0)
+	,	imposterManager(0)
 {   
     bvHierarchy = new BVHierarchy();
     bvHierarchy->ChangeScene(this);
@@ -98,6 +101,10 @@ Scene::~Scene()
 
 	SafeRelease(shadowRect);
     SafeRelease(bvHierarchy);
+
+	RemoveAllChildren();
+
+	SafeRelease(imposterManager);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -387,6 +394,11 @@ void Scene::Update(float timeElapsed)
 		AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
 		mesh->Update(timeElapsed);
 	}
+
+	if(imposterManager)
+	{
+		imposterManager->Update(timeElapsed);
+	}
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
     Stats::Instance()->EndTimeMeasure("Scene.Update", this);
@@ -415,10 +427,15 @@ void Scene::Draw()
     {
         currentCamera->Set();
     }
-    bvHierarchy->Cull();
+    if (bvHierarchy)
+        bvHierarchy->Cull();
 
     SceneNode::Draw();
     
+	if(imposterManager)
+	{
+		imposterManager->Draw();
+	}
 
 	if(shadowVolumes.size() > 0)
 	{
@@ -611,6 +628,26 @@ LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
 Set<LightNode*> & Scene::GetLights()
 {
     return lights;
+}
+
+void Scene::RegisterImposter(ImposterNode * imposter)
+{
+	if(!imposterManager)
+	{
+		imposterManager = new ImposterManager();
+	}
+	
+	imposterManager->Add(imposter);
+}
+
+void Scene::UnregisterImposter(ImposterNode * imposter)
+{
+	imposterManager->Remove(imposter);
+
+	if(imposterManager->IsEmpty())
+	{
+		SafeRelease(imposterManager);
+	}
 }
 
 /*void Scene::Save(KeyedArchive * archive)

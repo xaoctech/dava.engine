@@ -321,7 +321,7 @@ void PolygonGroup::BuildTangentsBinormals(uint32 flagsToAdd)
         Vector3 nrecomp = CrossProduct(*tres, *bres);
         
         
-        int xt = 0;
+        // int xt = 0;
         // use this method (get from .. http://www.c4engine.com/code/tangent.html);
         //const Vector3D& n = normal[a];
         //const Vector3D& t = tan1[a];

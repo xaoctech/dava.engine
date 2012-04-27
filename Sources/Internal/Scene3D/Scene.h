@@ -58,6 +58,8 @@ class ShadowRect;
 class QuadTree;
 class MeshInstanceNode;
 class BVHierarchy;
+class ImposterManager;
+class ImposterNode;
 	
 /** 
     \ingroup scene3d
@@ -212,6 +214,10 @@ public:
     
     Set<LightNode*> & GetLights();
     LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
+
+	void RegisterImposter(ImposterNode * imposter);
+
+	void UnregisterImposter(ImposterNode * imposter);
     
 private:	
     
@@ -243,6 +249,8 @@ private:
 	ShadowRect * shadowRect;
     
     BVHierarchy * bvHierarchy;
+
+	ImposterManager * imposterManager;
 
     friend class SceneNode;
 };

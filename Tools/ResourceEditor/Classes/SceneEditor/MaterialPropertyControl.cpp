@@ -169,6 +169,8 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
         material->SetType((Material::eType)newItemIndex);
         
         ReadFrom(currentDataNode);
+        
+        SceneValidator::Instance()->ValidateScene(material->GetScene());
     }
 
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
