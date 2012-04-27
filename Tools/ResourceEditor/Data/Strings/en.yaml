@@ -22,6 +22,7 @@ menu.createnode.box: "Box"
 menu.createnode.sphere: "Sphere"
 menu.createnode.camera: "Camera"
 menu.createnode.imposter: "Imposter"
+menu.createnode.lodnode: "LodNode"
 menu.new: "New Scene"
 menu.new.emptyscene: "Empty Scene"
 menu.new.scenewithcamera: "Scene+Camera"
@@ -81,6 +82,7 @@ createnode.box: "Create box node"
 createnode.sphere: "Create sphere node"
 createnode.camera: "Create camera"
 createnode.imposter: "Create imposter"
+createnode.lodnode: "Create lod node"
 
 #Create Property Dialog
 createproperty.type: "Type:"
@@ -213,6 +215,12 @@ property.material.ambientcolor: "Ambient color:"
 property.material.specularcolor: "Specular color:"
 property.material.diffusecolor: "Diffuse color:"
 property.material.specularshininess: "Specular shininess:"
+
+#LodNode
+property.lodnode: "LodNode"
+property.lodnode.distances: "Distance:"
+property.lodnode.forcedistance: "Force Distance"
+property.lodnode.distanceslider: ""
 
 
 #Settings Dialog

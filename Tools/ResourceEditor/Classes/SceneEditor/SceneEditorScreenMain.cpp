@@ -282,6 +282,8 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             
         case DIALOG_OPERATION_MENU_SAVE:
         {
+            EditorSettings::Instance()->AddLastOpenedFile(pathToFile);
+
             BodyItem *iBody = FindCurrentBody();
             iBody->bodyControl->SetFilePath(pathToFile);
 			
@@ -823,6 +825,13 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 					text = LocalizedString(L"menu.createnode.imposter");
 					break;
 				}
+
+//                case ECNID_LODNODE:
+//				{
+//					text = LocalizedString(L"menu.createnode.lodnode");
+//					break;
+//				}
+
                     
                 default:
                     break;
@@ -1065,19 +1074,24 @@ void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *obj, void *, vo
 
 void SceneEditorScreenMain::SettingsChanged()
 {
+//    BodyItem *iBody = FindCurrentBody();
+//    SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+//    EditorScene *editorScene = iBody->bodyControl->GetScene();
+//    editorScene->SetForceLodLayer(node, EditorSettings::Instance()->GetForceLodLayer());
+    
+
     for(int32 i = 0; i < bodies.size(); ++i)
     {
         EditorScene *scene = bodies[i]->bodyControl->GetScene();
-        
-        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
-        int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-        for(int32 iLod = 0; iLod < lodCount; ++iLod)
-        {
-            float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
-            float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
-            
-            scene->ReplaceLodLayer(i, nearDistance, farDistance);
-        }
+//        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
+//        int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+//        for(int32 iLod = 0; iLod < lodCount; ++iLod)
+//        {
+//            float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
+//            float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
+//            
+//            scene->ReplaceLodLayer(i, nearDistance, farDistance);
+//        }
         
         scene->SetDrawGrid(EditorSettings::Instance()->GetDrawGrid());
     }
@@ -1093,22 +1107,19 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             int32 key = event->tid - DVKEY_1;
             if(0 <= key && key < 8)
             {
-                for(int32 i = 0; i < bodies.size(); ++i)
-                {
-                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
-                    scene->SetForceLodLayer(key);
-                }
-                EditorSettings::Instance()->SetForceLodLayer(key);
-                EditorSettings::Instance()->Save();
+                BodyItem *iBody = FindCurrentBody();
+                SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+                EditorScene *editorScene = iBody->bodyControl->GetScene();
+                editorScene->SetForceLodLayer(node, key);
             }
             else if(DVKEY_0 == event->tid)
             {
-                for(int32 i = 0; i < bodies.size(); ++i)
-                {
-                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
-                    scene->SetForceLodLayer(-1);
-                }
-                EditorSettings::Instance()->SetForceLodLayer(-1);
+//                for(int32 i = 0; i < bodies.size(); ++i)
+//                {
+//                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
+//                    scene->SetForceLodLayer(-1);
+//                }
+//                EditorSettings::Instance()->SetForceLodLayer(-1);
                 EditorSettings::Instance()->Save();
             }
         }

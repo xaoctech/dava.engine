@@ -31,6 +31,7 @@
 		5C1BA9A315249E5900C7FA95 /* ModificationsPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1BA9A115249E5900C7FA95 /* ModificationsPanel.cpp */; };
 		5C1CCE6014C9E29D00EB2B22 /* SceneInfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1CCE5E14C9E29D00EB2B22 /* SceneInfoControl.cpp */; };
 		5C25BB83149D384B00776F0C /* ScenePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */; };
+		5C25DBEA1541FD60000E0568 /* LodNodePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C25DBE81541FD60000E0568 /* LodNodePropertyControl.cpp */; };
 		5C287E95153F213100ACA345 /* UNDOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C287E93153F213100ACA345 /* UNDOManager.cpp */; };
 		5C3B6D1B152B753200A1414F /* HintManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C3B6D19152B753200A1414F /* HintManager.cpp */; };
 		5C439EB7149ABEA900326566 /* ControlsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C439EB5149ABEA900326566 /* ControlsFactory.cpp */; };
@@ -70,6 +71,7 @@
 		5CE5A40514BF3171008A1B3F /* PropertyControlCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */; };
 		5CE81F3A14CEBA0A0066C7E1 /* ExtendedDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */; };
 		5CECF98A151476D600FFAE80 /* LightmapsPacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CECF988151476D600FFAE80 /* LightmapsPacker.cpp */; };
+		5CF45A8015487ED300A1E03C /* LodDistanceControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF45A7E15487ED200A1E03C /* LodDistanceControl.cpp */; };
 		5CF9DD1B153C9C2D001E4F9F /* UIFilePreviewDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF9DD19153C9C2D001E4F9F /* UIFilePreviewDialog.cpp */; };
 		5CFAF31014A6334200355DCF /* UICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFAF30E14A6334100355DCF /* UICheckBox.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -377,6 +379,8 @@
 		5C1CCE5F14C9E29D00EB2B22 /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneInfoControl.h; sourceTree = "<group>"; };
 		5C25BB81149D384B00776F0C /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C25BB82149D384B00776F0C /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewControl.h; sourceTree = "<group>"; };
+		5C25DBE81541FD60000E0568 /* LodNodePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNodePropertyControl.cpp; sourceTree = "<group>"; };
+		5C25DBE91541FD60000E0568 /* LodNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNodePropertyControl.h; sourceTree = "<group>"; };
 		5C287E93153F213100ACA345 /* UNDOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UNDOManager.cpp; sourceTree = "<group>"; };
 		5C287E94153F213100ACA345 /* UNDOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UNDOManager.h; sourceTree = "<group>"; };
 		5C3B6D19152B753200A1414F /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HintManager.cpp; sourceTree = "<group>"; };
@@ -457,6 +461,8 @@
 		5CE81F3B14CEE8660066C7E1 /* ColorPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerDelegate.h; sourceTree = "<group>"; };
 		5CECF988151476D600FFAE80 /* LightmapsPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LightmapsPacker.cpp; path = Classes/LightmapsPacker.cpp; sourceTree = SOURCE_ROOT; };
 		5CECF989151476D600FFAE80 /* LightmapsPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LightmapsPacker.h; path = Classes/LightmapsPacker.h; sourceTree = SOURCE_ROOT; };
+		5CF45A7E15487ED200A1E03C /* LodDistanceControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodDistanceControl.cpp; sourceTree = "<group>"; };
+		5CF45A7F15487ED200A1E03C /* LodDistanceControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodDistanceControl.h; sourceTree = "<group>"; };
 		5CF9DD19153C9C2D001E4F9F /* UIFilePreviewDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIFilePreviewDialog.cpp; sourceTree = "<group>"; };
 		5CF9DD1A153C9C2D001E4F9F /* UIFilePreviewDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIFilePreviewDialog.h; sourceTree = "<group>"; };
 		5CFAF30E14A6334100355DCF /* UICheckBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UICheckBox.cpp; sourceTree = "<group>"; };
@@ -1215,6 +1221,10 @@
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
 			isa = PBXGroup;
 			children = (
+				5CF45A7E15487ED200A1E03C /* LodDistanceControl.cpp */,
+				5CF45A7F15487ED200A1E03C /* LodDistanceControl.h */,
+				5C25DBE81541FD60000E0568 /* LodNodePropertyControl.cpp */,
+				5C25DBE91541FD60000E0568 /* LodNodePropertyControl.h */,
 				5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */,
 				5CC1069B1529BD8C002CE5CE /* MaterialPropertyControl.h */,
 				5CDACB2D151B5AB70031F8C7 /* LandscapeEditorPropertyControl.cpp */,
@@ -2361,6 +2371,8 @@
 				5C0CD38E1534329F00BF9C84 /* LandscapeToolsSelection.cpp in Sources */,
 				5CF9DD1B153C9C2D001E4F9F /* UIFilePreviewDialog.cpp in Sources */,
 				5C287E95153F213100ACA345 /* UNDOManager.cpp in Sources */,
+				5C25DBEA1541FD60000E0568 /* LodNodePropertyControl.cpp in Sources */,
+				5CF45A8015487ED300A1E03C /* LodDistanceControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
