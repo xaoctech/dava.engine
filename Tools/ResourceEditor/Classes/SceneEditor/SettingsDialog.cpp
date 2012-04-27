@@ -2,7 +2,7 @@
 #include "ControlsFactory.h"
 
 #include "EditorSettings.h"
-#include "ErrorDialog.h"
+#include "ErrorNotifier.h"
 
 SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDelegate)
     :   UIControl(rect)
@@ -52,48 +52,30 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     propertyList->AddIntProperty("settingsdialog.leftpanelwidth", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddIntProperty("settingsdialog.rightpanelwidth", PropertyList::PROPERTY_IS_EDITABLE);
     
-    Vector<String> lodsForSelection;
-    int32 count = EditorSettings::Instance()->GetLodLayersCount();
-    lodsForSelection.push_back("-1");
-    for(int32 i = 0; i < count; ++i)
-    {
-        lodsForSelection.push_back(Format("%d", i));
-    }
-    propertyList->AddComboProperty("Force LodLayer", lodsForSelection);
-    
-    for(int32 i = 0; i < count; ++i)
-    {
-        propertyList->AddFloatProperty(Format("LoadLevel Near #%d", i), PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->AddFloatProperty(Format("LoadLevel Far #%d", i), PropertyList::PROPERTY_IS_EDITABLE);
-    }
+//    for(int32 i = 0; i < LodNode::MAX_LOD_LAYERS; ++i)
+//    {
+//        propertyList->AddFloatProperty(Format("Lod distance #%d", i), PropertyList::PROPERTY_IS_EDITABLE);
+//    }
     
     propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
-
-    
-    errorDialog = new ErrorDialog();
 }
     
 SettingsDialog::~SettingsDialog()
 {
-    SafeRelease(errorDialog);
-    
     SafeRelease(propertyList);
     SafeRelease(dialogPanel);
 }
 
 void SettingsDialog::OnClose(BaseObject * object, void * userData, void * callerData)
 {
-    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-    for(int32 iLod = 1; iLod < lodCount; ++iLod)
+    for(int32 iLod = 1; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
     {
-        float32 prev = EditorSettings::Instance()->GetLodLayerNear(iLod - 1);
-        float32 cur = EditorSettings::Instance()->GetLodLayerNear(iLod);
+        float32 prev = EditorSettings::Instance()->GetLodLayerDistance(iLod - 1);
+        float32 cur = EditorSettings::Instance()->GetLodLayerDistance(iLod);
         
         if(cur <= prev)
         {
-            Set<String> error;
-            error.insert("Lod layers have wrong values.");
-            errorDialog->Show(error);
+            ErrorNotifier::Instance()->ShowError("Lod layers have wrong values.");
             return;
         }
     }
@@ -132,16 +114,10 @@ void SettingsDialog::WillAppear()
     propertyList->SetIntPropertyValue("settingsdialog.leftpanelwidth", EditorSettings::Instance()->GetLeftPanelWidth());
     propertyList->SetIntPropertyValue("settingsdialog.rightpanelwidth", EditorSettings::Instance()->GetRightPanelWidth());
     
-    //
-    int32 count = EditorSettings::Instance()->GetLodLayersCount();
-    int32 forcelod = EditorSettings::Instance()->GetForceLodLayer();
-    propertyList->SetComboPropertyIndex("Force LodLayer", forcelod + 1);
-
-    for(int32 i = 0; i < count; ++i)
-    {
-        propertyList->SetFloatPropertyValue(Format("LoadLevel Near #%d", i), EditorSettings::Instance()->GetLodLayerNear(i));
-        propertyList->SetFloatPropertyValue(Format("LoadLevel Far #%d", i), EditorSettings::Instance()->GetLodLayerFar(i));
-    }
+//    for(int32 i = 0; i < LodNode::MAX_LOD_LAYERS; ++i)
+//    {
+//        propertyList->SetFloatPropertyValue(Format("Lod distance #%d", i), EditorSettings::Instance()->GetLodLayerDistance(i));
+//    }
     
     propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
 }
@@ -178,30 +154,18 @@ void SettingsDialog::OnFloatPropertyChanged(PropertyList *forList, const String 
         EditorSettings::Instance()->SetCameraSpeed(3, newValue);
         EditorSettings::Instance()->Save();
     }
-    else 
-    {   //LODS
-        String NEAR_ID = "LoadLevel Near #";
-        String::size_type nearPos = forKey.find(NEAR_ID);
-        if(String::npos != nearPos)
-        {
-            String numStr = forKey.substr(NEAR_ID.length());
-            int32 lodIndex = atoi(numStr.c_str());
-            EditorSettings::Instance()->SetLodLayerNear(lodIndex, newValue);
-            EditorSettings::Instance()->Save();
-        }
-        else
-        {
-            String FAR_ID = "LoadLevel Far #";
-            String::size_type farPos = forKey.find(FAR_ID);
-            if(String::npos != farPos)
-            {
-                String numStr = forKey.substr(FAR_ID.length());
-                int32 lodIndex = atoi(numStr.c_str());
-                EditorSettings::Instance()->SetLodLayerFar(lodIndex, newValue);
-                EditorSettings::Instance()->Save();
-            }
-        }
-    }
+//    else 
+//    {   //LODS
+//        String DISTANCE_ID = "Lod distance #";
+//        String::size_type distancePos = forKey.find(DISTANCE_ID);
+//        if(String::npos != distancePos)
+//        {
+//            String numStr = forKey.substr(DISTANCE_ID.length());
+//            int32 lodIndex = atoi(numStr.c_str());
+//            EditorSettings::Instance()->SetLodLayerDistance(lodIndex, newValue);
+//            EditorSettings::Instance()->Save();
+//        }
+//    }
 }
 
 void SettingsDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
@@ -247,11 +211,6 @@ void SettingsDialog::OnComboIndexChanged(PropertyList *forList, const String &fo
     if("settingsdialog.language" == forKey)
     {
         EditorSettings::Instance()->SetLanguage(newItemKey);
-        EditorSettings::Instance()->Save();
-    }
-    else if("Force LodLayer" == forKey)
-    {
-        EditorSettings::Instance()->SetForceLodLayer(newItemIndex - 1);
         EditorSettings::Instance()->Save();
     }
 }

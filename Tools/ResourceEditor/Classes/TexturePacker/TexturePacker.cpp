@@ -23,6 +23,8 @@ TexturePacker::TexturePacker()
 	{
 		maxTextureSize = 2048;
 	}
+
+	onlySquareTextures = false;
 }
 
 bool TexturePacker::TryToPack(const Rect2i & textureRect, std::list<DefinitionFile*> & defsList)
@@ -241,6 +243,8 @@ void TexturePacker::PackToTextures(const char * excludeFolder, const char* outpu
 		 for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 		 {
 			 if ((isPvr) && (xResolution != yResolution))continue;
+
+			 if ((onlySquareTextures) && (xResolution != yResolution))continue;
 			 
 			 Rect2i textureRect = Rect2i(0, 0, xResolution, yResolution);
 			 
@@ -411,6 +415,8 @@ void TexturePacker::PackToMultipleTextures(const char * excludeFolder, const cha
 			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
 				if (CommandLineParser::Instance()->IsFlagSet("--pvr") && (xResolution != yResolution))continue;
+
+				if ((onlySquareTextures) && (xResolution != yResolution))continue;
 				
 				Rect2i textureRect = Rect2i(0, 0, xResolution, yResolution);
 				ImagePacker * packer = new ImagePacker(textureRect);
@@ -656,6 +662,16 @@ bool TexturePacker::WriteMultipleDefinition(const char * excludeFolder, const ch
 	
 	fclose(fp);
 	return true;
+}
+
+void TexturePacker::UseOnlySquareTextures()
+{
+	onlySquareTextures = true;
+}
+
+void TexturePacker::SetMaxTextureSize(int32 _maxTextureSize)
+{
+	maxTextureSize = _maxTextureSize;
 }
 
 

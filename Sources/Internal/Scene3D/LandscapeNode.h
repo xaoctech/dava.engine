@@ -36,6 +36,7 @@
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNode.h"
 #include "Scene3D/Frustum.h"
+#include "Scene3D/LandscapeCursor.h"
 
 
 namespace DAVA
@@ -47,32 +48,32 @@ class Texture;
 class RenderDataObject;
 class Shader;
 class SceneFileV2;
-
+class Heightmap;
     
 template<class T>
-class QuadTreeNode
+class LandQuadTreeNode
 {
 public:
-    QuadTreeNode()
+    LandQuadTreeNode()
     {
         childs = 0;
         parent = 0;
         for (int32 k = 0; k < 4; ++k)
             neighbours[k] = 0;
     }
-    ~QuadTreeNode()
+    ~LandQuadTreeNode()
     {
         SafeDeleteArray(childs);
     }
     
     void AllocChilds()
     {
-        childs = new QuadTreeNode[4];
+        childs = new LandQuadTreeNode[4];
     }
     
-    QuadTreeNode * childs;  // It's array of 4 child nodes
-    QuadTreeNode * parent;
-    QuadTreeNode * neighbours[4]; 
+    LandQuadTreeNode * childs;  // It's array of 4 child nodes
+    LandQuadTreeNode * parent;
+    LandQuadTreeNode * neighbours[4]; 
     T data;
 };
     
@@ -124,8 +125,21 @@ public:
     };
     
     /**
+        \brief Change rendering mode. 
+        \param[in] renderingMode rendering mode of landscape.
+     */
+    void SetRenderingMode(eRenderingMode _renderingMode);
+    
+    /**
+        \brief Get rendering mode. 
+        \returns rendering mode of landscape.
+     */
+    inline const eRenderingMode GetRenderingMode();
+
+    
+    /**
         \brief Builds landscape from heightmap image and bounding box of this landscape block
-        \param[in] renderingMode rendering mode of landscape/
+        \param[in] renderingMode rendering mode of landscape.
         \param[in] landscapeBox axial-aligned bounding box of the landscape block
      */
     void BuildLandscapeFromHeightmapImage(eRenderingMode renderingMode, const String & heightmapPathname, const AABBox3 & landscapeBox);
@@ -163,6 +177,20 @@ public:
         \param[in] textureName name of texture you want to open and set to specific level
      */
     void SetTexture(eTextureLevel level, const String & textureName);
+
+    
+    /**
+     \brief Set texture for the specific texture level
+     
+     To render landscape you need to set textures.  
+     For RENDERING_MODE_TEXTURE you need to set only TEXTURE_TEXTURE0.
+     For RENDERING_MODE_DETAIL_SHADER you have to set TEXTURE_TEXTURE0 and TEXTURE_DETAIL
+     For RENDERING_MODE_BLENDED_SHADER you have to set TEXTURE_TEXTURE0, TEXTURE_TEXTURE1, TEXTURE_TEXTUREMASK
+     
+     \param[in] level level of texture you want to set
+     \param[in] texture you want to set to specific level
+     */
+    void SetTexture(eTextureLevel level, Texture * texture);
 
 	/**
         \brief Get texture that was previously set in SetTexture.
@@ -215,14 +243,23 @@ public:
      */
     const String & GetHeightMapPathname();
 
-    inline const eRenderingMode GetRenderingMode();
     
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
     // TODO: Need comment here
 	bool PlacePoint(const Vector3 & point, Vector3 & result);
+	Vector3 GetPoint(int16 x, int16 y, uint16 height);
 
+	void CursorEnable();
+	void CursorDisable();
+	void SetCursorTexture(Texture * texture);
+	void SetBigTextureSize(float32 bigSize);
+	void SetCursorPosition(const Vector2 & position);
+	void SetCursorScale(float32 scale);
+
+    Heightmap *GetHeightmap();
+    
 protected:	
     
     class LandscapeQuad
@@ -242,17 +279,18 @@ protected:
     static const int32 INDEX_ARRAY_COUNT = RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6;
     
 
-    void RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels);
-    QuadTreeNode<LandscapeQuad> * FindNodeWithXY(QuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize);
-    void FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode);
-    void MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
+    void RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels);
+    LandQuadTreeNode<LandscapeQuad> * FindNodeWithXY(LandQuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize);
+    void FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode);
+    void MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
 
-    Vector3 GetPoint(int16 x, int16 y, uint8 height);
-    void DrawQuad(QuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
-    void Draw(QuadTreeNode<LandscapeQuad> * currentNode);
+    void BindMaterial();
+    void UnbindMaterial();
+    
+    void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
+    void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
 
-    Image *     heightmap;
     AABBox3     box;
     
     int8 AllocateRDOQuad(LandscapeQuad * quad);
@@ -269,9 +307,9 @@ protected:
     float32 lodDistance[8]; //
     float32 lodSqDistance[8];
     
-    QuadTreeNode<LandscapeQuad> quadTreeHead;
+    LandQuadTreeNode<LandscapeQuad> quadTreeHead;
 
-    List<QuadTreeNode<LandscapeQuad>*> fans;
+    List<LandQuadTreeNode<LandscapeQuad>*> fans;
     
     int32 allocatedMemoryForQuads;
     
@@ -290,6 +328,9 @@ protected:
     Vector2 textureTiling[TEXTURE_COUNT];
     
     Shader * activeShader;
+
+	LandscapeCursor * cursor;
+
 //    Shader * singleTextureShader;
 //    Shader * detailShader;
 //    Shader * blendedShader;
@@ -301,7 +342,9 @@ protected:
     void FlushQueue();
     void ClearQueue();
     
-    String heightMapPath;
+    bool BuildHeightmap();
+    Heightmap *heightmap;
+    String heightmapPath;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()

@@ -71,8 +71,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;./Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -89,12 +89,13 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;./Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -116,7 +117,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Distribute|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;$(DXSDK_DIR)/include;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;./Classes/bullet;../../../dava.resourceeditor.beast/wrapper;./Classes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -421,6 +422,8 @@
     <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
+    <ClInclude Include="Classes\LightmapAtlasingData.h" />
+    <ClInclude Include="Classes\LightmapsPacker.h" />
     <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
@@ -435,41 +438,65 @@
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
     <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\DataGraph.h" />
     <ClInclude Include="Classes\SceneEditor\DraggableDialog.h" />
     <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h" />
     <ClInclude Include="Classes\SceneEditor\EditorLightNode.h" />
     <ClInclude Include="Classes\SceneEditor\EditorSettings.h" />
     <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorControl.h" />
+    <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
+    <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
+    <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\HintManager.h" />
+    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeTool.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h" />
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h" />
     <ClInclude Include="Classes\SceneEditor\LibraryControl.h" />
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h" />
+    <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h" />
     <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h" />
+    <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h" />
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
     <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
-    <ClInclude Include="Classes\SceneEditor\PaintAreaControl.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyList.h" />
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h" />
+    <ClInclude Include="Classes\SceneEditor\PVRUtils.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneGraph.h" />
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
     <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneValidator.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h" />
+    <ClInclude Include="Classes\SceneEditor\UIFilePreviewDialog.h" />
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h" />
+    <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
+    <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="Classes\TexturePacker\DefinitionFile.h" />
@@ -668,6 +695,7 @@
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
+    <ClCompile Include="Classes\LightmapsPacker.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
@@ -681,40 +709,64 @@
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\DataGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp" />
     <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
+    <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
+    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\HintManager.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeTool.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp" />
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp" />
     <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp" />
+    <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\MeshInstancePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp" />
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
-    <ClCompile Include="Classes\SceneEditor\PaintAreaControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp" />
+    <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp" />
+    <ClCompile Include="Classes\SceneEditor\UIFilePreviewDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp" />
+    <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp" />

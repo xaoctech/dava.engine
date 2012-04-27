@@ -30,6 +30,8 @@ public:
     virtual void OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded){};
     virtual void OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor){};
     virtual void OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue){};
+    virtual void OnTexturePreviewPropertyChanged(PropertyList *forList, const String &forKey, bool newValue){};
+    virtual void OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index){};
 };
 
 
@@ -45,7 +47,7 @@ public:
     };
     
     PropertyList(const Rect &rect, PropertyListDelegate *propertiesDelegate);
-    ~PropertyList();
+    virtual ~PropertyList();
     
     bool IsPropertyAvaliable(const String &propertyName);
 
@@ -62,8 +64,10 @@ public:
     void AddMessageProperty(const String &propertyName, const Message &newMessage);
     void AddColorProperty(const String &propertyName);
     void AddSubsection(const String &subsectionName);
-    void AddSliderProperty(const String &propertyName);
-
+    void AddSliderProperty(const String &propertyName, bool showEdges);
+    void AddTexturePreviewProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    void AddDistanceProperty(const String &propertyName, editableType propEditType = PROPERTY_IS_EDITABLE);
+    
     void SetStringPropertyValue(const String &propertyName, const String &newText);
     void SetIntPropertyValue(const String &propertyName, int32 newIntValue);
     void SetFloatPropertyValue(const String &propertyName, float32 newFloatValue);
@@ -76,6 +80,8 @@ public:
     void SetMessagePropertyValue(const String &propertyName, const Message &newMessage);
     void SetColorPropertyValue(const String &propertyName, const Color &newColor);
     void SetSliderPropertyValue(const String &propertyName, float32 newMinValue, float32 newMaxValue, float32 newValue);
+    void SetTexturePreviewPropertyValue(const String &propertyName, bool newBoolValue, Texture *newTexture);
+    void SetDistancePropertyValue(const String &propertyName, float32 *distances, int32 count);
     
     const String &GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);
@@ -88,6 +94,8 @@ public:
     bool GetSectionIsOpened(const String &sectrionName);
     const Color &GetColorPropertyValue(const String &sectrionName);
     float32 GetSliderPropertyValue(const String &propertyName);
+    bool GetTexturePreviewPropertyValue(const String &propertyName);
+    float32 GetDistancePropertyValue(const String &propertyName, int32 index);
 
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);

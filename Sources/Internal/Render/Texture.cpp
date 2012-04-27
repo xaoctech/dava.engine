@@ -123,6 +123,8 @@ int32 Texture::GetPixelFormatSize(PixelFormat format)
 		return 4;
 	case FORMAT_PVR2:
 		return 2;
+    case FORMAT_A16:
+        return 16;
 	default:
 		return 0;
 	};
@@ -145,6 +147,8 @@ const char * Texture::GetPixelFormatString(PixelFormat format)
             return "FORMAT_PVR4";
         case FORMAT_PVR2:
             return "FORMAT_PVR2";
+        case FORMAT_A16:
+            return "FORMAT_A16";
         default:
             return "WRONG FORMAT";
 	};
@@ -170,6 +174,7 @@ Texture::Texture()
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_INVALID)
+,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
@@ -182,14 +187,19 @@ Texture::Texture()
 
 #ifdef __DAVAENGINE_OPENGL__
 	fboID = -1;
+	rboID = -1;
 #endif
 
-#ifdef __DAVAENGINE_ANDROID__
+    
+    isMimMapTexture = false;
+	isAlphaPremultiplied = false;
+
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	savedData = NULL;
 	savedDataSize = 0;
 	renderTargetModified = false;
     renderTargetAutosave = true;
-#endif //#ifdef __DAVAENGINE_ANDROID__
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
 
 Texture::~Texture()
@@ -210,12 +220,20 @@ Texture::~Texture()
 		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
 #endif //PLATFORMS
 
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		SafeDeleteArray(savedData);
 		savedDataSize = 0;
 #endif// #if defined(__DAVAENGINE_ANDROID__)
-
     }
+
+	if(rboID != (uint32)-1)
+	{
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+		RENDER_VERIFY(glDeleteRenderbuffersOES(1, &rboID));
+#else //Non ES platforms
+		RENDER_VERIFY(glDeleteRenderbuffersEXT(1, &rboID));
+#endif //PLATFORMS
+	}
 	
 	if(id)
 	{
@@ -232,7 +250,7 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 {
 	RenderManager::Instance()->LockNonMain();
 	Texture * tx = CreateFromData(format, data, width, height);
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     tx->SaveData(format, data, width, height);
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	RenderManager::Instance()->UnlockNonMain();
@@ -256,17 +274,20 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 	
 	switch(format) 
 	{
-		case Texture::FORMAT_RGBA8888:
+		case FORMAT_RGBA8888:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, _data));
 			break;
-		case Texture::FORMAT_A8:
+		case FORMAT_A8:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGBA4444:
+		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
+			break;
+		case FORMAT_A16:
+			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, _data));
 			break;
 		default:
 			return;
@@ -291,7 +312,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
 	// \todo instead of hardcoding transformations, use ImageConvert.
 	int32 pixelSizeInBits = GetPixelFormatSize(format);
-	if (format ==  Texture::FORMAT_RGBA8888)
+	if (format ==  FORMAT_RGBA8888)
 	{
 		//int32 pitchInBytes = 
 
@@ -369,17 +390,20 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 		
 	switch(texture->format) 
 	{
-		case Texture::FORMAT_RGBA8888:
+		case FORMAT_RGBA8888:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture->width, texture->height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, _data));
 			break;
-		case Texture::FORMAT_A8:
+		case FORMAT_A8:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, texture->width, texture->height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, _data));
 			break;
-		case Texture::FORMAT_RGBA4444:
+		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
+			break;
+		case FORMAT_A16:
+			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, texture->width, texture->height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, _data));
 			break;
 		default:
 			SafeRelease(texture);
@@ -445,7 +469,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 
 	for (uint32 i = 1; i < texture->id->GetLevelCount(); ++i)
 	{
-		ImageConvert::DownscaleTwiceBillinear((Image::PixelFormat)texture->format, (Image::PixelFormat)texture->format, 
+		ImageConvert::DownscaleTwiceBillinear((PixelFormat)texture->format, (PixelFormat)texture->format, 
 			prevMipData, mipMapWidth << 1, mipMapHeight << 1, (mipMapWidth << 1) * GetPixelFormatSize(texture->format) / 8,
 			currentMipData, mipMapWidth, mipMapHeight, mipMapWidth * GetPixelFormatSize(texture->format) / 8);
 
@@ -531,14 +555,21 @@ void Texture::DisableMipmapGeneration()
 void Texture::GenerateMipmaps()
 {
 	RenderManager::Instance()->LockNonMain();
+    
+    isMimMapTexture = true;
+
 #if defined(__DAVAENGINE_OPENGL__)
 
 	int saveId = GetSavedTextureID();
 	BindTexture(id);
 	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__)
 	// definitelly works for the iPhone
 	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+#elif defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 #else //Non-ES platforms
@@ -560,6 +591,45 @@ void Texture::GenerateMipmaps()
 	RenderManager::Instance()->UnlockNonMain();
 }
 
+void Texture::GeneratePixelesation()
+{
+	RenderManager::Instance()->LockNonMain();
+    
+    isMimMapTexture = false;
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    
+	int saveId = GetSavedTextureID();
+	BindTexture(id);
+	
+#if defined(__DAVAENGINE_IPHONE__)
+	// definitelly works for the iPhone
+//	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#elif defined (__DAVAENGINE_ANDROID__)
+//    RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#else //Non-ES platforms
+//	RENDER_VERIFY(glGenerateMipmapEXT(GL_TEXTURE_2D));
+    
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+#endif //PLATFORMS
+    
+	if (saveId != 0)
+	{
+		BindTexture(saveId);
+	}
+	
+	
+#elif defined(__DAVAENGINE_DIRECTX9__)
+    
+#endif // #if defined(__DAVAENGINE_OPENGL__)
+	RenderManager::Instance()->UnlockNonMain();
+}
+    
 void Texture::UsePvrMipmaps()
 {
 	RenderManager::Instance()->LockNonMain();
@@ -590,7 +660,7 @@ void Texture::UsePvrMipmaps()
 void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
 {
 	Image * image = Image::CreateFromFile(pathName);
-	if ((Texture::PixelFormat)image->GetPixelFormat() != format)
+	if ((PixelFormat)image->GetPixelFormat() != format)
 	{
 		Logger::Error("Texture::LoadMipMapFromFile - format of file texture different from this texture"); 
 		SafeRelease(image);
@@ -618,9 +688,10 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	}
 	
 	RenderManager::Instance()->LockNonMain();
-	texture = Texture::CreateFromData((Texture::PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+	texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
 	texture->relativePathname = pathName;
+    texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
 	
 	if (texture)
 		textureMap[texture->relativePathname] = texture;
@@ -844,8 +915,8 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
 
 		texture->width = width;
 		texture->height = height;
-		if (formatFlags == kPVRTextureFlagTypePVRTC_4)texture->format = Texture::FORMAT_PVR4;
-		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)texture->format = Texture::FORMAT_PVR2;
+		if (formatFlags == kPVRTextureFlagTypePVRTC_4)texture->format = FORMAT_PVR4;
+		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)texture->format = FORMAT_PVR2;
 		
 		RENDER_VERIFY(glGenTextures(1, &texture->id));
 		
@@ -861,7 +932,13 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
 			height = Max(height >> 1, 1);
 		}
 		
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        GLint minFilter = GL_LINEAR;
+        if(i > 0) //has mipmaps
+        {
+            minFilter = GL_LINEAR_MIPMAP_LINEAR;
+        }
+        
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		
 		if (0 != savedId)
@@ -950,7 +1027,7 @@ int32 Texture::Release()
 	return BaseObject::Release();
 }
 	
-Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
+Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
 	int i;
 	int dx = w;
@@ -987,6 +1064,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 
 	Texture *tx = Texture::CreateFromData(format, NULL, dx, dy);
 	DVASSERT(tx);
+
+	tx->depthFormat = _depthFormat;
 	 
 	// Now setup a texture to render to
 	BindTexture(tx->id);
@@ -1014,13 +1093,26 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format)
 #if defined(__DAVAENGINE_WIN32__)    
 	if(GLEW_EXT_framebuffer_object)
 	{
-#endif //#if defined(__DAVAENGINE_WIN32__)        
+#endif //#if defined(__DAVAENGINE_WIN32__)  
+		if(DEPTH_RENDERBUFFER == _depthFormat)
+		{
+			glGenRenderbuffersEXT(1, &tx->rboID);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, tx->rboID);
+			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, dx, dy);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+		}
+
 		RENDER_VERIFY(glGenFramebuffersEXT(1, &tx->fboID));
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
         BindFBO(tx->fboID);
-	
+
 		// And attach it to the FBO so we can render to it
 		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tx->id, 0));
+
+		if(DEPTH_RENDERBUFFER == _depthFormat)
+		{
+			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, tx->rboID);
+		}
 	
 		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
@@ -1095,6 +1187,9 @@ void Texture::DumpTextures()
 			case FORMAT_A8:
 				allocSize += t->width * t->height;
 				break;
+			case FORMAT_A16:
+				allocSize += t->width * t->height * 2;
+				break;
 			default:
 				break;
 		}
@@ -1103,14 +1198,14 @@ void Texture::DumpTextures()
 	Logger::Info("============================================================");
 }
 	
-Texture::PixelFormat Texture::defaultRGBAFormat = Texture::FORMAT_RGBA8888;
+PixelFormat Texture::defaultRGBAFormat = FORMAT_RGBA8888;
 
 void Texture::SetDefaultRGBAFormat(PixelFormat format)
 {
 	defaultRGBAFormat = format;
 }
 
-Texture::PixelFormat Texture::GetDefaultRGBAFormat()
+PixelFormat Texture::GetDefaultRGBAFormat()
 {
 	return defaultRGBAFormat;
 }
@@ -1122,7 +1217,7 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 #endif
 }
 
-#if defined(__DAVAENGINE_ANDROID__)    
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 void Texture::SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height)
 {
     int32 textureSize = width * height * FormatMultiplier(format);
@@ -1155,6 +1250,10 @@ int32 Texture::FormatMultiplier(PixelFormat format)
 		return 2;
 	case FORMAT_RGBA4444:
 		return 2;
+    case FORMAT_A16:
+        return 2;
+    case FORMAT_A8:
+        return 1;
 	}
 
 	return 4;
@@ -1198,18 +1297,21 @@ void Texture::SaveToSystemMemory()
 				RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 				switch(format) 
 				{
-				case Texture::FORMAT_RGBA8888:
+				case FORMAT_RGBA8888:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 					break;
-				case Texture::FORMAT_RGB565:
+				case FORMAT_RGB565:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)savedData));
 					break;
-				case Texture::FORMAT_A8:
+				case FORMAT_A8:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 					break;
-				case Texture::FORMAT_RGBA4444:
+				case FORMAT_RGBA4444:
 					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
 					break;
+                case FORMAT_A16:
+                    RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
+                    break;
 				}
 
 				BindFBO(saveFBO);
@@ -1228,7 +1330,7 @@ void Texture::SaveToSystemMemory()
 
 void Texture::Lost()
 {
-	Logger::Debug("[Texture::Lost] id = %d, isrendertarget = %d, fboID = %d, file = %s", id, isRenderTarget, fboID, relativePathname.c_str());
+//	Logger::Debug("[Texture::Lost] id = %d, isrendertarget = %d, fboID = %d, file = %s", id, isRenderTarget, fboID, relativePathname.c_str());
 
 	RenderManager::Instance()->LockNonMain();
 	if(RenderManager::Instance()->GetTexture() == this)
@@ -1238,7 +1340,12 @@ void Texture::Lost()
 
 	if(fboID != (uint32)-1)
 	{
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 		RENDER_VERIFY(glDeleteFramebuffersOES(1, &fboID));
+#else //Non ES platforms
+		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
+#endif //PLATFORMS
+
 		fboID = -1;
 	}
 
@@ -1253,15 +1360,19 @@ void Texture::Lost()
 
 void Texture::Invalidate()
 {
-	Logger::Debug("[Texture::Invalidate] id is %d, isRenderTarget is %d", id, isRenderTarget);
+//	Logger::Debug("[Texture::Invalidate] id is %d, isRenderTarget is %d", id, isRenderTarget);
 	if(id)
 	{
 		Logger::Warning("[Texture::Invalidate] id is %d, exit", id);
 		return;
 	}
 
-	RenderManager::Instance()->LockNonMain();
+    RenderManager::Instance()->LockNonMain();
 
+    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
+    
+    Image::EnableAlphaPremultiplication(isAlphaPremultiplied);
+    
 	if(isRenderTarget)
 	{
 		//////////////////////////////////////////////////////////////////////////
@@ -1279,6 +1390,7 @@ void Texture::Invalidate()
 		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 
+#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
 		// Setup our FBO
 		RENDER_VERIFY(glGenFramebuffersOES(1, &fboID));
 		BindFBO(fboID);
@@ -1291,6 +1403,19 @@ void Texture::Invalidate()
 		{
 			Logger::Error("[Texture::Invalidate] glCheckFramebufferStatusOES: %d", status);
 		}
+#elif defined(__DAVAENGINE_MACOS__)
+        RENDER_VERIFY(glGenFramebuffersEXT(1, &fboID));
+        BindFBO(fboID);
+        
+		// And attach it to the FBO so we can render to it
+		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, id, 0));
+        
+		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
+		{
+			Logger::Error("[Texture::CreateFBO] glCheckFramebufferStatusEXT: %d", status);
+		}
+#endif 
 
 		BindFBO(saveFBO);
 
@@ -1301,17 +1426,19 @@ void Texture::Invalidate()
 	}
 	else if(savedData)
 	{
-		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
+//		Logger::Debug("[Texture::Invalidate] from savedData, relativePathname: %s", relativePathname.c_str());
 
 		InvalidateFromSavedData();
 	}
 	else
 	{
-		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
+//		Logger::Debug("[Texture::Invalidate] from file, relativePathname: %s", relativePathname.c_str());
 
 		InvalidateFromFile();
 	}
 
+    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
+    
 	RenderManager::Instance()->UnlockNonMain();
 }
 
@@ -1333,23 +1460,29 @@ void Texture::InvalidateFromSavedData()
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 	switch(format) 
 	{
-		case Texture::FORMAT_RGBA8888:
+		case FORMAT_RGBA8888:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 			break;
-		case Texture::FORMAT_RGB565:
+		case FORMAT_RGB565:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)savedData));
 			break;
-		case Texture::FORMAT_A8:
+		case FORMAT_A8:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
 			break;
-		case Texture::FORMAT_RGBA4444:
+		case FORMAT_RGBA4444:
 			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
 			break;
+		case FORMAT_A16:
+			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
+			break;
+        default:
+            break;
 	}
+    
 
 
 	GLint wrapMode = GL_CLAMP_TO_EDGE;
-	if (isMipmapGenerationEnabled)
+	if (isMimMapTexture)
 	{
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
@@ -1371,7 +1504,7 @@ void Texture::InvalidateFromSavedData()
 
 void Texture::InvalidateFromFile()
 {
-	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
+//	Logger::Debug("[Texture::InvalidateFromFile] load image from: %s", relativePathname.c_str());
 
 	Image * image = Image::CreateFromFile(relativePathname);
 	if (!image)
@@ -1379,6 +1512,8 @@ void Texture::InvalidateFromFile()
 		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
 		return;
 	}
+    isAlphaPremultiplied = image->isAlphaPremultiplied;
+
 
 	savedData = image->GetData();
 	InvalidateFromSavedData();
@@ -1389,26 +1524,7 @@ void Texture::InvalidateFromFile()
     
 Image * Texture::ReadDataToImage()
 {
-    Image::PixelFormat imageFormat = Image::FORMAT_RGBA8888;
-    switch (format) {
-        case FORMAT_RGBA8888:
-            imageFormat = Image::FORMAT_RGBA8888;
-            break;
-        case FORMAT_RGB565:
-            imageFormat = Image::FORMAT_RGB565;
-            break;
-        case FORMAT_RGBA4444:
-            imageFormat = Image::FORMAT_RGBA4444;
-            break;
-        case FORMAT_A8:
-            imageFormat = Image::FORMAT_A8;
-            break;
-            
-        default:
-            return NULL;
-    }
-    
-    Image *image = Image::Create(width, height, imageFormat);
+    Image *image = Image::Create(width, height, format);
     uint8 *imageData = image->GetData();
     
 #if defined(__DAVAENGINE_OPENGL__)
@@ -1432,17 +1548,22 @@ Image * Texture::ReadDataToImage()
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     switch(format) 
     {
-        case Texture::FORMAT_RGBA8888:
+        case FORMAT_RGBA8888:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
             break;
-        case Texture::FORMAT_RGB565:
+        case FORMAT_RGB565:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)imageData));
             break;
-        case Texture::FORMAT_A8:
+        case FORMAT_A8:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
             break;
-        case Texture::FORMAT_RGBA4444:
+        case FORMAT_RGBA4444:
             RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)imageData));
+            break;
+        case FORMAT_A16:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)imageData));
+            break;
+        default:
             break;
     }
     
@@ -1471,25 +1592,31 @@ Image * Texture::CreateImageFromMemory()
     Image *image = NULL;
     if(isRenderTarget)
     {
-        Sprite *renderTarget = Sprite::CreateFromTexture(this, 0, 0, width, height);
+        Sprite *renderTarget = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
         
         image = ReadDataToImage();
             
         RenderManager::Instance()->RestoreRenderTarget();
+        
+        SafeRelease(renderTarget);
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget(width, height, Texture::FORMAT_RGBA8888);
+//        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
-        Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, width, height);
+        Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
         drawTexture->SetPosition(0, 0);
         drawTexture->Draw();
 
         RenderManager::Instance()->RestoreRenderTarget();
         
         image = renderTarget->GetTexture()->CreateImageFromMemory();
+
+        SafeRelease(renderTarget);
+        SafeRelease(drawTexture);
     }
         
     return image;
@@ -1516,6 +1643,9 @@ int32 Texture::GetDataSize()
             break;
         case FORMAT_A8:
             allocSize = width * height;
+            break;
+        case FORMAT_A16:
+            allocSize = width * height * 2;
             break;
         default:
             break;

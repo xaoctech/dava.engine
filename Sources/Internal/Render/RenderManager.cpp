@@ -154,6 +154,20 @@ bool RenderManager::IsInsideDraw()
 {
 	return isInsideDraw;
 }
+    
+#ifdef __DAVAENGINE_ANDROID__    
+void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight)
+{
+    frameBufferWidth = _frameBufferWidth;
+	frameBufferHeight = _frameBufferHeight;
+
+    hardwareState.Reset(false);
+	currentState.Reset(true);
+    
+	Logger::Debug("[RenderManager::InitFBSize] size: %d x %d", frameBufferWidth, frameBufferHeight);
+}
+#endif //    #ifdef __DAVASOUND_ANDROID__    
+
 
 void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 {
@@ -393,7 +407,12 @@ void RenderManager::SetRenderTarget(Sprite *renderTarget)
 	IdentityDrawMatrix();
 	SetHWRenderTarget(renderTarget);
 }
-	
+
+void RenderManager::SetRenderTarget(Texture * renderTarget)
+{
+	SetHWRenderTarget(renderTarget);
+}
+
 void RenderManager::RestoreRenderTarget()
 {
 //	Logger::Info("Restore Render target");
@@ -779,6 +798,13 @@ RenderStateBlock * RenderManager::State()
 {
 	return &RenderManager::Instance()->currentState;
 }
+
+void RenderManager::SetDepthFunc(eCmpFunc func)
+{
+	currentState.SetDepthFunc(func);
+}
+
+
 
 	
 };

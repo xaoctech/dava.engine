@@ -22,6 +22,7 @@
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
 #include "SceneEditor/PVRConverter.h"
+#include "SceneEditor/PVRUtils.h"
 
 using namespace DAVA;
 
@@ -38,6 +39,8 @@ GameCore::~GameCore()
 void GameCore::OnAppStarted()
 {
 	RenderManager::Instance()->SetFPS(30);
+    
+    Stats::Instance()->EnableStatsOutputEventNFrame(30);
 
     LocalizationSystem::Instance()->SetCurrentLocale(EditorSettings::Instance()->GetLanguage());
 	LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings");
@@ -53,6 +56,7 @@ void GameCore::OnAppStarted()
 //    new EditorSettings();
     new SceneValidator();
 	new PVRConverter();
+    new PVRUtils();
     
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
@@ -65,6 +69,7 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
+    PVRUtils::Instance()->Release();
 	PVRConverter::Instance()->Release();
     EditorSettings::Instance()->Release();
     OutputManager::Instance()->Release();

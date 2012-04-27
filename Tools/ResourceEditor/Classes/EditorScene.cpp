@@ -12,6 +12,7 @@
 #include "SceneEditor/SceneValidator.h"
 #include "Scene3D/LodNode.h"
 #include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/HeightmapNode.h"
 
 /*
     This means that if we'll call GameScene->GetClassName() it'll return "Scene"
@@ -33,17 +34,22 @@ EditorScene::EditorScene()
 	broadphase = new btAxisSweep3(worldMin,worldMax);
 	collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfiguration);
 
+	landCollisionConfiguration = new btDefaultCollisionConfiguration();
+	landDispatcher = new btCollisionDispatcher(landCollisionConfiguration);
+	landBroadphase = new btAxisSweep3(worldMin,worldMax);
+	landCollisionWorld = new btCollisionWorld(landDispatcher, landBroadphase, landCollisionConfiguration);
+
 //    RegisterLodLayer(0, 15);
 //    RegisterLodLayer(12, 35);
 //    RegisterLodLayer(31, 1000);
 
-    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-    for(int32 iLod = 0; iLod < lodCount; ++iLod)
-    {
-        float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
-        float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
-        RegisterLodLayer(nearDistance, farDistance);
-    }
+//    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+//    for(int32 iLod = 0; iLod < lodCount; ++iLod)
+//    {
+//        float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
+//        float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
+//        RegisterLodLayer(nearDistance, farDistance);
+//    }
     
     SetDrawGrid(true);
 }
@@ -55,6 +61,11 @@ EditorScene::~EditorScene()
 	SafeDelete(broadphase);
 	SafeDelete(dispatcher);
 	SafeDelete(collisionConfiguration);
+
+	SafeDelete(landCollisionWorld);
+	SafeDelete(landBroadphase);
+	SafeDelete(landDispatcher);
+	SafeDelete(landCollisionConfiguration);
 }
 
 void EditorScene::Update(float32 timeElapsed)
@@ -146,7 +157,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	btCollisionObject * coll = 0;
 	if (cb.hasHit()) 
     {
-		Logger::Debug("Has Hit");
+		//Logger::Debug("Has Hit");
 		int findedIndex = cb.m_collisionObjects.size() - 1;
 		if(lastSelectedPhysics)
 		{
@@ -181,6 +192,42 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 	}
 }
 
+bool EditorScene::LandscapeIntersection(const DAVA::Vector3 &from, const DAVA::Vector3 &direction, DAVA::Vector3 &point)
+{
+	btVector3 pos(from.x, from.y, from.z);
+    btVector3 to(direction.x, direction.y, direction.z);
+    
+    btCollisionWorld::ClosestRayResultCallback cb(pos, to);
+	uint64 time1 = SystemTimer::Instance()->AbsoluteMS();
+	uint64 time2;
+    landCollisionWorld->rayTest(pos, to, cb);
+	time2 = SystemTimer::Instance()->AbsoluteMS();
+	Logger::Debug("raytest %lld", time2-time1);
+	btCollisionObject * coll = 0;
+	if (cb.hasHit()) 
+    {
+		//int findedIndex = cb.m_collisionObjects.size() - 1;
+		//
+		//if (findedIndex == -1)
+		//	findedIndex = cb.m_collisionObjects.size() - 1;
+		//coll = cb.m_collisionObjects[findedIndex];
+        
+		//HeightmapNode *hm = FindHeightmap(this, coll);
+        //if(hm)
+        {
+            point.x = cb.m_hitPointWorld.x();
+            point.y = cb.m_hitPointWorld.y();
+            point.z = cb.m_hitPointWorld.z();
+            
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+
 LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
 {
     LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
@@ -200,6 +247,27 @@ LandscapeNode * EditorScene::GetLandScape(SceneNode *node)
 	return 0;
 }
 
+
+HeightmapNode * EditorScene::FindHeightmap(SceneNode * curr, btCollisionObject * coll)
+{
+	HeightmapNode * node = dynamic_cast<HeightmapNode *> (curr);
+	if (node && node->collisionObject == coll)
+	{
+        return node;
+	}
+    
+	int size = curr->GetChildrenCount();
+//	for (int i = 0; i < size; i++)
+	for (int i = size-1; i >= 0; --i)
+	{
+		HeightmapNode * result = FindHeightmap(curr->GetChild(i), coll);
+		if (result)
+			return result;
+	}
+	return 0;
+}
+
+
 SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll)
 {
 	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);
@@ -212,6 +280,7 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 		if (data->bulletObject->GetCollisionObject() == coll)
 			return curr;
 	}
+    
 	int size = curr->GetChildrenCount();
 	for (int i = 0; i < size; i++)
 	{
@@ -348,6 +417,60 @@ void EditorScene::DrawDebugNodes(SceneNode * curr)
 void EditorScene::SetDrawGrid(bool newDrawGrid)
 {
     drawGrid = newDrawGrid;
+}
+
+void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
+{
+    if(!node)   return;
+    
+    SceneNode *n = node;
+    
+    do {
+        LodNode *lodNode = dynamic_cast<LodNode *>(n);
+        if(lodNode)
+        {
+            lodNode->SetForceLodLayer(layer);
+        }
+        
+        n = n->GetParent();
+    } while (n);
+    
+    SetForceLodLayerRecursive(node, layer);
+}
+
+void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
+{
+    LodNode *lodNode = dynamic_cast<LodNode *>(node);
+    if(lodNode)
+    {
+        lodNode->SetForceLodLayer(layer);
+    }
+    
+    int32 count = node->GetChildrenCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        SetForceLodLayerRecursive(node->GetChild(i), layer);
+    }
+}
+
+
+int32 EditorScene::GetForceLodLayer(SceneNode *node)
+{
+    if(!node)   return -1;
+
+    LodNode *lodNode = dynamic_cast<LodNode *>(node);
+    if(lodNode)
+        return lodNode->GetForceLodLayer();
+    
+    int32 count = node->GetChildrenCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        int32 layer = GetForceLodLayer(node->GetChild(i));
+        if(-1 != layer)
+            return layer;
+    }
+    
+    return -1;
 }
 
 

@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
+#include "Render/Image.h"
 
 namespace DAVA 
 {
@@ -45,7 +46,7 @@ class LibPngWrapper
 {
 public:
 	static int ReadPngFile(const char *file, Image * image);
-	static void WritePngFile(const char* fileName, int32 width, int32 height, uint8 * data);
+	static void WritePngFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
 
 };
 
@@ -71,6 +72,7 @@ private:
 	int32		width;
 	int32		height;
 	uint8  *	data;
+    PixelFormat format;
 };
 };
 

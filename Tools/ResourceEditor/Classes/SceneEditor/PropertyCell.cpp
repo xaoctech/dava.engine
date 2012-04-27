@@ -14,8 +14,10 @@
 #include "ColorPicker.h"
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
+#include "HintManager.h"
+#include "UIFilePreviewDialog.h"
 
-
+#pragma mark --PropertyCell 
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
 {
@@ -49,7 +51,7 @@ String PropertyCell::GetTypeName(int cellType)
 }
 
 
-//********************* PropertyTextCell *********************
+#pragma mark --PropertyTextCell 
 PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -227,7 +229,7 @@ float32 PropertyTextCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-//********************* PropertyBoolCell *********************
+#pragma mark --PropertyBoolCell 
 PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -267,7 +269,7 @@ float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::ValueChanged(bool newValue)
+void PropertyBoolCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
@@ -275,7 +277,7 @@ void PropertyBoolCell::ValueChanged(bool newValue)
 }
 
 
-//********************* PropertyFilepathCell *********************
+#pragma mark --PropertyFilepathCell 
 PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -296,6 +298,7 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     pathText->SetFont(font);
     pathText->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
     pathTextContainer->AddControl(pathText);
+    pathTextContainer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyFilepathCell::OnHint));
     AddControl(pathTextContainer);
     
     browseButton = ControlsFactory::CreateButton(Rect(size.x - size.y/2 - xOffset, size.y/2, size.y/2, size.y/2), L"...");
@@ -315,6 +318,8 @@ PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, P
     }
     
     SetData(prop);
+    
+    moveCounter = 0;
 }
 
 PropertyFilepathCell::~PropertyFilepathCell()
@@ -354,7 +359,7 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
     {
         return;
     }
-    dialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    dialog = new UIFilePreviewDialog("~res:/Fonts/MyriadPro-Regular.otf");
     dialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
     dialog->SetDelegate(this);
     dialog->SetTitle(keyName->GetText());
@@ -384,6 +389,34 @@ void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * 
     propertyDelegate->OnPropertyChanged(property);
 }
 
+void PropertyFilepathCell::WillAppear()
+{
+    moveCounter = 0;
+    
+    UIListCell::WillAppear();
+}
+
+void PropertyFilepathCell::Input(UIEvent *currentInput)
+{
+    if(currentInput->phase == UIEvent::PHASE_MOVE)
+    {
+        ++moveCounter;
+//        Logger::Debug("move");
+    }
+    else 
+    {
+        moveCounter = 0;
+//        Logger::Debug("not_move");
+    }
+    
+    UIListCell::Input(currentInput);
+}
+
+void PropertyFilepathCell::OnHint(BaseObject * object, void * userData, void * callerData)
+{
+    HintManager::Instance()->ShowHint(pathText->GetText(), this->GetRect(true));
+}
+
 void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
     String extension = FileSystem::GetExtension(pathToFile);
@@ -409,7 +442,7 @@ void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDial
 //}
 
 
-//*************** PropertyComboboxCell **************
+#pragma mark --PropertyComboboxCell 
 PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -446,7 +479,7 @@ void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &i
     propertyDelegate->OnPropertyChanged(property);
 }
 
-//*************** PropertyMatrix4Cell **************
+#pragma mark --PropertyMatrix4Cell 
 PropertyMatrix4Cell::PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -495,7 +528,7 @@ void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void
 }
 
 
-//*************** PropertySectionHeaderCell **************
+#pragma mark --PropertySectionCell 
 PropertySectionCell::PropertySectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -523,7 +556,7 @@ void PropertySectionCell::OnButton(BaseObject * object, void * userData, void * 
 }
 
 
-//*************** PropertyButtonCell **************
+#pragma mark --PropertyButtonCell 
 PropertyButtonCell::PropertyButtonCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -555,7 +588,7 @@ void PropertyButtonCell::SetData(PropertyCellData *prop)
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
 }
 
-//*************** PropertyColorCell **************
+#pragma mark --PropertyColorCell 
 PropertyColorCell::PropertyColorCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -610,7 +643,7 @@ void PropertyColorCell::ColorPickerDone(const Color &newColor)
 }
 
 
-//*************** PropertySubsectionCell **************
+#pragma mark --PropertySubsectionCell 
 PropertySubsectionCell::PropertySubsectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -630,7 +663,7 @@ float32 PropertySubsectionCell::GetHeightForWidth(float32 currentWidth)
 }
 
 
-//*************** PropertySliderCell **************
+#pragma mark --PropertySliderCell 
 PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -638,16 +671,27 @@ PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, Prope
     keyName->size.y = GetHeightForWidth(width)/2;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
     
-    float32 textWidth = 50;
-    minValue = new UIStaticText(Rect(0, keyName->size.y, textWidth, keyName->size.y));
-    minValue->SetFont(ControlsFactory::GetFontLight());
-    minValue->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
-    AddControl(minValue);
+    bool showEdges = prop->GetBool();
+    float32 textWidth = 0.f;
+    if(showEdges)
+    {
+        textWidth = 50.f;
 
-    maxValue = new UIStaticText(Rect(width - textWidth, keyName->size.y, textWidth, keyName->size.y));
-    maxValue->SetFont(ControlsFactory::GetFontLight());
-    maxValue->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
-    AddControl(maxValue);
+        minValue = new UIStaticText(Rect(0, keyName->size.y, textWidth, keyName->size.y));
+        minValue->SetFont(ControlsFactory::GetFontLight());
+        minValue->SetAlign(ALIGN_VCENTER|ALIGN_RIGHT);
+        AddControl(minValue);
+
+        maxValue = new UIStaticText(Rect(width - textWidth, keyName->size.y, textWidth, keyName->size.y));
+        maxValue->SetFont(ControlsFactory::GetFontLight());
+        maxValue->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+        AddControl(maxValue);
+    }
+    else 
+    {
+        minValue = NULL;
+        maxValue = NULL;
+    }
 
     slider = new UISliderWithText(Rect(textWidth, keyName->size.y, width - 2*textWidth, keyName->size.y));
     slider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PropertySliderCell::OnValueChanged));
@@ -686,9 +730,162 @@ void PropertySliderCell::SetData(PropertyCellData *prop)
 {
     PropertyCell::SetData(prop);
     
-    minValue->SetText(Format(L"%f", prop->GetSliderMinValue()));
-    maxValue->SetText(Format(L"%f", prop->GetSliderMaxValue()));
+    if(minValue)
+    {
+        minValue->SetText(Format(L"%f", prop->GetSliderMinValue()));
+    }
+    
+    if(maxValue)
+    {
+        maxValue->SetText(Format(L"%f", prop->GetSliderMaxValue()));
+    }
     
     slider->SetMinMaxValue(prop->GetSliderMinValue(), prop->GetSliderMaxValue());
     slider->SetValue(prop->GetSliderValue());
+}
+
+
+#pragma mark --PropertyTexturePreviewCell 
+PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
+    :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
+{
+    keyName->size.x = GetHeightForWidth(width) / 2;
+    keyName->size.y = GetHeightForWidth(width) / 2;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+    keyName->SetVisible(false, false);
+    
+    float32 checkBoxWidth = GetHeightForWidth(width)/2;
+    checkBox = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(0, keyName->size.y, checkBoxWidth, checkBoxWidth));
+    checkBox->SetDelegate(this);
+    AddControl(checkBox);
+
+    previewControl = new UIControl(Rect(keyName->size.x, 0, width - keyName->size.x, GetHeightForWidth(width)));
+    previewControl->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyTexturePreviewCell::OnClick));
+    AddControl(previewControl);
+    
+    SetData(prop);
+}
+
+PropertyTexturePreviewCell::~PropertyTexturePreviewCell()
+{
+    SafeRelease(previewControl);
+    SafeRelease(checkBox);
+}
+
+void PropertyTexturePreviewCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_TEXTUREPREVIEW:
+        {
+            checkBox->SetChecked(prop->GetBool(), false);
+            Texture *tex = prop->GetTexture();
+            
+            if(tex)
+            {
+                uint32 width = DAVA::Min(tex->width, (uint32)previewControl->GetSize().x);
+                uint32 height = DAVA::Min(tex->height, (uint32)previewControl->GetSize().y);
+                Sprite *previewSprite = Sprite::CreateFromTexture(tex, 0, 0, width, height);
+                
+                previewControl->SetSprite(previewSprite, 0);
+                
+                SafeRelease(previewSprite);
+            }
+            
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+float32 PropertyTexturePreviewCell::GetHeightForWidth(float32 currentWidth)
+{
+    return CELL_HEIGHT * 2;
+}
+
+void PropertyTexturePreviewCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+{
+    property->SetBool(newValue);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+}
+
+
+void PropertyTexturePreviewCell::OnClick(DAVA::BaseObject *owner, void *userData, void *callerData)
+{
+    bool checked = checkBox->Checked();
+    checkBox->SetChecked(!checked, true);
+}
+
+#pragma mark  --PropertyDistanceCell
+//class PropertyDistanceCell: public PropertyCell, public LodDistanceControlDelegate
+//{
+//public:
+//    
+//    PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+//    virtual ~PropertyDistanceCell();
+//    
+//    static float32 GetHeightForWidth(float32 currentWidth);
+//    virtual void SetData(PropertyCellData *prop);
+//    
+//    virtual void DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value) = 0;
+//    
+//private:
+//    
+//    void OnClick(BaseObject * owner, void * userData, void * callerData);
+//    
+//    LodDistanceControl *distanceControl;
+//};
+
+PropertyDistanceCell::PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
+:   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width, 0)), prop)
+{
+    keyName->size.x = width;
+    keyName->size.y = CELL_HEIGHT;
+    keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
+    
+    distanceControl = new LodDistanceControl(this, Rect(0, CELL_HEIGHT, width, GetHeightForWidth(width, 0) - CELL_HEIGHT));
+    AddControl(distanceControl);
+
+    SetData(prop);
+}
+
+PropertyDistanceCell::~PropertyDistanceCell()
+{
+    SafeRelease(distanceControl);
+}
+
+void PropertyDistanceCell::SetData(PropertyCellData *prop)
+{
+    PropertyCell::SetData(prop);
+    
+    switch (prop->GetValueType())
+    {
+        case PropertyCellData::PROP_VALUE_DISTANCE:
+        {
+            distanceControl->SetDistances(prop->GetDistances(), prop->GetDistancesCount());
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+float32 PropertyDistanceCell::GetHeightForWidth(float32 currentWidth, int32 count)
+{
+    return CELL_HEIGHT + (count + 1) * ControlsFactory::BUTTON_HEIGHT;
+}
+
+void PropertyDistanceCell::DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value)
+{
+    property->SetDistance(value, index);
+    
+//    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
 }

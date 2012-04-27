@@ -96,6 +96,15 @@ public:
     Material(Scene * _scene = 0);
     virtual ~Material();
     
+    
+    enum eValidationResult
+    {
+        VALIDATE_COMPATIBLE = 1,
+        VALIDATE_INCOMPATIBLE,
+    };
+    
+    eValidationResult Validate(PolygonGroup * polygonGroup);
+    
     virtual void SetScene(Scene * _scene);
    
 	virtual int32 Release();
@@ -135,7 +144,10 @@ public:
 	float	transparency; 
 	float	indexOfRefraction;
 
-    enum
+	Vector2 uvOffset;
+	Vector2 uvScale;
+
+    enum eTextureLevel
     {
         TEXTURE_DIFFUSE = 0,
         TEXTURE_DETAIL = 1,
@@ -151,6 +163,7 @@ public:
     void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     
+    void SetTexture(eTextureLevel level, const String & textureName);
     
 private:
     void RebuildShader();
@@ -177,7 +190,10 @@ private:
     int32 uniformMaterialLightDiffuseColor;
     int32 uniformMaterialLightSpecularColor;
     int32 uniformMaterialSpecularShininess;
-
+    int32 uniformLightIntensity0;
+    int32 uniformLightAttenuationQ;
+	int32 uniformUvOffset;
+	int32 uniformUvScale;
     
     static UberShader * uberShader;
 };

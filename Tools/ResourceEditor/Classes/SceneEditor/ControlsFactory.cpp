@@ -11,7 +11,6 @@ UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonTe
     return btn;
 }
 
-
 UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &buttonText)
 {
     UIButton *btn = new UIButton(rect);
@@ -45,6 +44,17 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     
     AddBorder(btn);
 }
+
+void ControlsFactory::CustomizeButtonExpandable(UIButton *btn)
+{
+    UIControl *expandable = new UIControl(Rect(btn->GetSize().dx - btn->GetSize().dy, 0, btn->GetSize().dy, btn->GetSize().dy));
+    expandable->SetInputEnabled(false);
+    expandable->SetSprite("~res:/Gfx/UI/arrowdown", 0);
+    btn->AddControl(expandable);
+    
+    SafeRelease(expandable);
+}
+
 
 UIButton *ControlsFactory::CreateImageButton(const Rect & rect, const String &imagePath)
 {
@@ -266,16 +276,8 @@ void ControlsFactory::CustomizeListCellAlternative(UIListCell *c, const WideStri
 
 void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 {
-    Font *font = GetFontDark();
-    
-    c->text->SetFont(font);
-    c->text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
-    
-//    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-//    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
     c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
-    
 }
 
 void ControlsFactory::CustomizeMenuPopupCell(UIListCell *c, const WideString &text)
