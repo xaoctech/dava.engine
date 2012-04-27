@@ -53,28 +53,14 @@ void LodNode::LodDistance::SetDistance(float32 newDistance)
     
 void LodNode::LodDistance::SetNearDistance(float32 newDistance)
 {
-    if(INVALID_DISTANCE == newDistance)
-    {
-        nearDistance = nearDistanceSq = (float32) INVALID_DISTANCE;
-    }
-    else 
-    {
-        nearDistance = newDistance;
-        nearDistanceSq = nearDistance * nearDistance;
-    }
+    nearDistance = newDistance;
+    nearDistanceSq = nearDistance * nearDistance;
 }
 
 void LodNode::LodDistance::SetFarDistance(float32 newDistance)
 {
-    if(INVALID_DISTANCE == newDistance)
-    {
-        farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
-    }
-    else 
-    {
-        farDistance = newDistance;
-        farDistanceSq = farDistance * farDistance;
-    }
+    farDistance = newDistance;
+    farDistanceSq = farDistance * farDistance;
 }
     
 
@@ -484,11 +470,7 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
             RegisterIndexInLayer(index, layer);
         }
         
-        float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), INVALID_DISTANCE);
-        if(INVALID_DISTANCE == distance) 
-        {
-            distance = GetDefaultDistance(lodIdx); 
-        }
+        float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
         SetLodLayerDistance(lodIdx, distance);
     }
 }
@@ -581,14 +563,7 @@ float32 LodNode::GetDefaultDistance(int32 layer)
 void LodNode::SetForceLodLayerDistance(float32 newForceDistance)
 {
     forceDistance = newForceDistance;
-    if(INVALID_DISTANCE == forceDistance)
-    {
-        forceDistanceSq = INVALID_DISTANCE;
-    }
-    else 
-    {
-        forceDistanceSq = forceDistance * forceDistance;
-    }
+    forceDistanceSq = forceDistance * forceDistance;
 }
 
 float32 LodNode::GetForceLodLayerDistance()
