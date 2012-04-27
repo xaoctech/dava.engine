@@ -88,6 +88,8 @@ private:
 	eState state;
 
 	ImposterManager * manager;
+
+	void RecreateFbo(const Vector2 & size);
 };
 
 };
