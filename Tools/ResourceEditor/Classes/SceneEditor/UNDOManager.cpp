@@ -13,7 +13,6 @@ UNDOAction::UNDOAction()
 #pragma mark  --UNDOManager
 UNDOManager::UNDOManager()
     :   actionCounter(0)
-    ,   actionDirection(DIRECTION_NONE)
 {
     String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
     String historyPath = documentsPath + "History";
@@ -74,74 +73,110 @@ void UNDOManager::SaveHightmap(Heightmap *heightmap)
 
 void UNDOManager::UndoHeightmap(Heightmap *heightmap)
 {
-    int32 szu = actionsHistoryUNDO.size();
-    int32 szr = actionsHistoryREDO.size();
-    
-    if(actionsHistoryUNDO.size())
+    if(1 < actionsHistoryUNDO.size())
     {
-        if(0 == actionsHistoryREDO.size())
-        {
-            UNDOAction *action = CreateHeightmapAction(heightmap);
-            actionsHistoryREDO.push_front(action);
-        }
-        
         List<UNDOAction *>::iterator it = actionsHistoryUNDO.end();
         --it;
         
-        heightmap->Load((*it)->filePathname);
-        
-        if(1 < actionsHistoryUNDO.size())
-        {
-            actionsHistoryREDO.push_front(*it);
-        }
-        else 
-        {
-            FileSystem::Instance()->DeleteFile((*it)->filePathname);
-            SafeRelease(*it);
-        }
+        actionsHistoryREDO.push_front(*it);
         actionsHistoryUNDO.erase(it);
         
-        actionDirection = DIRECTION_UNDO;
+        it = actionsHistoryUNDO.end();
+        --it;
+        heightmap->Load((*it)->filePathname);
     }
 }
 
 void UNDOManager::RedoHeightmap(Heightmap *heightmap)
 {
-    int32 szu = actionsHistoryUNDO.size();
-    int32 szr = actionsHistoryREDO.size();
-
     if(actionsHistoryREDO.size())
     {
-        if(0 == actionsHistoryUNDO.size())
-        {
-            UNDOAction *action = CreateHeightmapAction(heightmap);
-            actionsHistoryUNDO.push_back(action);
-        }
-        
         List<UNDOAction *>::iterator it = actionsHistoryREDO.begin();
         heightmap->Load((*it)->filePathname);
         
-        if(1 < actionsHistoryREDO.size())
-        {
-            actionsHistoryUNDO.push_back(*it);
-        }
-        else 
-        {
-            FileSystem::Instance()->DeleteFile((*it)->filePathname);
-            SafeRelease(*it);
-        }
+        actionsHistoryUNDO.push_back(*it);
         actionsHistoryREDO.erase(it);
-        
-        actionDirection = DIRECTION_REDO;
     }
 }
+
+
+UNDOAction * UNDOManager::CreateTilemaskAction(Texture *tilemask)
+{
+    String documentsPath = FileSystem::Instance()->SystemPathForFrameworkPath("~doc:");
+    String folderPathname = documentsPath + "History";
+    FileSystem::Instance()->CreateDirectory(folderPathname);
+    folderPathname = folderPathname + "/Tilemask";
+    FileSystem::Instance()->CreateDirectory(folderPathname);
+    
+    UNDOAction *action = new UNDOAction();
+    action->type = UNDOAction::ACTION_TILEMASK;
+    action->ID = actionCounter++;
+    action->filePathname = folderPathname + "/" + TimeString() + ".png";
+    
+    Image *imgForSaving = tilemask->CreateImageFromMemory();
+    if(imgForSaving)
+    {
+        imgForSaving->Save(action->filePathname);
+        SafeRelease(imgForSaving);
+    }
+    
+    return action;
+}
+
+
+void UNDOManager::SaveTilemask(Texture *tilemask)
+{
+    DVASSERT(tilemask);
+    
+    CheckHistoryLength();
+    
+    UNDOAction *action = CreateTilemaskAction(tilemask);
+    actionsHistoryUNDO.push_back(action);
+    
+    ReleaseHistory(actionsHistoryREDO);
+}
+
+Texture * UNDOManager::UndoTilemask(Texture *tilemask)
+{
+    Texture *tex = NULL;
+    
+    if(1 < actionsHistoryUNDO.size())
+    {
+        List<UNDOAction *>::iterator it = actionsHistoryUNDO.end();
+        --it;
+        
+        actionsHistoryREDO.push_front(*it);
+        actionsHistoryUNDO.erase(it);
+        
+        it = actionsHistoryUNDO.end();
+        --it;
+        tex = Texture::CreateFromFile((*it)->filePathname);
+    }
+    return tex;
+}
+
+Texture * UNDOManager::RedoTilemask(Texture *tilemask)
+{
+    Texture *tex = NULL;
+    if(actionsHistoryREDO.size())
+    {
+        List<UNDOAction *>::iterator it = actionsHistoryREDO.begin();
+        tex = Texture::CreateFromFile((*it)->filePathname);
+        
+        actionsHistoryUNDO.push_back(*it);
+        actionsHistoryREDO.erase(it);
+    }
+
+    return tex;
+}
+
 
 
 UNDOAction::eActionType UNDOManager::GetLastUNDOAction()
 {
     UNDOAction::eActionType retAction = UNDOAction::ACTION_NONE;
     
-    if(actionsHistoryUNDO.size())
+    if(1 < actionsHistoryUNDO.size())
     {
         List<UNDOAction *>::iterator it = actionsHistoryUNDO.end();
         --it;

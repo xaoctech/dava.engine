@@ -23,6 +23,8 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
     
     prevToolSize = 0.f;
+    
+    editingIsEnabled = false;
 }
 
 
@@ -203,8 +205,6 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
         {
             case UIEvent::PHASE_BEGAN:
             {
-                UNDOManager::Instance()->SaveHightmap(heightmap);
-
                 editingIsEnabled = true;
                 UpdateToolImage();
                 
@@ -216,11 +216,10 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                 if(editingIsEnabled && !intersects)
                 {
                     editingIsEnabled = false;
+                    UNDOManager::Instance()->SaveHightmap(heightmap);
                 }
                 else if(!editingIsEnabled && intersects)
                 {
-                    UNDOManager::Instance()->SaveHightmap(heightmap);
-                
                     editingIsEnabled = true;
                     UpdateToolImage();
                 }
@@ -230,6 +229,7 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
             case UIEvent::PHASE_ENDED:
             {
                 editingIsEnabled = false;
+                UNDOManager::Instance()->SaveHightmap(heightmap);
                 break;
             }
                 
@@ -289,6 +289,8 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapeSize = heightmap->Size();
 
 	landscapeDebugNode->CursorEnable();
+    
+    UNDOManager::Instance()->SaveHightmap(heightmap);
 }
 
 void LandscapeEditorHeightmap::UndoAction()
@@ -354,7 +356,6 @@ void LandscapeEditorHeightmap::TextureWillChanged()
 
 void LandscapeEditorHeightmap::TextureDidChanged()
 {
-    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
     
     SafeRelease(heightmap);
     heightmap = SafeRetain(workingLandscape->GetHeightmap());
@@ -362,6 +363,9 @@ void LandscapeEditorHeightmap::TextureDidChanged()
     landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
     landscapeSize = heightmap->Size();
+    
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
+    UNDOManager::Instance()->SaveHightmap(heightmap);
 }
 
 #pragma mark  --LandscapeToolsPanelDelegate

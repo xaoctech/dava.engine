@@ -42,6 +42,7 @@ protected:
 
     
     void CreateMaskTexture();
+    void CreateMaskFromTexture(Texture *tex);
 
 	void UpdateTileMaskTool();
     void UpdateTileMask();
@@ -61,6 +62,7 @@ protected:
     Color paintColor;
     
 	Shader * tileMaskEditorShader;
+    bool editingIsEnabled;
 };
 
 
