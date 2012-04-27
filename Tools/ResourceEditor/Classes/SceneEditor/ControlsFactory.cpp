@@ -276,16 +276,8 @@ void ControlsFactory::CustomizeListCellAlternative(UIListCell *c, const WideStri
 
 void ControlsFactory::CustomizeSceneGraphCell(UIHierarchyCell *c)
 {
-    Font *font = GetFontDark();
-    
-    c->text->SetFont(font);
-    c->text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
-    
-//    c->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     c->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
-//    c->GetStateBackground(UIControl::STATE_NORMAL)->color = Color(1.0f, 1.0f, 1.0f, 1.0f);
     c->GetStateBackground(UIControl::STATE_SELECTED)->color = Color(1.0f, 0.8f, 0.8f, 1.0f);
-    
 }
 
 void ControlsFactory::CustomizeMenuPopupCell(UIListCell *c, const WideString &text)

@@ -1,62 +1,96 @@
 #include "HeightmapNode.h"
 #include "../bullet/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
-
 #include "../EditorScene.h"
+#include "Scene3D/Heightmap.h"
 
-HeightmapNode::HeightmapNode(EditorScene * _scene)
+#include "Scene3D/LandscapeCursor.h"
+
+HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     :   SceneNode(_scene)
     ,   position(0,0,0)
     ,   rotation(0)
 {
+    SetName("HeightmapNode");
+    
     editorScene = _scene;
-    SetVisible(true);
-    
-    renderData = NULL;
-    
-    land = (LandscapeNode*)scene->FindByName("Landscape");
-    
-    heightMap = Image::CreateFromFile(land->GetHeightMapPathname());
+    SetVisible(false);
 
-    uint8 *dt = (uint8 *)heightMap->GetData();
-    size.x = heightMap->GetWidth();
-    size.y = heightMap->GetHeight();
-    for (int32 y = 0; y < heightMap->GetHeight(); y++) 
-    {
-        for (int32 x = 0; x < heightMap->GetWidth(); x++) 
-        {
-            hmap.push_back(dt[(x + (y) * heightMap->GetWidth())]);
-        }
-    }
-	
+    land = _land;
+    DVASSERT(land);
+    
+    //Get LandSize;
     Vector3 landSize;
     AABBox3 transformedBox;
     land->GetBoundingBox().GetTransformedBox(land->GetWorldTransform(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
     
+    heightmap = land->GetHeightmap();
     sizeInMeters = landSize.x;
-    areaScale = sizeInMeters / heightMap->GetWidth();
-    maxHeight = landSize.z / 255.f * 65535.f;
+    areaScale = sizeInMeters / heightmap->Size();
+    maxHeight = landSize.z;
+    heightScale = maxHeight / 65535.f;
+    float32 minHeight = 0.0f;
 
+    heightmapTexture = Texture::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/lm_l2.png");//heit_l2.png");
+    debugVertices.resize(heightmap->Size() * heightmap->Size());
+	debugIndices.resize(heightmap->Size() * heightmap->Size() * 6);
+
+    renderDataObject = new RenderDataObject();
+	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeNode::LandscapeVertex), &debugVertices[0].position); 
+	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeNode::LandscapeVertex), &debugVertices[0].texCoord); 
+
+	int32 step = 1;
+	int32 indexIndex = 0;
+	int32 quadWidth = heightmap->Size();
+	for(int32 y = 0; y < heightmap->Size() - 1; y += step)
+	{
+		for(int32 x = 0; x < heightmap->Size() - 1; x += step)
+		{
+			debugIndices[indexIndex++] = x + y * quadWidth;
+			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
+			debugIndices[indexIndex++] = x + (y + step) * quadWidth;
+            
+			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
+			debugIndices[indexIndex++] = (x + step) + (y + step) * quadWidth;
+			debugIndices[indexIndex++] = x + (y + step) * quadWidth;     
+		}
+	}
     
-    bool useFloatDatam = false;
+    
+    uint16 *dt = heightmap->Data();
+    size.x = heightmap->Size();
+    size.y = heightmap->Size();
+    hmap.resize(heightmap->Size() * heightmap->Size());
+
+	for (int32 y = 0; y < heightmap->Size(); ++y)
+	{
+		for (int32 x = 0; x < heightmap->Size(); ++x)
+		{
+            int32 index = x + (y) * heightmap->Size();
+            float32 mapValue = dt[index] * heightScale;
+            SetValueToMap(x, y, mapValue, transformedBox);
+            
+			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), 
+                                                    (float32)y / (float32)(heightmap->Size() - 1));           
+		}
+	}
+
 	bool flipQuadEdges = true;
+
+    colShape = new btHeightfieldTerrainShape(heightmap->Size(), heightmap->Size()
+                                             , &hmap.front(), heightScale, minHeight, maxHeight
+                                             , 2, PHY_FLOAT
+                                             , flipQuadEdges);
+
+    colShape->setLocalScaling(btVector3(areaScale, areaScale, 1.0f));
     
-    
-	colShape = new btHeightfieldTerrainShape(heightMap->GetWidth(), heightMap->GetHeight()
-                                                                                , &hmap.front(), maxHeight
-                                                                                , 2, useFloatDatam
-                                                                                , flipQuadEdges);
-    
-    colShape->setLocalScaling(btVector3(areaScale, areaScale, 1.0));
-    
-    
-    /// Create Dynamic Objects
+    // Create Dynamic Objects
     btTransform startTransform;
     startTransform.setIdentity();
     
     btScalar	mass(0.0f);
-    
-		//rigidbody is dynamic if and only if mass is non zero, otherwise static
+
+    //rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mass != 0.f);
     
     btVector3 localInertia(0,0,0);
@@ -65,38 +99,39 @@ HeightmapNode::HeightmapNode(EditorScene * _scene)
     
     startTransform.setOrigin(btVector3( btScalar(position.x),
                                        btScalar(position.y),
-                                       btScalar(maxHeight/2 + position.z)));
+                                       btScalar(maxHeight/2.0f + position.z)));
     
     
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     motionSate = new btDefaultMotionState(startTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,motionSate,colShape,localInertia);
-    rbInfo.m_friction = 0.9;
+    rbInfo.m_friction = 0.9f;
     body = new btRigidBody(rbInfo);
     
-//    editorScene->dynamicsWorld->addRigidBody(body);
+//    btVector3 mn;
+//    btVector3 mx;
+//    body->getAabb(mn, mx);
+//    btVector3 sz = mx - mn;
+//    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
 
-    btVector3 mn;
-    btVector3 mx;
-    body->getAabb(mn, mx);
-    btVector3 sz = mx - mn;
-    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
-
-    
     collisionObject = new btCollisionObject();
     collisionObject->setWorldTransform(startTransform);
     collisionObject->setCollisionShape(colShape);
     editorScene->landCollisionWorld->addCollisionObject(collisionObject);
 	editorScene->landCollisionWorld->updateAabbs();
     
-
-    SafeRelease(heightMap);
+    cursor = new LandscapeCursor();
 }
-
 
 HeightmapNode::~HeightmapNode()
 {
-    editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
+    SafeDelete(cursor);
+    
+	if(editorScene->landCollisionWorld)
+	{
+        editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
+	}
+    
     
     SafeDelete(body);
     
@@ -106,10 +141,50 @@ HeightmapNode::~HeightmapNode()
     
     SafeDelete(colShape);
     
-    SafeRelease(renderData);
+    SafeRelease(heightmapTexture);
+    
+    SafeRelease(renderDataObject);
 }
 
 
+void HeightmapNode::SetValueToMap(int16 x, int16 y, float32 height, const AABBox3 &box)
+{
+    int32 index = x + y * heightmap->Size();
+
+    hmap[index] = height;
+    debugVertices[index].position = GetPoint(x, y, height, box);
+}
+
+void HeightmapNode::UpdateHeightmapRect(const Rect &rect)
+{
+    AABBox3 transformedBox;
+    land->GetBoundingBox().GetTransformedBox(land->GetWorldTransform(), transformedBox);
+    
+    int32 x = Max(0.f, rect.x);
+    int32 y = Max(0.f, rect.y);
+    int32 endX = Min(rect.x + rect.dx, heightmap->Size() - 1.0f);
+    int32 endY = Min(rect.y + rect.dy, heightmap->Size() - 1.0f);
+
+    uint16 *dt = heightmap->Data();
+    for (int32 yy = y; yy < endY; ++yy)
+    {
+		for (int32 xx = x; xx < endX; ++xx)
+		{
+            float32 mapValue = dt[(xx + (yy) * heightmap->Size())] * heightScale;
+            SetValueToMap(xx, yy, mapValue, transformedBox);
+		}
+	}
+}
+
+
+Vector3 HeightmapNode::GetPoint(int16 x, int16 y, float32 height, const AABBox3 &box)
+{
+    Vector3 res;
+    res.x = (box.min.x + (float32)x / (float32)(heightmap->Size() - 1) * (box.max.x - box.min.x));
+    res.y = (box.min.y + (float32)y / (float32)(heightmap->Size() - 1) * (box.max.y - box.min.y));
+    res.z = (box.min.z + height);
+    return res;
+}
 
 float32 HeightmapNode::GetAreaScale()
 {
@@ -127,34 +202,32 @@ float32 HeightmapNode::GetSizeInMeters()
 }
 
 
-
 void HeightmapNode::Draw()
 {
 	if (!GetVisible())return;
+   
     SceneNode::Draw();
 
-    return;
+    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+    RenderManager::Instance()->SetTexture(heightmapTexture, 0);
 
-	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
-	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
-    
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
-
-    RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-
-    
-    RenderManager::Instance()->SetColor(0.2, 0.2, 0.7, 0.2);
-    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
-    
+    RenderManager::Instance()->SetRenderData(renderDataObject);
 	RenderManager::Instance()->FlushState();
-	
-    RenderManager::Instance()->SetRenderData(renderData);
-	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, verts.size()/3);
-	
-
-    RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
-    RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_TEST|RenderStateBlock::STATE_DEPTH_WRITE);
+	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
     
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+    if(cursor)
+	{
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
+		cursor->Prepare();
+        
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
+        
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(src, dst);
+	}
 }

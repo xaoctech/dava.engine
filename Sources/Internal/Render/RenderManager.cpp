@@ -407,7 +407,12 @@ void RenderManager::SetRenderTarget(Sprite *renderTarget)
 	IdentityDrawMatrix();
 	SetHWRenderTarget(renderTarget);
 }
-	
+
+void RenderManager::SetRenderTarget(Texture * renderTarget)
+{
+	SetHWRenderTarget(renderTarget);
+}
+
 void RenderManager::RestoreRenderTarget()
 {
 //	Logger::Info("Restore Render target");
@@ -793,6 +798,13 @@ RenderStateBlock * RenderManager::State()
 {
 	return &RenderManager::Instance()->currentState;
 }
+
+void RenderManager::SetDepthFunc(eCmpFunc func)
+{
+	currentState.SetDepthFunc(func);
+}
+
+
 
 	
 };

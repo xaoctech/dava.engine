@@ -9,107 +9,57 @@
 #include "ImageRasterizer.h"
 #include "HeightmapNode.h"
 
+#include "UNDOManager.h"
 
 #pragma mark --LandscapeEditorHeightmap
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
 {
-	wasTileMaskToolUpdate = false;
-
     landscapeDebugNode = NULL;
-    heightImage = NULL;
+    heightmap = NULL;
     toolImage = NULL;
     
     toolsPanel = new LandscapeToolsPanelHeightmap(this, toolsRect);
+    
+    prevToolSize = 0.f;
+    
+    editingIsEnabled = false;
 }
+
 
 LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
 {
+    SafeRelease(heightmap);
     SafeRelease(toolImage);
-    SafeRelease(heightImage);
     SafeRelease(landscapeDebugNode);
-}
-
-void LandscapeEditorHeightmap::Draw(const UIGeometricData &geometricData)
-{
-//    if(drawSprite)
-//    {
-//        RenderManager::Instance()->SetColor(Color::Black());
-//        RenderHelper::Instance()->FillRect(Rect(0, 0, 50, 50));
-//
-//        RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-//
-//        RenderManager::Instance()->SetColor(Color::White());
-//
-//        drawSprite->SetPosition(0, 0);
-//        drawSprite->SetScaleSize(50, 50);
-//        drawSprite->Draw();
-//    }
-    
-//    if(toolImage)
-//    {
-//        RenderManager::Instance()->LockNonMain();
-//        
-//        Texture *tex = Texture::CreateFromData((PixelFormat)toolImage->GetPixelFormat(), toolImage->GetData(), 
-//                                               toolImage->GetWidth(), toolImage->GetHeight());
-//        
-//        Sprite *sprite = Sprite::CreateFromTexture(tex, 0, 0, toolImage->GetWidth(), toolImage->GetHeight());
-//        
-//        eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-//        eBlendMode dest = RenderManager::Instance()->GetDestBlend();
-//        RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-//
-//        RenderManager::Instance()->SetColor(Color::Black());
-//        RenderHelper::Instance()->FillRect(Rect(0, 0, 50, 50));
-//
-//        
-//        RenderManager::Instance()->SetColor(Color::White());
-//        
-//        sprite->SetPosition(Vector2(0, 0));
-//        sprite->SetScaleSize(50, 50);
-//        sprite->Draw();
-//        
-//        RenderManager::Instance()->SetBlendMode(src, dest);
-//        
-//        
-//        SafeRelease(sprite);
-//        SafeRelease(tex);
-//        
-//        RenderManager::Instance()->UnlockNonMain();
-//    }
-    
-    LandscapeEditorBase::Draw(geometricData);
 }
 
 void LandscapeEditorHeightmap::Update(float32 timeElapsed)
 {
     if(editingIsEnabled)
     {
-        UpdateTileMaskTool(timeElapsed);
+        if(currentTool)
+        {
+            if(LandscapeTool::TOOL_BRUSH == currentTool->type)
+            {
+                UpdateTileMaskTool(timeElapsed);
+            }
+            else if(LandscapeTool::TOOL_DROPPER == currentTool->type)
+            {
+                currentTool->height = GetDropperHeight();
+            }
+        }
     }
     
     LandscapeEditorBase::Update(timeElapsed);
-}
-
-
-void LandscapeEditorHeightmap::CreateMaskTexture()
-{
-    SafeRelease(heightImage);
-    
-    heightImage = Image::CreateFromFile(workingLandscape->GetHeightMapPathname());
-    savedPath = workingLandscape->GetHeightMapPathname();
-    
-    landscapeDebugNode->SetDebugHeightmapImage(heightImage, workingLandscape->GetBoundingBox());
-    
-    landscapeSize = heightImage->GetWidth();
 }
 
 void LandscapeEditorHeightmap::UpdateToolImage()
 {
     if(toolImage && currentTool)
     {
-        if(toolImage->width != currentTool->size)
+        if(prevToolSize != currentTool->size)
         {
             SafeRelease(toolImage);
         }
@@ -117,33 +67,35 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 
     if(currentTool && !toolImage)
     {
+        prevToolSize = currentTool->size;
+
         RenderManager::Instance()->LockNonMain();
 
         Image *image = currentTool->image;
-        
         int32 sideSize = currentTool->size;
         Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
-
         Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                                   image->GetWidth(), image->GetHeight());
-        
         Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, image->GetWidth(), image->GetHeight());
         
         RenderManager::Instance()->SetRenderTarget(dstSprite);
 
         RenderManager::Instance()->SetColor(Color::Black());
-        RenderHelper::Instance()->FillRect(Rect(0, 0, sideSize, sideSize));
+        RenderHelper::Instance()->FillRect(Rect(0, 0, dstSprite->GetTexture()->GetWidth(), dstSprite->GetTexture()->GetHeight()));
 
-        
         RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
         RenderManager::Instance()->SetColor(Color::White());
 
         srcSprite->SetScaleSize(sideSize, sideSize);
-        srcSprite->SetPosition(Vector2(0, 0));
+        srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f, 
+                                       (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
         srcSprite->Draw();
         RenderManager::Instance()->RestoreRenderTarget();
 
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
+  
+//TODO: for debug        
+//        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
         
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
@@ -156,84 +108,171 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 
 void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 {
-    if(currentTool && toolImage && currentTool->strength)
+    if(toolImage && currentTool->strength && LandscapeTool::TOOL_BRUSH == currentTool->type)
     {
-        float32 scaleSize = toolImage->GetWidth();
+        int32 scaleSize = toolImage->GetWidth();
         Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
-        if(pos != prevDrawPos)
         {
-            wasTileMaskToolUpdate = true;
-            
             if(currentTool->averageDrawing)
             {
-                ImageRasterizer::DrawAverageRGBA(heightImage, currentTool->image, pos.x, pos.y, scaleSize, scaleSize, timeElapsed);
+                float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
+                ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else if(currentTool->relativeDrawing)
             {
-                float32 koef = currentTool->strength * timeElapsed;
-                ImageRasterizer::DrawRelativeRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+                float32 koef = (currentTool->strength * timeElapsed);
+                if(inverseDrawingEnabled)
+                {
+                    koef = -koef;
+                }
+                ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
-            else 
+            else
             {
-                float32 koef = currentTool->strength * timeElapsed;
-                ImageRasterizer::DrawAbsoluteRGBA(heightImage, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, currentTool->height);
+                Vector3 landSize;
+                AABBox3 transformedBox;
+                workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+                landSize = transformedBox.max - transformedBox.min;
+                
+                float32 maxHeight = landSize.z;
+                float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
+                
+                float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
+                ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
             }
             
-            workingScene->RemoveNode(heightmapNode);
-            SafeRelease(heightmapNode);
-            heightmapNode = new HeightmapNode(workingScene);
-            workingScene->AddNode(heightmapNode);
+            heightmapNode->UpdateHeightmapRect(Rect(pos.x, pos.y, scaleSize, scaleSize));
         }
         startPoint = endPoint;
     }
 }
 
-void LandscapeEditorHeightmap::InputAction(int32 phase)
+float32 LandscapeEditorHeightmap::GetDropperHeight()
 {
-    switch(phase)
+    Vector3 landSize;
+    AABBox3 transformedBox;
+    workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+    landSize = transformedBox.max - transformedBox.min;
+
+    int32 index = startPoint.x + startPoint.y * heightmap->Size();
+    float32 height = heightmap->Data()[index];
+    float32 maxHeight = landSize.z;
+    return (height / Heightmap::MAX_VALUE * maxHeight);
+}
+
+void LandscapeEditorHeightmap::UpdateCursor()
+{
+	if(currentTool)
+	{
+		int32 scaleSize = currentTool->size;
+		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+
+		landscapeDebugNode->SetCursorTexture(cursorTexture);
+		landscapeDebugNode->SetBigTextureSize(landscapeSize);
+		landscapeDebugNode->SetCursorPosition(pos);
+		landscapeDebugNode->SetCursorScale(scaleSize);
+        
+        heightmapNode->cursor->SetCursorTexture(cursorTexture);
+		heightmapNode->cursor->SetBigTextureSize(landscapeSize);
+		heightmapNode->cursor->SetPosition(pos);
+		heightmapNode->cursor->SetScale(scaleSize);
+	}
+}
+
+void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
+{
+    bool dropper = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL);
+    if(dropper)
     {
-        case UIEvent::PHASE_BEGAN:
+        switch(phase)
         {
-            editingIsEnabled = true;
-            UpdateToolImage();
-
-            break;
+            case UIEvent::PHASE_BEGAN:
+            case UIEvent::PHASE_DRAG:
+            case UIEvent::PHASE_ENDED:
+            {
+                currentTool->height = GetDropperHeight();
+                break;
+            }
+                
+            default:
+                break;
         }
-
-        case UIEvent::PHASE_ENDED:
-        {
-            editingIsEnabled = false;
-            break;
-        }
-            
-        default:
-            break;
     }
-    
-//    UpdateTileMaskTool(); 
+    else 
+    {
+        switch(phase)
+        {
+            case UIEvent::PHASE_BEGAN:
+            {
+                if(currentTool->absoluteDropperDrawing)
+                {
+                    currentTool->height = GetDropperHeight();
+                }
+                
+                editingIsEnabled = true;
+                UpdateToolImage();
+                
+                break;
+            }
+                
+            case UIEvent::PHASE_DRAG:
+            {
+                if(editingIsEnabled && !intersects)
+                {
+                    editingIsEnabled = false;
+                    UNDOManager::Instance()->SaveHightmap(heightmap);
+                }
+                else if(!editingIsEnabled && intersects)
+                {
+                    editingIsEnabled = true;
+                    UpdateToolImage();
+                }
+                break;
+            }
+                
+            case UIEvent::PHASE_ENDED:
+            {
+                editingIsEnabled = false;
+                UNDOManager::Instance()->SaveHightmap(heightmap);
+                break;
+            }
+                
+            default:
+                break;
+        }
+    }
 }
 
 void LandscapeEditorHeightmap::HideAction()
 {
+	landscapeDebugNode->CursorDisable();
     SafeRelease(toolImage);
     
     workingScene->AddNode(workingLandscape);
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
     workingLandscape->BuildLandscapeFromHeightmapImage(workingLandscape->GetRenderingMode(), 
-                                                       workingLandscape->GetHeightMapPathname(), 
+                                                       savedPath,
                                                        workingLandscape->GetBoundingBox());
     
     workingScene->RemoveNode(landscapeDebugNode);
     SafeRelease(landscapeDebugNode);
+    
+    SafeRelease(heightmap);
+    
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
 }
 
 void LandscapeEditorHeightmap::ShowAction()
 {
+    prevToolSize = 0.f;
+    
     workingScene->RemoveNode(workingLandscape);
 
     landscapeDebugNode = new LandscapeDebugNode(workingScene);
     landscapeDebugNode->SetName("Landscape");
     landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightMapPathname());
-    
+    landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
+
     landscapeDebugNode->SetRenderingMode(workingLandscape->GetRenderingMode());
     for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)
     {
@@ -245,26 +284,92 @@ void LandscapeEditorHeightmap::ShowAction()
     }
 
     workingScene->AddNode(landscapeDebugNode);
+
+
+    heightmap = SafeRetain(workingLandscape->GetHeightmap());
+    savedPath = workingLandscape->GetHeightMapPathname();
+    landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
+    landscapeSize = heightmap->Size();
+
+	landscapeDebugNode->CursorEnable();
     
-    CreateMaskTexture();
+    UNDOManager::Instance()->SaveHightmap(heightmap);
 }
+
+void LandscapeEditorHeightmap::UndoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
+    if(UNDOAction::ACTION_HEIGHTMAP == type)
+    {
+        UNDOManager::Instance()->UndoHeightmap(heightmap);
+        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+    }
+}
+
+void LandscapeEditorHeightmap::RedoAction()
+{
+    UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
+    if(UNDOAction::ACTION_HEIGHTMAP == type)
+    {
+        UNDOManager::Instance()->RedoHeightmap(heightmap);
+        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+    }
+}
+
+
 
 void LandscapeEditorHeightmap::SaveTextureAction(const String &pathToFile)
 {
-    if(heightImage)
+    if(heightmap)
     {
-        heightImage->Save(pathToFile);
-        SafeRelease(heightImage);
+        String heightmapPath = pathToFile;
+        String extension = FileSystem::Instance()->GetExtension(pathToFile);
+        if(Heightmap::FileExtension() != extension)
+        {
+            heightmapPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
+        }
+        savedPath = heightmapPath;
+        heightmap->Save(heightmapPath);
     }
 }
 
 NodesPropertyControl *LandscapeEditorHeightmap::GetPropertyControl(const Rect &rect)
 {
-    NodesPropertyControl *propsControl = 
-    PropertyControlCreator::Instance()->CreateControlForNode(workingLandscape, rect, false);
+    LandscapeEditorPropertyControl *propsControl = 
+    (LandscapeEditorPropertyControl *)PropertyControlCreator::Instance()->CreateControlForLandscapeEditor(workingLandscape, rect, LandscapeEditorPropertyControl::HEIGHT_EDITOR_MODE);
+    
+    propsControl->SetDelegate(this);
     
     return propsControl;
+}
+
+
+#pragma mark -- LandscapeEditorPropertyControlDelegate
+void LandscapeEditorHeightmap::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
+{
+}
+
+void LandscapeEditorHeightmap::TextureWillChanged()
+{
+    if(savedPath.length())
+    {
+        SaveTextureAction(savedPath);
+    }
+}
+
+void LandscapeEditorHeightmap::TextureDidChanged()
+{
+    
+    SafeRelease(heightmap);
+    heightmap = SafeRetain(workingLandscape->GetHeightmap());
+    savedPath = workingLandscape->GetHeightMapPathname();
+    landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
+    
+    landscapeSize = heightmap->Size();
+    
+    UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
+    UNDOManager::Instance()->SaveHightmap(heightmap);
 }
 
 #pragma mark  --LandscapeToolsPanelDelegate
@@ -274,4 +379,12 @@ void LandscapeEditorHeightmap::OnToolSelected(LandscapeTool *newTool)
     SafeRelease(toolImage);
 }
 
-
+void LandscapeEditorHeightmap::OnShowGrid(bool show)
+{
+    LandscapeEditorBase::OnShowGrid(show);
+    
+    if(landscapeDebugNode)
+    {
+        landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
+    }
+}

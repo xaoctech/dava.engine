@@ -160,6 +160,9 @@ public:
     
     
 protected:
+    
+    virtual void OnFileSelected(const String &pathToFile);
+    
     void RefreshList();
     
     void OnIndexSelected(int32 index);

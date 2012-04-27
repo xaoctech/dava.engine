@@ -110,6 +110,18 @@ UIHierarchyCell * GraphBase::CellForNode(UIHierarchy *forHierarchy, void *node)
         //if cell of requested type isn't find in the store create new cell
         int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
         c = new UIHierarchyCell(Rect(0, 0, leftSideWidth, ControlsFactory::CELL_HEIGHT), "Graph cell");
+        
+        UIControl *icon = new UIControl(Rect(0, 0, ControlsFactory::CELL_HEIGHT, ControlsFactory::CELL_HEIGHT));
+        icon->SetName("_Icon_");
+        icon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+        c->text->AddControl(icon);
+        
+        UIStaticText *text = new UIStaticText(Rect(ControlsFactory::CELL_HEIGHT, 0, leftSideWidth - ControlsFactory::CELL_HEIGHT, ControlsFactory::CELL_HEIGHT));
+        Font *font = ControlsFactory::GetFontDark();
+        text->SetFont(font);
+        text->SetAlign(ALIGN_LEFT|ALIGN_VCENTER);
+        text->SetName("_Text_");
+        c->text->AddControl(text);
     }
     
     FillCell(c, node);

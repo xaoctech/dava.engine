@@ -31,6 +31,7 @@
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/LandscapeDebugNode.h"
+#include "Scene3D/Heightmap.h"
 
 namespace DAVA
 {
@@ -46,13 +47,15 @@ LandscapeDebugNode::~LandscapeDebugNode()
     SafeRelease(debugRenderDataObject);
 }
     
-void LandscapeDebugNode::SetDebugHeightmapImage(Image * _debugHeightmapImage, const AABBox3 & _box)
+void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box)
 {
     box = _box;
+    
+    SafeRelease(heightmap);
     heightmap = SafeRetain(_debugHeightmapImage);
 
-    debugVertices.resize(heightmap->GetWidth() * heightmap->GetHeight());
-	debugIndices.resize(heightmap->GetWidth() * heightmap->GetHeight() * 6);
+    debugVertices.resize(heightmap->Size() * heightmap->Size());
+	debugIndices.resize(heightmap->Size() * heightmap->Size() * 6);
     
     ReleaseShaders();
     InitShaders();
@@ -60,50 +63,96 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Image * _debugHeightmapImage, co
 
 void LandscapeDebugNode::Draw()
 {
-    BindMaterial();
+    if(0 == heightmap->Size())
+        return;
     
-	int32 index = 0;
-	for (int32 y = 0; y < heightmap->GetHeight(); ++y)
+    BindMaterial();
+
+    int32 index = 0;
+	for (int32 y = 0; y < heightmap->Size(); ++y)
 	{
-		for (int32 x = 0; x < heightmap->GetWidth(); ++x)
+		for (int32 x = 0; x < heightmap->Size(); ++x)
 		{
-			debugVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
-			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+			debugVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
+			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
 			index++;
 		}
 	}
-    
+
 	int32 step = 1;
 	int32 indexIndex = 0;
-	int32 quadWidth = heightmap->GetWidth();
-	for(int32 y = 0; y < heightmap->GetHeight() - 1; y += step)
+	int32 quadWidth = heightmap->Size();
+	for(int32 y = 0; y < heightmap->Size() - 1; y += step)
 	{
-		for(int32 x = 0; x < heightmap->GetWidth() - 1; x += step)
+		for(int32 x = 0; x < heightmap->Size() - 1; x += step)
 		{
 			debugIndices[indexIndex++] = x + y * quadWidth;
 			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
 			debugIndices[indexIndex++] = x + (y + step) * quadWidth;
-            
+
 			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
 			debugIndices[indexIndex++] = (x + step) + (y + step) * quadWidth;
 			debugIndices[indexIndex++] = x + (y + step) * quadWidth;     
 		}
 	}
+
     debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position); 
-    debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord); 
-                                     
-    RenderManager::Instance()->SetRenderData(debugRenderDataObject);
-    RenderManager::Instance()->FlushState();
-    RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->GetWidth() - 1) * (heightmap->GetHeight() - 1) * 6, EIF_32, &debugIndices.front()); 
+	debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord); 
+
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_GRID)
+    {
+        debugFlags &= ~DEBUG_DRAW_GRID;
+        DrawLandscape();
+        debugFlags |= DEBUG_DRAW_GRID;
+        
+        
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+    DrawLandscape();
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_ALL)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+    
+	if(cursor)
+	{
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
+		cursor->Prepare();
+
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
+
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(src, dst);
+	}
     
     UnbindMaterial();
 }
     
-void LandscapeDebugNode::SetHeightmapPath(const String &path)
+void LandscapeDebugNode::DrawLandscape()
 {
-    heightMapPath = path;
+    RenderManager::Instance()->SetRenderData(debugRenderDataObject);
+	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
 }
 
+    
+    
+void LandscapeDebugNode::SetHeightmapPath(const String &path)
+{
+    heightmapPath = path;
+}
     
 };
 

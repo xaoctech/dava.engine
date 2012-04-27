@@ -13,11 +13,11 @@ uniform sampler2D tileTexture3;
 uniform sampler2D tileMask;
 uniform sampler2D colorTexture;
 
-varying lowp vec2 varTexCoordOrig;
-varying lowp vec2 varTexCoord0;
-varying lowp vec2 varTexCoord1;
-varying lowp vec2 varTexCoord2;
-varying lowp vec2 varTexCoord3;
+varying mediump vec2 varTexCoordOrig;
+varying mediump vec2 varTexCoord0;
+varying mediump vec2 varTexCoord1;
+varying mediump vec2 varTexCoord2;
+varying mediump vec2 varTexCoord3;
 
 #ifdef EDITOR_CURSOR
 varying vec2 varTexCoordCursor;
@@ -34,7 +34,7 @@ void main()
     lowp vec4 mask = texture2D(tileMask, varTexCoordOrig);
     lowp vec4 lightMask = texture2D(colorTexture, varTexCoordOrig);
 
-    lowp vec3 color = (mask.r * color0 + mask.g * color1 + mask.b * color2 + mask.a * color3)*lightMask.rgb;
+    lowp vec3 color = (mask.r * color0 + mask.g * color1 + mask.b * color2 + mask.a * color3) * lightMask.rgb;
     
 #ifdef EDITOR_CURSOR
 	vec4 colorCursor = texture2D(cursorTexture, varTexCoordCursor);

@@ -10,17 +10,26 @@ class LandscapeTool: public BaseObject
     
 public:
 
-    LandscapeTool(int32 _toolID, const String & _imageName);
+    enum eToolType
+    {
+        TOOL_BRUSH = 0,
+        TOOL_DROPPER
+    };
+    
+    LandscapeTool(int32 _ID, eToolType _type, const String & _imageName);
     virtual ~LandscapeTool();
 
-    static float32 ZoomMin();
-    static float32 ZoomMax();
+    static float32 SizeColorMin();
+    static float32 SizeColorMax();
 
-    static float32 IntensionMin();
-    static float32 IntensionMax();
+    static float32 StrengthColorMin();
+    static float32 StrengthColorMax();
     
-    static float32 DefaultStrength();
-    static float32 DefaultSize();
+    static float32 StrengthHeightMax();
+    static float32 SizeHeightMax();
+
+    static float32 DefaultStrengthHeight();
+    static float32 DefaultSizeHeight();
 
     int32 toolID;
     
@@ -28,19 +37,19 @@ public:
     Image *image;
     Sprite *sprite;
     
-    //color
-    float32 intension;
-    float32 zoom;
-    
     //height
     float32 strength;
     float32 size;
     float32 maxStrength;
     float32 maxSize;
     float32 height;
+    float32 averageStrength;
     
     bool relativeDrawing;
     bool averageDrawing;
+    bool absoluteDropperDrawing;
+    
+    eToolType type;
 };
 
 #endif // __PAINT_TOOL_H__

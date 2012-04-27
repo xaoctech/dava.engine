@@ -204,7 +204,7 @@ bool Shader::LoadFromYaml(const String & pathname)
     
     shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
     
-    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
+//    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
     return true;
 }
     
@@ -296,37 +296,50 @@ bool Shader::Recompile()
     
 void Shader::SetUniformValue(int32 uniformLocation, int32 value)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform1i(uniformLocation, value));
 }
     
 void Shader::SetUniformValue(int32 uniformLocation, float32 value)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform1f(uniformLocation, value));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector2 & vector)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform2fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector3 & vector)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Color & color)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &color.r));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector4 & vector)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform4fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Matrix4 & matrix)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, matrix.data));
+}
+    
+    
+int32 Shader::GetAttributeCount()
+{
+    return activeAttributes;
 }
     
 int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)

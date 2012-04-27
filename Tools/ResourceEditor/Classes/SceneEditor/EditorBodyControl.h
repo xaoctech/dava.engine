@@ -105,7 +105,7 @@ public:
 
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
-    void ToggleLandscapeEditor(int32 landscapeEditorMode);
+    bool ToggleLandscapeEditor(int32 landscapeEditorMode);
 
     //LandscapeEditorDelegate
     virtual void LandscapeEditorStarted();  //Show LE Controls

@@ -31,11 +31,13 @@ public:
         PROP_VALUE_SLIDER,
         PROP_VALUE_SUBSECTION,
         PROP_VALUE_TEXTUREPREVIEW,
+        PROP_VALUE_DISTANCE,
         
         PROP_VALUE_COUNT
     };
     
     PropertyCellData(int _valueType);
+    virtual ~PropertyCellData();
 
     int32 GetValueType();
 
@@ -56,6 +58,8 @@ public:
     float32 GetSliderValue();
     float32 GetSliderMinValue();
     float32 GetSliderMaxValue();
+    float32 *GetDistances();
+    int32 GetDistancesCount();
     
     Texture *GetTexture();
 
@@ -72,11 +76,11 @@ public:
     void SetMessage(const Message &newMessage);
     void SetClearDataEnabled(bool enabled);
     void SetColor(const Color& newColor);
-    
     void SetSliderValue(float32 newMin, float32 newMax, float32 newValue);
     void SetSliderValue(float32 newValue);
-    
     void SetTexture(Texture *newTexture);
+    void SetDistances(float32 *newDistances, int32 count);
+    void SetDistance(float32 newDistance, int32 index);
     
     int32 cellType;
     String key;
@@ -107,6 +111,9 @@ protected:
     float32 sliderValue;
     
     Texture *texture;
+    
+    float32 *distances;
+    int32 distanceCount;
 };
 
 #endif

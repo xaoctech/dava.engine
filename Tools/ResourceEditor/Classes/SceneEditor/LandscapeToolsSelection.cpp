@@ -108,7 +108,7 @@ void LandscapeToolsSelection::EnumerateTools()
         
         if(".png" == extension)
         {
-            LandscapeTool *tool = new LandscapeTool(toolID, toolsPath + filename);
+            LandscapeTool *tool = new LandscapeTool(toolID, LandscapeTool::TOOL_BRUSH, toolsPath + filename);
             ++toolID;
             
             tools.push_back(tool);
@@ -188,6 +188,8 @@ UIControl * LandscapeToolsSelection::GetToolControl(int32 indexAtRow, DAVA::UILi
     {
         c = new UIControl(Rect(indexAtRow * ControlsFactory::TOOLS_HEIGHT, 0, 
                                ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+        c->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+        
         c->SetName(controlName);
         cell->AddControl(c);
     }

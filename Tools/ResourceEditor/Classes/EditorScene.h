@@ -54,7 +54,12 @@ public:
     
     void SetDrawGrid(bool newDrawGrid);
 	
+    void SetForceLodLayer(SceneNode *node, int32 layer);
+    int32 GetForceLodLayer(SceneNode *node);
+    
 protected:
+
+    void SetForceLodLayerRecursive(SceneNode *node, int32 layer);
 
 	SceneNode * GetHighestProxy(SceneNode* curr);
 

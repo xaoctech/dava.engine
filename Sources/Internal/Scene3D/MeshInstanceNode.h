@@ -85,7 +85,8 @@ public:
 	inline void SetVisible(bool isVisible);
 	inline bool GetVisible();
 	
-	inline AABBox3 & GetBoundingBox();
+	inline const AABBox3 & GetBoundingBox() const;
+    inline const AABBox3 & GetWorldTransformedBox() const; 
 	
     Vector<PolygonGroupWithMaterial*> & GetPolygonGroups();
     	
@@ -169,9 +170,13 @@ protected:
 
 };
 	
-inline AABBox3 & MeshInstanceNode::GetBoundingBox()
+inline const AABBox3 & MeshInstanceNode::GetBoundingBox() const
 {
 	return bbox;
+}
+inline const AABBox3 & MeshInstanceNode::GetWorldTransformedBox() const
+{
+    return transformedBox;
 }
 
 };

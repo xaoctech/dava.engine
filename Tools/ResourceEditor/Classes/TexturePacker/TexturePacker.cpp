@@ -415,6 +415,8 @@ void TexturePacker::PackToMultipleTextures(const char * excludeFolder, const cha
 			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
 				if (CommandLineParser::Instance()->IsFlagSet("--pvr") && (xResolution != yResolution))continue;
+
+				if ((onlySquareTextures) && (xResolution != yResolution))continue;
 				
 				Rect2i textureRect = Rect2i(0, 0, xResolution, yResolution);
 				ImagePacker * packer = new ImagePacker(textureRect);

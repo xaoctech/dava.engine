@@ -12,6 +12,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     ,   state(ELE_NONE)
     ,   workingScene(NULL)
     ,   parent(parentControl)
+    ,   inverseDrawingEnabled(false)
+    ,   touchID(INVALID_TOUCH_ID)
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -35,6 +37,9 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     toolsPanel = NULL;
     
     landscapeSize = 0;
+
+	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
+	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
@@ -48,6 +53,8 @@ LandscapeEditorBase::~LandscapeEditorBase()
     SafeRelease(workingScene);
     
     SafeRelease(fileSystemDialog);
+
+	SafeRelease(cursorTexture);
 }
 
 
@@ -99,13 +106,13 @@ void LandscapeEditorBase::Toggle()
     }
     else if(ELE_NONE == state)
     {
+        touchID = INVALID_TOUCH_ID;
+        
         SafeRelease(heightmapNode);
-        heightmapNode = new HeightmapNode(workingScene);
+        heightmapNode = new HeightmapNode(workingScene, workingLandscape);
         workingScene->AddNode(heightmapNode);
                 
         state = ELE_ACTIVE;
-        
-        isPaintActive = false;
         
         SetTool(toolsPanel->CurrentTool());
         
@@ -121,6 +128,9 @@ void LandscapeEditorBase::Toggle()
 void LandscapeEditorBase::Close()
 {
     HideAction();
+    
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    
     SafeRelease(workingLandscape);
 
     workingScene->RemoveNode(heightmapNode);
@@ -128,7 +138,6 @@ void LandscapeEditorBase::Close()
 
     SafeRelease(workingScene);
     
-//    currentTool = NULL;
     state = ELE_NONE;
     
     if(delegate)
@@ -153,8 +162,8 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
         AABBox3 box = workingLandscape->GetBoundingBox();
             
         //TODO: use 
-        landscapePoint.x = (point.x - box.min.x) * landscapeSize / (box.max.x - box.min.x);
-        landscapePoint.y = (point.y - box.min.y) * landscapeSize / (box.max.y - box.min.y);
+        landscapePoint.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
+        landscapePoint.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
     }
     
     return isIntersect;
@@ -163,63 +172,68 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
 
 bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 {
-    if(UIEvent::BUTTON_1 == touch->tid)
+	Vector2 point;
+	bool isIntersect = GetLandscapePoint(touch->point, point);
+    
+    point.x = (int32)point.x;
+    point.y = (int32)point.y;
+    
+	startPoint = endPoint = point;
+	UpdateCursor();
+	
+    if(INVALID_TOUCH_ID == touchID || touchID == touch->tid)
     {
-        if(UIEvent::PHASE_BEGAN == touch->phase)
+        if(UIEvent::BUTTON_1 == touch->tid)
         {
-            Vector2 point;
-            isPaintActive = GetLandscapePoint(touch->point, point);
-            if(isPaintActive)
+            inverseDrawingEnabled = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+            
+            if(UIEvent::PHASE_BEGAN == touch->phase)
             {
-                prevDrawPos = Vector2(-100, -100);
-                startPoint = endPoint = point;
-                
-                InputAction(touch->phase);
-            }
-            return true;
-        }
-        else if(UIEvent::PHASE_DRAG == touch->phase)
-        {
-            Vector2 point;
-            bool isIntersect = GetLandscapePoint(touch->point, point);
-            if(isIntersect)
-            {
-                if(!isPaintActive)
+                touchID = touch->tid;
+                if(isIntersect)
                 {
-                    isPaintActive = true;
-                    startPoint = point;
+                    prevDrawPos = Vector2(-100, -100);
+                    InputAction(touch->phase, isIntersect);
                 }
-                
-                endPoint = point;
-                InputAction(touch->phase);
+                return true;
             }
-            else 
+            else if(UIEvent::PHASE_DRAG == touch->phase)
             {
-                isPaintActive = false;
-                endPoint = point;
-  
-                InputAction(touch->phase);
-                prevDrawPos = Vector2(-100, -100);
+                InputAction(touch->phase, isIntersect);
+                if(!isIntersect)
+                {
+                    prevDrawPos = Vector2(-100, -100);
+                }
+                return true;
             }
+            else if(UIEvent::PHASE_ENDED == touch->phase || UIEvent::PHASE_CANCELLED == touch->phase)
+            {
+                touchID = INVALID_TOUCH_ID;
+                
+                if(isIntersect)
+                {
+                    InputAction(touch->phase, isIntersect);
+                    prevDrawPos = Vector2(-100, -100);
+                }
+                return true;
+            }
+        }
+    }
+    
+    if(UIEvent::PHASE_KEYCHAR == touch->phase)
+    {
+        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_CTRL))
+        {
+            UndoAction();
             return true;
         }
-        else if(UIEvent::PHASE_ENDED == touch->phase)
+        if(DVKEY_Z == touch->tid && InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT))
         {
-            Vector2 point;
-            GetLandscapePoint(touch->point, point);
-            if(isPaintActive)
-            {
-                isPaintActive = false;
-                
-                endPoint = point;
-                
-                InputAction(touch->phase);
-                prevDrawPos = Vector2(-100, -100);
-            }
+            RedoAction();
             return true;
         }
     }
-
+    
     return false;
 }
 
@@ -265,9 +279,23 @@ void LandscapeEditorBase::OnToolSelected(LandscapeTool *newTool)
     SetTool(newTool);
 }
 
-void LandscapeEditorBase::OnToolsPanelClose()
+void LandscapeEditorBase::OnShowGrid(bool show)
 {
-    Toggle();
+    if(workingLandscape)
+    {
+        if(show)
+        {
+            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
+        }
+        else 
+        {
+            workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+        }
+    }
+    else 
+    {
+        DVASSERT(false);
+    }
 }
 
 

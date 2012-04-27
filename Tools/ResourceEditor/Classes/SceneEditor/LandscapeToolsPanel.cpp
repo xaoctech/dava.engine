@@ -5,28 +5,41 @@
 
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
+    ,   selectedBrushTool(NULL)
     ,   selectedTool(NULL)
     ,   delegate(newDelegate)
 {
     ControlsFactory::CustomizeDialogFreeSpace(this);
     
-    Rect closeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT);
-    UIButton *closeButton = ControlsFactory::CreateCloseWindowButton(closeRect);
-    closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnClose));
-    AddControl(closeButton);
-    SafeRelease(closeButton);
-    
-    toolIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
-    toolIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnSelectTool));
-    AddControl(toolIcon);
-    
     selectionPanel = NULL;
+
+    brushIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+    brushIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnBrushTool));
+    brushIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+    AddControl(brushIcon);
+    
+    
+    sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - TEXTFIELD_WIDTH,
+                                   0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnSizeChanged));
+    AddControl(sizeSlider);
+    
+    strengthSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - TEXTFIELD_WIDTH, 
+                                       ControlsFactory::TOOLS_HEIGHT / 2, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+    strengthSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnStrengthChanged));
+    AddControl(strengthSlider);
+    
+    AddSliderHeader(sizeSlider, LocalizedString(L"landscapeeditor.size"));
+    AddSliderHeader(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
 }
 
 
 LandscapeToolsPanel::~LandscapeToolsPanel()
 {
-    SafeRelease(toolIcon);
+    SafeRelease(strengthSlider);
+    SafeRelease(sizeSlider);
+
+    SafeRelease(brushIcon);
 }
 
 UISlider * LandscapeToolsPanel::CreateSlider(const Rect & rect)
@@ -61,6 +74,29 @@ void LandscapeToolsPanel::AddSliderHeader(UISlider *slider, const WideString &te
     SafeRelease(textControl);
 }
 
+UICheckBox *LandscapeToolsPanel::CreateCkeckbox(const Rect &rect, const WideString &text)
+{
+    UICheckBox *checkbox = new UICheckBox("~res:/Gfx/UI/chekBox", rect);
+    checkbox->SetDelegate(this);
+    AddControl(checkbox);
+    
+    Rect textRect;
+    textRect.x = rect.x + rect.dx + OFFSET;
+    textRect.y = rect.y;
+    textRect.dx = TEXT_WIDTH;
+    textRect.dy = rect.dy;
+    
+    UIStaticText *textControl = new UIStaticText(textRect);
+    textControl->SetText(text);
+    textControl->SetFont(ControlsFactory::GetFontLight());
+    textControl->SetAlign(ALIGN_VCENTER | ALIGN_LEFT);
+    AddControl(textControl);
+    SafeRelease(textControl);
+    
+    return checkbox;
+}
+
+
 LandscapeTool * LandscapeToolsPanel::CurrentTool()
 {
     return selectedTool;
@@ -75,48 +111,115 @@ void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
     }
 }
 
-void LandscapeToolsPanel::OnClose(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(delegate)
-    {
-        delegate->OnToolsPanelClose();
-    }
-}
 
-void LandscapeToolsPanel::OnSelectTool(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanel::OnBrushTool(DAVA::BaseObject *object, void *userData, void *callerData)
 {
-    if(selectionPanel)
+    if(selectedTool == selectedBrushTool)
     {
-        selectionPanel->Show();
+        if(selectionPanel)
+        {
+            selectionPanel->Show();
+        }
     }
+    else 
+    {
+        selectedTool = selectedBrushTool;
+        if(delegate)
+        {
+            delegate->OnToolSelected(selectedTool);
+        }
+    }
+    
+    ToolIconSelected(brushIcon);
 }
 
 void LandscapeToolsPanel::WillAppear()
 {
     if(selectionPanel)
     {
-        selectedTool = selectionPanel->Tool();
-        if(selectedTool)
+        selectedBrushTool = selectionPanel->Tool();
+        selectedTool = selectedBrushTool;
+        if(selectedBrushTool)
         {
-            toolIcon->SetSprite(selectedTool->sprite, 0);
+            brushIcon->SetSprite(selectedBrushTool->sprite, 0);
         }
         else 
         {
-            toolIcon->SetSprite(NULL, 0);
+            brushIcon->SetSprite(NULL, 0);
         }
+        ToolIconSelected(brushIcon);
     }
 }
+
+void LandscapeToolsPanel::Input(DAVA::UIEvent *currentInput)
+{
+    if(UIEvent::PHASE_KEYCHAR == currentInput->phase)
+    { 
+       if('+' == currentInput->keyChar) 
+       {
+           float32 sz = sizeSlider->GetValue();
+           float32 maxVal = sizeSlider->GetMaxValue();
+           
+           sz += maxVal * 0.05f;
+           sizeSlider->SetValue(Min(sz, maxVal));
+           sizeSlider->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+       }
+       else if('-' == currentInput->keyChar)
+       {
+           float32 sz = sizeSlider->GetValue();
+           float32 maxVal = sizeSlider->GetMaxValue();
+           
+           sz -= maxVal * 0.05f;
+           sizeSlider->SetValue(Max(sz, sizeSlider->GetMinValue()));
+           sizeSlider->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+       }
+    }
+}
+
+void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedBrushTool)
+    {
+        selectedBrushTool->strength = strengthSlider->GetValue();
+    }
+}
+
+void LandscapeToolsPanel::OnSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    if(selectedBrushTool)
+    {
+        selectedBrushTool->size = sizeSlider->GetValue();
+    }
+}
+
+void LandscapeToolsPanel::ToolIconSelected(UIControl *focused)
+{
+    brushIcon->SetDebugDraw(focused == brushIcon);
+}
+
+
 
 #pragma mark  --LandscapeToolsSelectionDelegate
 void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
 {
     DVASSERT(newTool);
-    selectedTool = newTool;
-    toolIcon->SetSprite(selectedTool->sprite, 0);
+    
+    newTool->size = sizeSlider->GetValue();
+    newTool->strength = strengthSlider->GetValue();
+
+    
+    selectedBrushTool = newTool;
+    selectedTool = selectedBrushTool;
+    brushIcon->SetSprite(selectedBrushTool->sprite, 0);
     
     if(delegate)
     {
         delegate->OnToolSelected(newTool);
     }
+}
+
+#pragma mark  --UICheckBoxDelegate
+void LandscapeToolsPanel::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+{
 }
 

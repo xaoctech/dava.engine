@@ -40,6 +40,11 @@ class LandscapeEditorBase
         DIALOG_OPERATION_SAVE,
     };
 
+    enum eConst
+    {
+        INVALID_TOUCH_ID = -1,
+    };
+    
     
 public:
     
@@ -67,17 +72,20 @@ public:
 
     //Tools Panel delegate
     virtual void OnToolSelected(LandscapeTool *newTool);
-    virtual void OnToolsPanelClose();
+    virtual void OnShowGrid(bool show);
 
 protected:
 
     void SaveTexture();
     void SaveTextureAs(const String &pathToFile, bool closeLE);
 
-    virtual void InputAction(int32 phase) = 0;
+    virtual void InputAction(int32 phase, bool intersects) = 0;
     virtual void HideAction() = 0;
     virtual void ShowAction() = 0;
     virtual void SaveTextureAction(const String &pathToFile) = 0;
+	virtual void UpdateCursor() = 0;
+    virtual void UndoAction() = 0;
+    virtual void RedoAction() = 0;
     
     void Close();
     LandscapeEditorDelegate *delegate;
@@ -88,7 +96,6 @@ protected:
     uint32 fileSystemDialogOpMode;
     
     eLEState state;
-    bool isPaintActive;
 
     HeightmapNode *heightmapNode;
     LandscapeNode *workingLandscape;
@@ -106,6 +113,17 @@ protected:
     Vector2 prevDrawPos;
     
     LandscapeToolsPanel *toolsPanel;
+
+    bool inverseDrawingEnabled;
+    int32 touchID;
+    
+	Texture * cursorTexture;
+
+	struct CursorMode
+	{
+
+	};
+	CursorMode cursorMode;
 };
 
 

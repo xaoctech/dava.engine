@@ -1,13 +1,12 @@
 #include "ImageRasterizer.h"
 
 
-void ImageRasterizer::DrawRelative(Image *dst, Image *src, int32 x, int32 y, int32 width, int32 height, float32 k)
+void ImageRasterizer::DrawRelative(Heightmap *dst, Image *src, int32 x, int32 y, int32 width, int32 height, float32 k)
 {
     if(src && dst)
     {
-        uint8 *dstData = dst->data;
-        const uint8 *srcData = src->data;
-        
+        uint16 *dstData = dst->Data();
+        uint8 *srcData = src->data;
         
         uint32 cntX,cntY;
         
@@ -17,12 +16,11 @@ void ImageRasterizer::DrawRelative(Image *dst, Image *src, int32 x, int32 y, int
         int32 srcOffset;
         int32 dstOffset;
         
-        if (!Clipping(srcOffset,dstOffset,x,y, dst->width, dst->height, width,height, yAddSrc, xAddDst, yAddDst))
+        if (!Clipping(srcOffset,dstOffset,x,y, dst->Size(), dst->Size(), width,height, yAddSrc, xAddDst, yAddDst))
             return;
         
         srcData += srcOffset;
         dstData += dstOffset;
-        
 
         for(cntY = height; cntY > 0; cntY--)
         {
@@ -33,9 +31,9 @@ void ImageRasterizer::DrawRelative(Image *dst, Image *src, int32 x, int32 y, int
                 {
                     newValue = 0.f;
                 }
-                else if(255.f < newValue)
+                else if(Heightmap::MAX_VALUE < newValue)
                 {
-                    newValue = 255.f;
+                    newValue = Heightmap::MAX_VALUE;
                 }
                 
                 *dstData = newValue;
@@ -49,12 +47,12 @@ void ImageRasterizer::DrawRelative(Image *dst, Image *src, int32 x, int32 y, int
     }
 }
 
-void ImageRasterizer::DrawRelativeRGBA(Image *dst, Image *src, int32 x, int32 y, int32 width, int32 height, float32 k)
+void ImageRasterizer::DrawRelativeRGBA(Heightmap *dst, Image *src, int32 x, int32 y, int32 width, int32 height, float32 k)
 {
     if(src && dst)
     {
-        uint8 *dstData = dst->data;
-        const uint8 *srcData = src->data;
+        uint16 *dstData = dst->Data();
+        uint8 *srcData = src->data;
         
         
         uint32 cntX,cntY;
@@ -65,13 +63,13 @@ void ImageRasterizer::DrawRelativeRGBA(Image *dst, Image *src, int32 x, int32 y,
         int32 srcOffset;
         int32 dstOffset;
         
-        if (!Clipping(srcOffset,dstOffset,x,y, dst->width, dst->height, width,height, yAddSrc, xAddDst, yAddDst))
+        if (!Clipping(srcOffset,dstOffset,x,y, dst->Size(), dst->Size(), width,height, yAddSrc, xAddDst, yAddDst))
             return;
         
         srcData += (srcOffset * 4);
         dstData += dstOffset;
         
-        
+        yAddSrc *= 4;
         for(cntY = height; cntY > 0; cntY--)
         {
             for(cntX = width; cntX > 0; cntX--)
@@ -81,32 +79,29 @@ void ImageRasterizer::DrawRelativeRGBA(Image *dst, Image *src, int32 x, int32 y,
                 {
                     newValue = 0.f;
                 }
-                else if(255.f < newValue)
+                else if(Heightmap::MAX_VALUE < newValue)
                 {
-                    newValue = 255.f;
+                    newValue = Heightmap::MAX_VALUE;
                 }
                 
                 *dstData = newValue;
                 
-//                srcData++;
                 srcData += 4;
-
                 dstData += xAddDst;
             }
-            srcData += (yAddSrc * 4);
+            srcData += yAddSrc;
             dstData += yAddDst;
         }
     }
 }
 
 
-void ImageRasterizer::DrawAverage(Image *dst, Image *mask, int32 x, int32 y, int32 width, int32 height, float32 k)
+void ImageRasterizer::DrawAverage(Heightmap *dst, Image *mask, int32 x, int32 y, int32 width, int32 height, float32 k)
 {
     if(mask && dst)
     {
-        uint8 *dstData = dst->data;
-        const uint8 *maskData = mask->data;
-        
+        uint16 *dstData = dst->Data();
+        uint8 *maskData = mask->data;
         
         uint32 cntX,cntY;
         
@@ -116,24 +111,27 @@ void ImageRasterizer::DrawAverage(Image *dst, Image *mask, int32 x, int32 y, int
         int32 srcOffset;
         int32 dstOffset;
         
-        if (!Clipping(srcOffset,dstOffset,x,y, dst->width, dst->height, width,height, yAddSrc, xAddDst, yAddDst))
+        if (!Clipping(srcOffset,dstOffset,x,y, dst->Size(), dst->Size(), width,height, yAddSrc, xAddDst, yAddDst))
             return;
         
         maskData += srcOffset;
         dstData += dstOffset;
         
-        const uint8 *maskDataSaved = maskData;
-        uint8 *dstDataSaved = dstData;
+        uint8 *maskDataSaved = maskData;
+        uint16 *dstDataSaved = dstData;
         
-        float32 average = 0.0f;
+        float64 average = 0.0f;
+        float64 maskMax = 0.0f;
         int32 count = 0;
-        
+
         for(cntY = height; cntY > 0; cntY--)
         {
             for(cntX = width; cntX > 0; cntX--)
             {
                 if(*maskData)
                 {
+                    maskMax = Max(maskMax, (float64)*maskData);
+
                     average += *dstData;
                     ++count;
                 }
@@ -145,7 +143,7 @@ void ImageRasterizer::DrawAverage(Image *dst, Image *mask, int32 x, int32 y, int
             dstData += yAddDst;
         }
         
-        if(count && time)
+        if(count && k && maskMax)
         {
             average /= count;
 
@@ -155,7 +153,18 @@ void ImageRasterizer::DrawAverage(Image *dst, Image *mask, int32 x, int32 y, int
                 {
                     if(*maskDataSaved)
                     {
-                        *dstDataSaved = *dstDataSaved + (average - *dstDataSaved) * k;
+                        float64 koef = Min(k * ((float64)*maskDataSaved / maskMax), (float64)1.0f);
+                        float64 newValue = (float64)*dstDataSaved + (float64)(average - *dstDataSaved) * koef;
+                        if(newValue < 0.f)
+                        {
+                            newValue = 0.f;
+                        }
+                        else if(Heightmap::MAX_VALUE < newValue)
+                        {
+                            newValue = Heightmap::MAX_VALUE;
+                        }
+                        
+                        *dstDataSaved = newValue;
                     }
                     
                     maskDataSaved++;
@@ -166,16 +175,15 @@ void ImageRasterizer::DrawAverage(Image *dst, Image *mask, int32 x, int32 y, int
             }
         }
     }
-    
 }
 
 
-void ImageRasterizer::DrawAverageRGBA(Image *dst, Image *mask, int32 x, int32 y, int32 width, int32 height, float32 k)
+void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int32 y, int32 width, int32 height, float32 k)
 {
     if(mask && dst)
     {
-        uint8 *dstData = dst->data;
-        const uint8 *maskData = mask->data;
+        uint16 *dstData = dst->Data();
+        uint8 *maskData = mask->data;
         
         
         uint32 cntX,cntY;
@@ -186,38 +194,40 @@ void ImageRasterizer::DrawAverageRGBA(Image *dst, Image *mask, int32 x, int32 y,
         int32 srcOffset;
         int32 dstOffset;
         
-        if (!Clipping(srcOffset,dstOffset,x,y, dst->width, dst->height, width,height, yAddSrc, xAddDst, yAddDst))
+        if (!Clipping(srcOffset,dstOffset,x,y, dst->Size(), dst->Size(), width,height, yAddSrc, xAddDst, yAddDst))
             return;
         
         maskData += (srcOffset * 4);
         dstData += dstOffset;
         
-        const uint8 *maskDataSaved = maskData;
-        uint8 *dstDataSaved = dstData;
+        uint16 *dstDataSaved = dstData;
+        uint8 *maskDataSaved = maskData;
         
-        float32 average = 0.0f;
+        float64 average = 0.f;
+        float64 maskMax = 0.f;
         int32 count = 0;
         
+        yAddSrc *= 4;
         for(cntY = height; cntY > 0; cntY--)
         {
             for(cntX = width; cntX > 0; cntX--)
             {
                 if(*maskData)
                 {
+                    maskMax = Max(maskMax, (float64)*maskData);
+                    
                     average += *dstData;
                     ++count;
                 }
                 
-//                maskData++;
                 maskData += 4;
-
                 dstData += xAddDst;
             }
             maskData += yAddSrc;
             dstData += yAddDst;
         }
         
-        if(count && time)
+        if(count && k && maskMax)
         {
             average /= count;
             
@@ -227,12 +237,22 @@ void ImageRasterizer::DrawAverageRGBA(Image *dst, Image *mask, int32 x, int32 y,
                 {
                     if(*maskDataSaved)
                     {
-                        *dstDataSaved = *dstDataSaved + (average - *dstDataSaved) * k;
+                        float64 koef = Min(k * ((float64)*maskDataSaved / maskMax), (float64)1.0f);
+                        
+                        float64 newValue = (float64)*dstDataSaved + (float64)(average - *dstDataSaved) * koef;
+                        if(newValue < 0.f)
+                        {
+                            newValue = 0.f;
+                        }
+                        else if(Heightmap::MAX_VALUE < newValue)
+                        {
+                            newValue = Heightmap::MAX_VALUE;
+                        }
+                      
+                        *dstDataSaved = newValue;
                     }
                     
-//                    maskDataSaved++;
                     maskDataSaved += 4;
-
                     dstDataSaved += xAddDst;
                 }
                 maskDataSaved += yAddSrc;
@@ -240,17 +260,15 @@ void ImageRasterizer::DrawAverageRGBA(Image *dst, Image *mask, int32 x, int32 y,
             }
         }
     }
-    
 }
 
 
-void ImageRasterizer::DrawAbsolute(Image *dst, Image *src, int32 x, int32 y, int32 width, int32 height, float32 k, float32 dstHeight)
+void ImageRasterizer::DrawAbsolute(Heightmap *dst, Image *mask, int32 x, int32 y, int32 width, int32 height, float32 k, float32 dstHeight)
 {
-    if(src && dst)
+    if(mask && dst)
     {
-        uint8 *dstData = dst->data;
-        const uint8 *srcData = src->data;
-        
+        uint16 *dstData = dst->Data();
+        uint8 *maskData = mask->data;
         
         uint32 cntX,cntY;
         
@@ -260,48 +278,70 @@ void ImageRasterizer::DrawAbsolute(Image *dst, Image *src, int32 x, int32 y, int
         int32 srcOffset;
         int32 dstOffset;
         
-        if (!Clipping(srcOffset,dstOffset,x,y, dst->width, dst->height, width,height, yAddSrc, xAddDst, yAddDst))
+        if (!Clipping(srcOffset,dstOffset,x,y, dst->Size(), dst->Size(), width,height, yAddSrc, xAddDst, yAddDst))
             return;
         
-        srcData += srcOffset;
+        maskData += srcOffset;
         dstData += dstOffset;
         
+        uint8 *maskDataSaved = maskData;
+        uint16 *dstDataSaved = dstData;
         
+        float64 maskMax = 0.f;
         for(cntY = height; cntY > 0; cntY--)
         {
             for(cntX = width; cntX > 0; cntX--)
             {
-                if(*srcData)
+                if(*maskData)
                 {
-                    float32 newValue = dstHeight + (*srcData * k);
-                    if(newValue < 0.f)
-                    {
-                        newValue = 0.f;
-                    }
-                    else if(255.f < newValue)
-                    {
-                        newValue = 255.f;
-                    }
-                    
-                    *dstData = newValue;
+                    maskMax = Max(maskMax, (float64)*maskData);
                 }
                 
-                srcData++;
+                maskData++;
                 dstData += xAddDst;
             }
-            srcData += yAddSrc;
+            maskData += yAddSrc;
             dstData += yAddDst;
+        }
+        
+        if(k && maskMax)
+        {
+            for(cntY = height; cntY > 0; cntY--)
+            {
+                for(cntX = width; cntX > 0; cntX--)
+                {
+                    if(*maskDataSaved)
+                    {
+                        float64 newValue = (float64)*dstDataSaved + 
+                        (float64)(dstHeight - *dstDataSaved) * k * ((float64)*maskDataSaved / maskMax);
+                        if(newValue < 0.f)
+                        {
+                            newValue = 0.f;
+                        }
+                        else if(Heightmap::MAX_VALUE < newValue)
+                        {
+                            newValue = Heightmap::MAX_VALUE;
+                        }
+                        
+                        *dstDataSaved = newValue;
+                    }
+                    
+                    maskDataSaved++;
+                    dstDataSaved += xAddDst;
+                }
+                maskDataSaved += yAddSrc;
+                dstDataSaved += yAddDst;
+            }
         }
     }
 }
 
-void ImageRasterizer::DrawAbsoluteRGBA(Image *dst, Image *src, int32 x, int32 y, int32 width, int32 height, float32 k, float32 dstHeight)
+void ImageRasterizer::DrawAbsoluteRGBA(Heightmap *dst, Image *mask, int32 x, int32 y, int32 width, int32 height, float32 k, float32 dstHeight)
 {
-    if(src && dst)
+    if(mask && dst)
     {
-        uint8 *dstData = dst->data;
-        const uint8 *srcData = src->data;
-        
+        uint16 *dstData = dst->Data();
+        uint8 *maskData = mask->data;
         
         uint32 cntX,cntY;
         
@@ -311,39 +351,62 @@ void ImageRasterizer::DrawAbsoluteRGBA(Image *dst, Image *src, int32 x, int32 y,
         int32 srcOffset;
         int32 dstOffset;
         
-        if (!Clipping(srcOffset,dstOffset,x,y, dst->width, dst->height, width,height, yAddSrc, xAddDst, yAddDst))
+        if (!Clipping(srcOffset,dstOffset,x,y, dst->Size(), dst->Size(), width,height, yAddSrc, xAddDst, yAddDst))
             return;
         
-        srcData += (srcOffset * 4);
+        maskData += (srcOffset * 4);
         dstData += dstOffset;
         
+        uint16 *dstDataSaved = dstData;
+        uint8 *maskDataSaved = maskData;
         
+        float64 maskMax = 0.f;
+        
+        yAddSrc *= 4;
         for(cntY = height; cntY > 0; cntY--)
         {
             for(cntX = width; cntX > 0; cntX--)
             {
-                if(*srcData)
+                if(*maskData)
                 {
-                    float32 newValue = dstHeight + (*srcData * k);
-                    if(newValue < 0.f)
-                    {
-                        newValue = 0.f;
-                    }
-                    else if(255.f < newValue)
-                    {
-                        newValue = 255.f;
-                    }
-                    
-                    *dstData = newValue;
+                    maskMax = Max(maskMax, (float64)*maskData);
                 }
                 
-                //                srcData++;
-                srcData += 4;
-                
+                maskData += 4;
                 dstData += xAddDst;
             }
-            srcData += (yAddSrc * 4);
+            maskData += yAddSrc;
             dstData += yAddDst;
+        }
+        
+        if(k && maskMax)
+        {
+            for(cntY = height; cntY > 0; cntY--)
+            {
+                for(cntX = width; cntX > 0; cntX--)
+                {
+                    if(*maskDataSaved)
+                    {
+                        float64 newValue = (float64)*dstDataSaved + 
+                        (float64)(dstHeight - *dstDataSaved) * k * ((float64)*maskDataSaved / maskMax);
+                        if(newValue < 0.f)
+                        {
+                            newValue = 0.f;
+                        }
+                        else if(Heightmap::MAX_VALUE < newValue)
+                        {
+                            newValue = Heightmap::MAX_VALUE;
+                        }
+                        
+                        *dstDataSaved = newValue;
+                    }
+                    
+                    maskDataSaved += 4;
+                    dstDataSaved += xAddDst;
+                }
+                maskDataSaved += yAddSrc;
+                dstDataSaved += yAddDst;
+            }
         }
     }
 }

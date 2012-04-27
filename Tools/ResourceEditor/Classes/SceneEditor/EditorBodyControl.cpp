@@ -700,7 +700,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-            
+                        
             Camera *currCamera = scene->GetCurrentCamera();
             if(currCamera)
             {
@@ -1127,11 +1127,11 @@ void EditorBodyControl::CreateLandscapeEditor()
 {
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    Rect toolsRectColor(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
-    Rect toolsRectHeightMap(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT * 2);
-
-    landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRectColor);
-    landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRectHeightMap);
+    Rect toolsRect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
+    landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRect);
+    
+    toolsRect.dy += ControlsFactory::TOOLS_HEIGHT/2;
+    landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     
     Rect rect = GetRect();
@@ -1152,22 +1152,28 @@ void EditorBodyControl::ReleaseLandscapeEditor()
     SafeRelease(landscapeToolsSelection);
 }
 
-void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
+bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
 {
-    if(currentLandscapeEditor)
+    LandscapeEditorBase *requestedEditor = NULL;
+    if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorColor;
+    }
+    else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorHeightmap;
+    }
+    
+    if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
+        return false;
+    
+    if(currentLandscapeEditor == requestedEditor)
     {
         currentLandscapeEditor->Toggle();
     }
     else
     {
-        if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
-        {
-            currentLandscapeEditor = landscapeEditorColor;
-        }
-        else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
-        {
-            currentLandscapeEditor = landscapeEditorHeightmap;
-        }
+        currentLandscapeEditor = requestedEditor;
 
         bool ret = currentLandscapeEditor->SetScene(scene);
         if(ret)
@@ -1178,8 +1184,10 @@ void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
         else
         {
             currentLandscapeEditor = NULL;
+            return false;
         }
     }
+    return true;
 }
 
 #pragma mark --LandscapeEditorDelegate
