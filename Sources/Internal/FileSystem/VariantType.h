@@ -40,10 +40,13 @@ namespace DAVA
 	\ingroup filesystem
 	\brief Class to store value of all basic types in one instance. Can be used for various serialization / deserialization purposes.
  */
+
+class KeyedArchive;
 class VariantType
 {
 public:
 	VariantType();
+    VariantType(const VariantType &var);
 	~VariantType();
 	enum
 	{
@@ -54,8 +57,10 @@ public:
 		TYPE_STRING,
 		TYPE_WIDE_STRING,
 		TYPE_BYTE_ARRAY,
+		TYPE_UINT32,    
+        TYPE_KEYED_ARCHIVE,
         
-		TYPE_UINT32    // every new type should be always added to the end for compatibility with old archives
+        TYPES_COUNT // every new type should be always added to the end for compatibility with old archives
 	};
 	uint8 type;
 	union  
@@ -67,7 +72,7 @@ public:
 	};
 	String stringValue;	
 	WideString wideStringValue;
-	Vector<uint8> arrayValue;
+    void *pointerValue;
 	
 	// Functions
 	
@@ -113,6 +118,12 @@ public:
 	 \param[in] arraySizeInBytes	size of the array in bytes
 	 */
 	void SetByteArray(const uint8 *array, int32 arraySizeInBytes);
+
+	/**
+	 \brief Function to set KeyedArchive to variation type variable
+	 \param[in] archive	archive to set (Archive is retains inside variable type)
+	 */
+	void SetKeyedArchive(KeyedArchive *archive);
 	
 	/**
 		\brief Function to return bool value from variable
@@ -160,7 +171,13 @@ public:
 	 \returns array size in bytes variable, or generate assert if variable type is different
 	 */
 	int32 AsByteArraySize();
-	
+
+    /**
+	 \brief Function to return keyed archive from variable
+	 \returns value of variable, or generate assert if variable type is different
+	 */
+     KeyedArchive *AsKeyedArchive();
+    
 	// File read & write helpers
 	
 	/**
@@ -174,6 +191,9 @@ public:
 		\returns true if variable read successfully
 	 */
 	bool Read(File * fp);
+    
+private:
+    void ReleasePointer();
 };
 	
 	
