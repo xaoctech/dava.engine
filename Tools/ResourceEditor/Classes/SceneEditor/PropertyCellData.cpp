@@ -30,8 +30,17 @@ PropertyCellData::PropertyCellData(int _valueType)
     sliderValue = 0.f;
 
     texture = NULL;
+
+    distances = NULL;
+    distanceCount = 0;
+
     
     valueType = _valueType;
+}
+
+PropertyCellData::~PropertyCellData()
+{
+    SafeDeleteArray(distances);
 }
 
 int32 PropertyCellData::GetValueType()
@@ -42,37 +51,41 @@ int32 PropertyCellData::GetValueType()
 
 void PropertyCellData::SetBool(bool newBool)
 {
-    DVASSERT((valueType == PROP_VALUE_BOOL) || (valueType == PROP_VALUE_TEXTUREPREVIEW));
+    DVASSERT(   (valueType == PROP_VALUE_BOOL) 
+             || (valueType == PROP_VALUE_TEXTUREPREVIEW)
+             || (valueType == PROP_VALUE_SLIDER));
     boolValue = newBool;
 }
 
 bool PropertyCellData::GetBool()
 {
-    DVASSERT((valueType == PROP_VALUE_BOOL) || (valueType == PROP_VALUE_TEXTUREPREVIEW));
+    DVASSERT(   (valueType == PROP_VALUE_BOOL) 
+             || (valueType == PROP_VALUE_TEXTUREPREVIEW)
+             || (valueType == PROP_VALUE_SLIDER));
     return boolValue;
 }
 
 void PropertyCellData::SetInt(int32 newInt)
 {
-    DVASSERT(valueType == PROP_VALUE_INTEGER);
+    DVASSERT((valueType == PROP_VALUE_INTEGER) || (valueType == PROP_VALUE_DISTANCE));
     intValue = newInt;
 }
 
 int32 PropertyCellData::GetInt()
 {
-    DVASSERT(valueType == PROP_VALUE_INTEGER);
+    DVASSERT((valueType == PROP_VALUE_INTEGER) || (valueType == PROP_VALUE_DISTANCE));
     return intValue;
 }
 
 void PropertyCellData::SetFloat(float32 newFloat)
 {
-    DVASSERT(valueType == PROP_VALUE_FLOAT);
+    DVASSERT((valueType == PROP_VALUE_FLOAT) || (valueType == PROP_VALUE_DISTANCE));
     floatValue = newFloat;
 }
 
 float32 PropertyCellData::GetFloat()
 {
-    DVASSERT(valueType == PROP_VALUE_FLOAT);
+    DVASSERT((valueType == PROP_VALUE_FLOAT) || (valueType == PROP_VALUE_DISTANCE));
     return floatValue;
 }
 
@@ -240,5 +253,39 @@ Texture * PropertyCellData::GetTexture()
 {
     DVASSERT(valueType == PROP_VALUE_TEXTUREPREVIEW);
     return texture;
+}
+
+void PropertyCellData::SetDistances(float32 *newDistances, int32 count)
+{
+    DVASSERT(valueType == PROP_VALUE_DISTANCE);
+
+    SafeDeleteArray(distances);
+    distances = new float32[count];
+    Memcpy(distances, newDistances, count * sizeof(float32));
+
+    distanceCount = count;
+}
+
+float32 *PropertyCellData::GetDistances()
+{
+    DVASSERT(valueType == PROP_VALUE_DISTANCE);
+    return distances;
+}
+
+int32 PropertyCellData::GetDistancesCount()
+{
+    DVASSERT(valueType == PROP_VALUE_DISTANCE);
+    return distanceCount;
+}
+
+void PropertyCellData::SetDistance(float32 newDistance, int32 index)
+{
+    DVASSERT(valueType == PROP_VALUE_DISTANCE);
+    DVASSERT((0 <= index) && (index < distanceCount));
+    
+    SetFloat(newDistance);
+    SetInt(index);
+    
+    distances[index] = newDistance;
 }
 

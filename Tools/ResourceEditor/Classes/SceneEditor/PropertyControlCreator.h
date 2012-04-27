@@ -17,6 +17,7 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
         EPCID_CAMERA,
         EPCID_LANDSCAPE,
         EPCID_MESH,
+        EPCID_LODNODE,
         EPCID_NODE,
         
         EPCID_DATANODE,

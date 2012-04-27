@@ -1127,9 +1127,10 @@ void EditorBodyControl::CreateLandscapeEditor()
 {
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    Rect toolsRect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT +ControlsFactory::TOOLS_HEIGHT/2);
-
+    Rect toolsRect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
     landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRect);
+    
+    toolsRect.dy += ControlsFactory::TOOLS_HEIGHT/2;
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     

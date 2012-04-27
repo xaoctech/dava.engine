@@ -43,13 +43,13 @@ EditorScene::EditorScene()
 //    RegisterLodLayer(12, 35);
 //    RegisterLodLayer(31, 1000);
 
-    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-    for(int32 iLod = 0; iLod < lodCount; ++iLod)
-    {
-        float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
-        float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
-        RegisterLodLayer(nearDistance, farDistance);
-    }
+//    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+//    for(int32 iLod = 0; iLod < lodCount; ++iLod)
+//    {
+//        float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
+//        float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
+//        RegisterLodLayer(nearDistance, farDistance);
+//    }
     
     SetDrawGrid(true);
 }
@@ -417,6 +417,60 @@ void EditorScene::DrawDebugNodes(SceneNode * curr)
 void EditorScene::SetDrawGrid(bool newDrawGrid)
 {
     drawGrid = newDrawGrid;
+}
+
+void EditorScene::SetForceLodLayer(SceneNode *node, int32 layer)
+{
+    if(!node)   return;
+    
+    SceneNode *n = node;
+    
+    do {
+        LodNode *lodNode = dynamic_cast<LodNode *>(n);
+        if(lodNode)
+        {
+            lodNode->SetForceLodLayer(layer);
+        }
+        
+        n = n->GetParent();
+    } while (n);
+    
+    SetForceLodLayerRecursive(node, layer);
+}
+
+void EditorScene::SetForceLodLayerRecursive(SceneNode *node, int32 layer)
+{
+    LodNode *lodNode = dynamic_cast<LodNode *>(node);
+    if(lodNode)
+    {
+        lodNode->SetForceLodLayer(layer);
+    }
+    
+    int32 count = node->GetChildrenCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        SetForceLodLayerRecursive(node->GetChild(i), layer);
+    }
+}
+
+
+int32 EditorScene::GetForceLodLayer(SceneNode *node)
+{
+    if(!node)   return -1;
+
+    LodNode *lodNode = dynamic_cast<LodNode *>(node);
+    if(lodNode)
+        return lodNode->GetForceLodLayer();
+    
+    int32 count = node->GetChildrenCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        int32 layer = GetForceLodLayer(node->GetChild(i));
+        if(-1 != layer)
+            return layer;
+    }
+    
+    return -1;
 }
 
 

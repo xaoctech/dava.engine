@@ -15,6 +15,7 @@
 #include "ComboBox.h"
 #include "EditMatrixControl.h"
 #include "ColorPickerDelegate.h"
+#include "LodDistanceControl.h"
 
 using namespace DAVA;
 
@@ -53,6 +54,7 @@ public:
         PROP_CELL_SUBSECTION,
         PROP_CELL_SLIDER,
         PROP_CELL_TEXTUREPREVIEW,
+        PROP_CELL_DISTANCE,
 
         
         PROP_CELL_COUNT
@@ -277,6 +279,26 @@ private:
     
     UIControl *previewControl;
     UICheckBox *checkBox;
+};
+
+
+class PropertyDistanceCell: public PropertyCell, public LodDistanceControlDelegate
+{
+public:
+    
+    PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
+    virtual ~PropertyDistanceCell();
+    
+    static float32 GetHeightForWidth(float32 currentWidth, int32 count);
+    virtual void SetData(PropertyCellData *prop);
+    
+    virtual void DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value);
+    
+private:
+    
+    void OnClick(BaseObject * owner, void * userData, void * callerData);
+    
+    LodDistanceControl *distanceControl;
 };
 
 
