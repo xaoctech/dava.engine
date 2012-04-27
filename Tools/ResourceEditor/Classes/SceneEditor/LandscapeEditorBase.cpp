@@ -279,11 +279,6 @@ void LandscapeEditorBase::OnToolSelected(LandscapeTool *newTool)
     SetTool(newTool);
 }
 
-void LandscapeEditorBase::OnToolsPanelClose()
-{
-    Toggle();
-}
-
 void LandscapeEditorBase::OnShowGrid(bool show)
 {
     if(workingLandscape)

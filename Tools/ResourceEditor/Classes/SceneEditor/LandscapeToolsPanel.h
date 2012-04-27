@@ -12,7 +12,6 @@ class LandscapeToolsPanelDelegate
 public: 
     
     virtual void OnToolSelected(LandscapeTool *newTool) = 0;
-    virtual void OnToolsPanelClose() = 0;
     virtual void OnShowGrid(bool show) = 0;
 };
 
@@ -58,8 +57,6 @@ protected:
 
     UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
 
-    
-    void OnClose(BaseObject * object, void * userData, void * callerData);
     void OnBrushTool(BaseObject * object, void * userData, void * callerData);
 
     

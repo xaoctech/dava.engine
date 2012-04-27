@@ -72,7 +72,6 @@ public:
 
     //Tools Panel delegate
     virtual void OnToolSelected(LandscapeTool *newTool);
-    virtual void OnToolsPanelClose();
     virtual void OnShowGrid(bool show);
 
 protected:

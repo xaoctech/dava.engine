@@ -153,8 +153,8 @@ void ImageRasterizer::DrawAverage(Heightmap *dst, Image *mask, int32 x, int32 y,
                 {
                     if(*maskDataSaved)
                     {
-                        float64 newValue = (float64)*dstDataSaved + 
-                        (float64)(average - *dstDataSaved) * k * ((float64)*maskDataSaved / maskMax);
+                        float64 koef = Min(k * ((float64)*maskDataSaved / maskMax), (float64)1.0f);
+                        float64 newValue = (float64)*dstDataSaved + (float64)(average - *dstDataSaved) * koef;
                         if(newValue < 0.f)
                         {
                             newValue = 0.f;
@@ -237,8 +237,9 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
                 {
                     if(*maskDataSaved)
                     {
-                        float64 newValue = (float64)*dstDataSaved + 
-                            (float64)(average - *dstDataSaved) * k * ((float64)*maskDataSaved / maskMax);
+                        float64 koef = Min(k * ((float64)*maskDataSaved / maskMax), (float64)1.0f);
+                        
+                        float64 newValue = (float64)*dstDataSaved + (float64)(average - *dstDataSaved) * koef;
                         if(newValue < 0.f)
                         {
                             newValue = 0.f;

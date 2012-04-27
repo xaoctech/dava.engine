@@ -115,7 +115,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
         {
             if(currentTool->averageDrawing)
             {
-                float32 koef = (currentTool->averageStrength * timeElapsed);
+                float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
                 ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
             else if(currentTool->relativeDrawing)
@@ -127,7 +127,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
                 }
                 ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
             }
-            else 
+            else
             {
                 Vector3 landSize;
                 AABBox3 transformedBox;
@@ -137,7 +137,7 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
                 float32 maxHeight = landSize.z;
                 float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
                 
-                float32 koef = (currentTool->averageStrength * timeElapsed);
+                float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
                 ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
             }
             
@@ -197,7 +197,6 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
             default:
                 break;
         }
-
     }
     else 
     {
@@ -205,6 +204,11 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
         {
             case UIEvent::PHASE_BEGAN:
             {
+                if(currentTool->absoluteDropperDrawing)
+                {
+                    currentTool->height = GetDropperHeight();
+                }
+                
                 editingIsEnabled = true;
                 UpdateToolImage();
                 

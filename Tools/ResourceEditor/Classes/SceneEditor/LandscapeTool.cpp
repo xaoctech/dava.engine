@@ -48,6 +48,7 @@ LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageNa
     
     relativeDrawing = true;
     averageDrawing = false;
+    absoluteDropperDrawing = false;
 }
 
 LandscapeTool::~LandscapeTool()
