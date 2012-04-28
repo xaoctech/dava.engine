@@ -131,7 +131,7 @@ public:
      \param[in] key string key
      \param[in] defaultValue we want to set for this key
 	 */
-	KeyedArchive * GetArchive(const String & key, KeyedArchive * defaultValue);
+	KeyedArchive * GetArchive(const String & key, KeyedArchive * defaultValue = 0);
     
     /*
         \brief Function to get object from byte array.
