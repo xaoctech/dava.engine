@@ -120,7 +120,8 @@ public:
 	void SetByteArray(const uint8 *array, int32 arraySizeInBytes);
 
 	/**
-	 \brief Function to set KeyedArchive to variation type variable
+	 \brief Function to set KeyedArchive to variation type variable.
+     Archive is copying into the variable.
 	 \param[in] archive	archive to set (Archive is retains inside variable type)
 	 */
 	void SetKeyedArchive(KeyedArchive *archive);
@@ -173,7 +174,7 @@ public:
 	int32 AsByteArraySize();
 
     /**
-	 \brief Function to return keyed archive from variable
+	 \brief Function to return keyed archive from variable. Returns pointer to the KeyedArchive inside.
 	 \returns value of variable, or generate assert if variable type is different
 	 */
      KeyedArchive *AsKeyedArchive();
