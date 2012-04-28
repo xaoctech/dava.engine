@@ -127,7 +127,7 @@ public:
 	KeyedArchive * GetArchiveFromByteArray(const String & key);
 
     /**
-     \brief Function to get archive from archive.
+     \brief Function to get archive from archive. Returns pointer to the archive inside.
      \param[in] key string key
      \param[in] defaultValue we want to set for this key
 	 */
@@ -207,7 +207,8 @@ public:
 	void SetByteArrayFromArchive(const String & key, KeyedArchive * archive);
 
 	/**
-     \brief Function to set another keyed archive as kye for this archive.
+     \brief Function to set another keyed archive as key for this archive.
+     Function is copying archive inside. If you need to work with this archive later use GetArchive().
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
