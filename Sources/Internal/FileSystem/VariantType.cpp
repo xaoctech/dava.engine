@@ -153,7 +153,7 @@ void VariantType::SetKeyedArchive(KeyedArchive *archive)
 {
     ReleasePointer();
     type = TYPE_KEYED_ARCHIVE;
-    pointerValue = SafeRetain(archive);
+    pointerValue = new KeyedArchive(*archive);
 }
     
 	
