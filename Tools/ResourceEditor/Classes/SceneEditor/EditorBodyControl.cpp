@@ -83,6 +83,13 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     propertyShowState = EPSS_ONSCREEN;
     ToggleSceneGraph();
+    
+#ifdef FORCE_LOD_UPDATE
+    UIButton *btn = ControlsFactory::CreateButton(Vector2(200, 100), L"ForceLod");
+    btn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnForceLod));
+    AddControl(btn);
+    SafeRelease(btn);
+#endif //#ifdef FORCE_LOD_UPDATE
 }
 
 
@@ -1120,6 +1127,25 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
     
     UIControl::Draw(geometricData);
 }
+
+#ifdef FORCE_LOD_UPDATE
+void EditorBodyControl::OnForceLod(BaseObject * object, void * userData, void * callerData)
+{
+    Vector<LodNode *> lodnodes;
+    scene->GetChildNodes(lodnodes);
+    
+    float32 distances[LodNode::MAX_LOD_LAYERS] = {0, 13, 32, 900};
+    
+    for(int32 i = 0; i < lodnodes.size(); ++i)
+    {
+        int32 count = lodnodes[i]->GetLodLayersCount();
+        for(int32 iLayer = 0; iLayer < count; ++iLayer)
+        {
+            lodnodes[i]->SetLodLayerDistance(iLayer, distances[iLayer]);
+        }
+    }
+}
+#endif //#ifdef FORCE_LOD_UPDATE
 
 
 #pragma mark --Landscape Editor
