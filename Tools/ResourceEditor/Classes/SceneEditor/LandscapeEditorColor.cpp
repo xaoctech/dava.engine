@@ -323,7 +323,7 @@ void LandscapeEditorColor::UndoAction()
     {
         Image::EnableAlphaPremultiplication(false);
         
-        Texture *tex = UNDOManager::Instance()->UndoTilemask(maskSprite->GetTexture());
+        Texture *tex = UNDOManager::Instance()->UndoTilemask();
         
         Image::EnableAlphaPremultiplication(true);
         tex->GenerateMipmaps();
@@ -340,7 +340,7 @@ void LandscapeEditorColor::RedoAction()
     {
         Image::EnableAlphaPremultiplication(false);
         
-        Texture *tex = UNDOManager::Instance()->RedoTilemask(maskSprite->GetTexture());
+        Texture *tex = UNDOManager::Instance()->RedoTilemask();
         
         Image::EnableAlphaPremultiplication(true);
         tex->GenerateMipmaps();

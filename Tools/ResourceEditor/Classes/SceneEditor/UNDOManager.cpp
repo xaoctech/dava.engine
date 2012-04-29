@@ -136,7 +136,7 @@ void UNDOManager::SaveTilemask(Texture *tilemask)
     ReleaseHistory(actionsHistoryREDO);
 }
 
-Texture * UNDOManager::UndoTilemask(Texture *tilemask)
+Texture * UNDOManager::UndoTilemask()
 {
     Texture *tex = NULL;
     
@@ -155,7 +155,7 @@ Texture * UNDOManager::UndoTilemask(Texture *tilemask)
     return tex;
 }
 
-Texture * UNDOManager::RedoTilemask(Texture *tilemask)
+Texture * UNDOManager::RedoTilemask()
 {
     Texture *tex = NULL;
     if(actionsHistoryREDO.size())
