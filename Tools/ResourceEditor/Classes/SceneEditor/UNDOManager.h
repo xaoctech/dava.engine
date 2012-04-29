@@ -40,8 +40,8 @@ public:
     void RedoHeightmap(Heightmap *heightmap);
 
     void SaveTilemask(Texture *tilemask);
-    Texture * UndoTilemask(Texture *tilemask);
-    Texture * RedoTilemask(Texture *tilemask);
+    Texture * UndoTilemask();
+    Texture * RedoTilemask();
 
     
     UNDOAction::eActionType GetLastUNDOAction();
