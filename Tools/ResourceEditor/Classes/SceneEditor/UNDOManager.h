@@ -20,6 +20,8 @@ public:
     eActionType type;
     int32 ID;
     String filePathname;
+    
+    void *actionData;
 };
 
 
@@ -27,7 +29,7 @@ class UNDOManager: public Singleton<UNDOManager>
 {    
     enum eConst
     {
-        UNDO_HISTORY_SIZE = 50
+        UNDO_HISTORY_SIZE = 20
     };
     
 public:
