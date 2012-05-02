@@ -33,16 +33,25 @@
 #include "Render/Material.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/AnimatedMesh.h"
+#include "Render/Image.h"
+
+#include "Platform/SystemTimer.h"
+#include "FileSystem/FileSystem.h"
+#include "Debug/Stats.h"
+
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/SceneFile.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/DataNode.h"
 #include "Scene3D/ProxyNode.h"
-#include "Platform/SystemTimer.h"
-#include "FileSystem/FileSystem.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/ShadowRect.h"
 #include "Scene3D/LightNode.h"
+#include "Scene3D/BVHierarchy.h"
+#include "Scene3D/MeshInstanceNode.h"
+#include "Scene3D/ImposterManager.h"
+#include "Scene3D/ImposterNode.h"
+
 
 namespace DAVA 
 {
@@ -53,9 +62,16 @@ Scene::Scene()
 	:   SceneNode(0)
     ,   currentCamera(0)
     ,   clipCamera(0)
-    ,   forceLodLayer(-1)
+//    ,   forceLodLayer(-1)
 	,	shadowRect(0)
+	,	imposterManager(0)
 {   
+    bvHierarchy = new BVHierarchy();
+    bvHierarchy->ChangeScene(this);
+    
+    Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
+    Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
+    Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
 }
 
 Scene::~Scene()
@@ -84,13 +100,24 @@ Scene::~Scene()
     rootNodes.clear();
 
 	SafeRelease(shadowRect);
+    SafeRelease(bvHierarchy);
+
+	RemoveAllChildren();
+
+	SafeRelease(imposterManager);
 }
 
 void Scene::RegisterNode(SceneNode * node)
 {
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
+    {
         lights.insert(light);
+
+    }
+    
+    if (bvHierarchy)
+        bvHierarchy->RegisterNode(node);
 }
 
 void Scene::UnregisterNode(SceneNode * node)
@@ -98,7 +125,9 @@ void Scene::UnregisterNode(SceneNode * node)
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
         lights.erase(light);
-        
+    
+    if (bvHierarchy)
+        bvHierarchy->UnregisterNode(node);
 }
 
 Scene * Scene::GetScene()
@@ -106,37 +135,7 @@ Scene * Scene::GetScene()
     return this;
 }
     
-//int32 Scene::GetMaterialCount()
-//{
-//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-//    List<DataNode*> dataNodes;
-//    GetDataNodes(dataNodes);
-//    
-//    int32 matCount = 0;
-//    const List<DataNode*>::iterator & end = dataNodes.end(); 
-//    for (List<DataNode*>::iterator it = dataNodes.begin(); it != end; ++it)
-//    {
-//        if (dynamic_cast<Material*>(*it))
-//            matCount++;
-//    }
-//    return matCount;
-//}
-//
-//Material * Scene::GetMaterial(int32 index)
-//{
-//    //DataNode * materialsNode = dynamic_cast<DataNode*>(this->FindByName("materials"));
-//	return dynamic_cast<Material*>(materials->GetChild(index));
-//}
 
-//int32 Scene::GetStaticMeshCount()
-//{
-//    return (int32)staticMeshes->GetChildrenCount();
-//}
-//
-//StaticMesh * Scene::GetStaticMesh(int32 index)
-//{
-//	return dynamic_cast<StaticMesh*>(staticMeshes->GetChild(index));
-//}
     
 void Scene::AddAnimatedMesh(AnimatedMesh * mesh)
 {
@@ -261,10 +260,13 @@ SceneNode *Scene::GetRootNode(const String &rootNodePath)
     }
     else if(ext == ".sc2")
     {
+        uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
         SceneFileV2 *file = new SceneFileV2();
-        file->EnableDebugLog(true);
+        file->EnableDebugLog(false);
         file->LoadScene(rootNodePath.c_str(), this);
         SafeRelease(file);
+        uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+        Logger::Info("[GETROOTNODE TIME] %dms", (endTime - startTime));
     }
     
 	it = rootNodes.find(rootNodePath);
@@ -299,6 +301,22 @@ void Scene::ReleaseRootNode(SceneNode *nodeToRelease)
 //            return;
 //        }
 //	}
+}
+    
+    
+void Scene::SetBVHierarchy(BVHierarchy * _bvHierarchy)
+{
+    if (bvHierarchy)
+    {
+        bvHierarchy->ChangeScene(0);
+        SafeRelease(bvHierarchy);
+    }
+    bvHierarchy = SafeRetain(_bvHierarchy);
+}
+    
+BVHierarchy * Scene::GetBVHierarchy()
+{
+    return bvHierarchy;
 }
 
     
@@ -355,6 +373,7 @@ void Scene::SetupTestLighting()
     
 void Scene::Update(float timeElapsed)
 {
+    Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
     // lights 
@@ -375,12 +394,24 @@ void Scene::Update(float timeElapsed)
 		AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
 		mesh->Update(timeElapsed);
 	}
+
+	if(imposterManager)
+	{
+		imposterManager->Update(timeElapsed);
+	}
     
     updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
+    Stats::Instance()->EndTimeMeasure("Scene.Update", this);
 }		
 
 void Scene::Draw()
 {
+    Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
+
+    
+    //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
+	//RenderManager::Instance()->SetRenderTarget(fboSprite);
+	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
     nodeCounter = 0;
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
@@ -391,16 +422,20 @@ void Scene::Draw()
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->ClearDepthBuffer();
     
-
-    
-	SetupTestLighting();
 	
     if (currentCamera)
     {
         currentCamera->Set();
     }
+    if (bvHierarchy)
+        bvHierarchy->Cull();
 
-	SceneNode::Draw();
+    SceneNode::Draw();
+    
+	if(imposterManager)
+	{
+		imposterManager->Draw();
+	}
 
 	if(shadowVolumes.size() > 0)
 	{
@@ -455,6 +490,12 @@ void Scene::Draw()
 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
+
+    Stats::Instance()->EndTimeMeasure("Scene.Draw", this);
+	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
+	//RENDER_VERIFY(glReadPixels(0, 0, 512, 512, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image->data));
+	//image->Save("img.png");
+	//RenderManager::Instance()->RestoreRenderTarget();
 }
 
 	
@@ -494,48 +535,17 @@ Camera * Scene::GetClipCamera() const
     return clipCamera;
 }
  
-void Scene::SetForceLodLayer(int32 layer)
-{
-    forceLodLayer = layer;
-}
-int32 Scene::GetForceLodLayer()
-{
-    return forceLodLayer;
-}
-
-int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
-{
-    LodLayer newLevel;
-    newLevel.nearDistance = nearDistance;
-    newLevel.farDistance = farDistance;
-    newLevel.nearDistanceSq = nearDistance * nearDistance;
-    newLevel.farDistanceSq = farDistance * farDistance;
-    int i = 0;
-    
-    for (Vector<LodLayer>::iterator it = lodLayers.begin(); it < lodLayers.end(); it++)
-    {
-        if (nearDistance < it->nearDistance)
-        {
-            lodLayers.insert(it, newLevel);
-            return i;
-        }
-        i++;
-    }
-    
-    lodLayers.push_back(newLevel);
-    return i;
-}
-    
-void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance)
-{
-    DVASSERT(layerNum < (int32)lodLayers.size());
-    
-    lodLayers[layerNum].nearDistance = nearDistance;
-    lodLayers[layerNum].farDistance = farDistance;
-    lodLayers[layerNum].nearDistanceSq = nearDistance * nearDistance;
-    lodLayers[layerNum].farDistanceSq = farDistance * farDistance;
-    
-    
+//void Scene::SetForceLodLayer(int32 layer)
+//{
+//    forceLodLayer = layer;
+//}
+//int32 Scene::GetForceLodLayer()
+//{
+//    return forceLodLayer;
+//}
+//
+//int32 Scene::RegisterLodLayer(float32 nearDistance, float32 farDistance)
+//{
 //    LodLayer newLevel;
 //    newLevel.nearDistance = nearDistance;
 //    newLevel.farDistance = farDistance;
@@ -555,8 +565,39 @@ void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDis
 //    
 //    lodLayers.push_back(newLevel);
 //    return i;
-}
-    
+//}
+//    
+//void Scene::ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance)
+//{
+//    DVASSERT(layerNum < (int32)lodLayers.size());
+//    
+//    lodLayers[layerNum].nearDistance = nearDistance;
+//    lodLayers[layerNum].farDistance = farDistance;
+//    lodLayers[layerNum].nearDistanceSq = nearDistance * nearDistance;
+//    lodLayers[layerNum].farDistanceSq = farDistance * farDistance;
+//    
+//    
+////    LodLayer newLevel;
+////    newLevel.nearDistance = nearDistance;
+////    newLevel.farDistance = farDistance;
+////    newLevel.nearDistanceSq = nearDistance * nearDistance;
+////    newLevel.farDistanceSq = farDistance * farDistance;
+////    int i = 0;
+////    
+////    for (Vector<LodLayer>::iterator it = lodLayers.begin(); it < lodLayers.end(); it++)
+////    {
+////        if (nearDistance < it->nearDistance)
+////        {
+////            lodLayers.insert(it, newLevel);
+////            return i;
+////        }
+////        i++;
+////    }
+////    
+////    lodLayers.push_back(newLevel);
+////    return i;
+//}
+//    
     
 
 void Scene::AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume)
@@ -587,6 +628,26 @@ LightNode * Scene::GetNearestLight(LightNode::eType type, Vector3 position)
 Set<LightNode*> & Scene::GetLights()
 {
     return lights;
+}
+
+void Scene::RegisterImposter(ImposterNode * imposter)
+{
+	if(!imposterManager)
+	{
+		imposterManager = new ImposterManager();
+	}
+	
+	imposterManager->Add(imposter);
+}
+
+void Scene::UnregisterImposter(ImposterNode * imposter)
+{
+	imposterManager->Remove(imposter);
+
+	if(imposterManager->IsEmpty())
+	{
+		SafeRelease(imposterManager);
+	}
 }
 
 /*void Scene::Save(KeyedArchive * archive)

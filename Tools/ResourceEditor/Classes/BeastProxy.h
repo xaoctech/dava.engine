@@ -4,6 +4,7 @@
 #include "DAVAEngine.h"
 
 class BeastManager;
+struct LightmapAtlasingData;
 class BeastProxy : public DAVA::Singleton<BeastProxy>
 {
 public:
@@ -15,6 +16,8 @@ public:
 	virtual void Run(BeastManager * manager, DAVA::Scene * scene) {};
 	virtual void SetLightmapsDirectory(BeastManager * manager, const DAVA::String & path) {};
 	virtual void SetMode(BeastManager * manager, DAVA::int32 mode) {};
+
+	virtual void UpdateAtlas(BeastManager * manager, DAVA::Vector<LightmapAtlasingData> * atlasData) {};
 };
 
 #endif //__BEAST_PROXY__

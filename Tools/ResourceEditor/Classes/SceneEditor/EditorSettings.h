@@ -54,20 +54,15 @@ public:
     int32 GetRightPanelWidth();
     void SetRightPanelWidth(int32 width);
 
-    int32 GetLodLayersCount();
-    float32 GetLodLayerNear(int32 layerNum);
-    float32 GetLodLayerFar(int32 layerNum);
-
-    void SetLodLayersCount(int32 count);
-    void SetLodLayerNear(int32 layerNum, float32 near);
-    void SetLodLayerFar(int32 layerNum, float32 far);
-
-    int32 GetForceLodLayer();
-    void SetForceLodLayer(int32 layer);
+    float32 GetLodLayerDistance(int32 layerNum);
+    void SetLodLayerDistance(int32 layerNum, float32 distance);
 
     int32 GetLastOpenedCount();
     String GetLastOpenedFile(int32 index);
     void AddLastOpenedFile(const String & pathToFile);
+    
+    void SetDrawGrid(bool drawGrid);
+    bool GetDrawGrid();
     
 protected:
 

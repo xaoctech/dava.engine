@@ -118,6 +118,7 @@ void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode)
                 newNode->Retain();
                 children.insert(it, newNode);
                 newNode->SetParent(this);
+                newNode->SetScene(GetScene());
                 break;
             }
         }
@@ -370,7 +371,7 @@ void SceneNode::Update(float32 timeElapsed)
 
 void SceneNode::Draw()
 {
-	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE))return;
+	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
 
 	//uint32 size = (uint32)children.size();
     const Vector<SceneNode*>::iterator & itEnd = children.end();
@@ -429,11 +430,9 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
     dstNode->flags = flags;
-    const Map<String, VariantType> &customMap = customProperties->GetArchieveData();
-    for (Map<String, VariantType>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
-    {
-        dstNode->customProperties->SetVariant(it->first, it->second);
-    }
+
+    SafeRelease(dstNode->customProperties);
+    dstNode->customProperties = new KeyedArchive(*customProperties);
 
 //    Logger::Debug("Node %s clonned", name.c_str());
     
@@ -482,6 +481,9 @@ String SceneNode::GetFullName()
 
 String SceneNode::RecursiveBuildFullName(SceneNode * node, SceneNode * endNode)
 {
+    if (!node)
+        return "";
+        
     if (node->GetParent() != endNode)
     {
         return RecursiveBuildFullName(node->GetParent(), endNode) + String("->") + node->name; 

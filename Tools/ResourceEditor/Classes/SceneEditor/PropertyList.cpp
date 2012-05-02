@@ -231,6 +231,17 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
         case PropertyCellData::PROP_VALUE_COLOR:
             delegate->OnColorPropertyChanged(this, changedProperty->key, changedProperty->GetColor());
             break;
+        case PropertyCellData::PROP_VALUE_SUBSECTION:
+            break;
+        case PropertyCellData::PROP_VALUE_SLIDER:
+            delegate->OnSliderPropertyChanged(this, changedProperty->key, changedProperty->GetSliderValue());
+            break;
+        case PropertyCellData::PROP_VALUE_TEXTUREPREVIEW:
+            delegate->OnTexturePreviewPropertyChanged(this, changedProperty->key, changedProperty->GetBool());
+            break;
+        case PropertyCellData::PROP_VALUE_DISTANCE:
+            delegate->OnDistancePropertyChanged(this, changedProperty->key, changedProperty->GetFloat(), changedProperty->GetInt());
+            break;
     }
 }
 
@@ -319,6 +330,19 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
                 break;
             case PropertyCell::PROP_CELL_COLOR:
                 c = new PropertyColorCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_SUBSECTION:
+                c = new PropertySubsectionCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_SLIDER:
+                c = new PropertySliderCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_TEXTUREPREVIEW:
+                c = new PropertyTexturePreviewCell(this, props[index], size.x);
+                break;
+            case PropertyCell::PROP_CELL_DISTANCE:
+                c = new PropertyDistanceCell(this, props[index], size.x);
+                break;
         }
     }
     else 
@@ -338,27 +362,28 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
     {
         case PropertyCell::PROP_CELL_TEXT:
             return PropertyTextCell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_FILEPATH:
             return PropertyFilepathCell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_BOOL:
             return PropertyBoolCell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_COMBO:
             return PropertyComboboxCell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_MATRIX4:
             return PropertyMatrix4Cell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_SECTION:
             return PropertySectionCell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_BUTTON:
             return PropertyButtonCell::GetHeightForWidth(size.x);
-            break;
         case PropertyCell::PROP_CELL_COLOR:
             return PropertyColorCell::GetHeightForWidth(size.x);
+        case PropertyCell::PROP_CELL_SUBSECTION:
+            return PropertySubsectionCell::GetHeightForWidth(size.x);
+        case PropertyCell::PROP_CELL_SLIDER:
+            return PropertySliderCell::GetHeightForWidth(size.x);
+        case PropertyCell::PROP_CELL_TEXTUREPREVIEW:
+            return PropertyTexturePreviewCell::GetHeightForWidth(size.x);
+        case PropertyCell::PROP_CELL_DISTANCE:
+            return PropertyDistanceCell::GetHeightForWidth(size.x, props[index]->GetDistancesCount());
     }
     return 50;//todo: rework
 }
@@ -536,4 +561,92 @@ const Color & PropertyList::GetColorPropertyValue(const String &propertyName)
     return p->GetColor();
 }
 
+void PropertyList::AddSubsection(const String &subsectionName)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_SUBSECTION);
+    p->cellType = PropertyCell::PROP_CELL_SUBSECTION;
+    AddProperty(p, subsectionName, PROPERTY_IS_READ_ONLY);
+}
+
+
+void PropertyList::AddSliderProperty(const String &propertyName, bool showEdges)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_SLIDER);
+    p->cellType = PropertyCell::PROP_CELL_SLIDER;
+    p->SetSliderValue(0.f, 1.0f, 0.5f);
+    p->SetBool(showEdges);
+    
+    AddProperty(p, propertyName, PROPERTY_IS_EDITABLE);
+}
+
+void PropertyList::SetSliderPropertyValue(const String &propertyName, float32 newMinValue, float32 newMaxValue, float32 newValue)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetSliderValue(newMinValue, newMaxValue, newValue);
+    
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+float32 PropertyList::GetSliderPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetSliderValue();
+}
+
+void PropertyList::AddTexturePreviewProperty(const String &propertyName, editableType propEditType)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_TEXTUREPREVIEW);
+    p->cellType = PropertyCell::PROP_CELL_TEXTUREPREVIEW;
+    p->SetBool(false);
+    p->SetTexture(NULL);
+    AddProperty(p, propertyName, propEditType);
+}
+
+void PropertyList::SetTexturePreviewPropertyValue(const String &propertyName, bool newBoolValue, DAVA::Texture *newTexture)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetBool(newBoolValue);
+    p->SetTexture(newTexture);
+    
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+bool PropertyList::GetTexturePreviewPropertyValue(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    return p->GetBool();   
+}
+
+void PropertyList::AddDistanceProperty(const String &propertyName, editableType propEditType)
+{
+    PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_DISTANCE);
+    p->cellType = PropertyCell::PROP_CELL_DISTANCE;
+    p->SetDistances(NULL, 0);
+    AddProperty(p, propertyName, propEditType);
+}
+
+void PropertyList::SetDistancePropertyValue(const String &propertyName, float32 *distances, int32 count)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    p->SetDistances(distances, count);
+    
+    if (p->currentCell) 
+    {
+        p->currentCell->SetData(p);
+    }
+}
+
+float32 PropertyList::GetDistancePropertyValue(const String &propertyName, int32 index)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    
+    DVASSERT((0 <= index) && (index < p->GetDistancesCount()));
+    return p->GetDistances()[index];   
+}
 

@@ -31,6 +31,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Shader.h"
 #include "Platform/Thread.h"
+#include "Utils/Utils.h"
 
 
 namespace DAVA
@@ -68,6 +69,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     for (uint32 idx = 0; idx < MAX_TEXTURE_LEVELS; ++idx)
         currentTexture[idx] = 0;
     alphaFunc = CMP_ALWAYS;
+	depthFunc = CMP_LESS;
     shader = 0;
     cullMode = FACE_BACK;
     
@@ -181,6 +183,12 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
                     previousState->alphaFunc = alphaFunc;
                     previousState->alphaFuncCmpValue = alphaFuncCmpValue;
                 }
+
+		if (changeSet & STATE_CHANGED_DEPTH_FUNC)
+		{
+			SetDepthFuncInHW();
+			previousState->depthFunc = depthFunc;
+		}
         
         if (changeSet & STATE_CHANGED_TEXTURE0)
         {
@@ -202,6 +210,26 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
             SetTextureLevelInHW(3);
             previousState->currentTexture[3] = currentTexture[3];
         }
+		if (changeSet & STATE_CHANGED_TEXTURE4)
+		{
+			SetTextureLevelInHW(4);
+			previousState->currentTexture[4] = currentTexture[4];
+		}
+		if (changeSet & STATE_CHANGED_TEXTURE5)
+		{
+			SetTextureLevelInHW(5);
+			previousState->currentTexture[5] = currentTexture[5];
+		}
+		if (changeSet & STATE_CHANGED_TEXTURE6)
+		{
+			SetTextureLevelInHW(6);
+			previousState->currentTexture[6] = currentTexture[6];
+		}
+		if (changeSet & STATE_CHANGED_TEXTURE7)
+		{
+			SetTextureLevelInHW(7);
+			previousState->currentTexture[7] = currentTexture[7];
+		}
 
 		if (changeSet & STATE_CHANGED_STENCIL_REF)
 		{
@@ -354,7 +382,7 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
             }
         }
         
-        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, currentTexture[textureLevel]->id));
+        BindTexture(currentTexture[textureLevel]->id);
     }else
     {
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
@@ -370,7 +398,7 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
             }
         }
         
-        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, 0));
+        BindTexture(0);
     }    
 }
 inline void RenderStateBlock::SetDepthTestInHW()
@@ -411,7 +439,18 @@ inline void RenderStateBlock::SetAlphaTestInHW()
 
 inline void RenderStateBlock::SetAlphaTestFuncInHW()
 {
-     RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
+    if (renderer == Core::RENDERER_OPENGL)
+    {
+        RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], (float32)alphaFuncCmpValue / 255.0f) );
+    }else
+    {
+        RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
+    }
+}
+
+inline void RenderStateBlock::SetDepthFuncInHW()
+{
+	RENDER_VERIFY(glDepthFunc(COMPARE_FUNCTION_MAP[depthFunc]));
 }
 
 inline void RenderStateBlock::SetStencilRefInHW()
@@ -549,6 +588,11 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
 {
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAFUNC, COMPARE_FUNCTION_MAP[alphaFunc]));
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ALPHAREF , alphaFuncCmpValue));
+}
+
+inline void RenderStateBlock::SetDepthFuncInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ZFUNC, COMPARE_FUNCTION_MAP[alphaFunc]));
 }
 
 inline void RenderStateBlock::SetStensilTestInHW()

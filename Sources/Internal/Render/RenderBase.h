@@ -87,8 +87,6 @@
  	#include <GLES2/gl2.h>
  	#include <GLES2/gl2ext.h>
 
-	#define __DAVAENGINE_ANDROID_APIVERSION_8__	// for different SDK versions different path and 
-
 #else //PLATFORMS
 	//other platforms
 #endif//PLATFORMS 
@@ -120,6 +118,21 @@ enum eBlendMode
 	BLEND_MODE_COUNT,
 };
 
+enum PixelFormat
+{
+    FORMAT_INVALID = 0,
+    FORMAT_RGBA8888 = 1,		
+    FORMAT_RGB565,				 
+    FORMAT_RGBA4444,			
+    FORMAT_A8,
+    FORMAT_PVR4,
+    FORMAT_PVR2,
+    FORMAT_A16,
+    
+    FORMAT_CLOSEST = 256
+};
+
+    
 #if defined(__DAVAENGINE_OPENGL__)
 static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
 {

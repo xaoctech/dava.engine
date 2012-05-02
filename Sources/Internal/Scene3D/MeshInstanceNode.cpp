@@ -87,6 +87,8 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 	
 MeshInstanceNode::~MeshInstanceNode()
 {
+	ClearLightmaps();
+
     for (int32 idx = 0; idx < (int32)polygroups.size(); ++idx)
     {
         SafeRelease(polygroups[idx]);
@@ -128,8 +130,9 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     
 void MeshInstanceNode::Draw()
 {
-	if (!(flags&SceneNode::NODE_VISIBLE))return;
-        
+#if 1
+    if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
+
 //    if (GetFullName() == String("MaxScene->node-Cylinder01->VisualSceneNode14->instance_0"))
 //    {
 //        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -137,8 +140,9 @@ void MeshInstanceNode::Draw()
 //        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //    }    
 
-    if (!scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox))
+    if (flags & NODE_CLIPPED_THIS_FRAME)
     {
+        // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
         return;
     }
 		
@@ -171,11 +175,13 @@ void MeshInstanceNode::Draw()
         PolygonGroupWithMaterial * polygroup = polygroups[k];
         if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
 		{
-			Texture * lightmap = GetLightmapForIndex(k);
-			if(lightmap)
+			LightmapData * data = GetLightmapDataForIndex(k);
+			if(data && data->lightmap)
 			{
 				polygroup->material->SetSetupLightmap(false);
-				polygroup->material->textures[Material::TEXTURE_DECAL] = lightmap;
+				polygroup->material->textures[Material::TEXTURE_DECAL] = data->lightmap;
+				polygroup->material->uvOffset = data->uvOffset;
+				polygroup->material->uvScale = data->uvScale;
 			}
 			else
 			{
@@ -183,7 +189,12 @@ void MeshInstanceNode::Draw()
 				polygroup->material->SetSetupLightmapSize(GetCustomProperties()->GetInt32(DAVA::Format("#%d.lightmap.size", k), 128));
 			}
         }
-        
+
+//        if (polygroup->material->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+//        {
+//            polygroup->material->type = Material::MATERIAL_UNLIT_TEXTURE;
+//        }
+//        if (polygroup->material->type != Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
         polygroup->material->Draw(polygroup->GetPolygonGroup(), materialState);
     }
 	
@@ -246,10 +257,10 @@ void MeshInstanceNode::Draw()
                         binormal = CrossProduct(normal, tangent);
                     }
                     Vector3 vertex2;
-//                     vertex2 = vertex + normal * DEBUG_VECTOR_LENGTH;
-//                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
-//                    RenderManager::Instance()->SetColor(color);
-//                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
+                     vertex2 = vertex + normal * DEBUG_VECTOR_LENGTH;
+                    Color color(normal.x * 0.5f + 0.5f, normal.y * 0.5f + 0.5f, normal.z * 0.5f + 0.5f, 1.0f);
+                    RenderManager::Instance()->SetColor(color);
+                    RenderHelper::Instance()->DrawLine(vertex, vertex2);
                     
                     vertex2 = vertex + tangent * DEBUG_VECTOR_LENGTH;
                     Color tcolor(0.0f, 1.0f, 0.0f, 1.0f);
@@ -277,6 +288,7 @@ void MeshInstanceNode::Draw()
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 
 	SceneNode::Draw();
+#endif
 }
 
 
@@ -350,21 +362,18 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 //        lodIdx++;
 //    }
 
-    if (sceneFile->GetVersion() == 3)
+    int32 polygroupCount = (int32)polygroups.size();
+    archive->SetInt32("pgcnt", polygroupCount);
+    
+    for (int idx = 0; idx < polygroupCount; ++idx)
     {
-        int32 polygroupCount = (int32)polygroups.size();
-        archive->SetInt32("pgcnt", polygroupCount);
+        Material * material = polygroups[idx]->material;
+        StaticMesh * mesh = polygroups[idx]->mesh;
+        int32 pgIndex = polygroups[idx]->polygroupIndex;
         
-        for (int idx = 0; idx < polygroupCount; ++idx)
-        {
-            Material * material = polygroups[idx]->material;
-            StaticMesh * mesh = polygroups[idx]->mesh;
-            int32 pgIndex = polygroups[idx]->polygroupIndex;
-            
-            archive->SetByteArrayAsType(Format("pg%d_matptr", idx), (uint64)material);
-            archive->SetByteArrayAsType(Format("pg%d_meshptr", idx), (uint64)mesh);
-            archive->SetInt32(Format("pg%d_pg", idx), pgIndex);
-        }
+        archive->SetByteArrayAsType(Format("pg%d_matptr", idx), (uint64)material);
+        archive->SetByteArrayAsType(Format("pg%d_meshptr", idx), (uint64)mesh);
+        archive->SetInt32(Format("pg%d_pg", idx), pgIndex);
     }
     
 	archive->SetInt32("lightmapsCount", (int32)lightmaps.size());
@@ -372,9 +381,14 @@ void MeshInstanceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	Vector<LightmapData>::iterator lighmapsEnd = lightmaps.end();
 	for(Vector<LightmapData>::iterator lightmapsIterator = lightmaps.begin(); lightmapsIterator != lighmapsEnd; ++lightmapsIterator)
 	{
-		String filename = sceneFile->AbsoluteToRelative((*lightmapsIterator).lightmapName);
+		LightmapData & data = *lightmapsIterator;
+		String filename = sceneFile->AbsoluteToRelative(data.lightmapName);
 
 		archive->SetString(Format("lightmap%d", lightmapIndex), filename.c_str());
+		archive->SetFloat(Format("lightmap%duvoX", lightmapIndex), data.uvOffset.x);
+		archive->SetFloat(Format("lightmap%duvoY", lightmapIndex), data.uvOffset.y);
+		archive->SetFloat(Format("lightmap%duvsX", lightmapIndex), data.uvScale.x);
+		archive->SetFloat(Format("lightmap%duvsY", lightmapIndex), data.uvScale.y);
 		lightmapIndex++;
 	}
 }
@@ -383,8 +397,7 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Load(archive, sceneFile);
 
-    
-    if (sceneFile->GetVersion() == 3)
+    if (sceneFile->GetVersion() >= 3)
     {
         int32 polygroupCount = archive->GetInt32("pgcnt", 0);
         
@@ -398,7 +411,9 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
             if (material && mesh)
             {
-                Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                if(sceneFile->DebugLogEnabled())
+                    Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                
                 AddPolygonGroup(mesh, pgIndex, material);
             }
         }
@@ -422,7 +437,8 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
                     if (material && mesh)
                     {
-                        Logger::Debug("+ assign material: %s", material->GetName().c_str());
+                        if(sceneFile->DebugLogEnabled())
+                            Logger::Debug("+ assign material: %s", material->GetName().c_str());
                         
                         AddPolygonGroup(mesh, pgIndex, material);
                     }
@@ -460,8 +476,16 @@ void MeshInstanceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         int32 lightmapsCount = archive->GetInt32("lightmapsCount", 0);
         for(int32 i = 0; i < lightmapsCount; ++i)
         {
-            String lightmapName = archive->GetString(Format("lightmap%d", i), "");
-            AddLightmap(sceneFile->RelativeToAbsolute(lightmapName));
+			LightmapData data;
+
+            data.lightmapName = archive->GetString(Format("lightmap%d", i), "");
+			data.lightmapName = sceneFile->RelativeToAbsolute(data.lightmapName);
+			data.uvOffset.x = archive->GetFloat(Format("lightmap%duvoX", i));
+			data.uvOffset.y = archive->GetFloat(Format("lightmap%duvoY", i));
+			data.uvScale.x = archive->GetFloat(Format("lightmap%duvsX", i));
+			data.uvScale.y = archive->GetFloat(Format("lightmap%duvsY", i));
+
+            AddLightmap(i, data);
         }
     }
 }
@@ -471,12 +495,17 @@ Vector<PolygonGroupWithMaterial*> & MeshInstanceNode::GetPolygonGroups()
     return polygroups;
 }
 
-void MeshInstanceNode::AddLightmap(const String & lightmapName)
+void MeshInstanceNode::AddLightmap(int32 polygonGroupIndex, const LightmapData & lightmapData)
 {
-	LightmapData data;
-	data.lightmapName = lightmapName;
-	data.lightmap = Texture::CreateFromFile(lightmapName);
-	lightmaps.push_back(data);
+	LightmapData data = lightmapData;
+	data.lightmap = Texture::CreateFromFile(data.lightmapName);
+
+	if(polygonGroupIndex > ((int32)lightmaps.size()-1))
+	{
+		lightmaps.resize(polygonGroupIndex+1);
+	}
+
+	lightmaps[polygonGroupIndex] = data;
 }
 
 void MeshInstanceNode::ClearLightmaps()
@@ -497,11 +526,11 @@ void MeshInstanceNode::ReplaceMaterial(DAVA::Material *material, int32 index)
     polygroups[index]->material = SafeRetain(material);
 }
 
-Texture * MeshInstanceNode::GetLightmapForIndex(int32 index)
+MeshInstanceNode::LightmapData * MeshInstanceNode::GetLightmapDataForIndex(int32 index)
 {
 	if(index < (int32)lightmaps.size())
 	{
-		return lightmaps[index].lightmap;
+		return &(lightmaps[index]);
 	}
 	else
 	{
@@ -586,7 +615,7 @@ void MeshInstanceNode::BakeTransforms()
         else
         {
             canBakeEverything = false; 
-            Logger::Debug("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
+            Logger::Warning("WARNING: Can't batch object because it has multiple instances: %s", GetFullName().c_str());
         }
     }   
     if (canBakeEverything)

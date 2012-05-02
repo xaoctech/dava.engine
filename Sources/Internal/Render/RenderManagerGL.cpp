@@ -471,7 +471,7 @@ void RenderManager::FlushState()
 {
 	PrepareRealMatrix();
     AttachRenderData(currentState.shader);
-    
+
     currentState.Flush(&hardwareState);
 }
 
@@ -609,9 +609,9 @@ void RenderManager::ClearDepthBuffer(float32 depth)
 {
 #if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glClearDepthf(depth));
-#else
+#else //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glClearDepth(depth));
-#endif 
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glClear(GL_DEPTH_BUFFER_BIT));
 }
 
@@ -672,14 +672,15 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 {
 	if (renderTarget == NULL)
 	{
-#if defined(__DAVAENGINE_IPHONE__)
-		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, fboViewFramebuffer));
-#elif defined(__DAVAENGINE_ANDROID__)
+//#if defined(__DAVAENGINE_IPHONE__)
+//		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, fboViewFramebuffer));
+//#elif defined(__DAVAENGINE_ANDROID__)
+////        renderTarget->GetTexture()->renderTargetModified = true;
+//#else //Non ES platforms
+//		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
+//#endif //PLATFORMS
         BindFBO(fboViewFramebuffer);
-//        renderTarget->GetTexture()->renderTargetModified = true;
-#else //Non ES platforms
-		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
-#endif //PLATFORMS
+
         SetViewport(Rect(0, 0, -1, -1), true);
 
 		SetRenderOrientation(Core::Instance()->GetScreenOrientation());
@@ -687,14 +688,18 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	else
 	{
 		renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
-#if defined(__DAVAENGINE_IPHONE__)
-		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, renderTarget->GetTexture()->fboID));
-#elif defined(__DAVAENGINE_ANDROID__)
+//#if defined(__DAVAENGINE_IPHONE__)
+//		RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, renderTarget->GetTexture()->fboID));
+//#elif defined(__DAVAENGINE_ANDROID__)
+//		BindFBO(renderTarget->GetTexture()->fboID);
+//        renderTarget->GetTexture()->renderTargetModified = true;
+//#else //Non ES platforms
+//		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
+//#endif //PLATFORMS
 		BindFBO(renderTarget->GetTexture()->fboID);
+#if defined(__DAVAENGINE_ANDROID__)
         renderTarget->GetTexture()->renderTargetModified = true;
-#else //Non ES platforms
-		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
-#endif //PLATFORMS
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
         
         SetViewport(Rect(0, 0, renderTarget->GetTexture()->width, renderTarget->GetTexture()->height), true);
@@ -723,6 +728,14 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	}
 	
 	currentRenderTarget = renderTarget;
+}
+
+void RenderManager::SetHWRenderTarget(Texture * renderTarget)
+{
+	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
+	BindFBO(renderTarget->fboID);
+	SetViewport(Rect(0, 0, renderTarget->width, renderTarget->height), true);
+	RemoveClip();
 }
 
     
@@ -770,7 +783,7 @@ void RenderManager::AttachRenderData(Shader * shader)
             for (int32 p = 0; p < enabledAttribCount; ++p)
             {
                 if (DEBUG)Logger::Debug("!shader glDisableVertexAttribArray: %d", p);
-                glDisableVertexAttribArray(p);
+                RENDER_VERIFY(glDisableVertexAttribArray(p));
             }
             enabledAttribCount = 0;
             pointerArraysRendererState = 0;
@@ -886,7 +899,15 @@ void RenderManager::AttachRenderData(Shader * shader)
 #endif 
         //}
         
+        
         int32 size = (int32)currentRenderData->streamArray.size();
+        
+        //DVASSERT(size >= shader->GetAttributeCount() && "Shader attribute count higher than model attribute count");
+        if (size < shader->GetAttributeCount())
+        {
+            // Logger::Error("Shader attribute count higher than model attribute count");
+        }
+        
         for (int32 k = 0; k < size; ++k)
         {
             RenderDataStream * stream = currentRenderData->streamArray[k];

@@ -98,6 +98,8 @@ const char8 * Material::GetTypeName(eType format)
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR";
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
+        default:
+            break;
     };
     return "WRONG MATERIAL";
 }
@@ -125,6 +127,8 @@ Material::Material(Scene * _scene)
     {
         uberShader = new UberShader();
         uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
+        
+        
         uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
         uberShader->CompileShaderCombination("MATERIAL_DECAL");
         uberShader->CompileShaderCombination("MATERIAL_DETAIL");
@@ -163,6 +167,37 @@ Material::~Material()
 {
 }
     
+    
+Material::eValidationResult Material::Validate(PolygonGroup * polygonGroup)
+{
+    RebuildShader();
+    /*
+        General check if number of attributes in shader is 
+     */
+    int32 format = polygonGroup->GetFormat();
+    int32 formatBitCount = 0; // number of attributes in polygroup available in the shader
+    for (int bit = 1; bit <= EVF_HIGHER_BIT; bit <<= 1)
+    {
+        if (format & bit)
+        {
+            if (shader->GetAttributeIndex((eVertexFormat)bit) != -1)
+                formatBitCount++;
+        }
+    }
+    // Check if we have more attributes 
+    if (shader->GetAttributeCount() > formatBitCount)
+    {
+        //shader->Get
+        
+        
+        
+        return VALIDATE_INCOMPATIBLE;
+    }
+    
+    
+    return VALIDATE_COMPATIBLE;
+}
+
 void Material::RebuildShader()
 {
     uniformTexture0 = -1;
@@ -172,6 +207,10 @@ void Material::RebuildShader()
     uniformMaterialLightDiffuseColor = -1;
     uniformMaterialLightSpecularColor = -1;
     uniformMaterialSpecularShininess = -1;
+    uniformLightIntensity0 = -1;
+    uniformLightAttenuationQ = -1;
+    uniformUvOffset = -1;
+    uniformUvScale = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -225,6 +264,8 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
             uniformTexture0 = shader->FindUniformLocationByName("texture0");
             uniformTexture1 = shader->FindUniformLocationByName("texture1");
+			uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
+			uniformUvScale = shader->FindUniformLocationByName("uvScale");
             
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
@@ -234,6 +275,9 @@ void Material::RebuildShader()
             uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
             uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
             uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
+            uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
+            uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
+            
             break;
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE:
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR:
@@ -246,6 +290,8 @@ void Material::RebuildShader()
             uniformMaterialLightDiffuseColor = shader->FindUniformLocationByName("materialLightDiffuseColor");
             uniformMaterialLightSpecularColor = shader->FindUniformLocationByName("materialLightSpecularColor");
             uniformMaterialSpecularShininess = shader->FindUniformLocationByName("materialSpecularShininess");
+            uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
+            uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
             break;
         default:
             break;
@@ -269,7 +315,9 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
         {
             String filename = sceneFile->AbsoluteToRelative(names[k]);
             keyedArchive->SetString(Format("mat.tex%d", k), filename);
-            Logger::Debug("--- save material texture: %s", filename.c_str());
+            
+            if(sceneFile->DebugLogEnabled())
+                Logger::Debug("--- save material texture: %s", filename.c_str());
         }
     }
     
@@ -305,7 +353,8 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 			}
 
             names[k] = absolutePathname;
-            Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
+            if(sceneFile->DebugLogEnabled())
+                Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
             textures[k] = Texture::CreateFromFile(names[k]);
             if (textures[k])
@@ -445,9 +494,18 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
 		if (lightmapSizePosition != -1)
 		{
-			shader->SetUniformValue(lightmapSizePosition, setupLightmapSize); 
+			shader->SetUniformValue(lightmapSizePosition, (float32)setupLightmapSize); 
 		}
 	}
+
+	if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
+	{
+        if (uniformUvOffset != -1)
+            shader->SetUniformValue(uniformUvOffset, uvOffset);
+		if (uniformUvScale != -1)
+            shader->SetUniformValue(uniformUvScale, uvScale);
+	}
+	
 
     if (instanceMaterialState)
     {
@@ -477,6 +535,15 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
             if (uniformMaterialSpecularShininess != -1)
             {
                 shader->SetUniformValue(uniformMaterialSpecularShininess, shininess);
+            }
+            
+            if (uniformLightIntensity0 != -1)
+            {
+                shader->SetUniformValue(uniformLightIntensity0, lightNode0->GetIntensity());
+            }
+            if (uniformLightAttenuationQ != -1)
+            {
+                //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
             }
         }
     }
@@ -513,5 +580,20 @@ void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
 {
 	setupLightmapSize = _setupLightmapSize;
 }
+    
+void Material::SetTexture(eTextureLevel level, const String & textureName)
+{
+    SafeRelease(textures[level]);
+    names[level] = "";
+    
+    Texture *t = Texture::CreateFromFile(textureName);
+    if(t)
+    {
+		t->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        textures[level] = t;
+        names[level] = textureName;
+    }
+}
+
 
 };

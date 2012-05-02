@@ -38,79 +38,79 @@ namespace DAVA
 void RenderGrayscaleEffect::StartEffect()
 {
 
-	glColor4f(0.5f + 0.3f * RenderManager::Instance()->GetColorR(), 0.5f + 59.0f  * RenderManager::Instance()->GetColorG(), 0.5f + 0.11f  * RenderManager::Instance()->GetColorB(), RenderManager::Instance()->GetColorA());
+	RENDER_VERIFY(glColor4f(0.5f + 0.3f * RenderManager::Instance()->GetColorR(), 0.5f + 59.0f  * RenderManager::Instance()->GetColorG(), 0.5f + 0.11f  * RenderManager::Instance()->GetColorB(), RenderManager::Instance()->GetColorA()));
 	
 	float constColor[] = {0.67f, 0.67f, 0.67f, 0.25f};
-	glActiveTexture(GL_TEXTURE0);
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 	BindTexture(RenderManager::Instance()->GetTexture()->id);
 	
-	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, constColor);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_TEXTURE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_CONSTANT);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SRC2_RGB, GL_CONSTANT);
-	glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-	glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_ALPHA);
+	RENDER_VERIFY(glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, constColor));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_TEXTURE));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_CONSTANT));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_SRC2_RGB, GL_CONSTANT));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_ALPHA));
 	
 	
-	glActiveTexture(GL_TEXTURE1);
-	glEnable(GL_TEXTURE_2D);
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE1));
+	RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
 	BindTexture(RenderManager::Instance()->GetTexture()->id);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_PREVIOUS);
-	glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PRIMARY_COLOR);
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_SRC0_RGB, GL_PREVIOUS));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_SRC1_RGB, GL_PRIMARY_COLOR));
 	
-	glClientActiveTexture(GL_TEXTURE1);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glClientActiveTexture(GL_TEXTURE0);
+	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE1));
+	RENDER_VERIFY(glEnableClientState(GL_TEXTURE_COORD_ARRAY));
+	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0));
 	
 }
 
 void RenderGrayscaleEffect::StopEffect()
 {
-	glActiveTexture(GL_TEXTURE1);
-	glDisable(GL_TEXTURE_2D);
-	glClientActiveTexture(GL_TEXTURE1);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE1));
+	RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
+	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE1));
+	RENDER_VERIFY(glDisableClientState(GL_TEXTURE_COORD_ARRAY));
 
-	glClientActiveTexture(GL_TEXTURE0);
-	glActiveTexture(GL_TEXTURE0);
+	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0));
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 	BindTexture(RenderManager::Instance()->GetTexture()->id);
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
+	RENDER_VERIFY(glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE));
 	float constColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, constColor);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	RENDER_VERIFY(glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, constColor));
+	RENDER_VERIFY(glColor4f(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void RenderGrayscaleEffect::SetColor(float r, float g, float b, float a)
 {
-	glColor4f(0.5f + 0.3f * r, 0.5f + 59.0f  * g, 0.5f + 0.11f  * b, a);
+	RENDER_VERIFY(glColor4f(0.5f + 0.3f * r, 0.5f + 59.0f  * g, 0.5f + 0.11f  * b, a));
 }
 
 void RenderGrayscaleEffect::SetTexture(Texture *texture)
 {
-	glActiveTexture(GL_TEXTURE1);
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE1));
 	BindTexture(texture->id);
-	glActiveTexture(GL_TEXTURE0);
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 	BindTexture(texture->id);
 
 }
 	
-	void RenderGrayscaleEffect::SetVertexPointer(int size, int type, int stride, const void *pointer)
-	{
-		glVertexPointer(size, type, stride, pointer);
-	}
+void RenderGrayscaleEffect::SetVertexPointer(int size, int type, int stride, const void *pointer)
+{
+    RENDER_VERIFY(glVertexPointer(size, type, stride, pointer));
+}
 	
 
 void RenderGrayscaleEffect::SetTexCoordPointer(int size, int type, int stride, const void *pointer)
 {
-	glClientActiveTexture(GL_TEXTURE1);
-	glTexCoordPointer(size, type, stride, pointer);
-	glClientActiveTexture(GL_TEXTURE0);
-	glTexCoordPointer(size, type, stride, pointer);
+	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE1));
+	RENDER_VERIFY(glTexCoordPointer(size, type, stride, pointer));
+	RENDER_VERIFY(glClientActiveTexture(GL_TEXTURE0));
+	RENDER_VERIFY(glTexCoordPointer(size, type, stride, pointer));
 }
 #elif defined(__DAVAENGINE_DIRECTX9__)
 

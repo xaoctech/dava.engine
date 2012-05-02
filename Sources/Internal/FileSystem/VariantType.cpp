@@ -28,6 +28,9 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "FileSystem/VariantType.h"
+#include "FileSystem/KeyedArchive.h"
+#include "FileSystem/DynamicMemoryFile.h"
+
 
 namespace DAVA 
 {
@@ -35,59 +38,124 @@ namespace DAVA
 VariantType::VariantType()
 :	type(TYPE_NONE)
 ,	int32Value(0)
+,   pointerValue(NULL)
 {
+}
+
+VariantType::VariantType(const VariantType &var)
+{
+    type = var.type;
+	switch(type)
+	{
+		case TYPE_BOOLEAN:
+		{
+            boolValue = var.boolValue;
+		}
+            break;
+		case TYPE_INT32:
+		{
+            int32Value = var.int32Value;
+		}
+            break;	
+		case TYPE_UINT32:
+		{
+            uint32Value = var.uint32Value;
+		}
+            break;	
+		case TYPE_FLOAT:
+		{
+            floatValue = var.floatValue;
+		}
+            break;	
+		case TYPE_STRING:
+		{
+            stringValue = var.stringValue;
+		}
+            break;	
+		case TYPE_WIDE_STRING:
+		{ 
+            wideStringValue = var.wideStringValue;
+		}
+            break;
+		case TYPE_BYTE_ARRAY:
+		{
+            pointerValue = (void*)new Vector<uint8>(*((Vector<uint8>*)var.pointerValue));
+		}
+            break;	
+		case TYPE_KEYED_ARCHIVE:
+		{
+            pointerValue = new KeyedArchive(*((KeyedArchive*)var.pointerValue));
+		}
+            break;	
+		default:
+		{
+                //DVASSERT(0 && "Something went wrong with VariantType");
+		}
+	}
 }
 
 VariantType::~VariantType()
 {
-
-
+    ReleasePointer();
 }
 
 void VariantType::SetBool(bool value)
 {
+    ReleasePointer();
 	type = TYPE_BOOLEAN;
 	boolValue = value;
 }
 
 void VariantType::SetInt32(int32 value)
 {
+    ReleasePointer();
 	type = TYPE_INT32;
 	int32Value = value;
 }
 
 void VariantType::SetUInt32(uint32 value)
 {
+    ReleasePointer();
     type = TYPE_UINT32;
     uint32Value = value;
 }
 
 void VariantType::SetFloat(float32 value)
 {
+    ReleasePointer();
 	type = TYPE_FLOAT;
 	floatValue = value;
 }
 
 void VariantType::SetString(const String & value)
 {
+    ReleasePointer();
 	type = TYPE_STRING;
 	stringValue = value;
 }
 void VariantType::SetWideString(const WideString & value)
 {
+    ReleasePointer();
 	type = TYPE_WIDE_STRING;
 	wideStringValue = value;
 }
 
 void VariantType::SetByteArray(const uint8 *array, int32 arraySizeInBytes)
 {
+    ReleasePointer();
 	type = TYPE_BYTE_ARRAY;
-	for (int32 i = 0; i < arraySizeInBytes; i++) 
-	{
-		arrayValue.push_back(array[i]);
-	}
+    pointerValue = (void*)new Vector<uint8>;
+    ((Vector<uint8>*)pointerValue)->resize(arraySizeInBytes);
+    memcpy(&((Vector<uint8>*)pointerValue)->front(), array, arraySizeInBytes);
 }
 
+void VariantType::SetKeyedArchive(KeyedArchive *archive)
+{
+    ReleasePointer();
+    type = TYPE_KEYED_ARCHIVE;
+    pointerValue = new KeyedArchive(*archive);
+}
+    
 	
 bool VariantType::AsBool()
 {
@@ -128,13 +196,19 @@ const WideString & VariantType::AsWideString()
 const uint8 *VariantType::AsByteArray()
 {
 	DVASSERT(type == TYPE_BYTE_ARRAY);
-	return &arrayValue[0];
+	return &((Vector<uint8>*)pointerValue)->front();
 }
 	
 int32 VariantType::AsByteArraySize()
 {
 	DVASSERT(type == TYPE_BYTE_ARRAY);
-	return (int32)arrayValue.size();
+	return (int32)((Vector<uint8>*)pointerValue)->size();
+}
+
+KeyedArchive *VariantType::AsKeyedArchive()
+{
+    DVASSERT(type == TYPE_KEYED_ARCHIVE);
+    return (KeyedArchive*)pointerValue;
 }
 	
 
@@ -194,14 +268,27 @@ bool VariantType::Write(File * fp) const
 		break;
 	case TYPE_BYTE_ARRAY:
 		{
-			int32 len = (int32)arrayValue.size();
+			int32 len = (int32)((Vector<uint8>*)pointerValue)->size();
 			written = fp->Write(&len, 4);
 			if (written != 4)return false;
 			
-			written = fp->Write(&arrayValue[0], len);
+			written = fp->Write(&((Vector<uint8>*)pointerValue)->front(), len);
 			if (written != len)return false;
 		}
 		break;	
+    case TYPE_KEYED_ARCHIVE:
+		{
+            DynamicMemoryFile *pF = DynamicMemoryFile::Create(File::WRITE|File::APPEND);
+            ((KeyedArchive *)pointerValue)->Save(pF);
+			int32 len = pF->GetSize();
+			written = fp->Write(&len, 4);
+			if (written != 4)return false;
+			
+			written = fp->Write(pF->GetData(), len);
+            SafeRelease(pF);
+			if (written != len)return false;
+		}
+        break;	
 	}
 	return true;
 }
@@ -270,13 +357,33 @@ bool VariantType::Read(File * fp)
         break;
 		case TYPE_BYTE_ARRAY:
 		{
+            ReleasePointer();
 			int32 len;
 			read = fp->Read(&len, 4);
 			if (read != 4)return false;
 			
-			arrayValue.resize(len);
-			read = fp->Read(&arrayValue[0], len);
+            pointerValue = (void*)new Vector<uint8>;
+            ((Vector<uint8>*)pointerValue)->resize(len);
+			read = fp->Read(&((Vector<uint8>*)pointerValue)->front(), len);
 			if (read != len)return false;
+		}
+        break;	
+		case TYPE_KEYED_ARCHIVE:
+		{
+            ReleasePointer();
+			int32 len;
+			read = fp->Read(&len, 4);
+			if (read != 4)return false;
+			
+            uint8 *pData = new uint8[len];
+			read = fp->Read(pData, len);
+			if (read != len)return false;
+            DynamicMemoryFile *pF = DynamicMemoryFile::Create(pData, len, File::READ);
+            pointerValue = new KeyedArchive();
+            ((KeyedArchive*)pointerValue)->Load(pF);
+            SafeRelease(pF);
+            SafeDelete(pData);
+            
 		}
         break;	
 		default:
@@ -288,5 +395,26 @@ bool VariantType::Read(File * fp)
 }
 	
 	
+void VariantType::ReleasePointer()
+{
+    if (pointerValue) 
+    {
+        switch (type) 
+        {
+            case TYPE_BYTE_ARRAY:
+            {
+                delete (Vector<uint8> *)pointerValue;
+            }
+                break;
+            case TYPE_KEYED_ARCHIVE:
+            {
+                ((KeyedArchive *)pointerValue)->Release();
+            }
+                break;
+        }
+        pointerValue = NULL;
+    }
+}
+
 	
 };

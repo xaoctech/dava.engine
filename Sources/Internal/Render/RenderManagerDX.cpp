@@ -541,7 +541,7 @@ void RenderManager::EndFrame()
 }
 
 
-void RenderManager::SetViewport(const Rect & rect)
+void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates)
 {
 	//viewPort = rect;
  //   PrepareRealMatrix();
@@ -1234,6 +1234,11 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	}
 
 	currentRenderTarget = renderTarget;
+}
+
+void RenderManager::SetHWRenderTarget(Texture * renderTarget)
+{
+
 }
 
 //void RenderManager::SetDrawOffset(const Vector2 &offset)

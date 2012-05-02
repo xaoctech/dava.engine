@@ -20,12 +20,15 @@
 namespace DAVA
 {
 
-class AndroidSystemListener
+class AndroidSystemDelegate
 {
 public:
 	virtual void ShowKeyboard() = 0;
 	virtual void HideKeyboard() = 0;
 	virtual bool DownloadHttpFile(const String & url, const String & documentsPathname) = 0;
+    
+    virtual GLint RenderBuffer() = 0;
+	virtual GLint FrameBuffer() = 0;
 };
 
 
@@ -37,12 +40,13 @@ public:
 
 	CoreAndroidPlatform();
 
-	virtual void CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemListener * sysListener);
+	virtual void CreateAndroidWindow(const char8 *docPath, const char8 *assets, const char8 *logTag, AndroidSystemDelegate * sysDelegate);
 
 	virtual void Quit();
 
-	void RepaintView();
+	void RenderRecreated();
 	void ResizeView(int32 w, int32 h);
+	void RepaintView();
 
 	// called from Activity and manage a visible lifetime
 	void StartVisible();
@@ -54,12 +58,10 @@ public:
 	void OnCreateActivity();
 	void OnDestroyActivity();
 
-	void KeyUp(int keyCode);
-	void KeyDown(int keyCode);
+	void KeyUp(int32 keyCode);
+	void KeyDown(int32 keyCode);
 
-	void OnTouch(int action, int id, int x, int y, long time);
-
-	void RenderRecreated();
+	void OnTouch(int32 action, int32 id, float32 x, float32 y, long time);
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
@@ -81,7 +83,12 @@ private:
 
 	bool foreground;
 
-	AndroidSystemListener *androidListener;
+    UIEvent CreateTouchEvent(int32 action, int32 id, float32 x, float32 y, long time);
+    
+	Vector<DAVA::UIEvent> totalTouches;
+	int32 touchPhase;
+
+	AndroidSystemDelegate *androidDelegate;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)

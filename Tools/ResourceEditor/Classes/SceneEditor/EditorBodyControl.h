@@ -8,43 +8,45 @@
 
 #include "SceneNodeIDs.h"
 #include "NodesPropertyControl.h"
-#include "ModificationPopUp.h"
+
+#include "ModificationsPanel.h"
+
+#include "LandscapeEditorBase.h"
+
+#include "GraphBase.h"
+
+
+//#define FORCE_LOD_UPDATE
+
 
 using namespace DAVA;
 
-class SceneInfoControl;
+class SceneGraph;
+class DataGraph;
 
+class SceneInfoControl;
 class BeastManager;
 class OutputPanelControl;
-class EditorBodyControl : 
+class LandscapeEditorColor;
+class LandscapeEditorHeightmap;
+class LandscapeToolsSelection;
+class EditorBodyControl: 
         public UIControl, 
-        public UIHierarchyDelegate, 
-        public NodesPropertyDelegate
+        public GraphBaseDelegate,
+        public LandscapeEditorDelegate,
+        public ModificationsPanelDelegate
 {
     enum eConst
     {
         SCENE_OFFSET = 10, 
-        CELL_HEIGHT = 20,
     };
 
-	enum eModState
+    enum ePropertyShowState
     {
-        MOD_MOVE = 0, 
-        MOD_ROTATE,
-        MOD_SCALE
-	};
-
-	enum eModAxis
-    {
-        AXIS_X = 0, 
-        AXIS_Y,
-        AXIS_Z,
-        AXIS_XY,
-        AXIS_YZ,
-        AXIS_XZ,
-		AXIS_COUNT
-	};
-	
+        EPSS_HIDDEN = 0,
+        EPSS_ONSCREEN,
+    };
+    
 public:
 	
     enum eViewPortIDs
@@ -56,8 +58,6 @@ public:
 
         EVPID_COUNT
     };
-
-    
     
 public:
     EditorBodyControl(const Rect & rect);
@@ -66,6 +66,7 @@ public:
     virtual void WillAppear();
 	virtual void Update(float32 timeElapsed);
     virtual void Input(UIEvent * touch);
+	virtual void Draw(const UIGeometricData &geometricData);
 
     void OpenScene(const String &pathToFile, bool editScene);
     void ReloadRootScene(const String &pathToFile);
@@ -74,29 +75,25 @@ public:
     void ShowProperties(bool show);
     bool PropertiesAreShown();
 
-    void ShowSceneGraph(bool show);
-    bool SceneGraphAreShown();
-
-    void ShowDataGraph(bool show);
-    bool DataGraphAreShown();
-
+    void ToggleSceneGraph();
+    void ToggleDataGraph();
     
     void UpdateLibraryState(bool isShown, int32 width);
 
-	void BeastProcessScene(bool fullshade);
+	void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
     EditorScene * GetScene();
     void AddNode(SceneNode *node);
     
+    void RemoveSelectedSGNode();
     SceneNode *GetSelectedSGNode(); //Scene Graph node
     
-    virtual void NodesPropertyChanged();
-
+    void RefreshProperties();
+    
     void CreateScene(bool withCameras);
     void ReleaseScene();
     void Refresh();
-    void RefreshProperties();
     
     const String &GetFilePath();
     void SetFilePath(const String &newFilePath);
@@ -109,83 +106,43 @@ public:
 
     void ToggleSceneInfo();
 
-	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
-	
+    void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
+    
+    bool ToggleLandscapeEditor(int32 landscapeEditorMode);
+
+    //LandscapeEditorDelegate
+    virtual void LandscapeEditorStarted();  //Show LE Controls
+    virtual void LandscapeEditorFinished(); //Hide LE Controls
+    
+    //ModificationsPanelDelegate
+    virtual void OnPlaceOnLandscape();
+
+    //GraphBaseDelegate
+    virtual bool LandscapeEditorActive();
+    virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
+    
 protected:
 
+    void ToggleGraph(GraphBase *graph);
+
     void ResetSelection();
-    void DebugInfo();
     
-	void CreateModificationPanel(void);
+	void CreateModificationPanel();
     void ReleaseModificationPanel();
-	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
-	void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
-	void OnModePressed(BaseObject * object, void * userData, void * callerData);
-	void UpdateModState(void);
 	void PrepareModMatrix(const Vector2 & point);
-
-	
-    virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
-    virtual int32 ChildrenCount(UIHierarchy *forHierarchy, void *forParent);
-    virtual void *ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index);
-    virtual UIHierarchyCell *CellForNode(UIHierarchy *forHierarchy, void *node);
-    virtual void OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selectedCell);
-    virtual void DragAndDrop(void *who, void *target, int32 mode);
-
-    //left Panel
-    void CreateLeftPanel();
-    void ReleaseLeftPanel();
-    
-	void ReleaseHelpPanel();
-	void CreateHelpPanel();
 
 	void PlaceOnLandscape();
 	
-    UIControl *leftPanelSceneGraph;
-    UIHierarchy * sceneGraphTree;
-    void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
-    void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
-    void OnBakeMatricesPressed(BaseObject * obj, void *, void *);
-    void OnRefreshSceneGraph(BaseObject * obj, void *, void *);
-	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
-	void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
 	
 	
-    UIControl *leftPanelDataGraph;
-    UIHierarchy * dataGraphTree;
-
-    Set<DAVA::DataNode *> dataNodes;
-    
-    void RefreshDataGraph(bool force = false);
-    void OnRefreshDataGraph(BaseObject * obj, void *, void *);
-
     //scene controls
     EditorScene * scene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
-//    Max3dCameraController * cameraController;
     WASDCameraController * cameraController;
-    // Node preview information
-    void CreatePropertyPanel();
-    void ReleasePropertyPanel();
-    void UpdatePropertyPanel();
-	void ToggleHelp(void);
-	void AddHelpText(const wchar_t * text, float32 & y);
-	
-	
 
-    UIControl *rightPanel;
-    SceneNode * selectedSceneGraphNode;
-    DataNode * selectedDataGraphNode;
-
-    NodesPropertyControl *nodesPropertyPanel;
-    //
-    
-    UIButton *refreshButton;
-    void OnRefreshPressed(BaseObject * obj, void *, void *);
-    
     // touch
     float32 currentTankAngle;
 	bool inTouch;
@@ -196,24 +153,11 @@ protected:
 	//beast
 	BeastManager * beastManager;
 
-	UIButton *btnMod[3];
-	UIButton *btnAxis[3];
-	UIButton *btnPopUp;
-	UIButton *btnModeSelection;
-	UIButton *btnModeModification;
-	UIButton *btnPlaceOn;
-	
-	UIControl *modificationPanel;
-	eModState modState;
-	eModAxis modAxis;
 	Matrix4 startTransform;
 	Matrix4 currTransform;
 	Vector3 rotationCenter;
 	bool isDrag;
-	bool isModeModification;
-	DraggableDialog *helpDialog;
-
-	
+    ModificationsPanel *modificationPanel;
 	
 	float32 axisSign[3];
 	
@@ -228,12 +172,6 @@ protected:
     void ChangeControlWidthLeft(UIControl *c, float32 width);
     
     void SelectNodeAtTree(SceneNode *node);
-
-	Rect propertyPanelRect;
-	void RecreatePropertiesPanelForNode(SceneNode *node);
-	void RecreatePropertiesPanelForNode(DataNode *node);
-	ModificationPopUp * modificationPopUp;
-	
 
 	//for moving object
 	Vector3 startDragPoint;
@@ -260,6 +198,28 @@ protected:
     eViewPortIDs currentViewPortID;
     
     SceneInfoControl *sceneInfoControl;
+
+	void PackLightmaps();
+    
+    //Landscape Editor
+    bool savedModificatioMode;
+    void CreateLandscapeEditor();
+    void ReleaseLandscapeEditor();
+    
+    LandscapeEditorColor *landscapeEditorColor;
+    LandscapeEditorHeightmap *landscapeEditorHeightmap;
+    LandscapeEditorBase *currentLandscapeEditor;
+    LandscapeToolsSelection *landscapeToolsSelection;
+    
+    //graps
+    SceneGraph *sceneGraph;
+    DataGraph *dataGraph;
+    GraphBase *currentGraph;
+    ePropertyShowState propertyShowState;
+    
+#ifdef FORCE_LOD_UPDATE
+    void OnForceLod(BaseObject * object, void * userData, void * callerData);
+#endif //#ifdef FORCE_LOD_UPDATE
 };
 
 

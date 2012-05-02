@@ -41,11 +41,14 @@ RenderDataStream::RenderDataStream()
     size = 0;
     stride = 0;
     pointer = 0;
+    
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    savedPointerData = NULL;
+#endif //#if defined (__DAVAENGINE_ANDROID__)
 }
 
 RenderDataStream::~RenderDataStream()
 {
-    
 }
 
 void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, void * _pointer)
@@ -54,6 +57,11 @@ void RenderDataStream::Set(eVertexDataType _type, int32 _size, int32 _stride, vo
     size = _size;
     stride = _stride;
     pointer = _pointer;
+    
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    savedPointerData = pointer;
+#endif //#if defined (__DAVAENGINE_ANDROID__)
+
 }
     
 RenderDataObject::RenderDataObject()
@@ -62,9 +70,10 @@ RenderDataObject::RenderDataObject()
     resultVertexFormat = 0;
     vboBuffer = 0;
     
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     savedVertexCount = 0;
-    savedPointer = 0;
+    savedIndices = NULL;
+    isLost = false;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
     indexFormat = EIF_16;
@@ -97,6 +106,7 @@ RenderDataObject::~RenderDataObject()
             RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
     #endif
 #endif
+    
 }
 
 RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, void * pointer)
@@ -108,11 +118,6 @@ RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertex
         // New item - add it
         resultVertexFormat |= formatMark;
         stream = new RenderDataStream(); // todo optimize dynamic object cache
-        stream->formatMark = formatMark;
-        stream->type = vertexType;
-        stream->size = size;
-        stream->stride = stride;
-        stream->pointer = pointer;
         
         streamMap[formatMark] = stream;
         streamArray.push_back(stream);
@@ -122,10 +127,8 @@ RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertex
     }
     
     stream->formatMark = formatMark;
-    stream->type = vertexType;
-    stream->size = size;
-    stream->stride = stride;
-    stream->pointer = pointer;
+    stream->Set(vertexType, size, stride, pointer);
+
     return stream;
 }
 
@@ -139,17 +142,17 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     RenderManager::Instance()->LockNonMain();
 //#if !defined(__DAVAENGINE_MACOS__)
     
+//    Logger::Debug("[RenderDataObject::BuildVertexBuffer] vbo = %d", vboBuffer);
+    
 #if defined (__DAVAENGINE_OPENGL__)
+    
     uint32 size = streamArray.size();
     if (size == 0)return;
- 
-#if defined(__DAVAENGINE_ANDROID__)
+
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
     savedVertexCount = vertexCount;
-    savedPointer = streamArray[0]->pointer;
 #endif//#if defined(__DAVAENGINE_ANDROID__)
-   
-    //;
-    
+
     for (uint32 k = 1; k < size; ++k)
     {
         DVASSERT(streamArray[k]->stride == streamArray[k - 1]->stride);
@@ -182,7 +185,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     }
     
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
-    Logger::Debug("glGenBuffers: %d", vboBuffer);
+//    Logger::Debug("glGenBuffers: %d", vboBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 #endif
@@ -208,8 +211,12 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
 void RenderDataObject::SetIndices(eIndexFormat _format, uint8 * _indices, int32 _count)
 {
     indexFormat = _format;
-    indices = _indices;
     indexCount = _count;
+    indices = _indices;
+    
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    savedIndices = indices;
+#endif //#if defined (__DAVAENGINE_ANDROID__)
 }
 
 void RenderDataObject::BuildIndexBuffer()
@@ -237,7 +244,7 @@ void RenderDataObject::BuildIndexBuffer()
         indexBuffer = 0;
     }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
-    Logger::Debug("glGenBuffers index: %d", indexBuffer);
+//    Logger::Debug("glGenBuffers index: %d", indexBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     RENDER_VERIFY(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW));
 #endif
@@ -253,23 +260,65 @@ void RenderDataObject::BuildIndexBuffer()
     RenderManager::Instance()->UnlockNonMain();
 }
 
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 void RenderDataObject::SaveToSystemMemory()
 {
 }
 
-void RenderDataObject::RenderDataObject::Lost()
+void RenderDataObject::Lost()
 {
+//    Logger::Debug("[RenderDataObject::Lost]");
+    //    vboBuffer = 0;
+#if defined(__DAVAENGINE_OPENGL__)
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+    if (vboBuffer)
+        RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
+    if (indexBuffer)
+        RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
+#else 
+    if (vboBuffer)
+        RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
+    if (indexBuffer)
+        RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
+#endif
+    
     vboBuffer = 0;
+    indexBuffer = 0;
+#endif
+
+    isLost = true;
+
 }
 
 void RenderDataObject::Invalidate()
 {
-	if(savedVertexCount)
-	{
-		streamArray[0]->pointer = savedPointer;
-		BuildVertexBuffer(savedVertexCount);
-	}
+//    Logger::Debug("[RenderDataObject::Invalidate]");
+
+    if(isLost)
+    {
+        isLost = false;
+        
+        if(savedVertexCount)
+        {
+            uint32 size = streamArray.size();
+            for (uint32 k = 0; k < size; ++k)
+            {
+                streamArray[k]->pointer = streamArray[k]->savedPointerData;
+            }
+            
+            BuildVertexBuffer(savedVertexCount);
+        }
+        
+        if(savedIndices)
+        {
+            indices = savedIndices;
+            BuildIndexBuffer();
+        }
+    }
+    else
+    {
+        Logger::Warning("[RenderDataObject::Invalidate] not lost !!!");
+    }
 }
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
