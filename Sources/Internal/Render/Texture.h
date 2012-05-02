@@ -240,12 +240,16 @@ public:							// properties for fast access
     bool isMimMapTexture;
 	bool isAlphaPremultiplied;
 
+    TextureWrap wrapModeS; 
+    TextureWrap wrapModeT;
 
 	void SetDebugInfo(const String & _debugInfo);
 
 	static const Map<String, Texture*> & GetTextureMap();
     
     int32 GetDataSize();
+    
+    void ReleaseTextureData();
     
 private:
 	static Map<String, Texture*> textureMap;	
