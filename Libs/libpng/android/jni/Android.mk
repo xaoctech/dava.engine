@@ -39,6 +39,7 @@ LOCAL_SRC_FILES :=  \
                   ../../src/pngwutil.c \
 
 #LOCAL_CFLAGS := -g -O0
+#LOCAL_CFLAGS := -O2
 
 # build static library
 include $(BUILD_STATIC_LIBRARY)

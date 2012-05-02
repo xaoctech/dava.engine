@@ -20,6 +20,8 @@ using namespace DAVA;
 class ResourcePackerScreen : public UIScreen, public UIFileTreeDelegate
 {
 public:
+	ResourcePackerScreen();
+
 	virtual void LoadResources();
 	virtual void UnloadResources();
 	virtual void WillAppear();
@@ -56,6 +58,9 @@ public:
 
 	
 	bool isGfxModified;
+
+	bool isLightmapsPacking;
+	bool clearProcessDirectory;
 };
 
 #endif // __DAVAENGINE_RESOURCEPACKERSCREEN_H__

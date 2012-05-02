@@ -40,7 +40,7 @@ UIJoypad::UIJoypad(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 ,	needRecalcDigital(true)
 ,	needRecalcAnalog(true)
 ,	currentPos(Vector2(0,0))
-,	mainTouch(0)
+,	mainTouch(TOUCH_INVALID_ID)
 ,   stick(NULL)
 {
 	inputEnabled = true;
@@ -69,7 +69,6 @@ const Vector2 &UIJoypad::GetDigitalPosition()
 	digitalVector.x = 0.0f + (int32)(analogVector.x + xSign * 0.5f);
 	digitalVector.y = 0.0f + (int32)(analogVector.y + ySign * 0.5f);	
 	
-	Logger::Debug("%f %f", digitalVector.x, digitalVector.y);
 	return digitalVector;
 }
 const Vector2 &UIJoypad::GetAnalogPosition()
@@ -171,7 +170,7 @@ void UIJoypad::SetStickSprite(const String &stickSpriteName, int32 frame)
 
 void UIJoypad::Input(UIEvent *currentInput)
 {
-	if(!mainTouch && currentInput->phase == UIEvent::PHASE_BEGAN)
+	if((TOUCH_INVALID_ID == mainTouch) && currentInput->phase == UIEvent::PHASE_BEGAN)
 	{
 		mainTouch = currentInput->tid;
 	}
@@ -185,7 +184,7 @@ void UIJoypad::Input(UIEvent *currentInput)
 	{
 		currentPos.x = 0;
 		currentPos.y = 0;
-		mainTouch = 0;
+        mainTouch = TOUCH_INVALID_ID;
 	}
 	else 
 	{
@@ -215,7 +214,7 @@ void UIJoypad::InputCancelled(UIEvent *currentInput)
 {
 	if(currentInput->tid == mainTouch)
 	{
-		mainTouch = 0;
+		mainTouch = TOUCH_INVALID_ID;
 
 		currentPos.x = 0;
 		currentPos.y = 0;

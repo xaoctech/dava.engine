@@ -97,6 +97,9 @@ public:
 	 */
 #ifdef __DAVAENGINE_OPENGL__ 
 	void Init(int32 _frameBufferWidth, int32 _frameBufferHeight);
+#ifdef __DAVAENGINE_ANDROID__    
+	void InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight);
+#endif //    #ifdef __DAVASOUND_ANDROID__    
 #else
 	void Init(int32 _frameBufferWidth, int32 _frameBufferHeight);
 	LPDIRECT3D9		  GetD3D();
@@ -288,7 +291,7 @@ public:
     
     void SetAlphaFunc(eCmpFunc func, float32 cmpValue);
     void SetCullMode(eFace cullFace);
-
+	void SetDepthFunc(eCmpFunc func);
     
     
     void SetRenderData(RenderDataObject * object);
@@ -363,6 +366,13 @@ public:
 	 \param[in] renderTarget - Render target sprite. If NULL 0 render manager will draw to the screen.
 	 */
 	virtual void SetRenderTarget(Sprite *renderTarget);
+
+	/** 
+	 \brief Sets the texture to use as a render target. Texture should be created with CreateFBO method.
+			Call RestoreRenderTarget when you finish drawing to your texture 
+	 \param[in] renderTarget - Render target texture.
+	 */
+	void SetRenderTarget(Texture * renderTarget);
 
 	/** 
         \brief Restores the previous render target
@@ -471,6 +481,8 @@ public:
 		\returns pointer to custom cursor or null if there is no cursor set by default.
 	 */
 	virtual Cursor * GetCursor();
+
+	uint32 fboViewFramebuffer;
 	
 protected:
     //
@@ -530,7 +542,6 @@ protected:
 
 	// fbo data
 	uint32 fboViewRenderbuffer;
-	uint32 fboViewFramebuffer;
 
 	// state information
 //	Color oldColor;                 // UNIFORM - can be used or not used by RenderEffect
@@ -611,9 +622,9 @@ protected:
 	
 	Rect currentClip;
 	
-	void SetHWRenderTarget(Sprite *renderTarget);
 	void SetHWClip(const Rect &rect);
-
+	void SetHWRenderTarget(Sprite *renderTarget);
+	void SetHWRenderTarget(Texture * renderTarget);
 	void SetNewRenderEffect(RenderEffect *renderEffect);
 	
 	bool debugEnabled;

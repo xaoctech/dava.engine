@@ -381,7 +381,7 @@ void UITextField::RenderText()
 
     Size2i ds = textFont->DrawString(text, buf, w, h, 0, 0);
     String addInfo = WStringToString(Format(L"Text texture: %S", text.c_str()));
-    Texture *tex = Texture::CreateTextFromData(Texture::FORMAT_RGBA4444, (uint8*)buf, w, h, addInfo.c_str());
+    Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, w, h, addInfo.c_str());
     delete [] buf;
 
     textSprite = Sprite::CreateFromTexture(tex, 0, 0, GetRect().dx, GetRect().dy);

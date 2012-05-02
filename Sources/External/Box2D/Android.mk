@@ -68,7 +68,8 @@ LOCAL_SRC_FILES :=  \
                     \
                     Rope/b2Rope.cpp \
 
-LOCAL_CFLAGS := -g -O0
+#LOCAL_CFLAGS := -g -O0
+LOCAL_CFLAGS := -O2
 
 # build static library
 include $(BUILD_STATIC_LIBRARY)

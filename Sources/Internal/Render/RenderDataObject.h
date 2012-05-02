@@ -46,7 +46,7 @@ class RenderDataStream : public BaseObject
 {
 public:
     RenderDataStream();
-    ~RenderDataStream();
+    virtual ~RenderDataStream();
     
     void Set(eVertexDataType type, int32 size, int32 stride, void * pointer);
     
@@ -55,6 +55,9 @@ public:
     int32 size;
     int32 stride;
     void * pointer;
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    void * savedPointerData;
+#endif //#if defined (__DAVAENGINE_ANDROID__)
 };
 
 class RenderDataObject : public RenderResource //BaseObject
@@ -75,12 +78,12 @@ public:
     */
     void BuildVertexBuffer(int32 vertexCount); // pack data to VBOs and allow to use VBOs instead of SetStreams
     
-#if defined(__DAVAENGINE_ANDROID__)
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	virtual void SaveToSystemMemory();
 	virtual void Lost();
 	virtual void Invalidate();
 	int32 savedVertexCount;
-    void * savedPointer;
+    bool isLost;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
@@ -98,6 +101,9 @@ private:
     
     eIndexFormat indexFormat;
     uint8 * indices;
+#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    uint8 * savedIndices;
+#endif //#if defined(__DAVAENGINE_ANDROID__)
     uint32 indexBuffer;
     int32 indexCount;
     

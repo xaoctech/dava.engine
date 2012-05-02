@@ -85,10 +85,12 @@ public:
     static void Unbind();
     virtual int32 FindUniformLocationByName(const String & name);
     int32 GetAttributeIndex(eVertexFormat vertexFormat);
+    int32 GetAttributeCount();
     
     
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
+    void SetUniformValue(int32 uniformLocation, const Vector2 & vector);
     void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
     void SetUniformValue(int32 uniformLocation, const Color & color);
 
@@ -102,6 +104,14 @@ public:
      */
     //virtual uint32 GetVertexFormat();
     //virtual uint32 GetAttributeIndex(eVertexFormat fmt);
+    
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+	virtual void SaveToSystemMemory();
+	virtual void Lost();
+	virtual void Invalidate();
+    String relativeFileName;
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
     
 private:
 #if defined(__DAVAENGINE_DIRECTX9__)

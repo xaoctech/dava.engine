@@ -61,6 +61,9 @@ public:
 		return viewportRc;
 	}
 
+    virtual void SetSize(const Vector2 &newSize);
+    
+    
 protected:
     Scene * scene;
 	Rect viewportRc;

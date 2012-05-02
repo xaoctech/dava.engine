@@ -43,6 +43,10 @@ public:
 	float TryToPackFromSortVectorWeight(ImagePacker * packer,std::vector<SizeSortItem> & tempSortVector);
 
 	Rect2i ReduceRectToOriginalSize(const Rect2i & _input);
+
+	void UseOnlySquareTextures();
+
+	void SetMaxTextureSize(int32 maxTextureSize);
 	
 private:
 	ImagePacker *			lastPackedPacker;
@@ -50,6 +54,8 @@ private:
 
 	std::vector<SizeSortItem> sortVector;
 	int32 maxTextureSize;
+
+	bool onlySquareTextures;
 };
 
 #endif // __DAVAENGINE_TEXTURE_PACKER_H__

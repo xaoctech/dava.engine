@@ -35,7 +35,7 @@
 void ImageUsageScreen::LoadResources()
 {
 	testImageOriginal = Image::CreateFromFile("~res:/PNGImages/logo.png");
-	testImage4444 = Image::Create(testImageOriginal->GetWidth() / 2, testImageOriginal->GetHeight() / 2, Image::FORMAT_RGBA4444);
+	testImage4444 = Image::Create(testImageOriginal->GetWidth() / 2, testImageOriginal->GetHeight() / 2, FORMAT_RGBA4444);
 
 // 	ConvertDirect<uint32, uint16, ConvertRGBA8888toRGBA4444> convertRGBA8888toRGBA4444;
 // 	convertRGBA8888toRGBA4444(
@@ -50,14 +50,14 @@ void ImageUsageScreen::LoadResources()
 	//Texture * tex = Texture::CreateFromData((T`))
 	//Sprite * sprite = Sprite::CreateFromTexture(DAVA::Texture *fromTexture, DAVA::int32 xOffset, DAVA::int32 yOffset, DAVA::float32 sprWidth, DAVA::float32 sprHeight, bool contentScaleIncluded = false)
 
-	Texture * texOrig = Texture::CreateFromData((Texture::PixelFormat)testImageOriginal->GetPixelFormat(), 
+	Texture * texOrig = Texture::CreateFromData(testImageOriginal->GetPixelFormat(), 
 												testImageOriginal->GetData(), testImageOriginal->GetWidth(), 
 												testImageOriginal->GetHeight());
 	testImageRGBA8888 = Sprite::CreateFromTexture(texOrig, 0, 0, (float32)testImageOriginal->GetWidth(), (float32)testImageOriginal->GetHeight());
 	SafeRelease(texOrig);
 
 
-	Texture * texOrig2 = Texture::CreateFromData((Texture::PixelFormat)testImage4444->GetPixelFormat(), 
+	Texture * texOrig2 = Texture::CreateFromData(testImage4444->GetPixelFormat(), 
 		testImage4444->GetData(), testImage4444->GetWidth(), 
 		testImage4444->GetHeight());
 	testImageRGBA4444 = Sprite::CreateFromTexture(texOrig2, 0, 0, (float32)testImage4444->GetWidth(), (float32)testImage4444->GetHeight());

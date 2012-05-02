@@ -122,6 +122,18 @@ void Camera::Setup(float32 fovyInDegrees, float32 aspectYdivX, float32 zNear, fl
 	Recalc();
 }
 
+void Camera::Setup(float32 _xmin, float32 _xmax, float32 _ymin, float32 _ymax, float32 _znear, float32 _zfar)
+{
+	flags |= REQUIRE_REBUILD_PROJECTION;
+
+	xmin = _xmin;
+	xmax = _xmax;
+	ymin = _ymin;
+	ymax = _ymax;
+	znear = _znear;
+	zfar = _zfar;
+}
+
 void Camera::Recalc()
 {
 	ymax = znear * tanf(fovy * PI / 360.0f);
@@ -504,15 +516,37 @@ void Camera::Draw()
 
 Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect & viewport)
 {
-	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
+//	Matrix4 finalMatrix = modelMatrix * projMatrix;//RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
+    
+    Matrix4 finalMatrix = GetUniformProjModelMatrix();
 	finalMatrix.Inverse();		
 
 	Vector4 in(winx, winy, winz, 1.0f);
 
 	/* Map x and y from window coordinates */
 
-	in.x = (in.x - viewport.x) / viewport.dx;
-	in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
+	
+	switch(RenderManager::Instance()->GetRenderOrientation())
+	{
+		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
+        {
+			float32 xx = (in.y - viewport.y) / viewport.dy;
+			float32 yy = (in.x - viewport.x) / viewport.dx;
+			
+			in.x = xx;
+			in.y = yy;
+        }
+            break;
+		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
+        {
+            DVASSERT(false);
+        }
+			break;
+        default:
+			in.x = (in.x - viewport.x) / viewport.dx;
+			in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
+            break;
+	}
 
 	/* Map to range -1 to 1 */
 	in.x = in.x * 2 - 1;
@@ -523,7 +557,6 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 	
 	Vector3 result(0,0,0);
 	if (out.w == 0.0) return result;
-	
 	
 	result.x = out.x / out.w;
 	result.y = out.y / out.w;

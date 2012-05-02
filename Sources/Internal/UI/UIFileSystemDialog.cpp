@@ -176,17 +176,11 @@ void UIFileSystemDialog::ButtonPressed(BaseObject *obj, void *data, void *caller
         {
             if (lastSelectedIndex >= 0)
             {
-                if (delegate)
-                {
-                    delegate->OnFileSelected(this, files->GetPathname(fileUnits[lastSelectedIndex].indexInFileList));
-                }
+                OnFileSelected(files->GetPathname(fileUnits[lastSelectedIndex].indexInFileList));
             }
             else 
             {
-                if (delegate)
-                {
-                    delegate->OnFileSelected(this, currentDir);
-                }
+                OnFileSelected(currentDir);
             }
 
             GetParent()->RemoveControl(this);
@@ -205,17 +199,13 @@ void UIFileSystemDialog::SaveFinishing()
 {
     if (!textField->GetText().empty())
     {
-        if (delegate)
+        if (textField->GetText().find(L".") != textField->GetText().npos)
         {
-            if (textField->GetText().find(L".") != textField->GetText().npos)
-            {
-                delegate->OnFileSelected(this, currentDir + "/" + WStringToString(textField->GetText()));
-            }
-            else 
-            {
-                delegate->OnFileSelected(this, currentDir + "/" + WStringToString(textField->GetText()) + extensionFilter[0]);
-            }
-            
+            OnFileSelected(currentDir + "/" + WStringToString(textField->GetText()));
+        }
+        else 
+        {
+            OnFileSelected(currentDir + "/" + WStringToString(textField->GetText()) + extensionFilter[0]);
         }
         GetParent()->RemoveControl(this);
     }
@@ -313,13 +303,8 @@ void UIFileSystemDialog::SetExtensionFilter(const Vector<String> &newExtensionFi
     extensionFilter = newExtensionFilter;
     
     int32 size = extensionFilter.size();
-#ifdef __DAVAENGINE_ANDROID__    
-    for (int32 k = 0; k < size; ++k)
-        std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), AndroidToLower);
-#else //#ifdef __DAVAENGINE_ANDROID__    
     for (int32 k = 0; k < size; ++k)
         std::transform(extensionFilter[k].begin(), extensionFilter[k].end(), extensionFilter[k].begin(), ::tolower);
-#endif //#ifndef __DAVAENGINE_ANDROID__    
 }
 
 const Vector<String> & UIFileSystemDialog::GetExtensionFilter()
@@ -342,10 +327,7 @@ void UIFileSystemDialog::OnIndexSelected(int32 index)
     {
         if (operationType == OPERATION_LOAD) 
         {
-            if (delegate)
-            {
-                delegate->OnFileSelected(this, files->GetPathname(fileUnits[index].indexInFileList));
-            }
+            OnFileSelected(files->GetPathname(fileUnits[index].indexInFileList));
             GetParent()->RemoveControl(this);
         }
         else
@@ -435,11 +417,7 @@ void UIFileSystemDialog::RefreshList()
                     textField->SetText(StringToWString(files->GetFilename(fu.indexInFileList)));
                 }
                 String ext = FileSystem::GetExtension(fu.name);
-#ifdef __DAVAENGINE_ANDROID__    
-                std::transform(ext.begin(), ext.end(), ext.begin(), AndroidToLower);
-#else //#ifdef __DAVAENGINE_ANDROID__
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-#endif //#ifdef __DAVAENGINE_ANDROID__    
 
                 bool isPresent = false;
 		int32 size = extensionFilter.size();
@@ -615,6 +593,14 @@ void UIFileSystemDialog::CreateHistoryForPath(const String &pathToFile)
         foldersHistory.push_back(foldersHistory[iFolder] + "/" + folders[iFolder]);
     }
     historyPosition = foldersHistory.size() - 1;
+}
+
+void UIFileSystemDialog::OnFileSelected(const String &pathToFile)
+{
+    if(delegate)
+    {
+        delegate->OnFileSelected(this, pathToFile);
+    }
 }
 
     

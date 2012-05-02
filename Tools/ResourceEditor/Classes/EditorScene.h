@@ -16,6 +16,7 @@
 
 using namespace DAVA;
 
+class HeightmapNode;
 class EditorScene : public Scene
 {
 public:
@@ -26,9 +27,11 @@ public:
     virtual void Update(float32 timeElapsed);
 
     btCollisionWorld *collisionWorld;
+	btCollisionWorld *landCollisionWorld;
 	void CheckNodes(SceneNode * curr);
 	
 	void TrySelection(Vector3 from, Vector3 direction);
+    bool LandscapeIntersection(const Vector3 &from, const Vector3 &direction, Vector3 &point); 
 
 	inline SceneNode * GetSelection()
 	{
@@ -48,8 +51,15 @@ public:
 	void SetBulletUpdate(SceneNode* curr, bool value);
 	void ReleaseUserData(SceneNode * curr);
 	LandscapeNode * GetLandScape(SceneNode *node);
+    
+    void SetDrawGrid(bool newDrawGrid);
 	
+    void SetForceLodLayer(SceneNode *node, int32 layer);
+    int32 GetForceLodLayer(SceneNode *node);
+    
 protected:
+
+    void SetForceLodLayerRecursive(SceneNode *node, int32 layer);
 
 	SceneNode * GetHighestProxy(SceneNode* curr);
 
@@ -57,14 +67,21 @@ protected:
 	btCollisionDispatcher* dispatcher;
 	btAxisSweep3* broadphase;
     int depth;
-	
+
+	btDefaultCollisionConfiguration* landCollisionConfiguration;
+	btCollisionDispatcher* landDispatcher;
+	btAxisSweep3* landBroadphase;
+
 	SceneNode * selection;
 	SceneNode * proxy;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
+	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);
 	void DrawDebugNodes(SceneNode * curr);
 
 	SceneNode * lastSelectedPhysics;
+    
+    bool drawGrid;
 };
 
 #endif

@@ -209,7 +209,14 @@ public:
 		\returns true if file was successfully copied, false otherwise
 	*/
 	virtual bool CopyFile(const String & existingFile, const String & newFile);
-    
+
+	/**
+		\brief Copies directory to another existing directory.
+		\param[in] sourceDirectory The name of an existing file.
+		\param[out] destinationDirectory The name of the new file.
+		\returns true if all files were successfully copied, false otherwise.
+	*/
+	virtual bool CopyDirectory(const String & sourceDirectory, const String & destinationDirectory);
     
     /**
         \brief Read whole file contents into new buffer. 

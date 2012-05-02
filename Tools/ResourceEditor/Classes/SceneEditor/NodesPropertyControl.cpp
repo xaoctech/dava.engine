@@ -20,7 +20,8 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     
     
     nodesDelegate = NULL;
-    currentNode = NULL;
+    currentSceneNode = NULL;
+    currentDataNode = NULL;
     createNodeProperties = _createNodeProperties;
 
     
@@ -84,7 +85,9 @@ void NodesPropertyControl::WillAppear()
 
 void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
-    currentNode = sceneNode;
+    currentSceneNode = sceneNode;
+    currentDataNode = NULL;
+    
     propertyList->ReleaseProperties();
     
     if(!createNodeProperties)
@@ -131,31 +134,31 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
         
         KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
-        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
+        for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it)
         {
             String name = it->first;
-            VariantType key = it->second;
-            switch (key.type) 
+            VariantType * key = it->second;
+            switch (key->type) 
             {
                 case VariantType::TYPE_BOOLEAN:
                     propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetBoolPropertyValue(name, key.AsBool());
+                    propertyList->SetBoolPropertyValue(name, key->AsBool());
                     break;
                     
                 case VariantType::TYPE_STRING:
                     propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetStringPropertyValue(name, key.AsString());
+                    propertyList->SetStringPropertyValue(name, key->AsString());
                     break;
 
                 case VariantType::TYPE_INT32:
                     propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetIntPropertyValue(name, key.AsInt32());
+                    propertyList->SetIntPropertyValue(name, key->AsInt32());
                     break;
 
                 case VariantType::TYPE_FLOAT:
                     propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetFloatPropertyValue(name, key.AsFloat());
+                    propertyList->SetFloatPropertyValue(name, key->AsFloat());
                     break;
                     
                 default:
@@ -177,6 +180,9 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
 void NodesPropertyControl::ReadFrom(DataNode *dataNode)
 {
+    currentSceneNode = NULL;
+    currentDataNode = dataNode;
+    
     propertyList->ReleaseProperties();
     if(!createNodeProperties)
     {
@@ -201,14 +207,24 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *forList, const 
 {
     if(forKey == "property.scenenode.name") //SceneNode
     {
-        currentNode->SetName(newValue);
+        if(currentSceneNode)
+        {
+            currentSceneNode->SetName(newValue);
+        }
+        else if(currentDataNode)
+        {
+            currentDataNode->SetName(newValue);
+        }
     }
     else if(!createNodeProperties)
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
-        if(customProperties->IsKeyExists(forKey))
+        if(currentSceneNode)
         {
-            customProperties->SetString(forKey, newValue);
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetString(forKey, newValue);
+            }
         }
     }
     
@@ -221,14 +237,16 @@ void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const S
 {
     if(!createNodeProperties)
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
-        if(customProperties->IsKeyExists(forKey))
+        if(currentSceneNode)
         {
-            customProperties->SetFloat(forKey, newValue);
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetFloat(forKey, newValue);
+            }
         }
     }
 
-    
     
     if(nodesDelegate)
     {
@@ -239,10 +257,13 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
 {
     if(!createNodeProperties)
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
-        if(customProperties->IsKeyExists(forKey))
+        if(currentSceneNode)
         {
-            customProperties->SetInt32(forKey, newValue);
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetInt32(forKey, newValue);
+            }
         }
     }
 
@@ -254,32 +275,35 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
 }
 void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-	KeyedArchive *customProperties = currentNode->GetCustomProperties();
-
-	if("Used in static lighting" == forKey)
-	{
-		customProperties->SetBool("editor.staticlight.used", newValue);
-	}
-
-    if(!createNodeProperties)
+    if(currentSceneNode)
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
-		if (forKey == "property.scenenode.isVisible")
-		{
-			currentNode->SetVisible(newValue);
-		}
-		
-        if(customProperties->IsKeyExists(forKey))
+        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        
+        if("Used in static lighting" == forKey)
         {
-            customProperties->SetBool(forKey, newValue);
+            customProperties->SetBool("editor.staticlight.used", newValue);
         }
-    }
-    else
-    {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
-        if(customProperties->IsKeyExists(forKey))
+        
+        if(!createNodeProperties)
         {
-            customProperties->SetBool(forKey, newValue);
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if (forKey == "property.scenenode.isVisible")
+            {
+                currentSceneNode->SetVisible(newValue);
+            }
+            
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetBool(forKey, newValue);
+            }
+        }
+        else
+        {
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetBool(forKey, newValue);
+            }
         }
     }
 
@@ -309,7 +333,10 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String 
 {
     if(forKey == "property.scenenode.localmatrix")
     {
-        currentNode->SetLocalTransform(matrix4);
+        if(currentSceneNode)
+        {
+            currentSceneNode->SetLocalTransform(matrix4);
+        }
     }
     
     
@@ -341,33 +368,37 @@ void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * 
         return;
     }
     
-    KeyedArchive *customProperties = currentNode->GetCustomProperties();
-    Map<String, VariantType> propsData = customProperties->GetArchieveData();
-
-    int32 size = propsData.size();
-    if(size)
+    if(currentSceneNode)
     {
-        Rect r = listHolder->GetRect();
-        r.dy = Min(r.dy, (float32)size * CellHeight(NULL, 0));
-        r.y = listHolder->GetRect().dy - r.dy - ControlsFactory::BUTTON_HEIGHT;
+        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         
-        deletionList = new UIList(r, UIList::ORIENTATION_VERTICAL);
-        ControlsFactory::CustomizePropertyCell(deletionList, false);
-
-        deletionList->SetDelegate(this);
-        
-        listHolder->AddControl(deletionList);
-        deletionList->Refresh();
-        AddControl(listHolder);
+        int32 size = propsData.size();
+        if(size)
+        {
+            Rect r = listHolder->GetRect();
+            r.dy = Min(r.dy, (float32)size * CellHeight(NULL, 0));
+            r.y = listHolder->GetRect().dy - r.dy - ControlsFactory::BUTTON_HEIGHT;
+            
+            deletionList = new UIList(r, UIList::ORIENTATION_VERTICAL);
+            ControlsFactory::SetScrollbar(deletionList);
+            ControlsFactory::CustomizePropertyCell(deletionList, false);
+            
+            deletionList->SetDelegate(this);
+            
+            listHolder->AddControl(deletionList);
+            deletionList->Refresh();
+            AddControl(listHolder);
+        }
     }
 }
 
 void NodesPropertyControl::NodeCreated(bool success)
 {
     RemoveControl(propControl);
-    if(success)
+    if(success && currentSceneNode)
     {
-        KeyedArchive *currentProperties = currentNode->GetCustomProperties();
+        KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
         
         String name = propControl->GetPropName();
         switch (propControl->GetPropType()) 
@@ -400,10 +431,15 @@ void NodesPropertyControl::NodeCreated(bool success)
 
 int32 NodesPropertyControl::ElementsCount(UIList * list)
 {
-    KeyedArchive *customProperties = currentNode->GetCustomProperties();
-    Map<String, VariantType> propsData = customProperties->GetArchieveData();
+    if(currentSceneNode)
+    {
+        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
+        
+        return propsData.size();
+    }
     
-    return propsData.size();
+    return 0;
 }
 
 UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
@@ -414,17 +450,20 @@ UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
         c = new UIListCell(Rect(0, 0, 200, 20), "Deletion list");
     }
     
-    KeyedArchive *customProperties = currentNode->GetCustomProperties();
-    Map<String, VariantType> propsData = customProperties->GetArchieveData();
-    int32 i = 0; 
-    for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
+    if(currentSceneNode)
     {
-        if(i == index)
+        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
+        int32 i = 0; 
+        for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
         {
-            String name = it->first;
-
-            ControlsFactory::CustomizeListCell(c, StringToWString(name));
-            break;
+            if(i == index)
+            {
+                String name = it->first;
+                
+                ControlsFactory::CustomizeListCell(c, StringToWString(name));
+                break;
+            }
         }
     }
     
@@ -438,19 +477,22 @@ int32 NodesPropertyControl::CellHeight(UIList * list, int32 index)
 
 void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
-    int32 index = selectedCell->GetIndex();
-    KeyedArchive *customProperties = currentNode->GetCustomProperties();
-    Map<String, VariantType> propsData = customProperties->GetArchieveData();
-    int32 i = 0; 
-    for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
+    if(currentSceneNode)
     {
-        if(i == index)
+        int32 index = selectedCell->GetIndex();
+        KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
+        int32 i = 0; 
+        for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
         {
-            customProperties->DeleteKey(it->first);
-            
-            OnCancel(NULL, NULL, NULL);
-            ReadFrom(currentNode);
-            break;
+            if(i == index)
+            {
+                customProperties->DeleteKey(it->first);
+                
+                OnCancel(NULL, NULL, NULL);
+                ReadFrom(currentSceneNode);
+                break;
+            }
         }
     }
 }
@@ -471,7 +513,10 @@ void NodesPropertyControl::SetWorkingScene(DAVA::Scene *scene)
 
 void NodesPropertyControl::UpdateFieldsForCurrentNode()
 {
-    ReadFrom(currentNode);
+    if(currentSceneNode)
+    {
+        ReadFrom(currentSceneNode);
+    }
 }
 
 bool NodesPropertyControl::GetHeaderState(const String & headerName, bool defaultValue)

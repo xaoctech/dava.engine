@@ -55,7 +55,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
         
         String fieldName = Format("PolygonGroup #%d", i);
         propertyList->AddSection(fieldName, GetHeaderState(fieldName, true));
-        
+
         int32 vertexFormat = pg->GetFormat();
         
         String keyPrefix = Format("#%d", i);
@@ -87,7 +87,8 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
         propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
 
 		propertyList->AddIntProperty(keyPrefix + ".lightmap.size");
-		propertyList->SetIntPropertyValue(keyPrefix + ".lightmap.size", currentNode->GetCustomProperties()->GetInt32(keyPrefix + ".lightmap.size", 128));
+		propertyList->SetIntPropertyValue(keyPrefix + ".lightmap.size", currentSceneNode->GetCustomProperties()->GetInt32(keyPrefix + ".lightmap.size", 128));
+        
         
         if(matCount && !createNodeProperties)
         {
@@ -123,7 +124,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
 	propertyList->AddSection("property.meshinstance.dynamicshadow", GetHeaderState("property.meshinstance.dynamicshadow", true));
 	
 	propertyList->AddBoolProperty("property.meshinstance.dynamicshadow.enable");
-	propertyList->SetBoolPropertyValue("property.meshinstance.dynamicshadow.enable", currentNode->GetCustomProperties()->GetBool("property.meshinstance.dynamicshadow.enable", false));
+	propertyList->SetBoolPropertyValue("property.meshinstance.dynamicshadow.enable", currentSceneNode->GetCustomProperties()->GetBool("property.meshinstance.dynamicshadow.enable", false));
 
 	propertyList->AddMessageProperty("property.meshinstance.dynamicshadow.converttovolume", Message(this, &MeshInstancePropertyControl::OnConvertToShadowVolume));
 }
@@ -164,14 +165,14 @@ void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, c
 
 	if(forKey == "property.meshinstance.dynamicshadow.enable")
 	{
-		currentNode->GetCustomProperties()->SetBool(forKey, newValue);
+		currentSceneNode->GetCustomProperties()->SetBool(forKey, newValue);
 		if(newValue)
 		{
-			((MeshInstanceNode*)currentNode)->CreateDynamicShadowNode();
+			((MeshInstanceNode*)currentSceneNode)->CreateDynamicShadowNode();
 		}
 		else
 		{
-			((MeshInstanceNode*)currentNode)->DeleteDynamicShadowNode();
+			((MeshInstanceNode*)currentSceneNode)->DeleteDynamicShadowNode();
 		}
 	}
 
@@ -185,7 +186,7 @@ void MeshInstancePropertyControl::OnIntPropertyChanged(PropertyList *forList, co
 		int32 index = GetIndexFromKey(forKey);
 
 		String keyPrefix = Format("#%d", index);
-		currentNode->GetCustomProperties()->SetInt32(keyPrefix + ".lightmap.size", newValue);
+		currentSceneNode->GetCustomProperties()->SetInt32(keyPrefix + ".lightmap.size", newValue);
 	}
 
 	NodesPropertyControl::OnIntPropertyChanged(forList, forKey, newValue);
@@ -198,7 +199,7 @@ void MeshInstancePropertyControl::OnComboIndexChanged(PropertyList *forList, con
     {
         int32 index = GetIndexFromKey(forKey);
 
-        MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (currentNode);
+        MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (currentSceneNode);
         mesh->ReplaceMaterial(materials[newItemIndex], index);
         
         UpdateFieldsForCurrentNode();
@@ -217,8 +218,8 @@ int32 MeshInstancePropertyControl::GetIndexFromKey(const String &forKey)
 
 void MeshInstancePropertyControl::OnConvertToShadowVolume(BaseObject * object, void * userData, void * callerData)
 {
-	((MeshInstanceNode*)currentNode)->ConvertToShadowVolume();
+	((MeshInstanceNode*)currentSceneNode)->ConvertToShadowVolume();
 	SceneEditorScreenMain * screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
 	SceneEditorScreenMain::BodyItem * body = screen->FindCurrentBody();
-	body->bodyControl->OnRemoveNodeButtonPressed(0, 0, 0);
+	body->bodyControl->RemoveSelectedSGNode();//OnRemoveNodeButtonPressed(0, 0, 0);
 }

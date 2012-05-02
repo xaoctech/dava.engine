@@ -43,6 +43,7 @@ namespace DAVA
 GLuint Shader::activeProgram = 0;
 
 Shader::Shader()
+    : RenderResource()
 {
     DVASSERT(RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL_ES_2_0 || RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL);
     
@@ -63,6 +64,11 @@ Shader::Shader()
 
     vertexShaderData = 0;
     fragmentShaderData = 0;
+    
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    relativeFileName = "";
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
 }
 
 String VertexTypeStringFromEnum(GLenum type); // Fucking XCode 4 analyzer
@@ -136,6 +142,10 @@ void Shader::SetDefineList(const String & enableDefinesList)
     
 bool Shader::LoadFromYaml(const String & pathname)
 {
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+    relativeFileName = pathname;
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
     uint64 shaderLoadTime = SystemTimer::Instance()->AbsoluteMS();
     String pathOnly, shaderFilename;
     FileSystem::SplitPath(pathname, pathOnly, shaderFilename);
@@ -194,7 +204,7 @@ bool Shader::LoadFromYaml(const String & pathname)
     
     shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
     
-    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
+//    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
     return true;
 }
     
@@ -231,6 +241,8 @@ bool Shader::Recompile()
     
     if (!LinkProgram(program))
     {
+        Logger::Error("Failed to Link program for shader: %s", fragmentShaderPath.c_str());
+
         DeleteShaders();
         return false;
     }
@@ -251,7 +263,7 @@ bool Shader::Recompile()
         
         int32 flagIndex = GetAttributeIndexByName(attributeName);
         vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
-        Logger::Debug("shader attr: %s size: %d type: %s flagIndex: %d", attributeName, size, VertexTypeStringFromEnum(type).c_str(), flagIndex);
+//        Logger::Debug("shader attr: %s size: %d type: %s flagIndex: %d", attributeName, size, VertexTypeStringFromEnum(type).c_str(), flagIndex);
         //if (vertexFormatAttribIndeces[k] != -1)
         //    Logger::Debug("shader attr matched: 0x%08x", (1 << flagIndex));
     }
@@ -271,8 +283,12 @@ bool Shader::Recompile()
         uniformNames[k] = attributeName;
         uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
         uniformIDs[k] = uniform;
-        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
+//        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
+    
+    
+//    Logger::Debug("shader recompile success: %s", fragmentShaderPath.c_str());
+
     
     RenderManager::Instance()->UnlockNonMain();
     return true;
@@ -280,32 +296,50 @@ bool Shader::Recompile()
     
 void Shader::SetUniformValue(int32 uniformLocation, int32 value)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform1i(uniformLocation, value));
 }
     
 void Shader::SetUniformValue(int32 uniformLocation, float32 value)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform1f(uniformLocation, value));
+}
+
+void Shader::SetUniformValue(int32 uniformLocation, const Vector2 & vector)
+{
+    DVASSERT(uniformLocation >= 0);
+    RENDER_VERIFY(glUniform2fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector3 & vector)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Color & color)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform3fv(uniformLocation, 1, &color.r));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Vector4 & vector)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniform4fv(uniformLocation, 1, &vector.x));
 }
 
 void Shader::SetUniformValue(int32 uniformLocation, const Matrix4 & matrix)
 {
+    DVASSERT(uniformLocation >= 0);
     RENDER_VERIFY(glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, matrix.data));
+}
+    
+    
+int32 Shader::GetAttributeCount()
+{
+    return activeAttributes;
 }
     
 int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
@@ -333,21 +367,21 @@ GLint Shader::LinkProgram(GLuint prog)
 
     GLint status;
     
-    glLinkProgram(prog);
+    RENDER_VERIFY(glLinkProgram(prog));
     
     GLint logLength;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+    RENDER_VERIFY(glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength));
     if (logLength > 0)
     {
         GLchar *log = (GLchar *)malloc(logLength);
-        glGetProgramInfoLog(prog, logLength, &logLength, log);
+        RENDER_VERIFY(glGetProgramInfoLog(prog, logLength, &logLength, log));
         //Logger::Debug("Program link log:\n%s", log);
         free(log);
     }
     
-    glGetProgramiv(prog, GL_LINK_STATUS, &status);
+    RENDER_VERIFY(glGetProgramiv(prog, GL_LINK_STATUS, &status));
     if (status == GL_FALSE)
-        Logger::Debug("Failed to link program %d", prog);
+        Logger::Error("Failed to link program %d", prog);
     
     RenderManager::Instance()->UnlockNonMain();
 
@@ -366,7 +400,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
     
     if (defines.length() == 0)
     {
-        glShaderSource(*shader, 1, &sources, &count);	// set source code in the shader
+        RENDER_VERIFY(glShaderSource(*shader, 1, &sources, &count));	// set source code in the shader
     }else
     {
         const GLchar * multipleSources[] = 
@@ -379,27 +413,27 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
             defines.length(),
             count,
         };
-        glShaderSource(*shader, 2, multipleSources, multipleCounts);	// set source code in the shader
+        RENDER_VERIFY(glShaderSource(*shader, 2, multipleSources, multipleCounts));	// set source code in the shader
     }
     
-    glCompileShader(*shader);					// compile shader
+    RENDER_VERIFY(glCompileShader(*shader));					// compile shader
     
 //#if defined(DEBUG)
     GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+    RENDER_VERIFY(glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength));
     if (logLength > 0)
     {
         GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        Logger::Debug("Shader compile log:\n%s", log);
+        RENDER_VERIFY(glGetShaderInfoLog(*shader, logLength, &logLength, log));
+//        Logger::Debug("Shader compile log:\n%s", log);
         free(log);
     }
 //#endif
     
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+    RENDER_VERIFY(glGetShaderiv(*shader, GL_COMPILE_STATUS, &status));
     if (status == GL_FALSE)
     {
-        //Logger::Debug("Failed to compile shader:\n");
+        Logger::Error("Failed to compile shader: status == GL_FALSE\n");
     }
     RenderManager::Instance()->UnlockNonMain();
 
@@ -492,6 +526,27 @@ Shader * Shader::RecompileNewInstance(const String & combination)
 }
 
     
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+void Shader::SaveToSystemMemory()
+{
+    RenderResource::Lost();
+}
+void Shader::Lost()
+{
+//    Logger::Debug("[Shader::Lost]");
+    DeleteShaders();
+    RenderResource::Lost();
+}
+void Shader::Invalidate()
+{
+//    Logger::Debug("[Shader::Invalidate]");
+//    LoadFromYaml(relativeFileName);
+    Recompile();
+    
+    RenderResource::Invalidate();
+}
+#endif //#if defined(__DAVAENGINE_ANDROID__) 
+
 
 #endif 
 

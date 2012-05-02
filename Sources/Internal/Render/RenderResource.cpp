@@ -29,6 +29,8 @@
 =====================================================================================*/
 #include "Render/RenderResource.h"
 #include "Render/Texture.h"
+#include "Render/Shader.h"
+#include "Render/RenderDataObject.h"
 
 namespace DAVA
 {
@@ -68,6 +70,8 @@ void RenderResource::Invalidate()
 
 void RenderResource::LostAllResources()
 {
+    Logger::Debug("[RenderResource::LostAllResources]");
+    
 	List<RenderResource*>::iterator it = resourceList.begin();
     List<RenderResource*>::const_iterator itEnd = resourceList.end();
 	for(; it != itEnd; ++it)
@@ -78,6 +82,8 @@ void RenderResource::LostAllResources()
 
 void RenderResource::InvalidateAllResources()
 {
+    Logger::Debug("[RenderResource::InvalidateAllResources]");
+
 	List<RenderResource*>::iterator it = resourceList.begin();
     List<RenderResource*>::const_iterator itEnd = resourceList.end();
 	for(; it != itEnd; ++it)
@@ -98,4 +104,90 @@ void RenderResource::SaveAllResourcesToSystemMem()
 // 			Logger::Debug("%s", t->relativePathname.c_str());
 	}
 }
+    
+void RenderResource::LostAllShaders()
+{
+    List<RenderResource*>::iterator it = resourceList.begin();
+    List<RenderResource*>::const_iterator itEnd = resourceList.end();
+    for(; it != itEnd; ++it)
+    {
+        Shader *s = dynamic_cast<Shader *>(*it);
+        if(s)
+        {
+            s->Lost();
+        }
+    }
+}
+
+void RenderResource::InvalidateAllShaders()
+{
+    List<RenderResource*>::iterator it = resourceList.begin();
+    List<RenderResource*>::const_iterator itEnd = resourceList.end();
+    for(; it != itEnd; ++it)
+    {
+        Shader *s = dynamic_cast<Shader *>(*it);
+        if(s)
+        {
+            s->Invalidate();
+        }
+    }
+}
+    
+void RenderResource::LostAllTextures()
+{
+    List<RenderResource*>::iterator it = resourceList.begin();
+    List<RenderResource*>::const_iterator itEnd = resourceList.end();
+    for(; it != itEnd; ++it)
+    {
+        Texture *s = dynamic_cast<Texture *>(*it);
+        if(s)
+        {
+            s->Lost();
+        }
+    }
+}
+
+void RenderResource::InvalidateAllTextures()
+{
+    List<RenderResource*>::iterator it = resourceList.begin();
+    List<RenderResource*>::const_iterator itEnd = resourceList.end();
+    for(; it != itEnd; ++it)
+    {
+        Texture *s = dynamic_cast<Texture *>(*it);
+        if(s)
+        {
+            s->Invalidate();
+        }
+    }
+}
+
+
+void RenderResource::LostAllRDO()
+{
+    List<RenderResource*>::iterator it = resourceList.begin();
+    List<RenderResource*>::const_iterator itEnd = resourceList.end();
+    for(; it != itEnd; ++it)
+    {
+        RenderDataObject *s = dynamic_cast<RenderDataObject *>(*it);
+        if(s)
+        {
+            s->Lost();
+        }
+    }
+}
+
+void RenderResource::InvalidateAllRDO()
+{
+    List<RenderResource*>::iterator it = resourceList.begin();
+    List<RenderResource*>::const_iterator itEnd = resourceList.end();
+    for(; it != itEnd; ++it)
+    {
+        RenderDataObject *s = dynamic_cast<RenderDataObject *>(*it);
+        if(s)
+        {
+            s->Invalidate();
+        }
+    }
+}
+    
 };

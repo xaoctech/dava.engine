@@ -75,7 +75,8 @@ protected:
     void OnMinus(BaseObject * object, void * userData, void * callerData);
     
     CreatePropertyControl *propControl;
-    SceneNode *currentNode;
+    SceneNode *currentSceneNode;
+    DataNode *currentDataNode;
     
     Scene *workingScene;
 

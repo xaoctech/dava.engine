@@ -38,6 +38,10 @@
 #include "Platform/SystemTimer.h"
 #include "Utils/StringFormat.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Scene3D/Heightmap.h"
+#include "FileSystem/FileSystem.h"
+
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
@@ -46,10 +50,9 @@ REGISTER_CLASS(LandscapeNode);
 	
 LandscapeNode::LandscapeNode(Scene * _scene)
 	: SceneNode(_scene)
-    , heightmap(0)
     , indices(0)
 {
-    heightMapPath = "";
+    heightmapPath = "";
     
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)
         textures[t] = 0;
@@ -58,13 +61,21 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     renderingMode = RENDERING_MODE_TEXTURE;
     
     activeShader = 0;
-    singleTextureShader = 0;
-    detailShader = 0;
-    blendedShader = 0;
-    
-    uniformTexture = -1;
-    uniformDetailTexture = -1;
+	cursor = 0;
     uniformCameraPosition = -1;
+    
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        uniformTextures[k] = -1;
+        uniformTextureTiling[k] = -1;
+        textureTiling[k] = Vector2(1.0f, 1.0f);
+    }
+    
+    heightmap = new Heightmap();
+    
+    Stats::Instance()->RegisterEvent("LandscapeNode", "Everything related to LandscapeNode");
+    Stats::Instance()->RegisterEvent("LandscapeNode.Update", "Time spent in LandscapeNode Update");
+    Stats::Instance()->RegisterEvent("LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
 }
 
 LandscapeNode::~LandscapeNode()
@@ -77,7 +88,9 @@ LandscapeNode::~LandscapeNode()
         SafeRelease(textures[t]);
     }
     SafeDeleteArray(indices);
+
     SafeRelease(heightmap);
+	SafeDelete(cursor);
 }
     
 void LandscapeNode::InitShaders()
@@ -87,44 +100,71 @@ void LandscapeNode::InitShaders()
         case RENDERING_MODE_TEXTURE:
             break;
         case RENDERING_MODE_DETAIL_SHADER:
-            detailShader = new Shader();
-            detailShader->LoadFromYaml("~res:/Shaders/Landscape/detail-texture.shader");
-            detailShader->Recompile();
+            activeShader = new Shader();
+            activeShader->LoadFromYaml("~res:/Shaders/Landscape/detail-texture.shader");
+            activeShader->Recompile();
 
             
-            uniformTexture = detailShader->FindUniformLocationByName("texture");
-            uniformDetailTexture = detailShader->FindUniformLocationByName("detailTexture");
-            uniformCameraPosition = detailShader->FindUniformLocationByName("cameraPosition");
+            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("texture");
+            uniformTextures[TEXTURE_DETAIL] = activeShader->FindUniformLocationByName("detailTexture");
+            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
 
-            activeShader = detailShader;
             break;
         case RENDERING_MODE_BLENDED_SHADER:
-            blendedShader = new Shader();
-            blendedShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
-            blendedShader->Recompile();
+            activeShader = new Shader();
+            activeShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
+            activeShader->Recompile();
 
-            uniformTexture0 = blendedShader->FindUniformLocationByName("texture0");
-            uniformTexture1 = blendedShader->FindUniformLocationByName("texture1");
-            uniformTextureMask = blendedShader->FindUniformLocationByName("textureMask");
-            uniformCameraPosition = blendedShader->FindUniformLocationByName("cameraPosition");
+            uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0");
+            uniformTextures[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1");
+            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("textureMask");
+            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
             
-            activeShader = blendedShader;
+            uniformTextureTiling[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0Tiling");
+            uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
+            
             break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+            activeShader = new Shader();
+            activeShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+            activeShader->Recompile();
+            
+            uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("tileTexture0");
+            uniformTextures[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("tileTexture1");
+            uniformTextures[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("tileTexture2");
+            uniformTextures[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("tileTexture3");
+            uniformTextures[TEXTURE_TILE_MASK] = activeShader->FindUniformLocationByName("tileMask");
+            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("colorTexture");
+            
+            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
+            
+            uniformTextureTiling[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0Tiling");
+            uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
+            uniformTextureTiling[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("texture2Tiling");
+            uniformTextureTiling[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("texture3Tiling");
+            
+            break;
+
     }
 }
     
 void LandscapeNode::ReleaseShaders()
 {
-    SafeRelease(blendedShader);
-    SafeRelease(singleTextureShader);
-    SafeRelease(detailShader);
-    activeShader = 0;
+    SafeRelease(activeShader);
+
+    uniformCameraPosition = -1;
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        uniformTextures[k] = -1;
+        uniformTextureTiling[k] = -1;
+    }
+
 }
 
 
 int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
 {
-    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
+//    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
     DVASSERT(quad->size == RENDER_QUAD_WIDTH - 1);
     LandscapeVertex * landscapeVertices = new LandscapeVertex[(quad->size + 1) * (quad->size + 1)];
     
@@ -132,8 +172,9 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     for (int32 y = quad->y; y < quad->y + quad->size + 1; ++y)
         for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
         {
-            landscapeVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
-            landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+            landscapeVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
+            landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
+
 //            landscapeVertices[index].texCoord *= 10.0f;
             //Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].position.x, landscapeVertices[index].position.y);
             index++;
@@ -144,13 +185,13 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     landscapeRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].position); 
     landscapeRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &landscapeVertices[0].texCoord); 
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
-    SafeDeleteArray(landscapeVertices);
+//    SafeDeleteArray(landscapeVertices);
     
     landscapeVerticesArray.push_back(landscapeVertices);
     
     landscapeRDOArray.push_back(landscapeRDO);
     
-    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
+//    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
     
     return (int8)landscapeRDOArray.size() - 1;
 }
@@ -178,31 +219,41 @@ void LandscapeNode::SetLods(const Vector4 & lods)
     for (int32 ll = 0; ll < lodLevelsCount; ++ll)
         lodSqDistance[ll] = lodDistance[ll] * lodDistance[ll];
 }
+    
+void LandscapeNode::SetRenderingMode(eRenderingMode _renderingMode)
+{
+    renderingMode = _renderingMode;
+}
 
 void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMode, const String & heightmapPathname, const AABBox3 & _box)
 {
-    heightMapPath = heightmapPathname;
+    heightmapPath = heightmapPathname;
     
-    renderingMode = _renderingMode;
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
+    renderingMode = _renderingMode;
     InitShaders(); // init new shaders according to the selected rendering mode
     
-    heightmap = Image::CreateFromFile(heightmapPathname);
     
-    if (heightmap->GetPixelFormat() != Image::FORMAT_A8)
-    {
-        Logger::Error("Image for landscape should be grayscale");
-        SafeRelease(heightmap);
-        return;
-    }
+//    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+//    Image *image = Image::CreateFromFile(heightmapPathname);
+//    if (image->GetPixelFormat() != FORMAT_A8)
+//    {
+//        Logger::Error("Image for landscape should be grayscale");
+//        SafeRelease(image);
+//        return;
+//    }
+//    
+//    DVASSERT(image->GetWidth() == image->GetHeight());
+//    heightmap->BuildFromImage(image);
+//    SafeRelease(image);
+    BuildHeightmap();
+    
     box = _box;    
-    
-    DVASSERT(heightmap->GetWidth() == heightmap->GetHeight());
 
     quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
     //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
-    quadTreeHead.data.size = heightmap->GetWidth() - 1; 
+    quadTreeHead.data.size = heightmap->Size() - 1; 
     quadTreeHead.data.rdoQuad = -1;
     
     SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
@@ -213,12 +264,46 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
     
     indices = new uint16[INDEX_ARRAY_COUNT];
     
-    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
-    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
-    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
-    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
+//    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
+//    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
+//    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
+//    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
 }
 
+bool LandscapeNode::BuildHeightmap()
+{
+    bool retValue = false;
+    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    if(".png" == extension)
+    {
+        Image *image = Image::CreateFromFile(heightmapPath);
+        if(image)
+        {
+            if ((image->GetPixelFormat() != FORMAT_A8) && (image->GetPixelFormat() != FORMAT_A16))
+            {
+                Logger::Error("Image for landscape should be grayscale");
+            }
+            else 
+            {
+                DVASSERT(image->GetWidth() == image->GetHeight());
+                heightmap->BuildFromImage(image);
+                retValue = true;
+            }
+            SafeRelease(image);
+        }
+    }
+    else if(Heightmap::FileExtension() == extension)
+    {
+        retValue = heightmap->Load(heightmapPath);
+    }
+    else 
+    {
+        DVASSERT(false && "wrong extension");
+    }
+
+    return retValue;
+}
+    
 /*
     level 0 = full landscape
     level 1 = first set of quads
@@ -228,12 +313,12 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMo
  */
     
 //float32 LandscapeNode::BitmapHeightToReal(uint8 height)
-Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint8 height)
+Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint16 height)
 {
     Vector3 res;
-    res.x = (box.min.x + (float32)x / (float32)(heightmap->GetWidth() - 1) * (box.max.x - box.min.x));
-    res.y = (box.min.y + (float32)y / (float32)(heightmap->GetHeight() - 1) * (box.max.y - box.min.y));
-    res.z = (box.min.z + ((float32)height / 255.0f) * (box.max.z - box.min.z));
+    res.x = (box.min.x + (float32)x / (float32)(heightmap->Size() - 1) * (box.max.x - box.min.x));
+    res.y = (box.min.y + (float32)y / (float32)(heightmap->Size() - 1) * (box.max.y - box.min.y));
+    res.z = (box.min.z + ((float32)height / (float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z));
     return res;
 };
 
@@ -247,29 +332,29 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
 	{
 		return false;
 	}
-	float32 ww = (float32)(heightmap->GetWidth() - 1);
-	float32 hh = (float32)(heightmap->GetHeight() - 1);
+	float32 ww = (float32)(heightmap->Size() - 1);
+	float32 hh = (float32)(heightmap->Size() - 1);
 	
 	int32 x = (int32)((point.x - box.min.x) * ww / (box.max.x - box.min.x));
 	int32 y = (int32)((point.y - box.min.y) * hh / (box.max.x - box.min.x));
 	
-	uint8 * data = heightmap->GetData();
-	int32 imW = heightmap->GetWidth();
+	uint16 * data = heightmap->Data();
+	int32 imW = heightmap->Size();
 	
 	int32 summ = data[y * imW + x] + data[y * imW + x + 1] + data[(y + 1) * imW + x] + data[(y + 1) * imW + x + 1];
 	
 	result.x = point.x;
 	result.y = point.y;
-	result.z = (box.min.z + ((float32)summ / (255.0f * 4.0f)) * (box.max.z - box.min.z));
+	result.z = (box.min.z + ((float32)summ / ((float32)Heightmap::MAX_VALUE * 4.0f)) * (box.max.z - box.min.z));
 
 	return true;
 };
 	
 	
 	
-void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels)
+void LandscapeNode::RecursiveBuild(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 level, int32 maxLevels)
 {
-    allocatedMemoryForQuads += sizeof(QuadTreeNode<LandscapeQuad>);
+    allocatedMemoryForQuads += sizeof(LandQuadTreeNode<LandscapeQuad>);
     currentNode->data.lod = level;
     
     // if we have parrent get rdo quad 
@@ -293,11 +378,11 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     if (currentNode->data.size == 2)
     {
         // compute node bounding box
-        uint8 * data = heightmap->GetData();
+        uint16 * data = heightmap->Data();
         for (int16 x = currentNode->data.x; x <= currentNode->data.x + currentNode->data.size; ++x)
             for (int16 y = currentNode->data.y; y <= currentNode->data.y + currentNode->data.size; ++y)
             {
-                uint8 value = data[heightmap->GetWidth() * y + x];
+                uint16 value = data[heightmap->Size() * y + x];
                 Vector3 pos = GetPoint(x, y, value);
                 
                 currentNode->data.bbox.AddPoint(pos);
@@ -319,28 +404,28 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     // We should be able to divide landscape by 2 here
     DVASSERT((size & 1) == 0);
 
-    QuadTreeNode<LandscapeQuad> * child0 = &currentNode->childs[0];
+    LandQuadTreeNode<LandscapeQuad> * child0 = &currentNode->childs[0];
     child0->data.x = minIndexX;
     child0->data.y = minIndexY;
     //child0->data.xbuf = bufMinIndexX;
     //child0->data.ybuf = bufMinIndexY;
     child0->data.size = size / 2;
     
-    QuadTreeNode<LandscapeQuad> * child1 = &currentNode->childs[1];
+    LandQuadTreeNode<LandscapeQuad> * child1 = &currentNode->childs[1];
     child1->data.x = minIndexX + size / 2;
     child1->data.y = minIndexY;
     //child1->data.xbuf = bufMinIndexX + size / 2;
     //child1->data.ybuf = bufMinIndexY;
     child1->data.size = size / 2;
 
-    QuadTreeNode<LandscapeQuad> * child2 = &currentNode->childs[2];
+    LandQuadTreeNode<LandscapeQuad> * child2 = &currentNode->childs[2];
     child2->data.x = minIndexX;
     child2->data.y = minIndexY + size / 2;
     //child2->data.xbuf = bufMinIndexX;
     //child2->data.ybuf = bufMinIndexY + size / 2;
     child2->data.size = size / 2;
 
-    QuadTreeNode<LandscapeQuad> * child3 = &currentNode->childs[3];
+    LandQuadTreeNode<LandscapeQuad> * child3 = &currentNode->childs[3];
     child3->data.x = minIndexX + size / 2;
     child3->data.y = minIndexY + size / 2;
     //child3->data.xbuf = bufMinIndexX + size / 2;
@@ -349,7 +434,7 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     
     for (int32 index = 0; index < 4; ++index)
     {
-        QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+        LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
         child->parent = currentNode;
         RecursiveBuild(child, level + 1, maxLevels);
         
@@ -380,7 +465,7 @@ void LandscapeNode::RecursiveBuild(QuadTreeNode<LandscapeQuad> * currentNode, in
     *********
  */
 
-QuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(QuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize)
+LandQuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(LandQuadTreeNode<LandscapeQuad> * currentNode, int16 quadX, int16 quadY, int16 quadSize)
 {
     if ((currentNode->data.x <= quadX) && (quadX < currentNode->data.x + currentNode->data.size))
         if ((currentNode->data.y <= quadY) && (quadY < currentNode->data.y + currentNode->data.size))
@@ -390,8 +475,8 @@ QuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(QuadT
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-                QuadTreeNode<LandscapeQuad> * result = FindNodeWithXY(child, quadX, quadY, quadSize);
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * result = FindNodeWithXY(child, quadX, quadY, quadSize);
                 if (result)
                     return result;
             } 
@@ -404,7 +489,7 @@ QuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(QuadT
     return 0;
 }
     
-void LandscapeNode::FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode)
+void LandscapeNode::FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     currentNode->neighbours[LEFT] = FindNodeWithXY(&quadTreeHead, currentNode->data.x - 1, currentNode->data.y, currentNode->data.size);
     currentNode->neighbours[RIGHT] = FindNodeWithXY(&quadTreeHead, currentNode->data.x + currentNode->data.size, currentNode->data.y, currentNode->data.size);
@@ -415,13 +500,13 @@ void LandscapeNode::FindNeighbours(QuadTreeNode<LandscapeQuad> * currentNode)
     {
         for (int32 index = 0; index < 4; ++index)
         {
-            QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
             FindNeighbours(child);
         }
     }
 }
 
-void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 & depth)
+void LandscapeNode::MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 & depth)
 {
     if (--depth <= 0)
     {
@@ -433,11 +518,21 @@ void LandscapeNode::MarkFrames(QuadTreeNode<LandscapeQuad> * currentNode, int32 
     {
         for (int32 index = 0; index < 4; ++index)
         {
-            QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+            LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
             MarkFrames(child, depth);
         }
     }
     depth++;
+}
+    
+void LandscapeNode::SetTextureTiling(eTextureLevel level, const Vector2 & tiling)
+{
+    textureTiling[level] = tiling;
+}
+    
+const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
+{
+    return textureTiling[level];
 }
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
@@ -457,6 +552,13 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 
     Image::EnableAlphaPremultiplication(true);
 }
+
+void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
+{
+    SafeRelease(textures[level]);
+    textures[level] = SafeRetain(texture);
+}
+
     
 Texture * LandscapeNode::GetTexture(eTextureLevel level)
 {
@@ -481,7 +583,7 @@ void LandscapeNode::ClearQueue()
     queueDrawIndices = indices;
 }
 
-void LandscapeNode::DrawQuad(QuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
+void LandscapeNode::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
 {
     int32 depth = currentNode->data.size / (1 << lod);
     if (depth == 1)
@@ -532,11 +634,11 @@ void LandscapeNode::DrawFans()
     
     ClearQueue();
     
-    List<QuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
-    for (List<QuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
+    List<LandQuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
+    for (List<LandQuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
     {
         //uint16 * drawIndices = indices;
-        QuadTreeNode<LandscapeQuad>* node = *t;
+        LandQuadTreeNode<LandscapeQuad>* node = *t;
         
         //RenderManager::Instance()->SetRenderData(landscapeRDOArray[node->data.rdoQuad]);
         
@@ -614,11 +716,11 @@ void LandscapeNode::DrawFans()
     FlushQueue();
     
 /*  DRAW TRIANGLE FANS
-    List<QuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
-    for (List<QuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
+    List<LandQuadTreeNode<LandscapeQuad>*>::const_iterator end = fans.end();
+    for (List<LandQuadTreeNode<LandscapeQuad>*>::iterator t = fans.begin(); t != end; ++t)
     {
         uint16 * drawIndices = indices;
-        QuadTreeNode<LandscapeQuad>* node = *t;
+        LandQuadTreeNode<LandscapeQuad>* node = *t;
         
         RenderManager::Instance()->SetRenderData(landscapeRDOArray[node->data.rdoQuad]);
 
@@ -657,7 +759,7 @@ void LandscapeNode::DrawFans()
  */
 }  
     
-void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
+void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;
@@ -674,7 +776,7 @@ void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
                 Draw(child); 
             }
         }
@@ -779,7 +881,7 @@ void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
         {
             for (int32 index = 0; index < 4; ++index)
             {
-                QuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
                 Draw(child); 
             }
         }
@@ -790,17 +892,165 @@ void LandscapeNode::Draw(QuadTreeNode<LandscapeQuad> * currentNode)
         }*/
     }
 }
+    
+void LandscapeNode::BindMaterial()
+{
+    switch(renderingMode)
+    {
+        case RENDERING_MODE_TEXTURE:
+            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
+            break;
+            
+        case RENDERING_MODE_DETAIL_SHADER:
+        {
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
+            if (textures[TEXTURE_DETAIL])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_DETAIL], 1);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+            
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 0);
+            activeShader->SetUniformValue(uniformTextures[TEXTURE_DETAIL], 1);
+            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);
+        }
+            break;
+        case RENDERING_MODE_BLENDED_SHADER:
+        {
+            if (textures[TEXTURE_TILE0])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+            if (textures[TEXTURE_TILE1])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 2);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+
+            if (uniformTextures[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+            
+            if (uniformTextures[TEXTURE_TILE1] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+
+            if (uniformTextures[TEXTURE_COLOR] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
+
+            if (uniformCameraPosition != -1)
+                activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            
+            if (uniformTextureTiling[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+
+            if (uniformTextureTiling[TEXTURE_TILE1]!= -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+        }            
+            break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+        {
+            if (textures[TEXTURE_TILE0])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+            if (textures[TEXTURE_TILE1])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+            if (textures[TEXTURE_TILE2])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
+            if (textures[TEXTURE_TILE3])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
+            if (textures[TEXTURE_TILE_MASK])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
+            if (textures[TEXTURE_COLOR])
+                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
+            
+            RenderManager::Instance()->SetShader(activeShader);
+            RenderManager::Instance()->FlushState();
+            
+            if (uniformTextures[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+
+            if (uniformTextures[TEXTURE_TILE1] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+            
+            if (uniformTextures[TEXTURE_TILE2] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
+            
+            if (uniformTextures[TEXTURE_TILE3] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
+
+            if (uniformTextures[TEXTURE_TILE_MASK] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
+
+            if (uniformTextures[TEXTURE_COLOR] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
+            
+            if (uniformCameraPosition != -1)
+                activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            
+            if (uniformTextureTiling[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+            
+            if (uniformTextureTiling[TEXTURE_TILE1] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+            
+            if (uniformTextureTiling[TEXTURE_TILE2] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
+            
+            if (uniformTextureTiling[TEXTURE_TILE3] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
+            }            
+            break;
+    }
+}
+
+void LandscapeNode::UnbindMaterial()
+{
+    switch(renderingMode)
+    {
+        case RENDERING_MODE_TEXTURE:
+            break;
+            
+        case RENDERING_MODE_DETAIL_SHADER:
+        {
+            RenderManager::Instance()->SetTexture(0, 1);
+        }
+            break;
+        case RENDERING_MODE_BLENDED_SHADER:
+        {
+            RenderManager::Instance()->SetTexture(0, 1);
+            RenderManager::Instance()->SetTexture(0, 2);
+        }            
+            break;
+        case RENDERING_MODE_TILE_MASK_SHADER:
+        {
+            RenderManager::Instance()->SetTexture(0, 0);
+            RenderManager::Instance()->SetTexture(0, 1);
+            RenderManager::Instance()->SetTexture(0, 2);
+            RenderManager::Instance()->SetTexture(0, 3);
+            RenderManager::Instance()->SetTexture(0, 4);
+            RenderManager::Instance()->SetTexture(0, 5);
+        }
+        break;
+    }    
+}
+
 
 void LandscapeNode::Draw()
 {
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
-#if defined(__DAVAENGINE_MACOS__)
-    if (debugFlags & DEBUG_DRAW_ALL)
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
+//<<<<<<< HEAD
+//    if (debugFlags & DEBUG_DRAW_ALL)
+//=======
+    if (debugFlags & DEBUG_DRAW_GRID)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
-#endif
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+    
+    SceneNode::Draw();
     
     RenderManager::Instance()->ResetColor();
 
@@ -826,51 +1076,11 @@ void LandscapeNode::Draw()
     
     fans.clear();
     
-    switch(renderingMode)
-    {
-        case RENDERING_MODE_TEXTURE:
-            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-            if (textures[TEXTURE_TEXTURE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE0], 0);
-        break;
-            
-        case RENDERING_MODE_DETAIL_SHADER:
-        {
-            if (textures[TEXTURE_TEXTURE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE0], 0);
-            if (textures[TEXTURE_DETAIL])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_DETAIL], 1);
-
-            RenderManager::Instance()->SetShader(detailShader);
-            RenderManager::Instance()->FlushState();
-
-            detailShader->SetUniformValue(uniformTexture, 0);
-            detailShader->SetUniformValue(uniformDetailTexture, 1);
-            detailShader->SetUniformValue(uniformCameraPosition, cameraPos);
-        }
-        break;
-        case RENDERING_MODE_BLENDED_SHADER:
-        {
-            if (textures[TEXTURE_TEXTURE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE0], 0);
-            if (textures[TEXTURE_TEXTURE1])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTURE1], 1);
-            if (textures[TEXTURE_TEXTUREMASK])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TEXTUREMASK], 2);
-
-            RenderManager::Instance()->SetShader(blendedShader);
-            RenderManager::Instance()->FlushState();
-            blendedShader->SetUniformValue(uniformTexture0, 0);
-            blendedShader->SetUniformValue(uniformTexture1, 1);
-            blendedShader->SetUniformValue(uniformTextureMask, 2);
-            blendedShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-        }            
-        break;
-    }
+    BindMaterial();
     
-    Draw(&quadTreeHead);
-    FlushQueue();
-    DrawFans();
+	Draw(&quadTreeHead);
+	FlushQueue();
+	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
     if (debugFlags & DEBUG_DRAW_ALL)
@@ -878,25 +1088,26 @@ void LandscapeNode::Draw()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }   
 #endif 
-    
-    switch(renderingMode)
-    {
-        case RENDERING_MODE_TEXTURE:
-            break;
-            
-        case RENDERING_MODE_DETAIL_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 1);
-        }
-            break;
-        case RENDERING_MODE_BLENDED_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 1);
-            RenderManager::Instance()->SetTexture(0, 2);
-        }            
-            break;
-    }
 
+	if(cursor)
+	{
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
+		fans.clear();
+		cursor->Prepare();
+		ClearQueue();
+		Draw(&quadTreeHead);
+		FlushQueue();
+		DrawFans();
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(src, dst);
+	}
+    
+    UnbindMaterial();
 
 //#if defined(__DAVAENGINE_MACOS__)
 //    if (debugFlags & DEBUG_DRAW_ALL)
@@ -921,7 +1132,7 @@ void LandscapeNode::Draw()
 
 void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vector<int32> & indices)
 {
-	QuadTreeNode<LandscapeQuad> * currentNode = &quadTreeHead;
+	LandQuadTreeNode<LandscapeQuad> * currentNode = &quadTreeHead;
 	LandscapeQuad * quad = &currentNode->data;
 	
 	landscapeVertices.resize((quad->size + 1) * (quad->size + 1));
@@ -931,16 +1142,16 @@ void LandscapeNode::GetGeometry(Vector<LandscapeVertex> & landscapeVertices, Vec
 	{
 		for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
 		{
-			landscapeVertices[index].position = GetPoint(x, y, heightmap->GetData()[y * heightmap->GetWidth() + x]);
-			landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->GetWidth() - 1), (float32)y / (float32)(heightmap->GetHeight() - 1));           
+			landscapeVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
+			landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
 			index++;
 		}
 	}
 
-	indices.resize(heightmap->GetWidth()*heightmap->GetHeight()*6);
+	indices.resize(heightmap->Size()*heightmap->Size()*6);
 	int32 step = 1;
 	int32 indexIndex = 0;
-	int32 quadWidth = heightmap->GetWidth();
+	int32 quadWidth = heightmap->Size();
 	for(int32 y = 0; y < currentNode->data.size-1; y += step)
 	{
 		for(int32 x = 0; x < currentNode->data.size-1; x += step)
@@ -977,24 +1188,36 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
 
 const String & LandscapeNode::GetHeightMapPathname()
 {
-    return heightMapPath;
+    return heightmapPath;
 }
     
 void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
     SceneNode::Save(archive, sceneFile);
-    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightMapPath));
+        
+    //TODO: remove code in future. Need for transition from *.png to *.heightmap
+    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
+    if(Heightmap::FileExtension() != extension)
+    {
+        heightmapPath = FileSystem::Instance()->ReplaceExtension(heightmapPath, Heightmap::FileExtension());
+        heightmap->Save(heightmapPath);
+    }
+    //
+    
+    archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
     archive->SetInt32("renderingMode", renderingMode);
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         String path = textureNames[k];
         String relPath  = sceneFile->AbsoluteToRelative(path);
-        Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
+        
+        if(sceneFile->DebugLogEnabled())
+            Logger::Debug("landscape tex save: %s rel: %s", path.c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
+        archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
     }
-        
 }
     
 void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -1010,13 +1233,32 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
     BuildLandscapeFromHeightmapImage(renderingMode, path, box);
     
+    
+    
+    
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         String textureName = archive->GetString(Format("tex_%d", k));
         String absPath = sceneFile->RelativeToAbsolute(textureName);
-        Logger::Debug("landscape tex load: %s abs:%s", textureName.c_str(), absPath.c_str());
+        if(sceneFile->DebugLogEnabled())
+            Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
 
-        SetTexture((eTextureLevel)k, absPath);
+        if (sceneFile->GetVersion() >= 4)
+        {
+            SetTexture((eTextureLevel)k, absPath);
+            textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+        }
+        else
+        {
+            if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
+                SetTexture((eTextureLevel)(k + 2), absPath);
+                
+            if (k == 3)
+                SetTexture(TEXTURE_COLOR, absPath);
+
+            if ((k == 0) || (k == 1))
+                textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+        }
     }
 }
 
@@ -1024,5 +1266,41 @@ const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel 
 {
     return textureNames[level];
 }
+
+void LandscapeNode::CursorEnable()
+{
+	DVASSERT(0 == cursor);
+	cursor = new LandscapeCursor();
+}
+
+void LandscapeNode::CursorDisable()
+{
+	SafeDelete(cursor);
+}
+
+void LandscapeNode::SetCursorTexture(Texture * texture)
+{
+	cursor->SetCursorTexture(texture);
+}
+
+void LandscapeNode::SetCursorPosition(const Vector2 & position)
+{
+	cursor->SetPosition(position);
+}
+
+void LandscapeNode::SetCursorScale(float32 scale)
+{
+	cursor->SetScale(scale);
+}
+
+void LandscapeNode::SetBigTextureSize(float32 bigSize)
+{
+	cursor->SetBigTextureSize(bigSize);
+}
     
+Heightmap * LandscapeNode::GetHeightmap()
+{
+    return heightmap;
+}
+
 };

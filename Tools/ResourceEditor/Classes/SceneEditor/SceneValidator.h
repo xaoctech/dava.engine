@@ -5,7 +5,6 @@
 
 using namespace DAVA;
 
-class ErrorDialog;
 class SceneInfoControl;
 class SceneValidator: public Singleton<SceneValidator>
 {
@@ -25,9 +24,11 @@ public:
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
-protected:
+    static bool IsntPower2(int32 num);
 
-    bool IsntPower2(int32 num);
+    void ReloadTextures();
+    
+protected:
     
     void ValidateTextureInternal(Texture *texture);
     void ValidateLandscapeInternal(LandscapeNode *landscape);
@@ -39,7 +40,6 @@ protected:
     
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;
-    ErrorDialog *errorDialog;
     
     SceneInfoControl *infoControl;
 

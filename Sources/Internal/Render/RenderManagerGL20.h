@@ -65,7 +65,7 @@ private:
     
 /** 
 	\ingroup render
-	\brief Subclass that implements GL 2.0 rendering layer, using shaders 
+	\brief Subclass that implements GL 2.0 renderealChildBoxring layer, using shaders 
 */
 class RenderManagerGL20 : public RenderManager
 {

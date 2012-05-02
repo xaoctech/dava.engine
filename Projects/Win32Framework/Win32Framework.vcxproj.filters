@@ -97,6 +97,9 @@
     <Filter Include="Internal\Render\Effects">
       <UniqueIdentifier>{61100d52-442d-45fd-b286-f3baf188d2bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Scene3D\Imposter">
+      <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -936,6 +939,27 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h">
+      <Filter>Internal\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h">
+      <Filter>Internal\Scene3D\Imposter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h">
+      <Filter>Internal\Scene3D\Imposter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1618,6 +1642,27 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp">
       <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp">
+      <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp">
+      <Filter>Internal\Scene3D\Imposter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp">
+      <Filter>Internal\Scene3D\Imposter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -45,7 +45,7 @@ UIScreenTransition::UIScreenTransition()
 {
 	duration = 0.7f;
 	interpolationFunc = Interpolation::GetFunction(Interpolation::EASY_IN_EASY_OUT);
-	SetFillBorderOrder(UIScreen::FILL_BORDER_NONE);
+	SetFillBorderOrder(UIScreen::FILL_BORDER_AFTER_DRAW);
 }
 
 UIScreenTransition::~UIScreenTransition()
@@ -62,12 +62,12 @@ void UIScreenTransition::CreateRenderTargets()
 	
 	renderTargetPrevScreen = Sprite::CreateAsRenderTarget(
 		(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 
-		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), Texture::FORMAT_RGB565);
+		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), FORMAT_RGB565);
 	renderTargetPrevScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 	
 	renderTargetNextScreen = Sprite::CreateAsRenderTarget(
 		(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 
-		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), Texture::FORMAT_RGB565);
+		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), FORMAT_RGB565);
 	renderTargetNextScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 }
 
