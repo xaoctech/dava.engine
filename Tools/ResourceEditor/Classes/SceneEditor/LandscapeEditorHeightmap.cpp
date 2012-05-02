@@ -25,11 +25,18 @@ LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newD
     prevToolSize = 0.f;
     
     editingIsEnabled = false;
+    
+    copyFromCenter = Vector2(-1.0f, -1.0f);
+    copyToCenter = Vector2(-1.0f, -1.0f);
+    
+//    colorMaskImage = NULL;
 }
 
 
 LandscapeEditorHeightmap::~LandscapeEditorHeightmap()
 {
+//    SafeRelease(colorMaskImage);
+    
     SafeRelease(heightmap);
     SafeRelease(toolImage);
     SafeRelease(landscapeDebugNode);
@@ -41,7 +48,7 @@ void LandscapeEditorHeightmap::Update(float32 timeElapsed)
     {
         if(currentTool)
         {
-            if(LandscapeTool::TOOL_BRUSH == currentTool->type)
+            if((LandscapeTool::TOOL_BRUSH == currentTool->type) || (LandscapeTool::TOOL_COPYPASTE == currentTool->type))
             {
                 UpdateTileMaskTool(timeElapsed);
             }
@@ -93,10 +100,7 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         RenderManager::Instance()->RestoreRenderTarget();
 
         toolImage = dstSprite->GetTexture()->CreateImageFromMemory();
-  
-//TODO: for debug        
-//        toolImage->Save("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/Test.png");
-        
+          
         SafeRelease(srcSprite);
         SafeRelease(srcTex);
         SafeRelease(dstSprite);
@@ -108,44 +112,75 @@ void LandscapeEditorHeightmap::UpdateToolImage()
 
 void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 {
-    if(toolImage && currentTool->strength && LandscapeTool::TOOL_BRUSH == currentTool->type)
+    if(toolImage)
     {
-        int32 scaleSize = toolImage->GetWidth();
-        Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+        if(LandscapeTool::TOOL_BRUSH == currentTool->type)
         {
-            if(currentTool->averageDrawing)
-            {
-                float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-                ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
-            }
-            else if(currentTool->relativeDrawing)
-            {
-                float32 koef = (currentTool->strength * timeElapsed);
-                if(inverseDrawingEnabled)
-                {
-                    koef = -koef;
-                }
-                ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
-            }
-            else
-            {
-                Vector3 landSize;
-                AABBox3 transformedBox;
-                workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
-                landSize = transformedBox.max - transformedBox.min;
-                
-                float32 maxHeight = landSize.z;
-                float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
-                
-                float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-                ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
-            }
-            
-            heightmapNode->UpdateHeightmapRect(Rect(pos.x, pos.y, scaleSize, scaleSize));
+            UpdateBrushTool(timeElapsed);
         }
-        startPoint = endPoint;
+        else if(LandscapeTool::TOOL_COPYPASTE == currentTool->type)
+        {
+            UpdateCopypasteTool(timeElapsed);
+        }
     }
 }
+
+void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
+{
+    int32 scaleSize = toolImage->GetWidth();
+    Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
+    {
+        if(currentTool->averageDrawing)
+        {
+            float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
+            ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+        }
+        else if(currentTool->relativeDrawing)
+        {
+            float32 koef = (currentTool->strength * timeElapsed);
+            if(inverseDrawingEnabled)
+            {
+                koef = -koef;
+            }
+            ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+        }
+        else
+        {
+            Vector3 landSize;
+            AABBox3 transformedBox;
+            workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
+            landSize = transformedBox.max - transformedBox.min;
+            
+            float32 maxHeight = landSize.z;
+            float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
+            
+            float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
+            ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
+        }
+        
+        heightmapNode->UpdateHeightmapRect(Rect(pos.x, pos.y, scaleSize, scaleSize));
+    }
+}
+
+void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
+{
+    if(     (Vector2(-1.0f, -1.0f) != copyFromCenter) 
+       &&   (Vector2(-1.0f, -1.0f) != copyToCenter))
+    {
+        int32 scaleSize = toolImage->GetWidth();
+        Vector2 posTo = landscapePoint - Vector2(scaleSize, scaleSize)/2;
+        
+        Vector2 deltaPos = landscapePoint - copyToCenter;
+        Vector2 posFrom = copyFromCenter + deltaPos - Vector2(scaleSize, scaleSize)/2;
+        
+        float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
+        ImageRasterizer::DrawCopypasteRGBA(heightmap, toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
+        
+        heightmapNode->UpdateHeightmapRect(Rect(posTo.x, posTo.y, scaleSize, scaleSize));
+//        ImageRasterizer::DrawCopypasteRGBA(colorMaskImage, colorMaskImage, toolImage, posFrom, posTo, scaleSize, scaleSize);
+    }
+}
+
 
 float32 LandscapeEditorHeightmap::GetDropperHeight()
 {
@@ -154,7 +189,7 @@ float32 LandscapeEditorHeightmap::GetDropperHeight()
     workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
 
-    int32 index = startPoint.x + startPoint.y * heightmap->Size();
+    int32 index = landscapePoint.x + landscapePoint.y * heightmap->Size();
     float32 height = heightmap->Data()[index];
     float32 maxHeight = landSize.z;
     return (height / Heightmap::MAX_VALUE * maxHeight);
@@ -165,7 +200,7 @@ void LandscapeEditorHeightmap::UpdateCursor()
 	if(currentTool)
 	{
 		int32 scaleSize = currentTool->size;
-		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
 
 		landscapeDebugNode->SetCursorTexture(cursorTexture);
 		landscapeDebugNode->SetBigTextureSize(landscapeSize);
@@ -209,6 +244,11 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
                     currentTool->height = GetDropperHeight();
                 }
                 
+                if(LandscapeTool::TOOL_COPYPASTE == currentTool->type)
+                {
+                    CopyPasteBegin();
+                }
+                
                 editingIsEnabled = true;
                 UpdateToolImage();
                 
@@ -243,6 +283,20 @@ void LandscapeEditorHeightmap::InputAction(int32 phase, bool intersects)
     }
 }
 
+void LandscapeEditorHeightmap::CopyPasteBegin()
+{
+    bool start = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_ALT);
+    if(start)
+    {
+        copyFromCenter = landscapePoint;
+        copyToCenter = Vector2(-1.0f, -1.0f);
+    }
+    else if(Vector2(-1.0f, -1.0f) == copyToCenter)
+    {
+        copyToCenter = landscapePoint;
+    }
+}
+
 void LandscapeEditorHeightmap::HideAction()
 {
 	landscapeDebugNode->CursorDisable();
@@ -258,6 +312,7 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(landscapeDebugNode);
     
     SafeRelease(heightmap);
+//    SafeRelease(colorMaskImage);
     
     UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
 }
@@ -293,6 +348,14 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapeSize = heightmap->Size();
 
 	landscapeDebugNode->CursorEnable();
+    
+    
+//    Texture *mask = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
+//    if(mask)
+//    {
+//        colorMaskImage = Image::CreateFromFile(mask->GetPathname());
+//    }
+    
     
     UNDOManager::Instance()->SaveHightmap(heightmap);
 }
@@ -376,6 +439,11 @@ void LandscapeEditorHeightmap::TextureDidChanged()
 void LandscapeEditorHeightmap::OnToolSelected(LandscapeTool *newTool)
 {
     LandscapeEditorBase::OnToolSelected(newTool);
+    prevToolSize = -1.0f;
+    
+    copyFromCenter = Vector2(-1.0f, -1.0f);
+    copyToCenter = Vector2(-1.0f, -1.0f);
+    
     SafeRelease(toolImage);
 }
 

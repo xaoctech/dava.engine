@@ -45,8 +45,14 @@ protected:
     virtual void UndoAction();
     virtual void RedoAction();
 
+    void CopyPasteBegin();
+
     
 	void UpdateTileMaskTool(float32 timeElapsed);
+	void UpdateBrushTool(float32 timeElapsed);
+	void UpdateCopypasteTool(float32 timeElapsed);
+
+    
     void UpdateToolImage();
     float32 GetDropperHeight();
     
@@ -59,6 +65,10 @@ protected:
     
     Image *toolImage;
     float32 prevToolSize;
+    
+    Vector2 copyFromCenter;
+    Vector2 copyToCenter;
+//    Image *colorMaskImage;
 };
 
 
