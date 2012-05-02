@@ -8,6 +8,8 @@ UNDOAction::UNDOAction()
     type = ACTION_NONE;
     ID = -1;
     filePathname = "";
+    
+    actionData = NULL;
 }
 
 #pragma mark  --UNDOManager
@@ -111,14 +113,8 @@ UNDOAction * UNDOManager::CreateTilemaskAction(Texture *tilemask)
     UNDOAction *action = new UNDOAction();
     action->type = UNDOAction::ACTION_TILEMASK;
     action->ID = actionCounter++;
-    action->filePathname = folderPathname + "/" + TimeString() + ".png";
-    
-    Image *imgForSaving = tilemask->CreateImageFromMemory();
-    if(imgForSaving)
-    {
-        imgForSaving->Save(action->filePathname);
-        SafeRelease(imgForSaving);
-    }
+    action->filePathname = "";
+    action->actionData = tilemask->CreateImageFromMemory();
     
     return action;
 }
@@ -136,7 +132,7 @@ void UNDOManager::SaveTilemask(Texture *tilemask)
     ReleaseHistory(actionsHistoryREDO);
 }
 
-Texture * UNDOManager::UndoTilemask(Texture *tilemask)
+Texture * UNDOManager::UndoTilemask()
 {
     Texture *tex = NULL;
     
@@ -150,18 +146,28 @@ Texture * UNDOManager::UndoTilemask(Texture *tilemask)
         
         it = actionsHistoryUNDO.end();
         --it;
-        tex = Texture::CreateFromFile((*it)->filePathname);
+
+        RenderManager::Instance()->LockNonMain();
+        Image *image = (Image *)((*it)->actionData);
+        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+        RenderManager::Instance()->UnlockNonMain();
+        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
     }
     return tex;
 }
 
-Texture * UNDOManager::RedoTilemask(Texture *tilemask)
+Texture * UNDOManager::RedoTilemask()
 {
     Texture *tex = NULL;
     if(actionsHistoryREDO.size())
     {
         List<UNDOAction *>::iterator it = actionsHistoryREDO.begin();
-        tex = Texture::CreateFromFile((*it)->filePathname);
+
+        RenderManager::Instance()->LockNonMain();
+        Image *image = (Image *)((*it)->actionData);
+        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+        RenderManager::Instance()->UnlockNonMain();
+        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
         
         actionsHistoryUNDO.push_back(*it);
         actionsHistoryREDO.erase(it);
@@ -228,7 +234,17 @@ void UNDOManager::ClearHistory(List<UNDOAction *> &actionsHistory, UNDOAction::e
     {
         if(forAction == (*it)->type)
         {
-            FileSystem::Instance()->DeleteFile((*it)->filePathname);
+            if(UNDOAction::ACTION_TILEMASK == (*it)->type)
+            {
+                Image *image = (Image *)((*it)->actionData);
+                SafeRelease(image);
+                (*it)->actionData = NULL;
+            }
+            else 
+            {
+                FileSystem::Instance()->DeleteFile((*it)->filePathname);
+            }
+            
             SafeRelease(*it);
             
             it = actionsHistory.erase(it);
@@ -248,6 +264,17 @@ void UNDOManager::ReleaseHistory(List<UNDOAction *> &actionsHistory)
     
     for(; it != endIt; ++it)
     {
+        if(UNDOAction::ACTION_TILEMASK == (*it)->type)
+        {
+            Image *image = (Image *)((*it)->actionData);
+            SafeRelease(image);
+            (*it)->actionData = NULL;
+        }
+        else 
+        {
+            FileSystem::Instance()->DeleteFile((*it)->filePathname);
+        }
+        
         SafeRelease(*it);
     }
     actionsHistory.clear();

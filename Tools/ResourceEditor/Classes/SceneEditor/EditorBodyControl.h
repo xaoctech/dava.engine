@@ -16,6 +16,9 @@
 #include "GraphBase.h"
 
 
+//#define FORCE_LOD_UPDATE
+
+
 using namespace DAVA;
 
 class SceneGraph;
@@ -213,6 +216,10 @@ protected:
     DataGraph *dataGraph;
     GraphBase *currentGraph;
     ePropertyShowState propertyShowState;
+    
+#ifdef FORCE_LOD_UPDATE
+    void OnForceLod(BaseObject * object, void * userData, void * callerData);
+#endif //#ifdef FORCE_LOD_UPDATE
 };
 
 
