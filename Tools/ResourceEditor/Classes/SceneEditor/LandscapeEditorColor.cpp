@@ -184,21 +184,17 @@ void LandscapeEditorColor::UpdateTileMaskTool()
 	if(currentTool && currentTool->sprite && currentTool->size)
 	{
 		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
-//		Vector2 deltaPos = endPoint - startPoint;
-		{
-			Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
-			if(pos != prevDrawPos)
-			{
-				wasTileMaskToolUpdate = true;
-                
-				RenderManager::Instance()->SetRenderTarget(toolSprite);
-				currentTool->sprite->SetScaleSize(scaleSize, scaleSize);
-				currentTool->sprite->SetPosition(pos);
-				currentTool->sprite->Draw();
-                RenderManager::Instance()->RestoreRenderTarget();
-			}
-			startPoint = endPoint;
-		}
+        Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
+        if(pos != prevDrawPos)
+        {
+            wasTileMaskToolUpdate = true;
+            
+            RenderManager::Instance()->SetRenderTarget(toolSprite);
+            currentTool->sprite->SetScaleSize(scaleSize, scaleSize);
+            currentTool->sprite->SetPosition(pos);
+            currentTool->sprite->Draw();
+            RenderManager::Instance()->RestoreRenderTarget();
+        }
 	}
 }
 
@@ -208,7 +204,7 @@ void LandscapeEditorColor::UpdateCursor()
 	if(currentTool && currentTool->sprite && currentTool->size)
 	{
 		float32 scaleSize = currentTool->sprite->GetWidth() * (currentTool->size * currentTool->size);
-		Vector2 pos = startPoint - Vector2(scaleSize, scaleSize)/2;
+		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);
 		workingLandscape->SetBigTextureSize(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
