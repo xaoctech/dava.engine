@@ -376,6 +376,9 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(tilemaskImage);
     SafeRelease(toolImageTile);
 
+    workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
+
+    
     UNDOManager::Instance()->ClearHistory(UNDOAction::ACTION_HEIGHTMAP);
 }
 
