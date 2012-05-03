@@ -61,6 +61,7 @@ public:
 	void DrawImposter();
 
 	bool IsAskingForRedraw();
+	bool IsQueued();
 	void OnAddedToQueue();
 	void ApproveRedraw();
 
