@@ -40,8 +40,6 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     absoluteDropper = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                              LocalizedString(L"landscapeeditor.absolutedropper"));
 
-    
-    
     Rect heightRect;
     heightRect.x = showGrid->GetRect().x + showGrid->GetRect().dx + TEXT_WIDTH + OFFSET;
     heightRect.y = ControlsFactory::TOOLS_HEIGHT;
@@ -91,6 +89,11 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     copypasteIcon->SetSprite(copypasteTool->sprite, 0);
     AddControl(copypasteIcon);
     
+    copypasteRect.x = (copypasteRect.x + copypasteRect.dx + ControlsFactory::OFFSET);
+    copypasteRect.dx = copypasteRect.dy = ControlsFactory::TOOLS_HEIGHT / 2;
+    copyHeightmap = CreateCkeckbox(copypasteRect, L"Height");
+    copypasteRect.y += copypasteRect.dy;
+    copyTilemask = CreateCkeckbox(copypasteRect, L"Tilemask");
     
     sizeValue->SetText(Format(L"%.3f", LandscapeTool::SizeHeightMax()));
     strengthValue->SetText(Format(L"%.3f", LandscapeTool::StrengthHeightMax()));
@@ -107,6 +110,9 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     
     averageStrength->SetMinMaxValue(0.f, 1.f);
     averageStrength->SetValue(0.5f);
+    
+    copyHeightmap->SetChecked(true, false);    
+    copyTilemask->SetChecked(true, false);    
 }
 
 
@@ -132,6 +138,9 @@ void LandscapeToolsPanelHeightmap::WillAppear()
     LandscapeToolsPanel::WillAppear();
         
     showGrid->SetChecked(showGrid->Checked(), true);
+    
+    copyHeightmap->SetChecked(copyHeightmap->Checked(), true);    
+    copyTilemask->SetChecked(copyTilemask->Checked(), true);    
 }
 
 
@@ -381,6 +390,14 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
         {
             delegate->OnShowGrid(showGrid->Checked());
         }
+    }
+    else if(forCheckbox == copyTilemask)
+    {
+        copypasteTool->copyTilemask = newValue;
+    }
+    else if(forCheckbox == copyHeightmap)
+    {
+        copypasteTool->copyHeightmap = newValue;
     }
 
     if(selectedBrushTool)

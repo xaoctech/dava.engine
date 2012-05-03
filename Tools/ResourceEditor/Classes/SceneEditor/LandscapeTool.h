@@ -50,6 +50,9 @@ public:
     bool averageDrawing;
     bool absoluteDropperDrawing;
     
+    bool copyHeightmap;
+    bool copyTilemask;
+    
     eToolType type;
 };
 

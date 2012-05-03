@@ -59,6 +59,8 @@ protected:
 
     UIControl *copypasteIcon;
     LandscapeTool *copypasteTool;
+    UICheckBox *copyHeightmap;
+    UICheckBox *copyTilemask;
 
     
     UISlider *averageStrength;
