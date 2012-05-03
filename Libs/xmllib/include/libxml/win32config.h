@@ -191,8 +191,8 @@
 #define HAVE_SIGNAL_H 1
 
 /* Define to 1 if you have the `snprintf' function. */
-// #undef HAVE_SNPRINTF
-#define HAVE_SNPRINTF 1
+ #undef HAVE_SNPRINTF
+//#define HAVE_SNPRINTF 1
 
 /* Define to 1 if you have the `sprintf' function. */
 // #undef HAVE_SPRINTF
@@ -203,8 +203,8 @@
 #define HAVE_SSCANF 1
 
 /* Define to 1 if you have the `stat' function. */
-// #undef HAVE_STAT
-#define HAVE_STAT 1
+#undef HAVE_STAT
+//#define HAVE_STAT 1
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
@@ -301,8 +301,8 @@
 #define HAVE_VSPRINTF 1
 
 /* Define to 1 if you have the <zlib.h> header file. */
-// #undef HAVE_ZLIB_H
-#define HAVE_ZLIB_H 1
+#undef HAVE_ZLIB_H
+//#define HAVE_ZLIB_H 1
 
 /* Define to 1 if you have the `_stat' function. */
 #undef HAVE__STAT
