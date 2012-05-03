@@ -10,6 +10,10 @@
 #define IN_LIBXML
 #include "libxml/elfgcchack.h"
 
+#if defined(WIN32) || defined(_WIN32)
+#include "libxml/libxml.h"
+#endif
+
 #if defined(WIN32) && !defined (__CYGWIN__)
 #define XML_DIR_SEP '\\'
 #else

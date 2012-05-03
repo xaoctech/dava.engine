@@ -22,7 +22,7 @@ namespace DAVA
 // 		Logger::Debug("[XMLParser::ParseFile] delegateptr = %p", delegateptr);
 
 		bool retValue = false;
-		File *xmlFile = FileSystem::Instance()->CreateFileForFrameworkPath(fileName, 0);
+		File *xmlFile = FileSystem::Instance()->CreateFileForFrameworkPath(fileName, File::OPEN | File::READ);
 		if(xmlFile)
 		{
 			int32 dataSize = xmlFile->GetSize();
@@ -35,7 +35,7 @@ namespace DAVA
 //				Logger::Debug("[XMLParser::ParseFile] readBytes = %d", readBytes);
 				if(readBytes == dataSize)
 				{
-					retValue = this->ParseBytes(data, dataSize, delegateptr);
+					retValue = XMLParser::ParseBytes(data, dataSize, delegateptr);
 				}
 				else
 				{
