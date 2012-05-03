@@ -382,15 +382,21 @@ void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSetting
     settings = newSettings;
 }
 
-void LandscapeEditorColor::TextureWillChanged()
+void LandscapeEditorColor::TextureWillChanged(const String &forKey)
 {
-    if(savedPath.length())
+    if("property.landscape.texture.tilemask" == forKey)
     {
-        SaveTextureAction(savedPath);
+        if(savedPath.length())
+        {
+            SaveTextureAction(savedPath);
+        }
     }
 }
 
-void LandscapeEditorColor::TextureDidChanged()
+void LandscapeEditorColor::TextureDidChanged(const String &forKey)
 {
-    CreateMaskTexture();
+    if("property.landscape.texture.tilemask" == forKey)
+    {
+        CreateMaskTexture();
+    }
 }

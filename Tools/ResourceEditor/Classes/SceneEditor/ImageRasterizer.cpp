@@ -350,14 +350,14 @@ void ImageRasterizer::DrawCopypasteRGBA(Image *src, Image *dst, Image *mask, con
                 int32 xSrc = posFrom.x + iCol;
                 int32 xDst = posTo.x + iCol;
                 
-                if(     (0 <= xSrc && xSrc < dst->width)
+                if(     (0 <= xSrc && xSrc < src->width)
                    &&   (0 <= xDst && xDst < dst->width))
                 {
                     uint8 maskData = mask->data[(iRow * width + iCol) * 4];
                     if(maskData)
                     {
-                        int32 dstOffset = (dstIndex + xDst) * formatSize;
-                        int32 srcOffset = (srcIndex + xSrc) * formatSize;
+                        int64 dstOffset = (dstIndex + xDst) * formatSize;
+                        int64 srcOffset = (srcIndex + xSrc) * formatSize;
                         
                         for(int32 i = 0; i < formatSize; ++i)
                         {

@@ -31,8 +31,8 @@ public:
 
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
-    virtual void TextureWillChanged();
-    virtual void TextureDidChanged();
+    virtual void TextureWillChanged(const String &forKey);
+    virtual void TextureDidChanged(const String &forKey);
 
     
 protected:
@@ -64,11 +64,18 @@ protected:
     Heightmap *heightmap;
     
     Image *toolImage;
+    Image *toolImageTile;
     float32 prevToolSize;
     
     Vector2 copyFromCenter;
     Vector2 copyToCenter;
-//    Image *colorMaskImage;
+    Image *tilemaskImage;
+    String tilemaskPathname;
+    bool tilemaskWasChanged;
+    Texture *tilemaskTexture;
+    
+    void CreateTilemaskImage();
+    Image *CreateToolImage(int32 sideSize);
 };
 
 
