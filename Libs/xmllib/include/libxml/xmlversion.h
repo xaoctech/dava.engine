@@ -74,7 +74,12 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * defined if the trio support should not be configured in
  */
+#if defined(WIN32) || defined(_WIN32)
+#define WITH_TRIO 1
+#else
 #define WITHOUT_TRIO
+#endif // defined(WIN32) || defined(_WIN32)
+
 #endif
 #else /* VMS */
 /**
@@ -192,7 +197,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * Whether the HTML support is configured in
  */
-#if 1
+#if 0
 #define LIBXML_HTML_ENABLED
 #endif
 
@@ -328,7 +333,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * Whether the regular expressions interfaces are compiled in
  */
-#if 1
+#if 0
 #define LIBXML_REGEXP_ENABLED
 #endif
 
@@ -337,7 +342,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * Whether the automata interfaces are compiled in
  */
-#if 1
+#if 0
 #define LIBXML_AUTOMATA_ENABLED
 #endif
 
@@ -355,7 +360,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * Whether the Schemas validation interfaces are compiled in
  */
-#if 1
+#if 0
 #define LIBXML_SCHEMAS_ENABLED
 #endif
 

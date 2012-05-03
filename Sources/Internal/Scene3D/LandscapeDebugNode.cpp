@@ -66,14 +66,6 @@ void LandscapeDebugNode::Draw()
     if(0 == heightmap->Size())
         return;
     
-#if defined(__DAVAENGINE_OPENGL__)
-    if (debugFlags & DEBUG_DRAW_GRID)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    }
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-
-    
     BindMaterial();
 
     int32 index = 0;
@@ -104,13 +96,22 @@ void LandscapeDebugNode::Draw()
 		}
 	}
 
-	debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position); 
+    debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position); 
 	debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord); 
 
-	RenderManager::Instance()->SetRenderData(debugRenderDataObject);
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_GRID)
+    {
+        debugFlags &= ~DEBUG_DRAW_GRID;
+        DrawLandscape();
+        debugFlags |= DEBUG_DRAW_GRID;
+        
+        
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 
+    DrawLandscape();
     
 #if defined(__DAVAENGINE_OPENGL__)
     if (debugFlags & DEBUG_DRAW_ALL)
@@ -138,6 +139,15 @@ void LandscapeDebugNode::Draw()
     
     UnbindMaterial();
 }
+    
+void LandscapeDebugNode::DrawLandscape()
+{
+    RenderManager::Instance()->SetRenderData(debugRenderDataObject);
+	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
+}
+
+    
     
 void LandscapeDebugNode::SetHeightmapPath(const String &path)
 {

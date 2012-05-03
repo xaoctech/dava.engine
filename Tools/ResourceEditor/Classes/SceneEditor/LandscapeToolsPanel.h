@@ -12,7 +12,6 @@ class LandscapeToolsPanelDelegate
 public: 
     
     virtual void OnToolSelected(LandscapeTool *newTool) = 0;
-    virtual void OnToolsPanelClose() = 0;
     virtual void OnShowGrid(bool show) = 0;
 };
 
@@ -29,7 +28,7 @@ protected:
         SLIDER_WIDTH = 250,
         
         TEXTFIELD_WIDTH = 40,
-        TEXT_WIDTH = 50
+        TEXT_WIDTH = 60
     };
     
 public:
@@ -58,8 +57,6 @@ protected:
 
     UICheckBox *CreateCkeckbox(const Rect &rect, const WideString &text);
 
-    
-    void OnClose(BaseObject * object, void * userData, void * callerData);
     void OnBrushTool(BaseObject * object, void * userData, void * callerData);
 
     
@@ -71,8 +68,8 @@ protected:
 
     UISlider *sizeSlider;
     UISlider *strengthSlider;
-	void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
-	void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
+	virtual void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
+	virtual void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
     
     LandscapeToolsSelection *selectionPanel;
     

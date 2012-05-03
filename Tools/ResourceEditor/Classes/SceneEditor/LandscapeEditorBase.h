@@ -72,7 +72,6 @@ public:
 
     //Tools Panel delegate
     virtual void OnToolSelected(LandscapeTool *newTool);
-    virtual void OnToolsPanelClose();
     virtual void OnShowGrid(bool show);
 
 protected:
@@ -109,8 +108,7 @@ protected:
     EditorScene *workingScene;    
     EditorBodyControl *parent;
 
-    Vector2 startPoint;
-    Vector2 endPoint;
+    Vector2 landscapePoint;
     Vector2 prevDrawPos;
     
     LandscapeToolsPanel *toolsPanel;

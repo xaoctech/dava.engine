@@ -11,6 +11,10 @@
 #define IN_LIBXML
 #include "libxml/elfgcchack.h"
 
+#if defined(WIN32) || defined(_WIN32)
+#include "libxml/libxml.h"
+#endif
+
 #include <string.h>
 
 #include <libxml/xmlmemory.h>
