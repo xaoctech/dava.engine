@@ -102,7 +102,7 @@ void ImposterNode::Draw()
 
 void ImposterNode::GeneralDraw()
 {
-	if(STATE_REDRAW_APPROVED == state)
+	if(IsRedrawApproved())
 	{
 		UpdateImposter();
 	}
@@ -157,11 +157,8 @@ void ImposterNode::UpdateImposter()
 		screenBounds.AddPoint(screenVertices[i]);
 	}
 
-	//bbox project
 	Vector4 pv(bboxCenter);
 	pv = pv*mvp;
-	//pv.x = (viewport.dx * 0.5f) * (1.f + pv.x/pv.w)+viewport.x;
-	//pv.y = (viewport.dy * 0.5f) * (1.f + pv.y/pv.w)+viewport.y;
 	pv.z = (pv.z/pv.w + 1.f) * 0.5f;
 	float32 bboxCenterZ = pv.z;
 
@@ -197,42 +194,37 @@ void ImposterNode::UpdateImposter()
 	}
 	center /= 4.f;
 
+	//draw
+	RecreateFbo(screenSize);
 
+	direction = camera->GetPosition()-center;
+	direction.Normalize();
 
-	//if(IsRedrawApproved())
-	{
-		RecreateFbo(screenSize);
+	float32 nearPlane = (center-cameraPos).Length();
+	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
+	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
+	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
+	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
 
-		direction = camera->GetPosition()-center;
-		direction.Normalize();
+	Rect oldViewport = RenderManager::Instance()->GetViewport();
 
-		float32 nearPlane = (center-cameraPos).Length();
-		float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
-		float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
-		float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
-		imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
+	RenderManager::Instance()->SetRenderTarget(fbo);
+	imposterCamera->SetTarget(center);
+	imposterCamera->Set();
+	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
+	RenderManager::Instance()->ClearDepthBuffer();
 
-		Rect oldViewport = RenderManager::Instance()->GetViewport();
-
-		RenderManager::Instance()->SetRenderTarget(fbo);
-		imposterCamera->SetTarget(center);
-		imposterCamera->Set();
-		RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
-		RenderManager::Instance()->ClearDepthBuffer();
-
-		child->Draw();
+	child->RemoveFlag(NODE_CLIPPED_THIS_FRAME);
+	child->Draw();
 
 #ifdef __DAVAENGINE_OPENGL__
-		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
 #endif
 
-		//Image * img = fbo->CreateImageFromMemory();
-		//img->Save("imposter.png");
-		RenderManager::Instance()->SetViewport(oldViewport, true);
+	RenderManager::Instance()->SetViewport(oldViewport, true);
 		
-		isReady = true;
-		state = STATE_IMPOSTER;
-	}
+	isReady = true;
+	state = STATE_IMPOSTER;
 
 	//unproject
 	screenBillboardVertices[0] = Vector3(screenBounds.min.x, screenBounds.min.y, bboxCenterZ);
@@ -410,5 +402,11 @@ void ImposterNode::RecreateFbo(const Vector2 & size)
 	SafeRelease(fbo);
 	fbo = Texture::CreateFBO((uint32)(size.x*1.2f), (uint32)(size.y*1.2f), FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
 }
+
+bool ImposterNode::IsQueued()
+{
+	return (STATE_QUEUED == state);
+}
+
 
 }
