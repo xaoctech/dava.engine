@@ -53,7 +53,7 @@ int vfprintf(FILE *, const char *, va_list);
  * be used instead of the default stdio ones.
  */
 #define TRIO_REPLACE_STDIO
-#include "trio.h"
+#include <libxml/trio.h>
 #endif
 
 /*

@@ -134,31 +134,31 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->AddSection("property.scenenode.customproperties", GetHeaderState("property.scenenode.customproperties", true));
         
         KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
-        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it)
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
+        for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it)
         {
             String name = it->first;
-            VariantType key = it->second;
-            switch (key.type) 
+            VariantType * key = it->second;
+            switch (key->type) 
             {
                 case VariantType::TYPE_BOOLEAN:
                     propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetBoolPropertyValue(name, key.AsBool());
+                    propertyList->SetBoolPropertyValue(name, key->AsBool());
                     break;
                     
                 case VariantType::TYPE_STRING:
                     propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetStringPropertyValue(name, key.AsString());
+                    propertyList->SetStringPropertyValue(name, key->AsString());
                     break;
 
                 case VariantType::TYPE_INT32:
                     propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetIntPropertyValue(name, key.AsInt32());
+                    propertyList->SetIntPropertyValue(name, key->AsInt32());
                     break;
 
                 case VariantType::TYPE_FLOAT:
                     propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetFloatPropertyValue(name, key.AsFloat());
+                    propertyList->SetFloatPropertyValue(name, key->AsFloat());
                     break;
                     
                 default:
@@ -371,7 +371,7 @@ void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * 
     if(currentSceneNode)
     {
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         
         int32 size = propsData.size();
         if(size)
@@ -434,7 +434,7 @@ int32 NodesPropertyControl::ElementsCount(UIList * list)
     if(currentSceneNode)
     {
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         
         return propsData.size();
     }
@@ -453,9 +453,9 @@ UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
     if(currentSceneNode)
     {
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         int32 i = 0; 
-        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
+        for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
         {
             if(i == index)
             {
@@ -481,9 +481,9 @@ void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedC
     {
         int32 index = selectedCell->GetIndex();
         KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
-        Map<String, VariantType> propsData = customProperties->GetArchieveData();
+        Map<String, VariantType*> propsData = customProperties->GetArchieveData();
         int32 i = 0; 
-        for (Map<String, VariantType>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
+        for (Map<String, VariantType*>::iterator it = propsData.begin(); it != propsData.end(); ++it, ++i)
         {
             if(i == index)
             {

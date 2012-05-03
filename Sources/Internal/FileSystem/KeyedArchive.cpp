@@ -38,8 +38,19 @@ namespace DAVA
 KeyedArchive::KeyedArchive()
 {
 }
+    
+KeyedArchive::KeyedArchive(const KeyedArchive &arc)
+{
+    const Map<String, VariantType*> &customMap = arc.GetArchieveData();
+    for (Map<String, VariantType*>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
+    {
+        SetVariant(it->first, it->second);
+    }
+}
+
 KeyedArchive::~KeyedArchive()
 {
+    DeleteAllKeys();
 }
 
 bool KeyedArchive::Load(const String & pathName)
@@ -65,8 +76,8 @@ bool KeyedArchive::Load(File *archive)
             VariantType key;
             key.Read(archive);
             if (archive->IsEof())break;
-            VariantType value;
-            value.Read(archive);
+            VariantType *value = new VariantType();
+            value->Read(archive);
             objectMap[key.AsString()] = value;
         }
         return true;
@@ -87,8 +98,8 @@ bool KeyedArchive::Load(File *archive)
 		VariantType key;
 		key.Read(archive);
 		if (archive->IsEof())break;
-		VariantType value;
-		value.Read(archive);
+        VariantType *value = new VariantType();
+        value->Read(archive);
 		objectMap[key.AsString()] = value;
 	}
 	return true;
@@ -116,82 +127,100 @@ bool KeyedArchive::Save(File *archive)
     uint32 size = objectMap.size();
     archive->Write(&size, 4);
     
-	for (Map<String, VariantType>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
+	for (Map<String, VariantType*>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
 	{
 		VariantType key;
 		key.SetString(it->first);
 		key.Write(archive);
-		it->second.Write(archive);
+		it->second->Write(archive);
 	}
 	return true;
 }
 
 void KeyedArchive::SetBool(const String & key, bool value)
 {
-	VariantType variantValue;
-	variantValue.SetBool(value);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetBool(value);
 	objectMap[key] = variantValue;
 }
 
 void KeyedArchive::SetInt32(const String & key, int32 value)
 {
-	VariantType variantValue;
-	variantValue.SetInt32(value);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetInt32(value);
 	objectMap[key] = variantValue;
 }
     
 void KeyedArchive::SetUInt32(const String & key, uint32 value)
 {
-    VariantType variantValue;
-    variantValue.SetUInt32(value);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+    variantValue->SetUInt32(value);
     objectMap[key] = variantValue;
 }
 
 void KeyedArchive::SetFloat(const String & key, float32 value)
 {
-	VariantType variantValue;
-	variantValue.SetFloat(value);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetFloat(value);
 	objectMap[key] = variantValue;
 }
 
 void KeyedArchive::SetString(const String & key, const String & value)
 {
-	VariantType variantValue;
-	variantValue.SetString(value);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetString(value);
 	objectMap[key] = variantValue;
 }
 
 void KeyedArchive::SetWideString(const String & key, const WideString & value)
 {
-	VariantType variantValue;
-	variantValue.SetWideString(value);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetWideString(value);
 	objectMap[key] = variantValue;
 }
 
 void KeyedArchive::SetByteArray(const String & key, const uint8 * value, int32 arraySize)
 {
-	VariantType variantValue;
-	variantValue.SetByteArray(value, arraySize);
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetByteArray(value, arraySize);
 	objectMap[key] = variantValue;
 }
 
-void KeyedArchive::SetVariant(const String & key, const VariantType & value)
+void KeyedArchive::SetVariant(const String & key, VariantType *value)
 {
-	objectMap[key] = value;
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType(*value);
+	objectMap[key] = variantValue;
 }
     
 void KeyedArchive::SetByteArrayFromArchive(const String & key, KeyedArchive * archive)
 {
+    DVWARNING(false, "Method is depriceted! Use SetArchive()");
     DynamicMemoryFile * file = DynamicMemoryFile::Create(File::CREATE | File::WRITE);
     archive->Save(file);
     SetByteArray(key, (uint8*)file->GetData(), file->GetSize());
     SafeRelease(file);
 }
 
+void KeyedArchive::SetArchive(const String & key, KeyedArchive * archive)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetKeyedArchive(archive);
+	objectMap[key] = variantValue;
+}
+
 	
 bool KeyedArchive::IsKeyExists(const String & key)
 {
-	Map<String, VariantType>::iterator t = objectMap.find(key);
+	Map<String, VariantType*>::iterator t = objectMap.find(key);
 	if (t != objectMap.end())
 	{
 		return true;
@@ -202,59 +231,60 @@ bool KeyedArchive::IsKeyExists(const String & key)
 bool KeyedArchive::GetBool(const String & key, bool defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsBool();
+		return objectMap[key]->AsBool();
 	return defaultValue;
 }
 
 int32 KeyedArchive::GetInt32(const String & key, int32 defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsInt32();
+		return objectMap[key]->AsInt32();
 	return defaultValue;
 }
 
 uint32 KeyedArchive::GetUInt32(const String & key, uint32 defaultValue)
 {
     if (IsKeyExists(key))
-        return objectMap[key].AsUInt32();
+        return objectMap[key]->AsUInt32();
     return defaultValue;
 }
 
 float32 KeyedArchive::GetFloat(const String & key, float32 defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsFloat();
+		return objectMap[key]->AsFloat();
 	return defaultValue;
 }
 
 const String & KeyedArchive::GetString(const String & key, const String & defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsString();
+		return objectMap[key]->AsString();
 	return defaultValue;
 }
 const WideString & KeyedArchive::GetWideString(const String & key, const WideString & defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsWideString();
+		return objectMap[key]->AsWideString();
 	return defaultValue;
 }
 	
 const uint8 *KeyedArchive::GetByteArray(const String & key, const uint8 *defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsByteArray();
+		return objectMap[key]->AsByteArray();
 	return defaultValue;
 }
 int32 KeyedArchive::GetByteArraySize(const String & key, int32 defaultValue)
 {
 	if (IsKeyExists(key))
-		return objectMap[key].AsByteArraySize();
+		return objectMap[key]->AsByteArraySize();
 	return defaultValue;
 }
     
 KeyedArchive * KeyedArchive::GetArchiveFromByteArray(const String & key)
 {
+    DVWARNING(false, "Method is depriceted! Use GetArchive()");
     KeyedArchive * archive = new KeyedArchive;
     int32 size = GetByteArraySize(key);
     if (size == 0)return 0;
@@ -269,19 +299,36 @@ KeyedArchive * KeyedArchive::GetArchiveFromByteArray(const String & key)
     SafeRelease(file);
     return archive;
 }	
+    
+KeyedArchive * KeyedArchive::GetArchive(const String & key, KeyedArchive * defaultValue)
+{
+	if (IsKeyExists(key))
+		return objectMap[key]->AsKeyedArchive();
+	return defaultValue;
+}
 
-const VariantType & KeyedArchive::GetVariant(const String & key)
+
+VariantType *KeyedArchive::GetVariant(const String & key)
 {
 	return objectMap[key];
 }
 
 void KeyedArchive::DeleteKey(const String & key)
 {
-	objectMap.erase(key);
+	Map<String, VariantType*>::iterator t = objectMap.find(key);
+	if (t != objectMap.end())
+    {
+        delete t->second;
+        objectMap.erase(key);
+    }
 }
 
 void KeyedArchive::DeleteAllKeys()
 {
+    for (Map<String, VariantType*>::iterator it = objectMap.begin(); it != objectMap.end(); it++)
+    {
+        delete it->second;
+    }
 	objectMap.clear();
 }
 
@@ -290,13 +337,13 @@ void KeyedArchive::Dump()
 {
 	Logger::Info("============================================================");
 	Logger::Info("--------------- Archive Currently contain ----------------");
-	for(Map<String, VariantType>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
+	for(Map<String, VariantType*>::iterator it = objectMap.begin(); it != objectMap.end(); ++it)
 	{
-		switch(it->second.type)
+		switch(it->second->type)
 		{
 			case VariantType::TYPE_BOOLEAN:
 			{
-				if(it->second.boolValue)
+				if(it->second->boolValue)
 				{
 					Logger::Debug("%s : true", it->first.c_str());
 				}
@@ -309,27 +356,27 @@ void KeyedArchive::Dump()
 				break;
 			case VariantType::TYPE_INT32:
 			{
-				Logger::Debug("%s : %d", it->first.c_str(), it->second.int32Value);
+				Logger::Debug("%s : %d", it->first.c_str(), it->second->int32Value);
 			}
 				break;	
 			case VariantType::TYPE_UINT32:
 			{
-				Logger::Debug("%s : %d", it->first.c_str(), it->second.uint32Value);
+				Logger::Debug("%s : %d", it->first.c_str(), it->second->uint32Value);
 			}
 				break;	
 			case VariantType::TYPE_FLOAT:
 			{
-				Logger::Debug("%s : %f", it->first.c_str(), it->second.floatValue);
+				Logger::Debug("%s : %f", it->first.c_str(), it->second->floatValue);
 			}
 				break;	
 			case VariantType::TYPE_STRING:
 			{
-				Logger::Debug("%s : %s", it->first.c_str(), it->second.stringValue.c_str());
+				Logger::Debug("%s : %s", it->first.c_str(), it->second->stringValue.c_str());
 			}
 				break;	
 			case VariantType::TYPE_WIDE_STRING:
 			{
-				Logger::Debug("%s : %S", it->first.c_str(), it->second.wideStringValue.c_str());
+				Logger::Debug("%s : %S", it->first.c_str(), it->second->wideStringValue.c_str());
 			}
 				break;
 		}
@@ -338,11 +385,15 @@ void KeyedArchive::Dump()
 }
 
 
-const Map<String, VariantType> & KeyedArchive::GetArchieveData()
+const Map<String, VariantType*> & KeyedArchive::GetArchieveData()
 {
     return objectMap;
 }
-
+const Map<String, VariantType*> & KeyedArchive::GetArchieveData() const
+{
+    return objectMap;
+}
+    
 
 
 	

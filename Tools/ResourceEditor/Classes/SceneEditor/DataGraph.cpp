@@ -58,7 +58,9 @@ void DataGraph::FillCell(UIHierarchyCell *cell, void *node)
     UIControl *icon = cell->FindByName("_Icon_");
     icon->SetSprite("~res:/Gfx/UI/SceneNode/datanode", 0);
 
-//    cell->text->SetText(StringToWString(n->GetName()));
+    UIControl *marker = cell->FindByName("_Marker_");
+    marker->SetVisible(false);
+    
     if(n == workingNode)
     {
         cell->SetSelected(true, false);
@@ -126,7 +128,6 @@ void DataGraph::RefreshGraph()
     bool force = true;
     if(force || (NULL != graphPanel->GetParent()))
     {
-//        workingNode = NULL;
         dataNodes.clear();
         
         if(workingScene->GetSelection())

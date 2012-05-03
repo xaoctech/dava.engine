@@ -75,6 +75,8 @@ public:
     
 protected:	
     
+    void DrawLandscape();
+    
     Vector<LandscapeVertex> debugVertices;
     Vector<uint32> debugIndices;
     RenderDataObject * debugRenderDataObject;

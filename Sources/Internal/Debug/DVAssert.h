@@ -104,12 +104,19 @@ template <> struct CompileTimeError<true> {};
 		DebugBreak()\
 	}\
 
+#define DVWARNING(expr, msg)\
+    if (!(expr))\
+    {\
+        Logger::Instance()->Warning("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+    }\
+
 #define DVVERIFY(expr) DVASSERT(expr)
 
 #else // no assert functions in release builds
 
 #define DVASSERT(expr)
 #define DVASSERT_MSG(expr, msg)
+#define DVWARNING(expr, msg) 
 	
 #define DVVERIFY(expr) (expr)
 

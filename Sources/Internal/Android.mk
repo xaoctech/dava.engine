@@ -155,8 +155,10 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/Camera.cpp \
                     Scene3D/CubeNode.cpp \
                     Scene3D/DataNode.cpp \
-                    Scene3D/heightmap.cpp \
+                    Scene3D/Heightmap.cpp \
                     Scene3D/Frustum.cpp \
+                    Scene3D/ImposterManager.cpp \
+                    Scene3D/ImposterNode.cpp \
                     Scene3D/LandscapeCursor.cpp \
                     Scene3D/LandscapeNode.cpp \
                     Scene3D/LightNode.cpp \

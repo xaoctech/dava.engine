@@ -83,6 +83,13 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     
     propertyShowState = EPSS_ONSCREEN;
     ToggleSceneGraph();
+    
+#ifdef FORCE_LOD_UPDATE
+    UIButton *btn = ControlsFactory::CreateButton(Vector2(200, 100), L"ForceLod");
+    btn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnForceLod));
+    AddControl(btn);
+    SafeRelease(btn);
+#endif //#ifdef FORCE_LOD_UPDATE
 }
 
 
@@ -1121,6 +1128,25 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
     UIControl::Draw(geometricData);
 }
 
+#ifdef FORCE_LOD_UPDATE
+void EditorBodyControl::OnForceLod(BaseObject * object, void * userData, void * callerData)
+{
+    Vector<LodNode *> lodnodes;
+    scene->GetChildNodes(lodnodes);
+    
+    float32 distances[LodNode::MAX_LOD_LAYERS] = {0, 13, 32, 900};
+    
+    for(int32 i = 0; i < lodnodes.size(); ++i)
+    {
+        int32 count = lodnodes[i]->GetLodLayersCount();
+        for(int32 iLayer = 0; iLayer < count; ++iLayer)
+        {
+            lodnodes[i]->SetLodLayerDistance(iLayer, distances[iLayer]);
+        }
+    }
+}
+#endif //#ifdef FORCE_LOD_UPDATE
+
 
 #pragma mark --Landscape Editor
 void EditorBodyControl::CreateLandscapeEditor()
@@ -1130,7 +1156,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     Rect toolsRect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
     landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRect);
     
-    toolsRect.dy += ControlsFactory::TOOLS_HEIGHT/2;
+    toolsRect.dy += ControlsFactory::TOOLS_HEIGHT;
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     
@@ -1152,22 +1178,28 @@ void EditorBodyControl::ReleaseLandscapeEditor()
     SafeRelease(landscapeToolsSelection);
 }
 
-void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
+bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
 {
-    if(currentLandscapeEditor)
+    LandscapeEditorBase *requestedEditor = NULL;
+    if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorColor;
+    }
+    else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
+    {
+        requestedEditor = landscapeEditorHeightmap;
+    }
+    
+    if(currentLandscapeEditor && (currentLandscapeEditor != requestedEditor))
+        return false;
+    
+    if(currentLandscapeEditor == requestedEditor)
     {
         currentLandscapeEditor->Toggle();
     }
     else
     {
-        if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
-        {
-            currentLandscapeEditor = landscapeEditorColor;
-        }
-        else if(SceneEditorScreenMain::ELEMID_HEIGHTMAP == landscapeEditorMode)
-        {
-            currentLandscapeEditor = landscapeEditorHeightmap;
-        }
+        currentLandscapeEditor = requestedEditor;
 
         bool ret = currentLandscapeEditor->SetScene(scene);
         if(ret)
@@ -1178,8 +1210,10 @@ void EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
         else
         {
             currentLandscapeEditor = NULL;
+            return false;
         }
     }
+    return true;
 }
 
 #pragma mark --LandscapeEditorDelegate

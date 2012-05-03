@@ -193,6 +193,15 @@ Texture::Texture()
     
     isMimMapTexture = false;
 	isAlphaPremultiplied = false;
+    
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    wrapModeS = WRAP_CLAMP_TO_EDGE; 
+    wrapModeT = WRAP_CLAMP_TO_EDGE;
+#else //Non ES platforms
+    wrapModeS = WRAP_CLAMP; 
+    wrapModeT = WRAP_CLAMP;
+#endif //PLATFORMS
+
 
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	savedData = NULL;
@@ -204,14 +213,19 @@ Texture::Texture()
 
 Texture::~Texture()
 {
+    ReleaseTextureData();
+}
+    
+void Texture::ReleaseTextureData()
+{
 	RenderManager::Instance()->LockNonMain();
 	if(RenderManager::Instance()->GetTexture() == this)
 	{//to avoid drawing deleted textures
 		RenderManager::Instance()->SetTexture(0);
 	}
-
+    
 #if defined(__DAVAENGINE_OPENGL__)
-
+    
 	if(fboID != (uint32)-1)
 	{
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -219,13 +233,13 @@ Texture::~Texture()
 #else //Non ES platforms
 		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
 #endif //PLATFORMS
-
+        
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		SafeDeleteArray(savedData);
 		savedDataSize = 0;
 #endif// #if defined(__DAVAENGINE_ANDROID__)
     }
-
+    
 	if(rboID != (uint32)-1)
 	{
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -245,6 +259,7 @@ Texture::~Texture()
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	RenderManager::Instance()->UnlockNonMain();
 }
+
 
 Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, const char * addInfo)
 {
@@ -493,6 +508,9 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	
 void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 {
+    wrapModeS = wrapS; 
+    wrapModeT = wrapT;
+    
     RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
 	int saveId = GetSavedTextureID();
@@ -1254,6 +1272,9 @@ int32 Texture::FormatMultiplier(PixelFormat format)
         return 2;
     case FORMAT_A8:
         return 1;
+
+    default:
+        break;
 	}
 
 	return 4;
@@ -1311,6 +1332,9 @@ void Texture::SaveToSystemMemory()
 					break;
                 case FORMAT_A16:
                     RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
+                    break;
+
+                default:
                     break;
 				}
 

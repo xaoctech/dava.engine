@@ -430,11 +430,9 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
     dstNode->tag = tag;
     dstNode->debugFlags = debugFlags;
     dstNode->flags = flags;
-    const Map<String, VariantType> &customMap = customProperties->GetArchieveData();
-    for (Map<String, VariantType>::const_iterator it = customMap.begin(); it != customMap.end(); it++)
-    {
-        dstNode->customProperties->SetVariant(it->first, it->second);
-    }
+
+    SafeRelease(dstNode->customProperties);
+    dstNode->customProperties = new KeyedArchive(*customProperties);
 
 //    Logger::Debug("Node %s clonned", name.c_str());
     
