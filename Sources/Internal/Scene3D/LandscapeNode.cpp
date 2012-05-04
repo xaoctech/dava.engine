@@ -73,9 +73,9 @@ LandscapeNode::LandscapeNode(Scene * _scene)
     
     heightmap = new Heightmap();
     
-    Stats::Instance()->RegisterEvent("LandscapeNode", "Everything related to LandscapeNode");
-    Stats::Instance()->RegisterEvent("LandscapeNode.Update", "Time spent in LandscapeNode Update");
-    Stats::Instance()->RegisterEvent("LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
+    Stats::Instance()->RegisterEvent("Scene.LandscapeNode", "Everything related to LandscapeNode");
+    // Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Update", "Time spent in LandscapeNode Update");
+    Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
 }
 
 LandscapeNode::~LandscapeNode()
@@ -1038,6 +1038,7 @@ void LandscapeNode::UnbindMaterial()
 
 void LandscapeNode::Draw()
 {
+    Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
@@ -1127,6 +1128,8 @@ void LandscapeNode::Draw()
     //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     //uint64 drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
     //Logger::Debug("landscape draw time: %lld", drawTime);
+    
+    Stats::Instance()->EndTimeMeasure("Scene.LandscapeNode.Draw", this);
 }
 
 
