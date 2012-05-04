@@ -1186,7 +1186,7 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
 
-const String & LandscapeNode::GetHeightMapPathname()
+const String & LandscapeNode::GetHeightmapPathname()
 {
     return heightmapPath;
 }

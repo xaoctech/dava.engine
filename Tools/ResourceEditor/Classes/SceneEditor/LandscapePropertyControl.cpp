@@ -59,7 +59,7 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     propertyList->SetComboPropertyIndex("property.landscape.renderingmode", landscape->GetRenderingMode());
     
-    String heightMap = landscape->GetHeightMapPathname();
+    String heightMap = landscape->GetHeightmapPathname();
     if(heightMap.length())
     {
         propertyList->SetFilepathPropertyValue("property.landscape.heightmap", heightMap);
