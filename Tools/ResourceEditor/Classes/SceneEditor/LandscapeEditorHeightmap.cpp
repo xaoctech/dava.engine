@@ -390,7 +390,7 @@ void LandscapeEditorHeightmap::ShowAction()
 
     landscapeDebugNode = new LandscapeDebugNode(workingScene);
     landscapeDebugNode->SetName("Landscape");
-    landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightMapPathname());
+    landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightmapPathname());
     landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
 
     landscapeDebugNode->SetRenderingMode(workingLandscape->GetRenderingMode());
@@ -407,7 +407,7 @@ void LandscapeEditorHeightmap::ShowAction()
 
 
     heightmap = SafeRetain(workingLandscape->GetHeightmap());
-    savedPath = workingLandscape->GetHeightMapPathname();
+    savedPath = workingLandscape->GetHeightmapPathname();
     landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
     landscapeSize = heightmap->Size();
@@ -525,7 +525,7 @@ void LandscapeEditorHeightmap::TextureDidChanged(const String &forKey)
     {
         SafeRelease(heightmap);
         heightmap = SafeRetain(workingLandscape->GetHeightmap());
-        savedPath = workingLandscape->GetHeightMapPathname();
+        savedPath = workingLandscape->GetHeightmapPathname();
         landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
         
         landscapeSize = heightmap->Size();

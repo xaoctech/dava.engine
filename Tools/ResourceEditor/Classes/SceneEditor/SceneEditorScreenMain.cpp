@@ -1269,7 +1269,7 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
     if(land) 
     {
-        ExportTexture(land->GetHeightMapPathname());
+        ExportTexture(land->GetHeightmapPathname());
         for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
         {
             Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
