@@ -54,6 +54,10 @@
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CB6159F1552DDA40006EF15 /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6159B1552DDA40006EF15 /* ImposterManager.cpp */; };
+		5CB615A01552DDA40006EF15 /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CB6159C1552DDA40006EF15 /* ImposterManager.h */; };
+		5CB615A11552DDA40006EF15 /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6159D1552DDA40006EF15 /* ImposterNode.cpp */; };
+		5CB615A21552DDA40006EF15 /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CB6159E1552DDA40006EF15 /* ImposterNode.h */; };
 		5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */; };
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
@@ -526,6 +530,10 @@
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CB6159B1552DDA40006EF15 /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
+		5CB6159C1552DDA40006EF15 /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
+		5CB6159D1552DDA40006EF15 /* ImposterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterNode.cpp; sourceTree = "<group>"; };
+		5CB6159E1552DDA40006EF15 /* ImposterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterNode.h; sourceTree = "<group>"; };
 		5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -1445,6 +1453,10 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CB6159B1552DDA40006EF15 /* ImposterManager.cpp */,
+				5CB6159C1552DDA40006EF15 /* ImposterManager.h */,
+				5CB6159D1552DDA40006EF15 /* ImposterNode.cpp */,
+				5CB6159E1552DDA40006EF15 /* ImposterNode.h */,
 				FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */,
 				FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */,
 				FE5E1673153DA10A0047FAC5 /* BVNode.cpp */,
@@ -1883,6 +1895,8 @@
 				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
 				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
 				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
+				5CB615A01552DDA40006EF15 /* ImposterManager.h in Headers */,
+				5CB615A21552DDA40006EF15 /* ImposterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2165,6 +2179,8 @@
 				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
 				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
 				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
+				5CB6159F1552DDA40006EF15 /* ImposterManager.cpp in Sources */,
+				5CB615A11552DDA40006EF15 /* ImposterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
