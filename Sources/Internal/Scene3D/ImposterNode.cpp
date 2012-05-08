@@ -42,6 +42,7 @@ ImposterNode::ImposterNode(Scene * scene)
 	renderData = 0;
 	fbo = 0;
 	manager = 0;
+	distanceSquaredToCamera = 0;
 	isReady = false;
 	RegisterInScene();
 }
@@ -86,7 +87,10 @@ void ImposterNode::UpdateState()
 			{
 				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
 				newDirection.Normalize();
-				if(newDirection.DotProduct(direction) < 0.996f)
+				float32 distanceDelta = distanceSquare/distanceSquaredToCamera;
+				if((newDirection.DotProduct(direction) < 0.996f) 
+					|| (distanceDelta < 0.25f/*0.5^2*/) 
+					|| (distanceDelta > 4.f/*2^2*/))
 				{
 					AskForRedraw();
 				}
@@ -200,7 +204,9 @@ void ImposterNode::UpdateImposter()
 	direction = camera->GetPosition()-center;
 	direction.Normalize();
 
-	float32 nearPlane = (center-cameraPos).Length();
+	distanceSquaredToCamera = (center-cameraPos).SquareLength();
+
+	float32 nearPlane = sqrtf(distanceSquaredToCamera);
 	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
 	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
 	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
