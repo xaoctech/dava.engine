@@ -91,6 +91,8 @@ private:
 	ImposterManager * manager;
 
 	void RecreateFbo(const Vector2 & size);
+
+	void HierarchicalRemoveCull(SceneNode * node);
 };
 
 };
