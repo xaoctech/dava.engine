@@ -204,6 +204,7 @@ void ImposterNode::UpdateImposter()
 	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
 	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
 	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
+	//TODO: calculate instead of +50
 	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
 
 	Rect oldViewport = RenderManager::Instance()->GetViewport();
@@ -214,7 +215,8 @@ void ImposterNode::UpdateImposter()
 	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
 	RenderManager::Instance()->ClearDepthBuffer();
 
-	child->RemoveFlag(NODE_CLIPPED_THIS_FRAME);
+	//TODO: remove this call
+	HierarchicalRemoveCull(child);
 	child->Draw();
 
 #ifdef __DAVAENGINE_OPENGL__
@@ -255,6 +257,17 @@ void ImposterNode::UpdateImposter()
 
 	ClearGeometry();
 	CreateGeometry();
+}
+
+void ImposterNode::HierarchicalRemoveCull(SceneNode * node)
+{
+	//TODO: remove this function
+	node->RemoveFlag(NODE_CLIPPED_THIS_FRAME);
+	uint32 size = (uint32)(node->GetChildrenCount());
+	for(uint32 c = 0; c < size; ++c)
+	{
+		HierarchicalRemoveCull(node->GetChild(c));
+	}
 }
 
 void ImposterNode::DrawImposter()
@@ -399,6 +412,11 @@ void ImposterNode::ApproveRedraw()
 
 void ImposterNode::RecreateFbo(const Vector2 & size)
 {
+	if(fbo)
+	{
+			DVASSERT(fbo->GetRetainCount() == 1);
+	}
+
 	SafeRelease(fbo);
 	fbo = Texture::CreateFBO((uint32)(size.x*1.2f), (uint32)(size.y*1.2f), FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
 }
@@ -407,6 +425,5 @@ bool ImposterNode::IsQueued()
 {
 	return (STATE_QUEUED == state);
 }
-
 
 }
