@@ -85,6 +85,7 @@ private:
 	Vector<float32> texCoords;
 	Vector3 center;
 	Vector3 direction;
+	float32 distanceSquaredToCamera;
 
 	eState state;
 
