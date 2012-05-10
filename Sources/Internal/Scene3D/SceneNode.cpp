@@ -323,36 +323,12 @@ void SceneNode::Update(float32 timeElapsed)
 //		}
 	}
 	
-    // update world transform only in case if 
-    if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
+	UpdateTransform();
+	uint32 size = (uint32)children.size();
+	for (uint32 c = 0; c < size; ++c)
 	{
-		if (parent)
-        {
-            if (flags & NODE_LOCAL_MATRIX_IDENTITY)worldTransform = parent->worldTransform;
-            else worldTransform = localTransform * parent->worldTransform;
-        }else 
-		{
-            worldTransform = localTransform;
-        }
-        
-        // need propagate changes to child nodes
-        flags |= NODE_WORLD_MATRIX_ACTUAL;
-        uint32 size = (uint32)children.size();
-        for (uint32 c = 0; c < size; ++c)
-        {
-            children[c]->InvalidateLocalTransform();
-            children[c]->Update(timeElapsed);
-        }
-        
+		children[c]->Update(timeElapsed);
 	}
-    else 
-    {
-        uint32 size = (uint32)children.size();
-        for (uint32 c = 0; c < size; ++c)
-        {
-            children[c]->Update(timeElapsed);
-        }
-    }
 
 	//printf("- node: %s tr: %f %f %f\n", name.c_str(), localTransform.data[12], localTransform.data[13], localTransform.data[14]); 
 	
@@ -367,6 +343,42 @@ void SceneNode::Update(float32 timeElapsed)
         }
         removedCache.clear();
     }
+}
+
+void SceneNode::UpdateTransformNow()
+{
+	UpdateTransform();
+	uint32 size = (uint32)children.size();
+	for (uint32 c = 0; c < size; ++c)
+	{
+		children[c]->UpdateTransformNow();
+	}
+}
+
+void SceneNode::UpdateTransform()
+{
+	if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
+	{
+		if (parent)
+		{
+			if (flags & NODE_LOCAL_MATRIX_IDENTITY)
+				worldTransform = parent->worldTransform;
+			else
+				worldTransform = localTransform * parent->worldTransform;
+		}
+		else
+		{
+			worldTransform = localTransform;
+		}
+
+		// need propagate changes to child nodes
+		flags |= NODE_WORLD_MATRIX_ACTUAL;
+		uint32 size = (uint32)children.size();
+		for (uint32 c = 0; c < size; ++c)
+		{
+			children[c]->InvalidateLocalTransform();
+		}
+	}
 }
 
 void SceneNode::Draw()
