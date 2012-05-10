@@ -6,7 +6,7 @@
 LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   LandscapeToolsPanel(newDelegate, rect)
 {
-    Rect sizeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH, 
+    Rect sizeRect(rect.dx - TEXTFIELD_WIDTH, 
                   0, TEXTFIELD_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2);
     sizeValue = CreateTextField(sizeRect);
     AddControl(sizeValue);
@@ -25,18 +25,24 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(line);
     SafeRelease(line);
 
-    int32 x = ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH;
-    relative = CreateCkeckbox(Rect(x, ControlsFactory::TOOLS_HEIGHT, 
-                                   ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+    showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+                              LocalizedString(L"landscapeeditor.showgrid"));
+    
+    int32 x = 0;
+    int32 y = ControlsFactory::TOOLS_HEIGHT + ControlsFactory::TOOLS_HEIGHT/2;
+    relative = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.relative"));
     x += (ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH);
-    average = CreateCkeckbox(Rect(x, ControlsFactory::TOOLS_HEIGHT, 
-                                  ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+    average = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.average"));
     
+    x += (ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH);
+    absoluteDropper = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+                             LocalizedString(L"landscapeeditor.absolutedropper"));
+
     Rect heightRect;
-    heightRect.x = average->GetRect().x + average->GetRect().dx + TEXT_WIDTH + OFFSET + ControlsFactory::OFFSET/2.0;
-    heightRect.y = average->GetRect().y;
+    heightRect.x = showGrid->GetRect().x + showGrid->GetRect().dx + TEXT_WIDTH + OFFSET;
+    heightRect.y = ControlsFactory::TOOLS_HEIGHT;
     heightRect.dx = TEXTFIELD_WIDTH;
     heightRect.dy = average->GetRect().dy;
     heightValue = CreateTextField(Rect(heightRect));
@@ -53,15 +59,11 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     AddControl(textControl);
     SafeRelease(textControl);
     
-    averageStrength = CreateSlider(Rect(heightRect.x + heightRect.dx + TEXT_WIDTH, heightRect.y, 
+    averageStrength = CreateSlider(Rect(rect.dx - SLIDER_WIDTH, heightRect.y, 
                                         SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
     averageStrength->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanelHeightmap::OnAverageSizeChanged));
     AddControl(averageStrength);
     AddSliderHeader(averageStrength, LocalizedString(L"landscapeeditor.averagestrength"));
-
-    
-    showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
-                              LocalizedString(L"landscapeeditor.showgrid"));
 
     
     dropperTool = new LandscapeTool(-1, LandscapeTool::TOOL_DROPPER, "~res:/LandscapeEditor/SpecialTools/dropper.png");
@@ -76,11 +78,29 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     dropperIcon->SetSprite(dropperTool->sprite, 0);
     AddControl(dropperIcon);
     
+
+    copypasteTool = new LandscapeTool(-1, LandscapeTool::TOOL_COPYPASTE, "~res:/LandscapeEditor/SpecialTools/copypaste.png");
+    
+    Rect copypasteRect = dropperRect;
+    copypasteRect.x = (copypasteRect.x + copypasteRect.dx + ControlsFactory::OFFSET);
+    copypasteIcon = new UIControl(copypasteRect);
+    copypasteIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanelHeightmap::OnCopypasteTool));
+    copypasteIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+    copypasteIcon->SetSprite(copypasteTool->sprite, 0);
+    AddControl(copypasteIcon);
+    
+    copypasteRect.x = (copypasteRect.x + copypasteRect.dx + ControlsFactory::OFFSET);
+    copypasteRect.dx = copypasteRect.dy = ControlsFactory::TOOLS_HEIGHT / 2;
+    copyHeightmap = CreateCkeckbox(copypasteRect, L"Height");
+    copypasteRect.y += copypasteRect.dy;
+    copyTilemask = CreateCkeckbox(copypasteRect, L"Tilemask");
     
     sizeValue->SetText(Format(L"%.3f", LandscapeTool::SizeHeightMax()));
     strengthValue->SetText(Format(L"%.3f", LandscapeTool::StrengthHeightMax()));
     
     relative->SetChecked(true, false);
+    average->SetChecked(false, false);
+    absoluteDropper->SetChecked(false, false);
 
     sizeSlider->SetMinMaxValue(0.f, LandscapeTool::SizeHeightMax());
     sizeSlider->SetValue(LandscapeTool::DefaultSizeHeight());
@@ -90,11 +110,17 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     
     averageStrength->SetMinMaxValue(0.f, 1.f);
     averageStrength->SetValue(0.5f);
+    
+    copyHeightmap->SetChecked(true, false);    
+    copyTilemask->SetChecked(true, false);    
 }
 
 
 LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
 {
+    SafeRelease(copypasteIcon);
+    SafeRelease(copypasteTool);
+    
     SafeRelease(dropperIcon);
     SafeRelease(dropperTool);
 
@@ -112,6 +138,9 @@ void LandscapeToolsPanelHeightmap::WillAppear()
     LandscapeToolsPanel::WillAppear();
         
     showGrid->SetChecked(showGrid->Checked(), true);
+    
+    copyHeightmap->SetChecked(copyHeightmap->Checked(), true);    
+    copyTilemask->SetChecked(copyTilemask->Checked(), true);    
 }
 
 
@@ -142,9 +171,52 @@ void LandscapeToolsPanelHeightmap::OnDropperTool(DAVA::BaseObject *object, void 
     {
         relative->SetChecked(false, true);
     }
+    if(absoluteDropper->Checked())
+    {
+        absoluteDropper->SetChecked(false, true);
+    }
     
     ToolIconSelected(dropperIcon);
 }
+
+void LandscapeToolsPanelHeightmap::OnCopypasteTool(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    copypasteTool->size = sizeSlider->GetValue();
+    copypasteTool->strength = strengthSlider->GetValue();
+    copypasteTool->averageStrength = averageStrength->GetValue();
+    
+    SafeRelease(copypasteTool->sprite);
+    SafeRelease(copypasteTool->image);
+    if(selectedBrushTool)
+    {
+        copypasteTool->sprite = SafeRetain(selectedBrushTool->sprite);
+        copypasteTool->image = SafeRetain(selectedBrushTool->image);
+    }
+    
+    
+    selectedTool = copypasteTool;
+    
+    if(delegate)
+    {
+        delegate->OnToolSelected(selectedTool);
+    }
+    
+    if(average->Checked())
+    {
+        average->SetChecked(false, true);
+    }
+    if(relative->Checked())
+    {
+        relative->SetChecked(false, true);
+    }
+    if(absoluteDropper->Checked())
+    {
+        absoluteDropper->SetChecked(false, true);
+    }
+    
+    ToolIconSelected(copypasteIcon);
+}
+
 
 void LandscapeToolsPanelHeightmap::OnAverageSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
 {
@@ -171,7 +243,28 @@ void LandscapeToolsPanelHeightmap::Update(float32 timeElapsed)
 void LandscapeToolsPanelHeightmap::ToolIconSelected(UIControl *focused)
 {
     dropperIcon->SetDebugDraw(focused == dropperIcon);
+    copypasteIcon->SetDebugDraw(focused == copypasteIcon);
     LandscapeToolsPanel::ToolIconSelected(focused);
+}
+
+void LandscapeToolsPanelHeightmap::OnSizeChanged(BaseObject * object, void * userData, void * callerData)
+{
+    if(copypasteTool == selectedTool)
+    {
+        copypasteTool->size = sizeSlider->GetValue();
+    }
+    
+    LandscapeToolsPanel::OnSizeChanged(object, userData, callerData);
+}
+
+void LandscapeToolsPanelHeightmap::OnStrengthChanged(BaseObject * object, void * userData, void * callerData)
+{
+    if(copypasteTool == selectedTool)
+    {
+        copypasteTool->strength = strengthSlider->GetValue();
+    }
+    
+    LandscapeToolsPanel::OnStrengthChanged(object, userData, callerData);
 }
 
 
@@ -272,12 +365,22 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
         if(newValue)
         {
             relative->SetChecked(false, false);
+            absoluteDropper->SetChecked(false, false);
         }
     }
     else if(forCheckbox == relative)
     {
         if(newValue)
         {
+            average->SetChecked(false, false);
+            absoluteDropper->SetChecked(false, false);
+        }
+    }
+    else if(forCheckbox == absoluteDropper)
+    {
+        if(newValue)
+        {
+            relative->SetChecked(false, false);
             average->SetChecked(false, false);
         }
     }
@@ -288,11 +391,20 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
             delegate->OnShowGrid(showGrid->Checked());
         }
     }
+    else if(forCheckbox == copyTilemask)
+    {
+        copypasteTool->copyTilemask = newValue;
+    }
+    else if(forCheckbox == copyHeightmap)
+    {
+        copypasteTool->copyHeightmap = newValue;
+    }
 
     if(selectedBrushTool)
     {
         selectedBrushTool->averageDrawing = average->Checked();
         selectedBrushTool->relativeDrawing = relative->Checked();
+        selectedBrushTool->absoluteDropperDrawing = absoluteDropper->Checked();
     }
 }
 

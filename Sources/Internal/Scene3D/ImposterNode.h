@@ -61,6 +61,7 @@ public:
 	void DrawImposter();
 
 	bool IsAskingForRedraw();
+	bool IsQueued();
 	void OnAddedToQueue();
 	void ApproveRedraw();
 
@@ -84,10 +85,15 @@ private:
 	Vector<float32> texCoords;
 	Vector3 center;
 	Vector3 direction;
+	float32 distanceSquaredToCamera;
 
 	eState state;
 
 	ImposterManager * manager;
+
+	void RecreateFbo(const Vector2 & size);
+
+	void HierarchicalRemoveCull(SceneNode * node);
 };
 
 };

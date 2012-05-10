@@ -27,7 +27,6 @@ void SceneEditorScreenMain::LoadResources()
     new HintManager();
     new UNDOManager();
     
-    //RenderManager::Instance()->EnableOutputDebugStatsEveryNFrame(30);
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
@@ -202,8 +201,9 @@ void SceneEditorScreenMain::CreateTopMenu()
 	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast"));
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
-	btnLandscape = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape"));
-    ControlsFactory::CustomizeButtonExpandable(btnLandscape);
+	btnLandscapeHeightmap = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.heightmap"));
+	x += dx;
+	btnLandscapeColor = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.colormap"));
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
     ControlsFactory::CustomizeButtonExpandable(btnViewPortSize);
@@ -222,7 +222,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	AddControl(btnBeast);
 #endif
-    AddControl(btnLandscape);
+    AddControl(btnLandscapeHeightmap);
+    AddControl(btnLandscapeColor);
     AddControl(btnViewPortSize);
     AddControl(btnTextureConverter);
     
@@ -237,7 +238,8 @@ void SceneEditorScreenMain::CreateTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	btnBeast->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBeastPressed));
 #endif// #ifdef __DAVAENGINE_BEAST__
-	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapePressed));
+	btnLandscapeHeightmap->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapeHeightmapPressed));
+	btnLandscapeColor->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLandscapeColorPressed));
 	btnViewPortSize->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnViewPortSize));
 	btnTextureConverter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnTextureConverter));
 }
@@ -254,7 +256,8 @@ void SceneEditorScreenMain::ReleaseTopMenu()
 #ifdef __DAVAENGINE_BEAST__
 	SafeRelease(btnBeast);
 #endif// #ifdef __DAVAENGINE_BEAST__
-    SafeRelease(btnLandscape);
+    SafeRelease(btnLandscapeHeightmap);
+    SafeRelease(btnLandscapeColor);
     SafeRelease(btnViewPortSize);
     SafeRelease(btnTextureConverter);
 }
@@ -282,6 +285,8 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             
         case DIALOG_OPERATION_MENU_SAVE:
         {
+            EditorSettings::Instance()->AddLastOpenedFile(pathToFile);
+
             BodyItem *iBody = FindCurrentBody();
             iBody->bodyControl->SetFilePath(pathToFile);
 			
@@ -746,12 +751,6 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             break;
         }
             
-        case MENUID_LANDSCAPE:
-        {
-            ToggleLandscape(itemID);
-            break;
-        }
-            
         default:
             break;
     }
@@ -823,6 +822,13 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 					text = LocalizedString(L"menu.createnode.imposter");
 					break;
 				}
+
+//                case ECNID_LODNODE:
+//				{
+//					text = LocalizedString(L"menu.createnode.lodnode");
+//					break;
+//				}
+
                     
                 default:
                     break;
@@ -880,25 +886,6 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             break;
         }
             
-        case MENUID_LANDSCAPE:
-        {
-            switch (itemID) 
-            {
-                case ELEMID_HEIGHTMAP:
-                    text = LocalizedString(L"menu.landscape.heightmap");
-                    break;
-                    
-                case ELEMID_COLOR_MAP:
-                    text = LocalizedString(L"menu.landscape.colormap");
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            break;
-        }
-            
         default:
             break;
     }
@@ -932,12 +919,6 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         case MENUID_EXPORTTOGAME:
         {
             retCount = EETGMID_COUNT;
-            break;
-        }
-            
-        case MENUID_LANDSCAPE:
-        {
-            retCount = ELEMID_COUNT;
             break;
         }
             
@@ -981,20 +962,30 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
 
 void SceneEditorScreenMain::ReleaseNodeDialogs()
 {
-//    for(int32 iDlg = 0; iDlg < ECNID_COUNT; ++iDlg)
-//    {
-//        SafeRelease(nodeDialogs[iDlg]);
-//    }
-
     SafeRelease(nodeDialog);
-    
     SafeRelease(dialogBack);
 }
 
-void SceneEditorScreenMain::OnLandscapePressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnLandscapeHeightmapPressed(BaseObject * obj, void *, void *)
 {
-    menuPopup->InitControl(MENUID_LANDSCAPE, btnLandscape->GetRect());
-    AddControl(menuPopup);
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_HEIGHTMAP);
+    if(ret)
+    {
+        bool selected = btnLandscapeHeightmap->GetSelected();
+        btnLandscapeHeightmap->SetSelected(!selected);
+    }
+}
+
+void SceneEditorScreenMain::OnLandscapeColorPressed(BaseObject * obj, void *, void *)
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_COLOR_MAP);
+    if(ret)
+    {
+        bool selected = btnLandscapeColor->GetSelected();
+        btnLandscapeColor->SetSelected(!selected);
+    }
 }
 
 void SceneEditorScreenMain::EditMaterial(Material *material)
@@ -1065,19 +1056,24 @@ void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *obj, void *, vo
 
 void SceneEditorScreenMain::SettingsChanged()
 {
+//    BodyItem *iBody = FindCurrentBody();
+//    SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+//    EditorScene *editorScene = iBody->bodyControl->GetScene();
+//    editorScene->SetForceLodLayer(node, EditorSettings::Instance()->GetForceLodLayer());
+    
+
     for(int32 i = 0; i < bodies.size(); ++i)
     {
         EditorScene *scene = bodies[i]->bodyControl->GetScene();
-        
-        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
-        int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-        for(int32 iLod = 0; iLod < lodCount; ++iLod)
-        {
-            float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
-            float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
-            
-            scene->ReplaceLodLayer(i, nearDistance, farDistance);
-        }
+//        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
+//        int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
+//        for(int32 iLod = 0; iLod < lodCount; ++iLod)
+//        {
+//            float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
+//            float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
+//            
+//            scene->ReplaceLodLayer(i, nearDistance, farDistance);
+//        }
         
         scene->SetDrawGrid(EditorSettings::Instance()->GetDrawGrid());
     }
@@ -1093,22 +1089,19 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             int32 key = event->tid - DVKEY_1;
             if(0 <= key && key < 8)
             {
-                for(int32 i = 0; i < bodies.size(); ++i)
-                {
-                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
-                    scene->SetForceLodLayer(key);
-                }
-                EditorSettings::Instance()->SetForceLodLayer(key);
-                EditorSettings::Instance()->Save();
+                BodyItem *iBody = FindCurrentBody();
+                SceneNode *node = iBody->bodyControl->GetSelectedSGNode();
+                EditorScene *editorScene = iBody->bodyControl->GetScene();
+                editorScene->SetForceLodLayer(node, key);
             }
             else if(DVKEY_0 == event->tid)
             {
-                for(int32 i = 0; i < bodies.size(); ++i)
-                {
-                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
-                    scene->SetForceLodLayer(-1);
-                }
-                EditorSettings::Instance()->SetForceLodLayer(-1);
+//                for(int32 i = 0; i < bodies.size(); ++i)
+//                {
+//                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
+//                    scene->SetForceLodLayer(-1);
+//                }
+//                EditorSettings::Instance()->SetForceLodLayer(-1);
                 EditorSettings::Instance()->Save();
             }
         }
@@ -1276,7 +1269,7 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
     if(land) 
     {
-        ExportTexture(land->GetHeightMapPathname());
+        ExportTexture(land->GetHeightmapPathname());
         for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
         {
             Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
@@ -1314,11 +1307,4 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 		SceneNode * child = node->GetChild(ci);
 		ExportLandscapeAndMeshLightmaps(child);
 	}
-}
-
-
-void SceneEditorScreenMain::ToggleLandscape(int32 landscapeEditorMode)
-{
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleLandscapeEditor(landscapeEditorMode);
 }

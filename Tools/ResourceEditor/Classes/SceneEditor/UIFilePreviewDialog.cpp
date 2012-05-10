@@ -60,6 +60,13 @@ void UIFilePreviewDialog::UpdatePreview(int32 unitIndex)
     SafeRelease(tex);
 }
 
+void UIFilePreviewDialog::OnFileSelected(const String &pathToFile)
+{
+    preview->SetSprite(NULL, 0);
+    UIFileSystemDialog::OnFileSelected(pathToFile);
+}
+
+
 #pragma mark  --UIListDelegate
 UIListCell *UIFilePreviewDialog::CellAtIndex(UIList *forList, int32 index)
 {

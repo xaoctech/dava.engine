@@ -50,8 +50,9 @@ void Logger::Logv(eLogLevel ll, const char8* text, va_list li)
 	//NSString * stringOut = [string stringByAppendingString:[NSString stringWithCString:text]];
 	//NSString * string = [NSString stringWithFormat:@"[%s] %@", GetLogLevelString(ll), [NSString stringWithCString:text]];
 	//NSLogv(string, li);
-	char tmp[4096];
-	_vsnprintf(tmp, sizeof(tmp)-1, text, li);
+	char tmp[4096] = {0};
+	// sizeof(tmp) - 2  - We need two characters for appending "\n" if the number of characters exceeds the size of buffer. 
+	_vsnprintf(tmp, sizeof(tmp)-2, text, li);
 	strcat(tmp, "\n");
 	OutputDebugStringA(tmp);
 	if(!logFilename.empty() && FileSystem::Instance())
@@ -70,8 +71,9 @@ void Logger::Logv(eLogLevel ll, const char16* text, va_list li)
 	//NSString * str = [NSString stringWithFormat:@"[%s] %@", GetLogLevelString(ll), [NSString stringWithCString:(const char8*)text encoding: NSUTF32LittleEndianStringEncoding]];
 	//NSLogv(string, li);
 	//vwprintf((wchar_t*)text, li); printf("\n");
-	wchar_t tmp[4096];
-	_vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t)-sizeof(wchar_t), text, li);
+	wchar_t tmp[4096] = {0};
+	// sizeof(tmp)/sizeof(wchar_t)-2  - We need two characters for appending L"\n" if the number of characters exceeds the size of buffer. 
+	_vsnwprintf(tmp, sizeof(tmp)/sizeof(wchar_t)-2, text, li);
 	wcscat(tmp, L"\n");
 	OutputDebugStringW(tmp);
 	if(!logFilename.empty() && FileSystem::Instance())
@@ -96,6 +98,7 @@ static const char8 * logLevelString[4] =
 Logger::Logger()
 {
 	logLevel = LEVEL_DEBUG;
+	SetLogFilename("");
 }
 
 Logger::~Logger()

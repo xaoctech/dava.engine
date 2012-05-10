@@ -92,10 +92,10 @@ void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *for
 {
     if(delegate)
     {
-        if(     (("property.landscape.texture.tilemask" == forKey) && (MASK_EDITOR_MODE == editorMode))
+        if(     (("property.landscape.texture.tilemask" == forKey))// && (MASK_EDITOR_MODE == editorMode))
             ||  (("property.landscape.heightmap" == forKey) && (HEIGHT_EDITOR_MODE == editorMode)))
         {
-            delegate->TextureWillChanged();
+            delegate->TextureWillChanged(forKey);
         }
     }
     
@@ -103,10 +103,10 @@ void LandscapeEditorPropertyControl::OnFilepathPropertyChanged(PropertyList *for
     
     if(delegate)
     {
-        if(     (("property.landscape.texture.tilemask" == forKey) && (MASK_EDITOR_MODE == editorMode))
+        if(     (("property.landscape.texture.tilemask" == forKey))// && (MASK_EDITOR_MODE == editorMode))
            ||  (("property.landscape.heightmap" == forKey) && (HEIGHT_EDITOR_MODE == editorMode)))
         {
-            delegate->TextureDidChanged();
+            delegate->TextureDidChanged(forKey);
         }
     }
 }

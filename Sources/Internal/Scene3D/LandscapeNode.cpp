@@ -957,12 +957,24 @@ void LandscapeNode::BindMaterial()
             
             RenderManager::Instance()->SetShader(activeShader);
             RenderManager::Instance()->FlushState();
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
-            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-            activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+
+            if (uniformTextures[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+            
+            if (uniformTextures[TEXTURE_TILE1] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+
+            if (uniformTextures[TEXTURE_COLOR] != -1)
+                activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
+
+            if (uniformCameraPosition != -1)
+                activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+            
+            if (uniformTextureTiling[TEXTURE_TILE0] != -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+
+            if (uniformTextureTiling[TEXTURE_TILE1]!= -1)
+                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
         }            
             break;
         case RENDERING_MODE_TILE_MASK_SHADER:
@@ -1202,7 +1214,7 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     return retBBox;
 }
 
-const String & LandscapeNode::GetHeightMapPathname()
+const String & LandscapeNode::GetHeightmapPathname()
 {
     return heightmapPath;
 }

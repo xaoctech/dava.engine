@@ -107,8 +107,11 @@ void ImposterManager::Remove(ImposterNode * node)
 
 void ImposterManager::AddToQueue(ImposterNode * node)
 {
-	queue.push_back(node);
-	node->OnAddedToQueue();
+	if(!node->IsQueued())
+	{
+		queue.push_back(node);
+		node->OnAddedToQueue();
+	}
 }
 
 

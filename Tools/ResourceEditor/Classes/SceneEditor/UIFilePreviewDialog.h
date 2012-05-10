@@ -52,6 +52,8 @@ public:
 
 protected:
     
+    virtual void OnFileSelected(const String &pathToFile);
+
     void UpdatePreview(int32 unitIndex);
     
     UIControl *preview;

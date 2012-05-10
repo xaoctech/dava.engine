@@ -59,9 +59,6 @@ Sprite::Sprite()
 	rectsAndOffsets = 0;
 //	originalVertices = 0;
 	
-	polyArray = 0;
-	polyIndeces = 0;
-	polygonsCount = 0;
 	size.dx = 24;
 	size.dy = 24;
 //	originalSize = size;
@@ -293,44 +290,8 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 	//	center.x = width / 2;
 	//	center.y = height / 2;
 	
-	
-	fp->ReadLine(tempBuf, 1024);
-	sscanf(tempBuf, "%d", &spr->polygonsCount);
-	
 	spr->defaultPivotPoint.x = 0;
 	spr->defaultPivotPoint.y = 0;
-	
-	if(spr->polygonsCount > 0)
-	{
-		spr->polyArray = new Polygon2[spr->polygonsCount];
-		spr->polyIndeces = new int32[spr->frameCount];
-
-		for (int polyIndex = 0; polyIndex < spr->polygonsCount; ++polyIndex)
-		{
-			int polyPointCount;
-			fp->ReadLine(tempBuf, 1024);
-			sscanf(tempBuf, "%d", &polyPointCount);
-
-			AABBox2 bbox;
-			Vector2 sum;
-			for(int i = 0; i < polyPointCount; i ++)
-			{
-				Vector2 pt;
-				fp->ReadLine(tempBuf, 1024);
-				sscanf(tempBuf, "%f %f", &pt.x, &pt.y);
-				//TODO: Add conversion to virtual coordinates
-				spr->polyArray[polyIndex].AddPoint(pt);
-				bbox.AddPoint(pt);
-				sum += pt;
-			}
-		}
-		
-		for (int i = 0;	i < spr->frameCount; i++) 
-		{
-			fp->ReadLine(tempBuf, 1024);
-			sscanf(tempBuf, "%d", &spr->polyIndeces[i]);
-		}
-	}
 	
 	spr->resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(spr->resourceSizeIndex);
 	spr->resourceToPhysicalFactor = Core::Instance()->GetResourceToPhysicalFactor(spr->resourceSizeIndex);
@@ -570,9 +531,6 @@ int32 Sprite::Release()
 	
 void Sprite::Clear()
 {
-	SafeDeleteArray(polyIndeces);
-	SafeDeleteArray(polyArray);
-	
 	for (int k = 0; k < textureCount; ++k)
 	{
 		SafeRelease(textures[k]);
@@ -1274,15 +1232,6 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 }
-
-	
-	
-Polygon2 * Sprite::GetPolygonForFrame(int32 frame)
-{
-	if (!polyArray || !polyIndeces)return 0;
-	if (polyIndeces[frame] == -1)return 0;
-	return &polyArray[polyIndeces[frame]];
-}
 	
 float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType)
 {
@@ -1319,9 +1268,6 @@ void Sprite::PrepareForNewSize()
 	texCoords = 0;
 	rectsAndOffsets = 0;
 	
-	polyArray = 0;
-	polyIndeces = 0;
-	polygonsCount = 0;
 	size.dx = 24;
 	size.dy = 24;
 	frameCount = 0;
@@ -1383,16 +1329,27 @@ void Sprite::SetClipPolygon(Polygon2 * _clipPolygon)
 
 void Sprite::ConvertToVirtualSize()
 {
-	frameVertices[0][0] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][1] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][2] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][3] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][4] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][5] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][6] *= Core::Instance()->GetVirtualToPhysicalFactor();
-	frameVertices[0][7] *= Core::Instance()->GetVirtualToPhysicalFactor();
+    float32 virtualToPhysicalFactor = Core::Instance()->GetVirtualToPhysicalFactor();
+    float32 resourceToVirtualFactor = Core::Instance()->GetResourceToVirtualFactor(GetResourceSizeIndex());
+    
+	frameVertices[0][0] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][1] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][2] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][3] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][4] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][5] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][6] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+	frameVertices[0][7] *= virtualToPhysicalFactor * resourceToVirtualFactor;
+    
+    texCoords[0][0] *= resourceToVirtualFactor;
+    texCoords[0][1] *= resourceToVirtualFactor;
+    texCoords[0][2] *= resourceToVirtualFactor;
+    texCoords[0][3] *= resourceToVirtualFactor;
+    texCoords[0][4] *= resourceToVirtualFactor;
+    texCoords[0][5] *= resourceToVirtualFactor;
+    texCoords[0][6] *= resourceToVirtualFactor;
+    texCoords[0][7] *= resourceToVirtualFactor;
 }
-
 
 void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState)
 {

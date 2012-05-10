@@ -169,7 +169,9 @@ uint32 File::ReadLine(void * pointerToData, uint32 bufferSize)
 	while(!IsEof())
 	{
 		uint8 nextChar;
-		Read(&nextChar, 1);
+		uint32 actuallyRead = Read(&nextChar, 1);
+        if(actuallyRead != 1)break;
+        
 		if(nextChar == '\n')break;
 		if(nextChar == 0)break;
 

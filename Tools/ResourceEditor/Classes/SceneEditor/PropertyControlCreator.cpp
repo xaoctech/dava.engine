@@ -7,6 +7,7 @@
 #include "LandscapePropertyControl.h"
 #include "LandscapeEditorPropertyControl.h"
 #include "MaterialPropertyControl.h"
+#include "LodNodePropertyControl.h"
 
 
 PropertyControlCreator::PropertyControlCreator()
@@ -63,6 +64,12 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
     {
         return CreateControlForNode(EPCID_MESH, rect, createNodeProperties);
     }
+    
+    LodNode *lodNode = dynamic_cast<LodNode*>(sceneNode);
+    if(lodNode)
+    {
+        return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
+    }
 
 	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
@@ -112,6 +119,10 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
             case EPCID_NODE:
                 controls[controlID] = new NodesPropertyControl(rect, createNodeProperties);
                 break;
+            case EPCID_LODNODE:
+                controls[controlID] = new LodNodePropertyControl(rect, createNodeProperties);
+                break;
+
 
             case EPCID_LANDSCAPE_EDITOR_MASK:
                 controls[controlID] = new LandscapeEditorPropertyControl(rect, createNodeProperties, LandscapeEditorPropertyControl::MASK_EDITOR_MODE);

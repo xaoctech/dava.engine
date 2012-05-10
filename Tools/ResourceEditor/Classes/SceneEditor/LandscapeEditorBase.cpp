@@ -178,7 +178,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
     point.x = (int32)point.x;
     point.y = (int32)point.y;
     
-	startPoint = endPoint = point;
+	landscapePoint = point;
 	UpdateCursor();
 	
     if(INVALID_TOUCH_ID == touchID || touchID == touch->tid)
@@ -277,11 +277,6 @@ LandscapeToolsPanel * LandscapeEditorBase::GetToolPanel()
 void LandscapeEditorBase::OnToolSelected(LandscapeTool *newTool)
 {
     SetTool(newTool);
-}
-
-void LandscapeEditorBase::OnToolsPanelClose()
-{
-    Toggle();
 }
 
 void LandscapeEditorBase::OnShowGrid(bool show)
