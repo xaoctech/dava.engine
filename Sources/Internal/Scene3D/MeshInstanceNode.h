@@ -124,6 +124,11 @@ public:
 	void AddLightmap(int32 polygonGroupIndex, const LightmapData & lightmapData);
 
 	/**
+		\brief Same as previous function, but polygonGroupIndex is calculated as polygonGroupIndex=currentPolygonGroupCount.
+	*/
+	void AddLightmap(const LightmapData & lightmapData);
+
+	/**
         \brief Delete all lightmaps for this MeshInstance. 
 	 */
 	void ClearLightmaps();
