@@ -44,12 +44,10 @@ ImposterNode::ImposterNode(Scene * scene)
 	manager = 0;
 	distanceSquaredToCamera = 0;
 	isReady = false;
-	RegisterInScene();
 }
 
 ImposterNode::~ImposterNode()
 {
-	UnregisterInScene();
 	SafeRelease(fbo);
 	SafeRelease(renderData);
 }
@@ -367,24 +365,6 @@ void ImposterNode::CreateGeometry()
 	renderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &(texCoords[0]));
 }
 
-void ImposterNode::SetScene(Scene * _scene)
-{
-	SceneNode::SetScene(_scene);
-	RegisterInScene();
-}
-
-void ImposterNode::RegisterInScene()
-{
-	if(scene)
-	{
-		scene->RegisterImposter(this);
-	}
-}
-
-void ImposterNode::UnregisterInScene()
-{
-	scene->UnregisterImposter(this);
-}
 
 void ImposterNode::AskForRedraw()
 {

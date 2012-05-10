@@ -54,7 +54,6 @@ public:
 	void UpdateState();
 	virtual void Draw();
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-	virtual void SetScene(Scene * _scene);
 
 	void UpdateImposter();
 	void GeneralDraw();
@@ -69,8 +68,6 @@ private:
 	void AskForRedraw();
 	void ClearGeometry();
 	void CreateGeometry();
-	void RegisterInScene();
-	void UnregisterInScene();
 	
 	bool IsRedrawApproved();
 	bool IsImposterReady();
