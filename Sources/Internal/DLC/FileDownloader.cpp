@@ -10,7 +10,12 @@
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/File.h"
 #include "Platform/Thread.h"
+
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#include "curl64/curl.h"
+#else
 #include "curl/curl.h"
+#endif
 
 namespace DAVA
 {

@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef WoTSniperMacOS_ZlibWrapper_h
-#define WoTSniperMacOS_ZlibWrapper_h
+#ifndef __DAVAENGINE_ZlibWrapper_h__
+#define __DAVAENGINE_ZlibWrapper_h__
 
 #include "Base/BaseTypes.h"
 

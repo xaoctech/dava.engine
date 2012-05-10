@@ -434,7 +434,7 @@ uint16 DLCSystem::GetDLCIndexByName(const std::string& name) const
     
 const DLCSource * DLCSystem::GetDLCSource(const uint16 index)
 {
-    if ( index < 0 || index >= dlcs.size() )
+    if ( index >= dlcs.size() )
     {
         return NULL;
     }

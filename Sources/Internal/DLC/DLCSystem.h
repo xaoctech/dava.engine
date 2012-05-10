@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef WoTSniperMacOS_DLCManager_h
-#define WoTSniperMacOS_DLCManager_h
+#ifndef __DAVAENGINE_DLCManager_h__
+#define __DAVAENGINE_DLCManager_h__
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
