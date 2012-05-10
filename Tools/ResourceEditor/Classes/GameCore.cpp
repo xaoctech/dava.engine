@@ -53,7 +53,6 @@ void GameCore::OnAppStarted()
 #endif //__DAVAENGINE_BEAST__
 	
     new OutputManager();
-//    new EditorSettings();
     new SceneValidator();
 	new PVRConverter();
     new PVRUtils();
@@ -88,6 +87,8 @@ void GameCore::OnSuspend()
 void GameCore::OnResume()
 {
     ApplicationCore::OnResume();
+    
+    SceneValidator::Instance()->ReloadTextures();
 }
 
 void GameCore::OnBackground()

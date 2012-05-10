@@ -26,6 +26,8 @@ public:
     
     static bool IsntPower2(int32 num);
 
+    void ReloadTextures();
+    
 protected:
     
     void ValidateTextureInternal(Texture *texture);

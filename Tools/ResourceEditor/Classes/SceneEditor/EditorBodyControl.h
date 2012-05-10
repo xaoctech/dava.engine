@@ -16,6 +16,9 @@
 #include "GraphBase.h"
 
 
+//#define FORCE_LOD_UPDATE
+
+
 using namespace DAVA;
 
 class SceneGraph;
@@ -105,7 +108,7 @@ public:
 
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
-    void ToggleLandscapeEditor(int32 landscapeEditorMode);
+    bool ToggleLandscapeEditor(int32 landscapeEditorMode);
 
     //LandscapeEditorDelegate
     virtual void LandscapeEditorStarted();  //Show LE Controls
@@ -213,6 +216,10 @@ protected:
     DataGraph *dataGraph;
     GraphBase *currentGraph;
     ePropertyShowState propertyShowState;
+    
+#ifdef FORCE_LOD_UPDATE
+    void OnForceLod(BaseObject * object, void * userData, void * callerData);
+#endif //#ifdef FORCE_LOD_UPDATE
 };
 
 

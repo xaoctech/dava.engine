@@ -28,9 +28,14 @@
 #include <fstream>
 #include <algorithm>
 #include <cctype>
+#include <stdio.h>
 
 #include "ResourceArchive.h"
 #include "AnsiFileSystem.h"
+
+#ifdef WITH_LIBZ
+    #include "zlibPack.c"
+#endif
 
 using namespace Log;
 using namespace IO;
@@ -186,6 +191,19 @@ public:
 		fileList->Release();
 	}
 
+    void PackWithzlib()
+    {
+#ifdef WITH_LIBZ
+        FILE* sFile = fopen( resourceName.c_str(), "r");
+        FILE* dFile = fopen( (resourceName + String(".gz")).c_str(), "w");
+        int ret = def(sFile, dFile, 8);
+        if (ret != Z_OK)
+            zerr(ret);
+        fclose(dFile);
+        fclose(sFile);
+#endif
+    }
+    
 private:
 
 	List<String>	fileNameList;
@@ -212,18 +230,20 @@ int main(int argc, char* argv[])
 		printf("Options:\n");
 		printf("\t -d don't include to archive relative pathnames\n");
 		printf("\t -u unpack archive with contents\n");
+		printf("\t -z pack with libz \n");
 		return 0;
 	}
 	
 	bool	packPaths = true;
 	bool	showMode = false;
+    bool    useLibz = false;
 	String	directoryPath;
 	String  archiveName;
 	String	headerName;
 	
 	int32 pathIndex = 1;
 	
-	for (int flag = 0; flag < 2; ++flag)
+	for (int flag = 0; flag < 3; ++flag)
 	{
 		if (String(argv[pathIndex]) == "-d")
 		{
@@ -235,6 +255,11 @@ int main(int argc, char* argv[])
 			pathIndex++;
 			showMode = true;
 		}
+        else if (String(argv[pathIndex]) == "-z")
+        {
+			++pathIndex;
+			useLibz = true;
+        }
 	}
 	
 
@@ -370,7 +395,11 @@ int main(int argc, char* argv[])
 		Packer * packer = new Packer(programmPath + "/" + archiveName, directoryPath, programmPath + "/" + headerName);
 
 		packer->Pack(packPaths);
-
+        if (useLibz)
+        {
+            packer->PackWithzlib();
+        }
+        
 		delete packer;
 		packer = 0;
 	}
@@ -380,3 +409,6 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+
+
+

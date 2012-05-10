@@ -13,24 +13,18 @@ LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegat
     
     selectionPanel = NULL;
 
-    Rect closeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT);
-    UIButton *closeButton = ControlsFactory::CreateCloseWindowButton(closeRect);
-    closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnClose));
-    AddControl(closeButton);
-    SafeRelease(closeButton);
-    
     brushIcon = new UIControl(Rect(0, 0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
     brushIcon->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsPanel::OnBrushTool));
     brushIcon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
     AddControl(brushIcon);
     
     
-    sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH,
+    sizeSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - TEXTFIELD_WIDTH,
                                    0, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
     sizeSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnSizeChanged));
     AddControl(sizeSlider);
     
-    strengthSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - ControlsFactory::BUTTON_HEIGHT - TEXTFIELD_WIDTH, 
+    strengthSlider = CreateSlider(Rect(rect.dx - SLIDER_WIDTH - TEXTFIELD_WIDTH, 
                                        ControlsFactory::TOOLS_HEIGHT / 2, SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
     strengthSlider->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &LandscapeToolsPanel::OnStrengthChanged));
     AddControl(strengthSlider);
@@ -117,13 +111,6 @@ void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
     }
 }
 
-void LandscapeToolsPanel::OnClose(DAVA::BaseObject *object, void *userData, void *callerData)
-{
-    if(delegate)
-    {
-        delegate->OnToolsPanelClose();
-    }
-}
 
 void LandscapeToolsPanel::OnBrushTool(DAVA::BaseObject *object, void *userData, void *callerData)
 {

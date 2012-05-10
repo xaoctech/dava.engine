@@ -74,17 +74,6 @@ float32 EditorSettings::GetCameraSpeed(int32 camSpeedIndex)
 }
 
 
-//String EditorSettings::GetProjectPath()
-//{
-//    String projectPath = settings->GetString("ProjectPath", "/");
-//    if('/' != projectPath[projectPath.length() - 1])
-//    {
-//        projectPath += '/';
-//    }
-// 
-//    return projectPath;
-//}
-
 int32 EditorSettings::GetScreenWidth()
 {
     return settings->GetInt32("ScreenWidth", 1024);
@@ -153,61 +142,16 @@ void EditorSettings::SetRightPanelWidth(int32 width)
     settings->SetInt32("RightPanelWidth", width);
 }
 
-int32 EditorSettings::GetLodLayersCount()
+float32 EditorSettings::GetLodLayerDistance(int32 layerNum)
 {
-    return settings->GetInt32("LODLayers_count", LOD_LEVELS_COUNT);
+    DVASSERT(0 <= layerNum && layerNum < LodNode::MAX_LOD_LAYERS);
+    return settings->GetFloat(Format("LODLayer_%d", layerNum), LodNode::GetDefaultDistance(layerNum));
 }
 
-float32 EditorSettings::GetLodLayerNear(int32 layerNum)
+void EditorSettings::SetLodLayerDistance(int32 layerNum, float32 distance)
 {
-    int32 count = GetLodLayersCount();
-    DVASSERT(0 <= layerNum && layerNum < count);
-
-    static const float32 LodLayerNear[] = {0, 7, 18, 990, 1990, 2990, 3990, 4990};
-    return settings->GetFloat(Format("LODLayer_%d_Near", layerNum), LodLayerNear[layerNum]);
-}
-
-float32 EditorSettings::GetLodLayerFar(int32 layerNum)
-{
-    int32 count = GetLodLayersCount();
-    DVASSERT(0 <= layerNum && layerNum < count);
-    
-    static const float32 LodLayerFar[] = {10, 20, 1000, 2000, 3000, 4000, 5000, 6000};
-    return settings->GetFloat(Format("LODLayer_%d_Far", layerNum), LodLayerFar[layerNum]);
-}
-
-void EditorSettings::SetLodLayersCount(int32 count)
-{
-    settings->SetInt32("LODLayers_count", count);
-}
-
-void EditorSettings::SetLodLayerNear(int32 layerNum, float32 nearDistance)
-{
-    int32 count = GetLodLayersCount();
-    DVASSERT(0 <= layerNum && layerNum < count);
-    
-    settings->SetFloat(Format("LODLayer_%d_Near", layerNum), nearDistance);
-}
-
-void EditorSettings::SetLodLayerFar(int32 layerNum, float32 farDistance)
-{
-    int32 count = GetLodLayersCount();
-    DVASSERT(0 <= layerNum && layerNum < count);
-    
-    settings->SetFloat(Format("LODLayer_%d_Far", layerNum), farDistance);
-}
-
-int32 EditorSettings::GetForceLodLayer()
-{
-    return settings->GetInt32("LODLayer_Force", -1);
-}
-
-void EditorSettings::SetForceLodLayer(int32 layer)
-{
-    int32 count = GetLodLayersCount();
-    DVASSERT(-1 <= layer && layer < count);
-    
-    settings->SetInt32("LODLayer_Force", layer);
+    DVASSERT(0 <= layerNum && layerNum < LodNode::MAX_LOD_LAYERS);
+    return settings->SetFloat(Format("LODLayer_%d", layerNum), distance);
 }
 
 int32 EditorSettings::GetLastOpenedCount()

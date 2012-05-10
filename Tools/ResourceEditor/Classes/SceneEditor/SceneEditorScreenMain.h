@@ -48,7 +48,6 @@ class SceneEditorScreenMain:
         MENUID_CREATENODE = 200,
         MENUID_VIEWPORT = 300,
         MENUID_EXPORTTOGAME = 400,
-        MENUID_LANDSCAPE = 500
     };
     
     
@@ -140,7 +139,8 @@ private:
     UIButton * btnNew;
     UIButton * btnProject;
 	UIButton * btnBeast;
-	UIButton * btnLandscape;
+	UIButton * btnLandscapeHeightmap;
+	UIButton * btnLandscapeColor;
 	UIButton * btnViewPortSize;
     UIButton * btnTextureConverter;
 
@@ -153,7 +153,8 @@ private:
     void OnNewPressed(BaseObject * obj, void *, void *);
     void OnOpenProjectPressed(BaseObject * obj, void *, void *);
 	void OnBeastPressed(BaseObject * obj, void *, void *);
-	void OnLandscapePressed(BaseObject * obj, void *, void *);
+	void OnLandscapeHeightmapPressed(BaseObject * obj, void *, void *);
+	void OnLandscapeColorPressed(BaseObject * obj, void *, void *);
     void OnViewPortSize(BaseObject * obj, void *, void *);
     void OnTextureConverter(BaseObject * obj, void *, void *);
     
@@ -206,12 +207,9 @@ private:
     MenuPopupControl *menuPopup;
 
     //create node dialog
-//    CreateNodeDialog *nodeDialog;
     CreateNodesDialog *nodeDialog;
     
     MaterialEditor *materialEditor;
-//    CreateNodeDialog *nodeDialogs[ECNID_COUNT];
-//    int32 currentNodeDialog;
     void InitializeNodeDialogs();
     void ReleaseNodeDialogs();
     
@@ -235,10 +233,6 @@ private:
 	bool useConvertedTextures;
     
     HelpDialog *helpDialog;
-    
-    //LandscsapeEditor
-    void ToggleLandscape(int32 landscapeEditorMode);
-
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

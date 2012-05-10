@@ -271,3 +271,40 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
     sceneStats = newStats;
     infoControl->SetRenderStats(sceneStats);
 }
+
+void SceneValidator::ReloadTextures()
+{
+    Logger::Info("_____************ RELOAD **********____________");
+    
+    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
+    bool isMipmapsEnabled = Texture::IsMipmapGenerationEnabled();
+
+    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
+	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+	{
+		Texture *texture = it->second;
+        
+        Image::EnableAlphaPremultiplication(texture->isAlphaPremultiplied);
+        
+        if(texture->isMimMapTexture) Texture::EnableMipmapGeneration();
+        else Texture::DisableMipmapGeneration();
+
+        Image *image = Image::CreateFromFile(texture->relativePathname);
+        if(image)
+        {
+            texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData());
+            if(texture->isMimMapTexture)
+            {
+                texture->GenerateMipmaps();
+            }
+            texture->SetWrapMode(texture->wrapModeS, texture->wrapModeT);
+                
+            SafeRelease(image);
+        }
+	}
+    
+    if(isMipmapsEnabled) Texture::EnableMipmapGeneration();
+    else Texture::DisableMipmapGeneration();
+    
+    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
+}

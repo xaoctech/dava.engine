@@ -69,8 +69,8 @@ public:
 	
 	XMLParser();
 	
-	bool ParseFile(const String &fileName, XMLParserDelegate *delegate);
-	bool ParseBytes(const unsigned char *bytes, int length, XMLParserDelegate *delegate);
+	static bool ParseFile(const String &fileName, XMLParserDelegate *delegate);
+	static bool ParseBytes(const unsigned char *bytes, int length, XMLParserDelegate *delegate);
 	
 private:
 	static void StartDocument(void *user_data);
