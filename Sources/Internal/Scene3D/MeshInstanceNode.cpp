@@ -508,6 +508,11 @@ void MeshInstanceNode::AddLightmap(int32 polygonGroupIndex, const LightmapData &
 	lightmaps[polygonGroupIndex] = data;
 }
 
+void MeshInstanceNode::AddLightmap(const LightmapData & lightmapData)
+{
+	AddLightmap(lightmaps.size(), lightmapData);
+}
+
 void MeshInstanceNode::ClearLightmaps()
 {
 	Vector<LightmapData>::iterator lighmapsEnd = lightmaps.end();
