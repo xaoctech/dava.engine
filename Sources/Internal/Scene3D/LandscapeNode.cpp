@@ -327,26 +327,54 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
 	if (point.x > box.max.x ||
 		point.x < box.min.x ||
 		point.y > box.max.y ||
-		point.y < box.min.y ||
-		point.z < box.min.z)		
+		point.y < box.min.y)		
 	{
 		return false;
 	}
-	float32 ww = (float32)(heightmap->Size() - 1);
-	float32 hh = (float32)(heightmap->Size() - 1);
+	float32 kW = (float32)(heightmap->Size() - 1) / (box.max.x - box.min.x);
 	
-	int32 x = (int32)((point.x - box.min.x) * ww / (box.max.x - box.min.x));
-	int32 y = (int32)((point.y - box.min.y) * hh / (box.max.x - box.min.x));
-	
+	float32 x = (point.x - box.min.x) * kW;
+	float32 y = (point.y - box.min.y) * kW;
+
+	float32 x1 = floor(x);
+	float32 y1 = floor(y);
+
+	float32 x2 = ceil(x);
+	float32 y2 = ceil(y);
+
+	if (x1 == x2)
+		x2 += 1.0f;
+
+	if (y1 == y2)
+		y2 += 1.0f;
+
 	uint16 * data = heightmap->Data();
 	int32 imW = heightmap->Size();
-	
-	int32 summ = data[y * imW + x] + data[y * imW + x + 1] + data[(y + 1) * imW + x] + data[(y + 1) * imW + x + 1];
-	
+
+	Vector3 p1(x1, y1, 0);
+	p1.z = data[(int32)p1.y * imW + (int32)p1.x];
+
+	Vector3 p2(x2, y2, 0);
+	p2.z = data[(int32)p2.y * imW + (int32)p2.x];
+
+	Vector3 p3;
+	if (x - x1 >= y - y1)
+		p3 = Vector3(x2, y1, 0);
+	else
+		p3 = Vector3(x1, y2, 0);
+	p3.z = data[(int32)p3.y * imW + (int32)p3.x];
+
+	//http://algolist.manual.ru/maths/geom/equation/plane.php
+	float32 A = p1.y * (p2.z - p3.z) + p2.y * (p3.z - p1.z) + p3.y * (p1.z - p2.z); 
+	float32 B = p1.z * (p2.x - p3.x) + p2.z * (p3.x - p1.x) + p3.z * (p1.x - p2.x);
+	float32 C = p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y);
+	float32 D = p1.x * (p2.y * p3.z - p3.y * p2.z) + p2.x * (p3.y * p1.z - p1.y * p3.z) + p3.x * (p1.y * p2.z - p2.y * p1.z);
+
 	result.x = point.x;
 	result.y = point.y;
-	result.z = (box.min.z + ((float32)summ / ((float32)Heightmap::MAX_VALUE * 4.0f)) * (box.max.z - box.min.z));
 
+	result.z = (D - B * y - A * x) / C;
+	result.z = box.min.z + result.z / ((float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z);
 	return true;
 };
 	
@@ -1226,16 +1254,13 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     
     String path = archive->GetString("hmap");
     path = sceneFile->RelativeToAbsolute(path);
-    AABBox3 box;
-    box = archive->GetByteArrayAsType("bbox", box);
+    AABBox3 boxDef;
+    boxDef = archive->GetByteArrayAsType("bbox", boxDef);
     
     renderingMode = (eRenderingMode)archive->GetInt32("renderingMode", RENDERING_MODE_TEXTURE);
     
-    BuildLandscapeFromHeightmapImage(renderingMode, path, box);
-    
-    
-    
-    
+    BuildLandscapeFromHeightmapImage(renderingMode, path, boxDef);
+        
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         String textureName = archive->GetString(Format("tex_%d", k));
