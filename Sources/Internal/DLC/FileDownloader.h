@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef WoTSniperMacOS_FileDownloader_h
-#define WoTSniperMacOS_FileDownloader_h
+#ifndef __DAVAENGINE_FileDownloader_h__
+#define __DAVAENGINE_FileDownloader_h__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"

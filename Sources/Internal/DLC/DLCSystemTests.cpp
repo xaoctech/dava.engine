@@ -70,7 +70,7 @@ void DLCSystemTests::Test3()
     DLCSystem::Instance()->AddDelegate(this);
     DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_1/", "~doc:/downloads/res/");
 
-    sleep(5);
+    sleep(2);
     DLCSystem::Instance()->Stop();
 }
 
@@ -113,7 +113,7 @@ void DLCSystemTests::Test6()
     DLCSystem::Instance()->AddDelegate(this);
     DLCSystem::Instance()->InitSystem("http://transportcontrol.davamobile.com/temp/test_5/", "~doc:/downloads/res/");
     
-    sleep(5);
+    sleep(2);
     DLCSystem::Instance()->Stop();
 }
 

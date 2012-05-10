@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#ifndef WoTSniperMacOS_DLCSystemTests_h
-#define WoTSniperMacOS_DLCSystemTests_h
+#ifndef __DAVAENGINE_DLCSystemTests_h
+#define __DAVAENGINE_DLCSystemTests_h
 
 #include "DLCSystem.h"
 
