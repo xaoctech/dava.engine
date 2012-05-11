@@ -71,6 +71,9 @@ PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyC
     uneditableText = new UIStaticText(Rect(0, 0, uneditableTextContainer->size.x, uneditableTextContainer->size.y));
     uneditableText->SetFont(font);
     uneditableTextContainer->AddControl(uneditableText);
+
+    uneditableTextContainer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyTextCell::OnHint));
+    this->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PropertyTextCell::OnHint));
     
     SetData(prop);
 }
@@ -228,6 +231,19 @@ float32 PropertyTextCell::GetHeightForWidth(float32 currentWidth)
 {
     return CELL_HEIGHT;
 }
+
+void PropertyTextCell::OnHint(BaseObject * object, void * userData, void * callerData)
+{
+    if(uneditableTextContainer->GetParent())
+    {
+        HintManager::Instance()->ShowHint(uneditableText->GetText(), this->GetRect(true));
+    }
+    else if(editableText->GetParent())
+    {
+        HintManager::Instance()->ShowHint(editableText->GetText(), this->GetRect(true));
+    }
+}
+
 
 #pragma mark --PropertyBoolCell 
 PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
