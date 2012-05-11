@@ -159,9 +159,12 @@ void Stats::BeginFrame()
     
 }
     
+
 void Stats::EndFrame()
 {
 #if defined(__DAVAENGINE_ENABLE_DEBUG_STATS__)
+    
+    
     Map<uint32, uint64> timeForEvent;
     for (List<Event*>::reverse_iterator it = events.rbegin(); it != events.rend(); ++it)
     {

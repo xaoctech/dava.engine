@@ -37,8 +37,8 @@ namespace DAVA
 REGISTER_CLASS(DataNode);
     
     
-DataNode::DataNode(Scene * _scene)
-:   scene(_scene)
+DataNode::DataNode()
+:   scene(0)
 ,   index(-1)
 ,   pointer(0)
 {

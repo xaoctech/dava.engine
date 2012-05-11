@@ -32,8 +32,8 @@
 namespace DAVA
 {
 
-RotatingCubeNode::RotatingCubeNode(Scene * _scene)
-	: SceneNode(_scene)
+RotatingCubeNode::RotatingCubeNode()
+	: SceneNode()
 {
 	SetupCube();
 }
@@ -79,7 +79,7 @@ void RotatingCubeNode::SetupCube()
 	};
 	
 	
-	cube = new PolygonGroup(scene);
+	cube = new PolygonGroup();
 	cube->AllocateData( EVF_VERTEX | EVF_COLOR, 12, 36);
 
 	for (int i = 0; i < 8 ; ++i)

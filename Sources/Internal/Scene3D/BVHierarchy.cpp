@@ -37,7 +37,7 @@ namespace DAVA
     
 BVHierarchy::BVHierarchy()
 {
-    Stats::Instance()->RegisterEvent("BVHierarchy.Cull", "Time spent in hierarchy culling");
+    Stats::Instance()->RegisterEvent("Scene.BVHierarchy.Cull", "Time spent in hierarchy culling");
 }
     
 BVHierarchy::~BVHierarchy()
@@ -80,7 +80,7 @@ void BVHierarchy::UnregisterNode(SceneNode * node)
 
 void BVHierarchy::Cull()
 {
-    Stats::Instance()->BeginTimeMeasure("BVHierarchy.Cull", this);
+    Stats::Instance()->BeginTimeMeasure("Scene.BVHierarchy.Cull", this);
     // Bruce force frustum culling
     int32 objectsCulled = 0;
     
@@ -96,7 +96,7 @@ void BVHierarchy::Cull()
             objectsCulled++;
         }
     }
-    Stats::Instance()->EndTimeMeasure("BVHierarchy.Cull", this);
+    Stats::Instance()->EndTimeMeasure("Scene.BVHierarchy.Cull", this);
     //Logger::Debug("Objects: %d Objects Drawn: %d", size, (size - objectsCulled));
 }
 

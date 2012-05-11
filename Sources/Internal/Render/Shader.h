@@ -48,10 +48,8 @@ namespace DAVA
     
 class Data;
     
-
 /*	
     \brief Class to use low-level shaders
- 
 */	
 class Shader : public RenderResource
 {

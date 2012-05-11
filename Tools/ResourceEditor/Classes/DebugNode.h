@@ -17,7 +17,7 @@ using namespace DAVA;
 class DebugNode : public SceneNode
 {
 public:
-	DebugNode(Scene * scene, std::vector<float32> &data);
+	DebugNode(std::vector<float32> &data);
 	virtual ~DebugNode();
 
 	virtual void Draw();

@@ -36,8 +36,8 @@
 namespace DAVA
 {
     
-LandscapeDebugNode::LandscapeDebugNode(Scene * scene)
-    : LandscapeNode(scene)
+LandscapeDebugNode::LandscapeDebugNode()
+    : LandscapeNode()
 {
     debugRenderDataObject = new RenderDataObject();
 }

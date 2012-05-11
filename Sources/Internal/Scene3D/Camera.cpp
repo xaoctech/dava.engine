@@ -40,7 +40,7 @@ namespace DAVA
 REGISTER_CLASS(Camera);
 
 
-Camera::Camera(Scene * scene) : SceneNode(scene)
+Camera::Camera() : SceneNode()
 {
 	Setup(35.0f, 1.0f, 1.0f, 2500.f, false);
 	up = Vector3(0.0f, 1.0f, 0.0f);
@@ -441,7 +441,7 @@ SceneNode* Camera::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
-        dstNode = new Camera(scene);
+        dstNode = new Camera();
     }
     SceneNode::Clone(dstNode);
     Camera *cnd = (Camera*)dstNode;

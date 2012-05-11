@@ -222,6 +222,8 @@ Shader::~Shader()
     
 bool Shader::Recompile()
 {
+    DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
+    
     RenderManager::Instance()->LockNonMain();
     if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderData->GetSize(), (GLchar*)vertexShaderData->GetPtr()))
     {
@@ -356,6 +358,9 @@ void Shader::DeleteShaders()
     RENDER_VERIFY(glDeleteShader(vertexShader));
     RENDER_VERIFY(glDeleteShader(fragmentShader));
     RENDER_VERIFY(glDeleteProgram(program));
+    vertexShader = 0;
+    fragmentShader = 0;
+    program = 0;
 
     RenderManager::Instance()->UnlockNonMain();
 }

@@ -46,7 +46,7 @@ class SceneFileV2;
 class DataNode : public BaseObject
 {
 public:	
-	DataNode(Scene * _scene = 0);
+	DataNode();
 	virtual ~DataNode();
     virtual int32 Release();
 

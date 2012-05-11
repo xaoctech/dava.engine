@@ -132,8 +132,8 @@ public:
 		\param[in] func this is pointer to function that can create such class
         \param[in] alias this name can be used if you want to save object as his parent
 	*/
-	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo);
-	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, const String & alias);
+	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, uint32 size);
+	void RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & typeinfo, uint32 size, const String & alias);
 
 
     void Dump();
@@ -141,6 +141,7 @@ public:
 private:
 	Map<String, CreateObjectFunc> creatorMap;
     Map<String, String> nameMap;
+    Map<String, uint32> sizeMap;
     String unregisteredClassName;
 };
     

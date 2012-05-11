@@ -319,7 +319,7 @@ bool SceneFile::ReadMaterial()
     sceneFP->Read(&materialDef.hasOpacity, sizeof(materialDef.hasOpacity));
 
 
-	Material * mat = new Material(scene);
+	Material * mat = new Material();
 
 	mat->SetAmbientColor(Color(materialDef.ambient));
 	mat->SetDiffuseColor(Color(materialDef.diffuse));
@@ -401,7 +401,7 @@ bool SceneFile::ReadStaticMesh()
     
 	for (uint32 polyGroupIndex = 0; polyGroupIndex < polyGroupCount; polyGroupIndex++)
 	{
-        PolygonGroup * polygonGroup = new PolygonGroup(scene);
+        PolygonGroup * polygonGroup = new PolygonGroup();
         mesh->AddNode(polygonGroup);
         
 		uint32 vertexCount, indexCount, vertexFormat;
@@ -482,7 +482,7 @@ bool SceneFile::ReadAnimatedMesh()
     
 	for (int polyGroupIndex = 0; polyGroupIndex < polyGroupCount; polyGroupIndex++)
 	{
-        PolygonGroup * polygonGroup = new PolygonGroup(scene);
+        PolygonGroup * polygonGroup = new PolygonGroup();
         mesh->AddNode(polygonGroup);
         
 		int vertexCount, indexCount;
@@ -574,7 +574,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 	SceneNode * node = 0;
 	if (def.nodeType == SceneNodeDef::SCENE_NODE_BASE)
 	{
-		node = new SceneNode(scene);
+		node = new SceneNode();
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
 		node->SetName(name);
@@ -589,7 +589,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		sceneFP->Read(&inverse0, sizeof(Matrix4));
 		
 		
-		currentSkeletonNode = new SkeletonNode(scene);
+		currentSkeletonNode = new SkeletonNode();
 		node = currentSkeletonNode;
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
@@ -605,7 +605,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		Matrix4 inverse0;
 		sceneFP->Read(&inverse0, sizeof(Matrix4));
 
-		BoneNode * boneNode = new BoneNode(scene, currentSkeletonNode);
+		BoneNode * boneNode = new BoneNode(currentSkeletonNode);
 		node = boneNode;
         node->SetDefaultLocalTransform(def.localTransform);
 		node->SetLocalTransform(def.localTransform);
@@ -641,7 +641,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 		if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH)strcpy(nodeType, "static mesh node");
 		if (def.nodeType == SceneNodeDef::SCENE_NODE_ANIMATED_MESH)strcpy(nodeType, "animated mesh node");
 		
-		MeshInstanceNode* meshNode = new MeshInstanceNode(scene);
+		MeshInstanceNode* meshNode = new MeshInstanceNode();
 		node = meshNode;
         
         node->SetDefaultLocalTransform(def.localTransform);
@@ -713,7 +713,7 @@ bool SceneFile::ReadSceneGraph()
 
 bool SceneFile::ReadCamera()
 {
-	Camera * cam = new Camera(scene);
+	Camera * cam = new Camera();
 	scene->AddCamera(cam);
 	
 	// read camera options
@@ -728,7 +728,7 @@ bool SceneFile::ReadCamera()
 
 bool SceneFile::ReadAnimation()
 {
-	SceneNodeAnimationList * animationList = new SceneNodeAnimationList(scene);
+	SceneNodeAnimationList * animationList = new SceneNodeAnimationList();
 	
 	char name[512];
 	sceneFP->ReadString(name, 512);
@@ -809,7 +809,7 @@ void SceneFile::ProcessLOD(SceneNode *forRootNode)
         }
 
         SceneNode *oldParent = (*it)->GetParent();
-        LodNode *lodNode = new LodNode(scene);
+        LodNode *lodNode = new LodNode();
         lodNode->SetName(nodeName);
         for (int i = maxLodCount; i >= 0; i--) 
         {

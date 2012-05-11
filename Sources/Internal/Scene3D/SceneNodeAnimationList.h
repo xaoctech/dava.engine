@@ -46,7 +46,7 @@ public:
 	};
 	
 	
-	SceneNodeAnimationList(Scene * _scene);
+	SceneNodeAnimationList();
 	virtual ~SceneNodeAnimationList();
 
 	void AddAnimation(SceneNodeAnimation * node);

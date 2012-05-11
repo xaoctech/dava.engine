@@ -35,8 +35,8 @@ namespace DAVA
 
 REGISTER_CLASS(ProxyNode);
     
-ProxyNode::ProxyNode(Scene * scene)
-    : DataNode(scene)
+ProxyNode::ProxyNode()
+    : DataNode()
     , node(0)
 {
     

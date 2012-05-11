@@ -35,8 +35,8 @@
 
 namespace DAVA 
 {
-SphereNode::SphereNode(Scene * _scene)
-:	MeshInstanceNode(_scene)
+SphereNode::SphereNode()
+:	MeshInstanceNode()
 {
     sphereMesh = NULL;
     SetQuality(80);
@@ -63,7 +63,7 @@ SceneNode* SphereNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
-        dstNode = new SphereNode(scene);
+        dstNode = new SphereNode();
     }
 
     MeshInstanceNode::Clone(dstNode);
@@ -94,7 +94,7 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
     //====== Общее количество вершин 
     const int32 gnVert = (quality+1) * quality + 2; 
     
-    PolygonGroup *sphere = new PolygonGroup(scene);
+    PolygonGroup *sphere = new PolygonGroup();
     sphereMesh->AddNode(sphere);
     
 	sphere->AllocateData( EVF_VERTEX | EVF_COLOR, gnVert, gnTria * 3);

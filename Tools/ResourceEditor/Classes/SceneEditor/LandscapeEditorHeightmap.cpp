@@ -388,7 +388,7 @@ void LandscapeEditorHeightmap::ShowAction()
     
     workingScene->RemoveNode(workingLandscape);
 
-    landscapeDebugNode = new LandscapeDebugNode(workingScene);
+    landscapeDebugNode = new LandscapeDebugNode();
     landscapeDebugNode->SetName("Landscape");
     landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightmapPathname());
     landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());

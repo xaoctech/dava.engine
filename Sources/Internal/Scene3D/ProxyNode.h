@@ -46,7 +46,7 @@ namespace DAVA
 class ProxyNode : public DataNode
 {
 public:	
-	ProxyNode(Scene * scene = 0);
+	ProxyNode();
 	virtual ~ProxyNode();
 	
     virtual void SetNode(SceneNode * node);

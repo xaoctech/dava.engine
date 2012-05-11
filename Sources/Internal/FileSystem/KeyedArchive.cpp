@@ -284,7 +284,7 @@ int32 KeyedArchive::GetByteArraySize(const String & key, int32 defaultValue)
     
 KeyedArchive * KeyedArchive::GetArchiveFromByteArray(const String & key)
 {
-    DVWARNING(false, "Method is depriceted! Use GetArchive()");
+    //DVWARNING(false, "Method is depriceted! Use GetArchive()");
     KeyedArchive * archive = new KeyedArchive;
     int32 size = GetByteArraySize(key);
     if (size == 0)return 0;

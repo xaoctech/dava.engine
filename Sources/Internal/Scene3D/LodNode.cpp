@@ -68,8 +68,8 @@ void LodNode::LodDistance::SetFarDistance(float32 newDistance)
 REGISTER_CLASS(LodNode);
     
 
-LodNode::LodNode(Scene * _scene)
-:	SceneNode(_scene)
+LodNode::LodNode()
+:	SceneNode()
 ,   currentLod(NULL)
 ,   lastLodUpdateFrame(0)
 ,   forceLodLayer(INVALID_LOD_LAYER)
@@ -364,7 +364,7 @@ SceneNode* LodNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
-        dstNode = new LodNode(scene);
+        dstNode = new LodNode();
     }
     
     SceneNode::Clone(dstNode);
