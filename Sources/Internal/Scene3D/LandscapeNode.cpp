@@ -48,8 +48,8 @@ namespace DAVA
 REGISTER_CLASS(LandscapeNode);
 
 	
-LandscapeNode::LandscapeNode(Scene * _scene)
-	: SceneNode(_scene)
+LandscapeNode::LandscapeNode()
+	: SceneNode()
     , indices(0)
 {
     heightmapPath = "";
@@ -70,6 +70,8 @@ LandscapeNode::LandscapeNode(Scene * _scene)
         uniformTextureTiling[k] = -1;
         textureTiling[k] = Vector2(1.0f, 1.0f);
     }
+    uniformFogDensity = -1;
+    uniformFogColor = -1;
     
     heightmap = new Heightmap();
     
@@ -127,6 +129,7 @@ void LandscapeNode::InitShaders()
         case RENDERING_MODE_TILE_MASK_SHADER:
             activeShader = new Shader();
             activeShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+            //activeShader->SetDefineList("VERTEX_FOG");
             activeShader->Recompile();
             
             uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("tileTexture0");
@@ -142,7 +145,8 @@ void LandscapeNode::InitShaders()
             uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
             uniformTextureTiling[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("texture2Tiling");
             uniformTextureTiling[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("texture3Tiling");
-            
+            uniformFogColor = activeShader->FindUniformLocationByName("fogColor");
+            uniformFogDensity = activeShader->FindUniformLocationByName("fogDensity");            
             break;
 
     }
@@ -173,9 +177,9 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
         for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
         {
             landscapeVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
-            landscapeVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
+            landscapeVertices[index].texCoord = Vector2((float32)(x) / (float32)(heightmap->Size() - 1), (float32)(y) / (float32)(heightmap->Size() - 1));           
 
-//            landscapeVertices[index].texCoord *= 10.0f;
+            //landscapeVertices[index].texCoord -= Vector2(0.5f, 0.5f);
             //Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].position.x, landscapeVertices[index].position.y);
             index++;
         }
@@ -948,7 +952,7 @@ void LandscapeNode::BindMaterial()
             if (uniformTextureTiling[TEXTURE_TILE1]!= -1)
                 activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
         }            
-            break;
+        break;
         case RENDERING_MODE_TILE_MASK_SHADER:
         {
             if (textures[TEXTURE_TILE0])
@@ -999,6 +1003,12 @@ void LandscapeNode::BindMaterial()
             
             if (uniformTextureTiling[TEXTURE_TILE3] != -1)
                 activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
+            
+            if (uniformFogColor != -1)
+                activeShader->SetUniformValue(uniformFogColor, Color((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f));
+            if (uniformFogDensity != -1)
+                activeShader->SetUniformValue(uniformFogDensity, 0.006f);
+            
             }            
             break;
     }

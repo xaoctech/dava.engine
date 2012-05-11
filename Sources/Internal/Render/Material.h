@@ -83,7 +83,6 @@ public:
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR,     // single texture + diffuse light normal mapping
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP, // single texture + diffuse light normal mapping
         
-
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
         // MATERIAL_VERTEX_LIGHTING,       // flag
@@ -93,7 +92,7 @@ public:
     
     static const char8 * GetTypeName(eType type);
 
-    Material(Scene * _scene = 0);
+    Material();
     virtual ~Material();
     
     
@@ -110,10 +109,19 @@ public:
 	virtual int32 Release();
     
     void SetType(eType _type);
-    void SetOpaque(bool isOpaque);
+    
+    void SetOpaque(bool _isOpaque);
     bool GetOpaque();
-
-    void SetTwoSided(bool isTwoSided);
+    
+    void SetFog(bool _fogEnabled);
+    bool IsFogEnabled() const;
+    void SetFogDensity(float32 _fogDensity);
+    float32 GetFogDensity() const;
+    void SetFogColor(const Color & _fogColor);
+    const Color & GetFogColor() const;
+    
+    
+    void SetTwoSided(bool _isTwoSided);
     bool GetTwoSided();
     
     void SetAmbientColor(const Color & color);
@@ -132,8 +140,20 @@ public:
 	void SetSetupLightmap(bool isSetupLightmap);
 	bool GetSetupLightmap();
 	void SetSetupLightmapSize(int32 setupLightmapSize);
-        
+
+    /**
+        \brief Bind material to render system.
+        Function should be used if you want to render something with this material.
+     */
+    //void BindMaterial();
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
+    
+    /**
+        \brief Unbind material. 
+        Restore some default properties that can influence to rendering in the future.
+     */
+    //void UnbindMaterial();
+    
     
     eType   type;
 
@@ -181,6 +201,10 @@ private:
 	Color specularColor;
 	Color emissiveColor;
     
+    bool    isFogEnabled;
+    float32 fogDensity;
+    Color   fogColor;
+    
     Shader  * shader;
     
     int32 uniformTexture0;
@@ -194,6 +218,15 @@ private:
     int32 uniformLightAttenuationQ;
 	int32 uniformUvOffset;
 	int32 uniformUvScale;
+    int32 uniformFogDensity;
+    int32 uniformFogColor;
+    
+    
+    /*
+        TODO: Uniform array, with set of all uniforms, with one set.
+     */
+    
+    
     
     static UberShader * uberShader;
 };

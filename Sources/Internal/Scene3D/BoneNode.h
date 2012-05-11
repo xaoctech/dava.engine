@@ -39,7 +39,7 @@ class SkeletonNode;
 class BoneNode : public SceneNode
 {
 public:
-	BoneNode(Scene * scene = 0, SkeletonNode * owner = 0);
+	BoneNode(SkeletonNode * owner = 0);
 	virtual ~BoneNode();
 	
 	virtual void Draw();

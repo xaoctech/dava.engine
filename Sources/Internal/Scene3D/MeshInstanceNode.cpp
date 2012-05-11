@@ -80,8 +80,8 @@ Material * PolygonGroupWithMaterial::GetMaterial()
 }
 
     
-MeshInstanceNode::MeshInstanceNode(Scene * _scene)
-:	SceneNode(_scene)
+MeshInstanceNode::MeshInstanceNode()
+:	SceneNode()
 {
 	materialState = new InstanceMaterialState();
     
@@ -305,7 +305,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
-        dstNode = new MeshInstanceNode(scene);
+        dstNode = new MeshInstanceNode();
     }
 
     SceneNode::Clone(dstNode);

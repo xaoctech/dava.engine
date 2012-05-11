@@ -35,8 +35,8 @@ namespace DAVA
     
 REGISTER_CLASS(SkeletonNode);
 
-SkeletonNode::SkeletonNode(Scene * _scene)
-	: BoneNode(_scene, 0)
+SkeletonNode::SkeletonNode()
+	: BoneNode(0)
 {
 }
 

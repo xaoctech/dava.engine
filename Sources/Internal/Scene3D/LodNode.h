@@ -83,7 +83,7 @@ public:
         bool isDummy;
     };
     
-	LodNode(Scene * _scene = 0);
+	LodNode();
 	virtual ~LodNode();
 	
     

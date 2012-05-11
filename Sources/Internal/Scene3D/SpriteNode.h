@@ -46,10 +46,10 @@ class SpriteNode : public SceneNode
 {
 public:
     
-    SpriteNode(Scene * _scene, const String &pathToSprite, int32 frame = 0
+    SpriteNode(const String &pathToSprite, int32 frame = 0
                , const Vector2 &reqScale = Vector2(1.0f, 1.0f)
                , const Vector2 &pivotPoint = Vector2(0.0f, 0.0f));
-    SpriteNode(Scene * _scene, Sprite *spr, int32 frame = 0
+    SpriteNode(Sprite *spr, int32 frame = 0
                , const Vector2 &reqScale = Vector2(1.0f, 1.0f)
                , const Vector2 &pivotPoint = Vector2(0.0f, 0.0f));
     ~SpriteNode();

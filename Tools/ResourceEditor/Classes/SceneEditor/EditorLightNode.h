@@ -7,13 +7,13 @@ using namespace DAVA;
 class EditorLightNode : public SceneNode
 {
 public:
-	EditorLightNode(Scene * _scene = 0);
+	EditorLightNode();
 	virtual ~EditorLightNode();
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
 
-	static LightNode * CreateSceneAndEditorLight(Scene * scene);
+	static LightNode * CreateSceneAndEditorLight();
 
 private:
 

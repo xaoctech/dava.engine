@@ -105,7 +105,7 @@ public:
         BOTTOM = 3,
     };
     
-	LandscapeNode(Scene * scene = 0);
+	LandscapeNode();
 	virtual ~LandscapeNode();
     
     /**
@@ -326,6 +326,10 @@ protected:
     int32 uniformTextures[TEXTURE_COUNT];
     int32 uniformTextureTiling[TEXTURE_COUNT];
     Vector2 textureTiling[TEXTURE_COUNT];
+    
+    int32 uniformFogDensity;
+    int32 uniformFogColor;
+
     
     Shader * activeShader;
 

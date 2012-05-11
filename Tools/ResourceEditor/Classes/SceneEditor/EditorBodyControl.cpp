@@ -121,7 +121,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
     
     if(withCameras)
     {
-        Camera * cam = new Camera(scene);
+        Camera * cam = new Camera();
         cam->SetName("editor.main-camera");
         cam->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
@@ -136,7 +136,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
         
         SafeRelease(cam);
         
-        Camera * cam2 = new Camera(scene);
+        Camera * cam2 = new Camera();
         cam2->SetName("editor.debug-camera");
         cam2->SetUp(Vector3(0.0f, 0.0f, 1.0f));
         cam2->SetPosition(Vector3(0.0f, 0.0f, 200.0f));

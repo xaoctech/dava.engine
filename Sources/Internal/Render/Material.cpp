@@ -105,8 +105,8 @@ const char8 * Material::GetTypeName(eType format)
 }
 
 
-Material::Material(Scene * _scene) 
-    :   DataNode(_scene)
+Material::Material() 
+    :   DataNode()
     ,   diffuseColor(0.8f, 0.8f, 0.8f, 1.0f)
     ,   specularColor(0.0f, 0.0f, 0.0f, 1.0f)
     ,   ambientColor(0.2f, 0.2f, 0.2f, 1.0f)
@@ -116,6 +116,9 @@ Material::Material(Scene * _scene)
     ,   isTwoSided(false)
 	,	isSetupLightmap(false)
 	,	setupLightmapSize(1)
+    ,   isFogEnabled(false)
+    ,   fogDensity(0.006)
+    ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
 {
 //    if (scene)
 //    {
@@ -211,6 +214,8 @@ void Material::RebuildShader()
     uniformLightAttenuationQ = -1;
     uniformUvOffset = -1;
     uniformUvScale = -1;
+    uniformFogDensity = -1;
+    uniformFogColor = -1;
     
     String shaderCombileCombo = "MATERIAL_TEXTURE";
     
@@ -252,6 +257,9 @@ void Material::RebuildShader()
     
     //if (isDistanceAttenuation)
     shaderCombileCombo = shaderCombileCombo + ";DISTANCE_ATTENUATION";
+    
+    if (isFogEnabled)
+        shaderCombileCombo = shaderCombileCombo + ";VERTEX_FOG";
 
     // Get shader if combo unavailable compile it
     shader = uberShader->GetShader(shaderCombileCombo);
@@ -296,6 +304,12 @@ void Material::RebuildShader()
         default:
             break;
     };
+    
+    if (isFogEnabled)
+    {
+        uniformFogDensity = shader->FindUniformLocationByName("fogDensity");
+        uniformFogColor = shader->FindUniformLocationByName("fogColor");
+    }
 }
     
 void Material::SetType(eType _type)
@@ -448,6 +462,36 @@ float32 Material::GetShininess() const
 {
     return shininess;
 }
+    
+void Material::SetFog(bool _isFogEnabled)
+{
+    isFogEnabled = _isFogEnabled;
+}
+    
+bool Material::IsFogEnabled() const
+{
+    return isFogEnabled;
+}
+    
+void Material::SetFogDensity(float32 _fogDensity)
+{
+    fogDensity = _fogDensity;
+}
+    
+float32 Material::GetFogDensity() const
+{
+    return fogDensity;
+}
+
+void Material::SetFogColor(const Color & _fogColor)
+{
+    fogColor = _fogColor;
+}
+
+const Color & Material::GetFogColor() const
+{
+    return fogColor;
+}
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
 {
@@ -546,6 +590,14 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
                 //shader->SetUniformValue(uniformLightAttenuationQ, lightNode0->GetAttenuation());
             }
         }
+    }
+    
+    if (isFogEnabled)
+    {
+        if (uniformFogDensity != -1)
+            shader->SetUniformValue(uniformFogDensity, fogDensity);
+        if (uniformFogColor != -1)
+            shader->SetUniformValue(uniformFogColor, fogColor);
     }
     
     // TODO: rethink this code

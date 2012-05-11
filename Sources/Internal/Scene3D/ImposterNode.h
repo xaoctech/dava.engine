@@ -48,7 +48,7 @@ public:
 		STATE_REDRAW_APPROVED
 	};
 
-	ImposterNode(Scene * scene = 0);
+	ImposterNode();
 	virtual ~ImposterNode();
 
 	void UpdateState();

@@ -21,6 +21,16 @@ varying mediump vec2 varTexCoord1;
 varying mediump vec2 varTexCoord2;
 varying mediump vec2 varTexCoord3;
 
+
+#if defined(VERTEX_FOG)
+uniform mat4 modelViewMatrix;
+uniform float fogDensity;
+#endif
+
+#if defined(VERTEX_FOG)
+varying float varFogFactor;
+#endif
+
 #ifdef EDITOR_CURSOR
 varying vec2 varTexCoordCursor;
 #endif
@@ -35,6 +45,14 @@ void main()
 	varTexCoord1 = inTexCoord0 * texture1Tiling;
 	varTexCoord2 = inTexCoord0 * texture2Tiling;
 	varTexCoord3 = inTexCoord0 * texture3Tiling;
+	
+#if defined(VERTEX_FOG)
+    const float LOG2 = 1.442695;
+    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+        float fogFragCoord = length(eyeCoordsPosition);
+    varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
+    varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+#endif
 	
 #ifdef EDITOR_CURSOR
 	varTexCoordCursor = inTexCoord0;

@@ -40,7 +40,7 @@ class PolygonGroup;
 class ShadowVolumeNode : public SceneNode
 {
 public:
-	ShadowVolumeNode(Scene * scene = 0);
+	ShadowVolumeNode();
 	virtual ~ShadowVolumeNode();
 
 	virtual void Draw();

@@ -46,8 +46,8 @@ namespace DAVA
     
 REGISTER_CLASS(SceneNode);
 	
-SceneNode::SceneNode(Scene * _scene)
-	: scene(_scene)
+SceneNode::SceneNode()
+	: scene(0)
 	, parent(0)
     , inUpdate(false)
     , tag(0)
@@ -438,7 +438,7 @@ SceneNode* SceneNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
-        dstNode = new SceneNode(scene);
+        dstNode = new SceneNode();
     }
     dstNode->defaultLocalTransform = defaultLocalTransform;
     

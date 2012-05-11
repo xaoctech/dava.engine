@@ -31,8 +31,8 @@
 
 namespace DAVA 
 {
-SceneNodeAnimationList::SceneNodeAnimationList(Scene * _scene)
-:	SceneNode(_scene)
+SceneNodeAnimationList::SceneNodeAnimationList()
+:	SceneNode()
 ,	active(false)
 ,	cycled(false)
 ,	fadeInTime(0.0f)

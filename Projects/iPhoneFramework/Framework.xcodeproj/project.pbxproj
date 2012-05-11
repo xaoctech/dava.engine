@@ -119,6 +119,10 @@
 		FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5E1676153DA10A0047FAC5 /* QuadTree.h */; };
 		FE879F5814504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE879F5614504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp */; };
 		FE879F5914504A1800F889E5 /* TextureMulColorAlphaTestEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = FE879F5714504A1800F889E5 /* TextureMulColorAlphaTestEffect.h */; };
+		FE9A25C7154BF8E5009779AB /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE9A25C5154BF8E5009779AB /* ImposterManager.cpp */; };
+		FE9A25C8154BF8E5009779AB /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9A25C6154BF8E5009779AB /* ImposterManager.h */; };
+		FE9A25CC154BF904009779AB /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE9A25CA154BF904009779AB /* ImposterNode.cpp */; };
+		FE9A25CD154BF904009779AB /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9A25CB154BF904009779AB /* ImposterNode.h */; };
 		FE9C216812E9A254005C397A /* Circle.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9C216612E9A254005C397A /* Circle.h */; };
 		FE9C216912E9A254005C397A /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9C216712E9A254005C397A /* Sphere.h */; };
 		FEB6037712E8ED7200C749A1 /* Math2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEB6037612E8ED7200C749A1 /* Math2D.cpp */; };
@@ -584,6 +588,10 @@
 		FE5E1676153DA10A0047FAC5 /* QuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadTree.h; sourceTree = "<group>"; };
 		FE879F5614504A1800F889E5 /* TextureMulColorAlphaTestEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureMulColorAlphaTestEffect.cpp; sourceTree = "<group>"; };
 		FE879F5714504A1800F889E5 /* TextureMulColorAlphaTestEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureMulColorAlphaTestEffect.h; sourceTree = "<group>"; };
+		FE9A25C5154BF8E5009779AB /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
+		FE9A25C6154BF8E5009779AB /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
+		FE9A25CA154BF904009779AB /* ImposterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterNode.cpp; sourceTree = "<group>"; };
+		FE9A25CB154BF904009779AB /* ImposterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterNode.h; sourceTree = "<group>"; };
 		FE9C216612E9A254005C397A /* Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Circle.h; sourceTree = "<group>"; };
 		FE9C216712E9A254005C397A /* Sphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sphere.h; sourceTree = "<group>"; };
 		FEB6037612E8ED7200C749A1 /* Math2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Math2D.cpp; sourceTree = "<group>"; };
@@ -1431,6 +1439,10 @@
 				4780A9E214BF413A00BAA259 /* BillboardNode.h */,
 				4780A9E314BF413A00BAA259 /* CubeNode.cpp */,
 				4780A9E414BF413A00BAA259 /* CubeNode.h */,
+				FE9A25C5154BF8E5009779AB /* ImposterManager.cpp */,
+				FE9A25C6154BF8E5009779AB /* ImposterManager.h */,
+				FE9A25CA154BF904009779AB /* ImposterNode.cpp */,
+				FE9A25CB154BF904009779AB /* ImposterNode.h */,
 				4780A9E514BF413A00BAA259 /* DataNode.cpp */,
 				4780A9E614BF413A00BAA259 /* DataNode.h */,
 				4780A9E714BF413A00BAA259 /* LightNode.cpp */,
@@ -1843,6 +1855,8 @@
 				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
 				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
 				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
+				FE9A25C8154BF8E5009779AB /* ImposterManager.h in Headers */,
+				FE9A25CD154BF904009779AB /* ImposterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2121,6 +2135,8 @@
 				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
 				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
 				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
+				FE9A25C7154BF8E5009779AB /* ImposterManager.cpp in Sources */,
+				FE9A25CC154BF904009779AB /* ImposterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2145,7 +2161,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2172,7 +2187,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2323,7 +2337,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2390,7 +2403,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

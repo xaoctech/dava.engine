@@ -42,7 +42,7 @@ namespace DAVA
 REGISTER_CLASS(StaticMesh);
 
 StaticMesh::StaticMesh(Scene * _scene)
-	: DataNode(_scene)
+	: DataNode()
 {
 //    if (scene)
 //    {

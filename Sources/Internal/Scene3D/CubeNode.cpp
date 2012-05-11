@@ -35,8 +35,8 @@
 
 namespace DAVA 
 {
-CubeNode::CubeNode(Scene * _scene)
-:	MeshInstanceNode(_scene)
+CubeNode::CubeNode()
+:	MeshInstanceNode()
 {
     cubeMesh = NULL;
     
@@ -62,7 +62,7 @@ SceneNode* CubeNode::Clone(SceneNode *dstNode)
 {
     if (!dstNode) 
     {
-        dstNode = new CubeNode(scene);
+        dstNode = new CubeNode();
     }
 
     MeshInstanceNode::Clone(dstNode);
@@ -109,7 +109,7 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
 	SafeRelease(cubeMesh);
     cubeMesh = new StaticMesh(GetScene());
     
-    PolygonGroup * cube = new PolygonGroup(scene); // cubeMesh->GetPolygonGroup(0);
+    PolygonGroup * cube = new PolygonGroup(); // cubeMesh->GetPolygonGroup(0);
 
     //	cube->AllocateData( EVF_VERTEX | EVF_COLOR, 12, 36, 0);  //почему 12?
     cubeMesh->AddNode(cube);

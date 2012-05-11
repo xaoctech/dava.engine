@@ -47,7 +47,7 @@ namespace DAVA
 class Camera : public SceneNode
 {
 public:
-	Camera(Scene * scene = 0);
+	Camera();
 	virtual ~Camera();
 	
     /**
