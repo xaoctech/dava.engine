@@ -36,6 +36,8 @@ protected:
     void ValidateMeshInstanceInternal(MeshInstanceNode *meshNode);
     void ValidateMaterialInternal(Material *material);
     
+    void ValidateLodNodes(Scene *scen);
+    
     void ShowErrors();
     
     Set<SceneNode*> emptyNodesForDeletion;

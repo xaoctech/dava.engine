@@ -36,7 +36,11 @@ public:
 protected:
 
     void OnDropperTool(BaseObject * object, void * userData, void * callerData);
+    void OnCopypasteTool(BaseObject * object, void * userData, void * callerData);
     virtual void ToolIconSelected(UIControl *focused);
+
+    virtual void OnSizeChanged(BaseObject * object, void * userData, void * callerData);
+	virtual void OnStrengthChanged(BaseObject * object, void * userData, void * callerData);
 
     
     UITextField *sizeValue;
@@ -52,6 +56,12 @@ protected:
     
     UIControl *dropperIcon;
     LandscapeTool *dropperTool;
+
+    UIControl *copypasteIcon;
+    LandscapeTool *copypasteTool;
+    UICheckBox *copyHeightmap;
+    UICheckBox *copyTilemask;
+
     
     UISlider *averageStrength;
     void OnAverageSizeChanged(BaseObject * object, void * userData, void * callerData);

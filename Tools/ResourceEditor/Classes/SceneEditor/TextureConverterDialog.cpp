@@ -176,7 +176,10 @@ void TextureConverterDialog::Show(Scene * scene)
         
         selectedItem = -1;
         textureList->Refresh();
-        textureList->ScrollToElement(0);
+        if(textures.size())
+        {
+            textureList->ScrollToElement(0);
+        }
         
         UIScreen *screen = UIScreenManager::Instance()->GetScreen();
         screen->AddControl(this);

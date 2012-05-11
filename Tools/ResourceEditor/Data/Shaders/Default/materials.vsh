@@ -7,7 +7,6 @@ precision highp float;
 #define mediump
 #endif
 
-
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
@@ -17,7 +16,7 @@ attribute vec3 inNormal;
 
 attribute vec2 inTexCoord0;
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 attribute vec2 inTexCoord1;
 #endif
 
@@ -48,8 +47,7 @@ uniform float materialSpecularShininess;
 uniform float fogDensity;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
-//implemented only for lightmaps in code
+#if defined(MATERIAL_LIGHTMAP)
 uniform mediump vec2 uvOffset;
 uniform mediump vec2 uvScale;
 #endif
@@ -65,6 +63,10 @@ varying vec2 varTexCoord1;
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
+#endif
+
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
+varying vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
@@ -166,13 +168,15 @@ void main()
 #endif
 
 	varTexCoord0 = inTexCoord0;
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 	
 	#if defined(SETUP_LIGHTMAP)
 		varLightmapSize = lightmapSize;
 		varTexCoord1 = inTexCoord1;
-	#else
+	#elif defined(MATERIAL_LIGHTMAP)
 		varTexCoord1 = uvScale*inTexCoord1+uvOffset;
+	#else defined(MATERIAL_DECAL)
+		varTexCoord1 = inTexCoord1;
 	#endif
 #endif
 }

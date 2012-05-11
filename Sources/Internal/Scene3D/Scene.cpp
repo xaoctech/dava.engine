@@ -115,9 +115,17 @@ void Scene::RegisterNode(SceneNode * node)
         lights.insert(light);
 
     }
+
+	ImposterNode * imposter = dynamic_cast<ImposterNode*>(node);
+	if(imposter)
+	{
+		RegisterImposter(imposter);
+	}
     
     if (bvHierarchy)
+	{
         bvHierarchy->RegisterNode(node);
+	}
 }
 
 void Scene::UnregisterNode(SceneNode * node)
@@ -125,6 +133,12 @@ void Scene::UnregisterNode(SceneNode * node)
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
         lights.erase(light);
+
+	ImposterNode * imposter = dynamic_cast<ImposterNode*>(node);
+	if(imposter)
+	{
+		UnregisterImposter(imposter);
+	}
     
     if (bvHierarchy)
         bvHierarchy->UnregisterNode(node);

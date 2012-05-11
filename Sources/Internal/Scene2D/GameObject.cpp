@@ -467,15 +467,6 @@ void GameObject::SetCollisionObject(CollisionObject2 * obj)
 	collision = SafeRetain(obj);
 }
 
-void GameObject::BuildCollisionObjectFromSpritePoly(int32 frame)
-{
-	Polygon2 * framePolygon = sprite->GetPolygonForFrame(frame);
-	if (!framePolygon)return;
-	if (!collision)collision = new CollisionObject2(CollisionObject2::TYPE_POLYGON);
-	collision->SetType(CollisionObject2::TYPE_POLYGON);
-	collision->SetPolygon(framePolygon);
-}
-
 List<GameObject*> & GameObject::GetChildren()
 {
 	return children;

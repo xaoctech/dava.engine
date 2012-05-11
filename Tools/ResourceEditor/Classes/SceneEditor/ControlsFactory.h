@@ -16,7 +16,8 @@ public:
         
         LEFT_PANEL_WIDTH = 200,
         RIGHT_PANEL_WIDTH = 200,
-        OUTPUT_PANEL_HEIGHT = 200,
+        OUTPUT_PANEL_HEIGHT = 70,
+        PREVIEW_PANEL_HEIGHT = 200,
        
         OFFSET = 10,
         

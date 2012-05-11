@@ -132,14 +132,17 @@ void SceneGraph::FillCell(UIHierarchyCell *cell, void *node)
     text->SetText(StringToWString(n->GetName()));
     
     UIControl *icon = cell->FindByName("_Icon_");
+    icon->SetSprite("~res:/Gfx/UI/SceneNode/scenenode", 0);
     
+    UIControl *marker = cell->FindByName("_Marker_");
     if(n->GetFlags() & SceneNode::NODE_INVALID)
     {
-        icon->SetSprite("~res:/Gfx/UI/SceneNode/scenenode_invalid", 0);
+        marker->SetSprite("~res:/Gfx/UI/SceneNode/scenenode_invalid", 0);
+        marker->SetVisible(true);
     }
     else 
     {
-        icon->SetSprite("~res:/Gfx/UI/SceneNode/scenenode", 0);
+        marker->SetVisible(false);
     }
     
     

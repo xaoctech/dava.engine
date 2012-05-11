@@ -8,7 +8,6 @@ LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageNa
     imageName = _imageName;
     image = Image::CreateFromFile(imageName);
     
-    
     RenderManager::Instance()->LockNonMain();
     
     int32 sideSize = image->width;
@@ -49,6 +48,9 @@ LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageNa
     relativeDrawing = true;
     averageDrawing = false;
     absoluteDropperDrawing = false;
+    
+    copyHeightmap = false;
+    copyTilemask = false;
 }
 
 LandscapeTool::~LandscapeTool()
