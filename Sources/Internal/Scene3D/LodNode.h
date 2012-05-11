@@ -147,6 +147,8 @@ public:
 
     static float32 GetDefaultDistance(int32 layer);
 
+    void GetLodData(List<LodData*> &retLodLayers);
+    
 protected:
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 
@@ -174,26 +176,31 @@ int32 LodNode::GetLodLayersCount()
 
 float32 LodNode::GetLodLayerDistance(int32 layerNum)
 {
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
     return lodLayersArray[layerNum].distance;
 }
 
 float32 LodNode::GetLodLayerNear(int32 layerNum)
 {
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
     return lodLayersArray[layerNum].nearDistance;
 }
 
 float32 LodNode::GetLodLayerFar(int32 layerNum)
 {
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
     return lodLayersArray[layerNum].farDistance;
 }
 
 float32 LodNode::GetLodLayerNearSquare(int32 layerNum)
 {
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
     return lodLayersArray[layerNum].nearDistanceSq;
 }
 
 float32 LodNode::GetLodLayerFarSquare(int32 layerNum)
 {
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
     return lodLayersArray[layerNum].farDistanceSq;
 }
 	

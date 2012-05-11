@@ -178,7 +178,7 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
     point.x = (int32)point.x;
     point.y = (int32)point.y;
     
-	startPoint = endPoint = point;
+	landscapePoint = point;
 	UpdateCursor();
 	
     if(INVALID_TOUCH_ID == touchID || touchID == touch->tid)

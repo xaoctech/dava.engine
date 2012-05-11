@@ -120,6 +120,7 @@ public:
 	
 	// virtual updates
 	virtual void	Update(float32 timeElapsed);
+	virtual void	UpdateTransformNow();
 	virtual void	Draw();
 	
 	// properties
@@ -307,7 +308,8 @@ public:
 protected:
 
     String RecursiveBuildFullName(SceneNode * node, SceneNode * endNode);
-    
+	virtual void UpdateTransform();
+
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
 	void SetParent(SceneNode * node);
 	BaseObject * userData;

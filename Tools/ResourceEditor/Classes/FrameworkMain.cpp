@@ -15,6 +15,7 @@
 
 using namespace DAVA;
 
+#define VERSION     "0.0.1"
 
 void FrameworkDidLaunched()
 {
@@ -101,7 +102,7 @@ void FrameworkDidLaunched()
     int32 height = EditorSettings::Instance()->GetScreenHeight();
 
     
-	appOptions->SetString("title", "DAVA SDK - Studio");
+	appOptions->SetString("title", Format("DAVA SDK - Studio. %s", VERSION));
 	appOptions->SetInt32("width",	width);
 	appOptions->SetInt32("height", height);
 

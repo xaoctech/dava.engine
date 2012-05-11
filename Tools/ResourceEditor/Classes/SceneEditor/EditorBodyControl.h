@@ -220,6 +220,7 @@ protected:
 #ifdef FORCE_LOD_UPDATE
     void OnForceLod(BaseObject * object, void * userData, void * callerData);
 #endif //#ifdef FORCE_LOD_UPDATE
+    
 };
 
 

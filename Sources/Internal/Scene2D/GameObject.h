@@ -149,7 +149,6 @@ public:
 	bool			IsCollideWith(GameObject * gameObject);
     bool            IsCollideWith(CollisionObject2 * collision2);
 	void			SetCollisionObject(CollisionObject2 * obj);
-	void			BuildCollisionObjectFromSpritePoly(int32 frame);
 	inline			CollisionObject2 * GetCollision();
 
 	void			SetDebugDraw(bool _isDebugDraw); 

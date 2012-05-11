@@ -7,12 +7,11 @@ precision highp float;
 #define mediump
 #endif
 
-
 // DECLARATIONS
 uniform sampler2D texture0;
 varying mediump vec2 varTexCoord0;
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) 
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 uniform sampler2D texture1;
 varying mediump vec2 varTexCoord1;
 #endif 
@@ -59,10 +58,10 @@ void main()
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
 #endif
 #if defined(OPAQUE)
-    if (textureColor0.a < 0.9)discard;
+    if (textureColor0.a < 0.1)discard;
 #endif
     
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
     lowp vec3 textureColor1 = texture2D(texture1, varTexCoord1).rgb;
 #if defined(SETUP_LIGHTMAP)
 	vec3 lightGray = vec3(0.75, 0.75, 0.75);
@@ -130,7 +129,7 @@ void main()
 	
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
-#elif defined(MATERIAL_DECAL)
+#elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP)
     vec3 color = textureColor0.rgb * textureColor1.rgb;
 #elif defined(MATERIAL_DETAIL)
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;

@@ -115,6 +115,11 @@ UIHierarchyCell * GraphBase::CellForNode(UIHierarchy *forHierarchy, void *node)
         icon->SetName("_Icon_");
         icon->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
         c->text->AddControl(icon);
+
+        UIControl *marker = new UIControl(Rect(0, 0, ControlsFactory::CELL_HEIGHT, ControlsFactory::CELL_HEIGHT));
+        marker->SetName("_Marker_");
+        marker->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
+        c->text->AddControl(marker);
         
         UIStaticText *text = new UIStaticText(Rect(ControlsFactory::CELL_HEIGHT, 0, leftSideWidth - ControlsFactory::CELL_HEIGHT, ControlsFactory::CELL_HEIGHT));
         Font *font = ControlsFactory::GetFontDark();

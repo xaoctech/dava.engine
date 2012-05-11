@@ -90,6 +90,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     AddControl(btn);
     SafeRelease(btn);
 #endif //#ifdef FORCE_LOD_UPDATE
+    
 }
 
 
@@ -655,7 +656,6 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         if(editScene)
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile);
-            SceneValidator::Instance()->ValidateSceneNode(rootNode);
             
             mainFilePath = pathToFile;
             scene->AddNode(rootNode);
@@ -663,7 +663,6 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         else
         {
             SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
-            SceneValidator::Instance()->ValidateSceneNode(rootNode);
             
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
@@ -687,8 +686,6 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             SceneNode * rootNode = scene->GetRootNode(pathToFile);
             if(rootNode)
             {
-                SceneValidator::Instance()->ValidateSceneNode(rootNode);
-                
                 mainFilePath = pathToFile;
                 for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
                 {   
@@ -700,14 +697,13 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
         else
         {
             SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
-            //SceneValidator::Instance()->ValidateSceneNode(rootNode);
 
             KeyedArchive * customProperties = rootNode->GetCustomProperties();
             customProperties->SetString("editor.referenceToOwner", pathToFile);
 
             rootNode->SetSolid(true);
             scene->AddNode(rootNode);
-                        
+            
             Camera *currCamera = scene->GetCurrentCamera();
             if(currCamera)
             {
@@ -730,6 +726,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     
     SelectNodeAtTree(scene->GetSelection());
     
+    SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
@@ -1156,7 +1153,7 @@ void EditorBodyControl::CreateLandscapeEditor()
     Rect toolsRect(leftSideWidth, 0, GetRect().dx - (leftSideWidth + rightSideWidth), ControlsFactory::TOOLS_HEIGHT);
     landscapeEditorColor = new LandscapeEditorColor(this, this, toolsRect);
     
-    toolsRect.dy += ControlsFactory::TOOLS_HEIGHT/2;
+    toolsRect.dy += ControlsFactory::TOOLS_HEIGHT;
     landscapeEditorHeightmap = new LandscapeEditorHeightmap(this, this, toolsRect);
 
     

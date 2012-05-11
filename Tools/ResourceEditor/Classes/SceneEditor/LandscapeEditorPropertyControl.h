@@ -24,8 +24,8 @@ class LandscapeEditorPropertyControlDelegate
 {
 public: 
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings) = 0;
-    virtual void TextureWillChanged() = 0;
-    virtual void TextureDidChanged() = 0;
+    virtual void TextureWillChanged(const String &forKey) = 0;
+    virtual void TextureDidChanged(const String &forKey) = 0;
 };
 
 class LandscapeEditorPropertyControl: public LandscapePropertyControl

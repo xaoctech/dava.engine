@@ -13,7 +13,8 @@ public:
     enum eToolType
     {
         TOOL_BRUSH = 0,
-        TOOL_DROPPER
+        TOOL_DROPPER,
+        TOOL_COPYPASTE
     };
     
     LandscapeTool(int32 _ID, eToolType _type, const String & _imageName);
@@ -48,6 +49,9 @@ public:
     bool relativeDrawing;
     bool averageDrawing;
     bool absoluteDropperDrawing;
+    
+    bool copyHeightmap;
+    bool copyTilemask;
     
     eToolType type;
 };

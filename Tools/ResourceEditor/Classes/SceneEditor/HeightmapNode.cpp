@@ -160,10 +160,10 @@ void HeightmapNode::UpdateHeightmapRect(const Rect &rect)
     AABBox3 transformedBox;
     land->GetBoundingBox().GetTransformedBox(land->GetWorldTransform(), transformedBox);
     
-    int32 x = Max(0.f, rect.x);
-    int32 y = Max(0.f, rect.y);
-    int32 endX = Min(rect.x + rect.dx, heightmap->Size() - 1.0f);
-    int32 endY = Min(rect.y + rect.dy, heightmap->Size() - 1.0f);
+    int32 x = Max(0, (int32)rect.x);
+    int32 y = Max(0, (int32)rect.y);
+    int32 endX = Min((int32)(rect.x + rect.dx), heightmap->Size() - 1);
+    int32 endY = Min((int32)(rect.y + rect.dy), heightmap->Size() - 1);
 
     uint16 *dt = heightmap->Data();
     for (int32 yy = y; yy < endY; ++yy)

@@ -241,7 +241,7 @@ public:
         \brief Function to receive pathname of heightmap object
         \returns pathname of heightmap
      */
-    const String & GetHeightMapPathname();
+    const String & GetHeightmapPathname();
 
     
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);

@@ -225,12 +225,14 @@ void Material::RebuildShader()
             shaderCombileCombo = "MATERIAL_TEXTURE";
             break;
         case MATERIAL_UNLIT_TEXTURE_LIGHTMAP:
-        case MATERIAL_UNLIT_TEXTURE_DECAL:
-            shaderCombileCombo = "MATERIAL_DECAL";
+			shaderCombileCombo = "MATERIAL_LIGHTMAP";
 			if(isSetupLightmap)
 			{
 				shaderCombileCombo = shaderCombileCombo + ";SETUP_LIGHTMAP";
 			}
+			break;
+        case MATERIAL_UNLIT_TEXTURE_DECAL:
+            shaderCombileCombo = "MATERIAL_DECAL";
             break;
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
             shaderCombileCombo = "MATERIAL_DETAIL";

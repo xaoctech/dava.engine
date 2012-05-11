@@ -108,8 +108,7 @@ protected:
     EditorScene *workingScene;    
     EditorBodyControl *parent;
 
-    Vector2 startPoint;
-    Vector2 endPoint;
+    Vector2 landscapePoint;
     Vector2 prevDrawPos;
     
     LandscapeToolsPanel *toolsPanel;

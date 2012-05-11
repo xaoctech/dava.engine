@@ -960,6 +960,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h">
       <Filter>Internal\Scene3D\Imposter</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1663,6 +1666,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp">
       <Filter>Internal\Scene3D\Imposter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

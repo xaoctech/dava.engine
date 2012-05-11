@@ -184,6 +184,8 @@ public:
     void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     
     void SetTexture(eTextureLevel level, const String & textureName);
+	inline const Texture * GetTexture(eTextureLevel level);
+	inline const String & GetTextureName(eTextureLevel level);
     
 private:
     void RebuildShader();
@@ -230,6 +232,18 @@ private:
     
     static UberShader * uberShader;
 };
+
+const Texture * Material::GetTexture(eTextureLevel level)
+{
+	DVASSERT(level >= TEXTURE_COUNT);
+	return textures[level];
+}
+
+inline const String & Material::GetTextureName(eTextureLevel level)
+{
+	DVASSERT(level >= TEXTURE_COUNT);
+	return names[level];
+}
 
 };
 

@@ -25,8 +25,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __IMPOSTER_NODE_H__
-#define __IMPOSTER_NODE_H__
+#ifndef __DAVAENGINE_IMPOSTER_NODE_H__
+#define __DAVAENGINE_IMPOSTER_NODE_H__
 
 #include "Scene3D/Scene.h"
 #include "Render/RenderDataObject.h"
@@ -54,13 +54,13 @@ public:
 	void UpdateState();
 	virtual void Draw();
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-	virtual void SetScene(Scene * _scene);
 
 	void UpdateImposter();
 	void GeneralDraw();
 	void DrawImposter();
 
 	bool IsAskingForRedraw();
+	bool IsQueued();
 	void OnAddedToQueue();
 	void ApproveRedraw();
 
@@ -68,8 +68,6 @@ private:
 	void AskForRedraw();
 	void ClearGeometry();
 	void CreateGeometry();
-	void RegisterInScene();
-	void UnregisterInScene();
 	
 	bool IsRedrawApproved();
 	bool IsImposterReady();
@@ -84,12 +82,17 @@ private:
 	Vector<float32> texCoords;
 	Vector3 center;
 	Vector3 direction;
+	float32 distanceSquaredToCamera;
 
 	eState state;
 
 	ImposterManager * manager;
+
+	void RecreateFbo(const Vector2 & size);
+
+	void HierarchicalRemoveCull(SceneNode * node);
 };
 
 };
 
-#endif //__IMPOSTER_NODE_H__
+#endif //__DAVAENGINE_IMPOSTER_NODE_H__
