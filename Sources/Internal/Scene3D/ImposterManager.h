@@ -25,8 +25,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __IMPOSTER_MANAGER_H__
-#define __IMPOSTER_MANAGER_H__
+#ifndef __DAVAENGINE_IMPOSTER_MANAGER_H__
+#define __DAVAENGINE_IMPOSTER_MANAGER_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -59,4 +59,4 @@ private:
 
 };
 
-#endif //__IMPOSTER_MANAGER_H__
+#endif //__DAVAENGINE_IMPOSTER_MANAGER_H__
