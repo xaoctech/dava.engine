@@ -44,6 +44,14 @@
 		5CE063F3154A69630029DF36 /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE063F1154A69630029DF36 /* ImposterManager.h */; };
 		5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEA312A1535A325008E35F5 /* Heightmap.cpp */; };
 		5CEA312D1535A325008E35F5 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEA312B1535A325008E35F5 /* Heightmap.h */; };
+		5CF666A6155D43C70067072D /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF6669E155D43C70067072D /* DLCSystem.cpp */; };
+		5CF666A7155D43C70067072D /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6669F155D43C70067072D /* DLCSystem.h */; };
+		5CF666A8155D43C70067072D /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A0155D43C70067072D /* DLCSystemTests.cpp */; };
+		5CF666A9155D43C70067072D /* DLCSystemTests.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A1155D43C70067072D /* DLCSystemTests.h */; };
+		5CF666AA155D43C70067072D /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A2155D43C70067072D /* DLCUnpacker.cpp */; };
+		5CF666AB155D43C70067072D /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A3155D43C70067072D /* DLCUnpacker.h */; };
+		5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A4155D43C70067072D /* FileDownloader.cpp */; };
+		5CF666AD155D43C70067072D /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A5155D43C70067072D /* FileDownloader.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -538,6 +546,14 @@
 		5CE063F1154A69630029DF36 /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
 		5CEA312A1535A325008E35F5 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
 		5CEA312B1535A325008E35F5 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
+		5CF6669E155D43C70067072D /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystem.cpp; path = DLC/DLCSystem.cpp; sourceTree = "<group>"; };
+		5CF6669F155D43C70067072D /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystem.h; path = DLC/DLCSystem.h; sourceTree = "<group>"; };
+		5CF666A0155D43C70067072D /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = DLC/DLCSystemTests.cpp; sourceTree = "<group>"; };
+		5CF666A1155D43C70067072D /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = DLC/DLCSystemTests.h; sourceTree = "<group>"; };
+		5CF666A2155D43C70067072D /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCUnpacker.cpp; path = DLC/DLCUnpacker.cpp; sourceTree = "<group>"; };
+		5CF666A3155D43C70067072D /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCUnpacker.h; path = DLC/DLCUnpacker.h; sourceTree = "<group>"; };
+		5CF666A4155D43C70067072D /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader.cpp; path = DLC/FileDownloader.cpp; sourceTree = "<group>"; };
+		5CF666A5155D43C70067072D /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = DLC/FileDownloader.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
@@ -1055,6 +1071,21 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
+		5CF6669D155D435C0067072D /* DLC */ = {
+			isa = PBXGroup;
+			children = (
+				5CF6669E155D43C70067072D /* DLCSystem.cpp */,
+				5CF6669F155D43C70067072D /* DLCSystem.h */,
+				5CF666A0155D43C70067072D /* DLCSystemTests.cpp */,
+				5CF666A1155D43C70067072D /* DLCSystemTests.h */,
+				5CF666A2155D43C70067072D /* DLCUnpacker.cpp */,
+				5CF666A3155D43C70067072D /* DLCUnpacker.h */,
+				5CF666A4155D43C70067072D /* FileDownloader.cpp */,
+				5CF666A5155D43C70067072D /* FileDownloader.h */,
+			);
+			name = DLC;
+			sourceTree = "<group>";
+		};
 		FE578BB513278DAD0081BDE9 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -1133,6 +1164,7 @@
 				FECFC0DD12E87E3000C71562 /* DAVAEngine.cpp */,
 				FECFC0DE12E87E3000C71562 /* DAVAEngine.h */,
 				FECFC0DF12E87E3000C71562 /* Debug */,
+				5CF6669D155D435C0067072D /* DLC */,
 				FECFC0E512E87E3000C71562 /* FileSystem */,
 				FECFC10212E87E3000C71562 /* Input */,
 				FEFD182C1305D49C0050D7E6 /* Math */,
@@ -1969,6 +2001,10 @@
 				FEE76B9A153A053E00784D5F /* ImposterNode.h in Headers */,
 				FE5E165A153B641E0047FAC5 /* BVNode.h in Headers */,
 				5CE063F3154A69630029DF36 /* ImposterManager.h in Headers */,
+				5CF666A7155D43C70067072D /* DLCSystem.h in Headers */,
+				5CF666A9155D43C70067072D /* DLCSystemTests.h in Headers */,
+				5CF666AB155D43C70067072D /* DLCUnpacker.h in Headers */,
+				5CF666AD155D43C70067072D /* FileDownloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2257,6 +2293,10 @@
 				FEE76B99153A053E00784D5F /* ImposterNode.cpp in Sources */,
 				FE5E1659153B641E0047FAC5 /* BVNode.cpp in Sources */,
 				5CE063F2154A69630029DF36 /* ImposterManager.cpp in Sources */,
+				5CF666A6155D43C70067072D /* DLCSystem.cpp in Sources */,
+				5CF666A8155D43C70067072D /* DLCSystemTests.cpp in Sources */,
+				5CF666AA155D43C70067072D /* DLCUnpacker.cpp in Sources */,
+				5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
