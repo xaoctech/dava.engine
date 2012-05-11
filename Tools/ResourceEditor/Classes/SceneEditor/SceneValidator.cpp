@@ -25,14 +25,15 @@ void SceneValidator::ValidateScene(Scene *scene)
     errorMessages.clear();
 
     ValidateSceneNodeInternal(scene);
-    
+    ValidateLodNodes(scene);
+
     if(errorMessages.size())
     {
         ShowErrors();
     }
 }
 
-void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
+void SceneValidator::ValidateSceneNode(SceneNode *sceneNode)
 {
     errorMessages.clear();
 
@@ -59,7 +60,7 @@ void SceneValidator::ValidateSceneNode(DAVA::SceneNode *sceneNode)
     emptyNodesForDeletion.clear();
 }
 
-void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
+void SceneValidator::ValidateSceneNodeInternal(SceneNode *sceneNode)
 {
     if(!sceneNode) return;
     
@@ -103,7 +104,7 @@ void SceneValidator::ValidateSceneNodeInternal(DAVA::SceneNode *sceneNode)
                     referencePath.replace(pos, dataSourcePath.length(), "");
                     customProperties->SetString("editor.referenceToOwner", referencePath);
                     
-                    errorMessages.insert("ReferenceToOwner isn't correct. Re-save level.");
+                    errorMessages.insert(Format("Node %s: referenceToOwner isn't correct. Re-save level.", node->GetName().c_str()));
                 }
             }
         }
@@ -204,7 +205,7 @@ void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)
 }
 
 
-void SceneValidator::ValidateMaterial(DAVA::Material *material)
+void SceneValidator::ValidateMaterial(Material *material)
 {
     errorMessages.clear();
 
@@ -216,7 +217,7 @@ void SceneValidator::ValidateMaterial(DAVA::Material *material)
     }
 }
 
-void SceneValidator::ValidateMaterialInternal(DAVA::Material *material)
+void SceneValidator::ValidateMaterialInternal(Material *material)
 {
     for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
     {
@@ -274,8 +275,6 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
 
 void SceneValidator::ReloadTextures()
 {
-    Logger::Info("_____************ RELOAD **********____________");
-    
     bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
     bool isMipmapsEnabled = Texture::IsMipmapGenerationEnabled();
 
@@ -307,4 +306,43 @@ void SceneValidator::ReloadTextures()
     else Texture::DisableMipmapGeneration();
     
     Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
+}
+
+void SceneValidator::ValidateLodNodes(Scene *scene)
+{
+    Vector<LodNode *> lodnodes;
+    scene->GetChildNodes(lodnodes); 
+    
+    for(int32 index = 0; index < lodnodes.size(); ++index)
+    {
+        LodNode *ln = lodnodes[index];
+        
+        int32 layersCount = ln->GetLodLayersCount();
+        for(int32 layer = 0; layer < layersCount; ++layer)
+        {
+            float32 distance = ln->GetLodLayerDistance(layer);
+            if(LodNode::INVALID_DISTANCE == distance)
+            {
+                ln->SetLodLayerDistance(layer, ln->GetDefaultDistance(layer));
+                errorMessages.insert(Format("Node %s: lod distances weren't correct. Re-save.", ln->GetName().c_str()));
+            }
+        }
+        
+        List<LodNode::LodData *>lodLayers;
+        ln->GetLodData(lodLayers);
+        
+        List<LodNode::LodData *>::const_iterator endIt = lodLayers.end();
+        int32 layer = 0;
+        for(List<LodNode::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
+        {
+            LodNode::LodData * ld = *it;
+            
+            if(ld->layer != layer)
+            {
+                ld->layer = layer;
+
+                errorMessages.insert(Format("Node %s: lod layers weren't correct. Rename childs. Re-save.", ln->GetName().c_str()));
+            }
+        }
+    }
 }

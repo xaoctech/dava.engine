@@ -529,7 +529,7 @@ int32 LodNode::GetForceLodLayer()
 
 void LodNode::SetLodLayerDistance(int32 layerNum, float32 distance)
 {
-    DVASSERT(layerNum < MAX_LOD_LAYERS);
+    DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
     
     if(INVALID_DISTANCE != distance)
     {
@@ -569,6 +569,18 @@ void LodNode::SetForceLodLayerDistance(float32 newForceDistance)
 float32 LodNode::GetForceLodLayerDistance()
 {
     return forceDistance;
+}
+    
+void LodNode::GetLodData(List<LodData*> &retLodLayers)
+{
+    retLodLayers.clear();
+    
+    List<LodData>::const_iterator endIt = lodLayers.end();
+    for(List<LodData>::iterator it = lodLayers.begin(); it != endIt; ++it)
+    {
+        LodData *ld = &(*it);
+        retLodLayers.push_back(ld);
+    }
 }
 
     
