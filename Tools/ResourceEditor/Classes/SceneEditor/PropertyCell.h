@@ -91,6 +91,11 @@ public:
     UITextField *editableText;
     UIStaticText *uneditableText;
     UIControl *uneditableTextContainer;
+    
+protected:
+    
+    void OnHint(BaseObject * object, void * userData, void * callerData);
+
 };
 
 class PropertyBoolCell : public PropertyCell, public UICheckBoxDelegate
