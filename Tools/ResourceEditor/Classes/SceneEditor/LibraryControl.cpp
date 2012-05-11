@@ -17,7 +17,7 @@ LibraryControl::LibraryControl(const Rect & rect)
 
     ControlsFactory::CustomizePanelControl(this);
     
-    int32 panelHeight = ControlsFactory::OUTPUT_PANEL_HEIGHT;
+    int32 panelHeight = ControlsFactory::PREVIEW_PANEL_HEIGHT;
     fileTreeControl = new UIFileTree(Rect(0, ControlsFactory::BUTTON_HEIGHT, 
                                           rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT - panelHeight));
     ControlsFactory::CusomizeListControl(fileTreeControl);
