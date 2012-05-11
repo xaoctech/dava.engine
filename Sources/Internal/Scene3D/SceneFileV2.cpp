@@ -270,7 +270,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const String & filename, Scene * _sce
     if(isDebugLogEnabled)
         Logger::Debug("+ load hierarchy");
         
-    SceneNode * rootNode = new SceneNode(_scene);
+    SceneNode * rootNode = new SceneNode();
     rootNode->SetName(rootNodeName);
     for (int ci = 0; ci < header.nodeCount; ++ci)
     {

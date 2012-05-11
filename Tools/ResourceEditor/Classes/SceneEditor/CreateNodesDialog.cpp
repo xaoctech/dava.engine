@@ -104,7 +104,7 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
     {
         case ECNID_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
-            sceneNode = new LandscapeNode(scene);
+            sceneNode = new LandscapeNode();
             sceneNode->SetName("Landscape");
             break;
 
@@ -112,7 +112,7 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
         {
             SetHeader(LocalizedString(L"createnode.light"));
             
-            sceneNode = EditorLightNode::CreateSceneAndEditorLight(scene);
+            sceneNode = EditorLightNode::CreateSceneAndEditorLight();
             sceneNode->SetName("Light");
             break;
         }
@@ -120,7 +120,7 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
         case ECNID_SERVICENODE:
         {
             SetHeader(LocalizedString(L"createnode.servicenode"));
-            sceneNode = new SceneNode(scene);
+            sceneNode = new SceneNode();
             KeyedArchive *customProperties = sceneNode->GetCustomProperties();
             customProperties->SetBool("editor.isLocked", true);
             sceneNode->SetName("Servicenode");
@@ -129,25 +129,25 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 
         case ECNID_BOX:
             SetHeader(LocalizedString(L"createnode.box"));
-            sceneNode = new CubeNode(scene);
+            sceneNode = new CubeNode();
             sceneNode->SetName("Cube");
             break;
 
         case ECNID_SPHERE:
             SetHeader(LocalizedString(L"createnode.sphere"));
-            sceneNode = new SphereNode(scene);
+            sceneNode = new SphereNode();
             sceneNode->SetName("Sphere");
             break;
 
         case ECNID_CAMERA:
             SetHeader(LocalizedString(L"createnode.camera"));
-            sceneNode = new Camera(scene);
+            sceneNode = new Camera();
             sceneNode->SetName("Camera");
             break;
 
 		case ECNID_IMPOSTER:
 			SetHeader(LocalizedString(L"createnode.imposter"));
-			sceneNode = new ImposterNode(scene);
+			sceneNode = new ImposterNode();
 			sceneNode->SetName("Imposter");
 			break;
 

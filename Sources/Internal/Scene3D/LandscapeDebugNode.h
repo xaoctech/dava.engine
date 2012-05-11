@@ -60,7 +60,7 @@ class Heightmap;
 class LandscapeDebugNode : public LandscapeNode
 {
 public:	
-	LandscapeDebugNode(Scene * scene = 0);
+	LandscapeDebugNode();
 	virtual ~LandscapeDebugNode();
     
     

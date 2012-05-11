@@ -118,7 +118,8 @@ inline void Plane::Inverse()
 //! Find distance from plane to point
 inline float32 Plane::DistanceToPoint(const Vector3 & point) const
 {
-	return (n.DotProduct(point) + d);
+    return (n.x * point.x + n.y * point.y + n.z * point.z + d);
+	//return (n.DotProduct(point) + d);
 }
 
 inline void Plane::Normalize()

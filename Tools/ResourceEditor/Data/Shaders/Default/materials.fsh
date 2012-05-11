@@ -40,6 +40,11 @@ varying vec3 varEyeVec;
 varying float varPerPixelAttenuation;
 #endif
 
+#if defined(VERTEX_FOG)
+uniform vec3 fogColor;
+varying float varFogFactor;
+#endif
+
 #if defined(SETUP_LIGHTMAP)
 varying lowp float varLightmapSize;
 #endif
@@ -130,5 +135,9 @@ void main()
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #endif
 
+#if defined(VERTEX_FOG)
+    gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
+#else
     gl_FragColor = vec4(color, 1.0);
+#endif
 }

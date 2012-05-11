@@ -74,7 +74,7 @@ public:
 		Vector2 uvScale;
 	};
 
-	MeshInstanceNode(Scene * _scene = 0);
+	MeshInstanceNode();
 	~MeshInstanceNode();
 	
 	void AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material);

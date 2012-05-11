@@ -38,10 +38,9 @@ namespace DAVA
 
 REGISTER_CLASS(ShadowVolumeNode);
 
-ShadowVolumeNode::ShadowVolumeNode(Scene * _scene)
+ShadowVolumeNode::ShadowVolumeNode()
 : shadowPolygonGroup(0)
 {
-	scene = _scene;
 	shader = new Shader();
 	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
 	shader->Recompile();
@@ -439,7 +438,7 @@ void ShadowVolumeNode::CopyGeometryFrom(MeshInstanceNode * meshInstance)
 	}
 
 	SafeRelease(shadowPolygonGroup);
-	shadowPolygonGroup = new PolygonGroup(GetScene());
+	shadowPolygonGroup = new PolygonGroup();
 	shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, nextVertex, nextIndex);
 	Memcpy(shadowPolygonGroup->meshData, newPolygonGroup->meshData, nextVertex*newPolygonGroup->vertexStride);
 	Memcpy(shadowPolygonGroup->indexArray, newPolygonGroup->indexArray, nextIndex*sizeof(int16));
@@ -472,7 +471,7 @@ SceneNode* ShadowVolumeNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
-		dstNode = new ShadowVolumeNode(scene);
+		dstNode = new ShadowVolumeNode();
 	}
 
 	SceneNode::Clone(dstNode);

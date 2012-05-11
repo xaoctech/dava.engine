@@ -38,8 +38,8 @@ namespace DAVA
     
 REGISTER_CLASS(PolygonGroup);
 	
-PolygonGroup::PolygonGroup(Scene * _scene)
-:	DataNode(_scene),
+PolygonGroup::PolygonGroup()
+:	DataNode(),
     vertexCount(0),
 	indexCount(0),
 	textureCoordCount(0),

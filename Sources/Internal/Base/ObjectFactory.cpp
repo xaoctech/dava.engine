@@ -37,26 +37,28 @@ ObjectFactory::ObjectFactory()
     
 }
 
-ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info)
+ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info, uint32 size)
 {
-    ObjectFactory::Instance()->RegisterObjectCreator(name, func, info);	
+    ObjectFactory::Instance()->RegisterObjectCreator(name, func, info, size);	
 }
     
-ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info, const String & alias)
+ObjectRegistrator::ObjectRegistrator(const String & name, CreateObjectFunc func, const std::type_info & info, uint32 size, const String & alias)
 {
-    ObjectFactory::Instance()->RegisterObjectCreator(name, func, info, alias);	
+    ObjectFactory::Instance()->RegisterObjectCreator(name, func, info, size, alias);	
 }
 
-void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info)
+void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info, uint32 size)
 {
 	creatorMap[name] = func;
     nameMap[info.name()] = name;
+    sizeMap[name] = size;
 }
 
-void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info, const String & alias)
+void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info, uint32 size, const String & alias)
 {
     creatorMap[name] = func;
     nameMap[info.name()] = alias;
+    sizeMap[name] = size;
 }
 	
 BaseObject * ObjectFactory::New(const String & name)
@@ -75,7 +77,7 @@ void ObjectFactory::Dump()
     Map<String, CreateObjectFunc>::iterator it = creatorMap.begin();
     for (; it != creatorMap.end(); ++it)
     {
-        Logger::Debug("Class: %s", it->first.c_str());
+        Logger::Debug("Class: %s size: %d", it->first.c_str(), sizeMap[it->first]);
     }
 }
 }

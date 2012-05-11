@@ -151,7 +151,9 @@ private:
         String description;
         uint32 parent;
         List<uint32> childs;
+        uint32 time;
     };
+        
     Map<String, uint32> eventIds;
     Map<uint32, EventDescription> eventMap;
     Vector<std::pair<String, uint32> > sortedNames;

@@ -37,9 +37,9 @@ namespace DAVA
 {
     
 
-SpriteNode::SpriteNode(Scene * _scene, const String &pathToSprite, int32 _frame
+SpriteNode::SpriteNode(const String &pathToSprite, int32 _frame
                        , const Vector2 &reqScale, const Vector2 &pivotPoint)
-:   SceneNode(_scene)
+:   SceneNode()
 {
     sprite = Sprite::Create(pathToSprite);
     sprScale = reqScale;
@@ -55,9 +55,9 @@ SpriteNode::SpriteNode(Scene * _scene, const String &pathToSprite, int32 _frame
 
 }
 
-SpriteNode::SpriteNode(Scene * _scene, Sprite *spr, int32 _frame
+SpriteNode::SpriteNode(Sprite *spr, int32 _frame
            , const Vector2 &reqScale, const Vector2 &pivotPoint)
-:   SceneNode(_scene)
+:   SceneNode()
 {
     sprScale = reqScale;
     sprPivot = pivotPoint;

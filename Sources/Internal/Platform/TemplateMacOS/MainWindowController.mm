@@ -48,14 +48,10 @@ namespace DAVA
 		[NSApp setDelegate:[[[MainWindowController alloc] init] autorelease]];
 		
 		int retVal = NSApplicationMain(argc,  (const char **) argv);
-		
-		core->ReleaseSingletons();
-#ifdef ENABLE_MEMORY_MANAGER
-		if (DAVA::MemoryManager::Instance() != 0)
-		{
-			DAVA::MemoryManager::Instance()->FinalLog();
-		}
-#endif
+        // This method never returns, so release code transfered to termination message 
+        // - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+        // core->ReleaseSingletons() is called from there
+        
 		[globalPool release];
 		globalPool = 0;
 		return retVal;
@@ -832,8 +828,14 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
 	Core::Instance()->SystemAppFinished();
-	
 	FrameworkWillTerminate();
+    Core::Instance()->ReleaseSingletons();
+#ifdef ENABLE_MEMORY_MANAGER
+    if (DAVA::MemoryManager::Instance() != 0)
+    {
+        DAVA::MemoryManager::Instance()->FinalLog();
+    }
+#endif
 
 	NSLog(@"[CoreMacOSPlatform] Application terminate");
 	return NSTerminateNow;

@@ -7,15 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1660C2E81548043C00479A0E /* DLCSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1660C2D71548043C00479A0E /* DLCSystem.cpp */; };
-		1660C2E91548043C00479A0E /* DLCSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 1660C2D81548043C00479A0E /* DLCSystem.h */; };
-		1660C2EA1548043C00479A0E /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1660C2D91548043C00479A0E /* DLCSystemTests.cpp */; };
-		1660C2EB1548043C00479A0E /* DLCSystemTests.h in Headers */ = {isa = PBXBuildFile; fileRef = 1660C2DA1548043C00479A0E /* DLCSystemTests.h */; };
-		1660C2EC1548043C00479A0E /* DLCUnpacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1660C2DB1548043C00479A0E /* DLCUnpacker.cpp */; };
-		1660C2ED1548043C00479A0E /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 1660C2DC1548043C00479A0E /* DLCUnpacker.h */; };
-		1660C2EE1548043C00479A0E /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1660C2DD1548043C00479A0E /* FileDownloader.cpp */; };
-		1660C2EF1548043C00479A0E /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 1660C2DE1548043C00479A0E /* FileDownloader.h */; };
-		1660C2F11548049200479A0E /* libcurl_ios_mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1660C2F01548049200479A0E /* libcurl_ios_mac.a */; };
 		475D59561300236500A18EC7 /* Box2DGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D59501300236500A18EC7 /* Box2DGameObject.cpp */; };
 		475D59571300236500A18EC7 /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D59511300236500A18EC7 /* Box2DGameObject.h */; };
 		475D59581300236500A18EC7 /* Box2DHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D59521300236500A18EC7 /* Box2DHelper.cpp */; };
@@ -54,10 +45,6 @@
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
-		5CB6159F1552DDA40006EF15 /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6159B1552DDA40006EF15 /* ImposterManager.cpp */; };
-		5CB615A01552DDA40006EF15 /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CB6159C1552DDA40006EF15 /* ImposterManager.h */; };
-		5CB615A11552DDA40006EF15 /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB6159D1552DDA40006EF15 /* ImposterNode.cpp */; };
-		5CB615A21552DDA40006EF15 /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CB6159E1552DDA40006EF15 /* ImposterNode.h */; };
 		5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */; };
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
@@ -483,15 +470,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1660C2D71548043C00479A0E /* DLCSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCSystem.cpp; sourceTree = "<group>"; };
-		1660C2D81548043C00479A0E /* DLCSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCSystem.h; sourceTree = "<group>"; };
-		1660C2D91548043C00479A0E /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCSystemTests.cpp; sourceTree = "<group>"; };
-		1660C2DA1548043C00479A0E /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCSystemTests.h; sourceTree = "<group>"; };
-		1660C2DB1548043C00479A0E /* DLCUnpacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DLCUnpacker.cpp; sourceTree = "<group>"; };
-		1660C2DC1548043C00479A0E /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DLCUnpacker.h; sourceTree = "<group>"; };
-		1660C2DD1548043C00479A0E /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileDownloader.cpp; sourceTree = "<group>"; };
-		1660C2DE1548043C00479A0E /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileDownloader.h; sourceTree = "<group>"; };
-		1660C2F01548049200479A0E /* libcurl_ios_mac.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios_mac.a; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		475D59501300236500A18EC7 /* Box2DGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DGameObject.cpp; sourceTree = "<group>"; };
 		475D59511300236500A18EC7 /* Box2DGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DGameObject.h; sourceTree = "<group>"; };
 		475D59521300236500A18EC7 /* Box2DHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DHelper.cpp; sourceTree = "<group>"; };
@@ -530,10 +508,6 @@
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
-		5CB6159B1552DDA40006EF15 /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
-		5CB6159C1552DDA40006EF15 /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
-		5CB6159D1552DDA40006EF15 /* ImposterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterNode.cpp; sourceTree = "<group>"; };
-		5CB6159E1552DDA40006EF15 /* ImposterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterNode.h; sourceTree = "<group>"; };
 		5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -948,7 +922,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1660C2F11548049200479A0E /* libcurl_ios_mac.a in Frameworks */,
 				5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */,
 				5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */,
 				5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */,
@@ -971,7 +944,6 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				1660C2F01548049200479A0E /* libcurl_ios_mac.a */,
 				5C97964514E3E75000FFFA14 /* libxml_ios.a */,
 				5C97964614E3E75000FFFA14 /* libyaml_ios.a */,
 				5C77ABBE14C7703800E92D28 /* libpng_ios.a */,
@@ -991,21 +963,6 @@
 				EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		1660C2CC1548043C00479A0E /* DLC */ = {
-			isa = PBXGroup;
-			children = (
-				1660C2D71548043C00479A0E /* DLCSystem.cpp */,
-				1660C2D81548043C00479A0E /* DLCSystem.h */,
-				1660C2DB1548043C00479A0E /* DLCUnpacker.cpp */,
-				1660C2DC1548043C00479A0E /* DLCUnpacker.h */,
-				1660C2DD1548043C00479A0E /* FileDownloader.cpp */,
-				1660C2DE1548043C00479A0E /* FileDownloader.h */,
-				1660C2D91548043C00479A0E /* DLCSystemTests.cpp */,
-				1660C2DA1548043C00479A0E /* DLCSystemTests.h */,
-			);
-			path = DLC;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -1064,7 +1021,6 @@
 				FEFD19B413096A4C0050D7E6 /* DoxygenDocumenation.h */,
 				FECFB36312E5904400C71562 /* Debug */,
 				FECFB36912E5904400C71562 /* FileSystem */,
-				1660C2CC1548043C00479A0E /* DLC */,
 				FECFB38712E5904400C71562 /* Input */,
 				FECFB38C12E5904400C71562 /* Math */,
 				FECFB3AA12E5904400C71562 /* Network */,
@@ -1453,10 +1409,6 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
-				5CB6159B1552DDA40006EF15 /* ImposterManager.cpp */,
-				5CB6159C1552DDA40006EF15 /* ImposterManager.h */,
-				5CB6159D1552DDA40006EF15 /* ImposterNode.cpp */,
-				5CB6159E1552DDA40006EF15 /* ImposterNode.h */,
 				FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */,
 				FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */,
 				FE5E1673153DA10A0047FAC5 /* BVNode.cpp */,
@@ -1885,18 +1837,12 @@
 				5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */,
 				5C5C18DA14D716F000DC6DC3 /* EdgeAdjacency.h in Headers */,
 				5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */,
-				1660C2E91548043C00479A0E /* DLCSystem.h in Headers */,
-				1660C2EB1548043C00479A0E /* DLCSystemTests.h in Headers */,
-				1660C2ED1548043C00479A0E /* DLCUnpacker.h in Headers */,
-				1660C2EF1548043C00479A0E /* FileDownloader.h in Headers */,
 				5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */,
 				FE5E166B153DA0870047FAC5 /* Stats.h in Headers */,
 				FE5E1670153DA0E60047FAC5 /* LandscapeCursor.h in Headers */,
 				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
 				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
 				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
-				5CB615A01552DDA40006EF15 /* ImposterManager.h in Headers */,
-				5CB615A21552DDA40006EF15 /* ImposterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2169,18 +2115,12 @@
 				5C5C18D414D7168300DC6DC3 /* LodNode.cpp in Sources */,
 				5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */,
 				5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */,
-				1660C2E81548043C00479A0E /* DLCSystem.cpp in Sources */,
-				1660C2EA1548043C00479A0E /* DLCSystemTests.cpp in Sources */,
-				1660C2EC1548043C00479A0E /* DLCUnpacker.cpp in Sources */,
-				1660C2EE1548043C00479A0E /* FileDownloader.cpp in Sources */,
 				5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */,
 				FE5E166A153DA0870047FAC5 /* Stats.cpp in Sources */,
 				FE5E166F153DA0E60047FAC5 /* LandscapeCursor.cpp in Sources */,
 				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
 				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
 				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
-				5CB6159F1552DDA40006EF15 /* ImposterManager.cpp in Sources */,
-				5CB615A11552DDA40006EF15 /* ImposterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

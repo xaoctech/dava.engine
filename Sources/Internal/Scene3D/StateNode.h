@@ -38,7 +38,7 @@ namespace DAVA
 class StateNode : public SceneNode
 {
 public:
-	StateNode(Scene * _scene);
+	StateNode();
 	virtual ~StateNode();
 	
 	// 

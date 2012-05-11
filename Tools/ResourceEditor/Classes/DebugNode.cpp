@@ -10,8 +10,8 @@
 #include "DebugNode.h"
 
 
-DebugNode::DebugNode(Scene * scene, std::vector<float32> &data)
-    : SceneNode(scene)
+DebugNode::DebugNode(std::vector<float32> &data)
+    : SceneNode()
 {
 	verts = data;
 	

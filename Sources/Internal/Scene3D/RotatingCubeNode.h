@@ -42,7 +42,7 @@ namespace DAVA
 class RotatingCubeNode : public SceneNode
 {
 public:	
-	RotatingCubeNode(Scene * _scene);
+	RotatingCubeNode();
 	~RotatingCubeNode();
 	
 	virtual void	Update(float32 timeElapsed);

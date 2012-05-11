@@ -39,7 +39,7 @@ class PolygonGroup;
 class CubeNode : public MeshInstanceNode
 {
 public:	
-	CubeNode(Scene * _scene);
+	CubeNode();
 	virtual ~CubeNode();
 	
     virtual void Update(float32 timeElapsed);

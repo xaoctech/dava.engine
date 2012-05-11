@@ -52,7 +52,7 @@ class DataNode;
 class SceneNode : public BaseObject
 {
 public:	
-	SceneNode(Scene * scene = 0);
+	SceneNode();
 	virtual ~SceneNode();
 	
     /**

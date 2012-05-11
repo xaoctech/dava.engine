@@ -35,8 +35,8 @@ namespace DAVA
 {
 REGISTER_CLASS(BoneNode);
 
-BoneNode::BoneNode(Scene * _scene, SkeletonNode * owner)
-	: SceneNode(_scene)
+BoneNode::BoneNode(SkeletonNode * owner)
+	: SceneNode()
 {
 	
 	
