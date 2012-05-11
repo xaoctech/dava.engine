@@ -66,7 +66,7 @@ void LandscapeDebugNode::Draw()
     if(0 == heightmap->Size())
         return;
     
-    BindMaterial();
+    BindMaterial(0);
 
     int32 index = 0;
 	for (int32 y = 0; y < heightmap->Size(); ++y)

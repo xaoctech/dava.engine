@@ -42,7 +42,12 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddSubsection("property.landscape.subsection.build_mask");
     propertyList->AddFilepathProperty("property.landscape.lightmap", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFilepathProperty("property.landscape.alphamask", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
+
+    propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
+    bool showGrid =  (0 != (landscape->GetDebugFlags() & SceneNode::DEBUG_DRAW_GRID));
+    propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
     
+
     
     Vector3 size(445.0f, 445.0f, 50.f);
     AABBox3 bbox = landscape->GetBoundingBox();
@@ -261,45 +266,27 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
         }
         else if("property.landscape.texture.tile0" == forKey)
         {
-            Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_TILE0, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TILE0));
-            Texture::DisableMipmapGeneration();
+            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE0, newValue);
         }
         else if("property.landscape.texture.tile1" == forKey)
         {
-            Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_TILE1, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TILE1));
-            Texture::DisableMipmapGeneration();
+            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE1, newValue);
         }
         else if("property.landscape.texture.tile2" == forKey)
         {
-            Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_TILE2, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TILE2));
-            Texture::DisableMipmapGeneration();
+            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE2, newValue);
         }
         else if("property.landscape.texture.tile3" == forKey)
         {
-            Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_TILE3, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TILE3));
-            Texture::DisableMipmapGeneration();
+            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE3, newValue);
         }
         else if("property.landscape.texture.tilemask" == forKey)
         {
-            Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK));
-            Texture::DisableMipmapGeneration();
+            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, newValue);
         }        
         else if("property.landscape.texture.color" == forKey)
         {
-            Texture::EnableMipmapGeneration();
-            landscape->SetTexture(LandscapeNode::TEXTURE_COLOR, newValue);
-            SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_COLOR));
-            Texture::DisableMipmapGeneration();
+            SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, newValue);
         }
         else if(    "property.landscape.lightmap" == forKey 
                 ||  "property.landscape.alphamask" == forKey)
@@ -313,6 +300,20 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 
     NodesPropertyControl::OnFilepathPropertyChanged(forList, forKey, newValue);
 }
+
+void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname)
+{
+    Texture::EnableMipmapGeneration();
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+    landscape->SetTexture(level, texturePathname);
+    SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(level));
+    Texture::DisableMipmapGeneration();
+
+    landscape->CreateFullTiledTexture();
+}
+
+
+
 
 void LandscapePropertyControl::OnComboIndexChanged(
                                 PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
@@ -392,4 +393,23 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
     SafeRelease(alphaMask);
 }
 
+
+void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+{
+    if("property.landscape.showgrid" == forKey)
+    {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+        
+        if(newValue)
+        {
+            landscape->SetDebugFlags(landscape->GetDebugFlags() | SceneNode::DEBUG_DRAW_GRID);
+        }
+        else 
+        {
+            landscape->SetDebugFlags(landscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+        }
+    }
+    
+    NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
+}
 

@@ -60,7 +60,9 @@ LandscapeNode::LandscapeNode()
     frustum = 0; //new Frustum();
     renderingMode = RENDERING_MODE_TEXTURE;
     
-    activeShader = 0;
+    tileMaskShader = NULL;
+    fullTiledShader = NULL;
+    
 	cursor = 0;
     uniformCameraPosition = -1;
     
@@ -78,6 +80,8 @@ LandscapeNode::LandscapeNode()
     Stats::Instance()->RegisterEvent("Scene.LandscapeNode", "Everything related to LandscapeNode");
     // Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Update", "Time spent in LandscapeNode Update");
     Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
+    
+    prevLodLayer = -1;
 }
 
 LandscapeNode::~LandscapeNode()
@@ -97,72 +101,40 @@ LandscapeNode::~LandscapeNode()
     
 void LandscapeNode::InitShaders()
 {
-    switch (renderingMode)
-    {
-        case RENDERING_MODE_TEXTURE:
-            break;
-        case RENDERING_MODE_DETAIL_SHADER:
-            activeShader = new Shader();
-            activeShader->LoadFromYaml("~res:/Shaders/Landscape/detail-texture.shader");
-            activeShader->Recompile();
-
-            
-            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("texture");
-            uniformTextures[TEXTURE_DETAIL] = activeShader->FindUniformLocationByName("detailTexture");
-            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
-
-            break;
-        case RENDERING_MODE_BLENDED_SHADER:
-            activeShader = new Shader();
-            activeShader->LoadFromYaml("~res:/Shaders/Landscape/blended-texture.shader");
-            activeShader->Recompile();
-
-            uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0");
-            uniformTextures[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1");
-            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("textureMask");
-            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
-            
-            uniformTextureTiling[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0Tiling");
-            uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
-            
-            break;
-        case RENDERING_MODE_TILE_MASK_SHADER:
-            activeShader = new Shader();
-            activeShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
-            //activeShader->SetDefineList("VERTEX_FOG");
-            activeShader->Recompile();
-            
-            uniformTextures[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("tileTexture0");
-            uniformTextures[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("tileTexture1");
-            uniformTextures[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("tileTexture2");
-            uniformTextures[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("tileTexture3");
-            uniformTextures[TEXTURE_TILE_MASK] = activeShader->FindUniformLocationByName("tileMask");
-            uniformTextures[TEXTURE_COLOR] = activeShader->FindUniformLocationByName("colorTexture");
-            
-            uniformCameraPosition = activeShader->FindUniformLocationByName("cameraPosition");
-            
-            uniformTextureTiling[TEXTURE_TILE0] = activeShader->FindUniformLocationByName("texture0Tiling");
-            uniformTextureTiling[TEXTURE_TILE1] = activeShader->FindUniformLocationByName("texture1Tiling");
-            uniformTextureTiling[TEXTURE_TILE2] = activeShader->FindUniformLocationByName("texture2Tiling");
-            uniformTextureTiling[TEXTURE_TILE3] = activeShader->FindUniformLocationByName("texture3Tiling");
-            uniformFogColor = activeShader->FindUniformLocationByName("fogColor");
-            uniformFogDensity = activeShader->FindUniformLocationByName("fogDensity");            
-            break;
-
-    }
+    tileMaskShader = new Shader();
+    tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
+    //tileMaskShader->SetDefineList("VERTEX_FOG");
+    tileMaskShader->Recompile();
+    
+    uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("tileTexture0");
+    uniformTextures[TEXTURE_TILE1] = tileMaskShader->FindUniformLocationByName("tileTexture1");
+    uniformTextures[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("tileTexture2");
+    uniformTextures[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("tileTexture3");
+    uniformTextures[TEXTURE_TILE_MASK] = tileMaskShader->FindUniformLocationByName("tileMask");
+    uniformTextures[TEXTURE_COLOR] = tileMaskShader->FindUniformLocationByName("colorTexture");
+    
+    uniformCameraPosition = tileMaskShader->FindUniformLocationByName("cameraPosition");
+    
+    uniformTextureTiling[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("texture0Tiling");
+    uniformTextureTiling[TEXTURE_TILE1] = tileMaskShader->FindUniformLocationByName("texture1Tiling");
+    uniformTextureTiling[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("texture2Tiling");
+    uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("texture3Tiling");
+    
+    uniformFogColor = tileMaskShader->FindUniformLocationByName("fogColor");
+    uniformFogDensity = tileMaskShader->FindUniformLocationByName("fogDensity");            
 }
     
 void LandscapeNode::ReleaseShaders()
 {
-    SafeRelease(activeShader);
-
+    SafeRelease(tileMaskShader);
+    SafeRelease(fullTiledShader);
+    
     uniformCameraPosition = -1;
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
         uniformTextures[k] = -1;
         uniformTextureTiling[k] = -1;
     }
-
 }
 
 
@@ -570,9 +542,9 @@ const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
     Image::EnableAlphaPremultiplication(false);
-    
-    SafeRelease(textures[level]);
 
+    SafeRelease(textures[level]);
+    
     Texture * texture = Texture::CreateFromFile(textureName); 
     if (texture)
     {
@@ -581,7 +553,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
         texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
     }
     textures[level] = texture;
-
+    
     Image::EnableAlphaPremultiplication(true);
 }
 
@@ -617,6 +589,8 @@ void LandscapeNode::ClearQueue()
 
 void LandscapeNode::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
 {
+//    Logger::Debug("QUAD: size = %d, x = %d, y = %d, lod = %d", currentNode->data.size, currentNode->data.x, currentNode->data.y, lod);
+
     int32 depth = currentNode->data.size / (1 << lod);
     if (depth == 1)
     {
@@ -885,7 +859,19 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 
             
         //RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
-        DrawQuad(currentNode, maxLod);
+//        DrawQuad(currentNode, maxLod);
+        currentNode->data.lod = maxLod;
+        if(maxLod)
+        {
+            lodNot0quads.push_back(currentNode);
+        }
+        else 
+        {
+            lod0quads.push_back(currentNode);
+        }
+
+        
+        
         //RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
         //RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
 
@@ -924,153 +910,346 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
         }*/
     }
 }
+
     
-void LandscapeNode::BindMaterial()
+//void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * headNode)
+//{
+//    Vector3 bboxSize = box.max - box.min;
+//    int32 x = (bboxSize.x) ? ((float32)(cameraPos.x - box.min.x) / (float32)bboxSize.x * (float32)heightmap->Size()) : -100000;
+//    int32 y = (bboxSize.y) ? ((float32)(cameraPos.y - box.min.y) / (float32)bboxSize.y * heightmap->Size()) : -100000;
+////    Logger::Debug("CAMERA: x = %d, y = %d", x, y);
+//
+////    Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
+////    Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
+//
+//    Deque<LandQuadTreeNode<LandscapeQuad> *> quadDeque;
+//    
+//    quadDeque.push_back(headNode);
+//    while(quadDeque.size())
+//    {
+//        LandQuadTreeNode<LandscapeQuad> * currentNode = quadDeque.front();
+//        quadDeque.pop_front();
+//        
+//        
+//        //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
+//        // if (!frustum->IsInside(currentNode->data.bbox))return;
+//        Frustum::eFrustumResult frustumRes = frustum->Classify(currentNode->data.bbox);
+//        if (frustumRes == Frustum::EFR_OUTSIDE) continue;
+//        
+//        /*
+//         If current quad do not have geometry just traverse it childs. 
+//         Magic starts when we have a geometry
+//         */
+//        if (currentNode->data.rdoQuad == -1)
+//        {
+//            if (currentNode->childs)
+//            {
+////                // calc child lod levels
+////                Vector2 childLodLevels[4];
+////                for (int32 index = 0; index < 4; ++index)
+////                {
+////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+////                    Vector3 v = cameraPos - child->data.bbox.GetCenter();
+////                    float32 dist = v.Length();
+////                    childLodLevels[index].x = dist;
+////                    childLodLevels[index].y = index;
+////                }
+////                
+////                bool again = true;
+////                for (int32 i = 0; i < 4 && again; ++i)
+////                {
+////                    again = false;
+////                    for(int32 j = 4 - 1; j > i; --j)
+////                    {
+////                        if(childLodLevels[j-1].x > childLodLevels[j].x)
+////                        {
+////                            again = true;
+////                            
+////                            Vector2 tmp = childLodLevels[j-1];
+////                            childLodLevels[j-1] = childLodLevels[j];
+////                            childLodLevels[j] = tmp;
+////                        }
+////                    }
+////                }
+//                
+//                for (int32 index = 0; index < 4; ++index)
+//                {
+////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[(int32)childLodLevels[index].y];
+//                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+//                    quadDeque.push_back(child);
+////                    Draw(child); 
+//                }
+//            }
+//            continue;
+//        }
+//        /*
+//         // UNCOMMENT THIS TO CHECK GEOMETRY WITH 0 LEVEL OF DETAIL
+//         else
+//         {
+//         DrawQuad(currentNode, 0);
+//         return;
+//         }
+//         */
+//        
+//        /*
+//         We can be here only if we have a geometry in the node. 
+//         Here we use Geomipmaps rendering algorithm. 
+//         These quads are 129x129.
+//         */
+//        //    Camera * cam = clipCamera;
+//        
+//        Vector3 corners[8];
+//        currentNode->data.bbox.GetCorners(corners);
+//        
+//        float32 minDist =  100000000.0f;
+//        float32 maxDist = -100000000.0f;
+//        for (int32 k = 0; k < 8; ++k)
+//        {
+//            Vector3 v = cameraPos - corners[k];
+//            float32 dist = v.SquareLength();
+//            if (dist < minDist)
+//                minDist = dist;
+//            if (dist > maxDist)
+//                maxDist = dist;
+//        };
+//        
+//        int32 minLod = 0;
+//        int32 maxLod = 0;
+//        
+//        for (int32 k = 0; k < lodLevelsCount; ++k)
+//        {
+//            if (minDist > lodSqDistance[k])
+//                minLod = k + 1;
+//            if (maxDist > lodSqDistance[k])
+//                maxLod = k + 1;
+//        }
+//        
+//        // debug block
+//#if 1
+//        if (currentNode == &quadTreeHead)
+//        {
+//            //Logger::Debug("== draw start ==");
+//        }
+//        //Logger::Debug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
+//#endif
+//        
+//        //    if (frustum->IsFullyInside(currentNode->data.bbox))
+//        //    {
+//        //        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+//        //        RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
+//        //    }
+//        
+//        
+//        if ((minLod == maxLod) && (/*frustum->IsFullyInside(currentNode->data.bbox)*/(frustumRes == Frustum::EFR_INSIDE) || currentNode->data.size <= (1 << maxLod) + 1) )
+//        {
+//            //Logger::Debug("lod: %d depth: %d pos(%d, %d)", minLod, currentNode->data.lod, currentNode->data.x, currentNode->data.y);
+//            
+//            //        if (currentNode->data.size <= (1 << maxLod))
+//            //            RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
+//            //        if (frustum->IsFullyInside(currentNode->data.bbox))
+//            //            RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+//            //if (frustum->IsFullyInside(currentNode->data.bbox) && (currentNode->data.size <= (1 << maxLod)))
+//            //    RenderManager::Instance()->SetColor(1.0f, 1.0f, 0.0f, 1.0f);
+//            
+//            
+//            //RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
+//            
+////            DrawQuad(currentNode, maxLod);
+//            if(maxLod)
+//            {
+//                lodNot0quads.push_back(currentNode);
+//            }
+//            else 
+//            {
+//                lod0quads.push_back(currentNode);
+//            }
+//            //RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+//            //RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
+//            
+//            continue;
+//        }
+//        
+//        
+//        if ((minLod != maxLod) && (currentNode->data.size <= (1 << maxLod) + 1))
+//        {
+//            //        RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
+//            //DrawQuad(currentNode, minLod);
+//            //RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+//            //RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
+//            fans.push_back(currentNode);
+//            continue;
+//        }
+//        
+//        //
+//        // Check performance and identify do we need a sorting here. 
+//        // Probably sorting algorithm can be helpfull to render on Mac / Windows, but will be useless for iOS and Android
+//        //
+//        
+//        {
+//            if (currentNode->childs)
+//            {
+////                // calc child lod levels
+////                Vector2 childLodLevels[4];
+////                for (int32 index = 0; index < 4; ++index)
+////                {
+////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+////                    Vector3 v = cameraPos - child->data.bbox.GetCenter();
+////                    float32 dist = v.Length();
+////                    childLodLevels[index].x = dist;
+////                    childLodLevels[index].y = index;
+////                }
+////                
+////                bool again = true;
+////                for (int32 i = 0; i < 4 && again; ++i)
+////                {
+////                    again = false;
+////                    for(int32 j = 4 - 1; j > i; --j)
+////                    {
+////                        if(childLodLevels[j-1].x > childLodLevels[j].x)
+////                        {
+////                            again = true;
+////                            
+////                            Vector2 tmp = childLodLevels[j-1];
+////                            childLodLevels[j-1] = childLodLevels[j];
+////                            childLodLevels[j] = tmp;
+////                        }
+////                    }
+////                }
+////                
+//                for (int32 index = 0; index < 4; ++index)
+//                {
+////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[(int32)childLodLevels[index].y];
+//                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+//                    quadDeque.push_back(child);
+////                    Draw(child); 
+//                }
+//            }
+//            
+//            
+//            //        if (currentNode->childs)
+//            //        {
+//            //            for (int32 index = 0; index < 4; ++index)
+//            //            {
+//            //                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
+//            //                Draw(child); 
+//            //            }
+//            //        }
+//            /* EXPERIMENTAL => reduce level of quadtree, results was not successfull 
+//             else
+//             {
+//             DrawQuad(currentNode, maxLod);  
+//             }*/
+//        }
+//    }
+//    
+//    int32 count = lod0quads.size();
+//    for(int32 i = 0; i < count; ++i)
+//    {
+//        DrawQuad(lod0quads[i], 0);
+//    }
+//    
+//    count = lodNot0quads.size();
+//    for(int32 i = 0; i < count; ++i)
+//    {
+//        DrawQuad(lodNot0quads[i], 1);
+//    }
+//}
+
+    
+    
+void LandscapeNode::BindMaterial(int32 lodLayer)
 {
-    switch(renderingMode)
+    if(-1 != prevLodLayer)
     {
-        case RENDERING_MODE_TEXTURE:
-            RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
-            break;
-            
-        case RENDERING_MODE_DETAIL_SHADER:
-        {
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 0);
-            if (textures[TEXTURE_DETAIL])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_DETAIL], 1);
-            
-            RenderManager::Instance()->SetShader(activeShader);
-            RenderManager::Instance()->FlushState();
-            
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 0);
-            activeShader->SetUniformValue(uniformTextures[TEXTURE_DETAIL], 1);
-            activeShader->SetUniformValue(uniformCameraPosition, cameraPos);
-        }
-            break;
-        case RENDERING_MODE_BLENDED_SHADER:
-        {
-            if (textures[TEXTURE_TILE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
-            if (textures[TEXTURE_TILE1])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 2);
-            
-            RenderManager::Instance()->SetShader(activeShader);
-            RenderManager::Instance()->FlushState();
-
-            if (uniformTextures[TEXTURE_TILE0] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
-            
-            if (uniformTextures[TEXTURE_TILE1] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
-
-            if (uniformTextures[TEXTURE_COLOR] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 2);
-
-            if (uniformCameraPosition != -1)
-                activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            
-            if (uniformTextureTiling[TEXTURE_TILE0] != -1)
-                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-
-            if (uniformTextureTiling[TEXTURE_TILE1]!= -1)
-                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
-        }            
-        break;
-        case RENDERING_MODE_TILE_MASK_SHADER:
-        {
-            if (textures[TEXTURE_TILE0])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
-            if (textures[TEXTURE_TILE1])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
-            if (textures[TEXTURE_TILE2])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
-            if (textures[TEXTURE_TILE3])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
-            if (textures[TEXTURE_TILE_MASK])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
-            if (textures[TEXTURE_COLOR])
-                RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
-            
-            RenderManager::Instance()->SetShader(activeShader);
-            RenderManager::Instance()->FlushState();
-            
-            if (uniformTextures[TEXTURE_TILE0] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
-
-            if (uniformTextures[TEXTURE_TILE1] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
-            
-            if (uniformTextures[TEXTURE_TILE2] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
-            
-            if (uniformTextures[TEXTURE_TILE3] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
-
-            if (uniformTextures[TEXTURE_TILE_MASK] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
-
-            if (uniformTextures[TEXTURE_COLOR] != -1)
-                activeShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
-            
-            if (uniformCameraPosition != -1)
-                activeShader->SetUniformValue(uniformCameraPosition, cameraPos);    
-            
-            if (uniformTextureTiling[TEXTURE_TILE0] != -1)
-                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
-            
-            if (uniformTextureTiling[TEXTURE_TILE1] != -1)
-                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
-            
-            if (uniformTextureTiling[TEXTURE_TILE2] != -1)
-                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
-            
-            if (uniformTextureTiling[TEXTURE_TILE3] != -1)
-                activeShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
-            
-            if (uniformFogColor != -1)
-                activeShader->SetUniformValue(uniformFogColor, Color((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f));
-            if (uniformFogDensity != -1)
-                activeShader->SetUniformValue(uniformFogDensity, 0.006f);
-            
-            }            
-            break;
+        UnbindMaterial();
     }
+
+    if(0 == lodLayer)
+    {
+        if (textures[TEXTURE_TILE0])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE0], 0);
+        if (textures[TEXTURE_TILE1])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE1], 1);
+        if (textures[TEXTURE_TILE2])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE2], 2);
+        if (textures[TEXTURE_TILE3])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE3], 3);
+        if (textures[TEXTURE_TILE_MASK])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_MASK], 4);
+        if (textures[TEXTURE_COLOR])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_COLOR], 5);
+        
+        RenderManager::Instance()->SetShader(tileMaskShader);
+        RenderManager::Instance()->FlushState();
+        
+        if (uniformTextures[TEXTURE_TILE0] != -1)
+            tileMaskShader->SetUniformValue(uniformTextures[TEXTURE_TILE0], 0);
+        
+        if (uniformTextures[TEXTURE_TILE1] != -1)
+            tileMaskShader->SetUniformValue(uniformTextures[TEXTURE_TILE1], 1);
+        
+        if (uniformTextures[TEXTURE_TILE2] != -1)
+            tileMaskShader->SetUniformValue(uniformTextures[TEXTURE_TILE2], 2);
+        
+        if (uniformTextures[TEXTURE_TILE3] != -1)
+            tileMaskShader->SetUniformValue(uniformTextures[TEXTURE_TILE3], 3);
+        
+        if (uniformTextures[TEXTURE_TILE_MASK] != -1)
+            tileMaskShader->SetUniformValue(uniformTextures[TEXTURE_TILE_MASK], 4);
+        
+        if (uniformTextures[TEXTURE_COLOR] != -1)
+            tileMaskShader->SetUniformValue(uniformTextures[TEXTURE_COLOR], 5);
+        
+        if (uniformCameraPosition != -1)
+            tileMaskShader->SetUniformValue(uniformCameraPosition, cameraPos);    
+        
+        if (uniformTextureTiling[TEXTURE_TILE0] != -1)
+            tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE0], textureTiling[TEXTURE_TILE0]);
+        
+        if (uniformTextureTiling[TEXTURE_TILE1] != -1)
+            tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE1], textureTiling[TEXTURE_TILE1]);
+        
+        if (uniformTextureTiling[TEXTURE_TILE2] != -1)
+            tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE2], textureTiling[TEXTURE_TILE2]);
+        
+        if (uniformTextureTiling[TEXTURE_TILE3] != -1)
+            tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
+
+        if (uniformFogColor != -1)
+            tileMaskShader->SetUniformValue(uniformFogColor, Color((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f));
+        if (uniformFogDensity != -1)
+            tileMaskShader->SetUniformValue(uniformFogDensity, 0.006f);
+    }
+    else 
+    {
+        RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+        if (textures[TEXTURE_TILE_FULL])
+            RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_FULL], 0);
+    }
+    
+    prevLodLayer = lodLayer;
 }
 
 void LandscapeNode::UnbindMaterial()
 {
-    switch(renderingMode)
+    if(0 == prevLodLayer)
     {
-        case RENDERING_MODE_TEXTURE:
-            break;
-            
-        case RENDERING_MODE_DETAIL_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 1);
-        }
-            break;
-        case RENDERING_MODE_BLENDED_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 1);
-            RenderManager::Instance()->SetTexture(0, 2);
-        }            
-            break;
-        case RENDERING_MODE_TILE_MASK_SHADER:
-        {
-            RenderManager::Instance()->SetTexture(0, 0);
-            RenderManager::Instance()->SetTexture(0, 1);
-            RenderManager::Instance()->SetTexture(0, 2);
-            RenderManager::Instance()->SetTexture(0, 3);
-            RenderManager::Instance()->SetTexture(0, 4);
-            RenderManager::Instance()->SetTexture(0, 5);
-        }
-        break;
-    }    
+        RenderManager::Instance()->SetTexture(0, 0);
+        RenderManager::Instance()->SetTexture(0, 1);
+        RenderManager::Instance()->SetTexture(0, 2);
+        RenderManager::Instance()->SetTexture(0, 3);
+        RenderManager::Instance()->SetTexture(0, 4);
+        RenderManager::Instance()->SetTexture(0, 5);
+        
+        RenderManager::Instance()->SetShader(NULL);
+        RenderManager::Instance()->FlushState();
+    }
+    else if(-1 != prevLodLayer)
+    {
+        RenderManager::Instance()->SetTexture(0, 0);
+    }
+
+    prevLodLayer = -1;
 }
 
 
@@ -1079,19 +1258,32 @@ void LandscapeNode::Draw()
     Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
+//    Logger::Debug("*** [LandscapeNode::Draw] start");
+
+    
+    
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
-//<<<<<<< HEAD
-//    if (debugFlags & DEBUG_DRAW_ALL)
-//=======
     if (debugFlags & DEBUG_DRAW_GRID)
     {
+        RenderManager::Instance()->SetColor(1.0f, 0.f, 0.f, 1.f);
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->SetShader(0);
+        RenderManager::Instance()->FlushState();
+
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     SceneNode::Draw();
-    
-    RenderManager::Instance()->ResetColor();
+
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
+    if (!(debugFlags & DEBUG_DRAW_GRID))
+    {
+        RenderManager::Instance()->ResetColor();
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+//    RenderManager::Instance()->ResetColor();
 
     ClearQueue();
 
@@ -1115,11 +1307,28 @@ void LandscapeNode::Draw()
     
     fans.clear();
     
-    BindMaterial();
-    
+    lod0quads.clear();
+    lodNot0quads.clear();
+
 	Draw(&quadTreeHead);
+    
+    BindMaterial(0);
+    int32 count0 = lod0quads.size();
+    for(int32 i = 0; i < count0; ++i)
+    {
+        DrawQuad(lod0quads[i], 0);
+    }
+
+    BindMaterial(1);
+    int32 countNot0 = lodNot0quads.size();
+    for(int32 i = 0; i < countNot0; ++i)
+    {
+        DrawQuad(lodNot0quads[i], lodNot0quads[i]->data.lod);
+    }
+    
+    
 	FlushQueue();
-	DrawFans();
+//	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
     if (debugFlags & DEBUG_DRAW_ALL)
@@ -1147,6 +1356,7 @@ void LandscapeNode::Draw()
 	}
     
     UnbindMaterial();
+//    Logger::Debug("*** [LandscapeNode::Draw] finish");
 
 //#if defined(__DAVAENGINE_MACOS__)
 //    if (debugFlags & DEBUG_DRAW_ALL)
@@ -1281,6 +1491,11 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         if(sceneFile->DebugLogEnabled())
             Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
 
+        if(TEXTURE_TILE_FULL == k && "" == textureName)
+        {
+            absPath = CreateFullTiledTexture();
+        }
+        
         if (sceneFile->GetVersion() >= 4)
         {
             SetTexture((eTextureLevel)k, absPath);
@@ -1341,4 +1556,93 @@ Heightmap * LandscapeNode::GetHeightmap()
     return heightmap;
 }
 
+String LandscapeNode::CreateFullTiledTexture()
+{
+    //Set indexes
+    Vector<float32> ftVertexes;
+    Vector<float32> ftTextureCoords;
+    
+    float32 x0 = 0;
+    float32 y0 = 0;
+    float32 x1 = TEXTURE_TILE_FULL_SIZE-1;
+    float32 y1 = TEXTURE_TILE_FULL_SIZE-1;
+    
+    //triangle 1
+    //0, 0
+    ftVertexes.push_back(x0);
+    ftVertexes.push_back(y0);
+    ftVertexes.push_back(0);
+    ftTextureCoords.push_back(0);
+    ftTextureCoords.push_back(0);
+    
+    
+    //1, 0
+    ftVertexes.push_back(x1);
+    ftVertexes.push_back(y0);
+    ftVertexes.push_back(0);
+    ftTextureCoords.push_back(1);
+    ftTextureCoords.push_back(0);
+    
+    
+    //0, 1
+    ftVertexes.push_back(x0);
+    ftVertexes.push_back(y1);
+    ftVertexes.push_back(0);
+    ftTextureCoords.push_back(0);
+    ftTextureCoords.push_back(1);
+    
+    //1, 1
+    ftVertexes.push_back(x1);
+    ftVertexes.push_back(y1);
+    ftVertexes.push_back(0);
+    ftTextureCoords.push_back(1);
+    ftTextureCoords.push_back(1);
+    
+    RenderDataObject *ftRenderData = new RenderDataObject();
+    ftRenderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &ftVertexes.front());
+    ftRenderData->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &ftTextureCoords.front());
+
+
+    //Draw landscape to texture
+    Rect oldViewport = RenderManager::Instance()->GetViewport();
+    
+    Texture *fullTiled = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888, Texture::DEPTH_NONE);
+    RenderManager::Instance()->SetRenderTarget(fullTiled);
+
+	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);
+ 
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, Matrix4::IDENTITY);
+    Matrix4 projection;
+    projection.glOrtho(0, TEXTURE_TILE_FULL_SIZE, 0, TEXTURE_TILE_FULL_SIZE, 0, 1);
+    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projection);
+    RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
+    
+    prevLodLayer = -1;
+    BindMaterial(0);
+    RenderManager::Instance()->SetRenderData(ftRenderData);
+    RenderManager::Instance()->FlushState();
+    RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
+    UnbindMaterial();
+
+#ifdef __DAVAENGINE_OPENGL__
+	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+#endif
+    
+	RenderManager::Instance()->SetViewport(oldViewport, true);
+    SafeRelease(ftRenderData);
+
+    // Safe To File
+    String colorTextureMame = GetTextureName(TEXTURE_COLOR);
+    String filename, pathname;
+    FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+    
+    String pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+    Image *image = fullTiled->CreateImageFromMemory();
+    image->Save(pathToSave);
+    SafeRelease(image);
+    SafeRelease(fullTiled);
+    
+    return pathToSave;
+}
+    
 };
