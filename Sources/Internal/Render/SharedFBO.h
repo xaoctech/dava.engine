@@ -25,74 +25,20 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_IMPOSTER_NODE_H__
-#define __DAVAENGINE_IMPOSTER_NODE_H__
+#ifndef __DAVAENGINE_SHARED_FBO__
+#define __DAVAENGINE_SHARED_FBO__
 
-#include "Scene3D/Scene.h"
-#include "Render/RenderDataObject.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
 
 namespace DAVA
 {
 
-class ImposterManager;
-
-class ImposterNode : public SceneNode
+class SharedFBO : public BaseObject
 {
-public:
-	enum eState
-	{
-		STATE_3D = 0,
-		STATE_IMPOSTER,
-		STATE_ASK_FOR_REDRAW,
-		STATE_QUEUED,
-		STATE_REDRAW_APPROVED
-	};
 
-	ImposterNode(Scene * scene = 0);
-	virtual ~ImposterNode();
-
-	void UpdateState();
-	virtual void Draw();
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-
-	void UpdateImposter();
-	void GeneralDraw();
-	void DrawImposter();
-
-	bool IsAskingForRedraw();
-	bool IsQueued();
-	void OnAddedToQueue();
-	void ApproveRedraw();
-
-private:
-	void AskForRedraw();
-	void ClearGeometry();
-	void CreateGeometry();
-	
-	bool IsRedrawApproved();
-	bool IsImposterReady();
-
-	bool isReady;
-
-	Vector3 imposterVertices[4];
-	RenderDataObject * renderData;
-	Texture * fbo;
-
-	Vector<float32> verts;
-	Vector<float32> texCoords;
-	Vector3 center;
-	Vector3 direction;
-	float32 distanceSquaredToCamera;
-
-	eState state;
-
-	ImposterManager * manager;
-
-	void RecreateFbo(const Vector2 & size);
-
-	void HierarchicalRemoveCull(SceneNode * node);
 };
 
 };
 
-#endif //__DAVAENGINE_IMPOSTER_NODE_H__
+#endif //__DAVAENGINE_SHARED_FBO__

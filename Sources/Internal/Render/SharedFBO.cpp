@@ -25,74 +25,11 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_IMPOSTER_NODE_H__
-#define __DAVAENGINE_IMPOSTER_NODE_H__
-
-#include "Scene3D/Scene.h"
-#include "Render/RenderDataObject.h"
+#include "Render/SharedFBO.h"
 
 namespace DAVA
 {
 
-class ImposterManager;
 
-class ImposterNode : public SceneNode
-{
-public:
-	enum eState
-	{
-		STATE_3D = 0,
-		STATE_IMPOSTER,
-		STATE_ASK_FOR_REDRAW,
-		STATE_QUEUED,
-		STATE_REDRAW_APPROVED
-	};
-
-	ImposterNode(Scene * scene = 0);
-	virtual ~ImposterNode();
-
-	void UpdateState();
-	virtual void Draw();
-	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-
-	void UpdateImposter();
-	void GeneralDraw();
-	void DrawImposter();
-
-	bool IsAskingForRedraw();
-	bool IsQueued();
-	void OnAddedToQueue();
-	void ApproveRedraw();
-
-private:
-	void AskForRedraw();
-	void ClearGeometry();
-	void CreateGeometry();
-	
-	bool IsRedrawApproved();
-	bool IsImposterReady();
-
-	bool isReady;
-
-	Vector3 imposterVertices[4];
-	RenderDataObject * renderData;
-	Texture * fbo;
-
-	Vector<float32> verts;
-	Vector<float32> texCoords;
-	Vector3 center;
-	Vector3 direction;
-	float32 distanceSquaredToCamera;
-
-	eState state;
-
-	ImposterManager * manager;
-
-	void RecreateFbo(const Vector2 & size);
-
-	void HierarchicalRemoveCull(SceneNode * node);
-};
 
 };
-
-#endif //__DAVAENGINE_IMPOSTER_NODE_H__

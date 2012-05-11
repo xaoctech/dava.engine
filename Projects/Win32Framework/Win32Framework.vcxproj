@@ -268,6 +268,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Texture.h" />
@@ -513,6 +514,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\StaticIndexBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\StaticVertexBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Texture.cpp" />
