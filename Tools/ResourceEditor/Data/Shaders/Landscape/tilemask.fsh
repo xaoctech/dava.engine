@@ -24,6 +24,11 @@ varying vec2 varTexCoordCursor;
 uniform sampler2D cursorTexture;
 #endif
 
+#if defined(VERTEX_FOG)
+uniform vec3 fogColor;
+varying float varFogFactor;
+#endif
+
 void main()
 {
     lowp vec3 color0 = texture2D(tileTexture0, varTexCoord0).rgb;
@@ -42,5 +47,9 @@ void main()
 	color += colorCursor.rgb*colorCursor.a;
 #endif
 
+#if defined(VERTEX_FOG)
+    gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
+#else
     gl_FragColor = vec4(color, 1.0);
+#endif
 }

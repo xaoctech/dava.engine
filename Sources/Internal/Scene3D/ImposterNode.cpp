@@ -35,8 +35,8 @@ namespace DAVA
 
 REGISTER_CLASS(ImposterNode);
 
-ImposterNode::ImposterNode(Scene * scene)
-:	SceneNode(scene)
+ImposterNode::ImposterNode()
+:	SceneNode()
 {
 	state = STATE_3D;
 	renderData = 0;
@@ -265,7 +265,7 @@ SceneNode* ImposterNode::Clone(SceneNode *dstNode /*= NULL*/)
 {
 	if (!dstNode) 
 	{
-		dstNode = new ImposterNode(scene);
+		dstNode = new ImposterNode();
 	}
 
 	SceneNode::Clone(dstNode);

@@ -50,7 +50,7 @@ public:
 		TYPE_COUNT
     };
     
-    LightNode(Scene * _scene = 0);
+    LightNode();
     virtual ~LightNode();
     
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);

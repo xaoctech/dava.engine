@@ -38,8 +38,8 @@ namespace DAVA
     
 REGISTER_CLASS(LightNode);
 
-LightNode::LightNode(Scene * _scene)
-:	SceneNode(_scene),
+LightNode::LightNode()
+:	SceneNode(),
 	type(TYPE_DIRECTIONAL),
     ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),
@@ -83,7 +83,7 @@ SceneNode* LightNode::Clone(SceneNode *dstNode)
 {
     if(!dstNode)
     {
-        dstNode = new LightNode(GetScene());
+        dstNode = new LightNode();
     }
     
     SceneNode::Clone(dstNode);

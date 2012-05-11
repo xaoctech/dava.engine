@@ -33,7 +33,7 @@ attribute vec3 inTangent;
 // UNIFORMS
 uniform mat4 modelViewProjectionMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
 uniform vec3 lightPosition0;
@@ -42,6 +42,10 @@ uniform float lightIntensity0;
 
 #if defined(VERTEX_LIT)
 uniform float materialSpecularShininess;
+#endif
+
+#if defined(VERTEX_FOG)
+uniform float fogDensity;
 #endif
 
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
@@ -54,13 +58,13 @@ uniform mediump vec2 uvScale;
 // OUTPUT ATTRIBUTES
 varying vec2 varTexCoord0;
 
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
+varying vec2 varTexCoord1;
+#endif
+
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
-#endif
-
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
-varying vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
@@ -68,6 +72,10 @@ varying vec3 varLightVec;
 varying vec3 varHalfVec;
 varying vec3 varEyeVec;
 varying float varPerPixelAttenuation;
+#endif
+
+#if defined(VERTEX_FOG)
+varying float varFogFactor;
 #endif
 
 #if defined(SETUP_LIGHTMAP)
@@ -110,9 +118,9 @@ void main()
 	vec3 t = normalize (normalMatrix * inTangent);
 	vec3 b = -cross (n, t);
 
-    vec3 vertexPosition = vec3(modelViewMatrix *  inPosition);
+    vec3 eyeCoordsPosition = vec3(modelViewMatrix *  inPosition);
     
-    vec3 lightDir = lightPosition0 - vertexPosition;
+    vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
     lightDir = normalize(lightDir);
     
@@ -123,19 +131,19 @@ void main()
 	v.z = dot (lightDir, n);
 	varLightVec = normalize (v);
 
-    // vertexPosition = -vertexPosition;
-	// v.x = dot (vertexPosition, t);
-	// v.y = dot (vertexPosition, b);
-	// v.z = dot (vertexPosition, n);
+    // eyeCoordsPosition = -eyeCoordsPosition;
+	// v.x = dot (eyeCoordsPosition, t);
+	// v.y = dot (eyeCoordsPosition, b);
+	// v.z = dot (eyeCoordsPosition, n);
 	// varEyeVec = normalize (v);
 
-    vertexPosition = normalize(-vertexPosition);
+    vec3 E = normalize(-eyeCoordsPosition);
 
 	/* Normalize the halfVector to pass it to the fragment shader */
 
 	// No need to divide by two, the result is normalized anyway.
-	// vec3 halfVector = normalize((vertexPosition + lightDir) / 2.0); 
-	vec3 halfVector = normalize(vertexPosition + lightDir);
+	// vec3 halfVector = normalize((E + lightDir) / 2.0); 
+	vec3 halfVector = normalize(E + lightDir);
 	v.x = dot (halfVector, t);
 	v.y = dot (halfVector, b);
 	v.z = dot (halfVector, n);
@@ -143,6 +151,18 @@ void main()
 	// No need to normalize, t,b,n and halfVector are normal vectors.
 	//normalize (v);
 	varHalfVec = v;
+#endif
+
+#if defined(VERTEX_FOG)
+    const float LOG2 = 1.442695;
+    #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
+        float fogFragCoord = length(eyeCoordsPosition);
+    #else
+        vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+        float fogFragCoord = length(eyeCoordsPosition);
+    #endif
+    varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
+    varFogFactor = clamp(varFogFactor, 0.0, 1.0);
 #endif
 
 	varTexCoord0 = inTexCoord0;

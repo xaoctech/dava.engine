@@ -3,8 +3,8 @@
 
 REGISTER_CLASS(EditorLightNode);
 
-EditorLightNode::EditorLightNode(Scene * _scene)
-:	SceneNode(_scene),
+EditorLightNode::EditorLightNode()
+:	SceneNode(),
 	type(LightNode::TYPE_COUNT)
 {
 
@@ -15,11 +15,11 @@ EditorLightNode::~EditorLightNode()
 
 }
 
-LightNode * EditorLightNode::CreateSceneAndEditorLight(Scene * scene) 
+LightNode * EditorLightNode::CreateSceneAndEditorLight() 
 {
-	LightNode * ret = new LightNode(scene);
+	LightNode * ret = new LightNode();
 	ret->SetSolid(true);
-	EditorLightNode * child = new EditorLightNode(scene);
+	EditorLightNode * child = new EditorLightNode();
 	child->SetName("editor.light");
 	ret->AddNode(child);
 

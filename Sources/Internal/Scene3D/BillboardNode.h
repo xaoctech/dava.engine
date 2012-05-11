@@ -39,7 +39,7 @@ namespace DAVA
 class BillboardNode : public SceneNode
 {
 public:
-    BillboardNode(Scene * _scene = 0);
+    BillboardNode();
     virtual ~BillboardNode();
     
     virtual void Draw();

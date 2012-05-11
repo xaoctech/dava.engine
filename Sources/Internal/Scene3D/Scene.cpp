@@ -59,12 +59,12 @@ namespace DAVA
 REGISTER_CLASS(Scene);
     
 Scene::Scene()
-	:   SceneNode(0)
+	:   SceneNode()
     ,   currentCamera(0)
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
 	,	shadowRect(0)
-	,	imposterManager(0)
+	,	imposterManager()
 {   
     bvHierarchy = new BVHierarchy();
     bvHierarchy->ChangeScene(this);
@@ -99,12 +99,12 @@ Scene::~Scene()
     }
     rootNodes.clear();
 
-	SafeRelease(shadowRect);
-    SafeRelease(bvHierarchy);
-
+    // Childrens should be removed first because they should unregister themselves in managers
 	RemoveAllChildren();
-
+    
 	SafeRelease(imposterManager);
+    SafeRelease(bvHierarchy);
+	SafeRelease(shadowRect);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -204,7 +204,7 @@ Camera * Scene::GetCamera(int32 n)
 
 void Scene::AddRootNode(SceneNode *node, const String &rootNodePath)
 {
-    ProxyNode * proxyNode = new ProxyNode(this);
+    ProxyNode * proxyNode = new ProxyNode();
     proxyNode->SetNode(node);
     
     rootNodes[rootNodePath] = proxyNode;
