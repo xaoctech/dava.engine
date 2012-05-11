@@ -13,6 +13,7 @@ public:
 
 	virtual void ReadFrom(SceneNode * sceneNode);
 
+    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
     virtual void OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue);
 	virtual void OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue);
     virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
@@ -22,7 +23,9 @@ protected:
     Vector<String> renderingModes;
 
     void CreateMaskTexture(const String &lightmapPath, const String &alphamaskPath);
-    
+
+    void SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname);
+
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__

@@ -639,7 +639,10 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
 {
     SafeRelease(textures[level]);
     names[level] = "";
-    
+ 
+    Image::EnableAlphaPremultiplication(false);
+    Texture::EnableMipmapGeneration();
+
     Texture *t = Texture::CreateFromFile(textureName);
     if(t)
     {
@@ -647,6 +650,9 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
         textures[level] = t;
         names[level] = textureName;
     }
+
+    Texture::DisableMipmapGeneration();
+    Image::EnableAlphaPremultiplication(true);
 }
 
 

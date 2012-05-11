@@ -155,7 +155,10 @@ public:
         // TEXTURE_BUMP,
         
         TEXTURE_DETAIL, 
-        TEXTURE_COUNT,
+        
+        TEXTURE_TILE_FULL, 
+        
+        TEXTURE_COUNT
     };
 
 	class LandscapeVertex
@@ -260,6 +263,8 @@ public:
 
     Heightmap *GetHeightmap();
     
+    String CreateFullTiledTexture();
+    
 protected:	
     
     class LandscapeQuad
@@ -284,7 +289,7 @@ protected:
     void FindNeighbours(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void MarkFrames(LandQuadTreeNode<LandscapeQuad> * currentNode, int32 & depth);
 
-    void BindMaterial();
+    void BindMaterial(int32 lodLayer);
     void UnbindMaterial();
     
     void DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod);
@@ -331,7 +336,10 @@ protected:
     int32 uniformFogColor;
 
     
-    Shader * activeShader;
+//    Shader * activeShader;
+
+    Shader * tileMaskShader;
+    Shader * fullTiledShader;
 
 	LandscapeCursor * cursor;
 
@@ -349,6 +357,17 @@ protected:
     bool BuildHeightmap();
     Heightmap *heightmap;
     String heightmapPath;
+    
+    enum eConst
+    {
+        TEXTURE_TILE_FULL_SIZE = 2048
+    };
+    
+    Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
+    Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
+
+    
+    int32 prevLodLayer;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()
