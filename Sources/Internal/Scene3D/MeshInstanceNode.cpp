@@ -36,6 +36,7 @@
 #include "Render/RenderHelper.h"
 #include "Utils/StringFormat.h"
 #include "Scene3D/ShadowVolumeNode.h"
+#include "Debug/Stats.h"
 
 namespace DAVA 
 {
@@ -83,6 +84,9 @@ MeshInstanceNode::MeshInstanceNode(Scene * _scene)
 :	SceneNode(_scene)
 {
 	materialState = new InstanceMaterialState();
+    
+//    Stats::Instance()->RegisterEvent("Scene.Update.MeshInstanceNode.Update", "Update time of MeshInstanceNode");
+//    Stats::Instance()->RegisterEvent("Scene.Draw.MeshInstanceNode.Draw", "Draw time of MeshInstanceNode");
 }
 	
 MeshInstanceNode::~MeshInstanceNode()
@@ -109,7 +113,8 @@ void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupInde
     
 void MeshInstanceNode::Update(float32 timeElapsed)
 {
-#define LOD_DEBUG
+    //Stats::Instance()->BeginTimeMeasure("Scene.Update.MeshInstanceNode.Update", this);
+
     bool needUpdateTransformBox = false;
     if (!(flags & NODE_WORLD_MATRIX_ACTUAL)) 
     {
@@ -126,10 +131,13 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     if (needUpdateTransformBox)
         bbox.GetTransformedBox(worldTransform, transformedBox);
 
+    //Stats::Instance()->EndTimeMeasure("Scene.Update.MeshInstanceNode.Update", this);
 }
     
 void MeshInstanceNode::Draw()
 {
+    //Stats::Instance()->BeginTimeMeasure("Scene.Draw.MeshInstanceNode.Draw", this);
+
 #if 1
     if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
 
@@ -289,6 +297,7 @@ void MeshInstanceNode::Draw()
 
 	SceneNode::Draw();
 #endif
+    //Stats::Instance()->EndTimeMeasure("Scene.Draw.MeshInstanceNode.Draw", this);
 }
 
 
