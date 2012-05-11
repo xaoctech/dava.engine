@@ -37,6 +37,7 @@
 #include "Render/RenderHelper.h"
 #include "Scene3D/SceneFileV2.h"
 #include "FileSystem/FileSystem.h"
+#include "Debug/Stats.h"
 
 
 namespace DAVA
@@ -60,10 +61,21 @@ SceneNode::SceneNode(Scene * _scene)
 	userData = 0;
     
     customProperties = new KeyedArchive();
+    
+//    Stats::Instance()->RegisterEvent("Scene.Update.SceneNode.Update", "SceneNode update time");
+//    Stats::Instance()->RegisterEvent("Scene.Draw.SceneNode.Draw", "SceneNode draw time");
 }
 
 SceneNode::~SceneNode()
 {
+    /*
+        TODO: Double check that everything is working fine.
+     */
+    if (scene)
+    {
+        scene->UnregisterNode(this);
+    }
+    
     RemoveAllChildren();
 	SafeRelease(userData);
 
@@ -275,6 +287,8 @@ void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
     
 void SceneNode::Update(float32 timeElapsed)
 {
+    //Stats::Instance()->BeginTimeMeasure("Scene.Update.SceneNode.Update", this);
+
 //    if (!(flags & NODE_UPDATABLE))return;
 
     inUpdate = true;
@@ -367,10 +381,13 @@ void SceneNode::Update(float32 timeElapsed)
         }
         removedCache.clear();
     }
+    //Stats::Instance()->EndTimeMeasure("Scene.Update.SceneNode.Update", this);
 }
 
 void SceneNode::Draw()
 {
+    //Stats::Instance()->BeginTimeMeasure("Scene.Draw.SceneNode.Draw", this);
+    
 	if (!(flags & NODE_VISIBLE) || !(flags & NODE_UPDATABLE) || (flags & NODE_INVALID))return;
 
 	//uint32 size = (uint32)children.size();
@@ -396,6 +413,7 @@ void SceneNode::Draw()
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
+    //Stats::Instance()->EndTimeMeasure("Scene.Draw.SceneNode.Draw", this);
 }
 
     
