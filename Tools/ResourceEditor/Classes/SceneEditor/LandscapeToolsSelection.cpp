@@ -114,6 +114,7 @@ void LandscapeToolsSelection::EnumerateTools()
             tools.push_back(tool);
         }
 	}
+    SafeRelease(fileList);
 }
 
 void LandscapeToolsSelection::ReleaseTools()
