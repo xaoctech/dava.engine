@@ -56,17 +56,13 @@ uniform mediump vec2 uvScale;
 // OUTPUT ATTRIBUTES
 varying vec2 varTexCoord0;
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 varying vec2 varTexCoord1;
 #endif
 
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
-#endif
-
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
-varying vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
