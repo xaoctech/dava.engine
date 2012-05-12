@@ -590,7 +590,6 @@ void LandscapeNode::ClearQueue()
 void LandscapeNode::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
 {
 //    Logger::Debug("QUAD: size = %d, x = %d, y = %d, lod = %d", currentNode->data.size, currentNode->data.x, currentNode->data.y, lod);
-
     int32 depth = currentNode->data.size / (1 << lod);
     if (depth == 1)
     {
@@ -1318,6 +1317,7 @@ void LandscapeNode::Draw()
     {
         DrawQuad(lod0quads[i], 0);
     }
+	FlushQueue();
 
     BindMaterial(1);
     int32 countNot0 = lodNot0quads.size();
@@ -1325,10 +1325,9 @@ void LandscapeNode::Draw()
     {
         DrawQuad(lodNot0quads[i], lodNot0quads[i]->data.lod);
     }
-    
-    
 	FlushQueue();
-//	DrawFans();
+
+	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
     if (debugFlags & DEBUG_DRAW_ALL)
