@@ -263,7 +263,7 @@ public:
 
     Heightmap *GetHeightmap();
     
-    String CreateFullTiledTexture();
+    void CreateFullTiledTexture();
     
 protected:	
     

@@ -1308,3 +1308,11 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 		ExportLandscapeAndMeshLightmaps(child);
 	}
 }
+
+void SceneEditorScreenMain::RecreteFullTilingTexture()
+{
+    for(int32 i = 0; i < bodies.size(); ++i)
+    {
+        bodies[i]->bodyControl->RecreteFullTilingTexture();
+    }
+}
