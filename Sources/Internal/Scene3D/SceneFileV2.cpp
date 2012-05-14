@@ -95,7 +95,7 @@ String SceneFileV2::AbsoluteToRelative(const String & absolutePathname)
     }
 
 //    replace(result, GetScenePath(), String(""));
-    result = FileSystem::RealPath(result); // normalize path
+    result = FileSystem::NormalizePath(result); // normalize path
     result = FileSystem::AbsoluteToRelativePath(GetScenePath(), result);
     return result;
 }
@@ -104,7 +104,7 @@ String SceneFileV2::RelativeToAbsolute(const String & relativePathname)
 {
     String result;
     result = GetScenePath() + relativePathname;
-    result = FileSystem::RealPath(result); // normalize path
+    result = FileSystem::NormalizePath(result); // normalize path
     return result;
 }
     

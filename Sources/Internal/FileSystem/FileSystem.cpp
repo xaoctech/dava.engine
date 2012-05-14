@@ -660,6 +660,52 @@ String FileSystem::RealPath(const String & _path)
 	return result;
 }
 
+String FileSystem::NormalizePath(const String & _path)
+{
+    String path = (_path);
+    std::replace(path.begin(), path.end(),'\\','/');
+
+    Vector<String> tokens;
+    Split(path, "/", tokens);
+
+    //TODO: do anything if token[0] == String(".")?
+    
+    for (int32 i = 0; i < (int32)tokens.size(); ++i)
+    {
+        if (String(".") == tokens[i])
+        {		
+            for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
+            {
+                tokens[k - 1] = tokens[k];
+            }
+            --i;
+            tokens.pop_back();
+        }
+        else if (String("..") == tokens[i])
+        {		
+            for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
+            {
+                tokens[k - 2] = tokens[k];
+            }
+            i-=2;
+            tokens.pop_back();
+            tokens.pop_back();
+        }	
+    }
+
+    String result = "";
+    if((0 < path.length()) && ('/' == path[0])) result = "/";
+    
+    for (int32 k = 0; k < (int32)tokens.size(); ++k)
+    {
+        result += tokens[k];
+        if (k + 1 != (int32)tokens.size())
+            result += String("/");
+    }
+    return result;
+}
+
+    
 String FileSystem::ReplaceExtension(const String & filename, const String & newExt)
 {
 	String::size_type dotpos = filename.rfind(".");
