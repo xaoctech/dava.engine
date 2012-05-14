@@ -109,6 +109,8 @@ public:
     void GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point);
     
     bool ToggleLandscapeEditor(int32 landscapeEditorMode);
+    
+    void RecreteFullTilingTexture();
 
     //LandscapeEditorDelegate
     virtual void LandscapeEditorStarted();  //Show LE Controls

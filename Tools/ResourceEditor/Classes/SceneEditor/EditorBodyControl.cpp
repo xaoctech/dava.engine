@@ -1125,6 +1125,17 @@ void EditorBodyControl::Draw(const UIGeometricData &geometricData)
     UIControl::Draw(geometricData);
 }
 
+void EditorBodyControl::RecreteFullTilingTexture()
+{
+    Vector<LandscapeNode *>landscapes;
+    scene->GetChildNodes(landscapes);
+    
+    for(int32 i = 0; i < landscapes.size(); ++i)
+    {
+        landscapes[i]->CreateFullTiledTexture();
+    }
+}
+
 #ifdef FORCE_LOD_UPDATE
 void EditorBodyControl::OnForceLod(BaseObject * object, void * userData, void * callerData)
 {

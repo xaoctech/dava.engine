@@ -47,7 +47,8 @@ namespace DAVA
 {
 REGISTER_CLASS(LandscapeNode);
 
-	
+//#define DRAW_OLD_STYLE
+
 LandscapeNode::LandscapeNode()
 	: SceneNode()
     , indices(0)
@@ -589,7 +590,6 @@ void LandscapeNode::ClearQueue()
 
 void LandscapeNode::DrawQuad(LandQuadTreeNode<LandscapeQuad> * currentNode, int8 lod)
 {
-//    Logger::Debug("QUAD: size = %d, x = %d, y = %d, lod = %d", currentNode->data.size, currentNode->data.x, currentNode->data.y, lod);
     int32 depth = currentNode->data.size / (1 << lod);
     if (depth == 1)
     {
@@ -858,7 +858,9 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 
             
         //RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
-//        DrawQuad(currentNode, maxLod);
+#if defined (DRAW_OLD_STYLE)        
+        DrawQuad(currentNode, maxLod);
+#else //#if defined (DRAW_OLD_STYLE)        
         currentNode->data.lod = maxLod;
         if(maxLod)
         {
@@ -868,8 +870,7 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
         {
             lod0quads.push_back(currentNode);
         }
-
-        
+#endif //#if defined (DRAW_OLD_STYLE)
         
         //RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
         //RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
@@ -1251,15 +1252,13 @@ void LandscapeNode::UnbindMaterial()
     prevLodLayer = -1;
 }
 
-
+    
+    
 void LandscapeNode::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
-//    Logger::Debug("*** [LandscapeNode::Draw] start");
-
-    
     
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
     if (debugFlags & DEBUG_DRAW_GRID)
@@ -1306,9 +1305,13 @@ void LandscapeNode::Draw()
     
     fans.clear();
     
+#if defined (DRAW_OLD_STYLE)    
+    BindMaterial(0);
+	Draw(&quadTreeHead);
+#else //#if defined (DRAW_OLD_STYLE)    
     lod0quads.clear();
     lodNot0quads.clear();
-
+    
 	Draw(&quadTreeHead);
     
     BindMaterial(0);
@@ -1318,15 +1321,36 @@ void LandscapeNode::Draw()
         DrawQuad(lod0quads[i], 0);
     }
 	FlushQueue();
-
+    
     BindMaterial(1);
     int32 countNot0 = lodNot0quads.size();
     for(int32 i = 0; i < countNot0; ++i)
     {
         DrawQuad(lodNot0quads[i], lodNot0quads[i]->data.lod);
     }
-	FlushQueue();
+#endif //#if defined (DRAW_OLD_STYLE)    
 
+//    lod0quads.clear();
+//    lodNot0quads.clear();
+//
+//	Draw(&quadTreeHead);
+//    
+//    BindMaterial(0);
+//    int32 count0 = lod0quads.size();
+//    for(int32 i = 0; i < count0; ++i)
+//    {
+//        DrawQuad(lod0quads[i], 0);
+//    }
+//	FlushQueue();
+//
+//    BindMaterial(1);
+//    int32 countNot0 = lodNot0quads.size();
+//    for(int32 i = 0; i < countNot0; ++i)
+//    {
+//        DrawQuad(lodNot0quads[i], lodNot0quads[i]->data.lod);
+//    }
+
+	FlushQueue();
 	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
@@ -1355,7 +1379,6 @@ void LandscapeNode::Draw()
 	}
     
     UnbindMaterial();
-//    Logger::Debug("*** [LandscapeNode::Draw] finish");
 
 //#if defined(__DAVAENGINE_MACOS__)
 //    if (debugFlags & DEBUG_DRAW_ALL)
@@ -1459,6 +1482,11 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
+        if(TEXTURE_TILE_FULL == k)
+        {
+            continue;
+        }
+
         String path = textureNames[k];
         String relPath  = sceneFile->AbsoluteToRelative(path);
         
@@ -1485,16 +1513,17 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
+        if(TEXTURE_TILE_FULL == k)
+        {
+            CreateFullTiledTexture();
+            continue;
+        }
+
         String textureName = archive->GetString(Format("tex_%d", k));
         String absPath = sceneFile->RelativeToAbsolute(textureName);
         if(sceneFile->DebugLogEnabled())
             Logger::Debug("landscape tex %d load: %s abs:%s", k, textureName.c_str(), absPath.c_str());
 
-        if(TEXTURE_TILE_FULL == k && "" == textureName)
-        {
-            absPath = CreateFullTiledTexture();
-        }
-        
         if (sceneFile->GetVersion() >= 4)
         {
             SetTexture((eTextureLevel)k, absPath);
@@ -1555,7 +1584,7 @@ Heightmap * LandscapeNode::GetHeightmap()
     return heightmap;
 }
 
-String LandscapeNode::CreateFullTiledTexture()
+void LandscapeNode::CreateFullTiledTexture()
 {
     //Set indexes
     Vector<float32> ftVertexes;
@@ -1631,17 +1660,18 @@ String LandscapeNode::CreateFullTiledTexture()
     SafeRelease(ftRenderData);
 
     // Safe To File
-    String colorTextureMame = GetTextureName(TEXTURE_COLOR);
-    String filename, pathname;
-    FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+//    String colorTextureMame = GetTextureName(TEXTURE_COLOR);
+//    String filename, pathname;
+//    FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+//    
+//    String pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+//    Image *image = fullTiled->CreateImageFromMemory();
+//    image->Save(pathToSave);
+//    SafeRelease(image);
     
-    String pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
-    Image *image = fullTiled->CreateImageFromMemory();
-    image->Save(pathToSave);
-    SafeRelease(image);
+    SetTexture(TEXTURE_TILE_FULL, fullTiled);
+    
     SafeRelease(fullTiled);
-    
-    return pathToSave;
 }
     
 };

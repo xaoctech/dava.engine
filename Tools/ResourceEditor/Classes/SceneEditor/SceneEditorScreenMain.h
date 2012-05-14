@@ -119,6 +119,8 @@ public:
 		UIButton *closeButton;
 		EditorBodyControl *bodyControl;
 	};
+    
+    void RecreteFullTilingTexture();
 
 private:
     

@@ -89,6 +89,7 @@ void GameCore::OnResume()
     ApplicationCore::OnResume();
     
     SceneValidator::Instance()->ReloadTextures();
+    sceneEditorScreenMain->RecreteFullTilingTexture();
 }
 
 void GameCore::OnBackground()
