@@ -55,6 +55,7 @@ void BVHierarchy::RegisterNode(SceneNode * node)
     MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
     if (meshInstance)
     {
+        //Logger::Debug("Register mesh: %p cn: %s", meshInstance, node->GetClassName().c_str());
         meshInstances.push_back(meshInstance);
     }
 }
@@ -64,6 +65,7 @@ void BVHierarchy::UnregisterNode(SceneNode * node)
     MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
     if (meshInstance)
     {
+        //Logger::Debug("Unregister mesh: %p cn: %s", meshInstance, node->GetClassName().c_str());
         uint32 size = (uint32)meshInstances.size();
         uint32 pos = 0;
         for (pos = 0; pos < size; ++pos)
@@ -90,6 +92,7 @@ void BVHierarchy::Cull()
     {
         MeshInstanceNode * node = meshInstances[pos];
         node->RemoveFlag(SceneNode::NODE_CLIPPED_THIS_FRAME);
+        //Logger::Debug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
         if (!frustum->IsInside(node->GetWorldTransformedBox()))
         {
             node->AddFlag(SceneNode::NODE_CLIPPED_THIS_FRAME);

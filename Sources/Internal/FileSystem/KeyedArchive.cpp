@@ -202,7 +202,7 @@ void KeyedArchive::SetVariant(const String & key, VariantType *value)
     
 void KeyedArchive::SetByteArrayFromArchive(const String & key, KeyedArchive * archive)
 {
-    DVWARNING(false, "Method is depriceted! Use SetArchive()");
+    //DVWARNING(false, "Method is depriceted! Use SetArchive()");
     DynamicMemoryFile * file = DynamicMemoryFile::Create(File::CREATE | File::WRITE);
     archive->Save(file);
     SetByteArray(key, (uint8*)file->GetData(), file->GetSize());

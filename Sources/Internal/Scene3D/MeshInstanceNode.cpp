@@ -83,6 +83,7 @@ Material * PolygonGroupWithMaterial::GetMaterial()
 MeshInstanceNode::MeshInstanceNode()
 :	SceneNode()
 {
+    //Logger::Debug("MeshInstance: %p", this);
 	materialState = new InstanceMaterialState();
     
 //    Stats::Instance()->RegisterEvent("Scene.Update.MeshInstanceNode.Update", "Update time of MeshInstanceNode");
@@ -100,6 +101,8 @@ MeshInstanceNode::~MeshInstanceNode()
     polygroups.clear();
     
     SafeRelease(materialState);
+
+    //Logger::Debug("~MeshInstance: %p", this);
 }
 
 void MeshInstanceNode::AddPolygonGroup(StaticMesh * mesh, int32 polygonGroupIndex, Material* material)
@@ -560,7 +563,6 @@ int32 MeshInstanceNode::GetLightmapCount()
 void MeshInstanceNode::CreateDynamicShadowNode()
 {
 	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();
-	shadowVolume->SetScene(GetScene());
 	shadowVolume->SetName("dynamicshadow.shadowvolume");
 
 	shadowVolume->CopyGeometryFrom(this);
@@ -578,7 +580,6 @@ void MeshInstanceNode::DeleteDynamicShadowNode()
 void MeshInstanceNode::ConvertToShadowVolume()
 {
 	ShadowVolumeNode * shadowVolume = new ShadowVolumeNode();
-	shadowVolume->SetScene(GetScene());
 	shadowVolume->SetName("dynamicshadow.shadowvolume");
 
 	shadowVolume->CopyGeometryFrom(this);
