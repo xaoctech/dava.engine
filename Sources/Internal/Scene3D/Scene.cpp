@@ -109,6 +109,7 @@ Scene::~Scene()
 
 void Scene::RegisterNode(SceneNode * node)
 {
+    //Logger::Debug("Register node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
     {
@@ -130,6 +131,8 @@ void Scene::RegisterNode(SceneNode * node)
 
 void Scene::UnregisterNode(SceneNode * node)
 {
+    //Logger::Debug("Unregister node: %s %p %s", node->GetFullName().c_str(), node, node->GetClassName().c_str());
+
     LightNode * light = dynamic_cast<LightNode*>(node);
     if (light)
         lights.erase(light);

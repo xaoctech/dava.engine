@@ -270,6 +270,13 @@ protected:
     class LandscapeQuad
     {
     public:
+        LandscapeQuad()
+        {
+            x = y = size = lod = 0;
+            rdoQuad = -1;
+            frame = 0;
+        }
+        
         int16   x, y;
         //int16   xbuf, ybuf;
         int16   size;

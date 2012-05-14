@@ -52,6 +52,8 @@ SceneNode::SceneNode()
     , inUpdate(false)
     , tag(0)
 {
+//    Logger::Debug("SceneNode: %p", this);
+
 	localTransform.Identity();
 	worldTransform.Identity();
     defaultLocalTransform.Identity();
@@ -71,15 +73,18 @@ SceneNode::~SceneNode()
     /*
         TODO: Double check that everything is working fine.
      */
-    if (scene)
-    {
-        scene->UnregisterNode(this);
-    }
+//    if (scene)
+//    {
+//        scene->UnregisterNode(this);
+//        scene = 0;
+//    }
+    DVASSERT(scene == 0);
     
     RemoveAllChildren();
 	SafeRelease(userData);
 
     SafeRelease(customProperties);
+//  Logger::Debug("~SceneNode: %p", this);
 }
 
 void SceneNode::SetScene(Scene * _scene)
@@ -181,6 +186,7 @@ void SceneNode::RemoveAllChildren()
 	for (std::vector<SceneNode*>::iterator t = children.begin(); t != children.end(); ++t)
 	{
         SceneNode *node = *t;
+        node->SetScene(0);
         node->SetParent(0);
         node->Release();
 	}
