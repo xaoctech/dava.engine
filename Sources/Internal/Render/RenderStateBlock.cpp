@@ -146,6 +146,7 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 			SetStensilTestInHW();
 
 		if (diffState & STATE_SCISSOR_TEST)
+			SetScissorTestInHW();
 
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
