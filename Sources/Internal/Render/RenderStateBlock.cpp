@@ -73,6 +73,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
 	depthFunc = CMP_LESS;
     shader = 0;
     cullMode = FACE_BACK;
+	scissorRect = Rect(0, 0, -1.f, -1.f);
     
     if (doHardwareReset)
     {
@@ -143,6 +144,9 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 
 		if (diffState & STATE_STENCIL_TEST)
 			SetStensilTestInHW();
+
+		if (diffState & STATE_SCISSOR_TEST)
+
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
             if (diffState & STATE_ALPHA_TEST)
@@ -189,6 +193,12 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 		{
 			SetDepthFuncInHW();
 			previousState->depthFunc = depthFunc;
+		}
+
+		if (changeSet & STATE_CHANGED_SCISSOR_RECT)
+		{
+			SetScissorRectInHW();
+			previousState->scissorRect = scissorRect;
 		}
         
         if (changeSet & STATE_CHANGED_TEXTURE0)
@@ -452,6 +462,23 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
 inline void RenderStateBlock::SetDepthFuncInHW()
 {
 	RENDER_VERIFY(glDepthFunc(COMPARE_FUNCTION_MAP[depthFunc]));
+}
+
+inline void RenderStateBlock::SetScissorTestInHW()
+{
+	if(state & STATE_SCISSOR_TEST)
+	{
+		RENDER_VERIFY(glEnable(GL_SCISSOR_TEST));
+	}
+	else
+	{
+		RENDER_VERIFY(glDisable(GL_SCISSOR_TEST));
+	}
+}
+
+inline void RenderStateBlock::SetScissorRectInHW()
+{
+	RENDER_VERIFY(glScissor(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy));
 }
 
 inline void RenderStateBlock::SetStencilRefInHW()

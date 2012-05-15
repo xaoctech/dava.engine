@@ -210,6 +210,7 @@
     <ClInclude Include="..\..\Sources\Internal\Math\Quaternion.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Ray.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Rect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\RectPacker.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Sphere.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Spline.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Vector.h" />
@@ -471,6 +472,7 @@
     <ClCompile Include="..\..\Sources\Internal\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Polygon2.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Polygon3.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Math\Spline.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkConnection.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkDelegate.cpp" />

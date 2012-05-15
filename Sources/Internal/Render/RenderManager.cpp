@@ -405,12 +405,12 @@ void RenderManager::SetRenderTarget(Sprite *renderTarget)
 	PushDrawMatrix();
 	PushMappingMatrix();
 	IdentityDrawMatrix();
-	SetHWRenderTarget(renderTarget);
+	SetHWRenderTargetSprite(renderTarget);
 }
 
 void RenderManager::SetRenderTarget(Texture * renderTarget)
 {
-	SetHWRenderTarget(renderTarget);
+	SetHWRenderTargetTexture(renderTarget);
 }
 
 void RenderManager::RestoreRenderTarget()
@@ -418,7 +418,7 @@ void RenderManager::RestoreRenderTarget()
 //	Logger::Info("Restore Render target");
 	RenderTarget rt = renderTargetStack.top();
 	renderTargetStack.pop();
-	SetHWRenderTarget(rt.spr);
+	SetHWRenderTargetSprite(rt.spr);
 
 	PopDrawMatrix();
 	PopMappingMatrix();

@@ -178,6 +178,8 @@ public:
         STATE_CULL = 1 << 4,
 
         STATE_ALPHA_TEST = 1 << 5,          // fixed func only / in programmable pipeline can check for consistency
+		STATE_SCISSOR_TEST = 1 << 6,
+
         STATE_TEXTURE0 = 1 << 8,            // fixed func only / in programmable pipeline only checks for consistency
         STATE_TEXTURE1 = 1 << 9,            // fixed func only / in programmable pipeline only checks for consistency
         STATE_TEXTURE2 = 1 << 10,            // fixed func only / in programmable pipeline only checks for consistency
@@ -187,7 +189,7 @@ public:
 		STATE_TEXTURE6 = 1 << 14,
 		STATE_TEXTURE7 = 1 << 15,
         
-        STATE_COLORMASK_RED =  1 << 15,
+        STATE_COLORMASK_RED =  1 << 16,
         STATE_COLORMASK_GREEN = 1 << 17,
         STATE_COLORMASK_BLUE = 1 << 18,
         STATE_COLORMASK_ALPHA = 1 << 19,
@@ -215,6 +217,7 @@ public:
         STATE_CHANGED_SHADER = 1 << 4,
         STATE_CHANGED_ALPHA_FUNC = 1 << 5,
 		STATE_CHANGED_DEPTH_FUNC = 1 << 6,
+		STATE_CHANGED_SCISSOR_RECT = 1 << 7,
     
         STATE_CHANGED_TEXTURE0 = 1 << 8,        
         STATE_CHANGED_TEXTURE1 = 1 << 9,        
@@ -283,6 +286,7 @@ public:
     eCmpFunc alphaFunc;
     uint8    alphaFuncCmpValue;
 	eCmpFunc depthFunc;
+	Rect scissorRect;
 
 	struct StencilState
 	{
@@ -338,9 +342,9 @@ public:
 	inline void SetStencilFail(eFace face, eStencilOp operation);
 	inline void SetStencilZFail(eFace face, eStencilOp operation);
 
+	//SCISSOR
+	inline void SetScissorRect(const Rect & rect);
 
-    
-    
     inline void SetTextureLevelInHW(uint32 textureLevel);
     inline void SetBlendModeInHW();
     inline void SetDepthTestInHW();
@@ -362,6 +366,9 @@ public:
 	inline void SetStencilFailInHW();
 	inline void SetStencilZFailInHW();
 	inline void SetStencilOpInHW();
+
+	inline void SetScissorTestInHW();
+	inline void SetScissorRectInHW();
     
     /**
         Function to reset state to original zero state.
@@ -472,6 +479,15 @@ inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
 	{
 		depthFunc = func;
 		changeSet |= STATE_CHANGED_DEPTH_FUNC;
+	}
+}
+
+inline void RenderStateBlock::SetScissorRect(const Rect & rect)
+{
+	if(scissorRect != rect)
+	{
+		scissorRect = rect;
+		changeSet |= STATE_CHANGED_SCISSOR_RECT;
 	}
 }
     

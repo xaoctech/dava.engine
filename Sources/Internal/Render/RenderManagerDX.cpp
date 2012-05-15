@@ -1156,7 +1156,7 @@ void RenderManager::SetHWClip(const Rect &rect)
 	direct3DDevice->SetScissorRect(&hwRect);
 }
 
-void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
+void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 {
 	//Logger::Debug("[RenderManagerDX9] set render target: 0x%08x", renderTarget);
 	if (renderTarget == 0)
@@ -1236,7 +1236,7 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	currentRenderTarget = renderTarget;
 }
 
-void RenderManager::SetHWRenderTarget(Texture * renderTarget)
+void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 {
 
 }

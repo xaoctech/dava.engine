@@ -346,7 +346,7 @@ public:
         \brief Clear rendering surface with required color 
         \param[in] r,g,b,a Clear color components
 	 */
-	virtual void ClearWithColor(float32 r, float32 g, float32 b, float32 a);\
+	virtual void ClearWithColor(float32 r, float32 g, float32 b, float32 a);
     
     /** 
         \brief Clear attached depth buffer with requested depth
@@ -623,8 +623,8 @@ protected:
 	Rect currentClip;
 	
 	void SetHWClip(const Rect &rect);
-	void SetHWRenderTarget(Sprite *renderTarget);
-	void SetHWRenderTarget(Texture * renderTarget);
+	void SetHWRenderTargetSprite(Sprite *renderTarget);
+	void SetHWRenderTargetTexture(Texture * renderTarget);
 	void SetNewRenderEffect(RenderEffect *renderEffect);
 	
 	bool debugEnabled;
