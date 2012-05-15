@@ -121,7 +121,7 @@ void LandscapeEditorBase::Toggle()
             delegate->LandscapeEditorStarted();
         }
         
-        workingLandscape->CreateFullTiledTexture();
+        workingLandscape->UpdateFullTiledTexture();
         
         ShowAction();
     }

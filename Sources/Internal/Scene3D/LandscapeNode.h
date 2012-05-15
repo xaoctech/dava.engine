@@ -263,7 +263,10 @@ public:
 
     Heightmap *GetHeightmap();
     
-    void CreateFullTiledTexture();
+    void EnableFullTiledTexture(bool enabled);
+    bool IsFullTiledTextureEnabled();
+    void UpdateFullTiledTexture();
+    String SaveFullTiledTexture();
     
 protected:	
     
@@ -373,8 +376,10 @@ protected:
     Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
     Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
 
-    
     int32 prevLodLayer;
+    Texture *CreateFullTiledTexture();
+    
+    bool enabledFullTiledTexture;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()

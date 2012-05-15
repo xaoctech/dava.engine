@@ -47,8 +47,9 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     bool showGrid =  (0 != (landscape->GetDebugFlags() & SceneNode::DEBUG_DRAW_GRID));
     propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
     
+    propertyList->AddBoolProperty("property.landscape.fulltiledtexture", PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetBoolPropertyValue("property.landscape.fulltiledtexture", landscape->IsFullTiledTextureEnabled());
 
-    
     Vector3 size(445.0f, 445.0f, 50.f);
     AABBox3 bbox = landscape->GetBoundingBox();
     AABBox3 emptyBox;
@@ -309,7 +310,7 @@ void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel 
     SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(level));
     Texture::DisableMipmapGeneration();
 
-    landscape->CreateFullTiledTexture();
+    landscape->UpdateFullTiledTexture();
 }
 
 
@@ -408,6 +409,11 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
         {
             landscape->SetDebugFlags(landscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
         }
+    }
+    else if(forKey == "property.landscape.fulltiledtexture")
+    {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+        landscape->EnableFullTiledTexture(newValue);
     }
     
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
