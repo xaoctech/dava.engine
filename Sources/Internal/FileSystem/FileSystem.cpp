@@ -668,8 +668,7 @@ String FileSystem::NormalizePath(const String & _path)
     Vector<String> tokens;
     Split(path, "/", tokens);
 
-    //TODO: do anything if token[0] == String(".")?
-    
+    //TODO: correctly process situation ../../folders/filename
     for (int32 i = 0; i < (int32)tokens.size(); ++i)
     {
         if (String(".") == tokens[i])
@@ -681,7 +680,7 @@ String FileSystem::NormalizePath(const String & _path)
             --i;
             tokens.pop_back();
         }
-        else if (String("..") == tokens[i])
+        else if ((1 <= i) && (String("..") == tokens[i] && String("..") != tokens[i-1]))
         {		
             for (int32 k = i + 1; k < (int32)tokens.size(); ++k)
             {
