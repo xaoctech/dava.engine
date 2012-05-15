@@ -180,35 +180,35 @@ void SceneEditorScreenMain::CreateTopMenu()
     int32 y = 0;
     int32 dx = ControlsFactory::BUTTON_WIDTH;
     int32 dy = ControlsFactory::BUTTON_HEIGHT;
-    btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.open"));
+    btnOpen = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.open"), true);
     ControlsFactory::CustomizeButtonExpandable(btnOpen);
     x += dx;
-    btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.save"));
+    btnSave = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.save"), true);
     x += dx;
     btnExport = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.export"));
     ControlsFactory::CustomizeButtonExpandable(btnExport);
     x += dx;
-    btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.materials"));
+    btnMaterials = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.materials"), true);
     x += dx;
-    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.createnode"));
+    btnCreate = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.createnode"), true);
     ControlsFactory::CustomizeButtonExpandable(btnCreate);
-    x += dx;
-    btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.new"));
     x += dx;
     btnProject = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.openproject"));
 #ifdef __DAVAENGINE_BEAST__
 	x += dx;
-	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast"));
+	btnBeast = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.beast"), true);
 #endif //#ifdef __DAVAENGINE_BEAST__
 	x += dx;
-	btnLandscapeHeightmap = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.heightmap"));
+	btnLandscapeHeightmap = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.heightmap"), true);
 	x += dx;
-	btnLandscapeColor = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.colormap"));
+	btnLandscapeColor = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.landscape.colormap"), true);
 	x += dx;
 	btnViewPortSize = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.viewport"));
     ControlsFactory::CustomizeButtonExpandable(btnViewPortSize);
 	x += dx;
 	btnTextureConverter = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.textureconvertor"));
+    x += dx;
+    btnNew = ControlsFactory::CreateButton(Rect(x, y, dx, dy), LocalizedString(L"menu.new"));
     
     
 
@@ -1269,6 +1269,9 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
     if(land) 
     {
+        String fullTiledTexture = land->SaveFullTiledTexture();
+        land->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, fullTiledTexture);
+        
         ExportTexture(land->GetHeightmapPathname());
         for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
         {

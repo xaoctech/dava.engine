@@ -4,21 +4,21 @@ Font* ControlsFactory::fontLight = NULL;
 Font* ControlsFactory::fontDark = NULL;
 Font* ControlsFactory::fontError = NULL;
 
-UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText)
+UIButton * ControlsFactory::CreateButton(Vector2 pos, const WideString &buttonText, bool designers)
 {
     UIButton *btn = new UIButton(Rect(pos.x, pos.y, BUTTON_WIDTH, BUTTON_HEIGHT));
-    CustomizeButton(btn, buttonText);
+    CustomizeButton(btn, buttonText, designers);
     return btn;
 }
 
-UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &buttonText)
+UIButton * ControlsFactory::CreateButton(const Rect & rect, const WideString &buttonText, bool designers)
 {
     UIButton *btn = new UIButton(rect);
-    CustomizeButton(btn, buttonText);
+    CustomizeButton(btn, buttonText, designers);
     return btn;
 }
 
-void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonText)
+void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonText, bool designers)
 {
     Font *font = GetFontLight();
     
@@ -27,7 +27,14 @@ void ControlsFactory::CustomizeButton(UIButton *btn, const WideString &buttonTex
     btn->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
     btn->SetStateDrawType(UIControl::STATE_SELECTED, UIControlBackground::DRAW_FILL);
     
-    btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
+    if(designers)
+    {
+        btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(97.f / 255.f, 69.f / 255.f, 68.f / 255.f, 1.f));
+    }
+    else 
+    {
+        btn->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
+    }
     btn->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     btn->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     btn->GetStateBackground(UIControl::STATE_SELECTED)->SetColor(Color(0.0f, 0.0f, 1.0f, 0.2f));
