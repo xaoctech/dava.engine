@@ -380,6 +380,7 @@ protected:
     Texture *CreateFullTiledTexture();
     
     bool enabledFullTiledTexture;
+    int32 flashQueueCounter;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()
