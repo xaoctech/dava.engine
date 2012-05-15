@@ -123,7 +123,11 @@ void LandscapeNode::InitShaders()
     uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("texture3Tiling");
     
     uniformFogColor = tileMaskShader->FindUniformLocationByName("fogColor");
-    uniformFogDensity = tileMaskShader->FindUniformLocationByName("fogDensity");            
+    uniformFogDensity = tileMaskShader->FindUniformLocationByName("fogDensity");   
+    
+    fullTiledShader = new Shader();
+    fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
+    fullTiledShader->Recompile();
 }
     
 void LandscapeNode::ReleaseShaders()
@@ -580,6 +584,8 @@ void LandscapeNode::FlushQueue()
     RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, queueRenderCount, EIF_16, indices); 
 
     ClearQueue();
+    
+    ++flashQueueCounter;
 }
     
 void LandscapeNode::ClearQueue()
@@ -1223,12 +1229,12 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
     }
     else 
     {
-        RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-        
         DVASSERT(textures[TEXTURE_TILE_FULL]);
-        
         if (textures[TEXTURE_TILE_FULL])
             RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_FULL], 0);
+
+        RenderManager::Instance()->SetShader(fullTiledShader);
+        RenderManager::Instance()->FlushState();
     }
     
     prevLodLayer = lodLayer;
@@ -1251,6 +1257,9 @@ void LandscapeNode::UnbindMaterial()
     else if(-1 != prevLodLayer)
     {
         RenderManager::Instance()->SetTexture(0, 0);
+        
+        RenderManager::Instance()->SetShader(NULL);
+        RenderManager::Instance()->FlushState();
     }
 
     prevLodLayer = -1;
@@ -1310,6 +1319,8 @@ void LandscapeNode::Draw()
     
     fans.clear();
     
+    flashQueueCounter = 0;
+    
 #if defined (DRAW_OLD_STYLE)    
     BindMaterial(0);
 	Draw(&quadTreeHead);
@@ -1360,6 +1371,9 @@ void LandscapeNode::Draw()
 //    }
 
 	FlushQueue();
+    
+//    Logger::Debug("[LN] flashQueueCounter = %d", flashQueueCounter);
+    
 	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
@@ -1708,6 +1722,12 @@ String LandscapeNode::SaveFullTiledTexture()
 void LandscapeNode::UpdateFullTiledTexture()
 {
     Logger::Debug("[LN] UpdateFullTiledTexture");
+    
+#ifdef DRAW_OLD_STYLE
+    Logger::Debug("**** DRAW_OLD_STYLE");
+#else
+    Logger::Debug("**** DRAW_NEW_STYLE");
+#endif 
     
     Texture *t = CreateFullTiledTexture();
     t->GenerateMipmaps();
