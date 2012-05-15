@@ -1132,7 +1132,7 @@ void EditorBodyControl::RecreteFullTilingTexture()
     
     for(int32 i = 0; i < landscapes.size(); ++i)
     {
-        landscapes[i]->CreateFullTiledTexture();
+        landscapes[i]->UpdateFullTiledTexture();
     }
 }
 

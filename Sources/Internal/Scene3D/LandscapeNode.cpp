@@ -83,6 +83,7 @@ LandscapeNode::LandscapeNode()
     Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
     
     prevLodLayer = -1;
+    EnableFullTiledTexture(true);
 }
 
 LandscapeNode::~LandscapeNode()
@@ -1223,6 +1224,9 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
     else 
     {
         RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+        
+        DVASSERT(textures[TEXTURE_TILE_FULL]);
+        
         if (textures[TEXTURE_TILE_FULL])
             RenderManager::Instance()->SetTexture(textures[TEXTURE_TILE_FULL], 0);
     }
@@ -1279,9 +1283,10 @@ void LandscapeNode::Draw()
     {
         RenderManager::Instance()->ResetColor();
     }
+#else 
+    RenderManager::Instance()->ResetColor();
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
-//    RenderManager::Instance()->ResetColor();
 
     ClearQueue();
 
@@ -1322,7 +1327,11 @@ void LandscapeNode::Draw()
     }
 	FlushQueue();
     
-    BindMaterial(1);
+    if(enabledFullTiledTexture)
+    {
+        BindMaterial(1);
+    }
+    
     int32 countNot0 = lodNot0quads.size();
     for(int32 i = 0; i < countNot0; ++i)
     {
@@ -1513,12 +1522,6 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        if(TEXTURE_TILE_FULL == k)
-        {
-            CreateFullTiledTexture();
-            continue;
-        }
-
         String textureName = archive->GetString(Format("tex_%d", k));
         String absPath = sceneFile->RelativeToAbsolute(textureName);
         if(sceneFile->DebugLogEnabled())
@@ -1526,8 +1529,24 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
         if (sceneFile->GetVersion() >= 4)
         {
-            SetTexture((eTextureLevel)k, absPath);
-            textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+            if(TEXTURE_TILE_FULL == k)// && (String("") == absPath))
+            {
+                Image *testImg = Image::CreateFromFile(absPath);
+                if(testImg)
+                {
+                    SafeRelease(testImg);
+                    SetTexture((eTextureLevel)k, absPath);
+                }
+                else 
+                {
+                    UpdateFullTiledTexture();
+                }
+            }
+            else 
+            {
+                SetTexture((eTextureLevel)k, absPath);
+                textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
+            }
         }
         else
         {
@@ -1584,7 +1603,7 @@ Heightmap * LandscapeNode::GetHeightmap()
     return heightmap;
 }
 
-void LandscapeNode::CreateFullTiledTexture()
+Texture * LandscapeNode::CreateFullTiledTexture()
 {
     //Set indexes
     Vector<float32> ftVertexes;
@@ -1592,8 +1611,8 @@ void LandscapeNode::CreateFullTiledTexture()
     
     float32 x0 = 0;
     float32 y0 = 0;
-    float32 x1 = TEXTURE_TILE_FULL_SIZE-1;
-    float32 y1 = TEXTURE_TILE_FULL_SIZE-1;
+    float32 x1 = TEXTURE_TILE_FULL_SIZE;
+    float32 y1 = TEXTURE_TILE_FULL_SIZE;
     
     //triangle 1
     //0, 0
@@ -1635,6 +1654,7 @@ void LandscapeNode::CreateFullTiledTexture()
     Rect oldViewport = RenderManager::Instance()->GetViewport();
     
     Texture *fullTiled = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888, Texture::DEPTH_NONE);
+//    fullTiled->GenerateMipmaps();
     RenderManager::Instance()->SetRenderTarget(fullTiled);
 
 	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);
@@ -1654,24 +1674,56 @@ void LandscapeNode::CreateFullTiledTexture()
 
 #ifdef __DAVAENGINE_OPENGL__
 	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
-#endif
+#endif //#ifdef __DAVAENGINE_OPENGL__
     
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
 
-    // Safe To File
-//    String colorTextureMame = GetTextureName(TEXTURE_COLOR);
-//    String filename, pathname;
-//    FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
-//    
-//    String pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
-//    Image *image = fullTiled->CreateImageFromMemory();
-//    image->Save(pathToSave);
-//    SafeRelease(image);
-    
-    SetTexture(TEXTURE_TILE_FULL, fullTiled);
-    
-    SafeRelease(fullTiled);
+    return fullTiled;
 }
+    
+String LandscapeNode::SaveFullTiledTexture()
+{
+    String pathToSave = String("");
+    
+    if(textures[TEXTURE_TILE_FULL])
+    {
+        String colorTextureMame = GetTextureName(TEXTURE_COLOR);
+        String filename, pathname;
+        FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+        
+        String pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+        Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+        if(image)
+        {
+            image->Save(pathToSave);
+            SafeRelease(image);
+        }
+    }
+    
+    Logger::Debug("[LN] SaveFullTiledTexture: %s", pathToSave.c_str());
+    return pathToSave;
+}
+    
+void LandscapeNode::UpdateFullTiledTexture()
+{
+    Logger::Debug("[LN] UpdateFullTiledTexture");
+    
+    Texture *t = CreateFullTiledTexture();
+    t->GenerateMipmaps();
+    SetTexture(TEXTURE_TILE_FULL, t);
+    SafeRelease(t);
+}
+    
+void LandscapeNode::EnableFullTiledTexture(bool enabled)
+{
+    enabledFullTiledTexture = enabled;
+}
+    
+bool LandscapeNode::IsFullTiledTextureEnabled()
+{
+    return enabledFullTiledTexture;
+}
+
     
 };
