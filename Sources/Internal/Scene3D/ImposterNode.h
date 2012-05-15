@@ -30,6 +30,7 @@
 
 #include "Scene3D/Scene.h"
 #include "Render/RenderDataObject.h"
+#include "Render/SharedFBO.h"
 
 namespace DAVA
 {
@@ -64,6 +65,9 @@ public:
 	void OnAddedToQueue();
 	void ApproveRedraw();
 
+	void SetManager(ImposterManager * manager);
+	void SetSharedFBO(SharedFBO * fbo);
+
 private:
 	void AskForRedraw();
 	void ClearGeometry();
@@ -76,7 +80,6 @@ private:
 
 	Vector3 imposterVertices[4];
 	RenderDataObject * renderData;
-	Texture * fbo;
 
 	Vector<float32> verts;
 	Vector<float32> texCoords;
@@ -88,8 +91,10 @@ private:
 
 	ImposterManager * manager;
 
-	void RecreateFbo(const Vector2 & size);
+	SharedFBO * fbo;
+	SharedFBO::Block * block;
 
+	void RecreateFbo(const Vector2 & size);
 	void HierarchicalRemoveCull(SceneNode * node);
 };
 
