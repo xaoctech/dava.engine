@@ -445,7 +445,15 @@ void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
             }
         }
         
-        archive->SetFloat(Format("lod%d_dist", lodIdx), GetLodLayerDistance(lodIdx));
+        float32 distance = GetLodLayerDistance(lodIdx);
+        if(INVALID_DISTANCE == distance)
+        {
+            archive->SetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
+        }
+        else 
+        {
+            archive->SetFloat(Format("lod%d_dist", lodIdx), distance);
+        }
         
         lodIdx++;
     }
@@ -471,6 +479,10 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         }
         
         float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
+        if(INVALID_DISTANCE == distance)
+        {   // TemporaryFix
+            distance = GetDefaultDistance(lodIdx);
+        }
         SetLodLayerDistance(lodIdx, distance);
     }
 }
@@ -556,7 +568,7 @@ void LodNode::SetLodLayerDistance(int32 layerNum, float32 distance)
     
 float32 LodNode::GetDefaultDistance(int32 layer)
 {
-    float32 distance = MIN_LOD_DISTANCE + ((float32)(MAX_LOD_DISTANCE - MIN_LOD_DISTANCE) / MAX_LOD_LAYERS) * layer;
+    float32 distance = MIN_LOD_DISTANCE + ((float32)(MAX_LOD_DISTANCE - MIN_LOD_DISTANCE) / (MAX_LOD_LAYERS-1)) * layer;
     return distance;
 }
 
