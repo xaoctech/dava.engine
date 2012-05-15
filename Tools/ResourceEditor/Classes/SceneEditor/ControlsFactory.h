@@ -44,9 +44,9 @@ public:
     
     static void AddBorder(UIControl *c);
     
-    static UIButton *CreateButton(Vector2 pos, const WideString &buttonText);
-    static UIButton *CreateButton(const Rect & rect, const WideString &buttonText);
-    static void CustomizeButton(UIButton *btn, const WideString &buttonText);
+    static UIButton *CreateButton(Vector2 pos, const WideString &buttonText, bool designers = false);
+    static UIButton *CreateButton(const Rect & rect, const WideString &buttonText, bool designers = false);
+    static void CustomizeButton(UIButton *btn, const WideString &buttonText, bool designers = false);
 
     static void CustomizeButtonExpandable(UIButton *btn);
 
