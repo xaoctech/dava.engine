@@ -225,11 +225,13 @@ void ImposterNode::UpdateImposter()
 	
 	RenderManager::Instance()->SetRenderTarget(fbo->GetTexture());
 
-	RenderManager::Instance()->SetClip(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
+	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_SCISSOR_TEST);
+	RenderManager::Instance()->State()->SetScissorRect(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
+	RenderManager::Instance()->FlushState();
 	//TODO: use one "clear" function instead of two
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	RenderManager::Instance()->ClearDepthBuffer();
-	RenderManager::Instance()->SetClip(Rect(-1.f, -1.f, -1.f, -1.f));
+	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_SCISSOR_TEST);
 
 	RenderManager::Instance()->SetViewport(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy), true);
 
@@ -240,6 +242,7 @@ void ImposterNode::UpdateImposter()
 
 	//TODO: remove this call
 	HierarchicalRemoveCull(child);
+	RenderManager::Instance()->FlushState();
 	child->Draw();
 
 	//RenderManager::Instance()->SetRenderTarget((Texture*)0); //weird, but SetRenderTarget(0) is ambiguous call
