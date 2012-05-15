@@ -668,7 +668,7 @@ void RenderManager::SetHWClip(const Rect &rect)
 }
 
 
-void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
+void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 {
 	if (renderTarget == NULL)
 	{
@@ -730,9 +730,11 @@ void RenderManager::SetHWRenderTarget(Sprite *renderTarget)
 	currentRenderTarget = renderTarget;
 }
 
-void RenderManager::SetHWRenderTarget(Texture * renderTarget)
+void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 {
 	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
+	//IdentityModelMatrix();
+	//IdentityMappingMatrix();
 	BindFBO(renderTarget->fboID);
 	SetViewport(Rect(0, 0, renderTarget->width, renderTarget->height), true);
 	RemoveClip();
