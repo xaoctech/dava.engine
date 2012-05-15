@@ -1692,7 +1692,7 @@ String LandscapeNode::SaveFullTiledTexture()
         String filename, pathname;
         FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
         
-        String pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+        pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
         Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
         if(image)
         {
