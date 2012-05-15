@@ -217,6 +217,7 @@ void EditorBodyControl::PopDebugCamera()
 void EditorBodyControl::ReleaseScene()
 {
     //TODO: need to release root nodes?
+    ResetSelection();
     
     SafeRelease(scene);
     SafeRelease(cameraController);
@@ -1023,8 +1024,11 @@ void EditorBodyControl::Refresh()
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
-    sceneGraph->SelectNode(node);
-    dataGraph->RefreshGraph();
+    if(sceneGraph)
+        sceneGraph->SelectNode(node);
+    
+    if(dataGraph)
+        dataGraph->RefreshGraph();
 }
 
 void EditorBodyControl::ResetSelection()
