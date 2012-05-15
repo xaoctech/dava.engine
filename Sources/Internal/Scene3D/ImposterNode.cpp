@@ -40,15 +40,20 @@ ImposterNode::ImposterNode()
 {
 	state = STATE_3D;
 	renderData = 0;
-	fbo = 0;
 	manager = 0;
 	distanceSquaredToCamera = 0;
 	isReady = false;
+	block = 0;
+	fbo = 0;
 }
 
 ImposterNode::~ImposterNode()
 {
-	SafeRelease(fbo);
+	if(block && fbo)
+	{
+		fbo->ReleaseBlock(block);
+		block = 0;
+	}
 	SafeRelease(renderData);
 }
 
@@ -87,7 +92,7 @@ void ImposterNode::UpdateState()
 				newDirection.Normalize();
 				float32 distanceDelta = distanceSquare/distanceSquaredToCamera;
 				if((newDirection.DotProduct(direction) < 0.996f) 
-					|| (distanceDelta < 0.25f/*0.5^2*/) 
+					|| (distanceDelta < 0.25f/*0.5^2*/) //if distance is doubled or halved
 					|| (distanceDelta > 4.f/*2^2*/))
 				{
 					AskForRedraw();
@@ -198,6 +203,10 @@ void ImposterNode::UpdateImposter()
 
 	//draw
 	RecreateFbo(screenSize);
+	if(!block)
+	{
+		return;
+	}
 
 	direction = camera->GetPosition()-center;
 	direction.Normalize();
@@ -208,25 +217,33 @@ void ImposterNode::UpdateImposter()
 	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
 	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
 	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
+	
 	//TODO: calculate instead of +50
 	imposterCamera->Setup(-w/2.f, w/2.f, -h/2.f, h/2.f, nearPlane, nearPlane+50.f);
 
 	Rect oldViewport = RenderManager::Instance()->GetViewport();
+	
+	RenderManager::Instance()->SetRenderTarget(fbo->GetTexture());
 
-	RenderManager::Instance()->SetRenderTarget(fbo);
+	RenderManager::Instance()->SetClip(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
+	//TODO: use one "clear" function instead of two
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+	RenderManager::Instance()->ClearDepthBuffer();
+	RenderManager::Instance()->SetClip(Rect(-1.f, -1.f, -1.f, -1.f));
+
+	RenderManager::Instance()->SetViewport(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy), true);
+
 	imposterCamera->SetTarget(center);
 	imposterCamera->Set();
-	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
-	RenderManager::Instance()->ClearDepthBuffer();
+	//RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
+	//RenderManager::Instance()->ClearDepthBuffer();
 
 	//TODO: remove this call
 	HierarchicalRemoveCull(child);
 	child->Draw();
 
-#ifdef __DAVAENGINE_OPENGL__
+	//RenderManager::Instance()->SetRenderTarget((Texture*)0); //weird, but SetRenderTarget(0) is ambiguous call
 	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
-#endif
-
 	RenderManager::Instance()->SetViewport(oldViewport, true);
 		
 	isReady = true;
@@ -276,6 +293,11 @@ void ImposterNode::HierarchicalRemoveCull(SceneNode * node)
 
 void ImposterNode::DrawImposter()
 {
+	if(!block)
+	{
+		return;
+	}
+
 	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 	const Matrix4 & cameraMatrix = scene->GetCurrentCamera()->GetMatrix();
 	Matrix4 meshFinalMatrix;
@@ -295,7 +317,7 @@ void ImposterNode::DrawImposter()
 	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 
-	RenderManager::Instance()->SetTexture(fbo);
+	RenderManager::Instance()->SetTexture(fbo->GetTexture());
 
 	RenderManager::Instance()->SetRenderData(renderData);
 
@@ -348,17 +370,25 @@ void ImposterNode::CreateGeometry()
 	verts.push_back(imposterVertices[3].y);
 	verts.push_back(imposterVertices[3].z);
 
-	texCoords.push_back(0);
-	texCoords.push_back(0);
+	float32 fboWidth = (float32)fbo->GetTexture()->GetWidth();
+	float32 fboHeight = (float32)fbo->GetTexture()->GetHeight();
+	float32 uMin, uMax, vMin, vMax;
+	uMin = block->offset.x/fboWidth;
+	vMin = block->offset.y/fboHeight;
+	uMax = (block->offset.x+block->size.dx)/fboWidth;
+	vMax = (block->offset.y+block->size.dy)/fboHeight;
 
-	texCoords.push_back(1);
-	texCoords.push_back(0);
+	texCoords.push_back(uMin);
+	texCoords.push_back(vMin);
 
-	texCoords.push_back(0);
-	texCoords.push_back(1);
+	texCoords.push_back(uMax);
+	texCoords.push_back(vMin);
 
-	texCoords.push_back(1);
-	texCoords.push_back(1);
+	texCoords.push_back(uMin);
+	texCoords.push_back(vMax);
+
+	texCoords.push_back(uMax);
+	texCoords.push_back(vMax);
 
 	renderData = new RenderDataObject();
 	renderData->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &(verts[0]));
@@ -398,18 +428,26 @@ void ImposterNode::ApproveRedraw()
 
 void ImposterNode::RecreateFbo(const Vector2 & size)
 {
-	if(fbo)
+	if(block)
 	{
-			DVASSERT(fbo->GetRetainCount() == 1);
+		fbo->ReleaseBlock(block);
 	}
-
-	SafeRelease(fbo);
-	fbo = Texture::CreateFBO((uint32)(size.x*1.2f), (uint32)(size.y*1.2f), FORMAT_RGBA4444, Texture::DEPTH_RENDERBUFFER);
+	block = fbo->AcquireBlock(size);
 }
 
 bool ImposterNode::IsQueued()
 {
 	return (STATE_QUEUED == state);
+}
+
+void ImposterNode::SetManager(ImposterManager * _manager)
+{
+	manager = _manager;
+}
+
+void ImposterNode::SetSharedFBO(SharedFBO * _fbo)
+{
+	fbo = _fbo;
 }
 
 }

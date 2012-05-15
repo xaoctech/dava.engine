@@ -30,13 +30,50 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-
+#include "Base/BaseMath.h"
+#include "Render/RenderBase.h"
+#include "Render/Texture.h"
+	
 namespace DAVA
 {
 
 class SharedFBO : public BaseObject
 {
+public:
+	struct Block
+	{
+		Vector2 offset;
+		Vector2 size;
 
+		int32 poolIndex;//for internal usage
+	};
+
+	struct Setup
+	{
+		Vector2 size; //texture size
+		PixelFormat pixelFormat;
+		Texture::DepthFormat depthFormat;
+		Vector<std::pair<int32, Vector2> > blocks; //pair is <blocksCount, blockSize>
+	};
+
+	SharedFBO(Setup * setup);
+	~SharedFBO();
+
+	Block * AcquireBlock(const Vector2 & size);
+	void ReleaseBlock(Block * block);
+	Texture * GetTexture();
+
+private:
+	SharedFBO();
+	Texture * texture;
+	Vector<Block*> blocks;
+
+	Vector<Vector2> sizes;
+	Vector<Deque<Block*> > queues;
+	Vector<int32> frees;
+
+	int32 FindIndexForSize(const Vector2 & size);
+	Block * GetBlock(int32 poolIndex);
 };
 
 };

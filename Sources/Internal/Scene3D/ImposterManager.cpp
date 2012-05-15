@@ -27,18 +27,26 @@
 
 #include "ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
+#include "Render/SharedFBO.h"
 
 namespace DAVA
 {
 
 ImposterManager::ImposterManager()
 {
+	SharedFBO::Setup setup;
+	setup.size = Vector2(2048, 2048);
+	setup.pixelFormat = FORMAT_RGBA4444;
+	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
+	setup.blocks.push_back(std::pair<int32, Vector2>(8, Vector2(256.f, 256.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(224, Vector2(128.f, 128.f)));
 
+	sharedFBO = new SharedFBO(&setup);
 }
 
 ImposterManager::~ImposterManager()
 {
-
+	SafeRelease(sharedFBO);
 }
 
 bool ImposterManager::IsEmpty()
@@ -88,6 +96,8 @@ void ImposterManager::Add(ImposterNode * node)
 	List<ImposterNode*>::iterator iter = find(imposters.begin(), imposters.end(), node);
 	if(imposters.end() == iter)
 	{
+		node->SetManager(this);
+		node->SetSharedFBO(sharedFBO);
 		imposters.push_back(node);
 	}
 }
@@ -101,6 +111,8 @@ void ImposterManager::Remove(ImposterNode * node)
 	}
 	else
 	{
+		node->SetManager(0);
+		node->SetSharedFBO(0);
 		imposters.erase(iter);
 	}
 }

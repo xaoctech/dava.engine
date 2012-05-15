@@ -26,10 +26,153 @@
 =====================================================================================*/
 
 #include "Render/SharedFBO.h"
+#include "Render/RenderManager.h"
+#include "Math/RectPacker.h"
 
 namespace DAVA
 {
 
+bool SortBlocks(SharedFBO::Block * a, SharedFBO::Block * b)
+{
+	return a->size.SquareLength() > b->size.SquareLength();
+}
 
+SharedFBO::SharedFBO(Setup * setup)
+:	texture(0)
+{
+	texture = Texture::CreateFBO((uint32)setup->size.x, (uint32)setup->size.y, setup->pixelFormat, setup->depthFormat);
+
+	int32 blocksCount = setup->blocks.size();
+	for(int32 i = 0; i < blocksCount; ++i)
+	{
+		sizes.push_back(setup->blocks[i].second);
+		Deque<Block*> queue;
+		std::pair<int32, Vector2> & blockSetup = setup->blocks[i];
+		int32 count = blockSetup.first;
+		for(int32 j = 0; j < count; ++j)
+		{
+			Block * block = new Block();
+			block->poolIndex = i;
+			block->size = blockSetup.second;
+			blocks.push_back(block);
+			queue.push_back(block);
+		}
+
+		queues.push_back(queue);
+		frees.push_back(queue.size());
+	}
+
+	std::sort(blocks.begin(), blocks.end(), SortBlocks);
+	
+	RectPacker packer(Rect2i(0, 0, (int32)setup->size.x, (int32)setup->size.y));
+	int32 blocksSize = blocks.size();
+	for(int32 i = 0; i < blocksSize; ++i)
+	{
+		bool res = packer.AddRect(Size2i((int32)blocks[i]->size.dx, (int32)blocks[i]->size.dy), blocks[i]);
+		if(!res)
+		{
+			Logger::Error("SharedFBO failed to pack a rect");
+		}
+	}
+
+	for(int32 i = 0; i < blocksSize; ++i)
+	{
+		Rect2i * rect = packer.SearchRectForPtr(blocks[i]);
+		blocks[i]->offset = Vector2((float32)rect->x, (float32)rect->y);
+	}
+}
+
+SharedFBO::~SharedFBO()
+{
+	SafeRelease(texture);
+
+	int32 blocksSize = blocks.size();
+	for(int32 i = 0; i < blocksSize; ++i)
+	{
+		SafeDelete(blocks[i]);
+	}
+}
+
+SharedFBO::Block * SharedFBO::AcquireBlock(const Vector2 & size)
+{
+	int32 index = FindIndexForSize(size);
+
+	Block * block = 0;
+	int32 maxIndex = frees.size()-1;
+
+	//first try to find block of closest size
+	block = GetBlock(index);
+
+	//try to get smaller block
+	if(!block)
+	{
+		int32 smallerIndex = index;
+		while((!block) && (smallerIndex < maxIndex))
+		{
+			smallerIndex++;
+			block = GetBlock(smallerIndex);
+		}
+	}
+
+	//try to get larger block
+	if(!block)
+	{
+		int32 largerIndex = index;
+		while((!block) && (largerIndex > 0))
+		{
+			largerIndex--;
+			block = GetBlock(largerIndex);
+		}
+	}
+
+	return block;
+}
+
+SharedFBO::Block * SharedFBO::GetBlock(int32 poolIndex)
+{
+	if(frees[poolIndex] > 0)
+	{
+		DVASSERT(queues[poolIndex].size() > 0);
+
+		Block * block = queues[poolIndex].front();
+		queues[poolIndex].pop_front();
+		frees[poolIndex]--;
+
+		return block;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void SharedFBO::ReleaseBlock(SharedFBO::Block * block)
+{
+	queues[block->poolIndex].push_back(block);
+	frees[block->poolIndex]++;
+}
+
+int32 SharedFBO::FindIndexForSize(const Vector2 & size)
+{
+	int32 sizesSize = sizes.size();
+	int32 closestIndex = -1;
+	float32 smallestDelta = std::numeric_limits<float32>::max();
+	for(int32 i = 0; i < sizesSize; ++i)
+	{
+		float32 squareDelta = Vector2(size.x-sizes[i].x, size.y - sizes[i].y).SquareLength();
+		if(squareDelta < smallestDelta)
+		{
+			smallestDelta = squareDelta;
+			closestIndex = i;
+		}
+	}
+
+	return closestIndex;
+}
+
+Texture * SharedFBO::GetTexture()
+{
+	return texture;
+}
 
 };

@@ -35,6 +35,7 @@ namespace DAVA
 {
 
 class ImposterNode;
+class SharedFBO;
 
 class ImposterManager : public BaseObject
 {
@@ -55,6 +56,8 @@ private:
 
 	void AddToQueue(ImposterNode * node);
 	void ProcessQueue();
+
+	SharedFBO * sharedFBO;
 };
 
 };
