@@ -53,7 +53,7 @@ LandscapeNode::LandscapeNode()
 	: SceneNode()
     , indices(0)
 {
-    heightmapPath = "";
+    heightmapPath = String("");
     
     for (int32 t = 0; t < TEXTURE_COUNT; ++t)
         textures[t] = 0;
@@ -63,6 +63,9 @@ LandscapeNode::LandscapeNode()
     
     tileMaskShader = NULL;
     fullTiledShader = NULL;
+    nearLodIndex = 0;
+    farLodIndex = 1;
+    SetTiledShaderMode(TILED_MODE_MIXED);
     
 	cursor = 0;
     uniformCameraPosition = -1;
@@ -83,7 +86,6 @@ LandscapeNode::LandscapeNode()
     Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
     
     prevLodLayer = -1;
-    EnableFullTiledTexture(true);
 }
 
 LandscapeNode::~LandscapeNode()
@@ -550,6 +552,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     Image::EnableAlphaPremultiplication(false);
 
     SafeRelease(textures[level]);
+    textureNames[level] = String("");
     
     Texture * texture = Texture::CreateFromFile(textureName); 
     if (texture)
@@ -560,6 +563,11 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     }
     textures[level] = texture;
     
+    if(TEXTURE_TILE_FULL == level)
+    {
+        UpdateFullTiledTexture();
+    }
+
     Image::EnableAlphaPremultiplication(true);
 }
 
@@ -567,6 +575,24 @@ void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
 {
     SafeRelease(textures[level]);
     textures[level] = SafeRetain(texture);
+    
+    if(textures[level])
+    {
+        if(textures[level]->isRenderTarget)
+        {
+            textureNames[level] = String("");
+        }
+        else 
+        {
+            //TODO: VK: need to save pathname, not relative pathname. (Will be worked only for *.png, not for *.pvr)
+            textureNames[level] = textures[level]->relativePathname;
+        }
+    }
+    else 
+    {
+        textureNames[level] = String("");
+    }
+    
 }
 
     
@@ -919,251 +945,6 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 }
 
     
-//void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * headNode)
-//{
-//    Vector3 bboxSize = box.max - box.min;
-//    int32 x = (bboxSize.x) ? ((float32)(cameraPos.x - box.min.x) / (float32)bboxSize.x * (float32)heightmap->Size()) : -100000;
-//    int32 y = (bboxSize.y) ? ((float32)(cameraPos.y - box.min.y) / (float32)bboxSize.y * heightmap->Size()) : -100000;
-////    Logger::Debug("CAMERA: x = %d, y = %d", x, y);
-//
-////    Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
-////    Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
-//
-//    Deque<LandQuadTreeNode<LandscapeQuad> *> quadDeque;
-//    
-//    quadDeque.push_back(headNode);
-//    while(quadDeque.size())
-//    {
-//        LandQuadTreeNode<LandscapeQuad> * currentNode = quadDeque.front();
-//        quadDeque.pop_front();
-//        
-//        
-//        //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
-//        // if (!frustum->IsInside(currentNode->data.bbox))return;
-//        Frustum::eFrustumResult frustumRes = frustum->Classify(currentNode->data.bbox);
-//        if (frustumRes == Frustum::EFR_OUTSIDE) continue;
-//        
-//        /*
-//         If current quad do not have geometry just traverse it childs. 
-//         Magic starts when we have a geometry
-//         */
-//        if (currentNode->data.rdoQuad == -1)
-//        {
-//            if (currentNode->childs)
-//            {
-////                // calc child lod levels
-////                Vector2 childLodLevels[4];
-////                for (int32 index = 0; index < 4; ++index)
-////                {
-////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-////                    Vector3 v = cameraPos - child->data.bbox.GetCenter();
-////                    float32 dist = v.Length();
-////                    childLodLevels[index].x = dist;
-////                    childLodLevels[index].y = index;
-////                }
-////                
-////                bool again = true;
-////                for (int32 i = 0; i < 4 && again; ++i)
-////                {
-////                    again = false;
-////                    for(int32 j = 4 - 1; j > i; --j)
-////                    {
-////                        if(childLodLevels[j-1].x > childLodLevels[j].x)
-////                        {
-////                            again = true;
-////                            
-////                            Vector2 tmp = childLodLevels[j-1];
-////                            childLodLevels[j-1] = childLodLevels[j];
-////                            childLodLevels[j] = tmp;
-////                        }
-////                    }
-////                }
-//                
-//                for (int32 index = 0; index < 4; ++index)
-//                {
-////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[(int32)childLodLevels[index].y];
-//                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-//                    quadDeque.push_back(child);
-////                    Draw(child); 
-//                }
-//            }
-//            continue;
-//        }
-//        /*
-//         // UNCOMMENT THIS TO CHECK GEOMETRY WITH 0 LEVEL OF DETAIL
-//         else
-//         {
-//         DrawQuad(currentNode, 0);
-//         return;
-//         }
-//         */
-//        
-//        /*
-//         We can be here only if we have a geometry in the node. 
-//         Here we use Geomipmaps rendering algorithm. 
-//         These quads are 129x129.
-//         */
-//        //    Camera * cam = clipCamera;
-//        
-//        Vector3 corners[8];
-//        currentNode->data.bbox.GetCorners(corners);
-//        
-//        float32 minDist =  100000000.0f;
-//        float32 maxDist = -100000000.0f;
-//        for (int32 k = 0; k < 8; ++k)
-//        {
-//            Vector3 v = cameraPos - corners[k];
-//            float32 dist = v.SquareLength();
-//            if (dist < minDist)
-//                minDist = dist;
-//            if (dist > maxDist)
-//                maxDist = dist;
-//        };
-//        
-//        int32 minLod = 0;
-//        int32 maxLod = 0;
-//        
-//        for (int32 k = 0; k < lodLevelsCount; ++k)
-//        {
-//            if (minDist > lodSqDistance[k])
-//                minLod = k + 1;
-//            if (maxDist > lodSqDistance[k])
-//                maxLod = k + 1;
-//        }
-//        
-//        // debug block
-//#if 1
-//        if (currentNode == &quadTreeHead)
-//        {
-//            //Logger::Debug("== draw start ==");
-//        }
-//        //Logger::Debug("%f %f %d %d", minDist, maxDist, minLod, maxLod);
-//#endif
-//        
-//        //    if (frustum->IsFullyInside(currentNode->data.bbox))
-//        //    {
-//        //        RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-//        //        RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
-//        //    }
-//        
-//        
-//        if ((minLod == maxLod) && (/*frustum->IsFullyInside(currentNode->data.bbox)*/(frustumRes == Frustum::EFR_INSIDE) || currentNode->data.size <= (1 << maxLod) + 1) )
-//        {
-//            //Logger::Debug("lod: %d depth: %d pos(%d, %d)", minLod, currentNode->data.lod, currentNode->data.x, currentNode->data.y);
-//            
-//            //        if (currentNode->data.size <= (1 << maxLod))
-//            //            RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
-//            //        if (frustum->IsFullyInside(currentNode->data.bbox))
-//            //            RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-//            //if (frustum->IsFullyInside(currentNode->data.bbox) && (currentNode->data.size <= (1 << maxLod)))
-//            //    RenderManager::Instance()->SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-//            
-//            
-//            //RenderManager::Instance()->SetColor(0.0f, 1.0f, 0.0f, 1.0f);
-//            
-////            DrawQuad(currentNode, maxLod);
-//            if(maxLod)
-//            {
-//                lodNot0quads.push_back(currentNode);
-//            }
-//            else 
-//            {
-//                lod0quads.push_back(currentNode);
-//            }
-//            //RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-//            //RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
-//            
-//            continue;
-//        }
-//        
-//        
-//        if ((minLod != maxLod) && (currentNode->data.size <= (1 << maxLod) + 1))
-//        {
-//            //        RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
-//            //DrawQuad(currentNode, minLod);
-//            //RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-//            //RenderHelper::Instance()->DrawBox(currentNode->data.bbox);
-//            fans.push_back(currentNode);
-//            continue;
-//        }
-//        
-//        //
-//        // Check performance and identify do we need a sorting here. 
-//        // Probably sorting algorithm can be helpfull to render on Mac / Windows, but will be useless for iOS and Android
-//        //
-//        
-//        {
-//            if (currentNode->childs)
-//            {
-////                // calc child lod levels
-////                Vector2 childLodLevels[4];
-////                for (int32 index = 0; index < 4; ++index)
-////                {
-////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-////                    Vector3 v = cameraPos - child->data.bbox.GetCenter();
-////                    float32 dist = v.Length();
-////                    childLodLevels[index].x = dist;
-////                    childLodLevels[index].y = index;
-////                }
-////                
-////                bool again = true;
-////                for (int32 i = 0; i < 4 && again; ++i)
-////                {
-////                    again = false;
-////                    for(int32 j = 4 - 1; j > i; --j)
-////                    {
-////                        if(childLodLevels[j-1].x > childLodLevels[j].x)
-////                        {
-////                            again = true;
-////                            
-////                            Vector2 tmp = childLodLevels[j-1];
-////                            childLodLevels[j-1] = childLodLevels[j];
-////                            childLodLevels[j] = tmp;
-////                        }
-////                    }
-////                }
-////                
-//                for (int32 index = 0; index < 4; ++index)
-//                {
-////                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[(int32)childLodLevels[index].y];
-//                    LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-//                    quadDeque.push_back(child);
-////                    Draw(child); 
-//                }
-//            }
-//            
-//            
-//            //        if (currentNode->childs)
-//            //        {
-//            //            for (int32 index = 0; index < 4; ++index)
-//            //            {
-//            //                LandQuadTreeNode<LandscapeQuad> * child = &currentNode->childs[index];
-//            //                Draw(child); 
-//            //            }
-//            //        }
-//            /* EXPERIMENTAL => reduce level of quadtree, results was not successfull 
-//             else
-//             {
-//             DrawQuad(currentNode, maxLod);  
-//             }*/
-//        }
-//    }
-//    
-//    int32 count = lod0quads.size();
-//    for(int32 i = 0; i < count; ++i)
-//    {
-//        DrawQuad(lod0quads[i], 0);
-//    }
-//    
-//    count = lodNot0quads.size();
-//    for(int32 i = 0; i < count; ++i)
-//    {
-//        DrawQuad(lodNot0quads[i], 1);
-//    }
-//}
-
-    
-    
 void LandscapeNode::BindMaterial(int32 lodLayer)
 {
     if(-1 != prevLodLayer)
@@ -1242,27 +1023,30 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
 
 void LandscapeNode::UnbindMaterial()
 {
-    if(0 == prevLodLayer)
+    if(-1 != prevLodLayer)
     {
-        RenderManager::Instance()->SetTexture(0, 0);
-        RenderManager::Instance()->SetTexture(0, 1);
-        RenderManager::Instance()->SetTexture(0, 2);
-        RenderManager::Instance()->SetTexture(0, 3);
-        RenderManager::Instance()->SetTexture(0, 4);
-        RenderManager::Instance()->SetTexture(0, 5);
+        if(0 == prevLodLayer)
+        {
+            RenderManager::Instance()->SetTexture(0, 0);
+            RenderManager::Instance()->SetTexture(0, 1);
+            RenderManager::Instance()->SetTexture(0, 2);
+            RenderManager::Instance()->SetTexture(0, 3);
+            RenderManager::Instance()->SetTexture(0, 4);
+            RenderManager::Instance()->SetTexture(0, 5);
+            
+            RenderManager::Instance()->SetShader(NULL);
+            RenderManager::Instance()->FlushState();
+        }
+        else
+        {
+            RenderManager::Instance()->SetTexture(0, 0);
+            
+            RenderManager::Instance()->SetShader(NULL);
+            RenderManager::Instance()->FlushState();
+        }
         
-        RenderManager::Instance()->SetShader(NULL);
-        RenderManager::Instance()->FlushState();
+        prevLodLayer = -1;
     }
-    else if(-1 != prevLodLayer)
-    {
-        RenderManager::Instance()->SetTexture(0, 0);
-        
-        RenderManager::Instance()->SetShader(NULL);
-        RenderManager::Instance()->FlushState();
-    }
-
-    prevLodLayer = -1;
 }
 
     
@@ -1330,7 +1114,7 @@ void LandscapeNode::Draw()
     
 	Draw(&quadTreeHead);
     
-    BindMaterial(0);
+    BindMaterial(nearLodIndex);
     int32 count0 = lod0quads.size();
     for(int32 i = 0; i < count0; ++i)
     {
@@ -1338,11 +1122,8 @@ void LandscapeNode::Draw()
     }
 	FlushQueue();
     
-    if(enabledFullTiledTexture)
-    {
-        BindMaterial(1);
-    }
-    
+    if(nearLodIndex != farLodIndex)     BindMaterial(farLodIndex);
+
     int32 countNot0 = lodNot0quads.size();
     for(int32 i = 0; i < countNot0; ++i)
     {
@@ -1350,30 +1131,9 @@ void LandscapeNode::Draw()
     }
 #endif //#if defined (DRAW_OLD_STYLE)    
 
-//    lod0quads.clear();
-//    lodNot0quads.clear();
-//
-//	Draw(&quadTreeHead);
-//    
-//    BindMaterial(0);
-//    int32 count0 = lod0quads.size();
-//    for(int32 i = 0; i < count0; ++i)
-//    {
-//        DrawQuad(lod0quads[i], 0);
-//    }
-//	FlushQueue();
-//
-//    BindMaterial(1);
-//    int32 countNot0 = lodNot0quads.size();
-//    for(int32 i = 0; i < countNot0; ++i)
-//    {
-//        DrawQuad(lodNot0quads[i], lodNot0quads[i]->data.lod);
-//    }
-
+    
 	FlushQueue();
-    
-//    Logger::Debug("[LN] flashQueueCounter = %d", flashQueueCounter);
-    
+    //    Logger::Debug("[LN] flashQueueCounter = %d", flashQueueCounter);
 	DrawFans();
     
 #if defined(__DAVAENGINE_MACOS__)
@@ -1393,7 +1153,34 @@ void LandscapeNode::Draw()
 		fans.clear();
 		cursor->Prepare();
 		ClearQueue();
-		Draw(&quadTreeHead);
+
+        
+#if defined (DRAW_OLD_STYLE)    
+        Draw(&quadTreeHead);
+#else //#if defined (DRAW_OLD_STYLE)    
+        lod0quads.clear();
+        lodNot0quads.clear();
+        
+        Draw(&quadTreeHead);
+        
+        if(nearLodIndex != farLodIndex)     BindMaterial(nearLodIndex);
+        int32 count0 = lod0quads.size();
+        for(int32 i = 0; i < count0; ++i)
+        {
+            DrawQuad(lod0quads[i], 0);
+        }
+        FlushQueue();
+        
+        if(nearLodIndex != farLodIndex)     BindMaterial(farLodIndex);
+        
+        int32 countNot0 = lodNot0quads.size();
+        for(int32 i = 0; i < countNot0; ++i)
+        {
+            DrawQuad(lodNot0quads[i], lodNot0quads[i]->data.lod);
+        }
+#endif //#if defined (DRAW_OLD_STYLE)    
+
+        
 		FlushQueue();
 		DrawFans();
 		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
@@ -1505,11 +1292,6 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        if(TEXTURE_TILE_FULL == k)
-        {
-            continue;
-        }
-
         String path = textureNames[k];
         String relPath  = sceneFile->AbsoluteToRelative(path);
         
@@ -1543,24 +1325,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
         if (sceneFile->GetVersion() >= 4)
         {
-            if(TEXTURE_TILE_FULL == k)// && (String("") == absPath))
-            {
-                Image *testImg = Image::CreateFromFile(absPath);
-                if(testImg)
-                {
-                    SafeRelease(testImg);
-                    SetTexture((eTextureLevel)k, absPath);
-                }
-                else 
-                {
-                    UpdateFullTiledTexture();
-                }
-            }
-            else 
-            {
-                SetTexture((eTextureLevel)k, absPath);
-                textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
-            }
+            SetTexture((eTextureLevel)k, absPath);
+            textureTiling[k] = archive->GetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
         }
         else
         {
@@ -1619,6 +1385,8 @@ Heightmap * LandscapeNode::GetHeightmap()
 
 Texture * LandscapeNode::CreateFullTiledTexture()
 {
+    Logger::Debug("[LN] CreateFullTiledTexture");
+
     //Set indexes
     Vector<float32> ftVertexes;
     Vector<float32> ftTextureCoords;
@@ -1668,7 +1436,6 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     Rect oldViewport = RenderManager::Instance()->GetViewport();
     
     Texture *fullTiled = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888, Texture::DEPTH_NONE);
-//    fullTiled->GenerateMipmaps();
     RenderManager::Instance()->SetRenderTarget(fullTiled);
 
 	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);
@@ -1702,16 +1469,23 @@ String LandscapeNode::SaveFullTiledTexture()
     
     if(textures[TEXTURE_TILE_FULL])
     {
-        String colorTextureMame = GetTextureName(TEXTURE_COLOR);
-        String filename, pathname;
-        FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
-        
-        pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
-        Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
-        if(image)
+        if(textures[TEXTURE_TILE_FULL]->isRenderTarget)
         {
-            image->Save(pathToSave);
-            SafeRelease(image);
+            String colorTextureMame = GetTextureName(TEXTURE_COLOR);
+            String filename, pathname;
+            FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+            
+            pathToSave = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+            Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
+            if(image)
+            {
+                image->Save(pathToSave);
+                SafeRelease(image);
+            }
+        }
+        else 
+        {
+            pathToSave = textureNames[TEXTURE_TILE_FULL];
         }
     }
     
@@ -1721,29 +1495,39 @@ String LandscapeNode::SaveFullTiledTexture()
     
 void LandscapeNode::UpdateFullTiledTexture()
 {
-    Logger::Debug("[LN] UpdateFullTiledTexture");
-    
-#ifdef DRAW_OLD_STYLE
-    Logger::Debug("**** DRAW_OLD_STYLE");
-#else
-    Logger::Debug("**** DRAW_NEW_STYLE");
-#endif 
-    
-    Texture *t = CreateFullTiledTexture();
-    t->GenerateMipmaps();
-    SetTexture(TEXTURE_TILE_FULL, t);
-    SafeRelease(t);
+    if(0 == textureNames[TEXTURE_TILE_FULL].length())
+    {
+        Texture *t = CreateFullTiledTexture();
+        t->GenerateMipmaps();
+        SetTexture(TEXTURE_TILE_FULL, t);
+        SafeRelease(t);
+    }
 }
     
-void LandscapeNode::EnableFullTiledTexture(bool enabled)
+void LandscapeNode::SetTiledShaderMode(DAVA::LandscapeNode::eTiledShaderMode _tiledShaderMode)
 {
-    enabledFullTiledTexture = enabled;
-}
+    tiledShaderMode = _tiledShaderMode;
     
-bool LandscapeNode::IsFullTiledTextureEnabled()
-{
-    return enabledFullTiledTexture;
-}
+    switch (tiledShaderMode)
+    {
+        case TILED_MODE_TILEMASK:
+            nearLodIndex = 0;
+            farLodIndex = 0;
+            break;
+            
+        case TILED_MODE_MIXED:
+            nearLodIndex = 0;
+            farLodIndex = 1;
+            break;
 
+        case TILED_MODE_TEXTURE:
+            nearLodIndex = 1;
+            farLodIndex = 1;
+            break;
+
+        default:
+            break;
+    }
+}
     
 };
