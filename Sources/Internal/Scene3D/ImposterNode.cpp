@@ -33,6 +33,8 @@
 namespace DAVA
 {
 
+const float32 ImposterNode::TOGGLE_SQUARE_DISTANCE = 2500.f;
+
 REGISTER_CLASS(ImposterNode);
 
 ImposterNode::ImposterNode()
@@ -45,6 +47,7 @@ ImposterNode::ImposterNode()
 	isReady = false;
 	block = 0;
 	fbo = 0;
+	priority = 0;
 }
 
 ImposterNode::~ImposterNode()
@@ -69,8 +72,9 @@ void ImposterNode::UpdateState()
 
 		if((STATE_3D == state))
 		{
-			if(distanceSquare > 900)
+			if(distanceSquare > TOGGLE_SQUARE_DISTANCE)
 			{
+				UpdatePriority(distanceSquare, 0);
 				AskForRedraw();
 			}
 			else
@@ -81,7 +85,7 @@ void ImposterNode::UpdateState()
 
 		if(STATE_IMPOSTER == state)
 		{
-			if(distanceSquare < 900)
+			if(distanceSquare < TOGGLE_SQUARE_DISTANCE)
 			{
 				isReady = false;
 				state = STATE_3D;
@@ -91,10 +95,12 @@ void ImposterNode::UpdateState()
 				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
 				newDirection.Normalize();
 				float32 distanceDelta = distanceSquare/distanceSquaredToCamera;
-				if((newDirection.DotProduct(direction) < 0.996f) 
+				float32 dotProduct = newDirection.DotProduct(direction);
+				if((dotProduct < 0.9999f) 
 					|| (distanceDelta < 0.25f/*0.5^2*/) //if distance is doubled or halved
 					|| (distanceDelta > 4.f/*2^2*/))
 				{
+					UpdatePriority(distanceSquare, dotProduct);
 					AskForRedraw();
 				}
 			}
@@ -451,6 +457,24 @@ void ImposterNode::SetManager(ImposterManager * _manager)
 void ImposterNode::SetSharedFBO(SharedFBO * _fbo)
 {
 	fbo = _fbo;
+}
+
+void ImposterNode::UpdatePriority(float32 squaredDistance, float32 dotProduct)
+{
+	if(dotProduct)
+	{
+		priority = squaredDistance*dotProduct;
+	}
+	else
+	{
+		priority = squaredDistance;
+	}
+}
+
+
+bool ImposterNodeComparer::operator()(ImposterNode * lhs, ImposterNode * rhs)
+{
+	return lhs->priority > rhs->priority;
 }
 
 }
