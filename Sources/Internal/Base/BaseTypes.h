@@ -124,6 +124,7 @@
 #include <algorithm>
 #include <set>
 #include <stack>
+#include <queue>
 
 #if defined(__DAVAENGINE_WIN32__)
 #pragma warning( pop )
@@ -198,6 +199,9 @@ template<	class _Kty,
 class Map : public std::map<_Kty, _Ty, _Pr, _Alloc> {};
 
 template < class T, class Container = std::deque<T> > class Stack : public std::stack< T, Container > {};
+
+template < class T, class Container = std::vector<T>, class Compare = less<typename Container::value_type> > 
+class PriorityQueue : public std::priority_queue< T, Container, Compare > {};
 
 #ifdef min
 #undef min
