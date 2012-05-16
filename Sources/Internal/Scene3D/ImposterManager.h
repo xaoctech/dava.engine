@@ -30,16 +30,18 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Scene3D/ImposterNode.h"
 
 namespace DAVA
 {
 
-class ImposterNode;
 class SharedFBO;
 
 class ImposterManager : public BaseObject
 {
 public:
+	static const int32 MAX_UPDATES_PER_FRAME = 3;
+
 	ImposterManager();
 	virtual ~ImposterManager();
 
@@ -52,7 +54,7 @@ public:
 
 private:
 	List<ImposterNode*> imposters;
-	Deque<ImposterNode*> queue;
+	PriorityQueue<ImposterNode*, Vector<ImposterNode*>, ImposterNodeComparer> queue;
 
 	void AddToQueue(ImposterNode * node);
 	void ProcessQueue();

@@ -26,7 +26,6 @@
 =====================================================================================*/
 
 #include "ImposterManager.h"
-#include "Scene3D/ImposterNode.h"
 #include "Render/SharedFBO.h"
 
 namespace DAVA
@@ -38,8 +37,8 @@ ImposterManager::ImposterManager()
 	setup.size = Vector2(2048, 2048);
 	setup.pixelFormat = FORMAT_RGBA4444;
 	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-	setup.blocks.push_back(std::pair<int32, Vector2>(8, Vector2(256.f, 256.f)));
-	setup.blocks.push_back(std::pair<int32, Vector2>(224, Vector2(128.f, 128.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(48, Vector2(256.f, 256.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(128.f, 128.f)));
 
 	sharedFBO = new SharedFBO(&setup);
 }
@@ -74,10 +73,13 @@ void ImposterManager::ProcessQueue()
 {
 	if(!queue.empty())
 	{
-		ImposterNode * node = queue.front();
-		queue.pop_front();
-
-		node->ApproveRedraw();
+		int32 maxCount = Min(MAX_UPDATES_PER_FRAME, (int32)queue.size());
+		for(int32 i = 0; i < maxCount; ++i)
+		{
+			ImposterNode * node = queue.top();
+			queue.pop();
+			node->ApproveRedraw();
+		}
 	}
 }
 
@@ -121,7 +123,7 @@ void ImposterManager::AddToQueue(ImposterNode * node)
 {
 	if(!node->IsQueued())
 	{
-		queue.push_back(node);
+		queue.push(node);
 		node->OnAddedToQueue();
 	}
 }

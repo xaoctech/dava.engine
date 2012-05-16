@@ -37,9 +37,18 @@ namespace DAVA
 
 class ImposterManager;
 
+class ImposterNodeComparer
+{
+public:
+	bool operator() (ImposterNode * lhs, ImposterNode * rhs);
+};
+
 class ImposterNode : public SceneNode
 {
 public:
+
+	static const float32 TOGGLE_SQUARE_DISTANCE;
+
 	enum eState
 	{
 		STATE_3D = 0,
@@ -67,6 +76,7 @@ public:
 
 	void SetManager(ImposterManager * manager);
 	void SetSharedFBO(SharedFBO * fbo);
+	
 
 private:
 	void AskForRedraw();
@@ -96,6 +106,11 @@ private:
 
 	void RecreateFbo(const Vector2 & size);
 	void HierarchicalRemoveCull(SceneNode * node);
+
+	void UpdatePriority(float32 squaredDistance, float32 dotProduct);
+	float32 priority;
+
+	friend class ImposterNodeComparer;
 };
 
 };

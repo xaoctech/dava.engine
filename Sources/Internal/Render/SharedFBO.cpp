@@ -97,22 +97,23 @@ SharedFBO::Block * SharedFBO::AcquireBlock(const Vector2 & size)
 {
 	int32 index = FindIndexForSize(size);
 
+	while(index > 0)
+	{
+		if(queues[index].size() < queues[index].size())
+		{
+			index--;
+		}
+		else
+		{
+			break;
+		}
+	}
+
 	Block * block = 0;
 	int32 maxIndex = frees.size()-1;
 
 	//first try to find block of closest size
 	block = GetBlock(index);
-
-	//try to get smaller block
-	if(!block)
-	{
-		int32 smallerIndex = index;
-		while((!block) && (smallerIndex < maxIndex))
-		{
-			smallerIndex++;
-			block = GetBlock(smallerIndex);
-		}
-	}
 
 	//try to get larger block
 	if(!block)
@@ -122,6 +123,17 @@ SharedFBO::Block * SharedFBO::AcquireBlock(const Vector2 & size)
 		{
 			largerIndex--;
 			block = GetBlock(largerIndex);
+		}
+	}
+
+	//try to get smaller block
+	if(!block)
+	{
+		int32 smallerIndex = index;
+		while((!block) && (smallerIndex < maxIndex))
+		{
+			smallerIndex++;
+			block = GetBlock(smallerIndex);
 		}
 	}
 
