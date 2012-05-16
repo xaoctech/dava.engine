@@ -77,13 +77,14 @@ LodNode::LodNode()
 ,   forceDistanceSq(INVALID_DISTANCE)
     
 {
-    lodLayersArray[0].SetDistance(0.0f);
-    lodLayersArray[0].SetNearDistance(0.0f);
-    
     for(int32 iLayer = 0; iLayer < MAX_LOD_LAYERS; ++iLayer)
     {
+        lodLayersArray[iLayer].SetDistance(GetDefaultDistance(iLayer));
         lodLayersArray[iLayer].SetFarDistance(MAX_LOD_DISTANCE * 2);
     }
+
+//    lodLayersArray[0].SetDistance(0.0f);
+    lodLayersArray[0].SetNearDistance(0.0f);
 }
 	
 LodNode::~LodNode()
@@ -445,16 +446,7 @@ void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
             }
         }
         
-        float32 distance = GetLodLayerDistance(lodIdx);
-        if(INVALID_DISTANCE == distance)
-        {
-            archive->SetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
-        }
-        else 
-        {
-            archive->SetFloat(Format("lod%d_dist", lodIdx), distance);
-        }
-        
+        archive->SetFloat(Format("lod%d_dist", lodIdx), GetLodLayerDistance(lodIdx));
         lodIdx++;
     }
 }
@@ -480,7 +472,7 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         
         float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
         if(INVALID_DISTANCE == distance)
-        {   // TemporaryFix
+        {   // TemporaryFix. Remove it after all objects would be fixed.
             distance = GetDefaultDistance(lodIdx);
         }
         SetLodLayerDistance(lodIdx, distance);
