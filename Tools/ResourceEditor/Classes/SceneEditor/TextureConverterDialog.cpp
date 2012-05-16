@@ -259,7 +259,7 @@ void TextureConverterDialog::EnumerateTexturesFromNodes(SceneNode * node)
 
 void TextureConverterDialog::CollectTexture(Texture *texture)
 {
-    if(texture)
+    if(texture && !texture->isRenderTarget)
     {
         String::size_type pos = texture->relativePathname.find("~res:/");
         if(String::npos == pos)

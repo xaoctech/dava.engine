@@ -40,6 +40,8 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
 
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
+    
+    savedShaderMode = LandscapeNode::TILED_MODE_MIXED;
 }
 
 LandscapeEditorBase::~LandscapeEditorBase()
@@ -76,6 +78,9 @@ bool LandscapeEditorBase::SetScene(EditorScene *newScene)
         ErrorNotifier::Instance()->ShowError("No landscape at level.");
         return false;
     }
+    
+    savedShaderMode = workingLandscape->GetTiledShaderMode();
+    workingLandscape->SetTiledShaderMode(LandscapeNode::TILED_MODE_TILEMASK);
     
     workingScene = SafeRetain(newScene);
     return true;
@@ -121,8 +126,6 @@ void LandscapeEditorBase::Toggle()
             delegate->LandscapeEditorStarted();
         }
         
-        workingLandscape->UpdateFullTiledTexture();
-        
         ShowAction();
     }
 }
@@ -132,6 +135,10 @@ void LandscapeEditorBase::Close()
     HideAction();
     
     workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    
+    workingLandscape->UpdateFullTiledTexture();
+    workingLandscape->SetTiledShaderMode(savedShaderMode);
+    savedShaderMode = LandscapeNode::TILED_MODE_MIXED;
     
     SafeRelease(workingLandscape);
 

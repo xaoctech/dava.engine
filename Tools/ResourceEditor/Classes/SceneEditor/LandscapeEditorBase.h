@@ -123,6 +123,8 @@ protected:
 
 	};
 	CursorMode cursorMode;
+    
+    LandscapeNode::eTiledShaderMode savedShaderMode;
 };
 
 
