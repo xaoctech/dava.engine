@@ -200,7 +200,7 @@ class Map : public std::map<_Kty, _Ty, _Pr, _Alloc> {};
 
 template < class T, class Container = std::deque<T> > class Stack : public std::stack< T, Container > {};
 
-template < class T, class Container = std::vector<T>, class Compare = less<typename Container::value_type> > 
+template < class T, class Container = std::vector<T>, class Compare = std::less<typename Container::value_type> > 
 class PriorityQueue : public std::priority_queue< T, Container, Compare > {};
 
 #ifdef min
