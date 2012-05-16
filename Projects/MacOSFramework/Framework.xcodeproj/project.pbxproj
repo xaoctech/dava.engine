@@ -52,6 +52,11 @@
 		5CF666AB155D43C70067072D /* DLCUnpacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A3155D43C70067072D /* DLCUnpacker.h */; };
 		5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF666A4155D43C70067072D /* FileDownloader.cpp */; };
 		5CF666AD155D43C70067072D /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF666A5155D43C70067072D /* FileDownloader.h */; };
+		5CF6FF271563A8260070C3DB /* RectPacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF6FF251563A8260070C3DB /* RectPacker.cpp */; };
+		5CF6FF281563A8260070C3DB /* RectPacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6FF261563A8260070C3DB /* RectPacker.h */; };
+		5CF6FF2C1563A8390070C3DB /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6FF291563A8390070C3DB /* ImageConvert.h */; };
+		5CF6FF2D1563A8390070C3DB /* SharedFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF6FF2A1563A8390070C3DB /* SharedFBO.cpp */; };
+		5CF6FF2E1563A8390070C3DB /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6FF2B1563A8390070C3DB /* SharedFBO.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -554,6 +559,11 @@
 		5CF666A3155D43C70067072D /* DLCUnpacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCUnpacker.h; path = DLC/DLCUnpacker.h; sourceTree = "<group>"; };
 		5CF666A4155D43C70067072D /* FileDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader.cpp; path = DLC/FileDownloader.cpp; sourceTree = "<group>"; };
 		5CF666A5155D43C70067072D /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = DLC/FileDownloader.h; sourceTree = "<group>"; };
+		5CF6FF251563A8260070C3DB /* RectPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectPacker.cpp; sourceTree = "<group>"; };
+		5CF6FF261563A8260070C3DB /* RectPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RectPacker.h; sourceTree = "<group>"; };
+		5CF6FF291563A8390070C3DB /* ImageConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageConvert.h; sourceTree = "<group>"; };
+		5CF6FF2A1563A8390070C3DB /* SharedFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SharedFBO.cpp; sourceTree = "<group>"; };
+		5CF6FF2B1563A8390070C3DB /* SharedFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFBO.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
@@ -1422,6 +1432,9 @@
 		FECFC15B12E87E3000C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				5CF6FF291563A8390070C3DB /* ImageConvert.h */,
+				5CF6FF2A1563A8390070C3DB /* SharedFBO.cpp */,
+				5CF6FF2B1563A8390070C3DB /* SharedFBO.h */,
 				FECFC15C12E87E3000C71562 /* 2D */,
 				FECFC16A12E87E3000C71562 /* 3D */,
 				FECA0D6313D5F64B00059D5D /* Effects */,
@@ -1719,6 +1732,8 @@
 		FEFD182C1305D49C0050D7E6 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				5CF6FF251563A8260070C3DB /* RectPacker.cpp */,
+				5CF6FF261563A8260070C3DB /* RectPacker.h */,
 				FEFD182D1305D49C0050D7E6 /* AABBox2.cpp */,
 				FEFD182E1305D49C0050D7E6 /* AABBox2.h */,
 				FEFD182F1305D49C0050D7E6 /* AABBox3.cpp */,
@@ -2005,6 +2020,9 @@
 				5CF666A9155D43C70067072D /* DLCSystemTests.h in Headers */,
 				5CF666AB155D43C70067072D /* DLCUnpacker.h in Headers */,
 				5CF666AD155D43C70067072D /* FileDownloader.h in Headers */,
+				5CF6FF281563A8260070C3DB /* RectPacker.h in Headers */,
+				5CF6FF2C1563A8390070C3DB /* ImageConvert.h in Headers */,
+				5CF6FF2E1563A8390070C3DB /* SharedFBO.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2297,6 +2315,8 @@
 				5CF666A8155D43C70067072D /* DLCSystemTests.cpp in Sources */,
 				5CF666AA155D43C70067072D /* DLCUnpacker.cpp in Sources */,
 				5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */,
+				5CF6FF271563A8260070C3DB /* RectPacker.cpp in Sources */,
+				5CF6FF2D1563A8390070C3DB /* SharedFBO.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
