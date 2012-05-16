@@ -2,6 +2,8 @@
 
 #include "ControlsFactory.h"
 
+#include "SceneValidator.h"
+
 // ***************** PreviewCameraController *************** //
 PreviewCameraController::PreviewCameraController()
     :   CameraController()
@@ -270,6 +272,8 @@ int32 ScenePreviewControl::OpenScene(const String &pathToFile)
             }
         }
     }
+    
+    SceneValidator::Instance()->ValidateScene(editorScene);
     
     return retError;
 }
