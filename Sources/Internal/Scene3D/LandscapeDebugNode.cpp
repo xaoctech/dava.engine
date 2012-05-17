@@ -108,6 +108,12 @@ void LandscapeDebugNode::Draw()
         
         
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        
+        RenderManager::Instance()->SetColor(1.0f, 1.f, 1.f, 1.f);
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->SetShader(0);
+        RenderManager::Instance()->FlushState();
+        
     }
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
