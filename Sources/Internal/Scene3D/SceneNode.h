@@ -60,7 +60,7 @@ public:
         Function goes recursively and set scene for this node, and each child. 
         \param[in] _scene pointer to scene we want to set as holder for this node. 
      */
-    virtual void SetScene(Scene * _scene);
+    virtual void SetScene(Scene * _scene);//TODO: Move SetScene to private
     /**
         \brief Function to return scene of this node. This is virtual function. For SceneNode's function returns it's scene value. 
         In Scene class function is overloaded and returns self. It required to avoid dynamic casts to find a scene. 

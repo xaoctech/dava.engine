@@ -104,7 +104,7 @@ public:
 	//! \brief copy operator of bounding box class
 	inline AABBox3 & operator =(const AABBox3 & _bbox);
 
-    void GetTransformedBox(const Matrix4 & transform, AABBox3 & result);
+    void GetTransformedBox(const Matrix4 & transform, AABBox3 & result) const;
     void GetCorners(Vector3 * cornersArray);
 };
 
