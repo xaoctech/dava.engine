@@ -215,8 +215,13 @@ public:
     Set<LightNode*> & GetLights();
     LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
 
-	void RegisterImposter(ImposterNode * imposter);
+	/**
+		\brief Enables/disables imposters in scene.
+		\param[in] enable enable/disable flag. Enabled by default.
+	*/
+	void EnableImposters(bool enable);
 
+	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
     
 private:	
@@ -251,6 +256,7 @@ private:
     BVHierarchy * bvHierarchy;
 
 	ImposterManager * imposterManager;
+	bool enableImposters;
 
     friend class SceneNode;
 };
