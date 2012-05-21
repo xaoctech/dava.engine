@@ -64,7 +64,8 @@ Scene::Scene()
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
 	,	shadowRect(0)
-	,	imposterManager()
+	,	imposterManager(0)
+	,	enableImposters(true)
 {   
     bvHierarchy = new BVHierarchy();
     bvHierarchy->ChangeScene(this);
@@ -666,6 +667,15 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 		SafeRelease(imposterManager);
 	}
 }
+
+void Scene::EnableImposters(bool enable)
+{
+	if(enable != enableImposters)
+	{
+		enableImposters = enable;
+	}
+}
+
 
 /*void Scene::Save(KeyedArchive * archive)
 {
