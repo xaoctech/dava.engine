@@ -45,6 +45,16 @@
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CFD7DF81564DC58009692EE /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7DF41564DC58009692EE /* ImageConvert.h */; };
+		5CFD7DF91564DC58009692EE /* RenderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7DF51564DC58009692EE /* RenderBase.cpp */; };
+		5CFD7DFA1564DC58009692EE /* SharedFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7DF61564DC58009692EE /* SharedFBO.cpp */; };
+		5CFD7DFB1564DC58009692EE /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7DF71564DC58009692EE /* SharedFBO.h */; };
+		5CFD7DFF1564DC67009692EE /* RectPacker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7DFD1564DC67009692EE /* RectPacker.cpp */; };
+		5CFD7E001564DC67009692EE /* RectPacker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7DFE1564DC67009692EE /* RectPacker.h */; };
+		5CFD7E051564DC7D009692EE /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7E011564DC7D009692EE /* ImposterManager.cpp */; };
+		5CFD7E061564DC7D009692EE /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7E021564DC7D009692EE /* ImposterManager.h */; };
+		5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7E031564DC7D009692EE /* ImposterNode.cpp */; };
+		5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7E041564DC7D009692EE /* ImposterNode.h */; };
 		5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */; };
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
@@ -508,6 +518,16 @@
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CFD7DF41564DC58009692EE /* ImageConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageConvert.h; sourceTree = "<group>"; };
+		5CFD7DF51564DC58009692EE /* RenderBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBase.cpp; sourceTree = "<group>"; };
+		5CFD7DF61564DC58009692EE /* SharedFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SharedFBO.cpp; sourceTree = "<group>"; };
+		5CFD7DF71564DC58009692EE /* SharedFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFBO.h; sourceTree = "<group>"; };
+		5CFD7DFD1564DC67009692EE /* RectPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectPacker.cpp; sourceTree = "<group>"; };
+		5CFD7DFE1564DC67009692EE /* RectPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RectPacker.h; sourceTree = "<group>"; };
+		5CFD7E011564DC7D009692EE /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
+		5CFD7E021564DC7D009692EE /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
+		5CFD7E031564DC7D009692EE /* ImposterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterNode.cpp; sourceTree = "<group>"; };
+		5CFD7E041564DC7D009692EE /* ImposterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterNode.h; sourceTree = "<group>"; };
 		5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -1190,6 +1210,8 @@
 		FECFB38C12E5904400C71562 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				5CFD7DFD1564DC67009692EE /* RectPacker.cpp */,
+				5CFD7DFE1564DC67009692EE /* RectPacker.h */,
 				FE9C216612E9A254005C397A /* Circle.h */,
 				FE9C216712E9A254005C397A /* Sphere.h */,
 				FECFB38D12E5904400C71562 /* AABBox2.cpp */,
@@ -1286,6 +1308,10 @@
 		FECFB3D112E5904400C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				5CFD7DF41564DC58009692EE /* ImageConvert.h */,
+				5CFD7DF51564DC58009692EE /* RenderBase.cpp */,
+				5CFD7DF61564DC58009692EE /* SharedFBO.cpp */,
+				5CFD7DF71564DC58009692EE /* SharedFBO.h */,
 				FECFB3D212E5904400C71562 /* 2D */,
 				FECFB3E012E5904400C71562 /* 3D */,
 				FEE41FE313C5A043002F31D4 /* Effects */,
@@ -1409,6 +1435,10 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CFD7E011564DC7D009692EE /* ImposterManager.cpp */,
+				5CFD7E021564DC7D009692EE /* ImposterManager.h */,
+				5CFD7E031564DC7D009692EE /* ImposterNode.cpp */,
+				5CFD7E041564DC7D009692EE /* ImposterNode.h */,
 				FE5E1671153DA10A0047FAC5 /* BVHierarchy.cpp */,
 				FE5E1672153DA10A0047FAC5 /* BVHierarchy.h */,
 				FE5E1673153DA10A0047FAC5 /* BVNode.cpp */,
@@ -1843,6 +1873,11 @@
 				FE5E1678153DA10A0047FAC5 /* BVHierarchy.h in Headers */,
 				FE5E167A153DA10A0047FAC5 /* BVNode.h in Headers */,
 				FE5E167C153DA10A0047FAC5 /* QuadTree.h in Headers */,
+				5CFD7DF81564DC58009692EE /* ImageConvert.h in Headers */,
+				5CFD7DFB1564DC58009692EE /* SharedFBO.h in Headers */,
+				5CFD7E001564DC67009692EE /* RectPacker.h in Headers */,
+				5CFD7E061564DC7D009692EE /* ImposterManager.h in Headers */,
+				5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2121,6 +2156,11 @@
 				FE5E1677153DA10A0047FAC5 /* BVHierarchy.cpp in Sources */,
 				FE5E1679153DA10A0047FAC5 /* BVNode.cpp in Sources */,
 				FE5E167B153DA10A0047FAC5 /* QuadTree.cpp in Sources */,
+				5CFD7DF91564DC58009692EE /* RenderBase.cpp in Sources */,
+				5CFD7DFA1564DC58009692EE /* SharedFBO.cpp in Sources */,
+				5CFD7DFF1564DC67009692EE /* RectPacker.cpp in Sources */,
+				5CFD7E051564DC7D009692EE /* ImposterManager.cpp in Sources */,
+				5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

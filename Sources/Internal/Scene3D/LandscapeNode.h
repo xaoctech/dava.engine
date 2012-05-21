@@ -123,7 +123,7 @@ public:
         RENDERING_MODE_BLENDED_SHADER,  // revision 1 of blender shader. Support only 2 textures per landscape.
         RENDERING_MODE_TILE_MASK_SHADER,  // revision 2 of blender shader. Support 4 textures per landscape.
     };
-    
+
     /**
         \brief Change rendering mode. 
         \param[in] renderingMode rendering mode of landscape.
@@ -135,6 +135,28 @@ public:
         \returns rendering mode of landscape.
      */
     inline const eRenderingMode GetRenderingMode();
+
+    
+    //New rendering mode 
+    enum eTiledShaderMode
+    {
+        TILED_MODE_TILEMASK = 0,
+        TILED_MODE_TEXTURE,
+        TILED_MODE_MIXED
+    };
+
+    
+    /**
+     \brief Change rendering mode. 
+     \param[in] renderingMode rendering mode of landscape.
+     */
+    void SetTiledShaderMode(eTiledShaderMode _tiledShaderMode);
+    
+    /**
+     \brief Get rendering mode. 
+     \returns rendering mode of landscape.
+     */
+    inline const eTiledShaderMode GetTiledShaderMode();
 
     
     /**
@@ -263,8 +285,6 @@ public:
 
     Heightmap *GetHeightmap();
     
-    void EnableFullTiledTexture(bool enabled);
-    bool IsFullTiledTextureEnabled();
     void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
     
@@ -379,8 +399,12 @@ protected:
     int32 prevLodLayer;
     Texture *CreateFullTiledTexture();
     
-    bool enabledFullTiledTexture;
     int32 flashQueueCounter;
+    
+    eTiledShaderMode tiledShaderMode;
+    
+    int32 nearLodIndex;
+    int32 farLodIndex;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()
@@ -393,6 +417,10 @@ inline const LandscapeNode::eRenderingMode LandscapeNode::GetRenderingMode()
     return renderingMode;
 }
 
+inline const LandscapeNode::eTiledShaderMode LandscapeNode::GetTiledShaderMode()
+{
+    return tiledShaderMode;
+}
     
 };
 

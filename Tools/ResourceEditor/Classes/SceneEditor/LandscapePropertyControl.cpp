@@ -5,10 +5,9 @@
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
 {
-    renderingModes.push_back("Texture");
-    renderingModes.push_back("Shader");
-    renderingModes.push_back("Blended Shader");
-    renderingModes.push_back("Tile mask Shader");
+    tiledModes.push_back("Tile mask mode");
+    tiledModes.push_back("Texture mode");
+    tiledModes.push_back("Mixed mode");
 }
 
 LandscapePropertyControl::~LandscapePropertyControl()
@@ -27,29 +26,6 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     propertyList->AddFloatProperty("property.landscape.size", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddFloatProperty("property.landscape.height", PropertyList::PROPERTY_IS_EDITABLE); 
-    
-    propertyList->AddComboProperty("property.landscape.renderingmode", renderingModes);
-    propertyList->AddFilepathProperty("property.landscape.heightmap", ".png;.heightmap", false, PropertyList::PROPERTY_IS_EDITABLE);
-    
-    propertyList->AddSubsection("property.landscape.subsection.textures");
-    propertyList->AddFilepathProperty("property.landscape.texture.color", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.texture.tile0", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.texture.tile1", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.texture.tile2", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.texture.tile3", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.texture.tilemask", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    
-    propertyList->AddSubsection("property.landscape.subsection.build_mask");
-    propertyList->AddFilepathProperty("property.landscape.lightmap", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.alphamask", ".png;.pvr", true, PropertyList::PROPERTY_IS_EDITABLE);
-
-    propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
-    bool showGrid =  (0 != (landscape->GetDebugFlags() & SceneNode::DEBUG_DRAW_GRID));
-    propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
-    
-    propertyList->AddBoolProperty("property.landscape.fulltiledtexture", PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->SetBoolPropertyValue("property.landscape.fulltiledtexture", landscape->IsFullTiledTextureEnabled());
-
     Vector3 size(445.0f, 445.0f, 50.f);
     AABBox3 bbox = landscape->GetBoundingBox();
     AABBox3 emptyBox;
@@ -59,102 +35,42 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
         bbox.GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
         size = transformedBox.max - transformedBox.min;
     }
-    
     propertyList->SetFloatPropertyValue("property.landscape.size", size.x);
     propertyList->SetFloatPropertyValue("property.landscape.height", size.z);
-    
-    propertyList->SetComboPropertyIndex("property.landscape.renderingmode", landscape->GetRenderingMode());
-    
-    String heightMap = landscape->GetHeightmapPathname();
-    if(heightMap.length())
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.heightmap", heightMap);
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.heightmap", "");
-    }
-    Texture * t = 0;
-    
-    
-    t = landscape->GetTexture(LandscapeNode::TEXTURE_COLOR);
-    if(t)
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.color", landscape->GetTextureName(LandscapeNode::TEXTURE_COLOR));
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.color", "");
-    }
 
-    t = landscape->GetTexture(LandscapeNode::TEXTURE_TILE0);
-    if(t)
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile0", landscape->GetTextureName(LandscapeNode::TEXTURE_TILE0));
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile0", "");
-    }
-    
-    t = landscape->GetTexture(LandscapeNode::TEXTURE_TILE1);
-    if(t)
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile1", landscape->GetTextureName(LandscapeNode::TEXTURE_TILE1));
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile1", "");
-    }
-    
-    t = landscape->GetTexture(LandscapeNode::TEXTURE_TILE2);
-    if(t)
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile2", landscape->GetTextureName(LandscapeNode::TEXTURE_TILE2));
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile2", "");
-    }
-    
-    t = landscape->GetTexture(LandscapeNode::TEXTURE_TILE3);
-    if(t)
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile3", landscape->GetTextureName(LandscapeNode::TEXTURE_TILE3));
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tile3", "");
-    }
-    
-    t = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
-    if(t)
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tilemask", landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_MASK));
-    }
-    else
-    {
-        propertyList->SetFilepathPropertyValue("property.landscape.texture.tilemask", "");
-    }
+    propertyList->AddComboProperty("property.landscape.tilemode", tiledModes);
+    propertyList->SetComboPropertyIndex("property.landscape.tilemode", landscape->GetTiledShaderMode());
+
+
+    propertyList->AddFilepathProperty("property.landscape.heightmap", ".png;.heightmap", false, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("property.landscape.heightmap", landscape->GetHeightmapPathname());
     
     
-//    t = landscape->GetTexture(LandscapeNode::TEXTURE_BUMP);
-//    if(t)
-//    {
-//        propertyList->SetFilepathPropertyValue("property.landscape.texturebump", landscape->GetTextureName(LandscapeNode::TEXTURE_BUMP));
-//    }
-//    else
-//    {
-//        propertyList->SetFilepathPropertyValue("property.landscape.texturebump", "");
-//    }
+    propertyList->AddSubsection("property.landscape.subsection.textures");
+    AddFilepathProperty(String("property.landscape.texture.color"), String(".png;.pvr"), LandscapeNode::TEXTURE_COLOR);
+    AddFilepathProperty(String("property.landscape.texture.tile0"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE0);
+    AddFilepathProperty(String("property.landscape.texture.tile1"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE1);
+    AddFilepathProperty(String("property.landscape.texture.tile2"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE2);
+    AddFilepathProperty(String("property.landscape.texture.tile3"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE3);
+    AddFilepathProperty(String("property.landscape.texture.tilemask"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE_MASK);
+    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE_FULL);
+    propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"), 
+                                     Message(this, &LandscapePropertyControl::GenerateFullTiledTexture));
+
+    propertyList->AddSubsection("property.landscape.subsection.build_mask");
+    propertyList->AddFilepathProperty("property.landscape.lightmap", String(".png;.pvr"), true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("property.landscape.alphamask", String(".png;.pvr"), true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->SetFilepathPropertyValue("property.landscape.lightmap", String(""));
+    propertyList->SetFilepathPropertyValue("property.landscape.alphamask", String(""));
+
     
+    propertyList->AddBoolProperty("property.landscape.showgrid", PropertyList::PROPERTY_IS_EDITABLE);
+    bool showGrid =  (0 != (landscape->GetDebugFlags() & SceneNode::DEBUG_DRAW_GRID));
+    propertyList->SetBoolPropertyValue("property.landscape.showgrid", showGrid);
     
-    propertyList->SetFilepathPropertyValue("property.landscape.lightmap", "");
-    propertyList->SetFilepathPropertyValue("property.landscape.alphamask", "");
 
 	propertyList->AddIntProperty("lightmap.size");
 	propertyList->SetIntPropertyValue("lightmap.size", currentSceneNode->GetCustomProperties()->GetInt32("lightmap.size", 1024));
-    
 
     propertyList->AddFloatProperty("property.landscape.texture0.tilex");
     propertyList->SetFloatPropertyValue("property.landscape.texture0.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE0).x);
@@ -175,6 +91,22 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->SetFloatPropertyValue("property.landscape.texture3.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE3).x);
     propertyList->AddFloatProperty("property.landscape.texture3.tiley");
     propertyList->SetFloatPropertyValue("property.landscape.texture3.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE3).y);
+}
+
+void LandscapePropertyControl::AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level)
+{
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+    Texture * t = landscape->GetTexture(level);
+    
+    propertyList->AddFilepathProperty(key, filter, true, PropertyList::PROPERTY_IS_EDITABLE);
+    if(t && !t->isRenderTarget)
+    {
+        propertyList->SetFilepathPropertyValue(key, landscape->GetTextureName(level));
+    }
+    else 
+    {
+        propertyList->SetFilepathPropertyValue(key, String(""));
+    }
 }
 
 
@@ -289,6 +221,10 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
         {
             SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, newValue);
         }
+        else if("property.landscape.texture.tiledtexture" == forKey)
+        {
+            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_FULL, newValue);
+        }
         else if(    "property.landscape.lightmap" == forKey 
                 ||  "property.landscape.alphamask" == forKey)
         {
@@ -310,37 +246,23 @@ void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel 
     SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(level));
     Texture::DisableMipmapGeneration();
 
-    landscape->UpdateFullTiledTexture();
+    if(LandscapeNode::TEXTURE_TILE_FULL != level)
+    {
+        landscape->UpdateFullTiledTexture();   
+    }
 }
-
 
 
 
 void LandscapePropertyControl::OnComboIndexChanged(
                                 PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
-    if("property.landscape.renderingmode" == forKey)
+    if("property.landscape.tilemode" == forKey)
     {
         LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        
-        Vector3 size(
-                     propertyList->GetFloatPropertyValue("property.landscape.size"),
-                     propertyList->GetFloatPropertyValue("property.landscape.size"),
-                     propertyList->GetFloatPropertyValue("property.landscape.height"));
-        AABBox3 bbox;
-        bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
-        bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
-        
-        
-        int32 renderingMode = propertyList->GetComboPropertyIndex("property.landscape.renderingmode");
-        
-        String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-        if(EditorSettings::IsValidPath(heightMap) && heightMap.length())
-        {
-            landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
-        }
+        landscape->SetTiledShaderMode((LandscapeNode::eTiledShaderMode)newItemIndex);
     }
-
+        
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
 }
 
@@ -410,12 +332,15 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
             landscape->SetDebugFlags(landscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
         }
     }
-    else if(forKey == "property.landscape.fulltiledtexture")
-    {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        landscape->EnableFullTiledTexture(newValue);
-    }
     
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
 
+void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+    String texPathname = landscape->SaveFullTiledTexture();
+    
+    propertyList->SetFilepathPropertyValue(String("property.landscape.texture.tiledtexture"), texPathname);
+    landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texPathname);
+}
