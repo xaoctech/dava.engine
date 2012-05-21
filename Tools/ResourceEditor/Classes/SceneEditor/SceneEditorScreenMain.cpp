@@ -353,12 +353,17 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 {
-    if(!fileSystemDialog->GetParent())
+    BodyItem *iBody = FindCurrentBody();
+
+    if(iBody->bodyControl->LandscapeEditorActive())
+    {
+        ErrorNotifier::Instance()->ShowError("Can't save level at Landscape Editor Mode.");
+    }
+    else if(!fileSystemDialog->GetParent())
     {
         fileSystemDialog->SetExtensionFilter(".sc2");
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
         
-        BodyItem *iBody = FindCurrentBody();
         String path = iBody->bodyControl->GetFilePath();
         if (path.length() > 0)
         {
@@ -378,8 +383,16 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 {
-    menuPopup->InitControl(MENUID_EXPORTTOGAME, btnExport->GetRect());
-    AddControl(menuPopup);
+    BodyItem *iBody = FindCurrentBody();
+    if(iBody->bodyControl->LandscapeEditorActive())
+    {
+        ErrorNotifier::Instance()->ShowError("Can't save level at Landscape Editor Mode.");
+    }
+    else
+    {
+        menuPopup->InitControl(MENUID_EXPORTTOGAME, btnExport->GetRect());
+        AddControl(menuPopup);
+    }
 }
 
 void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)

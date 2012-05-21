@@ -394,6 +394,7 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
 
     landscapeDebugNode->SetRenderingMode(workingLandscape->GetRenderingMode());
+    landscapeDebugNode->SetTiledShaderMode(workingLandscape->GetTiledShaderMode());
     for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)
     {
         landscapeDebugNode->SetTexture((LandscapeNode::eTextureLevel)iTex, 

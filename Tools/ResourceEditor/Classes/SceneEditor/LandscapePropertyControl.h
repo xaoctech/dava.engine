@@ -20,12 +20,15 @@ public:
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     
 protected:
-    Vector<String> renderingModes;
+    Vector<String> tiledModes;
 
     void CreateMaskTexture(const String &lightmapPath, const String &alphamaskPath);
 
     void SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname);
 
+    void GenerateFullTiledTexture(BaseObject * object, void * userData, void * callerData);
+    
+    void AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level);
 };
 
 #endif //__LANDSCAPE_PROPERTY_CONTROL_H__
