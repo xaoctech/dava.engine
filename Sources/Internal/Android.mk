@@ -79,6 +79,7 @@ LOCAL_SRC_FILES :=  \
                     Math/Matrix4.cpp \
                     Math/Polygon2.cpp \
                     Math/Polygon3.cpp \
+                    Math/RectPacker.cpp \
                     Math/Spline.cpp \
                     \
                     Network/NetworkConnection.cpp \
@@ -134,6 +135,7 @@ LOCAL_SRC_FILES :=  \
                     Render/RenderStateBlock.cpp \
                     Render/Shader.cpp \
                     Render/ShaderGL.cpp \
+                    Render/SharedFBO.cpp \
                     Render/StaticIndexBuffer.cpp \
                     Render/StaticVertexBuffer.cpp \
                     Render/Texture.cpp \
@@ -152,6 +154,7 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/BillboardNode.cpp \
                     Scene3D/BoneNode.cpp \
                     Scene3D/BVHierarchy.cpp \
+                    Scene3D/BVNode.cpp \
                     Scene3D/Camera.cpp \
                     Scene3D/CubeNode.cpp \
                     Scene3D/DataNode.cpp \
