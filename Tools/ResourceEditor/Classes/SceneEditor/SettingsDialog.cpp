@@ -58,6 +58,8 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
 //    }
     
     propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
+
+	propertyList->AddBoolProperty("settingsdialog.imposters", PropertyList::PROPERTY_IS_EDITABLE);
 }
     
 SettingsDialog::~SettingsDialog()
@@ -120,6 +122,7 @@ void SettingsDialog::WillAppear()
 //    }
     
     propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
+	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetImposters());
 }
 
 void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -204,6 +207,11 @@ void SettingsDialog::OnBoolPropertyChanged(PropertyList *forList, const String &
         EditorSettings::Instance()->SetDrawGrid(newValue);
         EditorSettings::Instance()->Save();
     }
+	else if("settingsdialog.imposters" == forKey)
+	{
+		EditorSettings::Instance()->SetImposters(newValue);
+		EditorSettings::Instance()->Save();
+	}
 }
 
 void SettingsDialog::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
