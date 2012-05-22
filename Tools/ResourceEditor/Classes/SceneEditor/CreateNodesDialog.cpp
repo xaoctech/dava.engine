@@ -142,6 +142,7 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
         case ECNID_CAMERA:
             SetHeader(LocalizedString(L"createnode.camera"));
             sceneNode = new Camera();
+            ((Camera *)sceneNode)->SetUp(Vector3(0.0f, 0.0f, 1.0f));
             sceneNode->SetName("Camera");
             break;
 
