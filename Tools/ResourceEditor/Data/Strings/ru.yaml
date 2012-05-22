@@ -1,4 +1,4 @@
-#dialog buttons
+﻿#dialog buttons
 dialog.ok: "Ok"
 dialog.cancel: "Отмена"
 dialog.create: "Создать"
@@ -238,6 +238,7 @@ settingsdialog.cameraspeed4: "4-ая скорость камеры:"
 settingsdialog.leftpanelwidth: "Ширина левой панели:"
 settingsdialog.rightpanelwidth: "Ширина правой панели:"
 settingsdialog.drawgrid: "Рисовать сетку в сцене:"
+settingsdialog.imposters: "Включить импостеры:"
 
 #Color Picker
 colorpicker.r: "Red:"

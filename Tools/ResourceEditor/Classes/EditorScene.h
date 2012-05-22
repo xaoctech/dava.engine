@@ -82,6 +82,8 @@ protected:
 	SceneNode * lastSelectedPhysics;
     
     bool drawGrid;
+
+	void UpdateImpostersSettings();
 };
 
 #endif

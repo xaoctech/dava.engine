@@ -673,6 +673,7 @@ void Scene::EnableImposters(bool enable)
 	if(enable != enableImposters)
 	{
 		enableImposters = enable;
+		RecursiveEnableImposters(enableImposters);
 	}
 }
 

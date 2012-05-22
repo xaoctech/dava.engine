@@ -703,12 +703,8 @@ void SceneNode::RecursiveEnableImposters(bool enable)
 	uint32 size = (uint32)children.size();
 	for (uint32 c = 0; c < size; ++c)
 	{
-		children[c]->RecursiveEnableImposters(enable);
+		children[c]->RecursiveEnableImposters(enable); 
 	}
 }
     
 };
-
-
-
-
