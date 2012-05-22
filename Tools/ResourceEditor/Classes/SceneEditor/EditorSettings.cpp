@@ -205,4 +205,14 @@ bool EditorSettings::GetDrawGrid()
     return settings->GetBool("DrawGrid", true);
 }
 
+void EditorSettings::SetEnableImposters(bool enableImposters)
+{
+	settings->SetBool("enableImposters", enableImposters);
+}
+
+bool EditorSettings::GetEnableImposters()
+{
+	return settings->GetBool("enableImposters", true);
+}
+
 

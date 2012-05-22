@@ -224,7 +224,7 @@ public:
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
     
-private:	
+protected:	
     
     void UpdateLights();
     

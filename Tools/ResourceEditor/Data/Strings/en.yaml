@@ -241,6 +241,7 @@ settingsdialog.cameraspeed4: "4-th Camera Speed:"
 settingsdialog.leftpanelwidth: "Left Panel Width:"
 settingsdialog.rightpanelwidth: "Right Panel Width:"
 settingsdialog.drawgrid: "Draw Scene Grid:"
+settingsdialog.imposters: "Enable Imposters:"
 
 #Color Picker
 colorpicker.r: "Red:"

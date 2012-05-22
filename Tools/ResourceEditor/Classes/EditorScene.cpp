@@ -73,6 +73,7 @@ void EditorScene::Update(float32 timeElapsed)
     Scene::Update(timeElapsed);
 	CheckNodes(this);
 	collisionWorld->updateAabbs();
+	UpdateImpostersSettings();
 }
 
 void EditorScene::CheckNodes(SceneNode * curr)
@@ -473,4 +474,11 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
     return -1;
 }
 
-
+void EditorScene::UpdateImpostersSettings()
+{
+	bool newImposterEnabledValue = EditorSettings::Instance()->GetEnableImposters();
+	if(enableImposters != newImposterEnabledValue)
+	{
+		EnableImposters(newImposterEnabledValue);
+	}
+}
