@@ -358,9 +358,7 @@ void LandscapeEditorHeightmap::HideAction()
     
     workingScene->AddNode(workingLandscape);
     workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
-    workingLandscape->BuildLandscapeFromHeightmapImage(workingLandscape->GetRenderingMode(), 
-                                                       savedPath,
-                                                       workingLandscape->GetBoundingBox());
+    workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
     
     workingScene->RemoveNode(landscapeDebugNode);
     SafeRelease(landscapeDebugNode);
@@ -393,7 +391,6 @@ void LandscapeEditorHeightmap::ShowAction()
     landscapeDebugNode->SetHeightmapPath(workingLandscape->GetHeightmapPathname());
     landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
 
-    landscapeDebugNode->SetRenderingMode(workingLandscape->GetRenderingMode());
     landscapeDebugNode->SetTiledShaderMode(workingLandscape->GetTiledShaderMode());
     for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)
     {

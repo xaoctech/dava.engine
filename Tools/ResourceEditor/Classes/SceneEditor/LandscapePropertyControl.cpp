@@ -125,12 +125,10 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
         bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
         
         
-        int32 renderingMode = propertyList->GetComboPropertyIndex("property.landscape.renderingmode");
-        
         String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
         if(EditorSettings::IsValidPath(heightMap) && heightMap.length())
         {
-            landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, heightMap, bbox);
+            landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
         }
     }
     if ("property.landscape.texture0.tilex" == forKey || "property.landscape.texture0.tiley" == forKey)
@@ -191,10 +189,9 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
             bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
             bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
             
-            int32 renderingMode = propertyList->GetComboPropertyIndex("property.landscape.renderingmode");
             if(newValue.length())
             {
-                landscape->BuildLandscapeFromHeightmapImage((LandscapeNode::eRenderingMode)renderingMode, newValue, bbox);
+                landscape->BuildLandscapeFromHeightmapImage(newValue, bbox);
             }
         }
         else if("property.landscape.texture.tile0" == forKey)

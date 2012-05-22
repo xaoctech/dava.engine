@@ -213,24 +213,6 @@ void LandscapeEditorColor::UpdateCursor()
 	}
 }
 
-bool LandscapeEditorColor::SetScene(EditorScene *newScene)
-{
-    bool ret = LandscapeEditorBase::SetScene(newScene);
-    if(ret)
-    {
-        if(LandscapeNode::RENDERING_MODE_TILE_MASK_SHADER != workingLandscape->GetRenderingMode()) 
-        {
-            ErrorNotifier::Instance()->ShowError("Rendering mode is not RENDERING_MODE_TILE_MASK_SHADER.");
-
-            SafeRelease(workingLandscape);
-            SafeRelease(workingScene);
-            
-            ret = false;
-        }
-    }
-    
-    return ret;
-}
 
 void LandscapeEditorColor::InputAction(int32 phase, bool intersects)
 {
