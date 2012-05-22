@@ -122,7 +122,7 @@ void SettingsDialog::WillAppear()
 //    }
     
     propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
-	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetImposters());
+	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetEnableImposters());
 }
 
 void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
@@ -209,7 +209,7 @@ void SettingsDialog::OnBoolPropertyChanged(PropertyList *forList, const String &
     }
 	else if("settingsdialog.imposters" == forKey)
 	{
-		EditorSettings::Instance()->SetImposters(newValue);
+		EditorSettings::Instance()->SetEnableImposters(newValue);
 		EditorSettings::Instance()->Save();
 	}
 }

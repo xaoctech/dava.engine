@@ -476,5 +476,9 @@ int32 EditorScene::GetForceLodLayer(SceneNode *node)
 
 void EditorScene::UpdateImpostersSettings()
 {
-
+	bool newImposterEnabledValue = EditorSettings::Instance()->GetEnableImposters();
+	if(enableImposters != newImposterEnabledValue)
+	{
+		EnableImposters(newImposterEnabledValue);
+	}
 }

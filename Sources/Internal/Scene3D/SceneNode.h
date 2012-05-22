@@ -306,6 +306,11 @@ public:
         You can perform additional initialization here.
      */
     virtual void SceneDidLoaded();
+
+	/**
+		\brief Enable/disable imposters for node and it's children.
+	*/
+	void RecursiveEnableImposters(bool enable);
     
 protected:
 
@@ -331,8 +336,6 @@ protected:
 	Matrix4 worldTransform;
 
     KeyedArchive *customProperties;
-
-	void RecursiveEnableImposters(bool enable);
     
 private:
     Matrix4 localTransform;
