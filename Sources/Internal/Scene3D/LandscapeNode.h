@@ -116,33 +116,13 @@ public:
     void SetLods(const Vector4 & lods);
     
 
-    enum eRenderingMode
-    {
-        RENDERING_MODE_TEXTURE = 0,
-        RENDERING_MODE_DETAIL_SHADER, 
-        RENDERING_MODE_BLENDED_SHADER,  // revision 1 of blender shader. Support only 2 textures per landscape.
-        RENDERING_MODE_TILE_MASK_SHADER,  // revision 2 of blender shader. Support 4 textures per landscape.
-    };
-
-    /**
-        \brief Change rendering mode. 
-        \param[in] renderingMode rendering mode of landscape.
-     */
-    void SetRenderingMode(eRenderingMode _renderingMode);
-    
-    /**
-        \brief Get rendering mode. 
-        \returns rendering mode of landscape.
-     */
-    inline const eRenderingMode GetRenderingMode();
-
-    
-    //New rendering mode 
     enum eTiledShaderMode
     {
         TILED_MODE_TILEMASK = 0,
         TILED_MODE_TEXTURE,
-        TILED_MODE_MIXED
+        TILED_MODE_MIXED,
+        
+        TILED_MODE_COUNT
     };
 
     
@@ -161,10 +141,9 @@ public:
     
     /**
         \brief Builds landscape from heightmap image and bounding box of this landscape block
-        \param[in] renderingMode rendering mode of landscape.
         \param[in] landscapeBox axial-aligned bounding box of the landscape block
      */
-    void BuildLandscapeFromHeightmapImage(eRenderingMode renderingMode, const String & heightmapPathname, const AABBox3 & landscapeBox);
+    void BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & landscapeBox);
     
     enum eTextureLevel
     {
@@ -351,7 +330,6 @@ protected:
     Vector3 cameraPos;
     Frustum *frustum;
     
-    eRenderingMode renderingMode;
     ePrimitiveType primitypeType;
 
     void InitShaders();
@@ -366,16 +344,10 @@ protected:
     int32 uniformFogColor;
 
     
-//    Shader * activeShader;
-
     Shader * tileMaskShader;
     Shader * fullTiledShader;
 
 	LandscapeCursor * cursor;
-
-//    Shader * singleTextureShader;
-//    Shader * detailShader;
-//    Shader * blendedShader;
         
     int8 queueRdoQuad;
     int32 queueRenderCount;
@@ -412,11 +384,6 @@ inline AABBox3 & LandscapeNode::GetBoundingBox()
     return box;
 }
     
-inline const LandscapeNode::eRenderingMode LandscapeNode::GetRenderingMode()
-{
-    return renderingMode;
-}
-
 inline const LandscapeNode::eTiledShaderMode LandscapeNode::GetTiledShaderMode()
 {
     return tiledShaderMode;
