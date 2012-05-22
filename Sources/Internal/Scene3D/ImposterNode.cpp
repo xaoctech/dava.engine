@@ -110,7 +110,11 @@ void ImposterNode::UpdateState()
 
 void ImposterNode::Draw()
 {
-
+	if((flags & NODE_DISABLE_IMPOSTER) && GetChildrenCount() > 0)
+	{
+		DVASSERT(GetChildrenCount() == 1);
+		GetChild(0)->Draw();
+	}
 }
 
 void ImposterNode::GeneralDraw()
