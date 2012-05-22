@@ -656,6 +656,7 @@ void Scene::RegisterImposter(ImposterNode * imposter)
 	}
 	
 	imposterManager->Add(imposter);
+	imposter->RecursiveEnableImposters(enableImposters);
 }
 
 void Scene::UnregisterImposter(ImposterNode * imposter)

@@ -64,8 +64,8 @@ public:
     void SetDrawGrid(bool drawGrid);
     bool GetDrawGrid();
 
-	void SetImposters(bool enableImposters);
-	bool GetImposters();
+	void SetEnableImposters(bool enableImposters);
+	bool GetEnableImposters();
     
 protected:
 
