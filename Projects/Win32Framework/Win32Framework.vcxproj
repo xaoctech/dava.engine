@@ -329,6 +329,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundBuffer.h" />
@@ -574,6 +575,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp" />
