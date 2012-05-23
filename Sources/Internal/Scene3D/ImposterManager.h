@@ -52,12 +52,17 @@ public:
 	void Update(float32 frameTime);
 	void Draw();
 
+	void AddToQueue(ImposterNode * node);
+	void RemoveFromQueue(ImposterNode * node);
+	void UpdateQueue(ImposterNode * node);
+
 private:
 	List<ImposterNode*> imposters;
-	PriorityQueue<ImposterNode*, Vector<ImposterNode*>, ImposterNodeComparer> queue;
+	List<ImposterNode*> queue;
 
-	void AddToQueue(ImposterNode * node);
+	
 	void ProcessQueue();
+	void AddToPrioritizedPosition(ImposterNode * node);
 
 	SharedFBO * sharedFBO;
 };

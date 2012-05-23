@@ -37,12 +37,6 @@ namespace DAVA
 
 class ImposterManager;
 
-class ImposterNodeComparer
-{
-public:
-	bool operator() (ImposterNode * lhs, ImposterNode * rhs);
-};
-
 class ImposterNode : public SceneNode
 {
 public:
@@ -53,7 +47,6 @@ public:
 	{
 		STATE_3D = 0,
 		STATE_IMPOSTER,
-		STATE_ASK_FOR_REDRAW,
 		STATE_QUEUED,
 		STATE_REDRAW_APPROVED
 	};
@@ -69,13 +62,13 @@ public:
 	void GeneralDraw();
 	void DrawImposter();
 
-	bool IsAskingForRedraw();
 	bool IsQueued();
-	void OnAddedToQueue();
 	void ApproveRedraw();
 
 	void SetManager(ImposterManager * manager);
 	void SetSharedFBO(SharedFBO * fbo);
+
+	float32 GetPriority();
 	
 
 private:
@@ -109,6 +102,8 @@ private:
 
 	void UpdatePriority(float32 squaredDistance, float32 dotProduct);
 	float32 priority;
+
+	bool IsAngleOrRangeChangedEnough(float32 squareDistance, float32 dotProduct);
 
 	friend class ImposterNodeComparer;
 };
