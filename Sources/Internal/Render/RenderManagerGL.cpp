@@ -736,7 +736,6 @@ void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 	//IdentityModelMatrix();
 	//IdentityMappingMatrix();
 	BindFBO(renderTarget->fboID);
-	SetViewport(Rect(0, 0, renderTarget->width, renderTarget->height), true);
 	RemoveClip();
 }
 
