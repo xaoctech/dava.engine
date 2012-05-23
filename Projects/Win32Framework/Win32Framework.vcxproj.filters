@@ -966,6 +966,9 @@
     <ClInclude Include="..\..\Sources\Internal\Math\RectPacker.h">
       <Filter>Internal\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1675,6 +1678,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp">
       <Filter>Internal\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

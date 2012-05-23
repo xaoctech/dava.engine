@@ -212,6 +212,7 @@ public:
 		DEBUG_DRAW_LIGHT_NODE = 8,
         DEBUG_DRAW_NORMALS = 16,
         DEBUG_DRAW_GRID = 32,
+		DEBUG_DRAW_USERNODE = 64,
         DEBUG_DRAW_ALL = 0xFFFFFFFF,
 	};
 	/**
