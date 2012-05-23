@@ -79,18 +79,36 @@ void EditorScene::Update(float32 timeElapsed)
 void EditorScene::CheckNodes(SceneNode * curr)
 {
 	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode *> (curr);	
-	
-	if (mesh && mesh->GetUserData() == 0 && mesh->IsLodMain(0))
+	UserNode * userNode = dynamic_cast<UserNode *> (curr);	
+	if (mesh)
 	{
-		SceneNodeUserData * data = new SceneNodeUserData();
-		curr->SetUserData(data);
-		data->bulletObject = new BulletObject(this, collisionWorld, mesh, mesh->GetWorldTransform());
-		SafeRelease(data);
+		if (mesh->GetUserData() == 0 && mesh->IsLodMain(0))
+		{
+			SceneNodeUserData * data = new SceneNodeUserData();
+			curr->SetUserData(data);
+			data->bulletObject = new BulletObject(this, collisionWorld, mesh, mesh->GetWorldTransform());
+			SafeRelease(data);
+		}
+		else if (mesh->GetUserData())
+		{
+			SceneNodeUserData * data = (SceneNodeUserData*)mesh->GetUserData();
+			data->bulletObject->UpdateCollisionObject();
+		}
 	}
-	else if (mesh && mesh->GetUserData())
+	else if (userNode)
 	{
-		SceneNodeUserData * data = (SceneNodeUserData*)mesh->GetUserData();
-		data->bulletObject->UpdateCollisionObject();
+		if (userNode->GetUserData() == 0)
+		{
+			SceneNodeUserData * data = new SceneNodeUserData();
+			curr->SetUserData(data);
+			data->bulletObject = new BulletObject(this, collisionWorld, userNode, userNode->GetWorldTransform());
+			SafeRelease(data);
+		}
+		else if (userNode->GetUserData())
+		{
+			SceneNodeUserData * data = (SceneNodeUserData*)userNode->GetUserData();
+			data->bulletObject->UpdateCollisionObject();
+		}
 	}
 
 	int size = curr->GetChildrenCount();
@@ -274,6 +292,8 @@ SceneNode * EditorScene::FindSelected(SceneNode * curr, btCollisionObject * coll
 	SceneNode * node = dynamic_cast<MeshInstanceNode *> (curr);
 	if (node == 0)
 		node = dynamic_cast<LightNode *> (curr);
+	if (node == 0)
+		node = dynamic_cast<UserNode *> (curr);
 	
 	if (node && node->GetUserData())
 	{
