@@ -407,7 +407,14 @@ void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
 	if(useConvertedTextures)
 	{
 		// texture.pvr.png -> texture.pvr
-		pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
+        if(String::npos == pathTo.find(".pvr.png"))
+        {
+            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
+        }
+        else 
+        {
+            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
+        }
 	}
 
     FileSystem::Instance()->CreateDirectory(pathOnly, true);
@@ -415,6 +422,32 @@ void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
     FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
 }
 
+void SceneEditorScreenMain::ExportLandscapeFile(const String &fileDataSourcePath)
+{
+    String fileOnly;
+    String pathOnly;
+    String pathTo = fileDataSourcePath;
+    pathTo.replace(fileDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
+    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+    
+	//default pathTo  -gith
+	if(useConvertedTextures)
+	{
+		// texture.pvr.png -> texture.pvr
+        if(String::npos != pathTo.find(".pvr.png"))
+        {
+            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
+        }
+        else if(String::npos != pathTo.find(".png"))
+        {
+            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
+        }
+	}
+    
+    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+	FileSystem::Instance()->DeleteFile(pathTo);
+    FileSystem::Instance()->CopyFile(fileDataSourcePath, pathTo);
+}
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 {
@@ -1285,13 +1318,13 @@ void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
         String fullTiledTexture = land->SaveFullTiledTexture();
         land->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, fullTiledTexture);
         
-        ExportTexture(land->GetHeightmapPathname());
+        ExportLandscapeFile(land->GetHeightmapPathname());
         for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
         {
             Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
             if(t) 
             {
-                ExportTexture(t->relativePathname);
+                ExportLandscapeFile(land->GetTextureName((LandscapeNode::eTextureLevel)i));
 //                if(useConvertedTextures)
 //                {
 //                    ExportTexture(t->names[Material::TEXTURE_DIFFUSE]);
