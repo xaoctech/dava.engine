@@ -10,6 +10,20 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\FrameworkMain.h" />
+    <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\SpriteTest.h" />
+    <ClInclude Include="Classes\TestTemplate.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Classes\FrameworkMain.cpp" />
+    <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\SpriteTest.cpp" />
+    <ClCompile Include="Classes\TestTemplate.cpp" />
+    <ClCompile Include="Win32Specific\main.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A31689CE-A339-464E-8D7E-49EF2AF81AA4}</ProjectGuid>
     <RootNamespace>PerformanceTestVS2010</RootNamespace>
@@ -73,7 +87,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;$(DXSDK_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Libs/glew/Include;./../../Libs/include;$(DXSDK_DIR)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -83,28 +97,18 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>Win32Framework.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../Win32Framework/$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../Projects/Win32Framework/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Classes\FrameworkMain.cpp" />
-    <ClCompile Include="Classes\GameCore.cpp" />
-    <ClCompile Include="Classes\SpriteTest.cpp" />
-    <ClCompile Include="Classes\TestTemplate.cpp" />
-    <ClCompile Include="Win32Specific\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Classes\AppScreens.h" />
-    <ClInclude Include="Classes\FrameworkMain.h" />
-    <ClInclude Include="Classes\GameCore.h" />
-    <ClInclude Include="Classes\SpriteTest.h" />
-    <ClInclude Include="Classes\TestTemplate.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
