@@ -678,6 +678,11 @@ void Scene::EnableImposters(bool enable)
 	}
 }
 
+bool Scene::IsImposterEnabled()
+{
+	return enableImposters;
+}
+
 
 /*void Scene::Save(KeyedArchive * archive)
 {

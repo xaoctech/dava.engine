@@ -220,6 +220,7 @@ public:
 		\param[in] enable enable/disable flag. Enabled by default.
 	*/
 	void EnableImposters(bool enable);
+	bool IsImposterEnabled();
 
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
