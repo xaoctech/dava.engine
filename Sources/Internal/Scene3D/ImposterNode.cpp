@@ -26,6 +26,7 @@
 =====================================================================================*/
 
 #include "ImposterNode.h"
+#include "ImposterManager.h"
 #include "Utils/Utils.h"
 #include "Render/Image.h"
 #include "Platform/SystemTimer.h"
@@ -64,13 +65,24 @@ void ImposterNode::UpdateState()
 {
 	if(GetChildrenCount() > 0)
 	{
+		if((flags & NODE_DISABLE_IMPOSTER))
+		{
+			return;
+		}
+
 		DVASSERT(GetChildrenCount() == 1);
 		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBox();
 		Vector3 bboxCenter = bbox.GetCenter();
 		float32 distanceSquare = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
 		distanceSquare *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+		
+		Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
+		newDirection.Normalize();
+		float32 dotProduct = newDirection.DotProduct(direction);
 
-		if((STATE_3D == state))
+		switch(state)
+		{
+		case STATE_3D:
 		{
 			if(distanceSquare > TOGGLE_SQUARE_DISTANCE)
 			{
@@ -82,30 +94,58 @@ void ImposterNode::UpdateState()
 				isReady = false;
 			}
 		}
+		break;
 
-		if(STATE_IMPOSTER == state)
+		case STATE_QUEUED:
+		{
+			if(IsAngleOrRangeChangedEnough(distanceSquare, dotProduct))
+			{
+				UpdatePriority(distanceSquare, dotProduct);
+				manager->UpdateQueue(this);
+			}
+		}
+		break;
+
+		case STATE_IMPOSTER:
 		{
 			if(distanceSquare < TOGGLE_SQUARE_DISTANCE)
 			{
 				isReady = false;
 				state = STATE_3D;
+				manager->RemoveFromQueue(this);
+				break;
 			}
-			else
+
+			if(IsAngleOrRangeChangedEnough(distanceSquare, dotProduct))
 			{
-				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
-				newDirection.Normalize();
-				float32 distanceDelta = distanceSquare/distanceSquaredToCamera;
-				float32 dotProduct = newDirection.DotProduct(direction);
-				if((dotProduct < 0.9999f) 
-					|| (distanceDelta < 0.25f/*0.5^2*/) //if distance is doubled or halved
-					|| (distanceDelta > 4.f/*2^2*/))
-				{
-					UpdatePriority(distanceSquare, dotProduct);
-					AskForRedraw();
-				}
+				UpdatePriority(distanceSquare, dotProduct);
+				AskForRedraw();
 			}
 		}
+		break;
+
+		case STATE_REDRAW_APPROVED:
+		{
+		}
+		break;
+		}
 	}
+}
+
+
+bool ImposterNode::IsAngleOrRangeChangedEnough(float32 squareDistance, float32 dotProduct)
+{
+	bool result = false;
+
+	float32 distanceDelta = squareDistance/distanceSquaredToCamera;
+	if((dotProduct < 0.9999f) 
+		|| (distanceDelta < 0.25f/*0.5^2*/) //if distance is doubled or halved
+		|| (distanceDelta > 4.f/*2^2*/))
+	{
+		result = true;
+	}
+
+	return result;
 }
 
 void ImposterNode::Draw()
@@ -119,6 +159,11 @@ void ImposterNode::Draw()
 
 void ImposterNode::GeneralDraw()
 {
+	if(flags & NODE_DISABLE_IMPOSTER)
+	{
+		return;
+	}
+
 	if(IsRedrawApproved())
 	{
 		UpdateImposter();
@@ -411,7 +456,8 @@ void ImposterNode::CreateGeometry()
 
 void ImposterNode::AskForRedraw()
 {
-	state = STATE_ASK_FOR_REDRAW;
+	manager->AddToQueue(this);
+	state = STATE_QUEUED;
 }
 
 bool ImposterNode::IsRedrawApproved()
@@ -422,16 +468,6 @@ bool ImposterNode::IsRedrawApproved()
 bool ImposterNode::IsImposterReady()
 {
 	return isReady;
-}
-
-void ImposterNode::OnAddedToQueue()
-{
-	state = STATE_QUEUED;
-}
-
-bool ImposterNode::IsAskingForRedraw()
-{
-	return (STATE_ASK_FOR_REDRAW == state);
 }
 
 void ImposterNode::ApproveRedraw()
@@ -475,10 +511,10 @@ void ImposterNode::UpdatePriority(float32 squaredDistance, float32 dotProduct)
 	}
 }
 
-
-bool ImposterNodeComparer::operator()(ImposterNode * lhs, ImposterNode * rhs)
+float32 ImposterNode::GetPriority()
 {
-	return lhs->priority > rhs->priority;
+	return priority;
 }
+
 
 }
