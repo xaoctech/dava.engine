@@ -88,7 +88,11 @@ void SpriteTest::UnloadResources()
 
 void SpriteTest::SpriteRGBA888Draw(PerfFuncData * data)
 {
+#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
+	int32 type = (int64)data->userData;
+#else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 	int32 type = (int32)data->userData;
+#endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
 	float y = 0;
@@ -145,7 +149,11 @@ void SpriteTest::SpriteRGBA888Draw(PerfFuncData * data)
 
 void SpriteTest::SpriteRGBA888DrawStateDraw(PerfFuncData * data)
 {
+#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
+	int32 type = (int64)data->userData;
+#else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 	int32 type = (int32)data->userData;
+#endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
 	float y = 0;
@@ -212,7 +220,11 @@ void SpriteTest::SpriteRGBA888DrawStateDraw(PerfFuncData * data)
 
 void SpriteTest::GameObjectRGBA888Draw(PerfFuncData * data)
 {
+#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
+	int32 type = (int64)data->userData;
+#else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 	int32 type = (int32)data->userData;
+#endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
 	float y = 0;

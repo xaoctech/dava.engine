@@ -54,7 +54,6 @@ public:
 	virtual void OnBackground();
 
 	File * logFile;
-
 	SpriteTest * spriteTest;
 };
 

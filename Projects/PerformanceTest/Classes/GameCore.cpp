@@ -35,12 +35,12 @@ using namespace DAVA;
 
 GameCore::GameCore()
 {
-	
+	spriteTest = NULL;
+    logFile = NULL;
 }
 
 GameCore::~GameCore()
 {
-	
 }
 
 void GameCore::OnAppStarted()
@@ -59,9 +59,8 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
-	spriteTest->Release();
-
-	logFile->Release();
+    SafeRelease(spriteTest);
+    SafeRelease(logFile);
 }
 
 void GameCore::OnSuspend()
