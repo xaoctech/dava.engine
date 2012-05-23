@@ -9,6 +9,7 @@
 #include "../AppScreens.h"
 #include "EditorBodyControl.h"
 #include "EditorLightNode.h"
+#include "Scene3D/UserNode.h"
 #include "EditorSettings.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -151,6 +152,13 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 			sceneNode = new ImposterNode();
 			sceneNode->SetName("Imposter");
 			break;
+
+		case ECNID_USERNODE:
+			SetHeader(LocalizedString(L"createnode.usernode"));
+			sceneNode = new UserNode();
+			sceneNode->SetName("UserNode");
+			break;
+
 
 //        case ECNID_LODNODE:
 //			SetHeader(LocalizedString(L"createnode.lodnode"));

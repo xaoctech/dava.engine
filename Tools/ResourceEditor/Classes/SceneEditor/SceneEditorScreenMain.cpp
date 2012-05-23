@@ -869,6 +869,13 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 					break;
 				}
 
+				case ECNID_USERNODE:
+					{
+						text = LocalizedString(L"menu.createnode.usernode");
+						break;
+					}
+
+
 //                case ECNID_LODNODE:
 //				{
 //					text = LocalizedString(L"menu.createnode.lodnode");

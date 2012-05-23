@@ -14,6 +14,7 @@
 #include "bullet/btBulletDynamicsCommon.h"
 #include "bullet/btBulletCollisionCommon.h"
 #include "DebugNode.h"
+#include "Scene3d/UserNode.h"
 
 using namespace DAVA;
 
@@ -22,6 +23,7 @@ class BulletObject : public BaseObject
 public:
     
     BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform);
+	BulletObject(Scene * scene, btCollisionWorld *collisionWorld, UserNode *_userNode, const Matrix4 &pWorldTransform);
     ~BulletObject();
 	
 	void UpdateCollisionObject(void);
@@ -44,8 +46,9 @@ protected:
 	void CreateCollisionObject();
 
 	void CreateLightObject(float32 radius);
-	void DeleteLightObject(float32 radius);
+	void CreateBoxObject();
 
+	
 	btCollisionWorld *collWorld;
 	Matrix4 *collisionPartTransform;
 	btCollisionObject *collisionObject;
@@ -53,6 +56,7 @@ protected:
 	btCollisionShape * shape;
 	Matrix4 createdWith;
 	MeshInstanceNode * meshNode;
+	UserNode * userNode;
 	bool updateFlag;
 };
 
