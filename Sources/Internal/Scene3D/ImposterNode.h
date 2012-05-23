@@ -63,7 +63,6 @@ public:
 	void DrawImposter();
 
 	bool IsQueued();
-	void ApproveRedraw();
 
 	void SetManager(ImposterManager * manager);
 	void SetSharedFBO(SharedFBO * fbo);

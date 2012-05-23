@@ -27,11 +27,13 @@
 
 #include "ImposterManager.h"
 #include "Render/SharedFBO.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
 
-ImposterManager::ImposterManager()
+ImposterManager::ImposterManager(Scene * _scene)
+:	scene(_scene)
 {
 	SharedFBO::Setup setup;
 	setup.size = Vector2(2048, 1024);
@@ -61,30 +63,36 @@ void ImposterManager::Update(float32 frameTime)
 		ImposterNode * node = *iter;
 		node->UpdateState();
 	}
+}
 
+void ImposterManager::Draw()
+{
 	ProcessQueue();
+
+	List<ImposterNode*>::iterator end = imposters.end();
+	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
+	{
+		(*iter)->GeneralDraw();
+	}
 }
 
 void ImposterManager::ProcessQueue()
 {
 	if(!queue.empty())
 	{
+		Camera * camera = scene->GetCurrentCamera();
+		RenderManager::Instance()->SetRenderTarget(sharedFBO->GetTexture());
+
 		int32 maxCount = Min(MAX_UPDATES_PER_FRAME, (int32)queue.size());
 		for(int32 i = 0; i < maxCount; ++i)
 		{
 			ImposterNode * node = queue.front();
 			queue.pop_front();
-			node->ApproveRedraw();
+			node->UpdateImposter();
 		}
-	}
-}
 
-void ImposterManager::Draw()
-{
-	List<ImposterNode*>::iterator end = imposters.end();
-	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
-	{
-		(*iter)->GeneralDraw();
+		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+		camera->Set();
 	}
 }
 
