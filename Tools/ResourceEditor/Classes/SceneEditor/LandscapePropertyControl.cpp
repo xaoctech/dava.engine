@@ -41,7 +41,6 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->AddComboProperty("property.landscape.tilemode", tiledModes);
     propertyList->SetComboPropertyIndex("property.landscape.tilemode", landscape->GetTiledShaderMode());
 
-
     propertyList->AddFilepathProperty("property.landscape.heightmap", ".png;.heightmap", false, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("property.landscape.heightmap", landscape->GetHeightmapPathname());
     
