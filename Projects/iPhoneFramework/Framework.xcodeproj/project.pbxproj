@@ -45,6 +45,8 @@
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */; };
+		5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D53156E3EBF00EDB730 /* UserNode.h */; };
 		5CFD7DF81564DC58009692EE /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7DF41564DC58009692EE /* ImageConvert.h */; };
 		5CFD7DF91564DC58009692EE /* RenderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7DF51564DC58009692EE /* RenderBase.cpp */; };
 		5CFD7DFA1564DC58009692EE /* SharedFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFD7DF61564DC58009692EE /* SharedFBO.cpp */; };
@@ -518,6 +520,8 @@
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
+		5CFA5D53156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		5CFD7DF41564DC58009692EE /* ImageConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageConvert.h; sourceTree = "<group>"; };
 		5CFD7DF51564DC58009692EE /* RenderBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBase.cpp; sourceTree = "<group>"; };
 		5CFD7DF61564DC58009692EE /* SharedFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SharedFBO.cpp; sourceTree = "<group>"; };
@@ -1435,6 +1439,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */,
+				5CFA5D53156E3EBF00EDB730 /* UserNode.h */,
 				5CFD7E011564DC7D009692EE /* ImposterManager.cpp */,
 				5CFD7E021564DC7D009692EE /* ImposterManager.h */,
 				5CFD7E031564DC7D009692EE /* ImposterNode.cpp */,
@@ -1878,6 +1884,7 @@
 				5CFD7E001564DC67009692EE /* RectPacker.h in Headers */,
 				5CFD7E061564DC7D009692EE /* ImposterManager.h in Headers */,
 				5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */,
+				5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2161,6 +2168,7 @@
 				5CFD7DFF1564DC67009692EE /* RectPacker.cpp in Sources */,
 				5CFD7E051564DC7D009692EE /* ImposterManager.cpp in Sources */,
 				5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */,
+				5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
