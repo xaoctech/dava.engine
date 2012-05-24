@@ -83,7 +83,7 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
     color = c;
     radius = _radius;
     
-    RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
+    RGBColor color((uint8)(c.r * 255.f), (uint8)(c.g * 255.f), (uint8)(c.b * 255.f), (uint8)(c.a * 255.f));
     
 	SafeRelease(sphereMesh);
     sphereMesh = new StaticMesh(GetScene());
@@ -171,13 +171,13 @@ void SphereNode::CreateSphere(float32 _radius, Color c)
         { 
             int32 n3 = n*3;
             //======= Индекс общей вершины 
-            float32 n0 = k + j;
+            int16 n0 = k + j;
             sphere->SetIndex(n3 + 0, n0);
             //======= Индекс текущей вершины 
-            float32 n1 = k + quality + j;
+            int16 n1 = k + quality + j;
             sphere->SetIndex(n3 + 1, n1);
             //======= Замыкание 
-            float32 n2 = k + quality + ((j + 1) % quality);
+            int16 n2 = k + quality + ((j + 1) % quality);
             sphere->SetIndex(n3 + 2, n2);
 
             //======= To же для второго треугольника 
@@ -269,7 +269,7 @@ void SphereNode::SetRadius(float32 _radius)
 void SphereNode::SetColor(Color c)
 {
     color = c;
-    RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
+    RGBColor color((uint8)(c.r * 255.f), (uint8)(c.g * 255.f), (uint8)(c.b * 255.f), (uint8)(c.a * 255.f));
     
     //====== Общее количество вершин 
     PolygonGroup *sphere = sphereMesh->GetPolygonGroup(0);

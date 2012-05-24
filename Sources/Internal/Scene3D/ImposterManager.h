@@ -36,13 +36,14 @@ namespace DAVA
 {
 
 class SharedFBO;
+class Scene;
 
 class ImposterManager : public BaseObject
 {
 public:
 	static const int32 MAX_UPDATES_PER_FRAME = 3;
 
-	ImposterManager();
+	ImposterManager(Scene * scene);
 	virtual ~ImposterManager();
 
 	bool IsEmpty();
@@ -65,6 +66,7 @@ private:
 	void AddToPrioritizedPosition(ImposterNode * node);
 
 	SharedFBO * sharedFBO;
+	Scene * scene;
 };
 
 };

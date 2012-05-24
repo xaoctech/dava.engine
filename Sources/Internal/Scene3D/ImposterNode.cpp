@@ -164,11 +164,6 @@ void ImposterNode::GeneralDraw()
 		return;
 	}
 
-	if(IsRedrawApproved())
-	{
-		UpdateImposter();
-	}
-
 	if(IsImposterReady())
 	{
 		DrawImposter();
@@ -182,6 +177,7 @@ void ImposterNode::GeneralDraw()
 void ImposterNode::UpdateImposter()
 {
 	Camera * camera = scene->GetCurrentCamera();
+
 	Camera * imposterCamera = new Camera();
 	Vector3 cameraPos = camera->GetPosition();
 
@@ -197,7 +193,6 @@ void ImposterNode::UpdateImposter()
 	imposterCamera->SetPosition(cameraPos);
 	imposterCamera->SetUp(camera->GetUp());
 	imposterCamera->SetLeft(camera->GetLeft());
-	imposterCamera->Set();
 
 
 	Rect viewport = RenderManager::Instance()->GetViewport();
@@ -256,6 +251,7 @@ void ImposterNode::UpdateImposter()
 	}
 	center /= 4.f;
 
+
 	//draw
 	RecreateFbo(screenSize);
 	if(!block)
@@ -278,7 +274,7 @@ void ImposterNode::UpdateImposter()
 
 	Rect oldViewport = RenderManager::Instance()->GetViewport();
 	
-	RenderManager::Instance()->SetRenderTarget(fbo->GetTexture());
+	Texture * target = fbo->GetTexture();
 
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_SCISSOR_TEST);
 	RenderManager::Instance()->State()->SetScissorRect(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
@@ -290,20 +286,17 @@ void ImposterNode::UpdateImposter()
 
 	RenderManager::Instance()->SetViewport(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy), true);
 
+
 	imposterCamera->SetTarget(center);
 	imposterCamera->Set();
-	//RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
-	//RenderManager::Instance()->ClearDepthBuffer();
 
 	//TODO: remove this call
 	HierarchicalRemoveCull(child);
 	RenderManager::Instance()->FlushState();
 	child->Draw();
 
-	//RenderManager::Instance()->SetRenderTarget((Texture*)0); //weird, but SetRenderTarget(0) is ambiguous call
-	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
-		
+
 	isReady = true;
 	state = STATE_IMPOSTER;
 
@@ -331,7 +324,6 @@ void ImposterNode::UpdateImposter()
 		imposterVertices[i] = Vector3(out.x, out.y, out.z);
 	}
 
-	camera->Set();
 	SafeRelease(imposterCamera);
 
 	ClearGeometry();
@@ -468,11 +460,6 @@ bool ImposterNode::IsRedrawApproved()
 bool ImposterNode::IsImposterReady()
 {
 	return isReady;
-}
-
-void ImposterNode::ApproveRedraw()
-{
-	state = STATE_REDRAW_APPROVED;
 }
 
 void ImposterNode::RecreateFbo(const Vector2 & size)
