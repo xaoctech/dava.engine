@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SpriteTest.cpp */; };
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
@@ -47,6 +48,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeTest.cpp; path = Classes/LandscapeTest.cpp; sourceTree = "<group>"; };
+		5C1066DE156D35AE00912A45 /* LandscapeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeTest.h; path = Classes/LandscapeTest.h; sourceTree = "<group>"; };
 		5CDC24FA156CC72400742348 /* SpriteTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpriteTest.cpp; path = Classes/SpriteTest.cpp; sourceTree = "<group>"; };
 		5CDC24FB156CC72400742348 /* SpriteTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpriteTest.h; path = Classes/SpriteTest.h; sourceTree = "<group>"; };
 		5CDC24FC156CC72400742348 /* TestTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestTemplate.cpp; path = Classes/TestTemplate.cpp; sourceTree = "<group>"; };
@@ -156,11 +159,29 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		5C1066D8156D351400912A45 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				5C1066D9156D357C00912A45 /* Landscape */,
+				5CDC24FA156CC72400742348 /* SpriteTest.cpp */,
+				5CDC24FB156CC72400742348 /* SpriteTest.h */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		5C1066D9156D357C00912A45 /* Landscape */ = {
+			isa = PBXGroup;
+			children = (
+				5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */,
+				5C1066DE156D35AE00912A45 /* LandscapeTest.h */,
+			);
+			name = Landscape;
+			sourceTree = "<group>";
+		};
 		FE445A961153C27800F5EFD6 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				5CDC24FA156CC72400742348 /* SpriteTest.cpp */,
-				5CDC24FB156CC72400742348 /* SpriteTest.h */,
+				5C1066D8156D351400912A45 /* Tests */,
 				5CDC24FC156CC72400742348 /* TestTemplate.cpp */,
 				5CDC24FD156CC72400742348 /* TestTemplate.h */,
 				FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */,
@@ -296,6 +317,7 @@
 				FEC3CA821283557F00541220 /* GameCore.cpp in Sources */,
 				5CDC24FE156CC72400742348 /* SpriteTest.cpp in Sources */,
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
+				5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
