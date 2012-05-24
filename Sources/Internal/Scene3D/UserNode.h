@@ -45,6 +45,7 @@ public:
 	AABBox3 drawBox;
 	
 	virtual AABBox3 GetWTMaximumBoundingBox();
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
 };
 
