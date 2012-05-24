@@ -76,4 +76,16 @@ AABBox3 UserNode::GetWTMaximumBoundingBox()
 	return retBBox;
 }
 
+
+SceneNode* UserNode::Clone(SceneNode *dstNode)
+{
+	if (!dstNode) 
+	{
+		dstNode = new UserNode();
+	}
+	SceneNode::Clone(dstNode);
+	return dstNode;
+}
+
+
 };
