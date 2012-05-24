@@ -14,12 +14,14 @@
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\LandscapeTest.h" />
     <ClInclude Include="Classes\SpriteTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\LandscapeTest.cpp" />
     <ClCompile Include="Classes\SpriteTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />

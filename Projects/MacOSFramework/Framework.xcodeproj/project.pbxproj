@@ -57,6 +57,8 @@
 		5CF6FF2C1563A8390070C3DB /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6FF291563A8390070C3DB /* ImageConvert.h */; };
 		5CF6FF2D1563A8390070C3DB /* SharedFBO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF6FF2A1563A8390070C3DB /* SharedFBO.cpp */; };
 		5CF6FF2E1563A8390070C3DB /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6FF2B1563A8390070C3DB /* SharedFBO.h */; };
+		5CFA5D4F156E3EBF00EDB730 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */; };
+		5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D4E156E3EBF00EDB730 /* UserNode.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -564,6 +566,8 @@
 		5CF6FF291563A8390070C3DB /* ImageConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageConvert.h; sourceTree = "<group>"; };
 		5CF6FF2A1563A8390070C3DB /* SharedFBO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SharedFBO.cpp; sourceTree = "<group>"; };
 		5CF6FF2B1563A8390070C3DB /* SharedFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFBO.h; sourceTree = "<group>"; };
+		5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
+		5CFA5D4E156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
@@ -1559,6 +1563,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */,
+				5CFA5D4E156E3EBF00EDB730 /* UserNode.h */,
 				5CE063F0154A69630029DF36 /* ImposterManager.cpp */,
 				5CE063F1154A69630029DF36 /* ImposterManager.h */,
 				FE5E1657153B641D0047FAC5 /* BVNode.cpp */,
@@ -2023,6 +2029,7 @@
 				5CF6FF281563A8260070C3DB /* RectPacker.h in Headers */,
 				5CF6FF2C1563A8390070C3DB /* ImageConvert.h in Headers */,
 				5CF6FF2E1563A8390070C3DB /* SharedFBO.h in Headers */,
+				5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2317,6 +2324,7 @@
 				5CF666AC155D43C70067072D /* FileDownloader.cpp in Sources */,
 				5CF6FF271563A8260070C3DB /* RectPacker.cpp in Sources */,
 				5CF6FF2D1563A8390070C3DB /* SharedFBO.cpp in Sources */,
+				5CFA5D4F156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

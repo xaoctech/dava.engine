@@ -31,9 +31,12 @@
 #define __GAMECORE_H__
 
 #include "DAVAEngine.h"
+#include "AppScreens.h"
+
 using namespace DAVA;
 
 class SpriteTest;
+class LandscapeTest;
 
 class GameCore : public ApplicationCore
 {
@@ -53,8 +56,30 @@ public:
 	virtual void OnResume();
 	virtual void OnBackground();
 
+    virtual void BeginFrame();
+	virtual void Update(DAVA::float32 update);
+	virtual void Draw();
+
+    
 	File * logFile;
 	SpriteTest * spriteTest;
+    
+    LandscapeTest *landscapeMixedMode;
+    LandscapeTest *landscapeTiledMode;
+    LandscapeTest *landscapeTextureMode;
+    
+    
+    void TestFinished();
+    
+protected:
+    
+    void GoToNextTest();
+    
+    
+    bool CreateLogFile();
+    
+    int32 currentScreenID;
+    
 };
 
 

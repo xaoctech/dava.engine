@@ -38,7 +38,7 @@ SpriteTest::SpriteTest()
 
 void SpriteTest::LoadResources()
 {
-	int32 repeatCount = 30;
+	int32 repeatCount = 2;
 
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position)", repeatCount, (void*)(SET_POSITION));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | all default setters)", repeatCount, (void*)(SET_POSITION | SET_ALL_DEFAULT_SETTERS));
