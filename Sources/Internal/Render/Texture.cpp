@@ -572,6 +572,9 @@ void Texture::DisableMipmapGeneration()
 
 void Texture::GenerateMipmaps()
 {
+    if((FORMAT_PVR2 == format) || (FORMAT_PVR4 == format))
+        return;
+    
 	RenderManager::Instance()->LockNonMain();
     
     isMimMapTexture = true;
