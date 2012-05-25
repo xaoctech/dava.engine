@@ -141,9 +141,7 @@ void LandscapeTest::DrawSprite(PerfFuncData * data)
     
 	sprite->Reset();
     sprite->SetFrame(0);
-    sprite->SetPosition(GetSize().x - sprite->GetWidth(), GetSize().y - sprite->GetHeight());
-//    float32 minSize = Min(GetSize().x, GetSize().y);
-//    sprite->SetScaleSize(minSize, minSize);
+    sprite->SetPosition(0.f, 0.f);
     sprite->Draw();
 }
 
