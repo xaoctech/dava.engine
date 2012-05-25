@@ -397,6 +397,8 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
 {
+    Logger::Debug("[ExportTexture] %s", textureDataSourcePath.c_str());
+    
     String fileOnly;
     String pathOnly;
     String pathTo = textureDataSourcePath;
@@ -407,13 +409,13 @@ void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
 	if(useConvertedTextures)
 	{
 		// texture.pvr.png -> texture.pvr
-        if(String::npos == pathTo.find(".pvr.png"))
-        {
-            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
-        }
-        else 
+        if(String::npos != pathTo.find(".pvr.png"))
         {
             pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
+        }
+        else if(String::npos != pathTo.find(".png"))
+        {
+            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
         }
 	}
 
