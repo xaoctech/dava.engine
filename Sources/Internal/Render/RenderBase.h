@@ -118,6 +118,20 @@ enum eBlendMode
 	BLEND_MODE_COUNT,
 };
 
+static const String BlendModeNames[] = 
+{
+	"BLEND_NONE",
+	"BLEND_ZERO",
+	"BLEND_ONE",
+	"BLEND_DST_COLOR",
+	"BLEND_ONE_MINUS_DST_COLOR",
+	"BLEND_SRC_ALPHA",
+	"BLEND_ONE_MINUS_SRC_ALPHA",
+	"BLEND_DST_ALPHA",
+	"BLEND_ONE_MINUS_DST_ALPHA",
+	"BLEND_SRC_ALPHA_SATURATE"
+};
+
 enum PixelFormat
 {
     FORMAT_INVALID = 0,

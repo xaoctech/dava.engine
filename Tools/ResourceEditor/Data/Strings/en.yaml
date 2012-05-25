@@ -221,6 +221,9 @@ property.material.ambientcolor: "Ambient color:"
 property.material.specularcolor: "Specular color:"
 property.material.diffusecolor: "Diffuse color:"
 property.material.specularshininess: "Specular shininess:"
+property.material.alphablend: "Alpha blend"
+property.material.blendSrc: "Source factor"
+property.material.blendDst: "Destination factor"
 
 #LodNode
 property.lodnode: "LodNode"
