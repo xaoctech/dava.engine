@@ -117,17 +117,20 @@ void LandscapeTest::RunTests()
             
             int32 fps = (int32)((float32)TEST_FRAMES_COUNT / ((float32)testTime / 1000.0f));
             
-            PerfFuncData data = {0};
-            data.name = screenName;
-            data.startTime = startTime;
-            data.endTime = endTime;
-            data.maxTime = fps;
-            data.runCount = TEST_FRAMES_COUNT;
-            runIndex = 0;
+//            PerfFuncData data = {0};
+//            data.name = screenName;
+//            data.startTime = startTime;
+//            data.endTime = endTime;
+//            data.maxTime = fps;
+//            data.runCount = TEST_FRAMES_COUNT;
+//            runIndex = 0;
+//            WriteLog(&data);
+
+            File * log = GameCore::Instance()->logFile;
+            log->WriteLine(Format("%s", screenName.c_str()));
+            log->WriteLine(Format("runCount = %d, fps = %d", TEST_FRAMES_COUNT, fps));
             
-            WriteLog(&data);
-            
-            Logger::Debug("%s %s, fps = %d", screenName.c_str(), data.name.c_str(), fps);
+            Logger::Debug("%s, fps = %d", screenName.c_str(), fps);
             
             GameCore::Instance()->TestFinished();
         }
