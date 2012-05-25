@@ -185,6 +185,7 @@ LOCAL_SRC_FILES :=  \
                     Scene3D/SkeletonNode.cpp \
                     Scene3D/SphereNode.cpp \
                     Scene3D/SpriteNode.cpp \
+                    Scene3D/UserNode.cpp \
                     \
                     Sound/Sound.cpp \
                     Sound/SoundBuffer.cpp \

@@ -64,6 +64,7 @@ public:
 	File * logFile;
 	SpriteTest * spriteTest;
     
+    LandscapeTest *landscapeTextures;
     LandscapeTest *landscapeMixedMode;
     LandscapeTest *landscapeTiledMode;
     LandscapeTest *landscapeTextureMode;
