@@ -168,6 +168,8 @@ int32 SharedFBO::FindIndexForSize(const Vector2 & size)
 {
 	int32 sizesSize = sizes.size();
 	int32 closestIndex = -1;
+    
+#if !defined (__DAVAENGINE_ANDROID__)    
 	float32 smallestDelta = std::numeric_limits<float32>::max();
 	for(int32 i = 0; i < sizesSize; ++i)
 	{
@@ -178,6 +180,7 @@ int32 SharedFBO::FindIndexForSize(const Vector2 & size)
 			closestIndex = i;
 		}
 	}
+#endif //#if !defined (__DAVAENGINE_ANDROID__)    
 
 	return closestIndex;
 }
