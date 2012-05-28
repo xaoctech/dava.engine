@@ -624,6 +624,21 @@ inline void RenderStateBlock::SetDepthFuncInHW()
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_ZFUNC, COMPARE_FUNCTION_MAP[alphaFunc]));
 }
 
+inline void RenderStateBlock::SetScissorTestInHW()
+{
+	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, (state & STATE_SCISSOR_TEST)));
+}
+
+inline void RenderStateBlock::SetScissorRectInHW()
+{
+	RECT rect;
+	rect.left = (LONG)scissorRect.x;
+	rect.right = (LONG)scissorRect.dx;
+	rect.top = (LONG)scissorRect.y;
+	rect.bottom = (LONG)scissorRect.dy;
+	RENDER_VERIFY(direct3DDevice->SetScissorRect(&rect));
+}
+
 inline void RenderStateBlock::SetStensilTestInHW()
 {
 	RENDER_VERIFY(direct3DDevice->SetRenderState(D3DRS_STENCILENABLE, (state & STATE_STENCIL_TEST) != 0));

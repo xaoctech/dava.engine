@@ -154,6 +154,13 @@ void BindFBO(int32 fbo)
 
 #endif //#ifdef __DAVAENGINE_OPENGL__
 
+#if defined(__DAVAENGINE_DIRECTX9__)
+void BindFBO(int32 fbo)
+{
+
+}
+#endif
+
 void Split(const String & inputString, const String & delims, Vector<String> & tokens)
 {
 	// Skip delims at beginning, find start of first token
