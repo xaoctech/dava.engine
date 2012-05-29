@@ -10,6 +10,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		5C6EF11415751B5F001E45AD /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE9895581163F13500500198 /* libFramework.a */; };
 		5C7BE313156E0F0800F9F538 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7BE311156E0F0800F9F538 /* LandscapeTest.cpp */; };
 		5CDC2520156CD48700742348 /* SpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC251C156CD48700742348 /* SpriteTest.cpp */; };
 		5CDC2521156CD48700742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC251E156CD48700742348 /* TestTemplate.cpp */; };
@@ -87,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C6EF11415751B5F001E45AD /* libFramework.a in Frameworks */,
 				5CDC2533156CE21000742348 /* libz.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -384,13 +386,11 @@
 					./../../Libs/libs,
 					./../dava.framework/Libs/libs,
 				);
-				OTHER_LDFLAGS = (
-					"-lFramework",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "D21F34D0-36FC-4B2F-B5BD-87CD63CD3307";
 				SDKROOT = iphoneos;
+				TEST_AFTER_BUILD = NO;
 				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = AdHoc;
@@ -431,13 +431,11 @@
 					./../../Libs/libs,
 					./../dava.framework/Libs/libs,
 				);
-				OTHER_LDFLAGS = (
-					"-lFramework",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				TEST_AFTER_BUILD = NO;
 				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
@@ -465,13 +463,11 @@
 					./../../Libs/libs,
 					./../dava.framework/Libs/libs,
 				);
-				OTHER_LDFLAGS = (
-					"-lFramework",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
+				TEST_AFTER_BUILD = NO;
 				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
