@@ -31,7 +31,7 @@
 #include "SpriteTest.h"
 
 SpriteTest::SpriteTest()
-: TestTemplate("Sprite")
+: TestTemplate<SpriteTest>("Sprite")
 {
 
 }
