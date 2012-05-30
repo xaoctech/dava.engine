@@ -31,7 +31,7 @@
 #include "LandscapeTest.h"
 
 LandscapeTest::LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode)
-    :   TestTemplate<LandscapeTest>(testName)
+    :   TestTemplate(testName)
     ,   shaderMode(mode)
 {
     testCounter = 0;
