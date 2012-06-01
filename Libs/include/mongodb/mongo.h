@@ -21,7 +21,6 @@
 #ifndef MONGO_H_
 #define MONGO_H_
 
-#include "config.h"
 #include "bson.h"
 
 MONGO_EXTERN_C_START

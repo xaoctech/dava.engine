@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "config.h"
+
 #ifdef __GNUC__
     #define MONGO_INLINE static __inline__
     #define MONGO_EXPORT

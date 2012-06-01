@@ -27,8 +27,8 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_MONGODB_CLIENT_H__
-#define __DAVAENGINE_MONGODB_CLIENT_H__
+#ifndef __DAVAENGINE_MONGODB_OBJECT_H__
+#define __DAVAENGINE_MONGODB_OBJECT_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -36,60 +36,41 @@
 namespace DAVA 
 {
     
-/**
-	\defgroup Mongodb 
- */
-
 /** 
-	\ingroup Mongodb
-	\brief this class is mongodb client and it used if you want to work with mongodb
+ \ingroup Mongodb
+ \brief this class is mongodb object and it used if you want to work with mongodb
  */
-
-class MongodbObject;
-class MongodbClientInternalData;
-class MongodbClient: public BaseObject
+class MongodbClient;
+class MongodbObjectInternalData;
+class MongodbObject: public BaseObject
 {
+    friend class MongodbClient;
+    
 protected:
-	MongodbClient();
-	
+    
+    MongodbObject();
+    virtual ~MongodbObject();
+    
 public:
-	virtual ~MongodbClient();
-
-	static MongodbClient *Create(const String &ip, int32 port);
-	
-    bool Connect(const String &ip, int32 port);
-    void Disconnect();
     
-    void SetDatabaseName(const String &newDatabase);
-    void SetCollectionName(const String &newCollection);
+    void Finish();
 
-    void DropDatabase();
-    void DropCollection();
-    
-    bool IsConnected();
+    void SetObjectName(const String &objectname);
 
-    MongodbObject * CreateObject();
-    void DestroyObject(MongodbObject *object);
+    void AddInt(const String fieldname, int32 value);
+    int32 GetInt(const String &fieldname);
 
-    bool SaveBinary(const String &key, uint8 *data, int32 dataSize);
-    int32 GetBinarySize(const String &key);
-    bool GetBinary(const String &key, uint8 *outData, int32 dataSize);
+    void AddData(const String &fieldname, uint8 *data, int32 dataSize);
+    bool GetData(const String &fieldname, uint8 *outData, int32 dataSize);
 
-//    void Dump();
 protected:
-
-    void LogError(const String functionName, int32 errorCode);
-    MongodbObject * FindObjectbByKey(const String &key);
     
-	MongodbClientInternalData *clientData;
-    String database;
-    String collection;
-    String namespaceName;
+	void * InternalObject();
 
-    Vector<MongodbObject *> objects;
+	MongodbObjectInternalData *objectData;
 };
 
 };
 
-#endif // __DAVAENGINE_MONGODB_CLIENT_H__
+#endif // __DAVAENGINE_MONGODB_OBJECT_H__
 
