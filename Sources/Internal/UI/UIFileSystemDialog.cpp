@@ -250,7 +250,8 @@ void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
         selectedFile = "";
     }
     
-    if (currentDir[currentDir.length()-1] == '/') 
+
+    if (currentDir.length() > 0 && currentDir[currentDir.length()-1] == '/') 
     {
         currentDir = currentDir.substr(0, currentDir.length()-1);
     }
