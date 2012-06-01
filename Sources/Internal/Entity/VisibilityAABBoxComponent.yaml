@@ -1,0 +1,2 @@
+- [bool, "vilibilityFlag"]
+- [AABBox3, "meshAABBox"]

@@ -31,11 +31,16 @@
 #include "LandscapeTest.h"
 
 LandscapeTest::LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode)
-    :   TestTemplate(testName)
+    :   TestTemplate<LandscapeTest>(testName)
     ,   shaderMode(mode)
 {
     testCounter = 0;
     startTime = 0;
+    
+    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    {
+        textures[i] = NULL;
+    }
 }
 
 void LandscapeTest::LoadResources()
@@ -53,13 +58,28 @@ void LandscapeTest::LoadResources()
     land = (LandscapeNode *)scene->FindByName("Landscape"); 
     if(land)
     {
-        land->SetTiledShaderMode(shaderMode);
-    }  
+        if(LandscapeNode::TILED_MODE_COUNT == shaderMode)
+        {
+            for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+            {
+                Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+                if(t)
+                {
+                    textures[i] = Sprite::CreateFromTexture(t, 0, 0, t->GetWidth(), t->GetHeight());
+                    RegisterFunction(this, &LandscapeTest::DrawSprite, "TestLandscapeTexture", TEST_FRAMES_COUNT/2, textures[i]);
+                }
+            }
+        }
+        else 
+        {
+            land->SetTiledShaderMode(shaderMode);
+            UI3DView *sceneView = new UI3DView(Rect(0, 0, GetSize().x, GetSize().y));
+            sceneView->SetScene(scene);
+            AddControl(sceneView);
+            SafeRelease(sceneView);
+        }
+    }
     
-    UI3DView *sceneView = new UI3DView(Rect(0, 0, GetSize().x, GetSize().y));
-    sceneView->SetScene(scene);
-    AddControl(sceneView);
-    SafeRelease(sceneView);
     SafeRelease(scene);
     
     testCounter = 0;
@@ -68,6 +88,11 @@ void LandscapeTest::LoadResources()
 
 void LandscapeTest::UnloadResources()
 {
+    for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
+    {
+        SafeRelease(textures[i]);
+    }
+
     RemoveAllControls();
 
     testCounter = 0;
@@ -75,33 +100,54 @@ void LandscapeTest::UnloadResources()
 
 void LandscapeTest::RunTests()
 {
-    if(LOADING_FRAMES_COUNT == testCounter)
+    if(LandscapeNode::TILED_MODE_COUNT == shaderMode)
     {
-        startTime = SystemTimer::Instance()->AbsoluteMS();
+        TestTemplate<LandscapeTest>::RunTests();
     }
-    else if(FULL_FRAMES_COUNT == testCounter)
+    else 
     {
-        uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-        uint64 testTime = endTime - startTime;
-        
-        int32 fps = (int32)((float32)TEST_FRAMES_COUNT / ((float32)testTime / 1000.0f));
-        
-        PerfFuncData data = {0};
-        data.name = screenName;
-        data.startTime = startTime;
-        data.endTime = endTime;
-        data.maxTime = fps;
-        data.runCount = TEST_FRAMES_COUNT;
-        runIndex = 0;
-        
-        WriteLog(&data);
-        
-        Logger::Debug("%s %s, fps = %d", screenName.c_str(), data.name.c_str(), fps);
+        if(LOADING_FRAMES_COUNT == testCounter)
+        {
+            startTime = SystemTimer::Instance()->AbsoluteMS();
+        }
+        else if(FULL_FRAMES_COUNT == testCounter)
+        {
+            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+            uint64 testTime = endTime - startTime;
+            
+            int32 fps = (int32)((float32)TEST_FRAMES_COUNT / ((float32)testTime / 1000.0f));
+            
+//            PerfFuncData data = {0};
+//            data.name = screenName;
+//            data.startTime = startTime;
+//            data.endTime = endTime;
+//            data.maxTime = fps;
+//            data.runCount = TEST_FRAMES_COUNT;
+//            runIndex = 0;
+//            WriteLog(&data);
 
-        GameCore::Instance()->TestFinished();
+            File * log = GameCore::Instance()->logFile;
+            log->WriteLine(Format("%s", screenName.c_str()));
+            log->WriteLine(Format("runCount = %d, fps = %d", TEST_FRAMES_COUNT, fps));
+            
+            Logger::Debug("%s, fps = %d", screenName.c_str(), fps);
+            
+            GameCore::Instance()->TestFinished();
+        }
+        ++testCounter;
     }
-    ++testCounter;
 }
+
+void LandscapeTest::DrawSprite(PerfFuncData * data)
+{
+    Sprite *sprite = (Sprite *)data->userData;
+    
+	sprite->Reset();
+    sprite->SetFrame(0);
+    sprite->SetPosition(0.f, 0.f);
+    sprite->Draw();
+}
+
 
 void LandscapeTest::Draw(const UIGeometricData &geometricData)
 {
