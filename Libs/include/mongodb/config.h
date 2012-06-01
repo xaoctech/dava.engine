@@ -8,5 +8,6 @@
 
 //#define MONGO_BIG_ENDIAN
 
+#define MONGO_STATIC_BUILD
 
-#endif CONFIG_H_
+#endif //CONFIG_H_

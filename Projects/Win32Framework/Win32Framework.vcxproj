@@ -38,9 +38,9 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\objs\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\objs\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -64,7 +64,7 @@
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT_D.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static_d.lib;libvorbis_static_d.lib;libvorbisfile_static_d.lib;OpenAL32.lib;libyaml_wind.lib;libxml_wind.lib;pnglib_wind.lib;libmongodb_wind.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
@@ -81,7 +81,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;d3d9.lib;dxerr.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;openal32.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
       <AdditionalLibraryDirectories>./../../Libs/freetype/lib;./../../Libs/libs;./../../Libs/glew/lib;$(DXSDK_DIR)/lib/x86;./../../Libs/oggvorbis/lib/;C:\Program Files (x86)\OpenAL 1.1 SDK\libs\Win32;C:\Program Files\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
@@ -132,6 +132,8 @@
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
@@ -428,6 +430,8 @@
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Animation\AnimatedObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Animation\Animation.cpp" />
