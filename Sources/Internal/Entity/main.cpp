@@ -149,6 +149,7 @@ int main(int argc, const char ** argv)
     
 	//should be delayed (probably to the end of current frame)
 	Entity * stone = EntityManager::Instance()->CreateEntity();
-	stone->AddComponent("VisibilityAABBoxComponent");
-	stone->AddComponent("DrawMeshComponent");
+	stone->AddComponent(VisibilityAABBoxComponent::Get());
+	stone->AddComponent(VisibilitySphereComponent::Get());
+    
 }
