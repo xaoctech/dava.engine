@@ -142,14 +142,13 @@ public:
 //}
 
 
-int main(int argc, const char ** argv)
-{
-    VisibilityAABBoxComponent::Register();
-    VisibilitySphereComponent::Register();
-    
-	//should be delayed (probably to the end of current frame)
-	Entity * stone = EntityManager::Instance()->CreateEntity();
-	stone->AddComponent(VisibilityAABBoxComponent::Get());
-	stone->AddComponent(VisibilitySphereComponent::Get());
-    
-}
+//int main(int argc, const char ** argv)
+//{
+//    VisibilityAABBoxComponent::Register();
+//    VisibilitySphereComponent::Register();
+//    
+//	//should be delayed (probably to the end of current frame)
+//	Entity * stone = EntityManager::Instance()->CreateEntity();
+//	stone->AddComponent("VisibilityAABBoxComponent");
+//	stone->AddComponent("DrawMeshComponent");
+//}

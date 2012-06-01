@@ -28,100 +28,35 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Database/MongodbClient.h"
+#include "Database/MongodbObject.h"
+#include "mongodb/mongo.h"
 
 namespace DAVA 
 {
-    
-#pragma mark --MongodbObject
-MongodbObject::MongodbObject()
+class MongodbClientInternalData: public BaseObject
 {
-    bson_init(&object);
-}
-    
-MongodbObject::~MongodbObject()
-{
-    bson_destroy(&object);
-}
-    
-void MongodbObject::SetObjectName(const String &objectname)
-{
-    bson_append_string(&object, String("_id").c_str(), objectname.c_str());
-}
+public:
 
-void MongodbObject::AddInt(const String fieldname, int32 value)
-{
-    bson_append_int(&object, fieldname.c_str(), value);
-}
-    
-void MongodbObject::AddData(const String &fieldname, uint8 *data, int32 dataSize)
-{
-    bson_append_binary(&object, fieldname.c_str(), BSON_BIN_BINARY, (const char *)data, dataSize);
-}
-    
-void MongodbObject::Finish()
-{
-    bson_finish(&object);
-}
-    
-int32 MongodbObject::GetInt(const String &fieldname)
-{
-    int32 retValue = 0;
-    
-    bson_iterator it;
-    bson_iterator_init(&it, &object);
-    
-    bson_iterator foundIt;
-    bool found = FindField(&it, &foundIt, fieldname, true);
-    if(found)
-    {
-        retValue = bson_iterator_int(&foundIt);
-    }
-    
-    return retValue;
-}
+	MongodbClientInternalData()
+	{
+		connection = new mongo();
+		DVASSERT(connection);
 
-bool MongodbObject::GetData(const String &fieldname, uint8 *outData, int32 dataSize)
-{
-    bson_iterator it;
-    bson_iterator_init(&it, &object);
-    
-    bson_iterator foundIt;
-    bool found = FindField(&it, &foundIt, fieldname, true);
-    if(found)
-    {
-        uint8 *binaryData = (uint8 *)bson_iterator_bin_data(&foundIt);
-        Memcpy(outData, binaryData, dataSize);
-        found = true;
-    }
-    
-    return found;
-}
+		Memset(connection, 0, sizeof(connection));
+		mongo_init(connection);
+	}
 
-bool MongodbObject::FindField(bson_iterator *itIn, bson_iterator *itOut, const String &fieldname, bool recursive)
-{
-    bool found = false;
-    while(!found && bson_iterator_next(itIn))
-    {
-        String itKey = String(bson_iterator_key(itIn));
-        if(fieldname == itKey)
-        {
-            *itOut = *itIn;
-            found = true;
-        }
-        else if(recursive && (BSON_OBJECT == bson_iterator_type(itIn)))
-        {
-            bson_iterator subIt;
-            bson_iterator_subiterator(itIn, &subIt);
-            
-            found = FindField(&subIt, itOut, fieldname, recursive);
-        }
-    }
-    
-    return found;
-}
+	virtual ~MongodbClientInternalData()
+	{
+		mongo_destroy(connection);
+		SafeDelete(connection);
+	}
 
-    
-#pragma mark --MongodbClient
+public:
+	mongo *connection;
+};
+
+
 MongodbClient * MongodbClient::Create(const String &ip, int32 port)
 {
 	MongodbClient * client = new MongodbClient();
@@ -132,7 +67,6 @@ MongodbClient * MongodbClient::Create(const String &ip, int32 port)
         {
             Logger::Error("[MongodbClient] can't connect to database");
         }
-        
 	}
 	return client;
 }
@@ -143,7 +77,7 @@ MongodbClient::MongodbClient()
     mongo_init_sockets();
 #endif //#if defined (__DAVAENGINE_WIN32__)
     
-    Memset(&connection, 0, sizeof(connection));
+	clientData = new MongodbClientInternalData();
     
     SetDatabaseName(String("Database"));
     SetCollectionName(String("Collection"));
@@ -151,23 +85,24 @@ MongodbClient::MongodbClient()
 
 MongodbClient::~MongodbClient()
 {
-    Disconnect();
-    
     for(int32 i = 0; i < objects.size(); ++i)
     {
         SafeRelease(objects[i]);
     }
-    objects.clear();
+	objects.clear();
+	
+	Disconnect();
+
+	SafeRelease(clientData);
 }
 
 bool MongodbClient::Connect(const String &ip, int32 port)
 {
-    mongo_init(&connection);
     
-    int32 status = mongo_connect(&connection, ip.c_str(), port );
+    int32 status = mongo_connect(clientData->connection, ip.c_str(), port );
     if(MONGO_OK != status)
     {
-        LogError(String("Connect"), connection.err);
+        LogError(String("Connect"), clientData->connection->err);
     }
     
     return (MONGO_OK == status);
@@ -175,11 +110,10 @@ bool MongodbClient::Connect(const String &ip, int32 port)
     
 void MongodbClient::Disconnect()
 {
-    if(connection.connected)
+    if(IsConnected())
     {
-        mongo_disconnect(&connection);
+        mongo_disconnect(clientData->connection);
     }
-    mongo_destroy(&connection);
 }
 
 void MongodbClient::LogError(const String functionName, int32 errorCode)
@@ -226,26 +160,26 @@ void MongodbClient::SetCollectionName(const String &newCollection)
     
 void MongodbClient::DropDatabase()
 {
-    int32 status = mongo_cmd_drop_db(&connection, database.c_str());
+    int32 status = mongo_cmd_drop_db(clientData->connection, database.c_str());
     if(MONGO_OK != status)
     {
-        LogError(String("DropDatabase"), connection.err);
+        LogError(String("DropDatabase"), clientData->connection->err);
     }
 }
     
 void MongodbClient::DropCollection()
 {
-    int32 status = mongo_cmd_drop_collection(&connection, database.c_str(), collection.c_str(), NULL);
+    int32 status = mongo_cmd_drop_collection(clientData->connection, database.c_str(), collection.c_str(), NULL);
     if(MONGO_OK != status)
     {
-        LogError(String("DropCollection"), connection.err);
+        LogError(String("DropCollection"), clientData->connection->err);
     }
 }
 
     
 bool MongodbClient::IsConnected()
 {
-    return (0 != mongo_is_connected(&connection));
+    return (0 != mongo_is_connected(clientData->connection));
 }
 
 bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
@@ -265,20 +199,20 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
         MongodbObject *foundObject = FindObjectbByKey(key);
         if(foundObject)
         {
-            status = mongo_update(&connection, namespaceName.c_str(), &foundObject->object, &binary->object, 0, NULL);
+            status = mongo_update(clientData->connection, namespaceName.c_str(), (bson *)foundObject->InternalObject(), (bson *)binary->InternalObject(), 0, NULL);
             if(MONGO_OK != status)
             {
-                LogError(String("SaveBinary, update"), connection.err);
+                LogError(String("SaveBinary, update"), clientData->connection->err);
             }
             
             DestroyObject(foundObject);
         }
         else 
         {
-            status = mongo_insert(&connection, namespaceName.c_str(), &binary->object, NULL);
+            status = mongo_insert(clientData->connection, namespaceName.c_str(), (bson *)binary->InternalObject(), NULL);
             if(MONGO_OK != status)
             {
-                LogError(String("SaveBinary, insert"), connection.err);
+                LogError(String("SaveBinary, insert"), clientData->connection->err);
             }
         }
         
@@ -337,7 +271,7 @@ MongodbObject * MongodbClient::FindObjectbByKey(const String &key)
     MongodbObject *foundObject = CreateObject();
     DVASSERT(foundObject);
     
-    int32 status = mongo_find_one(&connection, namespaceName.c_str(), &query->object, 0, &foundObject->object);
+    int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
     if(MONGO_OK != status)
     {
         DestroyObject(foundObject);

@@ -37,6 +37,8 @@
 		5C0105D21577993400E0B939 /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0105D11577993400E0B939 /* libmongodb_ios.a */; };
 		5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0105D5157799E000E0B939 /* MongodbClient.cpp */; };
 		5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0105D6157799E000E0B939 /* MongodbClient.h */; };
+		5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C203F1D1579362300CB53E9 /* MongodbObject.cpp */; };
+		5C203F201579362300CB53E9 /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C203F1E1579362300CB53E9 /* MongodbObject.h */; };
 		5C5C18D414D7168300DC6DC3 /* LodNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C18D214D7168300DC6DC3 /* LodNode.cpp */; };
 		5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5C18D314D7168300DC6DC3 /* LodNode.h */; };
 		5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C18D714D716F000DC6DC3 /* EdgeAdjacency.cpp */; };
@@ -515,6 +517,8 @@
 		5C0105D11577993400E0B939 /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
 		5C0105D5157799E000E0B939 /* MongodbClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbClient.cpp; path = Database/MongodbClient.cpp; sourceTree = "<group>"; };
 		5C0105D6157799E000E0B939 /* MongodbClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbClient.h; path = Database/MongodbClient.h; sourceTree = "<group>"; };
+		5C203F1D1579362300CB53E9 /* MongodbObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbObject.cpp; path = Database/MongodbObject.cpp; sourceTree = "<group>"; };
+		5C203F1E1579362300CB53E9 /* MongodbObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbObject.h; path = Database/MongodbObject.h; sourceTree = "<group>"; };
 		5C5C18D214D7168300DC6DC3 /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
 		5C5C18D314D7168300DC6DC3 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		5C5C18D714D716F000DC6DC3 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
@@ -1009,6 +1013,8 @@
 		5C0105D4157799C400E0B939 /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				5C203F1D1579362300CB53E9 /* MongodbObject.cpp */,
+				5C203F1E1579362300CB53E9 /* MongodbObject.h */,
 				5C0105D5157799E000E0B939 /* MongodbClient.cpp */,
 				5C0105D6157799E000E0B939 /* MongodbClient.h */,
 			);
@@ -1904,6 +1910,7 @@
 				5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */,
 				5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */,
 				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
+				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2189,6 +2196,7 @@
 				5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */,
 				5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
+				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
