@@ -20,71 +20,37 @@
     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __GAMECORE_H__
-#define __GAMECORE_H__
+
+#ifndef __MONGODBTEST_H__
+#define __MONGODBTEST_H__
 
 #include "DAVAEngine.h"
-#include "AppScreens.h"
-
+#include "Database/MongodbClient.h"
 using namespace DAVA;
 
-class SpriteTest;
-class LandscapeTest;
-class MongodbTest;
+#include "TestTemplate.h"
 
-class GameCore : public ApplicationCore
+class MongodbTest : public TestTemplate<MongodbTest>
 {
-public:	
-	GameCore();
-	virtual ~GameCore();
+public:
+	MongodbTest();
 
-	static GameCore * Instance() 
-	{ 
-		return (GameCore*) DAVA::Core::GetApplicationCore();
-	};
-	
-	virtual void OnAppStarted();
-	virtual void OnAppFinished();
-	
-	virtual void OnSuspend();
-	virtual void OnResume();
-	virtual void OnBackground();
+	virtual void LoadResources();
+	virtual void UnloadResources();
 
-    virtual void BeginFrame();
-	virtual void Update(DAVA::float32 update);
-	virtual void Draw();
-
+private:
     
-	File * logFile;
+    MongodbClient *client;
     
-    void TestFinished();
-    
-protected:
-    
-    void GoToNextTest();
-    
-    
-    bool CreateLogFile();
-    
-    int32 currentScreenID;
-
-    SpriteTest * spriteTest;
-    
-    LandscapeTest *landscapeTextures;
-    LandscapeTest *landscapeMixedMode;
-    LandscapeTest *landscapeTiledMode;
-    LandscapeTest *landscapeTextureMode;
-    
-    MongodbTest *mongodbTest;
+    void BinaryDataTest(PerfFuncData * data);
 };
 
 
-
-#endif // __GAMECORE_H__
+#endif // __MONGODBTEST_H__
