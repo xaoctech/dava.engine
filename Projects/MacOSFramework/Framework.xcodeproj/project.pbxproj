@@ -28,6 +28,8 @@
 		47FBFFD713A790C800E5A7F6 /* UIHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */; };
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
+		5C203F311579362300CB53E9 /* MongodbObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C203F2F1579362300CB53E9 /* MongodbObject.cpp */; };
+		5C203F321579362300CB53E9 /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C203F301579362300CB53E9 /* MongodbObject.h */; };
 		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
 		5C42C98A14E3B3DD00EB3F53 /* XMLParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C42C98914E3B3DD00EB3F53 /* XMLParser.cpp */; };
 		5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C50EA1915761947005ABED7 /* libmongodb_macos.a */; };
@@ -539,6 +541,8 @@
 		47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchy.cpp; sourceTree = "<group>"; };
 		47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHierarchyCell.h; sourceTree = "<group>"; };
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
+		5C203F2F1579362300CB53E9 /* MongodbObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbObject.cpp; path = Database/MongodbObject.cpp; sourceTree = "<group>"; };
+		5C203F301579362300CB53E9 /* MongodbObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbObject.h; path = Database/MongodbObject.h; sourceTree = "<group>"; };
 		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		5C42C98914E3B3DD00EB3F53 /* XMLParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XMLParser.cpp; sourceTree = "<group>"; };
 		5C50EA1915761947005ABED7 /* libmongodb_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_macos.a; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
@@ -1096,6 +1100,8 @@
 		5C7BE58B1574BA6C004FF01C /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				5C203F2F1579362300CB53E9 /* MongodbObject.cpp */,
+				5C203F301579362300CB53E9 /* MongodbObject.h */,
 				5C7BE58D1574BAF8004FF01C /* MongodbClient.cpp */,
 				5C7BE58E1574BAF8004FF01C /* MongodbClient.h */,
 			);
@@ -2049,6 +2055,7 @@
 				5CF6FF2E1563A8390070C3DB /* SharedFBO.h in Headers */,
 				5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */,
 				5C7BE5901574BAF8004FF01C /* MongodbClient.h in Headers */,
+				5C203F321579362300CB53E9 /* MongodbObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2345,6 +2352,7 @@
 				5CF6FF2D1563A8390070C3DB /* SharedFBO.cpp in Sources */,
 				5CFA5D4F156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 				5C7BE58F1574BAF8004FF01C /* MongodbClient.cpp in Sources */,
+				5C203F311579362300CB53E9 /* MongodbObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
