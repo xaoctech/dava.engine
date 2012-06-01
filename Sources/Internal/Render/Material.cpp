@@ -117,8 +117,11 @@ Material::Material()
 	,	isSetupLightmap(false)
 	,	setupLightmapSize(1)
     ,   isFogEnabled(false)
-    ,   fogDensity(0.006)
+    ,   fogDensity(0.006f)
     ,   fogColor((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f)
+	,	isAlphablend(false)
+	,	blendSrc(BLEND_ONE)
+	,	blendDst(BLEND_ONE)
 {
 //    if (scene)
 //    {
@@ -132,17 +135,17 @@ Material::Material()
         uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
         
         
-        uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
+        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
         uberShader->CompileShaderCombination("MATERIAL_DECAL");
-        uberShader->CompileShaderCombination("MATERIAL_DETAIL");
-        
-        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
-        uberShader->CompileShaderCombination("MATERIAL_DECAL;VERTEX_LIT");
-        uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
-        
-        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;");
-        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;");
-        uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS;");
+        //uberShader->CompileShaderCombination("MATERIAL_DETAIL");
+        //
+        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
+        //uberShader->CompileShaderCombination("MATERIAL_DECAL;VERTEX_LIT");
+        //uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
+        //
+        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;");
+        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;");
+        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS;");
     }
     
 //    type = MATERIAL_UNLIT_TEXTURE;
@@ -256,6 +259,11 @@ void Material::RebuildShader()
     {
         shaderCombileCombo = shaderCombileCombo + ";OPAQUE";
     }
+
+	if(isAlphablend)
+	{
+		shaderCombileCombo = shaderCombileCombo + ";ALPHABLEND";
+	}
     
     //if (isDistanceAttenuation)
     shaderCombileCombo = shaderCombileCombo + ";DISTANCE_ATTENUATION";
@@ -336,19 +344,23 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
                 Logger::Debug("--- save material texture: %s", filename.c_str());
         }
     }
-    
+
     keyedArchive->SetByteArrayAsType("mat.diffuse", diffuseColor);
     keyedArchive->SetByteArrayAsType("mat.ambient", ambientColor);
     keyedArchive->SetByteArrayAsType("mat.specular", specularColor);
     keyedArchive->SetByteArrayAsType("mat.emission", emissiveColor);
     keyedArchive->SetFloat("mat.shininess", shininess);
-    
+
     keyedArchive->SetBool("mat.isOpaque", isOpaque);
     keyedArchive->SetBool("mat.isTwoSided", isTwoSided);
-    
+
+	keyedArchive->SetBool("mat.isAlphablend", isAlphablend);
+	keyedArchive->SetInt32("mat.blendSrc", blendSrc);
+	keyedArchive->SetInt32("mat.blendDst", blendDst);
+
     keyedArchive->SetInt32("mat.type", type);
 }
-    
+
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
     Image::EnableAlphaPremultiplication(false);
@@ -396,6 +408,10 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
     
     isOpaque = keyedArchive->GetBool("mat.isOpaque", isOpaque);
     isTwoSided = keyedArchive->GetBool("mat.isTwoSided", isTwoSided);
+
+	isAlphablend = keyedArchive->GetBool("mat.isAlphablend", isAlphablend);
+	blendSrc = (eBlendMode)keyedArchive->GetInt32("mat.blendSrc", blendSrc);
+	blendDst = (eBlendMode)keyedArchive->GetInt32("mat.blendDst", blendDst);
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
@@ -511,14 +527,31 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
         RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
     }
         
-    if (isOpaque || isTwoSided)
+    if (isOpaque)
     {
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
     }else
     {
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
     }
-    
+
+	eBlendMode oldSrc;
+	eBlendMode oldDst;
+	if(isAlphablend)
+	{
+		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE_BLEND);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+
+		oldSrc = RenderManager::Instance()->GetSrcBlend();
+		oldDst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(blendSrc, blendDst);
+	}
+
+	if(isTwoSided)
+	{
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+	}
+
     // render
     RenderManager::Instance()->FlushState();
     
@@ -613,7 +646,10 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
     
 	RenderManager::Instance()->SetTexture(0, 1); 
 	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-
+	if(isAlphablend)
+	{
+		RenderManager::Instance()->SetBlendMode(oldSrc, oldDst);
+	}
 }
 
 void Material::SetSetupLightmap(bool _isSetupLightmap)
@@ -653,6 +689,17 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
 
     Texture::DisableMipmapGeneration();
     Image::EnableAlphaPremultiplication(true);
+}
+
+void Material::SetAlphablend(bool _isAlphablend)
+{
+	isAlphablend = _isAlphablend;
+	RebuildShader();
+}
+
+bool Material::GetAlphablend()
+{
+	return isAlphablend;
 }
 
 

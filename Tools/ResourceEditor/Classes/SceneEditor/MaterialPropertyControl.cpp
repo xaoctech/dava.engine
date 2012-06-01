@@ -81,6 +81,23 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     
     propertyList->AddBoolProperty("property.material.twosided");
     propertyList->SetBoolPropertyValue("property.material.twosided", material->GetTwoSided());
+
+	bool isAlphablend = material->GetAlphablend();
+	propertyList->AddBoolProperty("property.material.alphablend");
+	propertyList->SetBoolPropertyValue("property.material.alphablend", isAlphablend);
+	if(isAlphablend)
+	{
+		Vector<String> blendTypes;
+		for (int i = 0; i < BLEND_MODE_COUNT; i++) 
+		{
+			blendTypes.push_back(BlendModeNames[i]);
+		}
+		propertyList->AddComboProperty("property.material.blendSrc", blendTypes);
+		propertyList->SetComboPropertyIndex("property.material.blendSrc", material->blendSrc);
+
+		propertyList->AddComboProperty("property.material.blendDst", blendTypes);
+		propertyList->SetComboPropertyIndex("property.material.blendDst", material->blendDst);
+	}
     
     if (    (Material::MATERIAL_VERTEX_LIT_TEXTURE == materialType) 
         ||  (Material::MATERIAL_VERTEX_LIT_DECAL == materialType)
@@ -136,6 +153,12 @@ void MaterialPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetTwoSided(newValue);
     }
+	else if("property.material.alphablend" == forKey)
+	{
+		Material *material = dynamic_cast<Material *> (currentDataNode);
+		material->SetAlphablend(newValue);
+		ReadFrom(currentDataNode);
+	}
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
@@ -172,6 +195,16 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
         
         SceneValidator::Instance()->ValidateScene(material->GetScene());
     }
+	else if ("property.material.blendSrc" == forKey) 
+	{
+		Material *material = dynamic_cast<Material *> (currentDataNode);
+		material->blendSrc = (eBlendMode)newItemIndex;
+	}
+	else if ("property.material.blendDst" == forKey) 
+	{
+		Material *material = dynamic_cast<Material *> (currentDataNode);
+		material->blendDst = (eBlendMode)newItemIndex;
+	}
 
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
 }

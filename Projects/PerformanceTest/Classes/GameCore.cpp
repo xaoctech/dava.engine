@@ -37,6 +37,7 @@ GameCore::GameCore()
 {
 	spriteTest = NULL;
     logFile = NULL;
+    landscapeTextures = NULL;
     landscapeMixedMode = NULL;
     landscapeTiledMode = NULL;
     landscapeTextureMode = NULL;
@@ -53,11 +54,13 @@ void GameCore::OnAppStarted()
     CreateLogFile();
 
 	spriteTest = new SpriteTest();
+    landscapeTextures = new LandscapeTest("Landscape Textures Test", LandscapeNode::TILED_MODE_COUNT);
     landscapeMixedMode = new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
     landscapeTiledMode = new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
     landscapeTextureMode = new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
 
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE, spriteTest);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTURES, landscapeTextures);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_MIXEDMODE, landscapeMixedMode);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TILEDMODE, landscapeTiledMode);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTUREDMODE, landscapeTextureMode);
@@ -98,6 +101,7 @@ void GameCore::OnAppFinished()
     SafeRelease(spriteTest);
     SafeRelease(logFile);
     
+    SafeRelease(landscapeTextures);
     SafeRelease(landscapeMixedMode);
     SafeRelease(landscapeTiledMode);
     SafeRelease(landscapeTextureMode);
