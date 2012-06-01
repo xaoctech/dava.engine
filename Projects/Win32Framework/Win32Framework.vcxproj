@@ -170,6 +170,11 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
@@ -448,6 +453,11 @@
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityTest.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />

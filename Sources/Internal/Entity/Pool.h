@@ -10,6 +10,7 @@ class Pool
 {
 public:
 	Pool()
+	: next(0)
 	{
 	}
 	
@@ -26,7 +27,9 @@ public:
 	int32 maxCount;
 	int32 typeSizeof;  
 	uint8 * byteData;
-	// String name; ???
+	
+
+	Pool * next;
 };
 
 
