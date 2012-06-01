@@ -28,8 +28,8 @@ public:
         Vector<TemplatePool<T>*>* allPools;
         return allPools;
 	}
-	
-	Vector<Pool *> pools; // not dynamic can't be changed in runtime
+
+	int32 type;// unique type(flag) for each Component subclass, values are [1..31]
 private:
 	static Map<const char *, Component * > cache;//<name, component>
 };
