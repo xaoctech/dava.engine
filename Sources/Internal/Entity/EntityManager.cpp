@@ -1,5 +1,8 @@
 #include "EntityManager.h"
 
+namespace DAVA 
+{
+
 Entity * EntityManager::CreateEntity()
 {
 	Entity * entity = new Entity();
@@ -7,3 +10,6 @@ Entity * EntityManager::CreateEntity()
 
 	return entity;
 }
+
+
+};
