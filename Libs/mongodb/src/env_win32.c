@@ -17,7 +17,7 @@
 
 /* Networking and other niceties for WIN32. */
 #include "env.h"
-#include "mongo.h"
+#include "mongodb/mongo.h"
 #include <string.h>
 
 #ifdef _MSC_VER
