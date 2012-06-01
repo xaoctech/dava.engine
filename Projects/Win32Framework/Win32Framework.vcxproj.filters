@@ -975,21 +975,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h">
-      <Filter>Internal\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
@@ -1706,23 +1691,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-
-    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityTest.cpp">
-      <Filter>Internal\Entity</Filter>
-
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp">
       <Filter>Internal\Database</Filter>
     </ClCompile>
@@ -1731,7 +1699,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
       <Filter>Internal\Utils</Filter>
-
     </ClCompile>
   </ItemGroup>
 </Project>

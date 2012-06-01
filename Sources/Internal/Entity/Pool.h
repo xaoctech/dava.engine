@@ -28,7 +28,6 @@ public:
 	int32 typeSizeof;  
 	uint8 * byteData;
 	
-
 	Pool * next;
 };
 
