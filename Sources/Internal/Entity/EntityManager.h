@@ -4,6 +4,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/StaticSingleton.h"
 #include "Entity/Entity.h"
+#include "Entity/Pool.h"
 
 namespace DAVA 
 {
