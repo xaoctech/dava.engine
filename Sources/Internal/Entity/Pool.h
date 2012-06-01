@@ -16,6 +16,11 @@ public:
 	virtual ~Pool()
 	{
 	}
+    
+    uint32 GetCount()
+    {
+        return length;
+    }
 
 	int32 length;
 	int32 maxCount;
@@ -29,17 +34,27 @@ template<class T>
 class TemplatePool : public Pool
 {
 public:
-	TemplatePool(int32 maxCount)
+	TemplatePool(int32 _maxCount)
 	{
 		typeSizeof = sizeof(T);
 		maxCount = _maxCount;
 		length = 0;
-		byteData = new T[maxCount];
+		byteData = (uint8*)new T[maxCount];
 	}
+    
+    T * GetPtr(uint32 i)
+    {
+        return &((T*)byteData)[i];
+    }
+    
+    T & Get(uint32 i)
+    {
+        return ((T*)byteData)[i];
+    }
 	
 	~TemplatePool()
 	{
-		SafeDeleteArray(byteData)
+		SafeDeleteArray(byteData);
 	}
 };
 

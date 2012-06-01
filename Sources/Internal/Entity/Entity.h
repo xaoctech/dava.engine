@@ -10,7 +10,7 @@ namespace DAVA
 class Entity
 {
 public:
-	void AddComponent(const char * componentName);
+	void AddComponent(Component * component);//const char * componentName);
 
 	int32 family;
 private:
