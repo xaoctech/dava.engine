@@ -59,7 +59,6 @@ LandscapeNode::LandscapeNode()
         textures[t] = 0;
     
     frustum = 0; //new Frustum();
-    renderingMode = RENDERING_MODE_TEXTURE;
     
     tileMaskShader = NULL;
     fullTiledShader = NULL;
@@ -157,10 +156,11 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
         for (int32 x = quad->x; x < quad->x + quad->size + 1; ++x)
         {
             landscapeVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
-            landscapeVertices[index].texCoord = Vector2((float32)(x) / (float32)(heightmap->Size() - 1), (float32)(y) / (float32)(heightmap->Size() - 1));           
+            Vector2 texCoord = Vector2((float32)(x) / (float32)(heightmap->Size() - 1), (float32)(y) / (float32)(heightmap->Size() - 1));           
 
+            landscapeVertices[index].texCoord = texCoord;
             //landscapeVertices[index].texCoord -= Vector2(0.5f, 0.5f);
-            //Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].position.x, landscapeVertices[index].position.y);
+//            Logger::Debug("AllocateRDOQuad: %d pos(%f, %f)", index, landscapeVertices[index].texCoord.x, landscapeVertices[index].texCoord.y);
             index++;
         }
     
@@ -204,33 +204,14 @@ void LandscapeNode::SetLods(const Vector4 & lods)
         lodSqDistance[ll] = lodDistance[ll] * lodDistance[ll];
 }
     
-void LandscapeNode::SetRenderingMode(eRenderingMode _renderingMode)
-{
-    renderingMode = _renderingMode;
-}
-
-void LandscapeNode::BuildLandscapeFromHeightmapImage(eRenderingMode _renderingMode, const String & heightmapPathname, const AABBox3 & _box)
+void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPathname, const AABBox3 & _box)
 {
     heightmapPath = heightmapPathname;
     
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
-    renderingMode = _renderingMode;
     InitShaders(); // init new shaders according to the selected rendering mode
     
-    
-//    String extension = FileSystem::Instance()->GetExtension(heightmapPath);
-//    Image *image = Image::CreateFromFile(heightmapPathname);
-//    if (image->GetPixelFormat() != FORMAT_A8)
-//    {
-//        Logger::Error("Image for landscape should be grayscale");
-//        SafeRelease(image);
-//        return;
-//    }
-//    
-//    DVASSERT(image->GetWidth() == image->GetHeight());
-//    heightmap->BuildFromImage(image);
-//    SafeRelease(image);
     BuildHeightmap();
     
     box = _box;    
@@ -1288,7 +1269,8 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     //
     
     archive->SetString("hmap", sceneFile->AbsoluteToRelative(heightmapPath));
-    archive->SetInt32("renderingMode", renderingMode);
+    archive->SetInt32("tiledShaderMode", tiledShaderMode);
+    
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
@@ -1312,9 +1294,10 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
     
-    renderingMode = (eRenderingMode)archive->GetInt32("renderingMode", RENDERING_MODE_TEXTURE);
+    eTiledShaderMode tiledMode = (eTiledShaderMode)archive->GetInt32("tiledShaderMode", TILED_MODE_MIXED);
+    SetTiledShaderMode(tiledMode);
     
-    BuildLandscapeFromHeightmapImage(renderingMode, path, boxDef);
+    BuildLandscapeFromHeightmapImage(path, boxDef);
         
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
@@ -1437,6 +1420,8 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     
     Texture *fullTiled = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888, Texture::DEPTH_NONE);
     RenderManager::Instance()->SetRenderTarget(fullTiled);
+    RenderManager::Instance()->SetViewport(Rect(0.f, 0.f, fullTiled->GetWidth(), fullTiled->GetHeight()), true);
+
 
 	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);
  

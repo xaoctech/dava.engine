@@ -58,7 +58,7 @@ void CameraPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const 
     {
         camera->Setup(
                       propertyList->GetFloatPropertyValue("property.camera.fov"),
-                      320.0f / 480.0f,
+                      camera->GetAspect(),
                       propertyList->GetFloatPropertyValue("property.camera.znear"),
                       propertyList->GetFloatPropertyValue("property.camera.zfar"),
                       propertyList->GetBoolPropertyValue("property.camera.isortho"));

@@ -212,6 +212,7 @@ public:
 		DEBUG_DRAW_LIGHT_NODE = 8,
         DEBUG_DRAW_NORMALS = 16,
         DEBUG_DRAW_GRID = 32,
+		DEBUG_DRAW_USERNODE = 64,
         DEBUG_DRAW_ALL = 0xFFFFFFFF,
 	};
 	/**
@@ -306,6 +307,11 @@ public:
         You can perform additional initialization here.
      */
     virtual void SceneDidLoaded();
+
+	/**
+		\brief Enable/disable imposters for node and it's children.
+	*/
+	void RecursiveEnableImposters(bool enable);
     
 protected:
 
@@ -331,8 +337,6 @@ protected:
 	Matrix4 worldTransform;
 
     KeyedArchive *customProperties;
-
-	void RecursiveEnableImposters(bool enable);
     
 private:
     Matrix4 localTransform;

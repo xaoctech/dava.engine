@@ -35,33 +35,33 @@ using namespace DAVA;
 
 void FrameworkDidLaunched()
 {
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	KeyedArchive * appOptions = new KeyedArchive();
-	appOptions->SetInt("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
-    //appOptions->SetInt("renderer", Core::RENDERER_OPENGL_ES_2_0);
+	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
+    appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
 	
-	DAVA::Core::Instance()->SetVirtualScreenSize(480, 320);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "Gfx");
+	DAVA::Core::Instance()->SetVirtualScreenSize(1024, 768);
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(1024, 768, "Gfx");
 
 #else
 	KeyedArchive * appOptions = new KeyedArchive();
 	
-	appOptions->SetInt("width",	920);
-	appOptions->SetInt("height", 690);
+	appOptions->SetInt32("width",	1024);
+	appOptions->SetInt32("height", 768);
 
 // 	appOptions->SetInt("fullscreen.width",	1280);
 // 	appOptions->SetInt("fullscreen.height", 800);
 	
-	appOptions->SetInt("fullscreen", 0);
-	appOptions->SetInt("bpp", 32); 
+	appOptions->SetInt32("fullscreen", 0);
+	appOptions->SetInt32("bpp", 32); 
 
-	DAVA::Core::Instance()->SetVirtualScreenSize(920, 690);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(920, 690, "Gfx");
+	DAVA::Core::Instance()->SetVirtualScreenSize(1024, 768);
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(1024, 768, "Gfx");
 #endif 
 
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
-	DAVA::Core::SetOptions(appOptions);
+	DAVA::Core::Instance()->SetOptions(appOptions);
 }
 
 

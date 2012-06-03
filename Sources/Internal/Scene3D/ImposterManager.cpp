@@ -27,18 +27,20 @@
 
 #include "ImposterManager.h"
 #include "Render/SharedFBO.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {
 
-ImposterManager::ImposterManager()
+ImposterManager::ImposterManager(Scene * _scene)
+:	scene(_scene)
 {
 	SharedFBO::Setup setup;
-	setup.size = Vector2(2048, 2048);
+	setup.size = Vector2(2048, 1024);
 	setup.pixelFormat = FORMAT_RGBA4444;
 	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-	setup.blocks.push_back(std::pair<int32, Vector2>(48, Vector2(256.f, 256.f)));
 	setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(128.f, 128.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(256, Vector2(64.f, 64.f)));
 
 	sharedFBO = new SharedFBO(&setup);
 }
@@ -60,35 +62,37 @@ void ImposterManager::Update(float32 frameTime)
 	{
 		ImposterNode * node = *iter;
 		node->UpdateState();
-		if(node->IsAskingForRedraw())
-		{
-			AddToQueue(node);
-		}
 	}
+}
 
+void ImposterManager::Draw()
+{
 	ProcessQueue();
+
+	List<ImposterNode*>::iterator end = imposters.end();
+	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
+	{
+		(*iter)->GeneralDraw();
+	}
 }
 
 void ImposterManager::ProcessQueue()
 {
 	if(!queue.empty())
 	{
+		Camera * camera = scene->GetCurrentCamera();
+		RenderManager::Instance()->SetRenderTarget(sharedFBO->GetTexture());
+
 		int32 maxCount = Min(MAX_UPDATES_PER_FRAME, (int32)queue.size());
 		for(int32 i = 0; i < maxCount; ++i)
 		{
-			ImposterNode * node = queue.top();
-			queue.pop();
-			node->ApproveRedraw();
+			ImposterNode * node = queue.front();
+			queue.pop_front();
+			node->UpdateImposter();
 		}
-	}
-}
 
-void ImposterManager::Draw()
-{
-	List<ImposterNode*>::iterator end = imposters.end();
-	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
-	{
-		(*iter)->GeneralDraw();
+		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+		camera->Set();
 	}
 }
 
@@ -121,10 +125,41 @@ void ImposterManager::Remove(ImposterNode * node)
 
 void ImposterManager::AddToQueue(ImposterNode * node)
 {
-	if(!node->IsQueued())
+	AddToPrioritizedPosition(node);
+}
+
+void ImposterManager::UpdateQueue(ImposterNode * node)
+{
+	RemoveFromQueue(node);
+	AddToPrioritizedPosition(node);
+}
+
+void ImposterManager::AddToPrioritizedPosition(ImposterNode * node)
+{
+	List<ImposterNode*>::iterator endIterator = queue.end();
+	for(List<ImposterNode*>::iterator iter = queue.begin(); iter != endIterator; ++iter)
 	{
-		queue.push(node);
-		node->OnAddedToQueue();
+		if(node->GetPriority() < (*iter)->GetPriority())
+		{
+			queue.insert(++iter, node);
+			return;
+		}
+	}
+	
+	//if queue is empty or node has highest priority
+	queue.push_back(node);
+}
+
+void ImposterManager::RemoveFromQueue(ImposterNode * node)
+{
+	List<ImposterNode*>::iterator endIterator = queue.end();
+	for(List<ImposterNode*>::iterator iter = queue.begin(); iter != endIterator; ++iter)
+	{
+		if((*iter) == node)
+		{
+			queue.erase(iter);
+			return;
+		}
 	}
 }
 

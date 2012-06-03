@@ -64,8 +64,12 @@ public:
 
 	void SubmitTime(PerfFuncData * data, uint64 time);
 	void WriteLog(PerfFuncData * data);
+    
 
 protected:
+    
+    virtual void RunTests();
+    
 	Vector<PerfFuncData> perfFuncs;
 	int32 funcIndex;
 	int32 runIndex;
@@ -96,7 +100,7 @@ void TestTemplate<T>::WriteLog(PerfFuncData * data)
 {
 	File * log = GameCore::Instance()->logFile;
 	log->WriteLine(Format("%s", data->name.c_str()));
-	log->WriteLine(Format("%lld %lld %lld %lld", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime));
+	log->WriteLine(Format("%lld %lld %lld %lld %d", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime, data->runCount));
 }
 
 template <class T>
@@ -139,11 +143,18 @@ void TestTemplate<T>::DidAppear()
 template <class T>
 void TestTemplate<T>::Update(float32 timeElapsed)
 {
-
+    RunTests();
+    UIScreen::Update(timeElapsed);
 }
 
 template <class T>
 void TestTemplate<T>::Draw(const UIGeometricData &geometricData)
+{
+    UIScreen::Draw(geometricData);
+}
+
+template <class T>
+void TestTemplate<T>::RunTests()
 {
 	int32 funcsCount = perfFuncs.size();
 	if(funcIndex >= 0 && funcIndex < funcsCount)
@@ -178,8 +189,9 @@ void TestTemplate<T>::Draw(const UIGeometricData &geometricData)
 	}
 	else
 	{
-		Core::Instance()->Quit();
+        GameCore::Instance()->TestFinished();
 	}
 }
+
 
 #endif // __TESTTEMPLATE_H__

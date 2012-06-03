@@ -11,6 +11,7 @@
 //#include "bullet/btBulletCollisionCommon.h"
 #include "bullet/BulletCollision/CollisionShapes/btShapeHull.h"
 
+
 BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, MeshInstanceNode *_meshNode, const Matrix4 &pWorldTransform)
 :collWorld(collisionWorld),
 collisionPartTransform(&((Matrix4&)pWorldTransform)),
@@ -18,10 +19,25 @@ meshNode(_meshNode),
 updateFlag(true),
 shape(NULL),
 collisionObject(0),
-trimesh(0)
+trimesh(0),
+userNode(0)
 
 {    
 	CreateCollisionObject();
+}
+
+BulletObject::BulletObject(Scene * scene, btCollisionWorld *collisionWorld, UserNode *_userNode, const Matrix4 &pWorldTransform)
+	:collWorld(collisionWorld),
+	collisionPartTransform(&((Matrix4&)pWorldTransform)),
+	userNode(_userNode),
+	updateFlag(true),
+	shape(NULL),
+	collisionObject(0),
+	trimesh(0),
+	meshNode(0)
+
+{
+	CreateBoxObject();
 }
 
 
@@ -99,6 +115,22 @@ void BulletObject::CreateLightObject(float32 radius)
 	collWorld->addCollisionObject(collisionObject);
 }
 
+void BulletObject::CreateBoxObject()
+{
+	createdWith = userNode->GetWorldTransform();
+	collisionObject = new btCollisionObject();
+	shape = new btBoxShape(btVector3(userNode->drawBox.max.x, userNode->drawBox.max.y, userNode->drawBox.max.z));
+	collisionObject->setCollisionShape(shape);
+
+	btTransform trans;
+	trans.setIdentity();
+	trans.setFromOpenGLMatrix(createdWith.data);
+	collisionObject->setWorldTransform(trans);
+	
+	collWorld->addCollisionObject(collisionObject);
+}
+
+
 void BulletObject::UpdateCollisionObject()
 {
 	if (!updateFlag)
@@ -108,6 +140,8 @@ void BulletObject::UpdateCollisionObject()
 		DeleteCollisionObject();
 		if (meshNode)
 			CreateCollisionObject();
+		else if (userNode)
+			CreateBoxObject();
 	}
 	
 //    btTransform btt;

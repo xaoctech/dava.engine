@@ -100,6 +100,12 @@
     <Filter Include="Internal\Scene3D\Imposter">
       <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Entity">
+      <UniqueIdentifier>{8f66ae0b-aa43-4803-a2d8-3f693710b865}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Database">
+      <UniqueIdentifier>{aacba949-a20d-4b44-821d-8170cd6d7aa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -966,6 +972,15 @@
     <ClInclude Include="..\..\Sources\Internal\Math\RectPacker.h">
       <Filter>Internal\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
+      <Filter>Internal\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
+      <Filter>Internal\Database</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1463,9 +1478,6 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
@@ -1675,6 +1687,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp">
       <Filter>Internal\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp">
+      <Filter>Internal\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp">
+      <Filter>Internal\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
+      <Filter>Internal\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
