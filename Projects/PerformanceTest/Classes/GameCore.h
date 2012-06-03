@@ -31,9 +31,13 @@
 #define __GAMECORE_H__
 
 #include "DAVAEngine.h"
+#include "AppScreens.h"
+
 using namespace DAVA;
 
 class SpriteTest;
+class LandscapeTest;
+class MongodbTest;
 
 class GameCore : public ApplicationCore
 {
@@ -53,9 +57,32 @@ public:
 	virtual void OnResume();
 	virtual void OnBackground();
 
-	File * logFile;
+    virtual void BeginFrame();
+	virtual void Update(DAVA::float32 update);
+	virtual void Draw();
 
-	SpriteTest * spriteTest;
+    
+	File * logFile;
+    
+    void TestFinished();
+    
+protected:
+    
+    void GoToNextTest();
+    
+    
+    bool CreateLogFile();
+    
+    int32 currentScreenID;
+
+    SpriteTest * spriteTest;
+    
+    LandscapeTest *landscapeTextures;
+    LandscapeTest *landscapeMixedMode;
+    LandscapeTest *landscapeTiledMode;
+    LandscapeTest *landscapeTextureMode;
+    
+    MongodbTest *mongodbTest;
 };
 
 

@@ -48,6 +48,7 @@ namespace DAVA
 		bool windowCreated = core->CreateWin32Window(handle);
 		if(windowCreated)
 		{
+			core->InitArgs();
 			core->Run();
 			core->ReleaseSingletons();
 			
@@ -80,30 +81,7 @@ namespace DAVA
 		core->EnableConsoleMode();
 		core->CreateSingletons();
 
-		LPWSTR *szArglist;
-		int nArgs;
-		int i;
-		szArglist = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
-		if( NULL == szArglist )
-		{
-			Logger::Error("CommandLineToArgvW failed\n");
-			return 0;
-		}
-		else 
-		{
-			for( i=0; i<nArgs; i++)
-			{
-				WideString w = szArglist[i];
-				String nonWide = WStringToString(w);
-				core->commandLine.push_back(nonWide);
-				Logger::Debug("%d: %s\n", i, nonWide.c_str());
-			}
-		}
-		// Free memory allocated for CommandLineToArgvW arguments.
-		LocalFree(szArglist);
-
-
-
+		core->InitArgs();
 
 		FrameworkDidLaunched();
 		FrameworkWillTerminate();
@@ -118,6 +96,32 @@ namespace DAVA
 
 	}
 	
+	void CoreWin32Platform::InitArgs()
+	{
+		LPWSTR *szArglist;
+		int nArgs;
+		int i;
+		szArglist = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
+		if( NULL == szArglist )
+		{
+			Logger::Error("CommandLineToArgvW failed\n");
+			return;
+		}
+		else 
+		{
+			Vector<String> & cl = GetCommandLine();
+			for( i=0; i<nArgs; i++)
+			{
+				WideString w = szArglist[i];
+				String nonWide = WStringToString(w);
+				cl.push_back(nonWide);
+				Logger::Debug("%d: %s\n", i, nonWide.c_str());
+			}
+		}
+		// Free memory allocated for CommandLineToArgvW arguments.
+		LocalFree(szArglist);
+	}
+
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	bool CoreWin32Platform::CreateWin32Window(HINSTANCE hInstance)

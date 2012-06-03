@@ -28,40 +28,91 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "GameCore.h"
-#include "AppScreens.h"
 #include "SpriteTest.h"
+#include "LandscapeTest.h"
+#include "MongodbTest.h"
 
 using namespace DAVA;
 
 GameCore::GameCore()
 {
-	
+	spriteTest = NULL;
+    logFile = NULL;
+    landscapeTextures = NULL;
+    landscapeMixedMode = NULL;
+    landscapeTiledMode = NULL;
+    landscapeTextureMode = NULL;
+    
+    mongodbTest = NULL;
 }
 
 GameCore::~GameCore()
 {
-	
 }
 
 void GameCore::OnAppStarted()
 {
 	RenderManager::Instance()->SetFPS(60);
 
-	time_t logStartTime = time(0);
-	logFile = File::Create(Format("./Reports/%lld.report", logStartTime), File::CREATE | File::WRITE);
+    CreateLogFile();
 
 	spriteTest = new SpriteTest();
-	
-	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE, spriteTest);
+    landscapeTextures = new LandscapeTest("Landscape Textures Test", LandscapeNode::TILED_MODE_COUNT);
+    landscapeMixedMode = new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
+    landscapeTiledMode = new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
+    landscapeTextureMode = new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
+    
+    mongodbTest = new MongodbTest();
 
-    UIScreenManager::Instance()->SetFirst(SCREEN_SPRITE);
+	UIScreenManager::Instance()->RegisterScreen(SCREEN_MONGODB, mongodbTest);
+	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE, spriteTest);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTURES, landscapeTextures);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_MIXEDMODE, landscapeMixedMode);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TILEDMODE, landscapeTiledMode);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTUREDMODE, landscapeTextureMode);
+    
+    currentScreenID = SCREEN_FIRST;
+    GoToNextTest();
 }
+
+bool GameCore::CreateLogFile()
+{
+    String documentsPath =      String(FileSystem::Instance()->GetUserDocumentsPath()) 
+                            +   "PerfomanceTest/";
+    
+    bool documentsExists = FileSystem::Instance()->IsDirectory(documentsPath);
+    if(!documentsExists)
+    {
+        FileSystem::Instance()->CreateDirectory(documentsPath);
+    }
+    FileSystem::Instance()->SetCurrentDocumentsDirectory(documentsPath);
+    
+    
+    String folderPath = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "Reports/";
+    bool folderExcists = FileSystem::Instance()->IsDirectory(folderPath);
+    if(!folderExcists)
+    {
+        FileSystem::Instance()->CreateDirectory(folderPath);
+    }
+
+	time_t logStartTime = time(0);
+	logFile = File::Create(Format("~doc:/Reports/%lld.report", logStartTime), File::CREATE | File::WRITE);
+
+    return (NULL != logFile);
+}
+
 
 void GameCore::OnAppFinished()
 {
-	spriteTest->Release();
-
-	logFile->Release();
+    SafeRelease(spriteTest);
+    SafeRelease(logFile);
+    
+    SafeRelease(mongodbTest);
+    
+    SafeRelease(landscapeTextures);
+    SafeRelease(landscapeMixedMode);
+    SafeRelease(landscapeTiledMode);
+    SafeRelease(landscapeTextureMode);
 }
 
 void GameCore::OnSuspend()
@@ -72,10 +123,50 @@ void GameCore::OnSuspend()
 
 void GameCore::OnResume()
 {
-
+    ApplicationCore::OnResume();
 }
 
 void GameCore::OnBackground()
 {
 	
 }
+
+void GameCore::BeginFrame()
+{
+	ApplicationCore::BeginFrame();
+	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+}
+
+void GameCore::Update(float32 timeElapsed)
+{	
+	ApplicationCore::Update(timeElapsed);
+}
+
+void GameCore::Draw()
+{
+	ApplicationCore::Draw();
+}
+
+void GameCore::TestFinished()
+{
+    ++currentScreenID;
+    GoToNextTest();
+}
+
+void GameCore::GoToNextTest()
+{
+    if(SCREEN_FIRST == currentScreenID)
+    {
+        UIScreenManager::Instance()->SetFirst(currentScreenID);
+    }
+    else if(SCREEN_COUNT == currentScreenID)
+    {
+		Core::Instance()->Quit();
+    }
+    else 
+    {
+        UIScreenManager::Instance()->SetScreen(currentScreenID);
+    }
+}
+
+

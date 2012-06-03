@@ -112,6 +112,9 @@ public:
     
     void SetOpaque(bool _isOpaque);
     bool GetOpaque();
+
+	void SetAlphablend(bool isAlphablend);
+	bool GetAlphablend();
     
     void SetFog(bool _fogEnabled);
     bool IsFogEnabled() const;
@@ -167,6 +170,9 @@ public:
 	Vector2 uvOffset;
 	Vector2 uvScale;
 
+	eBlendMode blendSrc;
+	eBlendMode blendDst;
+
     enum eTextureLevel
     {
         TEXTURE_DIFFUSE = 0,
@@ -206,6 +212,8 @@ private:
     bool    isFogEnabled;
     float32 fogDensity;
     Color   fogColor;
+
+	bool isAlphablend;
     
     Shader  * shader;
     

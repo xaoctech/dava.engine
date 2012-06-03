@@ -31,14 +31,14 @@
 #include "SpriteTest.h"
 
 SpriteTest::SpriteTest()
-: TestTemplate("Sprite")
+: TestTemplate<SpriteTest>("Sprite")
 {
 
 }
 
 void SpriteTest::LoadResources()
 {
-	int32 repeatCount = 30;
+	int32 repeatCount = 2;
 
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position)", repeatCount, (void*)(SET_POSITION));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | all default setters)", repeatCount, (void*)(SET_POSITION | SET_ALL_DEFAULT_SETTERS));
@@ -88,7 +88,11 @@ void SpriteTest::UnloadResources()
 
 void SpriteTest::SpriteRGBA888Draw(PerfFuncData * data)
 {
+#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
+	int32 type = (int64)data->userData;
+#else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 	int32 type = (int32)data->userData;
+#endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
 	float y = 0;
@@ -145,7 +149,11 @@ void SpriteTest::SpriteRGBA888Draw(PerfFuncData * data)
 
 void SpriteTest::SpriteRGBA888DrawStateDraw(PerfFuncData * data)
 {
+#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
+	int32 type = (int64)data->userData;
+#else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 	int32 type = (int32)data->userData;
+#endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
 	float y = 0;
@@ -212,7 +220,11 @@ void SpriteTest::SpriteRGBA888DrawStateDraw(PerfFuncData * data)
 
 void SpriteTest::GameObjectRGBA888Draw(PerfFuncData * data)
 {
+#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
+	int32 type = (int64)data->userData;
+#else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 	int32 type = (int32)data->userData;
+#endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
 	float y = 0;

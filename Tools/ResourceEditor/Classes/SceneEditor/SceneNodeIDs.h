@@ -10,6 +10,8 @@ enum eCreateNodeIds
     ECNID_SPHERE, 
     ECNID_CAMERA, 
 	ECNID_IMPOSTER,
+	ECNID_USERNODE,
+
 //	ECNID_LODNODE,
     
     

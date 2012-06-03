@@ -26,6 +26,7 @@
 =====================================================================================*/
 
 #include "ImposterNode.h"
+#include "ImposterManager.h"
 #include "Utils/Utils.h"
 #include "Render/Image.h"
 #include "Platform/SystemTimer.h"
@@ -64,13 +65,24 @@ void ImposterNode::UpdateState()
 {
 	if(GetChildrenCount() > 0)
 	{
+		if((flags & NODE_DISABLE_IMPOSTER))
+		{
+			return;
+		}
+
 		DVASSERT(GetChildrenCount() == 1);
 		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBox();
 		Vector3 bboxCenter = bbox.GetCenter();
 		float32 distanceSquare = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
 		distanceSquare *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
+		
+		Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
+		newDirection.Normalize();
+		float32 dotProduct = newDirection.DotProduct(direction);
 
-		if((STATE_3D == state))
+		switch(state)
+		{
+		case STATE_3D:
 		{
 			if(distanceSquare > TOGGLE_SQUARE_DISTANCE)
 			{
@@ -82,42 +94,74 @@ void ImposterNode::UpdateState()
 				isReady = false;
 			}
 		}
+		break;
 
-		if(STATE_IMPOSTER == state)
+		case STATE_QUEUED:
+		{
+			if(IsAngleOrRangeChangedEnough(distanceSquare, dotProduct))
+			{
+				UpdatePriority(distanceSquare, dotProduct);
+				manager->UpdateQueue(this);
+			}
+		}
+		break;
+
+		case STATE_IMPOSTER:
 		{
 			if(distanceSquare < TOGGLE_SQUARE_DISTANCE)
 			{
 				isReady = false;
 				state = STATE_3D;
+				manager->RemoveFromQueue(this);
+				break;
 			}
-			else
+
+			if(IsAngleOrRangeChangedEnough(distanceSquare, dotProduct))
 			{
-				Vector3 newDirection = scene->GetCurrentCamera()->GetPosition()-center;
-				newDirection.Normalize();
-				float32 distanceDelta = distanceSquare/distanceSquaredToCamera;
-				float32 dotProduct = newDirection.DotProduct(direction);
-				if((dotProduct < 0.9999f) 
-					|| (distanceDelta < 0.25f/*0.5^2*/) //if distance is doubled or halved
-					|| (distanceDelta > 4.f/*2^2*/))
-				{
-					UpdatePriority(distanceSquare, dotProduct);
-					AskForRedraw();
-				}
+				UpdatePriority(distanceSquare, dotProduct);
+				AskForRedraw();
 			}
+		}
+		break;
+
+		case STATE_REDRAW_APPROVED:
+		{
+		}
+		break;
 		}
 	}
 }
 
+
+bool ImposterNode::IsAngleOrRangeChangedEnough(float32 squareDistance, float32 dotProduct)
+{
+	bool result = false;
+
+	float32 distanceDelta = squareDistance/distanceSquaredToCamera;
+	if((dotProduct < 0.9999f) 
+		|| (distanceDelta < 0.25f/*0.5^2*/) //if distance is doubled or halved
+		|| (distanceDelta > 4.f/*2^2*/))
+	{
+		result = true;
+	}
+
+	return result;
+}
+
 void ImposterNode::Draw()
 {
-
+	if((flags & NODE_DISABLE_IMPOSTER) && GetChildrenCount() > 0)
+	{
+		DVASSERT(GetChildrenCount() == 1);
+		GetChild(0)->Draw();
+	}
 }
 
 void ImposterNode::GeneralDraw()
 {
-	if(IsRedrawApproved())
+	if(flags & NODE_DISABLE_IMPOSTER)
 	{
-		UpdateImposter();
+		return;
 	}
 
 	if(IsImposterReady())
@@ -133,6 +177,7 @@ void ImposterNode::GeneralDraw()
 void ImposterNode::UpdateImposter()
 {
 	Camera * camera = scene->GetCurrentCamera();
+
 	Camera * imposterCamera = new Camera();
 	Vector3 cameraPos = camera->GetPosition();
 
@@ -148,7 +193,6 @@ void ImposterNode::UpdateImposter()
 	imposterCamera->SetPosition(cameraPos);
 	imposterCamera->SetUp(camera->GetUp());
 	imposterCamera->SetLeft(camera->GetLeft());
-	imposterCamera->Set();
 
 
 	Rect viewport = RenderManager::Instance()->GetViewport();
@@ -207,6 +251,7 @@ void ImposterNode::UpdateImposter()
 	}
 	center /= 4.f;
 
+
 	//draw
 	RecreateFbo(screenSize);
 	if(!block)
@@ -229,7 +274,7 @@ void ImposterNode::UpdateImposter()
 
 	Rect oldViewport = RenderManager::Instance()->GetViewport();
 	
-	RenderManager::Instance()->SetRenderTarget(fbo->GetTexture());
+	Texture * target = fbo->GetTexture();
 
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_SCISSOR_TEST);
 	RenderManager::Instance()->State()->SetScissorRect(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
@@ -241,20 +286,17 @@ void ImposterNode::UpdateImposter()
 
 	RenderManager::Instance()->SetViewport(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy), true);
 
+
 	imposterCamera->SetTarget(center);
 	imposterCamera->Set();
-	//RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 0.f);
-	//RenderManager::Instance()->ClearDepthBuffer();
 
 	//TODO: remove this call
 	HierarchicalRemoveCull(child);
 	RenderManager::Instance()->FlushState();
 	child->Draw();
 
-	//RenderManager::Instance()->SetRenderTarget((Texture*)0); //weird, but SetRenderTarget(0) is ambiguous call
-	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
-		
+
 	isReady = true;
 	state = STATE_IMPOSTER;
 
@@ -282,7 +324,6 @@ void ImposterNode::UpdateImposter()
 		imposterVertices[i] = Vector3(out.x, out.y, out.z);
 	}
 
-	camera->Set();
 	SafeRelease(imposterCamera);
 
 	ClearGeometry();
@@ -407,7 +448,8 @@ void ImposterNode::CreateGeometry()
 
 void ImposterNode::AskForRedraw()
 {
-	state = STATE_ASK_FOR_REDRAW;
+	manager->AddToQueue(this);
+	state = STATE_QUEUED;
 }
 
 bool ImposterNode::IsRedrawApproved()
@@ -418,21 +460,6 @@ bool ImposterNode::IsRedrawApproved()
 bool ImposterNode::IsImposterReady()
 {
 	return isReady;
-}
-
-void ImposterNode::OnAddedToQueue()
-{
-	state = STATE_QUEUED;
-}
-
-bool ImposterNode::IsAskingForRedraw()
-{
-	return (STATE_ASK_FOR_REDRAW == state);
-}
-
-void ImposterNode::ApproveRedraw()
-{
-	state = STATE_REDRAW_APPROVED;
 }
 
 void ImposterNode::RecreateFbo(const Vector2 & size)
@@ -471,10 +498,10 @@ void ImposterNode::UpdatePriority(float32 squaredDistance, float32 dotProduct)
 	}
 }
 
-
-bool ImposterNodeComparer::operator()(ImposterNode * lhs, ImposterNode * rhs)
+float32 ImposterNode::GetPriority()
 {
-	return lhs->priority > rhs->priority;
+	return priority;
 }
+
 
 }

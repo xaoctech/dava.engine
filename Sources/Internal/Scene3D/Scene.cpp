@@ -448,12 +448,12 @@ void Scene::Draw()
     if (bvHierarchy)
         bvHierarchy->Cull();
 
-    SceneNode::Draw();
-    
 	if(imposterManager)
 	{
 		imposterManager->Draw();
 	}
+
+    SceneNode::Draw();
 
 	if(shadowVolumes.size() > 0)
 	{
@@ -652,10 +652,11 @@ void Scene::RegisterImposter(ImposterNode * imposter)
 {
 	if(!imposterManager)
 	{
-		imposterManager = new ImposterManager();
+		imposterManager = new ImposterManager(this);
 	}
 	
 	imposterManager->Add(imposter);
+	imposter->RecursiveEnableImposters(enableImposters);
 }
 
 void Scene::UnregisterImposter(ImposterNode * imposter)
@@ -673,7 +674,13 @@ void Scene::EnableImposters(bool enable)
 	if(enable != enableImposters)
 	{
 		enableImposters = enable;
+		RecursiveEnableImposters(enableImposters);
 	}
+}
+
+bool Scene::IsImposterEnabled()
+{
+	return enableImposters;
 }
 
 

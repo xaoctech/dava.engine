@@ -117,8 +117,6 @@ void Camera::Setup(float32 fovyInDegrees, float32 aspectYdivX, float32 zNear, fl
 	this->zfar = zFar;
 	this->ortho = isOrtho;
 	
-	this->znear = 1;
-	this->zfar = 5000;
 	Recalc();
 }
 

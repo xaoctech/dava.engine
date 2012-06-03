@@ -694,21 +694,17 @@ void SceneNode::RecursiveEnableImposters(bool enable)
 {
 	if(enable)
 	{
-		AddFlag(NODE_DISABLE_IMPOSTER);
+		RemoveFlag(NODE_DISABLE_IMPOSTER);
 	}
 	else
 	{
-		RemoveFlag(NODE_DISABLE_IMPOSTER);
+		AddFlag(NODE_DISABLE_IMPOSTER);
 	}
 	uint32 size = (uint32)children.size();
 	for (uint32 c = 0; c < size; ++c)
 	{
-		children[c]->RecursiveEnableImposters(enable);
+		children[c]->RecursiveEnableImposters(enable); 
 	}
 }
     
 };
-
-
-
-

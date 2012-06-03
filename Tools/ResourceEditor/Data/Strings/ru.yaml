@@ -1,4 +1,4 @@
-#dialog buttons
+﻿#dialog buttons
 dialog.ok: "Ok"
 dialog.cancel: "Отмена"
 dialog.create: "Создать"
@@ -23,6 +23,7 @@ menu.createnode.sphere: "Сфера"
 menu.createnode.camera: "Камера"
 menu.createnode.imposter: "Imposter"
 menu.createnode.lodnode: "LodNode"
+menu.createnode.usernode: "UserNode"
 menu.new: "Новая сцена"
 menu.new.emptyscene: "Сцена"
 menu.new.scenewithcamera: "Сцена с камерами"
@@ -81,6 +82,7 @@ createnode.sphere: "Создание sphere node"
 createnode.camera: "Создание камеры"
 createnode.imposter: "Создание imposter"
 createnode.lodnode: "Создание lod node"
+createnode.usernode: "Создание user node"
 
 #Create Property Dialog
 createproperty.type: "Тип:"
@@ -177,7 +179,6 @@ property.camera.target.z: "target.z:"
 property.landscape.landscape: "Ландшафт"
 property.landscape.size: "Size:"
 property.landscape.height: "Высота:"
-property.landscape.renderingmode: "Rendering Mode:"
 property.landscape.lightmap: "Light Map:"
 property.landscape.alphamask: "Alpha Mask:"
 property.landscape.heightmap: "Height Map:"
@@ -217,6 +218,9 @@ property.material.specularcolor: "Specular color:"
 property.material.diffusecolor: "Diffuse color:"
 property.material.specularshininess: "Specular shininess:"
 property.material.isopaque: "Is Opaque"
+property.material.alphablend: "Alpha blend"
+property.material.blendSrc: "Source factor"
+property.material.blendDst: "Destination factor"
 
 #LodNode
 property.lodnode: "LodNode"
@@ -238,6 +242,7 @@ settingsdialog.cameraspeed4: "4-ая скорость камеры:"
 settingsdialog.leftpanelwidth: "Ширина левой панели:"
 settingsdialog.rightpanelwidth: "Ширина правой панели:"
 settingsdialog.drawgrid: "Рисовать сетку в сцене:"
+settingsdialog.imposters: "Включить импостеры:"
 
 #Color Picker
 colorpicker.r: "Red:"
