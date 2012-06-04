@@ -38,8 +38,8 @@ MongodbTest::MongodbTest()
 
 void MongodbTest::LoadResources()
 {
-    client = MongodbClient::Create(String("127.0.0.1"), 27017);
-//    client = MongodbClient::Create(String("10.128.128.163"), 27017);
+//    client = MongodbClient::Create(String("127.0.0.1"), 27017);
+    client = MongodbClient::Create(String("10.128.128.163"), 27017);
     if(client)
     {
         client->SetDatabaseName(String("PerformanceTest"));
