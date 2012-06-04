@@ -46,12 +46,13 @@ public:
     static Component * GetComponentByIndex(uint64 index);
     
     Set<const char*> & GetDataNames() {return dataNames; };
+
+	static Map<const char *, Component * > cache;//<name, component>
     
 private:
 	ComponentType type;
     Set<const char*> dataNames;
     static Map<uint64, Component*>  componentsByIndex;
-    static Map<const char *, Component * > cache;//<name, component>
 };
     
 };
