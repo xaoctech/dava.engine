@@ -31,6 +31,7 @@
 #include "SpriteTest.h"
 #include "LandscapeTest.h"
 #include "MongodbTest.h"
+#include "CacheTest.h"
 
 using namespace DAVA;
 
@@ -61,10 +62,13 @@ void GameCore::OnAppStarted()
     landscapeMixedMode = new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
     landscapeTiledMode = new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
     landscapeTextureMode = new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
-    
-    mongodbTest = new MongodbTest();
 
-	UIScreenManager::Instance()->RegisterScreen(SCREEN_MONGODB, mongodbTest);
+    //mongodbTest = new MongodbTest();
+    mongodbTest = 0;
+    cacheTest = new CacheTest("Cache Test");
+    
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_CACHE_TEST, cacheTest);
+	//UIScreenManager::Instance()->RegisterScreen(SCREEN_MONGODB, mongodbTest);
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE, spriteTest);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTURES, landscapeTextures);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_MIXEDMODE, landscapeMixedMode);
@@ -104,6 +108,7 @@ bool GameCore::CreateLogFile()
 
 void GameCore::OnAppFinished()
 {
+    SafeRelease(cacheTest);
     SafeRelease(spriteTest);
     SafeRelease(logFile);
     

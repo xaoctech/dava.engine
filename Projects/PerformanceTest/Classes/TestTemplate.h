@@ -52,6 +52,9 @@ public:
 		int32			runCount;
 		void			* userData;
 	};
+    
+    static int32 globalScreenId; // 1, on create of screen increment  
+    int32 currentScreenId;
 
 	TestTemplate(const String & screenName);
 
@@ -100,7 +103,7 @@ void TestTemplate<T>::WriteLog(PerfFuncData * data)
 {
 	File * log = GameCore::Instance()->logFile;
 	log->WriteLine(Format("%s", data->name.c_str()));
-	log->WriteLine(Format("%lld %lld %lld %lld %d", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime, data->runCount));
+	log->WriteLine(Format("%lld tot:%lld min:%lld max:%lld run count:%d", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime, data->runCount));
 }
 
 template <class T>
