@@ -37,7 +37,7 @@ public:
         return typeSizeof;
     }
     virtual void MoveElement(uint32 oldIndex, uint32 newIndex) = 0;
-    virtual void MoveElement(uint32 oldIndex, Pool * newPool, uint32 newIndex);
+    virtual void MoveElement(uint32 oldIndex, Pool * newPool, uint32 newIndex) = 0;
     
     virtual void Resize(uint32 newSize) = 0;
     

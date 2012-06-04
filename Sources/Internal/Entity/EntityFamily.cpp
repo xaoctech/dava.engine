@@ -23,7 +23,7 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
         }
     }
     
-    pools.resize(dataNamesForAllComponents.size());
+    pools.reserve(dataNamesForAllComponents.size()); //this changes size of vector
     
     currentSize = 0;
 	maxSize = 15;
