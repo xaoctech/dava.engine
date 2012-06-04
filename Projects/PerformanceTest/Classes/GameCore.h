@@ -31,14 +31,8 @@
 #define __GAMECORE_H__
 
 #include "DAVAEngine.h"
-#include "AppScreens.h"
 
 using namespace DAVA;
-
-class SpriteTest;
-class LandscapeTest;
-class MongodbTest;
-class CacheTest;
 
 class GameCore : public ApplicationCore
 {
@@ -67,25 +61,15 @@ public:
     
     void TestFinished();
     
+    void RegisterScreen(DAVA::UIScreen *screen);
+    
 protected:
     
-    void GoToNextTest();
-    
-    
+    void RunCurrentTest();
     bool CreateLogFile();
     
-    int32 currentScreenID;
-
-    SpriteTest * spriteTest;
-    
-    LandscapeTest *landscapeTextures;
-    LandscapeTest *landscapeMixedMode;
-    LandscapeTest *landscapeTiledMode;
-    LandscapeTest *landscapeTextureMode;
-    
-    MongodbTest *mongodbTest;
-    
-    CacheTest * cacheTest;
+    int32 currentScreenIndex;
+    Vector<DAVA::UIScreen *> screens;
 };
 
 

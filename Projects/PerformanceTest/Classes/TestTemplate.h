@@ -53,8 +53,6 @@ public:
 		void			* userData;
 	};
     
-    static int32 globalScreenId; // 1, on create of screen increment  
-    int32 currentScreenId;
 
 	TestTemplate(const String & screenName);
 
@@ -68,7 +66,9 @@ public:
 	void SubmitTime(PerfFuncData * data, uint64 time);
 	void WriteLog(PerfFuncData * data);
     
-
+    int32 GetScreenId();
+    
+    
 protected:
     
     virtual void RunTests();
@@ -79,8 +79,15 @@ protected:
 	String screenName;
 
 private:
+    
+    static int32 globalScreenId; // 1, on create of screen increment  
+    int32 currentScreenId;
+    
 	TestTemplate();
 };
+
+template <class T>
+int32 TestTemplate<T>::globalScreenId = 1;
 
 template <class T>
 void TestTemplate<T>::RegisterFunction(T * screen, void (T::*func)(PerfFuncData * data), const String & name, int32 runCount, void * userData)
@@ -131,6 +138,10 @@ TestTemplate<T>::TestTemplate(const String & _screenName)
 	screenName = _screenName;
 	funcIndex = -1;
 	runIndex = -1;
+    
+    currentScreenId = globalScreenId++;
+    
+    GameCore::Instance()->RegisterScreen(this);
 }
 
 template <class T>
