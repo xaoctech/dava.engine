@@ -185,6 +185,7 @@ public:
 //    void*, "materialPtr",
 //}
 
+void EntityTest();
 
 void EntityTest()
 {

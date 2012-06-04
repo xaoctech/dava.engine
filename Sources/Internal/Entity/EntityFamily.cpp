@@ -12,7 +12,6 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
     family = _family;
     
     // Require refactoring, because depends on internal structure of FamilyType / ComponentType.
-    
     Set<const char*> dataNamesForAllComponents;
     uint64 bit = family.GetBit();
     for (uint64 idx = 0; idx < 64; ++idx)
@@ -28,8 +27,6 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
     
     currentSize = 0;
 	maxSize = 15;
-
-    Map<const char *, Pool *> & compPools = EntityManager::GetPoolAllocators();
 
     for (Set<const char*>::iterator it = dataNamesForAllComponents.begin(); it != dataNamesForAllComponents.end(); ++it)
     {
@@ -52,6 +49,8 @@ Pool * EntityFamily::GetPoolByDataName(const char * dataName)
     
 void EntityFamily::NewEntity(Entity * entity)
 {
+    DVASSERT(entity->GetFamily() == EntityFamilyType(0));
+    
     if (currentSize >= maxSize)
     {
         // Resize all pools
@@ -61,21 +60,58 @@ void EntityFamily::NewEntity(Entity * entity)
         }
     }
     entity->SetIndexInFamily((int32)currentSize);
-    
     currentSize++;
+    for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
+    {
+        pools[poolIndex]->length++;
+    }
 }
     
 void EntityFamily::DeleteEntity(Entity * entity)
 {
+    // We can't only delete entity that in the family. If it's not something went wrong
+    DVASSERT(entity->GetFamily().GetBit() == this->family.GetBit());
+    DVASSERT(entity->indexInFamily >= 0);
+    DVASSERT(entity->indexInFamily < currentSize);
     
-    
-    
+    for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
+    {
+        pools[poolIndex]->MoveElement(currentSize - 1, entity->GetIndexInFamily());
+        pools[poolIndex]->length--;
+    }
+    currentSize--;
+    entity->SetIndexInFamily(-1);
+    entity->SetFamily(EntityFamilyType(0)); // Empty family
 }
     
 void EntityFamily::MoveToFamily(EntityFamily * newFamily, Entity * entity)
 {
+    // We should move all data from one pools to other pools.
     
+    if (currentSize >= maxSize)
+    {
+        // Resize all pools
+        for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
+        {
+            pools[poolIndex]->Resize(currentSize + 15);
+        }
+    }
+    int32 oldIndex = entity->GetIndexInFamily();
     
+    for (Map<const char *, Pool*>::iterator currentPoolIt = poolByDataName.begin(); currentPoolIt != poolByDataName.end(); ++currentPoolIt)
+    {
+        Pool * newFamilyPool = newFamily->GetPoolByDataName(currentPoolIt->first);
+        DVASSERT(typeid(*newFamilyPool) == typeid(*newFamilyPool));
+        
+        newFamilyPool->MoveElement(oldIndex, (uint32)currentSize);
+    }
+    
+    entity->SetIndexInFamily((int32)currentSize);
+    currentSize++;
+    for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
+    {
+        pools[poolIndex]->length++;
+    }
 }
 
 
