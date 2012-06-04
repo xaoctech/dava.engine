@@ -203,9 +203,26 @@ void EntityTest()
 	Entity * entity0 = EntityManager::Instance()->CreateEntity();
 	entity0->AddComponent("VisibilityAABBoxComponent");
 	entity0->AddComponent("DrawMeshComponent");
-
     entity0->SetData("meshAABox", AABBox3());
     entity0->SetData("meshVisibilityFlag", (uint32)0);
+
+	Entity * entity1 = EntityManager::Instance()->CreateEntity();
+	entity1->AddComponent("VisibilityAABBoxComponent");
+	entity1->AddComponent("DrawMeshComponent");
+	entity1->SetData("meshAABox", AABBox3(Vector3(-1.f, -1.f, -1.f), Vector3(1.f, 1.f, 1.f)));
+	entity1->SetData("meshVisibilityFlag", (uint32)0);
+
+	Entity * entity2 = EntityManager::Instance()->CreateEntity();
+	entity2->AddComponent("VisibilityAABBoxComponent");
+	entity2->AddComponent("DrawMeshComponent");
+	entity2->SetData("meshAABox", AABBox3(Vector3(-2.f, -2.f, -2.f), Vector3(-1.f, -1.f, -1.f)));
+	entity2->SetData("meshVisibilityFlag", (uint32)0);
+
+	Entity * entity3 = EntityManager::Instance()->CreateEntity();
+	entity3->AddComponent("VisibilityAABBoxComponent");
+	entity3->AddComponent("DrawMeshComponent");
+	entity3->SetData("meshAABox", AABBox3(Vector3(3.f, 3.f, 3.f), Vector3(4.f, 4.f, 4.f)));
+	entity3->SetData("meshVisibilityFlag", (uint32)0);
 
 	visibilityAABBoxSystem.Run();
 	drawSystem.Run();
