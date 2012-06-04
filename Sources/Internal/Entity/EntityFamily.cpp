@@ -17,7 +17,7 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
     uint64 bit = family.GetBit();
     for (uint64 idx = 0; idx < 64; ++idx)
     {
-        if (bit & (1 << idx))
+        if (bit & ((int64)1 << idx))
         {
             Component * comp = Component::GetComponentByIndex(idx);
             dataNamesForAllComponents.insert(comp->GetDataNames().begin(), comp->GetDataNames().end());
