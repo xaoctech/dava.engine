@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */; };
 		5C7BE5931574E090004FF01C /* MongodbTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7BE5911574E090004FF01C /* MongodbTest.cpp */; };
+		5CBC1F66157CD739009DAD1C /* CacheTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBC1F64157CD739009DAD1C /* CacheTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SpriteTest.cpp */; };
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
@@ -61,6 +62,8 @@
 		5C6EF12A15751E1B001E45AD /* test-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "test-Prefix.pch"; sourceTree = "<group>"; };
 		5C7BE5911574E090004FF01C /* MongodbTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbTest.cpp; path = Classes/MongodbTest.cpp; sourceTree = "<group>"; };
 		5C7BE5921574E090004FF01C /* MongodbTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbTest.h; path = Classes/MongodbTest.h; sourceTree = "<group>"; };
+		5CBC1F64157CD739009DAD1C /* CacheTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CacheTest.cpp; path = Classes/CacheTest.cpp; sourceTree = "<group>"; };
+		5CBC1F65157CD739009DAD1C /* CacheTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CacheTest.h; path = Classes/CacheTest.h; sourceTree = "<group>"; };
 		5CDC24FA156CC72400742348 /* SpriteTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpriteTest.cpp; path = Classes/SpriteTest.cpp; sourceTree = "<group>"; };
 		5CDC24FB156CC72400742348 /* SpriteTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpriteTest.h; path = Classes/SpriteTest.h; sourceTree = "<group>"; };
 		5CDC24FC156CC72400742348 /* TestTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestTemplate.cpp; path = Classes/TestTemplate.cpp; sourceTree = "<group>"; };
@@ -177,6 +180,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				5CBC1F63157CD725009DAD1C /* CacheTest */,
 				5C7BE58A1574BA01004FF01C /* Mongodb */,
 				5C1066D9156D357C00912A45 /* Landscape */,
 				5CDC24FA156CC72400742348 /* SpriteTest.cpp */,
@@ -221,6 +225,15 @@
 				5C7BE5921574E090004FF01C /* MongodbTest.h */,
 			);
 			name = Mongodb;
+			sourceTree = "<group>";
+		};
+		5CBC1F63157CD725009DAD1C /* CacheTest */ = {
+			isa = PBXGroup;
+			children = (
+				5CBC1F64157CD739009DAD1C /* CacheTest.cpp */,
+				5CBC1F65157CD739009DAD1C /* CacheTest.h */,
+			);
+			name = CacheTest;
 			sourceTree = "<group>";
 		};
 		FE445A961153C27800F5EFD6 /* Classes */ = {
@@ -365,6 +378,7 @@
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
 				5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */,
 				5C7BE5931574E090004FF01C /* MongodbTest.cpp in Sources */,
+				5CBC1F66157CD739009DAD1C /* CacheTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
