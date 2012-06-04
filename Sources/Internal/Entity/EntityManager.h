@@ -18,8 +18,10 @@ public:
     void AddComponent(Entity * entity, Component * component);
     void RemoveComponent(Entity * entity, Component * component);
 	
+    EntityFamily * GetFamily(Component * c0, ...);
+    
     template<class T>
-    TemplatePool<T> * GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName);
+    void GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName, List<TemplatePool<T> *> & poolList);
     
 //    void Flush();
 //
@@ -37,7 +39,7 @@ private:
     //  
     
     
-    Map<EntityFamilyType, EntityFamily*> families;
+    Map<uint64, EntityFamily*> families;
     std::multimap<Component*, EntityFamily*> familiesWithComponent; // all families with given component
     
 //	Set<Entity*> changedEntities;

@@ -1,5 +1,6 @@
 #include "Base/BaseMath.h"
 #include "Entity/EntityManager.h"
+#include "Entity/ComponentDataMapper.h"
 #include "Scene3D/Camera.h"
 
 using namespace DAVA;
@@ -56,25 +57,26 @@ public:
     {   
         RegisterData<Sphere>("meshBSphere");
         RegisterData<uint32>("meshVisibilityFlag");
-		sceneCameraPools = LinkToAllPools((Camera*)(0), "sceneCamera");
+		//sceneCameraPools = LinkToAllPools((Camera*)(0), "sceneCamera");
     }
-
 };
 
 class VisibilitySphereSystem 
 {
 public:
-    ComponentDataMapper<Sphere> * sphereData;
-    ComponentDataMapper<uint32> * visibilityFlag;
+    EntityManager * manager;
+    EntityFamily * family;
+    //ComponentDataMapper<Sphere> * sphereData;
+    //ComponentDataMapper<uint32> * visibilityFlag;
     
     void Create()
     {
-        
+        family = manager->GetFamily(VisibilitySphereComponent::Get());    
     }
     
     void Run()
     {
-		Camera * camera = sceneCameraPools->at(0)->Get(0); 
+		/*Camera * camera = sceneCameraPools->at(0)->Get(0); 
         Frustum * frustum = camera->GetFrustum();
 		
 		int32 elementCount = meshSpherePool->GetCount();
@@ -83,7 +85,18 @@ public:
 			Sphere * sphere = meshSpherePool->GetPtr(k);
 			uint32 * flagResult = meshVisibilityFlagPool->GetPtr(k);
 			*flagResult = 0; // No sphere check function: (frustum->IsInside(*sphere) == true);
-		}
+		}*/
+        //for (
+        
+        uint32 count = family->GetSize();
+        Sphere * sphereHead = family->GetPtr<Sphere>(VisibilitySphereComponent::Get(), "meshBSphere");
+        uint32 * flags = family->GetPtr<uint32>(VisibilitySphereComponent::Get(), "meshVisibilityFlag");
+        
+        for (uint32 k = 0; k < count; ++k)
+        {
+            sphereHead[k].radius = 1.0;
+            flags[k] = 1;
+        }
     }
     TemplatePool<void*> * meshPtrPool;
 	TemplatePool<Sphere> * meshSpherePool;

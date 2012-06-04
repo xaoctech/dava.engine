@@ -2,25 +2,14 @@
 #define __DAVAENGINE_ENTITY_COMPONENT_H__
 
 #include "Entity/Pool.h"
-#include "Entity/ComponentType.h"
+#include "Entity/ComponentTypes.h"
 
 namespace DAVA 
 {
     
 
 class EntityManager;
-    
-template<class T>
-class ComponentDataMapper
-{
-public:
-    ComponentDataMapper(EntityManager * manager, const char * componentName)
-    {
-    }
-    
-    
-    
-};
+
 
 class Component
 {

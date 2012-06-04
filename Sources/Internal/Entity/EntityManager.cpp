@@ -19,13 +19,13 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     EntityFamily * oldFamily = 0; 
     EntityFamily * newFamily = 0; 
     
-    Map<EntityFamilyType, EntityFamily*>::iterator oldFamilyIterator = families.find(oldFamilyType);
+    Map<uint64, EntityFamily*>::iterator oldFamilyIterator = families.find(oldFamilyType.GetBit());
     if (oldFamilyIterator != families.end())
     {
         oldFamily = oldFamilyIterator->second;
     }
     
-    Map<EntityFamilyType, EntityFamily*>::iterator newFamilyIterator = families.find(newFamilyType);
+    Map<uint64, EntityFamily*>::iterator newFamilyIterator = families.find(newFamilyType.GetBit());
     if (newFamilyIterator != families.end())
     {
         newFamily = newFamilyIterator->second;
@@ -38,7 +38,7 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     {
         newFamily = new EntityFamily(newFamilyType);
             
-        families[newFamilyType] = newFamily;
+        families[newFamilyType.GetBit()] = newFamily;
         
         // Require refactoring, because depends on intenrnal structure of FamilyType / ComponentType.
         uint64 bit = newFamilyType.GetBit();
@@ -62,11 +62,34 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     {
         newFamily->NewEntity(entity);
     }
-    
 }
     
+EntityFamily * EntityManager::GetFamily(Component * c0, ...)
+{
+    va_list list;
+    
+    va_start(list, c0);
+    
+    uint64 bit = c0->GetType().GetBit();
+    while(1)
+    {
+        Component * cNext = va_arg(list, Component*);
+        if (!cNext)break;
+        bit |= cNext->GetType().GetBit();
+    }
+    va_end(list);
+
+    Map<uint64, EntityFamily*>::iterator familyIterator = families.find(bit);
+    if (familyIterator != families.end())
+    {
+        return familyIterator->second;
+    }
+    return 0;
+}
+
+
 template<class T>
-TemplatePool<T> * EntityManager::GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName)
+void EntityManager::GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName, List<TemplatePool<T> *> & poolList)
 {
     std::pair<std::multimap<Component*, EntityFamily*>::iterator, std::multimap<Component*, EntityFamily*>::iterator> range;
     range = familiesWithComponent.equal_range(component);
@@ -78,8 +101,11 @@ TemplatePool<T> * EntityManager::GetLinkedTemplatePoolsForComponent(Component * 
         EntityFamily * family = it2->second;
         Pool * pool = family->GetPoolByComponentIndexDataName(component->GetType().GetIndex(), dataName);
         TemplatePool<T> * templatePool = dynamic_cast<TemplatePool<T>*>(pool); 
-        templatePool->next = currentPool;
-        currentPool = templatePool;
+        poolList.push_back(templatePool);
+
+//      Not sure that can use references in pools, because they can potentially lie in several comps??? Need ot check
+//        templatePool->next = currentPool;
+//        currentPool = templatePool;
     }
     return currentPool;
 }

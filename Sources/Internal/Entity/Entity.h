@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
-#include "Entity/ComponentType.h"
+#include "Entity/ComponentTypes.h"
 
 namespace DAVA 
 {
