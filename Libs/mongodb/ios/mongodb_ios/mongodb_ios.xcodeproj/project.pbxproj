@@ -21,6 +21,18 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		5CBC1F88157CF388009DAD1C /* bson.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CD81573D27E00BC45C6 /* bson.c */; };
+		5CBC1F89157CF388009DAD1C /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CDA1573D27E00BC45C6 /* encoding.c */; };
+		5CBC1F8B157CF388009DAD1C /* env_posix.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CDC1573D27E00BC45C6 /* env_posix.c */; };
+		5CBC1F8C157CF388009DAD1C /* env_standard.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CDD1573D27E00BC45C6 /* env_standard.c */; };
+		5CBC1F8E157CF388009DAD1C /* gridfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CDF1573D27E00BC45C6 /* gridfs.c */; };
+		5CBC1F90157CF388009DAD1C /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CE11573D27E00BC45C6 /* md5.c */; };
+		5CBC1F92157CF388009DAD1C /* mongo.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CE31573D27E00BC45C6 /* mongo.c */; };
+		5CBC1F93157CF388009DAD1C /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CE41573D27E00BC45C6 /* numbers.c */; };
+		5CBC1F94157CF3F8009DAD1C /* encoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1CDB1573D27E00BC45C6 /* encoding.h */; };
+		5CBC1F95157CF3F8009DAD1C /* env.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1CDE1573D27E00BC45C6 /* env.h */; };
+		5CBC1F96157CF3F8009DAD1C /* md5.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1CE21573D27E00BC45C6 /* md5.h */; };
+		5CBC1F97157CF40F009DAD1C /* gridfs.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CEE1CE01573D27E00BC45C6 /* gridfs.h */; };
 		5CEE1CC21573D23200BC45C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CEE1CC11573D23200BC45C6 /* Foundation.framework */; };
 		5CEE1CE51573D27E00BC45C6 /* bson.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CD81573D27E00BC45C6 /* bson.c */; };
 		5CEE1CE71573D27E00BC45C6 /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CEE1CDA1573D27E00BC45C6 /* encoding.c */; };
@@ -148,15 +160,19 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CBC1F97157CF40F009DAD1C /* gridfs.h in Headers */,
+				5CBC1F94157CF3F8009DAD1C /* encoding.h in Headers */,
+				5CBC1F95157CF3F8009DAD1C /* env.h in Headers */,
+				5CBC1F96157CF3F8009DAD1C /* md5.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		5CEE1CBD1573D23200BC45C6 /* mongodb_ioslib */ = {
+		5CEE1CBD1573D23200BC45C6 /* mongodb_ios */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ioslib" */;
+			buildConfigurationList = 5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ios" */;
 			buildPhases = (
 				5CEE1CBA1573D23200BC45C6 /* Sources */,
 				5CEE1CBB1573D23200BC45C6 /* Frameworks */,
@@ -166,7 +182,7 @@
 			);
 			dependencies = (
 			);
-			name = mongodb_ioslib;
+			name = mongodb_ios;
 			productName = mongodb_ios;
 			productReference = 5CEE1CBE1573D23200BC45C6 /* libmongodb_ios.a */;
 			productType = "com.apple.product-type.library.static";
@@ -208,7 +224,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5CEE1CBD1573D23200BC45C6 /* mongodb_ioslib */,
+				5CEE1CBD1573D23200BC45C6 /* mongodb_ios */,
 				5CEE1D161573DB1000BC45C6 /* mongodb_sim */,
 				5CEE1D221573DB4D00BC45C6 /* mongodb_combined */,
 			);
@@ -251,6 +267,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CBC1F88157CF388009DAD1C /* bson.c in Sources */,
+				5CBC1F89157CF388009DAD1C /* encoding.c in Sources */,
+				5CBC1F8B157CF388009DAD1C /* env_posix.c in Sources */,
+				5CBC1F8C157CF388009DAD1C /* env_standard.c in Sources */,
+				5CBC1F8E157CF388009DAD1C /* gridfs.c in Sources */,
+				5CBC1F90157CF388009DAD1C /* md5.c in Sources */,
+				5CBC1F92157CF388009DAD1C /* mongo.c in Sources */,
+				5CBC1F93157CF388009DAD1C /* numbers.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +304,7 @@
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = "";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -300,6 +325,7 @@
 				PRODUCT_NAME = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -329,7 +355,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/mongodb_sim.dst;
-				GCC_PREFIX_HEADER = "mongodb_sim/mongodb_sim-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -341,7 +366,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/mongodb_sim.dst;
-				GCC_PREFIX_HEADER = "mongodb_sim/mongodb_sim-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -375,7 +399,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ioslib" */ = {
+		5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5CEE1CCC1573D23200BC45C6 /* Debug */,
