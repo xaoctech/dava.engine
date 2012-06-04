@@ -77,7 +77,6 @@
 		FE98930B11638F3C00500198 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../MacOSFramework/Framework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		FEA30C291231362D00E691CC /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		FEA30C2E1231362D00E691CC /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
-		FEC3CA6C1283557F00541220 /* AppScreens.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreens.h; path = Classes/AppScreens.h; sourceTree = "<group>"; };
 		FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FrameworkMain.cpp; path = Classes/FrameworkMain.cpp; sourceTree = "<group>"; };
 		FEC3CA701283557F00541220 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
 		FEC3CA711283557F00541220 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameCore.cpp; path = Classes/GameCore.cpp; sourceTree = "<group>"; };
@@ -246,7 +245,6 @@
 				FEC3CA701283557F00541220 /* FrameworkMain.h */,
 				FEC3CA711283557F00541220 /* GameCore.cpp */,
 				FEC3CA721283557F00541220 /* GameCore.h */,
-				FEC3CA6C1283557F00541220 /* AppScreens.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";

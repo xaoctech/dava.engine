@@ -134,6 +134,28 @@ void CacheTest::UnloadResources()
             Logger::Debug("Function calculated results wrongly");
         }
     }
+    
+    SafeDeleteArray(array0);
+    SafeDeleteArray(array1);
+    SafeDeleteArray(arrayResult);
+    SafeDeleteArray(correctResult);
+    SafeDeleteArray(crossResult);
+
+    
+    for (int32 k = 0; k < elementCount; ++k)
+    {
+        SafeDelete(arrayRandom0[k]);
+        SafeDelete(arrayRandom1[k]);
+    }
+    SafeDeleteArray(arrayRandom0);
+    SafeDeleteArray(arrayRandom1);
+    
+    
+    SafeDeleteArray(matrixes0);
+    SafeDeleteArray(matrixes1);
+    SafeDeleteArray(matrixesResult);
+    SafeDeleteArray(neonMatrixesResult);
+    
 }
 
 void CacheTest::SequentionalDotProductTest(PerfFuncData * data)
