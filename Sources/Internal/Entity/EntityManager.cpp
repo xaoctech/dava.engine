@@ -54,6 +54,8 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     {
         newFamily->NewEntity(entity);
     }
+
+	entity->SetFamily(newFamilyType);
 }
     
 EntityFamily * EntityManager::GetFamilyByType(const EntityFamilyType & familyType)
@@ -121,6 +123,8 @@ void EntityManager::RemoveComponent(Entity * entity, Component * component)
     
 Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
 {
+	Pool * pool = 0;
+
     Map<const char *, Pool *>::iterator poolsIt = poolAllocators.find(dataName);
     if (poolsIt != poolAllocators.end())
     {
@@ -134,8 +138,10 @@ Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
         }
         newPool->next = prevPool;
         pools[dataName] = newPool;
+		pool = newPool;
     }
-    return 0;
+	
+	return pool;
 }
     
 

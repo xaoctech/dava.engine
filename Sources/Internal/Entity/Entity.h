@@ -19,6 +19,7 @@ public:
 	};
 
 	void AddComponent(Component * component);//const char * componentName);
+	void AddComponent(const char * component);
 
     template<class T>
     void SetData(const char * dataName, const T & value);

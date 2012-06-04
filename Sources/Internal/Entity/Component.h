@@ -20,7 +20,7 @@ public:
     
     Component()
     {
-        type = ComponentType();
+        //type = ComponentType(); //this duplicates field declaration
         componentsByIndex[type.GetIndex()] = this;
     };
     

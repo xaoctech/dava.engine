@@ -64,7 +64,7 @@ void EntityManager::CreatePoolAllocator(const char * dataPoolName)
     Map<const char *, Pool *>::iterator it = poolAllocators.find(dataPoolName);
     if (it != poolAllocators.end())
     {
-        if (typeid(TemplatePool<T>*) != typeid(it->second))
+        if (typeid(TemplatePool<T>) != typeid(*(it->second)))
         {
             DVASSERT("Data type not valid" && 0);
         }
