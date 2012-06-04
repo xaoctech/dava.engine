@@ -3,43 +3,45 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/ComponentTypes.h"
-#include "Entity/Component.h"
 
 namespace DAVA
 {
 
 class Pool;
 class Entity;
+class Component;
+class EntityManager;    
 
 class EntityFamily
 {
 public:
-	EntityFamily(EntityFamilyType family);
+	EntityFamily(EntityManager * manager, EntityFamilyType family);
     ~EntityFamily();
     
     void NewEntity(Entity * entity);
     void DeleteEntity(Entity * entity);
 	void MoveToFamily(EntityFamily * newFamily, Entity * entity);
     
-    Pool * GetPoolByComponentIndexDataName(uint64 index, const char * dataName);
+    Pool * GetPoolByDataName(const char * dataName);
 
     uint32 GetSize() { return currentSize; };
     template<class T>
-    T * GetPtr(Component * component, const char * name); 
+    T * GetPtr(const char * name); 
     
 private:
+    EntityManager * manager;
     EntityFamilyType family;
     Vector<Entity*> entities;
 	Vector<Pool*> pools;
-    Map<std::pair<uint64, const char *>, Pool*> poolByComponentIndexDataName;
+    Map<const char *, Pool*> poolByDataName;
     uint32 currentSize;
     uint32 maxSize;
 };
 
 template<class T>
-T * EntityFamily::GetPtr(Component * component, const char * dataName)
+T * EntityFamily::GetPtr(const char * dataName)
 {
-    Pool * pool = GetPoolByComponentIndexDataName(component->GetType().GetIndex(), dataName);
+    Pool * pool = GetPoolByDataName(dataName);
     
     // TODO: replace to reinterpret cast in release.
     TemplatePool<T> * tPool = dynamic_cast<TemplatePool<T>*>(pool);

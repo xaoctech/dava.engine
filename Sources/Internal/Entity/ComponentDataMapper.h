@@ -13,9 +13,9 @@ class ComponentDataMapper
 public:
     List<TemplatePool<T> *> poolList;
     
-    ComponentDataMapper(EntityManager * manager, Component * component, const char * dataName)
+    ComponentDataMapper(EntityManager * manager, const char * dataName)
     {
-        manager->GetLinkedTemplatePoolsForComponent(component, dataName, poolList);
+        manager->GetLinkedTemplatePools(dataName, poolList);
     }
     
     

@@ -3,13 +3,12 @@
 
 #include "Entity/Pool.h"
 #include "Entity/ComponentTypes.h"
+#include "Entity/EntityManager.h"
+#include <typeinfo>
+
 
 namespace DAVA 
 {
-    
-
-class EntityManager;
-
 
 class Component
 {
@@ -25,13 +24,14 @@ public:
         componentsByIndex[type.GetIndex()] = this;
     };
     
+    
     template <class T>
     void RegisterData(const char * name)
     {
-        Pool * pool = new TemplatePool<T>(1);
-        pools[name] = pool;
+        EntityManager::CreatePoolAllocator<T>(name);
+        dataNames.insert(name);
     }
-    
+
 //	template<class T>
 //	TemplatePool<T>* CreatePool(T a, const char * name)
 //	{
@@ -51,12 +51,11 @@ public:
     
     static Component * GetComponentByIndex(uint64 index);
     
-    Map<const char *, Pool *> & GetNamedPools() { return pools; };
-    uint32 GetPoolCount();
+    Set<const char*> & GetDataNames() {return dataNames; };
     
 private:
 	ComponentType type;
-    Map<const char *, Pool *> pools;
+    Set<const char*> dataNames;
     static Map<uint64, Component*>  componentsByIndex;
     static Map<const char *, Component * > cache;//<name, component>
 };
