@@ -49,7 +49,7 @@ void main()
 #if defined(VERTEX_FOG)
     const float LOG2 = 1.442695;
     vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
-        float fogFragCoord = length(eyeCoordsPosition);
+    float fogFragCoord = length(eyeCoordsPosition);
     varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
     varFogFactor = clamp(varFogFactor, 0.0, 1.0);
 #endif
