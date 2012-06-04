@@ -7,11 +7,14 @@
 namespace DAVA 
 {
 
+class EntityFamily;
+
 class Pool
 {
 public:
 	Pool()
-	: next(0)
+	:	next(0),
+		entityFamily(0)
 	{
 	}
 	
@@ -34,21 +37,22 @@ public:
         return typeSizeof;
     }
     
-    void Resize(uint32 newSize)
-    {
-        DVASSERT(0 && "Should be called from subclass");
-    }
+    virtual void Resize(uint32 newSize) = 0;
     
     virtual Pool * CreateCopy(int32 _maxCount)
     {
         return 0;
     }
-    
+
+    void SetEntityFamily(EntityFamily * _entityFamily) { entityFamily = _entityFamily; }
+	EntityFamily * GetEntityFamily() { return entityFamily; }
 
 	int32 length;
 	int32 maxCount;
 	int32 typeSizeof;  
 	uint8 * byteData;
+
+	EntityFamily * entityFamily;
 	
 	Pool * next;
 };
@@ -84,11 +88,11 @@ public:
         return ((T*)byteData)[i];
     }
 
-    void Resize(uint32 newSize)
+    virtual void Resize(uint32 newSize)
     {
         T * newArray = new T[newSize];
         memcpy(newArray, byteData, sizeof(T) * length);
-        SafeDeleteArray((T*)(byteData));
+        SafeDeleteArray(byteData);//SafeDeleteArray((T*)(byteData));
         byteData = (uint8*)newArray;
         maxCount = newSize;
     }

@@ -11,7 +11,7 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
     manager = _manager;
     family = _family;
     
-    // Require refactoring, because depends on intenrnal structure of FamilyType / ComponentType.
+    // Require refactoring, because depends on internal structure of FamilyType / ComponentType.
     
     Set<const char*> dataNamesForAllComponents;
     uint64 bit = family.GetBit();
@@ -34,6 +34,7 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
     for (Set<const char*>::iterator it = dataNamesForAllComponents.begin(); it != dataNamesForAllComponents.end(); ++it)
     {
         Pool * newPool = manager->CreatePool(*it, maxSize);
+		newPool->SetEntityFamily(this);
         pools.push_back(newPool);
         poolByDataName[*it] = newPool;
     }       
