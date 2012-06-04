@@ -69,6 +69,11 @@ public:
 		byteData = (uint8*)new T[maxCount];
 	}
     
+    T * GetHead()
+    {
+        return (T*)byteData;
+    }
+    
     T * GetPtr(uint32 i)
     {
         return &((T*)byteData)[i];

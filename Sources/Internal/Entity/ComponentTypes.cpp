@@ -1,4 +1,4 @@
-#include "Entity/ComponentType.h"
+#include "Entity/ComponentTypes.h"
 #include "FileSystem/Logger.h"
 
 namespace DAVA 
@@ -15,7 +15,8 @@ void ComponentType::Init()
     globalIndex++;
     if (globalIndex >= 64)
     {
-        Logger::Error("Need to think about larger ComponentType");
+        // TODO: Enable errors, and warnings
+        //Logger::Error("Need to think about larger ComponentType");
     }
 }
 

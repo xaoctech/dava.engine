@@ -2,7 +2,8 @@
 #define __DAVAENGINE_ENTITY_FAMILY_H__
 
 #include "Base/BaseTypes.h"
-#include "Entity/ComponentType.h"
+#include "Entity/ComponentTypes.h"
+#include "Entity/Component.h"
 
 namespace DAVA
 {
@@ -20,9 +21,12 @@ public:
     void DeleteEntity(Entity * entity);
 	void MoveToFamily(EntityFamily * newFamily, Entity * entity);
     
-    
     Pool * GetPoolByComponentIndexDataName(uint64 index, const char * dataName);
 
+    uint32 GetSize() { return currentSize; };
+    template<class T>
+    T * GetPtr(Component * component, const char * name); 
+    
 private:
     EntityFamilyType family;
     Vector<Entity*> entities;
@@ -32,6 +36,18 @@ private:
     uint32 maxSize;
 };
 
+template<class T>
+T * EntityFamily::GetPtr(Component * component, const char * dataName)
+{
+    Pool * pool = GetPoolByComponentIndexDataName(component->GetType().GetIndex(), dataName);
+    
+    // TODO: replace to reinterpret cast in release.
+    TemplatePool<T> * tPool = dynamic_cast<TemplatePool<T>*>(pool);
+    
+    return tPool->GetHead();
+}
+
+    
 };
 
 #endif //__DAVAENGINE_ENTITY_FAMILY_H__
