@@ -36,6 +36,8 @@ public:
     {
         return typeSizeof;
     }
+    virtual void MoveElement(uint32 oldIndex, uint32 newIndex) = 0;
+    virtual void MoveElement(uint32 oldIndex, Pool * newPool, uint32 newIndex);
     
     virtual void Resize(uint32 newSize) = 0;
     
@@ -86,6 +88,18 @@ public:
     T & Get(uint32 i)
     {
         return ((T*)byteData)[i];
+    }
+    
+    virtual void MoveElement(uint32 oldIndex, uint32 newIndex)
+    {
+        memcpy(&((T*)byteData)[newIndex], &((T*)byteData)[oldIndex],  sizeof(T));
+    }
+    
+    virtual void MoveElement(uint32 oldIndex, Pool * newPool, uint32 newIndex)
+    {
+        TemplatePool<T> * tPool = dynamic_cast<TemplatePool<T> *>(newPool);
+        
+        memcpy(&((T*)tPool->byteData)[newIndex], &((T*)byteData)[oldIndex],  sizeof(T));
     }
 
     virtual void Resize(uint32 newSize)
