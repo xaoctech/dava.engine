@@ -16,11 +16,11 @@
     <Filter Include="Tests\Mongodb">
       <UniqueIdentifier>{47258a6d-445b-481e-a110-4c2a1ffe5449}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tests\CacheTest">
+      <UniqueIdentifier>{4a7edc7e-2c8e-4d46-8d7d-7eb19f5fb87e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\AppScreens.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\FrameworkMain.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -38,6 +38,9 @@
     </ClInclude>
     <ClInclude Include="Classes\MongodbTest.h">
       <Filter>Tests\Mongodb</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\CacheTest.h">
+      <Filter>Tests\CacheTest</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="Classes\MongodbTest.cpp">
       <Filter>Tests\Mongodb</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\CacheTest.cpp">
+      <Filter>Tests\CacheTest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
