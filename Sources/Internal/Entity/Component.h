@@ -40,12 +40,6 @@ public:
 //        return pool;
 //	}
 //    
-    template<class T>
-	Vector<TemplatePool<T>*>* LinkToAllPools(T a, const char * name)
-	{
-        Vector<TemplatePool<T>*>* allPools;
-        return allPools;
-	}
 
     const ComponentType & GetType() { return type; };
     

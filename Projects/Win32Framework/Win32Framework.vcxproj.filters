@@ -981,6 +981,30 @@
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1699,6 +1723,27 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
       <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityTest.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
+      <Filter>Internal\Entity</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
