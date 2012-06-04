@@ -1,5 +1,7 @@
 #include "Base/BaseMath.h"
+#include "Entity/Entity.h"
 #include "Entity/EntityManager.h"
+#include "Entity/Component.h"
 #include "Entity/ComponentDataMapper.h"
 #include "Scene3D/Camera.h"
 
@@ -89,8 +91,8 @@ public:
         //for (
         
         uint32 count = family->GetSize();
-        Sphere * sphereHead = family->GetPtr<Sphere>(VisibilitySphereComponent::Get(), "meshBSphere");
-        uint32 * flags = family->GetPtr<uint32>(VisibilitySphereComponent::Get(), "meshVisibilityFlag");
+        Sphere * sphereHead = family->GetPtr<Sphere>("meshBSphere");
+        uint32 * flags = family->GetPtr<uint32>("meshVisibilityFlag");
         
         for (uint32 k = 0; k < count; ++k)
         {
@@ -98,47 +100,63 @@ public:
             flags[k] = 1;
         }
     }
-    TemplatePool<void*> * meshPtrPool;
-	TemplatePool<Sphere> * meshSpherePool;
-	TemplatePool<uint32> * meshVisibilityFlagPool;
-	Vector<TemplatePool<Camera*> * > * sceneCameraPools;
+//    TemplatePool<void*> * meshPtrPool;
+//	TemplatePool<Sphere> * meshSpherePool;
+//	TemplatePool<uint32> * meshVisibilityFlagPool;
+//	Vector<TemplatePool<Camera*> * > * sceneCameraPools;
 };
 
 class DrawMeshComponent : public Component
 {
 public:
+    static void Register()
+    {   
+        DrawMeshComponent * component = new DrawMeshComponent();
+        RegisterComponent("DrawMeshComponent", component);
+        component->Create();
+    }
+    
+    void Create()
+    {   
+        RegisterData<void*>("mesh");
+        RegisterData<uint32>("meshVisibilityFlag");
+        RegisterData<Matrix4>("worldTransform");
+    }
+};
+
+class DrawMeshSystem
+{
+public:
     void Create()
     {
-		allMeshesPools = LinkToAllPools((void*)(0), "mesh");
-        allMeshVisibilityFlagPools = LinkToAllPools(uint32(), "meshVisibilityFlag");   
+        //family = manager->GetFamily(VisibilitySphereComponent::Get());    
     }
     
     void Run()
     {
-		for (int32 poolIndex = 0; poolIndex < allMeshVisibilityFlagPools->size(); ++poolIndex)
-		{
-			int32 poolMeshCount = allMeshVisibilityFlagPools->at(poolIndex)->GetCount();
-			for (int32 visibilityIndex = 0; visibilityIndex < poolMeshCount; ++visibilityIndex)
-            {
-                /*
-                    Мысль такая, что если visibilityIndex всегда связан с Mesh-ем, то его можно положить прямо в 
-                    Mesh, ведь по сути, мы всегда когда рисуем меши, перед отрисовкой меша, будем читать 
-                    visibilityIndex, если он будет лежать перед мешем то в теории, его чтение может подогреть кэш
-                 */
-                /*
-                    Мысль 2: Надо написать вариант, когда в начале получаются данные. Указатели на visibility, mesh
-                    и в внутреннем цикле ходим уже только по указателям. 
-                 */
-                // retrieve visibility index
-                // get mesh
-                // draw mesh if visibility index is good
-                
-            }   
-		}
+		/*Camera * camera = sceneCameraPools->at(0)->Get(0); 
+         Frustum * frustum = camera->GetFrustum();
+         
+         int32 elementCount = meshSpherePool->GetCount();
+         for (int k = 0; k < elementCount; ++k)
+         {
+         Sphere * sphere = meshSpherePool->GetPtr(k);
+         uint32 * flagResult = meshVisibilityFlagPool->GetPtr(k);
+         *flagResult = 0; // No sphere check function: (frustum->IsInside(*sphere) == true);
+         }*/
+        //for (
+        
+//        uint32 count = family->GetSize();
+//        Sphere * sphereHead = family->GetPtr<Sphere>("meshBSphere");
+//        uint32 * flags = family->GetPtr<uint32>("meshVisibilityFlag");
+//        
+//        for (uint32 k = 0; k < count; ++k)
+//        {
+//            sphereHead[k].radius = 1.0;
+//            flags[k] = 1;
+//        }
     }
-
-	Vector<TemplatePool<void*>*> * allMeshesPools;
-    Vector<TemplatePool<uint32> *> * allMeshVisibilityFlagPools;
+    
 };
 
 
@@ -169,14 +187,16 @@ int main(int argc, const char ** argv)
 {
     VisibilityAABBoxComponent::Register();
     VisibilitySphereComponent::Register();
+    DrawMeshComponent::Register();
     
 	//should be delayed (probably to the end of current frame)
-	Entity * object0 = EntityManager::Instance()->CreateEntity();
-	object0->AddComponent(VisibilityAABBoxComponent::Get());
-	object0->AddComponent(DrawMeshComponent::Get());
+	Entity * entity0 = EntityManager::Instance()->CreateEntity();
+	entity0->AddComponent(VisibilityAABBoxComponent::Get());
+	entity0->AddComponent(DrawMeshComponent::Get());
     //object0->Flush();
     
-    
+    entity0->SetData("meshAABox", AABBox3());
+    entity0->SetData("visibilityFlag", 0);
     
     
     

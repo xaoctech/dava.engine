@@ -1,8 +1,12 @@
-#include "EntityManager.h"
-#include "Component.h"
+#include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Component.h"
 
 namespace DAVA 
 {
+
+    
+Map<const char *, Pool *> EntityManager::poolAllocators;
 
 Entity * EntityManager::CreateEntity()
 {
@@ -16,27 +20,15 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     EntityFamilyType oldFamilyType = entity->GetFamily();
     EntityFamilyType newFamilyType(oldFamilyType, addType);
 
-    EntityFamily * oldFamily = 0; 
-    EntityFamily * newFamily = 0; 
-    
-    Map<uint64, EntityFamily*>::iterator oldFamilyIterator = families.find(oldFamilyType.GetBit());
-    if (oldFamilyIterator != families.end())
-    {
-        oldFamily = oldFamilyIterator->second;
-    }
-    
-    Map<uint64, EntityFamily*>::iterator newFamilyIterator = families.find(newFamilyType.GetBit());
-    if (newFamilyIterator != families.end())
-    {
-        newFamily = newFamilyIterator->second;
-    }
-    
+    EntityFamily * oldFamily = GetFamilyByType(oldFamilyType); 
+    EntityFamily * newFamily = GetFamilyByType(newFamilyType); 
+        
     /*
         Если тип не равен 0, то есть если мы не удалили последний компонент. 
      */
     if (!newFamilyType.IsEmpty() && (newFamily == 0))
     {
-        newFamily = new EntityFamily(newFamilyType);
+        newFamily = new EntityFamily(this, newFamilyType);
             
         families[newFamilyType.GetBit()] = newFamily;
         
@@ -64,6 +56,16 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     }
 }
     
+EntityFamily * EntityManager::GetFamilyByType(const EntityFamilyType & familyType)
+{
+    Map<uint64, EntityFamily*>::iterator familyIterator = families.find(familyType.GetBit());
+    if (familyIterator != families.end())
+    {
+        return familyIterator->second;
+    }   
+    return 0;
+}
+    
 EntityFamily * EntityManager::GetFamily(Component * c0, ...)
 {
     va_list list;
@@ -88,34 +90,55 @@ EntityFamily * EntityManager::GetFamily(Component * c0, ...)
 }
 
 
-template<class T>
-void EntityManager::GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName, List<TemplatePool<T> *> & poolList)
-{
-    std::pair<std::multimap<Component*, EntityFamily*>::iterator, std::multimap<Component*, EntityFamily*>::iterator> range;
-    range = familiesWithComponent.equal_range(component);
-    
-    TemplatePool<T> * currentPool = 0;
-    
-    for (std::multimap<Component*, EntityFamily*>::iterator it2 = range.first; it2 != range.second; ++it2)
-    {
-        EntityFamily * family = it2->second;
-        Pool * pool = family->GetPoolByComponentIndexDataName(component->GetType().GetIndex(), dataName);
-        TemplatePool<T> * templatePool = dynamic_cast<TemplatePool<T>*>(pool); 
-        poolList.push_back(templatePool);
-
-//      Not sure that can use references in pools, because they can potentially lie in several comps??? Need ot check
-//        templatePool->next = currentPool;
-//        currentPool = templatePool;
-    }
-    return currentPool;
-}
-
+//template<class T>
+//void EntityManager::GetLinkedTemplatePools(const char * dataName, List<TemplatePool<T> *> & poolList)
+//{
+//    std::pair<std::multimap<Component*, EntityFamily*>::iterator, std::multimap<Component*, EntityFamily*>::iterator> range;
+//    range = familiesWithComponent.equal_range(component);
+//    
+//    TemplatePool<T> * currentPool = 0;
+//    
+//    for (std::multimap<Component*, EntityFamily*>::iterator it2 = range.first; it2 != range.second; ++it2)
+//    {
+//        EntityFamily * family = it2->second;
+//        Pool * pool = family->GetPoolByDataName(dataName);
+//        TemplatePool<T> * templatePool = dynamic_cast<TemplatePool<T>*>(pool); 
+//        poolList.push_back(templatePool);
+//
+////      Not sure that can use references in pools, because they can potentially lie in several comps??? Need ot check
+////        templatePool->next = currentPool;
+////        currentPool = templatePool;
+//    }
+//    return currentPool;
+//}
+//
     
 void EntityManager::RemoveComponent(Entity * entity, Component * component)
 {
     
     
 }
+    
+Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
+{
+    Map<const char *, Pool *>::iterator poolsIt = poolAllocators.find(dataName);
+    if (poolsIt != poolAllocators.end())
+    {
+        Pool * newPool = poolsIt->second->CreateCopy(maxSize);
+        
+        Pool * prevPool = 0;
+        Map<const char *, Pool*>::iterator find = pools.find(dataName);
+        if(pools.end() != find)
+        {
+            prevPool = find->second;
+        }
+        newPool->next = prevPool;
+        pools[dataName] = newPool;
+    }
+    return 0;
+}
+    
+
 
     
 

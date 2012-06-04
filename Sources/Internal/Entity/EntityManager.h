@@ -3,13 +3,15 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
-#include "Entity/Entity.h"
 #include "Entity/Pool.h"
 #include "Entity/EntityFamily.h"
+#include <typeinfo>
 
 namespace DAVA 
 {
 
+class Component;
+class Entity;    
 class EntityManager : public Singleton<EntityManager>
 {
 public:
@@ -18,36 +20,74 @@ public:
     void AddComponent(Entity * entity, Component * component);
     void RemoveComponent(Entity * entity, Component * component);
 	
+    EntityFamily * GetFamilyByType(const EntityFamilyType & familyType);
     EntityFamily * GetFamily(Component * c0, ...);
     
     template<class T>
-    void GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName, List<TemplatePool<T> *> & poolList);
+    TemplatePool<T> * GetLinkedTemplatePools(const char * dataName);
     
-//    void Flush();
-//
-//	void EntityChanged(Entity * entity);
-//
-//	void Update();
 
+    
+    template<class T>
+    static void CreatePoolAllocator(const char * dataPoolName);
+    // ??? 
+    template<class T>
+    static void ReleasePoolAllocator(const char * dataPoolName);
+
+    static Map<const char *, Pool *> & GetPoolAllocators() { return poolAllocators; };
+    
+    Pool * CreatePool(const char * dataName, int32 size);
+        
+    
 private:
-    // ?? 
-    //
-    //  e1, e2, e3, e4, e5
-    //  
-    //  
-    //  
-    //  
-    
-    
+
     Map<uint64, EntityFamily*> families;
     std::multimap<Component*, EntityFamily*> familiesWithComponent; // all families with given component
     
+    //
+    static Map<const char *, Pool *> poolAllocators;
+    Map<const char *, Pool *> pools;
+                              
+                              
 //	Set<Entity*> changedEntities;
 //
 //	void FlushEntity(Entity * entity);
 //	void RemoveFromMap(Entity * entity );
 //	void FlushFamily(EntityFamily * family);
 };
+    
+    
+    
+template<class T>
+void EntityManager::CreatePoolAllocator(const char * dataPoolName)
+{
+    Map<const char *, Pool *>::iterator it = poolAllocators.find(dataPoolName);
+    if (it != poolAllocators.end())
+    {
+        if (typeid(TemplatePool<T>*) != typeid(it->second))
+        {
+            DVASSERT("Data type not valid" && 0);
+        }
+    }else
+    {
+        Pool * pool = new TemplatePool<T>(1);
+        poolAllocators[dataPoolName] = pool;
+    }
+}
+    
+template<class T>
+TemplatePool<T> * EntityManager::GetLinkedTemplatePools(const char * dataName)
+{
+    Pool * pool = 0;
+    Map<const char *, Pool*>::iterator find = pools.find(dataName);
+    if(pools.end() != find)
+    {
+        pool = find->second;
+    }
+    // TODO: fast_cast
+    return dynamic_cast<TemplatePool<T> *>(pool);
+}
+
 
 };
 

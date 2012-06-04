@@ -1,54 +1,48 @@
 #include "Entity/EntityFamily.h"
 #include "Entity/Component.h"
 #include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
 
 namespace DAVA
 {
 
-EntityFamily::EntityFamily(EntityFamilyType _family)
+EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
 {
+    manager = _manager;
     family = _family;
     
-    uint32 poolCount = 0;
-    
     // Require refactoring, because depends on intenrnal structure of FamilyType / ComponentType.
+    
+    Set<const char*> dataNamesForAllComponents;
     uint64 bit = family.GetBit();
     for (uint64 idx = 0; idx < 64; ++idx)
     {
         if (bit & (1 << idx))
         {
             Component * comp = Component::GetComponentByIndex(idx);
-            poolCount += comp->GetPoolCount();
+            dataNamesForAllComponents.insert(comp->GetDataNames().begin(), comp->GetDataNames().end());
         }
     }
     
-    pools.resize(poolCount);
+    pools.resize(dataNamesForAllComponents.size());
     
     currentSize = 0;
 	maxSize = 15;
 
-    // Require refactoring, because depends on intenrnal structure of FamilyType / ComponentType.
-    for (uint64 idx = 0; idx < 64; ++idx)
+    Map<const char *, Pool *> & compPools = EntityManager::GetPoolAllocators();
+
+    for (Set<const char*>::iterator it = dataNamesForAllComponents.begin(); it != dataNamesForAllComponents.end(); ++it)
     {
-        if (bit & (1 << idx))
-        {
-            Component * comp = Component::GetComponentByIndex(idx);
-            //comp->CreateCopyOfPools(pools, maxSize);
-            Map<const char *, Pool *> & compPools = comp->GetNamedPools();
-            for (Map<const char *, Pool *>::iterator it = compPools.begin(); it != compPools.end(); ++it)
-            {
-                Pool * newPool = it->second->CreateCopy(maxSize);
-                pools.push_back(newPool);
-                poolByComponentIndexDataName[std::pair<uint64, const char*>(idx, it->first)] = newPool;
-            }
-        }
-    }
+        Pool * newPool = manager->CreatePool(*it, maxSize);
+        pools.push_back(newPool);
+        poolByDataName[*it] = newPool;
+    }       
 }
     
-Pool * EntityFamily::GetPoolByComponentIndexDataName(uint64 index, const char * dataName)
+Pool * EntityFamily::GetPoolByDataName(const char * dataName)
 {
-    Map<std::pair<uint64, const char *>, Pool*>::iterator it = poolByComponentIndexDataName.find(std::pair<uint64, const char*>(index, dataName));
-    if (it != poolByComponentIndexDataName.end())
+    Map<const char *, Pool*>::iterator it = poolByDataName.find(dataName);
+    if (it != poolByDataName.end())
     {
         return it->second;
     }

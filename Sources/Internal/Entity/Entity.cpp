@@ -17,6 +17,7 @@ void Entity::AddComponent(Component * component)
     manager->AddComponent(this, component);
 }
 
+
 //uint32 Entity::CalculateFamily()
 //{
 //	family = 0;

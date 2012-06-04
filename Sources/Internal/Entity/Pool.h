@@ -57,9 +57,6 @@ public:
 template<class T>
 class TemplatePool : public Pool
 {
-public:
-    TemplatePool<T> * next;
-    
 	TemplatePool(int32 _maxCount)
 	{
         next = 0;
@@ -68,6 +65,9 @@ public:
 		length = 0;
 		byteData = (uint8*)new T[maxCount];
 	}
+
+public:
+    TemplatePool<T> * next;
     
     T * GetHead()
     {
@@ -104,6 +104,8 @@ public:
         
 		SafeDeleteArray(byteData);
 	}
+    
+    friend class EntityManager;
 };
 
 };
