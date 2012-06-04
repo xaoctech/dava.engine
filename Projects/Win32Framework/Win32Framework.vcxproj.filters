@@ -100,6 +100,9 @@
     <Filter Include="Internal\Scene3D\Imposter">
       <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Autotesting">
+      <UniqueIdentifier>{9c48b596-2306-460c-82bd-f3a4279468b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -969,6 +972,18 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\TestsYamlParser.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Test.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchTest.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1681,6 +1696,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp">
       <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Test.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchTest.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TestsYamlParser.cpp">
+      <Filter>Internal\Autotesting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

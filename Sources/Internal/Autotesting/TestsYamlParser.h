@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2012, DAVA Consulting, LLC
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -25,33 +25,31 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Dmitry Shpakov 
 =====================================================================================*/
+#ifndef __DAVAENGINE_TESTS_YAML_PARSER_H__
+#define __DAVAENGINE_TESTS_YAML_PARSER_H__
 
-/*
-	__DAVAENGINE_IPHONE__ this define must be set in preprocessor macros for all projects that compiled using DAVAEngine for iPhone
- */
+#include "DAVAConfig.h"
 
-#ifndef __DAVAENGINE_CONFIG_H__
-#define __DAVAENGINE_CONFIG_H__
+#ifdef __DAVAENGINE_AUTOTESTING__
 
-//#define ENABLE_MEMORY_MANAGER
-//#define CHECK_MEMORY_OVERRUNS 1 // number of 4 byte blocks used to check memory overrun
+#include "DAVAEngine.h"
 
-//#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
+namespace DAVA
+{
 
-//#define ENABLE_CONTROL_EDIT //allows to drug'n'drop controls for position editing
+class TestsYamlParser : public BaseObject
+{
+public:
+    TestsYamlParser();
+    virtual ~TestsYamlParser();
 
-//#define SHOW_FRAME_TIME	// shows milliseconds per fame
+    void ParseTestsYaml(const String &yamlFilePath);
+};
 
-//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
-//#define __DAVAENGINE_DIRECTX9__
-#define __DAVAENGINE_OPENGL__
+};
 
-// This flag allow to enable debug stats 
-//#define __DAVAENGINE_ENABLE_DEBUG_STATS__
+#endif //__DAVAENGINE_AUTOTESTING__
 
-#define __DAVAENGINE_AUTOTESTING__
-
-#endif // __DAVAENGINE_CONFIG_H__
-
+#endif //__DAVAENGINE_TESTS_YAML_PARSER_H__
