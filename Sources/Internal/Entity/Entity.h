@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
+#include "Entity/ComponentType.h"
 
 namespace DAVA 
 {
@@ -18,20 +19,21 @@ public:
 
 	void AddComponent(Component * component);//const char * componentName);
 
-	Vector<Component*> components;
+	//Vector<Component*> components;
 
-	uint32 CalculateFamily();
-	uint32 GetFamily();
+    void SetFamily(EntityFamilyType newFamily);
+	const EntityFamilyType & GetFamily();
 
 	int32 GetChangeState();
 
-	void SetIndex(int32 index);
-	int32 GetIndex();
+	void SetIndexInFamily(int32 index);
+	int32 GetIndexInFamily();
 private:
 	Entity(EntityManager * manager);
+	EntityFamilyType  family;
+	int32   indexInFamily;
+
 	int32 changeState;
-	uint32 family;
-	int32 indexInFamily;
 
 	EntityManager * manager;
 

@@ -18,9 +18,8 @@ public:
     
     void Create()
     {   
-        meshPtrPool = CreatePool((void*)(0), "mesh"); 
-        meshAABBoxPool = CreatePool(AABBox3(), "meshAABox");
-        meshVisibilityFlagPool = CreatePool(uint32(), "meshVisibilityFlag");
+        RegisterData<AABBox3>("meshAABox");
+        RegisterData<uint32>("meshVisibilityFlag");
 		sceneCameraPools = LinkToAllPools((Camera*)(0), "sceneCamera");
     }
     
@@ -55,10 +54,21 @@ public:
     
     void Create()
     {   
-        meshPtrPool = CreatePool((void*)(0), "mesh"); 
-        meshSpherePool = CreatePool(Sphere(), "meshBSphere");
-        meshVisibilityFlagPool = CreatePool(uint32(), "meshVisibilityFlag");
+        RegisterData<Sphere>("meshBSphere");
+        RegisterData<uint32>("meshVisibilityFlag");
 		sceneCameraPools = LinkToAllPools((Camera*)(0), "sceneCamera");
+    }
+
+};
+
+class VisibilitySphereSystem 
+{
+public:
+    ComponentDataMapper<Sphere> * sphereData;
+    ComponentDataMapper<uint32> * visibilityFlag;
+    
+    void Create()
+    {
         
     }
     
@@ -142,13 +152,19 @@ public:
 //}
 
 
-//int main(int argc, const char ** argv)
-//{
-//    VisibilityAABBoxComponent::Register();
-//    VisibilitySphereComponent::Register();
-//    
-//	//should be delayed (probably to the end of current frame)
-//	Entity * stone = EntityManager::Instance()->CreateEntity();
-//	stone->AddComponent("VisibilityAABBoxComponent");
-//	stone->AddComponent("DrawMeshComponent");
-//}
+int main(int argc, const char ** argv)
+{
+    VisibilityAABBoxComponent::Register();
+    VisibilitySphereComponent::Register();
+    
+	//should be delayed (probably to the end of current frame)
+	Entity * object0 = EntityManager::Instance()->CreateEntity();
+	object0->AddComponent(VisibilityAABBoxComponent::Get());
+	object0->AddComponent(DrawMeshComponent::Get());
+    //object0->Flush();
+    
+    
+    
+    
+    
+}

@@ -2,7 +2,7 @@
 #define __DAVAENGINE_ENTITY_FAMILY_H__
 
 #include "Base/BaseTypes.h"
-
+#include "Entity/ComponentType.h"
 
 namespace DAVA
 {
@@ -13,17 +13,23 @@ class Entity;
 class EntityFamily
 {
 public:
-	EntityFamily(uint32 family);
-	void Flush();
-
+	EntityFamily(EntityFamilyType family);
+    ~EntityFamily();
+    
+    void NewEntity(Entity * entity);
+    void DeleteEntity(Entity * entity);
 	void MoveToFamily(EntityFamily * newFamily, Entity * entity);
+    
+    
+    Pool * GetPoolByComponentIndexDataName(uint64 index, const char * dataName);
 
-	Vector<Entity*> entities;
 private:
-	int32 currentSize;
-	int32 maxSize;
+    EntityFamilyType family;
+    Vector<Entity*> entities;
 	Vector<Pool*> pools;
-	uint32 family;
+    Map<std::pair<uint64, const char *>, Pool*> poolByComponentIndexDataName;
+    uint32 currentSize;
+    uint32 maxSize;
 };
 
 };
