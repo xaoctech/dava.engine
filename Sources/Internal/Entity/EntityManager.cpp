@@ -36,7 +36,7 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
         uint64 bit = newFamilyType.GetBit();
         for (uint64 idx = 0; idx < 64; ++idx)
         {
-            if (bit & (1 << idx))
+            if (bit & ((int64)1 << idx))
             {
                 Component * comp = Component::GetComponentByIndex(idx);
                 familiesWithComponent.insert(std::pair<Component*, EntityFamily*>(comp, newFamily));
