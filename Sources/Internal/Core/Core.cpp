@@ -524,6 +524,7 @@ DisplayMode Core::GetCurrentDisplayMode()
 
 void Core::Quit()
 {
+    exit(0);
 	Logger::Debug("[Core::Quit] do not supported by platform implementation of core");
 }
 	
