@@ -39,7 +39,7 @@ namespace DAVA
 
 void NEON_Matrix4Mul(const float* a, const float* b, float* output )
 {
-    _asm volatile
+    asm volatile
     (
      // Store A & B leaving room at top of registers for result (q0-q3)
      "vldmia %1, { q4-q7 }  \n\t"
@@ -79,7 +79,7 @@ void NEON_Matrix4Mul(const float* a, const float* b, float* output )
 
 void NEON_Matrix4Vector4Mul(const float* m, const float* v, float* output)
 {
-    _asm volatile
+    asm volatile
     (
      // Store m & v leaving room at top of registers for result (q0)
      "vldmia %1, {q1-q4 }   \n\t"   // q2-q5 = m
