@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2012, DAVA Consulting, LLC
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -25,33 +25,86 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Dmitry Shpakov 
 =====================================================================================*/
 
-/*
-	__DAVAENGINE_IPHONE__ this define must be set in preprocessor macros for all projects that compiled using DAVAEngine for iPhone
- */
+#ifndef __DAVAENGINE_TOUCH_TEST_H__
+#define __DAVAENGINE_TOUCH_TEST_H__
 
-#ifndef __DAVAENGINE_CONFIG_H__
-#define __DAVAENGINE_CONFIG_H__
+#include "DAVAConfig.h"
 
-//#define ENABLE_MEMORY_MANAGER
-//#define CHECK_MEMORY_OVERRUNS 1 // number of 4 byte blocks used to check memory overrun
+#ifdef __DAVAENGINE_AUTOTESTING__
 
-//#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
+#include "Autotesting/Test.h"
 
-//#define ENABLE_CONTROL_EDIT //allows to drug'n'drop controls for position editing
+namespace DAVA
+{
 
-//#define SHOW_FRAME_TIME	// shows milliseconds per fame
+class TouchTest : public Test
+{
+public:
+    TouchTest(int32 _id);
+    virtual ~TouchTest();
 
-//#define __DAVAENGINE_RENDER_AUTOCONFIG__	// it will use DAVANENGINE_OPENGL for MacOS / iPhone, and 
-//#define __DAVAENGINE_DIRECTX9__
-#define __DAVAENGINE_OPENGL__
+protected:
+    void TouchDown(const Vector2 &point);
+    void TouchDown(const String &controlName);
+    void TouchUp();
+    void TouchMove(const Vector2 &point);
 
-// This flag allow to enable debug stats 
-//#define __DAVAENGINE_ENABLE_DEBUG_STATS__
+    Vector2 GetPhysPoint(const Vector2 &p);
 
-#define __DAVAENGINE_AUTOTESTING__
+    int32 id;
+};
 
-#endif // __DAVAENGINE_CONFIG_H__
+class TouchDownTest : public TouchTest
+{
+public:
+    TouchDownTest(const Vector2 &_point, int32 _id);
+    virtual ~TouchDownTest();
 
+    virtual void Execute();
+protected:
+    Vector2 point;
+};
+
+class TouchControlTest : public TouchTest
+{
+public:
+    TouchControlTest(const String &_controlName, int32 _id);
+    virtual ~TouchControlTest();
+
+    virtual void Execute();
+protected:
+    String controlName;
+};
+
+class TouchUpTest : public TouchTest
+{
+public:
+    TouchUpTest(int32 id);
+    virtual ~TouchUpTest();
+
+    virtual void Execute();
+};
+
+class TouchMoveTest : public TouchTest
+{
+public:
+    TouchMoveTest(const Vector2 &_point, float32 _moveTime, int32 _id);
+    virtual ~TouchMoveTest();
+
+    virtual void Execute();
+    virtual void Update(float32 timeElapsed);
+
+protected:
+    virtual bool TestCondition();
+    Vector2 point;
+    float32 moveTime;
+};
+
+};
+
+#endif //__DAVAENGINE_AUTOTESTING__
+
+#endif //__DAVAENGINE_TOUCH_TEST_H__

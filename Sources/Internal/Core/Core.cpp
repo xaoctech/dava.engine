@@ -51,6 +51,10 @@
 #	include "Input/AccelerometerAndroid.h"
 #endif //PLATFORMS
 
+#ifdef __DAVAENGINE_AUTOTESTING__
+#include "Autotesting/AutotestingSystem.h"
+#endif
+
 namespace DAVA 
 {
 
@@ -122,6 +126,10 @@ void Core::CreateSingletons()
 	
 	new UIScreenManager();
 
+#ifdef __DAVAENGINE_AUTOTESTING__
+    new AutotestingSystem();
+#endif
+
 #ifdef __DAVAENGINE_WIN32__
 	Thread::InitMainThread();
 #endif
@@ -155,6 +163,10 @@ void Core::ReleaseSingletons()
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
+
+#ifdef __DAVAENGINE_AUTOTESTING__
+    AutotestingSystem::Instance()->Release();
+#endif
 }
 
 void Core::SetOptions(KeyedArchive * archiveOfOptions)

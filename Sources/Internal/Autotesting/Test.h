@@ -1,5 +1,5 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
+    Copyright (c) 2012, DAVA Consulting, LLC
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -25,83 +25,95 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Dmitry Shpakov 
 =====================================================================================*/
-#include "Core/ApplicationCore.h"
-#include "Animation/AnimationManager.h"
-#include "UI/UIControlSystem.h"
-#include "Render/RenderManager.h"
-#include "Sound/SoundSystem.h"
-#include "Debug/Stats.h"
+#ifndef __DAVAENGINE_TEST_H__
+#define __DAVAENGINE_TEST_H__
+
+#include "DAVAConfig.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
-#include "Autotesting/AutotestingSystem.h"
-#endif
 
-namespace DAVA 
+#include "Base/BaseTypes.h"
+#include "UI/UIControl.h"
+
+namespace DAVA
 {
 
-ApplicationCore::ApplicationCore()
-	: BaseObject()
+class Test : public BaseObject
 {
-}
+public:
+    Test();
+    virtual ~Test();
 
-ApplicationCore::~ApplicationCore()
+    virtual void Update(float32 timeElapsed);
+    virtual void Execute();
+    inline bool IsExecuted() { return isExecuted; };
+
+protected:
+    virtual bool TestCondition();
+
+    void SetText(const String &controlName, const WideString &text);
+    WideString GetText(const String &controlName);
+
+    void ProcessInput(const UIEvent &input);
+    Vector2 FindControlPositionByName(const String& controlName);
+    UIControl* FindByName(const String& controlName);
+
+    bool isExecuted;
+};
+
+class KeyPressTest : public Test
 {
-	
-}
-	
-void ApplicationCore::Update(float32 timeElapsed)
+public:
+    KeyPressTest(char16 _keyChar);
+    virtual ~KeyPressTest();
+
+    virtual void Execute();
+protected:
+    void KeyPress(char16 keyChar);
+    char16 keyChar;
+};
+
+class WaitTest : public Test
 {
-	SoundSystem::Instance()->Update();
-	AnimationManager::Instance()->Update(timeElapsed);
-	UIControlSystem::Instance()->Update();
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Update(timeElapsed);
-#endif
-}
+public:
+    WaitTest(float32 _waitTime);
+    virtual ~WaitTest();
 
-void ApplicationCore::Draw()
+    virtual void Execute();
+    virtual void Update(float32 timeElapsed);
+protected:
+    virtual bool TestCondition();
+    float32 waitTime;
+};
+
+class WaitForUITest : public Test
 {
-	UIControlSystem::Instance()->Draw();	
-#ifdef __DAVAENGINE_AUTOTESTING__
-    AutotestingSystem::Instance()->Draw();
-#endif
-}
+public:
+    WaitForUITest(const String& _controlName);
+    virtual ~WaitForUITest();
 
-void ApplicationCore::BeginFrame()
+    virtual void Execute();
+protected:
+    virtual bool TestCondition();
+    String controlName;
+};
+
+class SetTextTest : public Test
 {
-    Stats::Instance()->BeginFrame();
-	RenderManager::Instance()->BeginFrame();
+public:
+    SetTextTest(const String& _controlName, const WideString &_text);
+    virtual ~SetTextTest();
 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
-}
-
-void ApplicationCore::EndFrame()
-{
-	RenderManager::Instance()->EndFrame();
-    RenderManager::Instance()->ProcessStats();
-    Stats::Instance()->EndFrame();
-}
-
-void ApplicationCore::OnSuspend()
-{
-	SoundSystem::Instance()->Suspend();
-	Core::Instance()->SetIsActive(false);
-}
-
-void ApplicationCore::OnResume()
-{
-	Core::Instance()->SetIsActive(true);
-	SoundSystem::Instance()->Resume();
-}
-
-bool ApplicationCore::OnQuit()
-{
-	return false;
-}
-
-
+    virtual void Execute();
+protected:
+    String controlName;
+    WideString text;
+};
 
 };
+
+#endif //__DAVAENGINE_AUTOTESTING__
+
+#endif //__DAVAENGINE_TEST_H__
