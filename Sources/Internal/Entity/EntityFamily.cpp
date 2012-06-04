@@ -49,7 +49,7 @@ Pool * EntityFamily::GetPoolByDataName(const char * dataName)
     
 void EntityFamily::NewEntity(Entity * entity)
 {
-    DVASSERT(entity->GetFamily() == EntityFamilyType(0));
+    //DVASSERT(entity->GetFamily() == EntityFamilyType(0));
     
     if (currentSize >= maxSize)
     {
@@ -71,8 +71,8 @@ void EntityFamily::DeleteEntity(Entity * entity)
 {
     // We can't only delete entity that in the family. If it's not something went wrong
     DVASSERT(entity->GetFamily().GetBit() == this->family.GetBit());
-    DVASSERT(entity->indexInFamily >= 0);
-    DVASSERT(entity->indexInFamily < currentSize);
+    DVASSERT(entity->GetIndexInFamily() >= 0);
+    DVASSERT(entity->GetIndexInFamily() < currentSize);
     
     for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
     {
