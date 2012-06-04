@@ -202,11 +202,14 @@ void EntityTest()
 	drawSystem.manager = manager;
 
 	Entity * entity0 = EntityManager::Instance()->CreateEntity();
-	entity0->AddComponent(VisibilityAABBoxComponent::Get());
-	entity0->AddComponent(DrawMeshComponent::Get());
+	entity0->AddComponent("VisibilityAABBoxComponent");
+	entity0->AddComponent("DrawMeshComponent");
 
     entity0->SetData("meshAABox", AABBox3());
-    entity0->SetData("visibilityFlag", 0);
+    entity0->SetData("meshVisibilityFlag", (uint32)0);
+
+	visibilityAABBoxSystem.Run();
+	drawSystem.Run();
     
     SafeRelease(manager);
 }

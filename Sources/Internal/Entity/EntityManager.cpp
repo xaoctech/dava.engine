@@ -32,7 +32,7 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
             
         families[newFamilyType.GetBit()] = newFamily;
         
-        // Require refactoring, because depends on intenrnal structure of FamilyType / ComponentType.
+        // Require refactoring, because depends on internal structure of FamilyType / ComponentType.
         uint64 bit = newFamilyType.GetBit();
         for (uint64 idx = 0; idx < 64; ++idx)
         {
@@ -57,7 +57,17 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
 
 	entity->SetFamily(newFamilyType);
 }
-    
+
+void EntityManager::AddComponent(Entity * entity, const char * componentName)
+{
+	Map<const char *, Component * >::iterator it = Component::cache.find(componentName);
+	if(it != Component::cache.end())
+	{
+		AddComponent(entity, it->second);
+	}
+
+}
+
 EntityFamily * EntityManager::GetFamilyByType(const EntityFamilyType & familyType)
 {
     Map<uint64, EntityFamily*>::iterator familyIterator = families.find(familyType.GetBit());

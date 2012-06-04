@@ -18,6 +18,8 @@ public:
     Entity * CreateEntity();
 	
     void AddComponent(Entity * entity, Component * component);
+	void AddComponent(Entity * entity, const char * componentName);
+
     void RemoveComponent(Entity * entity, Component * component);
 	
     EntityFamily * GetFamilyByType(const EntityFamilyType & familyType);
