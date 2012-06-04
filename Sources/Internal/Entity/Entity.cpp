@@ -19,7 +19,7 @@ void Entity::AddComponent(Component * component)
 
 void Entity::AddComponent(const char * component)
 {
-
+	manager->AddComponent(this, component);
 }
 
 //uint32 Entity::CalculateFamily()
