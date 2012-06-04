@@ -10,29 +10,32 @@ Entity::Entity(EntityManager * _manager)
 	family(0),
 	indexInFamily(-1)
 {
-	manager->EntityChanged(this);
 }
 
 void Entity::AddComponent(Component * component)
 {
-    components.push_back(component);
-	changeState |= COMPONENT_ADDED;
-	manager->EntityChanged(this);
+    manager->AddComponent(this, component);
 }
 
-uint32 Entity::CalculateFamily()
+//uint32 Entity::CalculateFamily()
+//{
+//	family = 0;
+//    // TODO: Check how to write correct STL code, with size_type. Without 64 => 32 bit conversions.
+//	uint32 componentsCount = (uint32)components.size();
+//	for(uint32 i = 0; i < componentsCount; ++i)
+//	{
+//		family |= (1 << components[i]->type);
+//	}
+//
+//	return family;
+//}
+
+void Entity::SetFamily(EntityFamilyType newFamily)
 {
-	family = 0;
-	int32 componentsCount = components.size();
-	for(int32 i = 0; i < componentsCount; ++i)
-	{
-		family |= (1 << components[i]->type);
-	}
-
-	return family;
+    family = newFamily;
 }
 
-uint32 Entity::GetFamily()
+const EntityFamilyType & Entity::GetFamily()
 {
 	return family;
 }
@@ -42,12 +45,12 @@ int32 Entity::GetChangeState()
 	return changeState;
 }
 
-void Entity::SetIndex(int32 _index)
+void Entity::SetIndexInFamily(int32 _index)
 {
 	indexInFamily = _index;
 }
 
-int32 Entity::GetIndex()
+int32 Entity::GetIndexInFamily()
 {
 	return indexInFamily;
 }

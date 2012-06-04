@@ -2,9 +2,25 @@
 #define __DAVAENGINE_ENTITY_COMPONENT_H__
 
 #include "Entity/Pool.h"
+#include "Entity/ComponentType.h"
 
 namespace DAVA 
 {
+    
+
+class EntityManager;
+    
+template<class T>
+class ComponentDataMapper
+{
+public:
+    ComponentDataMapper(EntityManager * manager, const char * componentName)
+    {
+    }
+    
+    
+    
+};
 
 class Component
 {
@@ -14,14 +30,27 @@ public:
     static Component * Get();
     static Component * instance;
     
-	template<class T>
-	TemplatePool<T>* CreatePool(T a, const char * name)
-	{
-		TemplatePool<T> * pool = new TemplatePool<T>(100);
-		pools.push_back(pool);
-        return pool;
-	}
+    Component()
+    {
+        type = ComponentType();
+        componentsByIndex[type.GetIndex()] = this;
+    };
     
+    template <class T>
+    void RegisterData(const char * name)
+    {
+        Pool * pool = new TemplatePool<T>(1);
+        pools[name] = pool;
+    }
+    
+//	template<class T>
+//	TemplatePool<T>* CreatePool(T a, const char * name)
+//	{
+//		TemplatePool<T> * pool = new TemplatePool<T>(100);
+//		pools.push_back(pool);
+//        return pool;
+//	}
+//    
     template<class T>
 	Vector<TemplatePool<T>*>* LinkToAllPools(T a, const char * name)
 	{
@@ -29,9 +58,18 @@ public:
         return allPools;
 	}
 
-	int32 type;// unique type(flag) for each Component subclass, values are [1..31]
+    const ComponentType & GetType() { return type; };
+    
+    static Component * GetComponentByIndex(uint64 index);
+    
+    Map<const char *, Pool *> & GetNamedPools() { return pools; };
+    uint32 GetPoolCount();
+    
 private:
-	static Map<const char *, Component * > cache;//<name, component>
+	ComponentType type;
+    Map<const char *, Pool *> pools;
+    static Map<uint64, Component*>  componentsByIndex;
+    static Map<const char *, Component * > cache;//<name, component>
 };
     
 };
