@@ -38,6 +38,7 @@ using namespace DAVA;
 class SpriteTest;
 class LandscapeTest;
 class MongodbTest;
+class CacheTest;
 
 class GameCore : public ApplicationCore
 {
@@ -83,6 +84,8 @@ protected:
     LandscapeTest *landscapeTextureMode;
     
     MongodbTest *mongodbTest;
+    
+    CacheTest * cacheTest;
 };
 
 
