@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\AppScreens.h" />
+    <ClInclude Include="Classes\CacheTest.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\LandscapeTest.h" />
@@ -20,6 +20,7 @@
     <ClInclude Include="Classes\TestTemplate.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\CacheTest.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\LandscapeTest.cpp" />
