@@ -154,9 +154,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		5CEE1CBD1573D23200BC45C6 /* mongodb_ios */ = {
+		5CEE1CBD1573D23200BC45C6 /* mongodb_ioslib */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ios" */;
+			buildConfigurationList = 5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ioslib" */;
 			buildPhases = (
 				5CEE1CBA1573D23200BC45C6 /* Sources */,
 				5CEE1CBB1573D23200BC45C6 /* Frameworks */,
@@ -166,7 +166,7 @@
 			);
 			dependencies = (
 			);
-			name = mongodb_ios;
+			name = mongodb_ioslib;
 			productName = mongodb_ios;
 			productReference = 5CEE1CBE1573D23200BC45C6 /* libmongodb_ios.a */;
 			productType = "com.apple.product-type.library.static";
@@ -208,7 +208,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5CEE1CBD1573D23200BC45C6 /* mongodb_ios */,
+				5CEE1CBD1573D23200BC45C6 /* mongodb_ioslib */,
 				5CEE1D161573DB1000BC45C6 /* mongodb_sim */,
 				5CEE1D221573DB4D00BC45C6 /* mongodb_combined */,
 			);
@@ -272,12 +272,12 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../../include;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = "";
 				SDKROOT = iphoneos;
 			};
@@ -291,12 +291,12 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../../include;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -329,7 +329,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/mongodb_sim.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "mongodb_sim/mongodb_sim-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -342,7 +341,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/mongodb_sim.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "mongodb_sim/mongodb_sim-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -377,7 +375,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ios" */ = {
+		5CEE1CCB1573D23200BC45C6 /* Build configuration list for PBXNativeTarget "mongodb_ioslib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5CEE1CCC1573D23200BC45C6 /* Debug */,
