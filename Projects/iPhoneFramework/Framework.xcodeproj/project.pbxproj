@@ -93,6 +93,8 @@
 		FE127707144444E80082901E /* UIScrollBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE127705144444E80082901E /* UIScrollBar.cpp */; };
 		FE127708144444E80082901E /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = FE127706144444E80082901E /* UIScrollBar.h */; };
 		FE203F3F13BCCD3400350E9A /* RenderManagerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE203F3E13BCCD3400350E9A /* RenderManagerFactory.cpp */; };
+		FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE40BC8D1579567C0014BB7D /* NeonMath.cpp */; };
+		FE40BC901579567C0014BB7D /* NeonMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FE40BC8E1579567C0014BB7D /* NeonMath.h */; };
 		FE4E01E513AAA9D00013464E /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE4E01E313AAA9D00013464E /* Camera.cpp */; };
 		FE4E01E613AAA9D00013464E /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = FE4E01E413AAA9D00013464E /* Camera.h */; };
 		FE4E01E913AAA9EF0013464E /* UI3DView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE4E01E713AAA9EF0013464E /* UI3DView.cpp */; };
@@ -575,6 +577,8 @@
 		FE127705144444E80082901E /* UIScrollBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollBar.cpp; sourceTree = "<group>"; };
 		FE127706144444E80082901E /* UIScrollBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollBar.h; sourceTree = "<group>"; };
 		FE203F3E13BCCD3400350E9A /* RenderManagerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderManagerFactory.cpp; sourceTree = "<group>"; };
+		FE40BC8D1579567C0014BB7D /* NeonMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NeonMath.cpp; sourceTree = "<group>"; };
+		FE40BC8E1579567C0014BB7D /* NeonMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeonMath.h; sourceTree = "<group>"; };
 		FE4E01E313AAA9D00013464E /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		FE4E01E413AAA9D00013464E /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		FE4E01E713AAA9EF0013464E /* UI3DView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UI3DView.cpp; sourceTree = "<group>"; };
@@ -1021,6 +1025,15 @@
 			name = Database;
 			sourceTree = "<group>";
 		};
+		FE40BC8C1579567C0014BB7D /* Neon */ = {
+			isa = PBXGroup;
+			children = (
+				FE40BC8D1579567C0014BB7D /* NeonMath.cpp */,
+				FE40BC8E1579567C0014BB7D /* NeonMath.h */,
+			);
+			path = Neon;
+			sourceTree = "<group>";
+		};
 		FE578B3013278D720081BDE9 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -1238,6 +1251,7 @@
 		FECFB38C12E5904400C71562 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				FE40BC8C1579567C0014BB7D /* Neon */,
 				5CFD7DFD1564DC67009692EE /* RectPacker.cpp */,
 				5CFD7DFE1564DC67009692EE /* RectPacker.h */,
 				FE9C216612E9A254005C397A /* Circle.h */,
@@ -1911,6 +1925,7 @@
 				5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */,
 				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
 				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
+				FE40BC901579567C0014BB7D /* NeonMath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2197,6 +2212,7 @@
 				5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
 				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
+				FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2236,6 +2252,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -2263,6 +2280,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -2414,6 +2432,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -2481,6 +2500,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
