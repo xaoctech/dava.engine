@@ -8,23 +8,36 @@
 using namespace DAVA;
 
 
-class VisibilityAABBoxComponent : public Component
-{
-public:
 
-    static void Register()
-    {   
-        VisibilityAABBoxComponent * component = new VisibilityAABBoxComponent();
-        RegisterComponent("VisibilityAABBoxComponent", component);
-        component->Create();
-    }
-    
-    void Create()
-    {   
-        RegisterData<AABBox3>("meshAABox");
-        RegisterData<uint32>("meshVisibilityFlag");
-    }
-};
+
+//class ComponentVar;
+
+DECLARE_COMPONENT(VisibilityAABBoxComponent);  
+//DECLARE_COMPONENT_VAR(VisibilityAABBoxComponent, AABBox3, MeshAABBoxData);
+
+void VisibilityAABBoxComponent::Register()
+{   
+    RegisterData<AABBox3>("meshAABox");
+	RegisterData<uint32>("meshVisibilityFlag");
+}
+
+
+DECLARE_COMPONENT(VisibilityBSphereComponent);  
+void VisibilityBSphereComponent::Register()
+{   
+	RegisterData<Sphere>("meshBSphere");
+	RegisterData<uint32>("meshVisibilityFlag");
+}
+
+DECLARE_COMPONENT(DrawMeshComponent);
+void DrawMeshComponent::Register()
+{
+	RegisterData<void*>("mesh");
+	RegisterData<uint32>("meshVisibilityFlag");
+	RegisterData<Matrix4>("worldTransform");
+}
+
+
 
 class VisibilityAABBoxSystem
 {
@@ -56,84 +69,96 @@ public:
 	}
 };
 
-class VisibilitySphereComponent : public Component
+class VisibilityBSphereSystem
 {
 public:
-    static void Register()
-    {   
-        VisibilitySphereComponent * component = new VisibilitySphereComponent();
-        RegisterComponent("VisibilitySphereComponent", component);
-        component->Create();
-    }
-    
-    void Create()
-    {   
-        RegisterData<Sphere>("meshBSphere");
-        RegisterData<uint32>("meshVisibilityFlag");
-		//sceneCameraPools = LinkToAllPools((Camera*)(0), "sceneCamera");
-    }
-};
+	EntityManager * manager;
 
-class VisibilitySphereSystem 
-{
-public:
-    EntityManager * manager;
-    EntityFamily * family;
-    //ComponentDataMapper<Sphere> * sphereData;
-    //ComponentDataMapper<uint32> * visibilityFlag;
-    
-    void Create()
-    {
-        family = manager->GetFamily(VisibilitySphereComponent::Get());    
-    }
-    
-    void Run()
-    {
-		/*Camera * camera = sceneCameraPools->at(0)->Get(0); 
-        Frustum * frustum = camera->GetFrustum();
-		
-		int32 elementCount = meshSpherePool->GetCount();
-		for (int k = 0; k < elementCount; ++k)
+	void Run()
+	{
+		TemplatePool<Sphere> * spheres = manager->GetLinkedTemplatePools<Sphere>("meshBSphere");
+		while(spheres)
 		{
-			Sphere * sphere = meshSpherePool->GetPtr(k);
-			uint32 * flagResult = meshVisibilityFlagPool->GetPtr(k);
-			*flagResult = 0; // No sphere check function: (frustum->IsInside(*sphere) == true);
-		}*/
-        //for (
-        
-        uint32 count = family->GetSize();
-        Sphere * sphereHead = family->GetPtr<Sphere>("meshBSphere");
-        uint32 * flags = family->GetPtr<uint32>("meshVisibilityFlag");
-        
-        for (uint32 k = 0; k < count; ++k)
-        {
-            sphereHead[k].radius = 1.0;
-            flags[k] = 1;
-        }
-    }
-//    TemplatePool<void*> * meshPtrPool;
-//	TemplatePool<Sphere> * meshSpherePool;
-//	TemplatePool<uint32> * meshVisibilityFlagPool;
-//	Vector<TemplatePool<Camera*> * > * sceneCameraPools;
+			EntityFamily * family = spheres->GetEntityFamily();
+			TemplatePool<uint32> * visibilityFlags = (TemplatePool<uint32>*)family->GetPoolByDataName("meshVisibilityFlag");
+
+			int32 count = spheres->GetCount();
+			Sphere * sphere = spheres->GetPtr(0);
+			uint32 * flag = visibilityFlags->GetPtr(0);
+
+			for(int32 i = 0; i < count; ++i)
+			{
+				*flag = sphere->center.x > 0;
+
+				sphere++;
+				flag++;
+			}
+
+			spheres = spheres->next;
+		}
+	}
 };
 
-class DrawMeshComponent : public Component
-{
-public:
-    static void Register()
-    {   
-        DrawMeshComponent * component = new DrawMeshComponent();
-        RegisterComponent("DrawMeshComponent", component);
-        component->Create();
-    }
-    
-    void Create()
-    {   
-        RegisterData<void*>("mesh");
-        RegisterData<uint32>("meshVisibilityFlag");
-        RegisterData<Matrix4>("worldTransform");
-    }
-};
+//class VisibilitySphereComponent : public Component
+//{
+//public:
+//    static void Register()
+//    {   
+//        VisibilitySphereComponent * component = new VisibilitySphereComponent();
+//        RegisterComponent("VisibilitySphereComponent", component);
+//        component->Create();
+//    }
+//    
+//    void Create()
+//    {   
+//        RegisterData<Sphere>("meshBSphere");
+//        RegisterData<uint32>("meshVisibilityFlag");
+//		//sceneCameraPools = LinkToAllPools((Camera*)(0), "sceneCamera");
+//    }
+//};
+
+//class VisibilitySphereSystem 
+//{
+//public:
+//    EntityManager * manager;
+//    EntityFamily * family;
+//    //ComponentDataMapper<Sphere> * sphereData;
+//    //ComponentDataMapper<uint32> * visibilityFlag;
+//    
+//    void Create()
+//    {
+//        family = manager->GetFamily(VisibilitySphereComponent::Get());    
+//    }
+//    
+//    void Run()
+//    {
+//		/*Camera * camera = sceneCameraPools->at(0)->Get(0); 
+//        Frustum * frustum = camera->GetFrustum();
+//		
+//		int32 elementCount = meshSpherePool->GetCount();
+//		for (int k = 0; k < elementCount; ++k)
+//		{
+//			Sphere * sphere = meshSpherePool->GetPtr(k);
+//			uint32 * flagResult = meshVisibilityFlagPool->GetPtr(k);
+//			*flagResult = 0; // No sphere check function: (frustum->IsInside(*sphere) == true);
+//		}*/
+//        //for (
+//        
+//        uint32 count = family->GetSize();
+//        Sphere * sphereHead = family->GetPtr<Sphere>("meshBSphere");
+//        uint32 * flags = family->GetPtr<uint32>("meshVisibilityFlag");
+//        
+//        for (uint32 k = 0; k < count; ++k)
+//        {
+//            sphereHead[k].radius = 1.0;
+//            flags[k] = 1;
+//        }
+//    }
+////    TemplatePool<void*> * meshPtrPool;
+////	TemplatePool<Sphere> * meshSpherePool;
+////	TemplatePool<uint32> * meshVisibilityFlagPool;
+////	Vector<TemplatePool<Camera*> * > * sceneCameraPools;
+//};
 
 
 
@@ -189,9 +214,9 @@ void EntityTest();
 
 void EntityTest()
 {
-    VisibilityAABBoxComponent::Register();
-    VisibilitySphereComponent::Register();
-    DrawMeshComponent::Register();
+    VisibilityAABBoxComponent::Create();
+    VisibilityBSphereComponent::Create();
+    DrawMeshComponent::Create();
 
 	EntityManager * manager = new EntityManager();
 
@@ -201,10 +226,13 @@ void EntityTest()
 	DrawMeshSystem drawSystem;
 	drawSystem.manager = manager;
 
+	VisibilityBSphereSystem visibilityBSphereSystem;
+	visibilityBSphereSystem.manager = manager;
+
 	Entity * entity0 = EntityManager::Instance()->CreateEntity();
-	entity0->AddComponent("VisibilityAABBoxComponent");
+	entity0->AddComponent(VisibilityAABBoxComponent::Get());
 	entity0->AddComponent("DrawMeshComponent");
-    entity0->SetData("meshAABox", AABBox3());
+    entity0->SetData("meshAABox", AABBox3(Vector3(-5.f, -5.f, -5.f), Vector3(-4.f, -4.f, -4.f)));
     entity0->SetData("meshVisibilityFlag", (uint32)0);
 
 	Entity * entity1 = EntityManager::Instance()->CreateEntity();
@@ -225,8 +253,27 @@ void EntityTest()
 	entity3->SetData("meshAABox", AABBox3(Vector3(3.f, 3.f, 3.f), Vector3(4.f, 4.f, 4.f)));
 	entity3->SetData("meshVisibilityFlag", (uint32)0);
 
+	Entity * entity4 = EntityManager::Instance()->CreateEntity();
+	entity4->AddComponent(VisibilityBSphereComponent::Get());
+	entity4->AddComponent("DrawMeshComponent");
+	Sphere sphere4;
+	sphere4.center = Vector3(1.f, 1.f, 1.f);
+	entity4->SetData("meshBSphere", sphere4);
+	entity4->SetData("meshVisibilityFlag", (uint32)0);
+
+	Entity * entity5 = EntityManager::Instance()->CreateEntity();
+	entity5->AddComponent(VisibilityBSphereComponent::Get());
+	entity5->AddComponent("DrawMeshComponent");
+	Sphere sphere5;
+	sphere5.center = Vector3(-1.f, -1.f, -1.f);
+	entity5->SetData("meshBSphere", sphere5);
+	entity5->SetData("meshVisibilityFlag", (uint32)0);
+
 	visibilityAABBoxSystem.Run();
+	visibilityBSphereSystem.Run();
 	drawSystem.Run();
+
+	manager->Dump();
     
     SafeRelease(manager);
 }

@@ -40,6 +40,7 @@ public:
     
     Pool * CreatePool(const char * dataName, int32 size);
         
+	void Dump();
     
 private:
 
