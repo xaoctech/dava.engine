@@ -603,28 +603,68 @@ void AutotestingSystem::WaitForUI(const Vector<String> &controlPath)
 
 void AutotestingSystem::AssertText(const WideString &expected, const Vector<String> &controlPath)
 {
-    AssertTextAction* assertTextAction = new AssertTextAction(expected, controlPath);
+    VTAssertAction* assertTextAction = new VTAssertAction();
+    
+    VariantType expectedValue;
+    expectedValue.SetWideString(expected);
+    Getter* expectedGetter = new Getter(expectedValue);
+    assertTextAction->SetExpectedGetter(expectedGetter);
+    SafeRelease(expectedGetter);
+
+    ControlTextGetter* actualGetter = new ControlTextGetter(controlPath);
+    assertTextAction->SetActualGetter(actualGetter);
+    SafeRelease(actualGetter);
+
     AddAction(assertTextAction);
     SafeRelease(assertTextAction);
 }
 
 void AutotestingSystem::AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath)
 {
-    AssertTextAction* assertTextAction = new AssertTextAction(expectedControlPath, actualControlPath);
+    VTAssertAction* assertTextAction = new VTAssertAction();
+    
+    ControlTextGetter* expectedGetter = new ControlTextGetter(expectedControlPath);
+    assertTextAction->SetActualGetter(expectedGetter);
+    SafeRelease(expectedGetter);
+
+    ControlTextGetter* actualGetter = new ControlTextGetter(actualControlPath);
+    assertTextAction->SetActualGetter(actualGetter);
+    SafeRelease(actualGetter);
+
     AddAction(assertTextAction);
     SafeRelease(assertTextAction);
 }
     
 void AutotestingSystem::AssertBool(bool expected, const Vector<String> &controlPath)
 {
-    AssertBoolAction* assertBoolAction = new AssertBoolAction(expected, controlPath);
+    VTAssertAction* assertBoolAction = new VTAssertAction();
+    
+    VariantType expectedValue;
+    expectedValue.SetBool(expected);
+    Getter* expectedGetter = new Getter(expectedValue);
+    assertBoolAction->SetExpectedGetter(expectedGetter);
+    SafeRelease(expectedGetter);
+
+    ControlTextGetter* actualGetter = new ControlTextGetter(controlPath);
+    assertBoolAction->SetActualGetter(actualGetter);
+    SafeRelease(actualGetter);
+
     AddAction(assertBoolAction);
     SafeRelease(assertBoolAction);
 }
 
 void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath)   
 {
-    AssertBoolAction* assertBoolAction = new AssertBoolAction(expectedControlPath, actualControlPath);
+    VTAssertAction* assertBoolAction = new VTAssertAction();
+    
+    ControlBoolGetter* expectedGetter = new ControlBoolGetter(expectedControlPath);
+    assertBoolAction->SetActualGetter(expectedGetter);
+    SafeRelease(expectedGetter);
+
+    ControlBoolGetter* actualGetter = new ControlBoolGetter(actualControlPath);
+    assertBoolAction->SetActualGetter(actualGetter);
+    SafeRelease(actualGetter);
+
     AddAction(assertBoolAction);
     SafeRelease(assertBoolAction);
 }

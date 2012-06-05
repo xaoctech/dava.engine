@@ -37,34 +37,36 @@
 
 #include "Autotesting/Action.h"
 
+#include "FileSystem/VariantType.h"
+
 namespace DAVA
 {
 
-template <class T> class Getter : public Action
+class Getter : public Action
 {
 public:
     Getter() {};
-    Getter(const T &_value) : Action(), value(_value) {};
+    Getter(const VariantType &_value) : Action(), value(_value) {};
     virtual ~Getter() {};
 
-    virtual const T &Get() { return value; };
+    virtual const VariantType &Get() { return value; };
 protected:
-    T value;
+    VariantType value;
 };
 
-template <class T> class ControlGetter : public Getter<T>
+class ControlGetter : public Getter
 {
 public:
     ControlGetter(const Vector<String> &_controlPath) : Getter(), controlPath(_controlPath) {};
     virtual ~ControlGetter() {};
 
-   virtual const T &Get();
+   virtual const VariantType &Get();
 
 protected:
     Vector<String> controlPath;
 };
 
-class ControlTextGetter : public ControlGetter<WideString>
+class ControlTextGetter : public ControlGetter
 {
 public:
     ControlTextGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
@@ -73,7 +75,7 @@ public:
     virtual void Execute();
 };
 
-class ControlBoolGetter : public ControlGetter<bool>
+class ControlBoolGetter : public ControlGetter
 {
 public:
     ControlBoolGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
@@ -82,40 +84,97 @@ public:
     virtual void Execute();
 };
 
-
-template <class T> class AssertAction : public Action
+class VTAssertAction : public Action
 {
 public:
-    AssertAction();
-    virtual ~AssertAction();
+    VTAssertAction();
+    virtual ~VTAssertAction();
+
+    void SetExpectedGetter(Getter *_expected);
+    void SetActualGetter(Getter *_actual);
 
     virtual void Execute();
 protected:
-    Getter<T> *expected;
-    Getter<T> *actual;
+    Getter *expected;
+    Getter *actual;
 };
 
-class AssertTextAction : public AssertAction<WideString>
-{
-public:
-    // compare value with result of getter
-    AssertTextAction(const WideString &_expected, const Vector<String> &_actualControlPath); 
-    // compare results of getters
-    AssertTextAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath); 
+// template <class T> class Getter : public Action
+// {
+// public:
+//     Getter() {};
+//     Getter(const T &_value) : Action(), value(_value) {};
+//     virtual ~Getter() {};
+// 
+//     virtual const T &Get() { return value; };
+// protected:
+//     T value;
+// };
+// 
+// template <class T> class ControlGetter : public Getter<T>
+// {
+// public:
+//     ControlGetter(const Vector<String> &_controlPath) : Getter(), controlPath(_controlPath) {};
+//     virtual ~ControlGetter() {};
+// 
+//    virtual const T &Get();
+// 
+// protected:
+//     Vector<String> controlPath;
+// };
 
-    virtual ~AssertTextAction();
-};
+// class ControlTextGetter : public ControlGetter<WideString>
+// {
+// public:
+//     ControlTextGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
+//     virtual ~ControlTextGetter() {};
+// 
+//     virtual void Execute();
+// };
+// 
+// class ControlBoolGetter : public ControlGetter<bool>
+// {
+// public:
+//     ControlBoolGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
+//     virtual ~ControlBoolGetter() {};
+// 
+//     virtual void Execute();
+// };
 
-class AssertBoolAction : public AssertAction<bool>
-{
-public:
-    // compare value with result of getter
-    AssertBoolAction(bool _expected, const Vector<String> &_actualControlPath); 
-    // compare results of getters
-    AssertBoolAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath); 
 
-    virtual ~AssertBoolAction();
-};
+// template <class T> class AssertAction : public Action
+// {
+// public:
+//     AssertAction();
+//     virtual ~AssertAction();
+// 
+//     virtual void Execute();
+// protected:
+//     Getter<T> *expected;
+//     Getter<T> *actual;
+// };
+// 
+// class AssertTextAction : public AssertAction<WideString>
+// {
+// public:
+//     // compare value with result of getter
+//     AssertTextAction(const WideString &_expected, const Vector<String> &_actualControlPath); 
+//     // compare results of getters
+//     AssertTextAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath); 
+// 
+//     virtual ~AssertTextAction();
+// };
+// 
+// class AssertBoolAction : public AssertAction<bool>
+// {
+// public:
+//     // compare value with result of getter
+//     AssertBoolAction(bool _expected, const Vector<String> &_actualControlPath); 
+//     // compare results of getters
+//     AssertBoolAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath); 
+// 
+//     virtual ~AssertBoolAction();
+// };
 
 };
 #endif //__DAVAENGINE_AUTOTESTING__
