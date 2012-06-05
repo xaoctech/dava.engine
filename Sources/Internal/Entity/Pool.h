@@ -13,8 +13,7 @@ class Pool
 {
 public:
 	Pool()
-	:	next(0),
-		entityFamily(0)
+	:	entityFamily(0)
 	{
 	}
 	
@@ -38,6 +37,8 @@ public:
     }
     virtual void MoveElement(uint32 oldIndex, uint32 newIndex) = 0;
     virtual void MoveElement(uint32 oldIndex, Pool * newPool, uint32 newIndex) = 0;
+	virtual void SetNext(Pool * next) = 0;
+	virtual Pool * GetNext() = 0;
     
     virtual void Resize(uint32 newSize) = 0;
     
@@ -45,6 +46,7 @@ public:
     {
         return 0;
     }
+
 
     void SetEntityFamily(EntityFamily * _entityFamily) { entityFamily = _entityFamily; }
 	EntityFamily * GetEntityFamily() { return entityFamily; }
@@ -55,8 +57,6 @@ public:
 	uint8 * byteData;
 
 	EntityFamily * entityFamily;
-	
-	Pool * next;
 };
 
 
@@ -101,6 +101,16 @@ public:
         
         memcpy(&((T*)tPool->byteData)[newIndex], &((T*)byteData)[oldIndex],  sizeof(T));
     }
+
+	virtual void SetNext(Pool * _next)
+	{
+		next = reinterpret_cast<TemplatePool<T>*>(_next);
+	}
+
+	virtual Pool * GetNext()
+	{
+		return next;
+	}
 
     virtual void Resize(uint32 newSize)
     {

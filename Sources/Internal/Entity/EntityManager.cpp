@@ -146,17 +146,41 @@ Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
         {
             prevPool = find->second;
         }
-        newPool->next = prevPool;
+        newPool->SetNext(prevPool);
         pools[dataName] = newPool;
 		pool = newPool;
     }
 	
 	return pool;
 }
-    
 
+void EntityManager::Dump()
+{
+	Logger::Info("============================");
+	Logger::Info("EntityManager dump");
+	Logger::Info("============================");
+	Logger::Info("Pools:");
+	Logger::Info("============================");
+	
+	Map<const char *, Pool *>::iterator poolIterator;
+	for(poolIterator = pools.begin(); poolIterator != pools.end(); ++poolIterator)
+	{
+		const char * poolName = poolIterator->first;
+		Pool * pool = poolIterator->second;
+		Logger::Info("Pool \"%s\" of type %s", poolName, typeid(*pool).name());
+		Logger::Info("----------------------------");
+		
+		while(pool)
+		{
+			int32 count = pool->GetCount();
+			int32 maxCount = pool->GetMaxCount();
+			Logger::Info("    subpool of family %lld (%d elements, %d maxCount, %d bytes)", pool->GetEntityFamily()->family.GetBit(), count, maxCount, maxCount*pool->typeSizeof);
 
-    
+			pool = pool->GetNext();
+			Logger::Info("    ----------------------------");
+		}
+	}
+}
 
 //void EntityManager::EntityChanged(Entity * entity)
 //{

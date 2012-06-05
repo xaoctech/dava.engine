@@ -88,7 +88,7 @@ void EntityFamily::MoveToFamily(EntityFamily * newFamily, Entity * entity)
 {
     // We should move all data from one pools to other pools.
     
-    if (currentSize >= maxSize)
+    if (currentSize >= maxSize) //Dizz: how? maybe resize newFamilyPool?
     {
         // Resize all pools
         for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
@@ -96,22 +96,25 @@ void EntityFamily::MoveToFamily(EntityFamily * newFamily, Entity * entity)
             pools[poolIndex]->Resize(currentSize + 15);
         }
     }
+
     int32 oldIndex = entity->GetIndexInFamily();
+	int32 newIndex = newFamily->currentSize;
     
     for (Map<const char *, Pool*>::iterator currentPoolIt = poolByDataName.begin(); currentPoolIt != poolByDataName.end(); ++currentPoolIt)
     {
-        Pool * newFamilyPool = newFamily->GetPoolByDataName(currentPoolIt->first);
-        DVASSERT(typeid(*newFamilyPool) == typeid(*newFamilyPool));
+		Pool * oldPool = currentPoolIt->second;
+        Pool * newPool = newFamily->GetPoolByDataName(currentPoolIt->first);
+        DVASSERT(typeid(*oldPool) == typeid(*newPool));
         
-        newFamilyPool->MoveElement(oldIndex, (uint32)currentSize);
+        oldPool->MoveElement(oldIndex, newPool, newIndex);
+		
+		newPool->length++;
+		oldPool->length--;
     }
     
-    entity->SetIndexInFamily((int32)currentSize);
-    currentSize++;
-    for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
-    {
-        pools[poolIndex]->length++;
-    }
+    entity->SetIndexInFamily(newIndex);
+	newFamily->currentSize++;
+    currentSize--;
 }
 
 

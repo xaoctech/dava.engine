@@ -10,13 +10,34 @@
 namespace DAVA 
 {
 
+#define DECLARE_COMPONENT(ComponentName) \
+class ComponentName : public Component \
+{ \
+public:	\
+	static ComponentName * Get() { return instance; } \
+	\
+	static void Create() \
+	{   \
+		ComponentName * component = new ComponentName(); \
+		RegisterComponent(#ComponentName, component); \
+		component->Register(); \
+	}\
+private: \
+	static ComponentName * instance; \
+	ComponentName() \
+	{ \
+		instance = this; \
+	} \
+	void Register();	\
+\
+}; \
+ComponentName * ComponentName::instance = 0;
+
 class Component
 {
 public:
 	static void RegisterComponent(const char * componentName, Component * component); //create or get from cache
 	static Component * GetComponent(const char * componentName);
-    static Component * Get();
-    static Component * instance;
     
     Component()
     {
