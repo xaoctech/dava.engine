@@ -84,17 +84,18 @@ public:
     virtual void Execute();
 };
 
-class VTAssertAction : public Action
+class AssertAction : public Action
 {
 public:
-    VTAssertAction();
-    virtual ~VTAssertAction();
+    AssertAction(const String &_message = "");
+    virtual ~AssertAction();
 
     void SetExpectedGetter(Getter *_expected);
     void SetActualGetter(Getter *_actual);
 
     virtual void Execute();
 protected:
+    String message;
     Getter *expected;
     Getter *actual;
 };

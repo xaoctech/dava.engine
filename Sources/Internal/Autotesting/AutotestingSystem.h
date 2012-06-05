@@ -40,19 +40,14 @@
 
 #include "Base/Singleton.h"
 
+//#define __DAVAENGINE_AUTOTESTING_FILE__
+
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+#include "FileSystem/FileSystem.h"
+#endif
 
 namespace DAVA
 {
-
-// class AutotestingData
-// {
-// public:
-//     AutotestingData() {};
-//     ~AutotestingData() {};
-// 
-//     bool isDrag;
-//     Vector2 prevTouchPoint;
-// };
 
 class AutotestingSystem : public Singleton<AutotestingSystem>
 {
@@ -100,11 +95,11 @@ public:
     void WaitForUI(const String &controlName);
     void WaitForUI(const Vector<String> &controlPath);
 
-    void AssertText(const WideString &expected, const Vector<String> &controlPath);
-    void AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath);
+    void AssertText(const WideString &expected, const Vector<String> &controlPath, const String &assertMessage = "");
+    void AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage = "");
     
-    void AssertBool(bool expected, const Vector<String> &controlPath);
-    void AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath);    
+    void AssertBool(bool expected, const Vector<String> &controlPath, const String &assertMessage = "");
+    void AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage = "");    
 
     // assert report
     void OnTestAssert(const String & text, bool isPassed);
@@ -126,9 +121,11 @@ protected:
     Action* currentAction;
     Deque<Action*> actions;
 
-    //TestsYamlParser* actionsParser;
-
     String testName;
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    String testReportsFolder;
+    File* reportFile;
+#endif
         
     // TODO: data, shared between tests
     // keep in shared object instead of AutotestingSystem
