@@ -15,7 +15,7 @@ TestsYamlParser::~TestsYamlParser()
 {
 }
 
-void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
+void TestsYamlParser::ParseYaml(const String &yamlFilePath)
 {
     YamlParser* parser = YamlParser::Create(yamlFilePath);
     if(parser)
@@ -34,7 +34,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                     if(actionNode && actionNameNode)
                     {                        
                         String actionName = actionNameNode->AsString();
-                        Logger::Debug("TestsYamlParser::ParseTestsYaml action=%s", actionName.c_str());
+                        Logger::Debug("TestsYamlParser::ParseYaml action=%s", actionName.c_str());
 
                         if(actionName == "Click")
                         {
@@ -67,7 +67,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                                 }
                                 else
                                 {
-                                    Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                    Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                                 }
                             }
                         }
@@ -102,7 +102,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                                 }
                                 else
                                 {
-                                    Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                    Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                                 }
                             }
                         }
@@ -141,7 +141,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                             }
                             else
                             {
-                                Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                             }
                         }
                         else if(actionName == "SetText")
@@ -161,7 +161,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                             }
                             else
                             {
-                                Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                             }
                         }
                         else if(actionName == "Wait")
@@ -173,7 +173,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                             }
                             else
                             {
-                                Logger::Warning("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                Logger::Warning("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                             }
                         }
                         else if(actionName == "WaitForUI")
@@ -185,7 +185,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                             }
                             else
                             {
-                                Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                             }
                         }
                         else if(actionName == "KeyPress")
@@ -198,7 +198,7 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                             }
                             else
                             {
-                                Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                             }
                         }
                         else if(actionName == "KeyboardInput")
@@ -210,30 +210,30 @@ void TestsYamlParser::ParseTestsYaml(const String &yamlFilePath)
                             }
                             else
                             {
-                                Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                                Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                             }
                         }
                         else
                         {
                             //TODO: asserts, getters
 
-                            Logger::Error("TestsYamlParser::ParseTestsYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
+                            Logger::Error("TestsYamlParser::ParseYaml %s action %s ignored", yamlFilePath.c_str(), actionName.c_str());
                         }
                     }
                     else
                     {
-                        Logger::Warning("TestsYamlParser::ParseTestsYaml %s action ignored", yamlFilePath.c_str());
+                        Logger::Warning("TestsYamlParser::ParseYaml %s action ignored", yamlFilePath.c_str());
                     }
                 }
             }
             else
             {
-                Logger::Error("TestsYamlParser::ParseTestsYaml %s failed - no actions node", yamlFilePath.c_str());
+                Logger::Error("TestsYamlParser::ParseYaml %s failed - no actions node", yamlFilePath.c_str());
             }
         }
         else
         {
-            Logger::Error("TestsYamlParser::ParseTestsYaml %s failed - no root node", yamlFilePath.c_str());
+            Logger::Error("TestsYamlParser::ParseYaml %s failed - no root node", yamlFilePath.c_str());
         }
     }
     SafeRelease(parser);

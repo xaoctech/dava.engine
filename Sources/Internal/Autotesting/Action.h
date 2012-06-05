@@ -27,84 +27,111 @@
     Revision History:
         * Created by Dmitry Shpakov 
 =====================================================================================*/
-
-#ifndef __DAVAENGINE_TOUCH_TEST_H__
-#define __DAVAENGINE_TOUCH_TEST_H__
+#ifndef __DAVAENGINE_ACTION_H__
+#define __DAVAENGINE_ACTION_H__
 
 #include "DAVAConfig.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "Autotesting/Test.h"
+#include "Base/BaseTypes.h"
+#include "UI/UIControl.h"
 
 namespace DAVA
 {
 
-class TouchTest : public Test
+class Action : public BaseObject
 {
 public:
-    TouchTest(int32 _id);
-    virtual ~TouchTest();
+    Action();
+    virtual ~Action();
 
-protected:
-    void TouchDown(const Vector2 &point);
-    void TouchDown(const String &controlName);
-    void TouchUp();
-    void TouchMove(const Vector2 &point);
+    //virtual void Load();
 
-    Vector2 GetPhysPoint(const Vector2 &p);
-
-    int32 id;
-};
-
-class TouchDownTest : public TouchTest
-{
-public:
-    TouchDownTest(const Vector2 &_point, int32 _id);
-    virtual ~TouchDownTest();
-
-    virtual void Execute();
-protected:
-    Vector2 point;
-};
-
-class TouchControlTest : public TouchTest
-{
-public:
-    TouchControlTest(const String &_controlName, int32 _id);
-    virtual ~TouchControlTest();
-
-    virtual void Execute();
-protected:
-    String controlName;
-};
-
-class TouchUpTest : public TouchTest
-{
-public:
-    TouchUpTest(int32 id);
-    virtual ~TouchUpTest();
-
-    virtual void Execute();
-};
-
-class TouchMoveTest : public TouchTest
-{
-public:
-    TouchMoveTest(const Vector2 &_point, float32 _moveTime, int32 _id);
-    virtual ~TouchMoveTest();
-
-    virtual void Execute();
     virtual void Update(float32 timeElapsed);
+    virtual void Execute();
+    inline bool IsExecuted() { return isExecuted; };
 
 protected:
     virtual bool TestCondition();
-    Vector2 point;
-    float32 moveTime;
+
+    void SetText(const Vector<String> &controlPath, const WideString &text);
+    WideString GetText(const Vector<String> &controlPath);
+
+    void ProcessInput(const UIEvent &input);
+
+    Vector2 FindControlPosition(const Vector<String>& controlPath);
+    UIControl* FindControl(const Vector<String>& controlPath);
+
+    bool isExecuted;
 };
+
+class KeyPressAction : public Action
+{
+public:
+    KeyPressAction(char16 _keyChar);
+    virtual ~KeyPressAction();
+
+    virtual void Execute();
+protected:
+    void KeyPress(char16 keyChar);
+    char16 keyChar;
+};
+
+class WaitAction : public Action
+{
+public:
+    WaitAction(float32 _waitTime);
+    virtual ~WaitAction();
+
+    virtual void Execute();
+    virtual void Update(float32 timeElapsed);
+protected:
+    virtual bool TestCondition();
+    float32 waitTime;
+};
+
+class WaitForUIAction : public Action
+{
+public:
+    WaitForUIAction(const String& _controlName);
+    WaitForUIAction(const Vector<String>& _controlName);
+    virtual ~WaitForUIAction();
+
+    virtual void Execute();
+protected:
+    virtual bool TestCondition();
+    Vector<String> controlPath;
+};
+
+class SetTextAction : public Action
+{
+public:
+    SetTextAction(const String& _controlName, const WideString &_text);
+    SetTextAction(const Vector<String>& _controlPath, const WideString &_text);
+    virtual ~SetTextAction();
+
+    virtual void Execute();
+protected:
+    Vector<String> controlPath;
+    WideString text;
+};
+
+// class ExecuteYamlAction : public Action
+// {
+// public:
+//     ExecuteYamlAction(const String& _yamlPath);
+//     virtual ~ExecuteYamlAction();
+// 
+//     virtual void Load();
+//     virtual void Execute();
+// protected:
+//     String yamlPath;
+//     Deque<Action*> actions;
+// };
 
 };
 
 #endif //__DAVAENGINE_AUTOTESTING__
 
-#endif //__DAVAENGINE_TOUCH_TEST_H__
+#endif //__DAVAENGINE_ACTION_H__

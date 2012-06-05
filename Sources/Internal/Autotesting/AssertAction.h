@@ -27,93 +27,96 @@
     Revision History:
         * Created by Dmitry Shpakov 
 =====================================================================================*/
-#ifndef __DAVAENGINE_TEST_H__
-#define __DAVAENGINE_TEST_H__
+
+#ifndef __DAVAENGINE_ASSERT_ACTION_H__
+#define __DAVAENGINE_ASSERT_ACTION_H__
 
 #include "DAVAConfig.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "Base/BaseTypes.h"
-#include "UI/UIControl.h"
+#include "Autotesting/Action.h"
 
 namespace DAVA
 {
 
-class Test : public BaseObject
+template <class T> class Getter : public Action
 {
 public:
-    Test();
-    virtual ~Test();
+    Getter() {};
+    Getter(const T &_value) : Action(), value(_value) {};
+    virtual ~Getter() {};
 
-    virtual void Update(float32 timeElapsed);
-    virtual void Execute();
-    inline bool IsExecuted() { return isExecuted; };
-
+    virtual const T &Get() { return value; };
 protected:
-    virtual bool TestCondition();
-
-    void SetText(const String &controlName, const WideString &text);
-    WideString GetText(const String &controlName);
-
-    void ProcessInput(const UIEvent &input);
-    Vector2 FindControlPositionByName(const String& controlName);
-    UIControl* FindByName(const String& controlName);
-
-    bool isExecuted;
+    T value;
 };
 
-class KeyPressTest : public Test
+template <class T> class ControlGetter : public Getter<T>
 {
 public:
-    KeyPressTest(char16 _keyChar);
-    virtual ~KeyPressTest();
+    ControlGetter(const Vector<String> &_controlPath) : Getter(), controlPath(_controlPath) {};
+    virtual ~ControlGetter() {};
 
-    virtual void Execute();
+   virtual const T &Get();
+
 protected:
-    void KeyPress(char16 keyChar);
-    char16 keyChar;
+    Vector<String> controlPath;
 };
 
-class WaitTest : public Test
+class ControlTextGetter : public ControlGetter<WideString>
 {
 public:
-    WaitTest(float32 _waitTime);
-    virtual ~WaitTest();
+    ControlTextGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
+    virtual ~ControlTextGetter() {};
 
     virtual void Execute();
-    virtual void Update(float32 timeElapsed);
-protected:
-    virtual bool TestCondition();
-    float32 waitTime;
 };
 
-class WaitForUITest : public Test
+class ControlBoolGetter : public ControlGetter<bool>
 {
 public:
-    WaitForUITest(const String& _controlName);
-    virtual ~WaitForUITest();
+    ControlBoolGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
+    virtual ~ControlBoolGetter() {};
+
+    virtual void Execute();
+};
+
+
+template <class T> class AssertAction : public Action
+{
+public:
+    AssertAction();
+    virtual ~AssertAction();
 
     virtual void Execute();
 protected:
-    virtual bool TestCondition();
-    String controlName;
+    Getter<T> *expected;
+    Getter<T> *actual;
 };
 
-class SetTextTest : public Test
+class AssertTextAction : public AssertAction<WideString>
 {
 public:
-    SetTextTest(const String& _controlName, const WideString &_text);
-    virtual ~SetTextTest();
+    // compare value with result of getter
+    AssertTextAction(const WideString &_expected, const Vector<String> &_actualControlPath); 
+    // compare results of getters
+    AssertTextAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath); 
 
-    virtual void Execute();
-protected:
-    String controlName;
-    WideString text;
+    virtual ~AssertTextAction();
+};
+
+class AssertBoolAction : public AssertAction<bool>
+{
+public:
+    // compare value with result of getter
+    AssertBoolAction(bool _expected, const Vector<String> &_actualControlPath); 
+    // compare results of getters
+    AssertBoolAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath); 
+
+    virtual ~AssertBoolAction();
 };
 
 };
-
 #endif //__DAVAENGINE_AUTOTESTING__
-
-#endif //__DAVAENGINE_TEST_H__
+#endif //__DAVAENGINE_ASSERT_ACTION_H__

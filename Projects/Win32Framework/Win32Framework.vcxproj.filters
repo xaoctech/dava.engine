@@ -975,13 +975,13 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\TestsYamlParser.h">
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Test.h">
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchTest.h">
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1700,13 +1700,13 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\Test.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchTest.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\TestsYamlParser.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
   </ItemGroup>
