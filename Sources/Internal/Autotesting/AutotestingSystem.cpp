@@ -3,12 +3,18 @@
 #ifdef __DAVAENGINE_AUTOTESTING__
 
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 #include "Render/RenderHelper.h"
 
 namespace DAVA
 {
 
-AutotestingSystem::AutotestingSystem() : currentAction(NULL), isRunning(false), isInit(false)
+AutotestingSystem::AutotestingSystem() : currentAction(NULL)
+    , isInit(false)
+    , isRunning(false)
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    , reportFile(NULL)
+#endif
 {
 }
 
@@ -27,6 +33,7 @@ void AutotestingSystem::OnAppStarted()
     {
         //check if autotesting.yaml exists, run if exists
         String yamlFilePath = "~res:/Tests/autotesting.yaml";
+
         YamlParser* parser = YamlParser::Create(yamlFilePath);
         if(parser)
         {
@@ -59,6 +66,11 @@ void AutotestingSystem::Init(const String &_testName)
 {
     if(!isInit)
     {
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+        testReportsFolder = "~doc:autotesting";
+        FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
+#endif
+
         isInit = true;
         testName = _testName;
     }
@@ -299,6 +311,13 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                 }
                 else if(actionName == "Assert")
                 {
+                    YamlNode* messageNode = actionNode->Get("message");
+                    String messageText = "";
+                    if(messageNode)
+                    {
+                        messageText = messageNode->AsString();
+                    }
+
                     YamlNode* expectedNode = actionNode->Get("expected");
                     YamlNode* actualNode = actionNode->Get("actual");
                     if(expectedNode && actualNode)
@@ -317,7 +336,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                             {
                                 if(actualGetterName == "GetText")
                                 {
-                                    AssertText(ParseControlPath(expectedControlPathNode), ParseControlPath(actualControlPathNode));
+                                    AssertText(ParseControlPath(expectedControlPathNode), ParseControlPath(actualControlPathNode), messageText);
                                 }
                                 else
                                 {
@@ -329,7 +348,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                             {
                                 if(actualGetterName == "FindControl")
                                 {
-                                    AssertBool(ParseControlPath(expectedControlPathNode), ParseControlPath(actualControlPathNode));
+                                    AssertBool(ParseControlPath(expectedControlPathNode), ParseControlPath(actualControlPathNode), messageText);
                                 }
                                 else
                                 {
@@ -344,11 +363,11 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                             YamlNode* actualControlPathNode = actualNode->Get("controlPath");
                             if(actualGetterName == "GetText")
                             {
-                                AssertText(expectedNode->AsWString(), ParseControlPath(actualControlPathNode));
+                                AssertText(expectedNode->AsWString(), ParseControlPath(actualControlPathNode), messageText);
                             }
                             else if(actualGetterName == "FindControl")
                             {
-                                AssertBool(expectedNode->AsBool(), ParseControlPath(actualControlPathNode));
+                                AssertBool(expectedNode->AsBool(), ParseControlPath(actualControlPathNode), messageText);
                             }
                         }
                         else
@@ -417,6 +436,9 @@ void AutotestingSystem::RunTests()
 {
     if(!isInit) return;
     isRunning = true;
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    reportFile = DAVA::File::Create(Format("%s\\autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
+#endif
 }
 
 void AutotestingSystem::Update(float32 timeElapsed)
@@ -480,6 +502,9 @@ void AutotestingSystem::OnTestsFinished()
 {
     Logger::Debug("AutotestingSystem::OnTestsFinished");
     //TODO: all actions finished. report?
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    SafeRelease(reportFile);
+#endif
 }
 
 
@@ -601,9 +626,9 @@ void AutotestingSystem::WaitForUI(const Vector<String> &controlPath)
     SafeRelease(waitForUIAction);
 }
 
-void AutotestingSystem::AssertText(const WideString &expected, const Vector<String> &controlPath)
+void AutotestingSystem::AssertText(const WideString &expected, const Vector<String> &controlPath, const String &assertMessage)
 {
-    VTAssertAction* assertTextAction = new VTAssertAction();
+    AssertAction* assertTextAction = new AssertAction(assertMessage);
     
     VariantType expectedValue;
     expectedValue.SetWideString(expected);
@@ -619,9 +644,9 @@ void AutotestingSystem::AssertText(const WideString &expected, const Vector<Stri
     SafeRelease(assertTextAction);
 }
 
-void AutotestingSystem::AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath)
+void AutotestingSystem::AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage)
 {
-    VTAssertAction* assertTextAction = new VTAssertAction();
+    AssertAction* assertTextAction = new AssertAction(assertMessage);
     
     ControlTextGetter* expectedGetter = new ControlTextGetter(expectedControlPath);
     assertTextAction->SetActualGetter(expectedGetter);
@@ -635,9 +660,9 @@ void AutotestingSystem::AssertText(const Vector<String> &expectedControlPath, co
     SafeRelease(assertTextAction);
 }
     
-void AutotestingSystem::AssertBool(bool expected, const Vector<String> &controlPath)
+void AutotestingSystem::AssertBool(bool expected, const Vector<String> &controlPath, const String &assertMessage)
 {
-    VTAssertAction* assertBoolAction = new VTAssertAction();
+    AssertAction* assertBoolAction = new AssertAction(assertMessage);
     
     VariantType expectedValue;
     expectedValue.SetBool(expected);
@@ -645,7 +670,7 @@ void AutotestingSystem::AssertBool(bool expected, const Vector<String> &controlP
     assertBoolAction->SetExpectedGetter(expectedGetter);
     SafeRelease(expectedGetter);
 
-    ControlTextGetter* actualGetter = new ControlTextGetter(controlPath);
+    ControlBoolGetter* actualGetter = new ControlBoolGetter(controlPath);
     assertBoolAction->SetActualGetter(actualGetter);
     SafeRelease(actualGetter);
 
@@ -653,9 +678,9 @@ void AutotestingSystem::AssertBool(bool expected, const Vector<String> &controlP
     SafeRelease(assertBoolAction);
 }
 
-void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath)   
+void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage)   
 {
-    VTAssertAction* assertBoolAction = new VTAssertAction();
+    AssertAction* assertBoolAction = new AssertAction(assertMessage);
     
     ControlBoolGetter* expectedGetter = new ControlBoolGetter(expectedControlPath);
     assertBoolAction->SetActualGetter(expectedGetter);
@@ -671,15 +696,12 @@ void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, co
 
 void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 {
+    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
+    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
     //TODO: report into database
-    if(isPassed)
-    {
-        Logger::Debug("AutotestingSystem::OnTestAssert %s PASSED", text.c_str());
-    }
-    else
-    {
-        Logger::Debug("AutotestingSystem::OnTestAssert %s FAILED", text.c_str());
-    }
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    reportFile->WriteLine(assertMsg);
+#endif
 }
 
 void AutotestingSystem::OnInput(const UIEvent &input)

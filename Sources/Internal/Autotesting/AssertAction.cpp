@@ -34,37 +34,38 @@ void ControlBoolGetter::Execute()
 
 //-----------------------------------------------------------------
 
-VTAssertAction::VTAssertAction() : Action()
+AssertAction::AssertAction(const String &_message) : Action()
     , expected(NULL)
     , actual(NULL)
+    , message(_message)
 {
 }
 
-VTAssertAction::~VTAssertAction()
+AssertAction::~AssertAction()
 {
     SafeRelease(expected); 
     SafeRelease(actual);
 }
 
-void VTAssertAction::SetExpectedGetter(Getter *_expected)
+void AssertAction::SetExpectedGetter(Getter *_expected)
 {
     SafeRelease(expected);
     expected = SafeRetain(_expected);
 }
-void VTAssertAction::SetActualGetter(Getter *_actual)
+void AssertAction::SetActualGetter(Getter *_actual)
 {
     SafeRelease(actual);
     actual = SafeRetain(_actual);
 }
 
-void VTAssertAction::Execute()
+void AssertAction::Execute()
 {
     bool isPassed = false;
     if(actual && expected)
     {
         isPassed = (actual->Get() == expected->Get());
     }
-    AutotestingSystem::Instance()->OnTestAssert("AssertAction::Execute", isPassed);
+    AutotestingSystem::Instance()->OnTestAssert(message, isPassed);
     Action::Execute();
 }
 
