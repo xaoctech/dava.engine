@@ -27,29 +27,97 @@
     Revision History:
         * Created by Dmitry Shpakov 
 =====================================================================================*/
-#ifndef __DAVAENGINE_TESTS_YAML_PARSER_H__
-#define __DAVAENGINE_TESTS_YAML_PARSER_H__
+
+#ifndef __DAVAENGINE_TOUCH_ACTION_H__
+#define __DAVAENGINE_TOUCH_ACTION_H__
 
 #include "DAVAConfig.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "DAVAEngine.h"
+#include "Autotesting/Action.h"
 
 namespace DAVA
 {
 
-class TestsYamlParser : public BaseObject
+class TouchAction : public Action
 {
 public:
-    TestsYamlParser();
-    virtual ~TestsYamlParser();
+    TouchAction(int32 _id);
+    virtual ~TouchAction();
 
-    void ParseYaml(const String &yamlFilePath);
+protected:
+    void TouchDown(const Vector2 &point);
+    void TouchDown(const Vector<String> &controlPath);
+    void TouchUp();
+    void TouchMove(const Vector2 &point);
+
+    Vector2 GetPhysPoint(const Vector2 &p);
+
+    int32 id;
+};
+
+class TouchDownAction : public TouchAction
+{
+public:
+    TouchDownAction(const Vector2 &_point, int32 _id);
+    virtual ~TouchDownAction();
+
+    virtual void Execute();
+protected:
+    Vector2 point;
+};
+
+class TouchDownControlAction : public TouchAction
+{
+public:
+    TouchDownControlAction(const String &_controlName, int32 _id);
+    TouchDownControlAction(const Vector<String> &_controlPath, int32 _id);
+    virtual ~TouchDownControlAction();
+
+    virtual void Execute();
+protected:
+    Vector<String> controlPath;
+};
+
+class TouchUpAction : public TouchAction
+{
+public:
+    TouchUpAction(int32 id);
+    virtual ~TouchUpAction();
+
+    virtual void Execute();
+};
+
+class TouchMoveAction : public TouchAction
+{
+public:
+    TouchMoveAction(const Vector2 &_point, float32 _moveTime, int32 _id);
+    virtual ~TouchMoveAction();
+
+    virtual void Execute();
+    virtual void Update(float32 timeElapsed);
+
+protected:
+    virtual bool TestCondition();
+    Vector2 point;
+    float32 moveTime;
+};
+
+class TouchMoveControlAction : public TouchMoveAction
+{
+public:
+    TouchMoveControlAction(const String &_controlName, float32 _moveTime, int32 _id);
+    TouchMoveControlAction(const Vector<String> &_controlPath, float32 _moveTime, int32 _id);
+    virtual ~TouchMoveControlAction();
+
+    virtual void Execute();
+protected:
+    Vector<String> controlPath;
 };
 
 };
 
 #endif //__DAVAENGINE_AUTOTESTING__
 
-#endif //__DAVAENGINE_TESTS_YAML_PARSER_H__
+#endif //__DAVAENGINE_TOUCH_TEST_H__
