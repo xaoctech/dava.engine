@@ -183,6 +183,8 @@ public:
 
 	void ScrollTo(float delta);
 
+    inline eListOrientation GetOrientation() { return orientation; };
+    
 	const List<UIControl*> &GetVisibleCells();
 
 
