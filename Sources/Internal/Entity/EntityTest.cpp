@@ -41,6 +41,18 @@ class VisibilityAABBoxSystem
 {
 public:
 	EntityManager * manager;
+	//DataIndex meshVisibilityFlag;
+
+	//const char *, Pool *
+	//const char *, int
+	//int, Pool*
+
+	//VisibilityAABBoxSystem()
+	//	meshVisibilityFlag("meshVisibilityFlag")
+	//{
+
+	//}
+
 
 	void Run()
 	{
@@ -245,7 +257,7 @@ void EntityTest()
 	Entity * entity11 = EntityManager::Instance()->CreateEntity();
 	entity11->AddComponent(VisibilityAABBoxComponent::Get());
 	entity11->AddComponent(DrawMeshComponent::Get());
-	entity11->SetData("meshAABox", AABBox3(Vector3(-1.f, -1.f, -1.f), Vector3(1.f, 1.f, 1.f)));
+	entity11->SetData("meshAABox", AABBox3(Vector3(-1.f, -1.f, -1.f), Vector3(0.f, 1.f, 1.f)));
 	entity11->SetData("meshVisibilityFlag", (uint32)0);
 
 	Entity * entity12 = EntityManager::Instance()->CreateEntity();
@@ -263,7 +275,7 @@ void EntityTest()
 	Entity * entity14 = EntityManager::Instance()->CreateEntity();
 	entity14->AddComponent(VisibilityAABBoxComponent::Get());
 	entity14->AddComponent(DrawMeshComponent::Get());
-	entity14->SetData("meshAABox", AABBox3(Vector3(-1.f, -1.f, -1.f), Vector3(1.f, 1.f, 1.f)));
+	entity14->SetData("meshAABox", AABBox3(Vector3(-1.f, -1.f, -1.f), Vector3(0.f, 1.f, 1.f)));
 	entity14->SetData("meshVisibilityFlag", (uint32)0);
 
 	Entity * entity15 = EntityManager::Instance()->CreateEntity();
@@ -276,10 +288,10 @@ void EntityTest()
 	visibilityBSphereSystem.Run();
 	drawSystem.Run();
 
-	int32 expectedResultsResize[16] = {0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1};
-	for(int32 i = 0; i < 6; ++i)
+	int32 expectedResultsResize[16] = {0,1,0,0,1,1,1,1,1,1,1,0,1,1,0,1};
+	for(int32 i = 0; i < 16; ++i)
 	{
-		DVASSERT(testResults[i] == expectedResultsRemove[i]);
+		DVASSERT(testResults[i] == expectedResultsResize[i]);
 	}
 
 	manager->Dump();
