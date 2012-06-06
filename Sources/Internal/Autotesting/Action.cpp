@@ -6,6 +6,10 @@
 #include "UI/UIControlSystem.h"
 #include "UI/UIScreenManager.h"
 
+#include <iterator>
+#include <iostream>
+#include <sstream>
+
 namespace DAVA
 {
 
@@ -16,10 +20,6 @@ Action::Action() : BaseObject()
 Action::~Action()
 {
 }
-
-// void Action::Load()
-// {
-// }
 
 void Action::Update(float32 timeElapsed)
 {
@@ -109,14 +109,80 @@ UIControl* Action::FindControl(const Vector<String>& controlPath)
     UIControl* control = NULL;
     if(UIScreenManager::Instance()->GetScreen() && (!controlPath.empty()))
     {
-        control = UIScreenManager::Instance()->GetScreen()->FindByName(controlPath[0]);
+        control = FindControl(UIScreenManager::Instance()->GetScreen(), controlPath[0]);
+
         for(int32 i = 1; i < controlPath.size(); ++i)
         {
             if(!control) break;
-            control = control->FindByName(controlPath[i]);
+            control = FindControl(control, controlPath[i]);
         }
     }
     return control;
+}
+
+UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
+{
+    if(srcControl)
+    {
+        int32 index = atoi(controlName.c_str());
+        if((index == 0) && (Format("%d",index) != controlName))
+        {
+            // not number
+            return srcControl->FindByName(controlName);
+        }
+        else
+        {
+            // number
+            UIList* list = dynamic_cast<UIList*>(srcControl);
+            if(list)
+            {
+                return FindControl(list, index);
+            }
+            else
+            {
+                return FindControl(srcControl, index);
+            }
+        }
+    }
+    return NULL;
+}
+
+UIControl* Action::FindControl(UIControl* srcControl, int32 index)
+{
+    if(srcControl)
+    {
+        const List<UIControl*> children = srcControl->GetChildren();
+        int32 childIndex = 0;
+        for(List<UIControl*>::const_iterator it = children.begin(); it != children.end(); ++it)
+        {
+            childIndex++;
+            if(childIndex == index)
+            {
+                return (*it);
+            }
+        }
+    }
+    return NULL;
+}
+
+UIControl* Action::FindControl(UIList* srcList, int32 index)
+{
+    if(srcList)
+    {
+        const List<UIControl*> &cells = srcList->GetVisibleCells();
+        for(List<UIControl*>::const_iterator it = cells.begin(); it != cells.end(); ++it)
+        {
+            UIListCell* cell = dynamic_cast<UIListCell*>(*it);
+            if(cell)
+            {
+                if(cell->GetIndex() == index && IsInside(srcList, cell))
+                {
+                    return cell;
+                }
+            }
+        }
+    }
+    return NULL;
 }
 
 Vector2 Action::FindControlPosition(const Vector<String>& controlPath)
@@ -125,9 +191,47 @@ Vector2 Action::FindControlPosition(const Vector<String>& controlPath)
     UIControl* control = FindControl(controlPath);
     if(control)
     {
-        point = control->GetPosition(true);
+        Rect controlRect(control->GetGeometricData().GetUnrotatedRect());
+        point = Vector2(controlRect.x + 0.5f*controlRect.dx, controlRect.y + 0.5f*controlRect.dy);
     }
     return point;
+}
+
+bool Action::IsInside(UIControl* parent, UIControl* child)
+{
+    bool isInside = false;
+    if(parent && child)
+    {
+        Rect parentRect(parent->GetGeometricData().GetUnrotatedRect());
+        Rect childRect(child->GetGeometricData().GetUnrotatedRect());
+        Vector2 childCenter(childRect.x + childRect.dx/2, childRect.y + childRect.dy/2);
+        isInside = ((parentRect.x <= childCenter.x) && (childCenter.x <= parentRect.x + parentRect.dx) &&
+            (parentRect.y <= childCenter.y) && (childCenter.y <= parentRect.y + parentRect.dy));
+        //isInside = ((parentRect.x <= childRect.x) && (childRect.x + childRect.dx <= parentRect.x + parentRect.dx) &&
+        //    (parentRect.y <= childRect.y) && (childRect.y + childRect.dy <= parentRect.y + parentRect.dy));
+    }
+    return isInside;
+}
+
+String Action::PathToString(const Vector<String>& controlPath)
+{
+    Vector<String> controlPathFormatted;
+    int32 pathSize = controlPath.size();
+    controlPathFormatted.push_back("[");
+    for(int32 i = 0; i < pathSize; ++i)
+    {
+        controlPathFormatted.push_back(controlPath[i]);
+        if(i < pathSize - 1)
+        {
+            controlPathFormatted.push_back(",");
+        }
+    }
+    controlPathFormatted.push_back("]");
+
+    std::stringstream ss; 
+    //std::copy(controlPath.begin(), controlPath.end(), std::ostream_iterator<String>(ss)); 
+    std::copy(controlPathFormatted.begin(), controlPathFormatted.end(), std::ostream_iterator<String>(ss));
+    return ss.str();
 }
 
 //----------------------------------------------------------------------
@@ -190,12 +294,12 @@ bool WaitAction::TestCondition()
 
 //----------------------------------------------------------------------
 
-WaitForUIAction::WaitForUIAction(const String &_controlName) : Action()
+WaitForUIAction::WaitForUIAction(const String &_controlName, float32 timeout) : WaitAction(timeout)
 {
     controlPath.push_back(_controlName);
 }
 
-WaitForUIAction::WaitForUIAction(const Vector<String> &_controlPath) : Action()
+WaitForUIAction::WaitForUIAction(const Vector<String> &_controlPath, float32 timeout) : WaitAction(timeout)
     , controlPath(_controlPath)
 {
 }
@@ -206,11 +310,16 @@ WaitForUIAction::~WaitForUIAction()
 
 void WaitForUIAction::Execute()
 {
-    Action::Execute();
+    WaitAction::Execute();
 }
 
 bool WaitForUIAction::TestCondition()
 {
+    if(WaitAction::TestCondition())
+    {
+        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", controlPath.back().c_str()));
+        return true;
+    }
     return (FindControl(controlPath) != NULL);
 }
 

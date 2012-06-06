@@ -40,7 +40,7 @@
 
 #include "Base/Singleton.h"
 
-//#define __DAVAENGINE_AUTOTESTING_FILE__
+#define __DAVAENGINE_AUTOTESTING_FILE__
 
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
 #include "FileSystem/FileSystem.h"
@@ -67,6 +67,7 @@ public:
     void Update(float32 timeElapsed);
     void Draw();
 
+    void OnError(const String & errorMessage = "");
     void OnTestsFinished();
 
     // API (high level)
@@ -92,8 +93,11 @@ public:
     
     void Wait(float32 time);
 
-    void WaitForUI(const String &controlName);
-    void WaitForUI(const Vector<String> &controlPath);
+    void WaitForUI(const String &controlName, float32 timeout = 10.0f);
+    void WaitForUI(const Vector<String> &controlPath, float32 timeout = 10.0f);
+
+    void Scroll(const String &controlName, int32 id = 1, float32 timeout = 10.0f);
+    void Scroll(const Vector<String> &controlPath, int32 id = 1, float32 timeout = 10.0f);
 
     void AssertText(const WideString &expected, const Vector<String> &controlPath, const String &assertMessage = "");
     void AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage = "");
@@ -114,6 +118,8 @@ public:
 protected:
     void AddActionsFromYamlNode(YamlNode* actionsNode);
     Vector<String> ParseControlPath(YamlNode* controlPathNode);
+
+    void ExitApp();
 
     bool isInit;
     bool isRunning;

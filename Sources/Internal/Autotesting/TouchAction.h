@@ -116,6 +116,30 @@ protected:
     Vector<String> controlPath;
 };
 
+class ScrollControlAction : public WaitAction
+{
+public:
+    ScrollControlAction(const String &_controlName, int32 _id, float32 timeout);
+    ScrollControlAction(const Vector<String> &_controlPath, int32 _id, float32 timeout);
+    virtual ~ScrollControlAction();
+
+    virtual void Update(float32 timeElapsed);
+    virtual void Execute();
+protected:
+    virtual bool TestCondition();
+    void FindScrollPoints();
+
+    bool isFound;
+    Action* currentAction;
+    Deque<Action*> actions;
+
+    Vector2 touchDownPoint;
+    Vector2 touchUpPoint;
+
+    Vector<String> controlPath;
+    int32 id;
+};
+
 };
 
 #endif //__DAVAENGINE_AUTOTESTING__
