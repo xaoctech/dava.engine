@@ -41,6 +41,8 @@ public:
     Pool * CreatePool(const char * dataName, int32 size);
         
 	void Dump();
+
+	//TODO: GC(); //remove empty EntityFamilies
     
 private:
 
@@ -50,7 +52,8 @@ private:
     //
     static Map<const char *, Pool *> poolAllocators;
     Map<const char *, Pool *> pools;
-                              
+    
+	void ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldType, const EntityFamilyType & newType);
                               
 //	Set<Entity*> changedEntities;
 //

@@ -1,6 +1,7 @@
 #include "Entity/Entity.h"
 #include "Entity/EntityManager.h"
 #include "Entity/Component.h"
+#include "Math/AABBox3.h"
 
 namespace DAVA 
 {
@@ -18,8 +19,31 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
 {
     const ComponentType & addType = component->GetType();
     EntityFamilyType oldFamilyType = entity->GetFamily();
-    EntityFamilyType newFamilyType(oldFamilyType, addType);
+    EntityFamilyType newFamilyType = EntityFamilyType::AddComponentType(oldFamilyType, addType);
 
+	ProcessAddRemoveComponent(entity, oldFamilyType, newFamilyType);
+}
+
+void EntityManager::AddComponent(Entity * entity, const char * componentName)
+{
+	Map<const char *, Component * >::iterator it = Component::cache.find(componentName);
+	if(it != Component::cache.end())
+	{
+		AddComponent(entity, it->second);
+	}
+}
+
+void EntityManager::RemoveComponent(Entity * entity, Component * component)
+{
+	const ComponentType & addType = component->GetType();
+	EntityFamilyType oldFamilyType = entity->GetFamily();
+	EntityFamilyType newFamilyType = EntityFamilyType::RemoveComponentType(oldFamilyType, addType);
+
+	ProcessAddRemoveComponent(entity, oldFamilyType, newFamilyType);
+}
+
+void EntityManager::ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldFamilyType, const EntityFamilyType & newFamilyType)
+{
     EntityFamily * oldFamily = GetFamilyByType(oldFamilyType); 
     EntityFamily * newFamily = GetFamilyByType(newFamilyType); 
         
@@ -46,26 +70,19 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     
     if (oldFamily && newFamily)
     {
-        oldFamily->MoveToFamily(newFamily, entity);
-    }else if (!newFamily)
+		newFamily->MoveFromFamily(oldFamily, entity);
+    }
+	else if (!newFamily)
     {
         oldFamily->DeleteEntity(entity);
-    }else if (!oldFamily)
+    }
+	else if (!oldFamily)
     {
         newFamily->NewEntity(entity);
     }
 
 	entity->SetFamily(newFamilyType);
-}
-
-void EntityManager::AddComponent(Entity * entity, const char * componentName)
-{
-	Map<const char *, Component * >::iterator it = Component::cache.find(componentName);
-	if(it != Component::cache.end())
-	{
-		AddComponent(entity, it->second);
-	}
-
+	entity->SetIndexInFamily(newFamily->GetSize()-1);
 }
 
 EntityFamily * EntityManager::GetFamilyByType(const EntityFamilyType & familyType)
@@ -99,36 +116,6 @@ EntityFamily * EntityManager::GetFamily(Component * c0, ...)
         return familyIterator->second;
     }
     return 0;
-}
-
-
-//template<class T>
-//void EntityManager::GetLinkedTemplatePools(const char * dataName, List<TemplatePool<T> *> & poolList)
-//{
-//    std::pair<std::multimap<Component*, EntityFamily*>::iterator, std::multimap<Component*, EntityFamily*>::iterator> range;
-//    range = familiesWithComponent.equal_range(component);
-//    
-//    TemplatePool<T> * currentPool = 0;
-//    
-//    for (std::multimap<Component*, EntityFamily*>::iterator it2 = range.first; it2 != range.second; ++it2)
-//    {
-//        EntityFamily * family = it2->second;
-//        Pool * pool = family->GetPoolByDataName(dataName);
-//        TemplatePool<T> * templatePool = dynamic_cast<TemplatePool<T>*>(pool); 
-//        poolList.push_back(templatePool);
-//
-////      Not sure that can use references in pools, because they can potentially lie in several comps??? Need ot check
-////        templatePool->next = currentPool;
-////        currentPool = templatePool;
-//    }
-//    return currentPool;
-//}
-//
-    
-void EntityManager::RemoveComponent(Entity * entity, Component * component)
-{
-    
-    
 }
     
 Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
@@ -175,6 +162,10 @@ void EntityManager::Dump()
 			int32 count = pool->GetCount();
 			int32 maxCount = pool->GetMaxCount();
 			Logger::Info("    subpool of family %lld (%d elements, %d maxCount, %d bytes)", pool->GetEntityFamily()->family.GetBit(), count, maxCount, maxCount*pool->typeSizeof);
+			for(int32 i = 0; i < count; ++i)
+			{
+				pool->DumpElement(i);
+			}
 
 			pool = pool->GetNext();
 			Logger::Info("    ----------------------------");
@@ -240,5 +231,9 @@ void EntityManager::FlushFamily(EntityFamily * family)
 {
 	family->Flush();
 }*/
+
+
+
+
 
 };
