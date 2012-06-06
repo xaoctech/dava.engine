@@ -35,7 +35,11 @@
 #ifdef __DAVAENGINE_AUTOTESTING__
 
 #include "Base/BaseTypes.h"
+
+#include "Utils/StringFormat.h"
+
 #include "UI/UIControl.h"
+#include "UI/UIList.h"
 
 namespace DAVA
 {
@@ -45,8 +49,6 @@ class Action : public BaseObject
 public:
     Action();
     virtual ~Action();
-
-    //virtual void Load();
 
     virtual void Update(float32 timeElapsed);
     virtual void Execute();
@@ -61,7 +63,16 @@ protected:
     void ProcessInput(const UIEvent &input);
 
     Vector2 FindControlPosition(const Vector<String>& controlPath);
+
     UIControl* FindControl(const Vector<String>& controlPath);
+    UIControl* FindControl(UIControl* srcControl, const String &controlName);
+    UIControl* FindControl(UIControl* srcControl, int32 index);
+    UIControl* FindControl(UIList* srcList, int32 index);
+
+    bool IsInside(UIControl* parent, UIControl* child);
+
+// helper for messages
+    String PathToString(const Vector<String>& controlPath);
 
     bool isExecuted;
 };
@@ -91,11 +102,11 @@ protected:
     float32 waitTime;
 };
 
-class WaitForUIAction : public Action
+class WaitForUIAction : public WaitAction
 {
 public:
-    WaitForUIAction(const String& _controlName);
-    WaitForUIAction(const Vector<String>& _controlName);
+    WaitForUIAction(const String& _controlName, float32 timeout);
+    WaitForUIAction(const Vector<String>& _controlName, float32 timeout);
     virtual ~WaitForUIAction();
 
     virtual void Execute();

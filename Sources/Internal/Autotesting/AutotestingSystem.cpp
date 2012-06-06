@@ -3,8 +3,9 @@
 #ifdef __DAVAENGINE_AUTOTESTING__
 
 #include "Utils/Utils.h"
-#include "Utils/StringFormat.h"
 #include "Render/RenderHelper.h"
+
+#include "Core/Core.h"
 
 namespace DAVA
 {
@@ -55,7 +56,7 @@ void AutotestingSystem::OnAppStarted()
             }
             else
             {
-                Logger::Error("AutotestingSystem::AddActionsFromYaml %s failed - no root node", yamlFilePath.c_str());
+                OnError(Format("parsing %s failed - no root node", yamlFilePath.c_str()));
             }
         }
         SafeRelease(parser);
@@ -69,6 +70,7 @@ void AutotestingSystem::Init(const String &_testName)
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
         testReportsFolder = "~doc:autotesting";
         FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
+        reportFile = DAVA::File::Create(Format("%s\\autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
 #endif
 
         isInit = true;
@@ -99,7 +101,7 @@ void AutotestingSystem::AddActionsFromYaml(const String &yamlFilePath)
         }
         else
         {
-            Logger::Error("AutotestingSystem::AddActionsFromYaml %s failed - no root node", yamlFilePath.c_str());
+            OnError(Format("parsing %s failed - no root node", yamlFilePath.c_str()));
         }
     }
     SafeRelease(parser);
@@ -119,7 +121,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
             if(actionNode && actionNameNode)
             {                        
                 String actionName = actionNameNode->AsString();
-                Logger::Debug("AutotestingSystem::AddActionsFromYamlNode action=%s", actionName.c_str());
+                Logger::Debug("AddActionsFromYamlNode action=%s", actionName.c_str());
                 if(actionName == "ExecuteYaml")
                 {
                     YamlNode* pathNode = actionNode->Get("path");
@@ -129,7 +131,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                     }
                 }
                 else if(actionName == "Click")
@@ -163,7 +165,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         }
                         else
                         {
-                            Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                            OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                         }
                     }
                 }
@@ -198,7 +200,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         }
                         else
                         {
-                            Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                            OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                         }
                     }
                 }
@@ -237,7 +239,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no point", actionName.c_str()));
                     }
                 }
                 else if(actionName == "SetText")
@@ -257,7 +259,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                     }
                 }
                 else if(actionName == "Wait")
@@ -269,19 +271,26 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     }
                     else
                     {
-                        Logger::Warning("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        Logger::Warning("AddActionsFromYamlNode action %s no time", actionName.c_str());
                     }
                 }
                 else if(actionName == "WaitForUI")
                 {
+                    float32 timeout = 10.0f;
+                    YamlNode* timeoutNode = actionNode->Get("timeout");
+                    if(timeoutNode)
+                    {
+                        timeout = timeoutNode->AsFloat();
+                    }
+
                     YamlNode* controlPathNode = actionNode->Get("controlPath");
                     if(controlPathNode)
                     {
-                        WaitForUI(ParseControlPath(controlPathNode));
+                        WaitForUI(ParseControlPath(controlPathNode), timeout);
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                     }
                 }
                 else if(actionName == "KeyPress")
@@ -294,7 +303,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no key", actionName.c_str()));
                     }
                 }
                 else if(actionName == "KeyboardInput")
@@ -306,7 +315,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no text", actionName.c_str()));
                     }
                 }
                 else if(actionName == "Assert")
@@ -341,7 +350,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                                 else
                                 {
                                     //TODO: other supported actual getters for expected getter "GetText"
-                                    Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored: wrong actual %s for expected %s", actionName.c_str(), actualGetterName.c_str(), expectedGetterName.c_str());
+                                    OnError(Format("AddActionsFromYamlNode action %s wrong actual %s for expected %s", actionName.c_str(), actualGetterName.c_str(), expectedGetterName.c_str()));
                                 }
                             }
                             else if(expectedGetterName == "FindControl")
@@ -353,7 +362,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                                 else
                                 {
                                     //TODO: other supported actual getters for expected getter "FindControl"
-                                    Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored: wrong actual %s for expected %s", actionName.c_str(), actualGetterName.c_str(), expectedGetterName.c_str());
+                                    OnError(Format("AddActionsFromYamlNode action %s wrong actual %s for expected %s", actionName.c_str(), actualGetterName.c_str(), expectedGetterName.c_str()));
                                 }
                             }
                         }
@@ -372,30 +381,56 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         }
                         else
                         {
-                            Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored: no actual getter", actionName.c_str());
+                            OnError(Format("AddActionsFromYamlNode action %s no actual getter", actionName.c_str()));
                         }
                     }
                     else
                     {
-                        Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored: no expected or actual", actionName.c_str());
+                        OnError(Format("AddActionsFromYamlNode action %s no expected or actual", actionName.c_str()));
+                    }
+                }
+                else if(actionName == "Scroll")
+                {
+                    float32 timeout = 10.0f;
+                    YamlNode* timeoutNode = actionNode->Get("timeout");
+                    if(timeoutNode)
+                    {
+                        timeout = timeoutNode->AsFloat();
+                    }
+
+                    int32 id = 1;
+                    YamlNode* idNode = actionNode->Get("id");
+                    if(idNode)
+                    {
+                        id = idNode->AsInt();
+                    }
+
+                    YamlNode* controlPathNode = actionNode->Get("controlPath");
+                    if(controlPathNode)
+                    {
+                        Scroll(ParseControlPath(controlPathNode), id, timeout);
+                    }
+                    else
+                    {
+                        OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                     }
                 }
                 else
                 {
-                    //TODO: other asserts, getters
+                    //TODO: other actions, asserts, getters
 
-                    Logger::Error("AutotestingSystem::AddActionsFromYamlNode action %s ignored", actionName.c_str());
+                    OnError(Format("AddActionsFromYamlNode wrong action %s", actionName.c_str()));
                 }
             }
             else
             {
-                Logger::Warning("AutotestingSystem::AddActionsFromYamlNode action ignored");
+                OnError("AddActionsFromYamlNode no action");
             }
         }
     }
     else
     {
-        Logger::Error("AutotestingSystem::AddActionsFromYamlNode failed - no actions node");
+        OnError("AddActionsFromYamlNode no actions");
     }
 }
 
@@ -420,14 +455,14 @@ Vector<String> AutotestingSystem::ParseControlPath(YamlNode* controlPathNode)
                 }
                 else
                 {
-                    Logger::Error("AutotestingSystem::ParseControlPath part failed");
+                    OnError("ParseControlPath part failed");
                 }
             }
         }
     }
     else
     {
-        Logger::Error("AutotestingSystem::ParseControlPath failed");
+        OnError("ParseControlPath failed");
     }
     return controlPath;
 }
@@ -436,9 +471,6 @@ void AutotestingSystem::RunTests()
 {
     if(!isInit) return;
     isRunning = true;
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    reportFile = DAVA::File::Create(Format("%s\\autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
-#endif
 }
 
 void AutotestingSystem::Update(float32 timeElapsed)
@@ -460,7 +492,10 @@ void AutotestingSystem::Update(float32 timeElapsed)
             if(!currentAction)
             {
                 currentAction = actions.front();
-                currentAction->Execute();
+                if(currentAction)
+                {
+                    currentAction->Execute();
+                }
             }
         
             if(currentAction)
@@ -503,10 +538,22 @@ void AutotestingSystem::OnTestsFinished()
     Logger::Debug("AutotestingSystem::OnTestsFinished");
     //TODO: all actions finished. report?
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
     SafeRelease(reportFile);
 #endif
+    ExitApp();
 }
 
+void AutotestingSystem::OnError(const String & errorMessage)
+{
+    Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
+    reportFile->WriteLine(exitOnErrorMsg);
+    SafeRelease(reportFile);
+#endif
+    ExitApp();
+}
 
 void AutotestingSystem::Click(const Vector2 &point, int32 id)
 {
@@ -612,18 +659,32 @@ void AutotestingSystem::Wait(float32 time)
     SafeRelease(waitAction);
 }
 
-void AutotestingSystem::WaitForUI(const String &controlName)
+void AutotestingSystem::WaitForUI(const String &controlName, float32 timeout)
 {
-    WaitForUIAction* waitForUIAction = new WaitForUIAction(controlName);
+    WaitForUIAction* waitForUIAction = new WaitForUIAction(controlName, timeout);
     AddAction(waitForUIAction);
     SafeRelease(waitForUIAction);
 }
 
-void AutotestingSystem::WaitForUI(const Vector<String> &controlPath)
+void AutotestingSystem::WaitForUI(const Vector<String> &controlPath, float32 timeout)
 {
-    WaitForUIAction* waitForUIAction = new WaitForUIAction(controlPath);
+    WaitForUIAction* waitForUIAction = new WaitForUIAction(controlPath, timeout);
     AddAction(waitForUIAction);
     SafeRelease(waitForUIAction);
+}
+
+void AutotestingSystem::Scroll(const String &controlName, int32 id, float32 timeout)
+{
+    ScrollControlAction* scrollControlAction = new ScrollControlAction(controlName, id, timeout);
+    AddAction(scrollControlAction);
+    SafeRelease(scrollControlAction);
+}
+
+void AutotestingSystem::Scroll(const Vector<String> &controlPath, int32 id, float32 timeout)
+{
+    ScrollControlAction* scrollControlAction = new ScrollControlAction(controlPath, id, timeout);
+    AddAction(scrollControlAction);
+    SafeRelease(scrollControlAction);
 }
 
 void AutotestingSystem::AssertText(const WideString &expected, const Vector<String> &controlPath, const String &assertMessage)
@@ -780,6 +841,12 @@ bool AutotestingSystem::FindTouch(int32 id, UIEvent &touch)
 bool AutotestingSystem::IsTouchDown(int32 id)
 {
     return (touches.find(id) != touches.end());
+}
+
+void AutotestingSystem::ExitApp()
+{
+    //TODO: exit app on each platform
+    Core::Instance()->Quit();
 }
 
 };
