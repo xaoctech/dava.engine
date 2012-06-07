@@ -72,8 +72,6 @@
 		C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D1157FA00C00B0E00A /* AssertAction.h */; };
 		C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */; };
 		C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */; };
-		C7E895DE157FA00C00B0E00A /* TestsYamlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D4157FA00C00B0E00A /* TestsYamlParser.cpp */; };
-		C7E895DF157FA00C00B0E00A /* TestsYamlParser.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D5157FA00C00B0E00A /* TestsYamlParser.h */; };
 		C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D6157FA00C00B0E00A /* TouchAction.cpp */; };
 		C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D7157FA00C00B0E00A /* TouchAction.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
@@ -564,8 +562,6 @@
 		C7E895D1157FA00C00B0E00A /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
 		C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
 		C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
-		C7E895D4157FA00C00B0E00A /* TestsYamlParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestsYamlParser.cpp; sourceTree = "<group>"; };
-		C7E895D5157FA00C00B0E00A /* TestsYamlParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestsYamlParser.h; sourceTree = "<group>"; };
 		C7E895D6157FA00C00B0E00A /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
 		C7E895D7157FA00C00B0E00A /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1034,23 +1030,6 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
-			isa = PBXGroup;
-			children = (
-				C7E895CE157FA00C00B0E00A /* Action.cpp */,
-				C7E895CF157FA00C00B0E00A /* Action.h */,
-				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
-				C7E895D1157FA00C00B0E00A /* AssertAction.h */,
-				C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */,
-				C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */,
-				C7E895D4157FA00C00B0E00A /* TestsYamlParser.cpp */,
-				C7E895D5157FA00C00B0E00A /* TestsYamlParser.h */,
-				C7E895D6157FA00C00B0E00A /* TouchAction.cpp */,
-				C7E895D7157FA00C00B0E00A /* TouchAction.h */,
-			);
-			path = Autotesting;
-			sourceTree = "<group>";
-		};
 		5C0105D4157799C400E0B939 /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -1060,6 +1039,21 @@
 				5C0105D6157799E000E0B939 /* MongodbClient.h */,
 			);
 			name = Database;
+			sourceTree = "<group>";
+		};
+		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
+			isa = PBXGroup;
+			children = (
+				C7E895CE157FA00C00B0E00A /* Action.cpp */,
+				C7E895CF157FA00C00B0E00A /* Action.h */,
+				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
+				C7E895D1157FA00C00B0E00A /* AssertAction.h */,
+				C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */,
+				C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */,
+				C7E895D6157FA00C00B0E00A /* TouchAction.cpp */,
+				C7E895D7157FA00C00B0E00A /* TouchAction.h */,
+			);
+			path = Autotesting;
 			sourceTree = "<group>";
 		};
 		FE40BC8C1579567C0014BB7D /* Neon */ = {
@@ -1964,7 +1958,6 @@
 				C7E895D9157FA00C00B0E00A /* Action.h in Headers */,
 				C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */,
 				C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */,
-				C7E895DF157FA00C00B0E00A /* TestsYamlParser.h in Headers */,
 				C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */,
 				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
 				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
@@ -2256,7 +2249,6 @@
 				C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */,
 				C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */,
 				C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */,
-				C7E895DE157FA00C00B0E00A /* TestsYamlParser.cpp in Sources */,
 				C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */,
 				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
 				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
