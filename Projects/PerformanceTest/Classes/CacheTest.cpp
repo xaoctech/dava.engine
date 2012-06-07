@@ -34,6 +34,14 @@
 CacheTest::CacheTest(const String &testName)
     :   TestTemplate<CacheTest>(testName)
 {
+    RegisterFunction(this, &CacheTest::SequentionalDotProductTest, "SequentionalDotProductTest", 1,  NULL);
+    RegisterFunction(this, &CacheTest::RandomDotProductTest, "RandomDotProductTest", 1,  NULL);
+    RegisterFunction(this, &CacheTest::SequentionalCrossProductTest, "SequentionalCrossProductTest", 1,  NULL);
+    RegisterFunction(this, &CacheTest::RandomCrossProductTest, "RandomCrossProductTest", 1,  NULL);
+    RegisterFunction(this, &CacheTest::DefaultMatrixMul, "DefaultMatrixMul", 1,  NULL);
+#ifdef _ARM_ARCH_7
+    RegisterFunction(this, &CacheTest::NeonMatrixMul, "NeonMatrixMul", 1,  NULL);
+#endif //#ifdef _ARM_ARCH_7
 }
 
 
@@ -109,15 +117,6 @@ void CacheTest::LoadResources()
                 matrixes1[k]._data[i][j] = rand();
             } 
     }
-    
-    RegisterFunction(this, &CacheTest::SequentionalDotProductTest, "SequentionalDotProductTest", 1,  NULL);
-    RegisterFunction(this, &CacheTest::RandomDotProductTest, "RandomDotProductTest", 1,  NULL);
-    RegisterFunction(this, &CacheTest::SequentionalCrossProductTest, "SequentionalCrossProductTest", 1,  NULL);
-    RegisterFunction(this, &CacheTest::RandomCrossProductTest, "RandomCrossProductTest", 1,  NULL);
-    RegisterFunction(this, &CacheTest::DefaultMatrixMul, "DefaultMatrixMul", 1,  NULL);
-#ifdef _ARM_ARCH_7
-    RegisterFunction(this, &CacheTest::NeonMatrixMul, "NeonMatrixMul", 1,  NULL);
-#endif //#ifdef _ARM_ARCH_7
 }
 
 void CacheTest::UnloadResources()
@@ -125,13 +124,17 @@ void CacheTest::UnloadResources()
     for (int32 k = 0; k < elementCount; ++k)
     {
         if (correctResult[k] != arrayResult[k])
+        {
             Logger::Debug("Function calculated results wrongly");
+            break;
+        }
     }
     for (int32 k = 0; k < elementCount; ++k)
     {
         if (matrixesResult[k]._data[1][3] != neonMatrixesResult[k]._data[1][3])
         {
             Logger::Debug("Function calculated results wrongly");
+            break;
         }
     }
     

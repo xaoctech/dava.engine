@@ -12,7 +12,7 @@
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		5C6EF11415751B5F001E45AD /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE9895581163F13500500198 /* libFramework.a */; };
 		5C7BE313156E0F0800F9F538 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7BE311156E0F0800F9F538 /* LandscapeTest.cpp */; };
-		5CBC1F83157CF0F0009DAD1C /* MongodbTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBC1F81157CF0F0009DAD1C /* MongodbTest.cpp */; };
+		5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8D42421580E4D700441032 /* BaseScreen.cpp */; };
 		5CDC2520156CD48700742348 /* SpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC251C156CD48700742348 /* SpriteTest.cpp */; };
 		5CDC2521156CD48700742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC251E156CD48700742348 /* TestTemplate.cpp */; };
 		5CDC2530156CDED900742348 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5CDC252F156CDED900742348 /* MainWindow-iPad.xib */; };
@@ -58,8 +58,9 @@
 		32CA4F630368D1EE00C91783 /* TemplateProjectiPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectiPhone_Prefix.pch; sourceTree = "<group>"; };
 		5C7BE311156E0F0800F9F538 /* LandscapeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTest.cpp; sourceTree = "<group>"; };
 		5C7BE312156E0F0800F9F538 /* LandscapeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTest.h; sourceTree = "<group>"; };
-		5CBC1F81157CF0F0009DAD1C /* MongodbTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbTest.cpp; sourceTree = "<group>"; };
-		5CBC1F82157CF0F0009DAD1C /* MongodbTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongodbTest.h; sourceTree = "<group>"; };
+		5C8D42421580E4D700441032 /* BaseScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseScreen.cpp; sourceTree = "<group>"; };
+		5C8D42431580E4D700441032 /* BaseScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseScreen.h; sourceTree = "<group>"; };
+		5C8D42451580E4ED00441032 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		5CDC251C156CD48700742348 /* SpriteTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteTest.cpp; sourceTree = "<group>"; };
 		5CDC251D156CD48700742348 /* SpriteTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteTest.h; sourceTree = "<group>"; };
 		5CDC251E156CD48700742348 /* TestTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestTemplate.cpp; sourceTree = "<group>"; };
@@ -114,9 +115,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				5C8D42451580E4ED00441032 /* Config.h */,
+				5C8D42411580E4C300441032 /* TestSuite */,
 				5C7BE30F156E0EF400F9F538 /* Tests */,
-				5CDC251E156CD48700742348 /* TestTemplate.cpp */,
-				5CDC251F156CD48700742348 /* TestTemplate.h */,
 				FEC3CBC51284374A00541220 /* FrameworkMain.cpp */,
 				FEC3CBC61284374A00541220 /* FrameworkMain.h */,
 				FEC3CBC71284374A00541220 /* GameCore.cpp */,
@@ -186,20 +187,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		5C0105CD1577986300E0B939 /* Mongodb */ = {
-			isa = PBXGroup;
-			children = (
-				5CBC1F81157CF0F0009DAD1C /* MongodbTest.cpp */,
-				5CBC1F82157CF0F0009DAD1C /* MongodbTest.h */,
-			);
-			name = Mongodb;
-			sourceTree = "<group>";
-		};
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				FE40BC88157937580014BB7D /* CacheTest */,
-				5C0105CD1577986300E0B939 /* Mongodb */,
 				5C7BE310156E0EFE00F9F538 /* Landscape */,
 				5CDC251C156CD48700742348 /* SpriteTest.cpp */,
 				5CDC251D156CD48700742348 /* SpriteTest.h */,
@@ -214,6 +205,17 @@
 				5C7BE312156E0F0800F9F538 /* LandscapeTest.h */,
 			);
 			name = Landscape;
+			sourceTree = "<group>";
+		};
+		5C8D42411580E4C300441032 /* TestSuite */ = {
+			isa = PBXGroup;
+			children = (
+				5CDC251E156CD48700742348 /* TestTemplate.cpp */,
+				5CDC251F156CD48700742348 /* TestTemplate.h */,
+				5C8D42421580E4D700441032 /* BaseScreen.cpp */,
+				5C8D42431580E4D700441032 /* BaseScreen.h */,
+			);
+			name = TestSuite;
 			sourceTree = "<group>";
 		};
 		5CDC252E156CDED400742348 /* iPad */ = {
@@ -345,7 +347,7 @@
 				5CDC2521156CD48700742348 /* TestTemplate.cpp in Sources */,
 				5C7BE313156E0F0800F9F538 /* LandscapeTest.cpp in Sources */,
 				FE40BC8B1579376B0014BB7D /* CacheTest.cpp in Sources */,
-				5CBC1F83157CF0F0009DAD1C /* MongodbTest.cpp in Sources */,
+				5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
