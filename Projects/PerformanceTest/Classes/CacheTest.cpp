@@ -115,7 +115,9 @@ void CacheTest::LoadResources()
     RegisterFunction(this, &CacheTest::SequentionalCrossProductTest, "SequentionalCrossProductTest", 1,  NULL);
     RegisterFunction(this, &CacheTest::RandomCrossProductTest, "RandomCrossProductTest", 1,  NULL);
     RegisterFunction(this, &CacheTest::DefaultMatrixMul, "DefaultMatrixMul", 1,  NULL);
+#ifdef _ARM_ARCH_7
     RegisterFunction(this, &CacheTest::NeonMatrixMul, "NeonMatrixMul", 1,  NULL);
+#endif //#ifdef _ARM_ARCH_7
 }
 
 void CacheTest::UnloadResources()
@@ -132,6 +134,28 @@ void CacheTest::UnloadResources()
             Logger::Debug("Function calculated results wrongly");
         }
     }
+    
+    SafeDeleteArray(array0);
+    SafeDeleteArray(array1);
+    SafeDeleteArray(arrayResult);
+    SafeDeleteArray(correctResult);
+    SafeDeleteArray(crossResult);
+
+    
+    for (int32 k = 0; k < elementCount; ++k)
+    {
+        SafeDelete(arrayRandom0[k]);
+        SafeDelete(arrayRandom1[k]);
+    }
+    SafeDeleteArray(arrayRandom0);
+    SafeDeleteArray(arrayRandom1);
+    
+    
+    SafeDeleteArray(matrixes0);
+    SafeDeleteArray(matrixes1);
+    SafeDeleteArray(matrixesResult);
+    SafeDeleteArray(neonMatrixesResult);
+    
 }
 
 void CacheTest::SequentionalDotProductTest(PerfFuncData * data)
@@ -176,10 +200,12 @@ void CacheTest::DefaultMatrixMul(PerfFuncData * data)
 
 void CacheTest::NeonMatrixMul(PerfFuncData * data)
 {
+#ifdef _ARM_ARCH_7
     for (int32 k = 0; k < elementCount; ++k)
     {
         NEON_Matrix4Mul(matrixes0[k].data, matrixes1[k].data, neonMatrixesResult[k].data);     
     }
+#endif //#ifdef _ARM_ARCH_7
     
 }
 

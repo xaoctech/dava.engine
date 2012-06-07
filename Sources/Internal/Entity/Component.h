@@ -2,47 +2,57 @@
 #define __DAVAENGINE_ENTITY_COMPONENT_H__
 
 #include "Entity/Pool.h"
-#include "Entity/ComponentType.h"
+#include "Entity/ComponentTypes.h"
+#include "Entity/EntityManager.h"
+#include <typeinfo>
+
 
 namespace DAVA 
 {
-    
 
-class EntityManager;
-    
-template<class T>
-class ComponentDataMapper
-{
-public:
-    ComponentDataMapper(EntityManager * manager, const char * componentName)
-    {
-    }
-    
-    
-    
-};
+#define DECLARE_COMPONENT(ComponentName) \
+class ComponentName : public Component \
+{ \
+public:	\
+	static ComponentName * Get() { return instance; } \
+	\
+	static void Create() \
+	{   \
+		ComponentName * component = new ComponentName(); \
+		RegisterComponent(#ComponentName, component); \
+		component->Register(); \
+	}\
+private: \
+	static ComponentName * instance; \
+	ComponentName() \
+	{ \
+		instance = this; \
+	} \
+	void Register();	\
+\
+}; \
+ComponentName * ComponentName::instance = 0;
 
 class Component
 {
 public:
 	static void RegisterComponent(const char * componentName, Component * component); //create or get from cache
 	static Component * GetComponent(const char * componentName);
-    static Component * Get();
-    static Component * instance;
     
     Component()
     {
-        type = ComponentType();
+        //type = ComponentType(); //this duplicates field declaration
         componentsByIndex[type.GetIndex()] = this;
     };
+    
     
     template <class T>
     void RegisterData(const char * name)
     {
-        Pool * pool = new TemplatePool<T>(1);
-        pools[name] = pool;
+        EntityManager::CreatePoolAllocator<T>(name);
+        dataNames.insert(name);
     }
-    
+
 //	template<class T>
 //	TemplatePool<T>* CreatePool(T a, const char * name)
 //	{
@@ -51,25 +61,19 @@ public:
 //        return pool;
 //	}
 //    
-    template<class T>
-	Vector<TemplatePool<T>*>* LinkToAllPools(T a, const char * name)
-	{
-        Vector<TemplatePool<T>*>* allPools;
-        return allPools;
-	}
 
     const ComponentType & GetType() { return type; };
     
     static Component * GetComponentByIndex(uint64 index);
     
-    Map<const char *, Pool *> & GetNamedPools() { return pools; };
-    uint32 GetPoolCount();
+    Set<const char*> & GetDataNames() {return dataNames; };
+
+	static Map<const char *, Component * > cache;//<name, component>
     
 private:
 	ComponentType type;
-    Map<const char *, Pool *> pools;
+    Set<const char*> dataNames;
     static Map<uint64, Component*>  componentsByIndex;
-    static Map<const char *, Component * > cache;//<name, component>
 };
     
 };
