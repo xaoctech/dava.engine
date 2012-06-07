@@ -12,10 +12,9 @@ class Component;
 class Entity
 {
 public:
-	enum eChangeParameter
+	enum eChangeState
 	{
-		CREATED			= 1 << 0,
-		COMPONENT_ADDED = 1 << 1
+		FAMILY_CHANGED = 1
 	};
 
 	void AddComponent(Component * component);//const char * componentName);
@@ -29,8 +28,6 @@ public:
 
     void SetFamily(EntityFamilyType newFamily);
 	const EntityFamilyType & GetFamily();
-
-	int32 GetChangeState();
 
 	void SetIndexInFamily(int32 index);
 	int32 GetIndexInFamily();
@@ -50,6 +47,12 @@ private:
 template<class T>
 void Entity::SetData(const char * dataName, const T & value)
 {
+	if(changeState & FAMILY_CHANGED)
+	{
+		DVASSERT(0 && "Entity::SetData called before manager->Flush()");
+		Logger::Error("Entity::SetData called before manager->Flush()");
+	}
+
     EntityFamily * enFamily = manager->GetFamilyByType(family);
 	if(0 == enFamily)
 	{
