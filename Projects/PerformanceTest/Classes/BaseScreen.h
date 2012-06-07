@@ -27,30 +27,64 @@
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-
-#ifndef __MONGODBTEST_H__
-#define __MONGODBTEST_H__
+#ifndef __BASESCREEN_H__
+#define __BASESCREEN_H__
 
 #include "DAVAEngine.h"
-#include "Database/MongodbClient.h"
 using namespace DAVA;
 
-#include "TestTemplate.h"
+#include "GameCore.h"
 
-class MongodbTest : public TestTemplate<MongodbTest>
+class TestData
 {
 public:
-	MongodbTest();
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
+    TestData()
+    {
+        name = String("");
+        totalTime = minTime = maxTime = startTime = endTime = 0;
+        maxTimeIndex = runCount = 0;
+        userData = NULL;
+    }
+    
+    String name;
+    uint64 totalTime;
+    uint64 minTime;
+    uint64 maxTime;
+    int32 maxTimeIndex;
+    uint64 startTime;
+    uint64 endTime;
+    int32 runCount;
+    void * userData;
+};
 
+class BaseScreen: public UIScreen
+{
+public:
+
+	BaseScreen();
+	BaseScreen(const String & screenName, int32 skipBeforeTests = 10);
+    int32 GetScreenId();
+
+    virtual void WillAppear();
+    virtual void DidAppear();
+    virtual void Update(float32 timeElapsed);
+    
+    bool ReadyForTests();
+    
+    virtual int32 GetTestCount() = 0;
+    virtual TestData * GetTestData(int32 iTest) = 0;
+    
+    virtual bool RunTest(int32 testNum) = 0;
+    
 private:
-    
-    MongodbClient *client;
-    
-    void BinaryDataTest(PerfFuncData * data);
+    static int32 globalScreenId; // 1, on create of screen increment  
+    int32 currentScreenId;
+
+    int32 skipCount;
+    int32 skipCounter;
+    bool readyForTests;
 };
 
 
-#endif // __MONGODBTEST_H__
+#endif // __BASESCREEN_H__

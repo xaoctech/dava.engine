@@ -27,44 +27,25 @@
     Revision History:
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
-#ifndef __LANDSCAPE_TEST_H__
-#define __LANDSCAPE_TEST_H__
+//#define SINGLE_MODE
 
-#include "DAVAEngine.h"
-using namespace DAVA;
-
-#include "TestTemplate.h"
-
-class LandscapeTest: public TestTemplate<LandscapeTest>
-{
-    enum eConst
-    {
-        TEST_FRAMES_COUNT = 100
-    };
-    
-public:
-	LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode);
-
-	virtual void LoadResources();
-	virtual void UnloadResources();
-    
-    virtual void Draw(const UIGeometricData &geometricData);
-    
-    virtual bool RunTest(int32 testNum);
-
-protected:
-    
-    void DrawSprite(PerfFuncData * data);
-
-    int32 testCounter;
-    
-    uint64 startTime;
-
-    LandscapeNode::eTiledShaderMode shaderMode;
-    
-    Sprite *textures[LandscapeNode::TEXTURE_COUNT];
-};
+#if defined (SINGLE_MODE)
+    #define SINGLE_TEST_NAME        String("Landscape Mixed Mode")
+#endif //#if defined (SINGLE_MODE)
 
 
-#endif // __LANDSCAPE_TEST_H__
+#define DATABASE_IP               String("10.128.128.131")
+//#define DATABASE_IP                 String("127.0.0.1")
+#define DATAPASE_PORT               27017
+
+#define DATABASE_NAME               String("PerformanceTest")
+#if defined (SINGLE_MODE)
+    #define DATABASE_COLLECTION     String("Single Test")
+#else //#if defined (SINGLE_MODE)
+    #define DATABASE_COLLECTION     String("Multiple Tests")
+#endif //#if defined (SINGLE_MODE)
+
+#endif // __CONFIG_H__
