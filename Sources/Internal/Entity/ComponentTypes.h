@@ -39,7 +39,8 @@ public:
     uint64 bit;
     
     EntityFamilyType(uint64 _bit = 0) { bit = _bit; };
-    EntityFamilyType(EntityFamilyType oldFamily, ComponentType type) { bit = oldFamily.GetBit() | type.GetBit(); };
+    static EntityFamilyType AddComponentType(EntityFamilyType oldFamily, ComponentType type) { return EntityFamilyType(oldFamily.GetBit() | type.GetBit()); };
+	static EntityFamilyType RemoveComponentType(EntityFamilyType oldFamily, ComponentType type) { return EntityFamilyType(oldFamily.GetBit() & (~type.GetBit())); };
     
     uint64 GetBit() const { return bit; };
     bool IsEmpty() const { return bit == 0; };

@@ -3,12 +3,12 @@
 
 #include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
+#include "Entity/DumpVariable.h"
 
 namespace DAVA 
 {
 
 class EntityFamily;
-
 class Pool
 {
 public:
@@ -47,6 +47,7 @@ public:
         return 0;
     }
 
+	virtual void DumpElement(int32 index) = 0;
 
     void SetEntityFamily(EntityFamily * _entityFamily) { entityFamily = _entityFamily; }
 	EntityFamily * GetEntityFamily() { return entityFamily; }
@@ -95,12 +96,18 @@ public:
         memcpy(&((T*)byteData)[newIndex], &((T*)byteData)[oldIndex],  sizeof(T));
     }
     
-    virtual void MoveElement(uint32 oldIndex, Pool * newPool, uint32 newIndex)
+    virtual void MoveElement(uint32 oldIndex, Pool * oldPool, uint32 newIndex)
     {
-        TemplatePool<T> * tPool = dynamic_cast<TemplatePool<T> *>(newPool);
+        TemplatePool<T> * tPool = dynamic_cast<TemplatePool<T> *>(oldPool);
         
-        memcpy(&((T*)tPool->byteData)[newIndex], &((T*)byteData)[oldIndex],  sizeof(T));
+        memcpy(&((T*)byteData)[oldIndex], &((T*)tPool->byteData)[newIndex], sizeof(T));
     }
+
+	virtual void DumpElement(int32 index)
+	{
+		T & element = ((T*)byteData)[index];
+		DumpVariable(element);
+	}
 
 	virtual void SetNext(Pool * _next)
 	{
