@@ -68,6 +68,14 @@
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
 		C7AB37101473F31E00D52251 /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */; };
+		C7DE5975157F8CA10045CA41 /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596B157F8CA10045CA41 /* Action.cpp */; };
+		C7DE5976157F8CA10045CA41 /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE596C157F8CA10045CA41 /* Action.h */; };
+		C7DE5977157F8CA10045CA41 /* AssertAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596D157F8CA10045CA41 /* AssertAction.cpp */; };
+		C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE596E157F8CA10045CA41 /* AssertAction.h */; };
+		C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */; };
+		C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */; };
+		C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5973157F8CA10045CA41 /* TouchAction.cpp */; };
+		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9BC14A8591A008675BD /* CubeNode.cpp */; };
@@ -582,6 +590,14 @@
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
 		C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSFullScreenWindow.m; sourceTree = "<group>"; };
+		C7DE596B157F8CA10045CA41 /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
+		C7DE596C157F8CA10045CA41 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
+		C7DE596D157F8CA10045CA41 /* AssertAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssertAction.cpp; sourceTree = "<group>"; };
+		C7DE596E157F8CA10045CA41 /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
+		C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
+		C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
+		C7DE5973157F8CA10045CA41 /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
+		C7DE5974157F8CA10045CA41 /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -1123,6 +1139,21 @@
 			name = DLC;
 			sourceTree = "<group>";
 		};
+		C7DE596A157F8CA10045CA41 /* Autotesting */ = {
+			isa = PBXGroup;
+			children = (
+				C7DE596B157F8CA10045CA41 /* Action.cpp */,
+				C7DE596C157F8CA10045CA41 /* Action.h */,
+				C7DE596D157F8CA10045CA41 /* AssertAction.cpp */,
+				C7DE596E157F8CA10045CA41 /* AssertAction.h */,
+				C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */,
+				C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */,
+				C7DE5973157F8CA10045CA41 /* TouchAction.cpp */,
+				C7DE5974157F8CA10045CA41 /* TouchAction.h */,
+			);
+			path = Autotesting;
+			sourceTree = "<group>";
+		};
 		FE578BB513278DAD0081BDE9 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -1192,6 +1223,7 @@
 		FECFC0A512E87E3000C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				C7DE596A157F8CA10045CA41 /* Autotesting */,
 				FECFC0A612E87E3000C71562 /* Animation */,
 				FECFC0B612E87E3000C71562 /* Base */,
 				FECFC0CA12E87E3000C71562 /* Collision */,
@@ -2056,6 +2088,10 @@
 				5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */,
 				5C7BE5901574BAF8004FF01C /* MongodbClient.h in Headers */,
 				5C203F321579362300CB53E9 /* MongodbObject.h in Headers */,
+				C7DE5976157F8CA10045CA41 /* Action.h in Headers */,
+				C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */,
+				C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */,
+				C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2353,6 +2389,10 @@
 				5CFA5D4F156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 				5C7BE58F1574BAF8004FF01C /* MongodbClient.cpp in Sources */,
 				5C203F311579362300CB53E9 /* MongodbObject.cpp in Sources */,
+				C7DE5975157F8CA10045CA41 /* Action.cpp in Sources */,
+				C7DE5977157F8CA10045CA41 /* AssertAction.cpp in Sources */,
+				C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */,
+				C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
