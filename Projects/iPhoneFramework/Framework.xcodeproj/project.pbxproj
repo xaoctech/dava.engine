@@ -66,6 +66,14 @@
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
+		C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895CE157FA00C00B0E00A /* Action.cpp */; };
+		C7E895D9157FA00C00B0E00A /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895CF157FA00C00B0E00A /* Action.h */; };
+		C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D0157FA00C00B0E00A /* AssertAction.cpp */; };
+		C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D1157FA00C00B0E00A /* AssertAction.h */; };
+		C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */; };
+		C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */; };
+		C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D6157FA00C00B0E00A /* TouchAction.cpp */; };
+		C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D7157FA00C00B0E00A /* TouchAction.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA6D63114753FF0000898F8 /* TextGameObject.cpp */; };
 		EDA6D63414753FF0000898F8 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA6D63214753FF0000898F8 /* TextGameObject.h */; };
@@ -548,6 +556,14 @@
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
+		C7E895CE157FA00C00B0E00A /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
+		C7E895CF157FA00C00B0E00A /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
+		C7E895D0157FA00C00B0E00A /* AssertAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssertAction.cpp; sourceTree = "<group>"; };
+		C7E895D1157FA00C00B0E00A /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
+		C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
+		C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
+		C7E895D6157FA00C00B0E00A /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
+		C7E895D7157FA00C00B0E00A /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
@@ -1025,6 +1041,21 @@
 			name = Database;
 			sourceTree = "<group>";
 		};
+		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
+			isa = PBXGroup;
+			children = (
+				C7E895CE157FA00C00B0E00A /* Action.cpp */,
+				C7E895CF157FA00C00B0E00A /* Action.h */,
+				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
+				C7E895D1157FA00C00B0E00A /* AssertAction.h */,
+				C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */,
+				C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */,
+				C7E895D6157FA00C00B0E00A /* TouchAction.cpp */,
+				C7E895D7157FA00C00B0E00A /* TouchAction.h */,
+			);
+			path = Autotesting;
+			sourceTree = "<group>";
+		};
 		FE40BC8C1579567C0014BB7D /* Neon */ = {
 			isa = PBXGroup;
 			children = (
@@ -1071,6 +1102,7 @@
 		FECFB32D12E5904400C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				C7E895CD157FA00C00B0E00A /* Autotesting */,
 				FECFB32E12E5904400C71562 /* Animation */,
 				FECFB33E12E5904400C71562 /* Base */,
 				FECFB35212E5904400C71562 /* Collision */,
@@ -1923,6 +1955,10 @@
 				5CFD7E061564DC7D009692EE /* ImposterManager.h in Headers */,
 				5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */,
 				5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */,
+				C7E895D9157FA00C00B0E00A /* Action.h in Headers */,
+				C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */,
+				C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */,
+				C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */,
 				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
 				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
 				FE40BC901579567C0014BB7D /* NeonMath.h in Headers */,
@@ -2210,6 +2246,10 @@
 				5CFD7E051564DC7D009692EE /* ImposterManager.cpp in Sources */,
 				5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */,
 				5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */,
+				C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */,
+				C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */,
+				C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */,
+				C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */,
 				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
 				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
 				FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */,

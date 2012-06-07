@@ -120,6 +120,11 @@ void Thread::StartWin32()
 	ResumeThread(handle);
 }
 
+void Thread::YieldThread()
+{
+    SwitchToThread();
+}
+
 #endif 
 
 };

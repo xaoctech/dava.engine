@@ -34,6 +34,10 @@
 #include "Sound/SoundSystem.h"
 #include "Debug/Stats.h"
 
+#ifdef __DAVAENGINE_AUTOTESTING__
+#include "Autotesting/AutotestingSystem.h"
+#endif
+
 namespace DAVA 
 {
 
@@ -52,11 +56,17 @@ void ApplicationCore::Update(float32 timeElapsed)
 	SoundSystem::Instance()->Update();
 	AnimationManager::Instance()->Update(timeElapsed);
 	UIControlSystem::Instance()->Update();
+#ifdef __DAVAENGINE_AUTOTESTING__
+    AutotestingSystem::Instance()->Update(timeElapsed);
+#endif
 }
 
 void ApplicationCore::Draw()
 {
 	UIControlSystem::Instance()->Draw();	
+#ifdef __DAVAENGINE_AUTOTESTING__
+    AutotestingSystem::Instance()->Draw();
+#endif
 }
 
 void ApplicationCore::BeginFrame()

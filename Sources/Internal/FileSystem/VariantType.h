@@ -130,54 +130,54 @@ public:
 		\brief Function to return bool value from variable
 		\returns value of variable, or generate assert if variable type is different
 	 */
-	bool AsBool();
+	bool AsBool() const;
 
 	/**
 		\brief Function to return int value from variable
 		\returns value of variable, or generate assert if variable type is different
 	 */
-	int32 AsInt32();
+	int32 AsInt32() const;
 
 	/**
         \brief Function to return int value from variable
         \returns value of variable, or generate assert if variable type is different
 	 */
-	uint32 AsUInt32();
+	uint32 AsUInt32() const;
 
 	/**
 		\brief Function to return float value from variable
 		\returns value of variable, or generate assert if variable type is different
 	 */
-	float32 AsFloat();
+	float32 AsFloat() const;
 
 	/**
 		\brief Function to return string value from variable
 		\returns value of variable, or generate assert if variable type is different
 	 */
-	const String & AsString();
+	const String & AsString() const;
 
 	/**
 		\brief Function to return wide string value from variable
 		\returns value of variable, or generate assert if variable type is different
 	 */
-	const WideString & AsWideString();
+	const WideString & AsWideString() const;
 
 	/**
 	 \brief Function to return array from variable
 	 \returns value of variable, or generate assert if variable type is different
 	 */
-	const uint8 *AsByteArray();
+	const uint8 *AsByteArray() const;
 	/**
 	 \brief Function to return array size from variable
 	 \returns array size in bytes variable, or generate assert if variable type is different
 	 */
-	int32 AsByteArraySize();
+	int32 AsByteArraySize() const;
 
     /**
 	 \brief Function to return keyed archive from variable. Returns pointer to the KeyedArchive inside.
 	 \returns value of variable, or generate assert if variable type is different
 	 */
-     KeyedArchive *AsKeyedArchive();
+     KeyedArchive *AsKeyedArchive() const;
     
 	// File read & write helpers
 	
@@ -192,6 +192,18 @@ public:
 		\returns true if variable read successfully
 	 */
 	bool Read(File * fp);
+
+    /**
+		\brief Operator to compare variant types
+		\returns true if values are equal
+	 */
+    bool operator==(const VariantType& other) const;
+
+    /**
+		\brief Operator to compare variant types
+		\returns true if values are not equal
+	 */
+    bool operator!=(const VariantType& other) const;
     
 private:
     void ReleasePointer();
