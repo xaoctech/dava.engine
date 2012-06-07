@@ -26,7 +26,7 @@ EntityFamily::EntityFamily(EntityManager * _manager, EntityFamilyType _family)
     pools.reserve(dataNamesForAllComponents.size()); //this changes size of vector
     
     currentSize = 0;
-	maxSize = 15;
+	maxSize = 10;
 
     for (Set<const char*>::iterator it = dataNamesForAllComponents.begin(); it != dataNamesForAllComponents.end(); ++it)
     {
@@ -56,11 +56,13 @@ void EntityFamily::NewEntity(Entity * entity)
         // Resize all pools
         for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
         {
-            pools[poolIndex]->Resize(currentSize + 15);
+            pools[poolIndex]->Resize(currentSize + 10);
         }
+		maxSize += 10;
     }
-    entity->SetIndexInFamily((int32)currentSize);
+
     currentSize++;
+	entities.push_back(entity);
     for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
     {
         pools[poolIndex]->length++;
@@ -74,47 +76,47 @@ void EntityFamily::DeleteEntity(Entity * entity)
     //DVASSERT(entity->indexInFamily >= 0);
     //DVASSERT(entity->indexInFamily < currentSize);
     
+	int32 oldIndex = entity->GetIndexInFamily();
+	int32 lastIndex = currentSize - 1;
     for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
     {
-        pools[poolIndex]->MoveElement(currentSize - 1, entity->GetIndexInFamily());
+		if(pools[poolIndex]->length > 1)
+		{
+			pools[poolIndex]->MoveElement(lastIndex, oldIndex);
+		}
         pools[poolIndex]->length--;
     }
-    currentSize--;
-    entity->SetIndexInFamily(-1);
-    entity->SetFamily(EntityFamilyType(0)); // Empty family
+
+	entities[oldIndex] = entities[lastIndex];
+	entities.pop_back();
+
+	currentSize--;
 }
     
-void EntityFamily::MoveToFamily(EntityFamily * newFamily, Entity * entity)
+void EntityFamily::MoveFromFamily(EntityFamily * oldFamily, Entity * entity)
 {
-    // We should move all data from one pools to other pools.
-    
-    if (currentSize >= maxSize) //Dizz: how? maybe resize newFamilyPool?
-    {
-        // Resize all pools
-        for (uint32 poolIndex = 0; poolIndex < pools.size(); ++poolIndex)
-        {
-            pools[poolIndex]->Resize(currentSize + 15);
-        }
-    }
-
     int32 oldIndex = entity->GetIndexInFamily();
-	int32 newIndex = newFamily->currentSize;
+	int32 newIndex = currentSize;
+
+	NewEntity(entity);
     
     for (Map<const char *, Pool*>::iterator currentPoolIt = poolByDataName.begin(); currentPoolIt != poolByDataName.end(); ++currentPoolIt)
     {
-		Pool * oldPool = currentPoolIt->second;
-        Pool * newPool = newFamily->GetPoolByDataName(currentPoolIt->first);
-        DVASSERT(typeid(*oldPool) == typeid(*newPool));
+		Pool * oldPool = oldFamily->GetPoolByDataName(currentPoolIt->first);
+        Pool * newPool = currentPoolIt->second;
+
+		if(oldPool)
+		{
+			DVASSERT(typeid(*oldPool) == typeid(*newPool));
         
-        oldPool->MoveElement(oldIndex, newPool, newIndex);
-		
-		newPool->length++;
-		oldPool->length--;
+			oldPool->MoveElement(oldIndex, oldPool, newIndex);
+		}
     }
+
+	oldFamily->DeleteEntity(entity);
     
-    entity->SetIndexInFamily(newIndex);
-	newFamily->currentSize++;
-    currentSize--;
+	//must stay
+	entity->SetIndexInFamily(newIndex);
 }
 
 

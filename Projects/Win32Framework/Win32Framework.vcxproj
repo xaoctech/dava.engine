@@ -179,6 +179,7 @@
     <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />

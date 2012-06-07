@@ -137,7 +137,7 @@ void SceneValidator::ValidateTexture(Texture *texture)
 void SceneValidator::ValidateTextureInternal(Texture *texture)
 {
     if(!texture) return;
-    
+
     if(IsntPower2(texture->GetWidth()) || IsntPower2(texture->GetHeight()))
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
