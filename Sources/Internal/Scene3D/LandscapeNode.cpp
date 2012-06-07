@@ -287,7 +287,7 @@ Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint16 height)
     return res;
 };
 
-bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
+bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal) const
 {
 	if (point.x > box.max.x ||
 		point.x < box.min.x ||
@@ -340,6 +340,14 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
 
 	result.z = (D - B * y - A * x) / C;
 	result.z = box.min.z + result.z / ((float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z);
+
+	if (normal != 0)
+	{
+		normal->x = A;
+		normal->y = B;
+		normal->x = C;
+		normal->Normalize();
+	}
 	return true;
 };
 	
