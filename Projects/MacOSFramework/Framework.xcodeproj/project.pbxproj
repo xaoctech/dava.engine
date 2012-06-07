@@ -74,8 +74,6 @@
 		C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE596E157F8CA10045CA41 /* AssertAction.h */; };
 		C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */; };
 		C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */; };
-		C7DE597B157F8CA10045CA41 /* TestsYamlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5971157F8CA10045CA41 /* TestsYamlParser.cpp */; };
-		C7DE597C157F8CA10045CA41 /* TestsYamlParser.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5972157F8CA10045CA41 /* TestsYamlParser.h */; };
 		C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5973157F8CA10045CA41 /* TouchAction.cpp */; };
 		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
@@ -598,8 +596,6 @@
 		C7DE596E157F8CA10045CA41 /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
 		C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
 		C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
-		C7DE5971157F8CA10045CA41 /* TestsYamlParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestsYamlParser.cpp; sourceTree = "<group>"; };
-		C7DE5972157F8CA10045CA41 /* TestsYamlParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestsYamlParser.h; sourceTree = "<group>"; };
 		C7DE5973157F8CA10045CA41 /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
 		C7DE5974157F8CA10045CA41 /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1152,8 +1148,6 @@
 				C7DE596E157F8CA10045CA41 /* AssertAction.h */,
 				C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */,
 				C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */,
-				C7DE5971157F8CA10045CA41 /* TestsYamlParser.cpp */,
-				C7DE5972157F8CA10045CA41 /* TestsYamlParser.h */,
 				C7DE5973157F8CA10045CA41 /* TouchAction.cpp */,
 				C7DE5974157F8CA10045CA41 /* TouchAction.h */,
 			);
@@ -2097,7 +2091,6 @@
 				C7DE5976157F8CA10045CA41 /* Action.h in Headers */,
 				C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */,
 				C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */,
-				C7DE597C157F8CA10045CA41 /* TestsYamlParser.h in Headers */,
 				C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2399,7 +2392,6 @@
 				C7DE5975157F8CA10045CA41 /* Action.cpp in Sources */,
 				C7DE5977157F8CA10045CA41 /* AssertAction.cpp in Sources */,
 				C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */,
-				C7DE597B157F8CA10045CA41 /* TestsYamlParser.cpp in Sources */,
 				C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
