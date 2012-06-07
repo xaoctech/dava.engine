@@ -6,25 +6,29 @@ namespace DAVA
 
 Entity::Entity(EntityManager * _manager)
 :	manager(_manager),
-	changeState(CREATED),
 	family(0),
-	indexInFamily(-1)
+	indexInFamily(-1),
+	changeState(0)
 {
 }
 
 void Entity::AddComponent(Component * component)
 {
     manager->AddComponent(this, component);
+
+	changeState |= FAMILY_CHANGED;
 }
 
 void Entity::AddComponent(const char * component)
 {
-	manager->AddComponent(this, component);
+	//manager->AddComponent(this, component);
 }
 
 void Entity::RemoveComponent(Component * component)
 {
 	manager->RemoveComponent(this, component);
+
+	changeState |= FAMILY_CHANGED;
 }
 
 //uint32 Entity::CalculateFamily()
@@ -48,11 +52,6 @@ void Entity::SetFamily(EntityFamilyType newFamily)
 const EntityFamilyType & Entity::GetFamily()
 {
 	return family;
-}
-
-int32 Entity::GetChangeState()
-{
-	return changeState;
 }
 
 void Entity::SetIndexInFamily(int32 _index)
