@@ -27,7 +27,7 @@ private:
     // Immediate functions. Do what you ask immediatelly. Should be called only from EntityManager
     void NewEntity(Entity * entity);
     void DeleteEntity(Entity * entity);
-	void MoveToFamily(EntityFamily * newFamily, Entity * entity);
+	void MoveFromFamily(EntityFamily * oldFamily, Entity * entity);
     
     EntityManager * manager;
     EntityFamilyType family;

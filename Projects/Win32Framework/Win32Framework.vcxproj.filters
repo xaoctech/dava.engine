@@ -1005,6 +1005,9 @@
     <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h">
       <Filter>Internal\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">

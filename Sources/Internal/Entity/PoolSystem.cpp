@@ -2,7 +2,7 @@
 
 namespace DAVA
 {
-    
+
 //Map<const char *, Pool *> Component::pools;
 //
 //
