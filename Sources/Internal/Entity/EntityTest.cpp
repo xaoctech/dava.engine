@@ -4,6 +4,7 @@
 #include "Entity/Component.h"
 #include "Entity/ComponentDataMapper.h"
 #include "Scene3D/Camera.h"
+#include "Base/TemplateHelpers.h"
 
 using namespace DAVA;
 
