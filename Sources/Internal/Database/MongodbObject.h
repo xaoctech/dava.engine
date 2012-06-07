@@ -51,21 +51,38 @@ protected:
     MongodbObject();
     virtual ~MongodbObject();
     
+    void * InternalObject();
+    
 public:
     
     void Finish();
 
     void SetObjectName(const String &objectname);
+    String GetObjectName();
 
-    void AddInt(const String fieldname, int32 value);
-    int32 GetInt(const String &fieldname);
+    void AddInt32(const String fieldname, int32 value);
+    int32 GetInt32(const String &fieldname);
+
+    void AddInt64(const String fieldname, int64 value);
+    int64 GetInt64(const String &fieldname);
 
     void AddData(const String &fieldname, uint8 *data, int32 dataSize);
     bool GetData(const String &fieldname, uint8 *outData, int32 dataSize);
 
-protected:
+    void AddString(const String fieldname, const String &value);
+    String GetString(const String &fieldname);
+
+    void AddDouble(const String fieldname, double value);
+    double GetDouble(const String &fieldname);
+
     
-	void * InternalObject();
+    void StartArray(const String &fieldname);
+    void FinishArray();
+    
+    void StartObject(const String &fieldname);
+    void FinishObject();
+    
+protected:
 
 	MongodbObjectInternalData *objectData;
 };
