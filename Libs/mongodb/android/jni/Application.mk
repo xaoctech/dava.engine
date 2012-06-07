@@ -1,0 +1,1 @@
+APP_MODULES := libmongodb_android

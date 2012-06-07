@@ -30,17 +30,15 @@
 #include "GameCore.h"
 #include "SpriteTest.h"
 #include "LandscapeTest.h"
+#include "MongodbTest.h"
+#include "CacheTest.h"
 
 using namespace DAVA;
 
 GameCore::GameCore()
 {
-	spriteTest = NULL;
     logFile = NULL;
-    landscapeTextures = NULL;
-    landscapeMixedMode = NULL;
-    landscapeTiledMode = NULL;
-    landscapeTextureMode = NULL;
+    currentScreenIndex = 0;
 }
 
 GameCore::~GameCore()
@@ -53,21 +51,24 @@ void GameCore::OnAppStarted()
 
     CreateLogFile();
 
-	spriteTest = new SpriteTest();
-    landscapeTextures = new LandscapeTest("Landscape Textures Test", LandscapeNode::TILED_MODE_COUNT);
-    landscapeMixedMode = new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
-    landscapeTiledMode = new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
-    landscapeTextureMode = new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
-
-	UIScreenManager::Instance()->RegisterScreen(SCREEN_SPRITE, spriteTest);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTURES, landscapeTextures);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_MIXEDMODE, landscapeMixedMode);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TILEDMODE, landscapeTiledMode);
-    UIScreenManager::Instance()->RegisterScreen(SCREEN_LANDSCAPE_TEXTUREDMODE, landscapeTextureMode);
+    new MongodbTest();
+    new CacheTest("Cache Test");
+    new LandscapeTest("Landscape Textures Test", LandscapeNode::TILED_MODE_COUNT);
+    new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
+    new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
+    new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
+    new SpriteTest();
     
-    currentScreenID = SCREEN_FIRST;
-    GoToNextTest();
+    currentScreenIndex = 0;
+    RunCurrentTest();
 }
+
+void GameCore::RegisterScreen(DAVA::UIScreen *screen)
+{
+    screens.push_back(screen);
+    UIScreenManager::Instance()->RegisterScreen(screens.size(), screen);
+}
+
 
 bool GameCore::CreateLogFile()
 {
@@ -98,13 +99,13 @@ bool GameCore::CreateLogFile()
 
 void GameCore::OnAppFinished()
 {
-    SafeRelease(spriteTest);
+    for(int32 i = 0; i < screens.size(); ++i)
+    {
+        SafeRelease(screens[i]);
+    }
+    screens.clear();
+
     SafeRelease(logFile);
-    
-    SafeRelease(landscapeTextures);
-    SafeRelease(landscapeMixedMode);
-    SafeRelease(landscapeTiledMode);
-    SafeRelease(landscapeTextureMode);
 }
 
 void GameCore::OnSuspend()
@@ -141,23 +142,24 @@ void GameCore::Draw()
 
 void GameCore::TestFinished()
 {
-    ++currentScreenID;
-    GoToNextTest();
+    RunCurrentTest();
 }
 
-void GameCore::GoToNextTest()
+void GameCore::RunCurrentTest()
 {
-    if(SCREEN_FIRST == currentScreenID)
+    if(0 == currentScreenIndex)
     {
-        UIScreenManager::Instance()->SetFirst(currentScreenID);
+        UIScreenManager::Instance()->SetFirst(currentScreenIndex + 1);
+        ++currentScreenIndex;
     }
-    else if(SCREEN_COUNT == currentScreenID)
+    else if(currentScreenIndex < screens.size())
     {
-		Core::Instance()->Quit();
+        UIScreenManager::Instance()->SetScreen(currentScreenIndex + 1);
+        ++currentScreenIndex;
     }
     else 
     {
-        UIScreenManager::Instance()->SetScreen(currentScreenID);
+		Core::Instance()->Quit();
     }
 }
 
