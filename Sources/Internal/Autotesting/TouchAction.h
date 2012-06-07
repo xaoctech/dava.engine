@@ -52,7 +52,8 @@ protected:
     void TouchUp();
     void TouchMove(const Vector2 &point);
 
-    Vector2 GetPhysPoint(const Vector2 &p);
+    Vector2 GetPhysicalPoint(const Vector2 &virtualPoint);
+    Vector2 GetVirtualPoint(const Vector2 &physicalPoint);
 
     int32 id;
 };

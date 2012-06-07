@@ -87,6 +87,13 @@ public:
 	*/
 	void			EnableCopyContext() { needCopyContext = true; }//setting current context in new thread
 
+    /**
+     \brief Notifies the scheduler that the current thread is
+     willing to release its processor to other threads of the same or higher
+     priority.
+     */
+    static void Yield();
+    
 private:
 	Thread() {};
 	Thread(const Thread& t) {};
@@ -129,7 +136,6 @@ private:
 public:
 	void		MainThread();
 	static void		SleepThread(int32 timems);
-
 #else //PLATFORMS
 	// other platforms
 #endif //PLATFORMS	

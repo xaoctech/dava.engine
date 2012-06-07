@@ -31,7 +31,7 @@ void Action::Update(float32 timeElapsed)
 
 void Action::Execute()
 {
-    Logger::Debug("Action::Execute");
+    //Logger::Debug("Action::Execute");
     isExecuted = TestCondition();
 }
 
@@ -51,7 +51,7 @@ void Action::SetText(const Vector<String> &controlPath, const WideString &text)
     if(staticText)
     {
         staticText->SetText(text);
-        Logger::Debug("Action::SetText UIStaticText");
+        //Logger::Debug("Action::SetText UIStaticText");
     }
     else
     {
@@ -59,7 +59,7 @@ void Action::SetText(const Vector<String> &controlPath, const WideString &text)
         if(textField)
         {
             textField->SetText(text);
-            Logger::Debug("Action::SetText UITextField");
+            //Logger::Debug("Action::SetText UITextField");
         }
         else
         {
@@ -246,7 +246,6 @@ KeyPressAction::~KeyPressAction()
 
 void KeyPressAction::Execute()
 {
-    Logger::Debug("KeyPressAction::Execute");
     KeyPress(keyChar);
     Action::Execute();
 }
@@ -254,7 +253,7 @@ void KeyPressAction::Execute()
 void KeyPressAction::KeyPress(char16 keyChar)
 {
     //TODO: KeyPress
-    Logger::Debug("KeyPressAction::KeyPress %c", keyChar);
+    //Logger::Debug("KeyPressAction::KeyPress %c", keyChar);
     UIEvent keyPress;
     keyPress.tid = 0;
     keyPress.phase = UIEvent::PHASE_KEYCHAR;
@@ -345,31 +344,9 @@ SetTextAction::~SetTextAction()
 
 void SetTextAction::Execute()
 {
-    Logger::Debug("SetTextAction::Execute");
     Action::SetText(controlPath, text);
     Action::Execute();
 }
-//----------------------------------------------------------------------
-
-// ExecuteYamlAction::ExecuteYamlAction(const String& _yamlPath) : Action()
-//     , yamlPath(_yamlPath)
-// {
-// }
-// 
-// ExecuteYamlAction::~ExecuteYamlAction()
-// {
-// }
-//
-// void ExecuteYamlAction::Load()
-// {
-// }
-//
-// void ExecuteYamlAction::Execute()
-// {
-//     Action::Execute();
-// }
-
-
 
 //----------------------------------------------------------------------
 

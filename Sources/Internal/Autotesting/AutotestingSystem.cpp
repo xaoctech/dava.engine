@@ -70,7 +70,7 @@ void AutotestingSystem::Init(const String &_testName)
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
         testReportsFolder = "~doc:autotesting";
         FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
-        reportFile = DAVA::File::Create(Format("%s\\autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
+        reportFile = DAVA::File::Create(Format("%s/autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
 #endif
 
         isInit = true;
@@ -538,7 +538,10 @@ void AutotestingSystem::OnTestsFinished()
     Logger::Debug("AutotestingSystem::OnTestsFinished");
     //TODO: all actions finished. report?
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
+    if(reportFile)
+    {
+        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
+    }
     SafeRelease(reportFile);
 #endif
     ExitApp();
@@ -549,7 +552,10 @@ void AutotestingSystem::OnError(const String & errorMessage)
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
-    reportFile->WriteLine(exitOnErrorMsg);
+    if(reportFile)
+    {
+        reportFile->WriteLine(exitOnErrorMsg);
+    }
     SafeRelease(reportFile);
 #endif
     ExitApp();
@@ -761,7 +767,10 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
     Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
     //TODO: report into database
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    reportFile->WriteLine(assertMsg);
+    if(reportFile)
+    {
+        reportFile->WriteLine(assertMsg);
+    }
 #endif
 }
 
@@ -783,6 +792,7 @@ void AutotestingSystem::OnInput(const UIEvent &input)
             }
         }
         break;
+#ifndef __DAVAENGINE_IPHONE__
     case UIEvent::PHASE_MOVE:
         {
             mouseMove = input;
@@ -792,6 +802,7 @@ void AutotestingSystem::OnInput(const UIEvent &input)
             }
         }
         break;
+#endif
     case UIEvent::PHASE_DRAG:
         {
             mouseMove = input;
