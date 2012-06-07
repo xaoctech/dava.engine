@@ -55,6 +55,7 @@ public:
 
 	virtual void SetIcon(int32 iconId);
 
+	void InitArgs();
 	void InitOpenGL();
 	void ReleaseOpenGL();
 
@@ -79,12 +80,13 @@ public:
 	bool isFullscreen;
 	RECT		windowPositionBeforeFullscreen;
 private:
+
 	static const uint32 WINDOWED_STYLE = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 	static const uint32 FULLSCREEN_STYLE = WS_VISIBLE | WS_POPUP;
 
-
 	RECT GetWindowedRectForDisplayMode(DisplayMode & dm);
 	bool willQuit;
+
 };	
 };
 #endif // #if defined(__DAVAENGINE_WIN32__)

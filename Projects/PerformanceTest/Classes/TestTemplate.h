@@ -52,6 +52,7 @@ public:
 		int32			runCount;
 		void			* userData;
 	};
+    
 
 	TestTemplate(const String & screenName);
 
@@ -65,7 +66,9 @@ public:
 	void SubmitTime(PerfFuncData * data, uint64 time);
 	void WriteLog(PerfFuncData * data);
     
-
+    int32 GetScreenId();
+    
+    
 protected:
     
     virtual void RunTests();
@@ -76,8 +79,15 @@ protected:
 	String screenName;
 
 private:
+    
+    static int32 globalScreenId; // 1, on create of screen increment  
+    int32 currentScreenId;
+    
 	TestTemplate();
 };
+
+template <class T>
+int32 TestTemplate<T>::globalScreenId = 1;
 
 template <class T>
 void TestTemplate<T>::RegisterFunction(T * screen, void (T::*func)(PerfFuncData * data), const String & name, int32 runCount, void * userData)
@@ -100,7 +110,7 @@ void TestTemplate<T>::WriteLog(PerfFuncData * data)
 {
 	File * log = GameCore::Instance()->logFile;
 	log->WriteLine(Format("%s", data->name.c_str()));
-	log->WriteLine(Format("%lld %lld %lld %lld %d", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime, data->runCount));
+	log->WriteLine(Format("%lld tot:%lld min:%lld max:%lld run count:%d", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime, data->runCount));
 }
 
 template <class T>
@@ -128,6 +138,10 @@ TestTemplate<T>::TestTemplate(const String & _screenName)
 	screenName = _screenName;
 	funcIndex = -1;
 	runIndex = -1;
+    
+    currentScreenId = globalScreenId++;
+    
+    GameCore::Instance()->RegisterScreen(this);
 }
 
 template <class T>

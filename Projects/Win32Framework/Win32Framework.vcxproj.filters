@@ -103,6 +103,12 @@
     <Filter Include="Internal\Autotesting">
       <UniqueIdentifier>{9c48b596-2306-460c-82bd-f3a4279468b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Entity">
+      <UniqueIdentifier>{8f66ae0b-aa43-4803-a2d8-3f693710b865}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Database">
+      <UniqueIdentifier>{aacba949-a20d-4b44-821d-8170cd6d7aa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -984,6 +990,36 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
+        <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
+      <Filter>Internal\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
+      <Filter>Internal\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h">
+      <Filter>Internal\Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1481,9 +1517,6 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
@@ -1697,7 +1730,37 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp">
+      <Filter>Internal\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp">
+      <Filter>Internal\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp">
+      <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityTest.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
+      <Filter>Internal\Entity</Filter>
+    </ClCompile>
+        <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
