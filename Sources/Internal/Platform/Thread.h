@@ -92,7 +92,7 @@ public:
      willing to release its processor to other threads of the same or higher
      priority.
      */
-    static void Yield();
+    static void YieldThread();
     
 private:
 	Thread() {};

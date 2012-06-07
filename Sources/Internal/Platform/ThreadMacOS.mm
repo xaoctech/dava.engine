@@ -139,7 +139,7 @@ bool Thread::IsMainThread()
 	return [NSThread isMainThread];
 }
     
-void Thread::Yield()
+void Thread::YieldThread()
 {
     return pthread_yield_np();
 }
