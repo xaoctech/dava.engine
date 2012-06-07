@@ -1,4 +1,3 @@
-#define VERTEX_LIT
 #ifdef GL_ES
 // define default precision for float, vec, mat.
 precision highp float;
@@ -81,13 +80,6 @@ varying float varFogFactor;
 uniform float lightmapSize;
 varying lowp float varLightmapSize;
 #endif
-
-float ComputeAttenuation(float lightIntensity, vec3 lightDirection)
-{
-		float attenuation = length(lightDir);
-		atteruation = lightIntensity / (attenuation * attenuation);
-		return attenuation;
-}
 
 void main()
 {

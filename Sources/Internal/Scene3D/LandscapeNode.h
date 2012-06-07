@@ -252,7 +252,7 @@ public:
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
     // TODO: Need comment here
-	bool PlacePoint(const Vector3 & point, Vector3 & result);
+	bool PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal = 0) const;
 	Vector3 GetPoint(int16 x, int16 y, uint16 height);
 
 	void CursorEnable();
