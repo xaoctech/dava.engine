@@ -1,8 +1,13 @@
-#include "EntityManager.h"
-#include "Component.h"
+#include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Component.h"
+#include "Math/AABBox3.h"
 
 namespace DAVA 
 {
+
+    
+Map<const char *, Pool *> EntityManager::poolAllocators;
 
 Entity * EntityManager::CreateEntity()
 {
@@ -14,37 +19,48 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
 {
     const ComponentType & addType = component->GetType();
     EntityFamilyType oldFamilyType = entity->GetFamily();
-    EntityFamilyType newFamilyType(oldFamilyType, addType);
+    EntityFamilyType newFamilyType = EntityFamilyType::AddComponentType(oldFamilyType, addType);
 
-    EntityFamily * oldFamily = 0; 
-    EntityFamily * newFamily = 0; 
-    
-    Map<EntityFamilyType, EntityFamily*>::iterator oldFamilyIterator = families.find(oldFamilyType);
-    if (oldFamilyIterator != families.end())
-    {
-        oldFamily = oldFamilyIterator->second;
-    }
-    
-    Map<EntityFamilyType, EntityFamily*>::iterator newFamilyIterator = families.find(newFamilyType);
-    if (newFamilyIterator != families.end())
-    {
-        newFamily = newFamilyIterator->second;
-    }
-    
+	ProcessAddRemoveComponent(entity, oldFamilyType, newFamilyType);
+}
+
+void EntityManager::AddComponent(Entity * entity, const char * componentName)
+{
+	Map<const char *, Component * >::iterator it = Component::cache.find(componentName);
+	if(it != Component::cache.end())
+	{
+		AddComponent(entity, it->second);
+	}
+}
+
+void EntityManager::RemoveComponent(Entity * entity, Component * component)
+{
+	const ComponentType & addType = component->GetType();
+	EntityFamilyType oldFamilyType = entity->GetFamily();
+	EntityFamilyType newFamilyType = EntityFamilyType::RemoveComponentType(oldFamilyType, addType);
+
+	ProcessAddRemoveComponent(entity, oldFamilyType, newFamilyType);
+}
+
+void EntityManager::ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldFamilyType, const EntityFamilyType & newFamilyType)
+{
+    EntityFamily * oldFamily = GetFamilyByType(oldFamilyType); 
+    EntityFamily * newFamily = GetFamilyByType(newFamilyType); 
+        
     /*
         Если тип не равен 0, то есть если мы не удалили последний компонент. 
      */
     if (!newFamilyType.IsEmpty() && (newFamily == 0))
     {
-        newFamily = new EntityFamily(newFamilyType);
+        newFamily = new EntityFamily(this, newFamilyType);
             
-        families[newFamilyType] = newFamily;
+        families[newFamilyType.GetBit()] = newFamily;
         
-        // Require refactoring, because depends on intenrnal structure of FamilyType / ComponentType.
+        // Require refactoring, because depends on internal structure of FamilyType / ComponentType.
         uint64 bit = newFamilyType.GetBit();
         for (uint64 idx = 0; idx < 64; ++idx)
         {
-            if (bit & (1 << idx))
+            if (bit & ((int64)1 << idx))
             {
                 Component * comp = Component::GetComponentByIndex(idx);
                 familiesWithComponent.insert(std::pair<Component*, EntityFamily*>(comp, newFamily));
@@ -54,44 +70,108 @@ void EntityManager::AddComponent(Entity * entity, Component * component)
     
     if (oldFamily && newFamily)
     {
-        oldFamily->MoveToFamily(newFamily, entity);
-    }else if (!newFamily)
+		newFamily->MoveFromFamily(oldFamily, entity);
+    }
+	else if (!newFamily)
     {
         oldFamily->DeleteEntity(entity);
-    }else if (!oldFamily)
+    }
+	else if (!oldFamily)
     {
         newFamily->NewEntity(entity);
     }
-    
+
+	entity->SetFamily(newFamilyType);
+	entity->SetIndexInFamily(newFamily->GetSize()-1);
 }
-    
-template<class T>
-TemplatePool<T> * EntityManager::GetLinkedTemplatePoolsForComponent(Component * component, const char * dataName)
+
+EntityFamily * EntityManager::GetFamilyByType(const EntityFamilyType & familyType)
 {
-    std::pair<std::multimap<Component*, EntityFamily*>::iterator, std::multimap<Component*, EntityFamily*>::iterator> range;
-    range = familiesWithComponent.equal_range(component);
-    
-    TemplatePool<T> * currentPool = 0;
-    
-    for (std::multimap<Component*, EntityFamily*>::iterator it2 = range.first; it2 != range.second; ++it2)
+    Map<uint64, EntityFamily*>::iterator familyIterator = families.find(familyType.GetBit());
+    if (familyIterator != families.end())
     {
-        EntityFamily * family = it2->second;
-        Pool * pool = family->GetPoolByComponentIndexDataName(component->GetType().GetIndex(), dataName);
-        TemplatePool<T> * templatePool = dynamic_cast<TemplatePool<T>*>(pool); 
-        templatePool->next = currentPool;
-        currentPool = templatePool;
-    }
-    return currentPool;
+        return familyIterator->second;
+    }   
+    return 0;
 }
-
     
-void EntityManager::RemoveComponent(Entity * entity, Component * component)
+EntityFamily * EntityManager::GetFamily(Component * c0, ...)
 {
+    va_list list;
     
+    va_start(list, c0);
     
+    uint64 bit = c0->GetType().GetBit();
+    while(1)
+    {
+        Component * cNext = va_arg(list, Component*);
+        if (!cNext)break;
+        bit |= cNext->GetType().GetBit();
+    }
+    va_end(list);
+
+    Map<uint64, EntityFamily*>::iterator familyIterator = families.find(bit);
+    if (familyIterator != families.end())
+    {
+        return familyIterator->second;
+    }
+    return 0;
+}
+    
+Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
+{
+	Pool * pool = 0;
+
+    Map<const char *, Pool *>::iterator poolsIt = poolAllocators.find(dataName);
+    if (poolsIt != poolAllocators.end())
+    {
+        Pool * newPool = poolsIt->second->CreateCopy(maxSize);
+        
+        Pool * prevPool = 0;
+        Map<const char *, Pool*>::iterator find = pools.find(dataName);
+        if(pools.end() != find)
+        {
+            prevPool = find->second;
+        }
+        newPool->SetNext(prevPool);
+        pools[dataName] = newPool;
+		pool = newPool;
+    }
+	
+	return pool;
 }
 
-    
+void EntityManager::Dump()
+{
+	Logger::Info("============================");
+	Logger::Info("EntityManager dump");
+	Logger::Info("============================");
+	Logger::Info("Pools:");
+	Logger::Info("============================");
+	
+	Map<const char *, Pool *>::iterator poolIterator;
+	for(poolIterator = pools.begin(); poolIterator != pools.end(); ++poolIterator)
+	{
+		const char * poolName = poolIterator->first;
+		Pool * pool = poolIterator->second;
+		Logger::Info("Pool \"%s\" of type %s", poolName, typeid(*pool).name());
+		Logger::Info("----------------------------");
+		
+		while(pool)
+		{
+			int32 count = pool->GetCount();
+			int32 maxCount = pool->GetMaxCount();
+			Logger::Info("    subpool of family %lld (%d elements, %d maxCount, %d bytes)", pool->GetEntityFamily()->family.GetBit(), count, maxCount, maxCount*pool->typeSizeof);
+			for(int32 i = 0; i < count; ++i)
+			{
+				pool->DumpElement(i);
+			}
+
+			pool = pool->GetNext();
+			Logger::Info("    ----------------------------");
+		}
+	}
+}
 
 //void EntityManager::EntityChanged(Entity * entity)
 //{
@@ -151,5 +231,9 @@ void EntityManager::FlushFamily(EntityFamily * family)
 {
 	family->Flush();
 }*/
+
+
+
+
 
 };

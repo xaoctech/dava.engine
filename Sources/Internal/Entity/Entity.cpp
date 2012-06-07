@@ -17,6 +17,16 @@ void Entity::AddComponent(Component * component)
     manager->AddComponent(this, component);
 }
 
+void Entity::AddComponent(const char * component)
+{
+	manager->AddComponent(this, component);
+}
+
+void Entity::RemoveComponent(Component * component)
+{
+	manager->RemoveComponent(this, component);
+}
+
 //uint32 Entity::CalculateFamily()
 //{
 //	family = 0;
@@ -54,7 +64,5 @@ int32 Entity::GetIndexInFamily()
 {
 	return indexInFamily;
 }
-
-
 
 };

@@ -43,6 +43,9 @@ LOCAL_SRC_FILES :=  \
                     Core/ApplicationCore.cpp \
                     Core/Core.cpp \
                     \
+                    Database/MongodbClient.cpp \
+                    Database/MongodbObject.cpp \
+                    \
                     Debug/MemoryManager.cpp \
                     Debug/Stats.cpp \
                     Debug/Replay.cpp \
@@ -244,6 +247,7 @@ LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libxml_android.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libpng_android.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libfreetype_android.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libyaml_android.a
+LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libmongodb_android.a
 
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)

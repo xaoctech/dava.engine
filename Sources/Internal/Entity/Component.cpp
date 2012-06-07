@@ -1,12 +1,11 @@
 #include "Entity/Component.h"
+#include "Entity/EntityManager.h"
 
 namespace DAVA 
 {
 
 Map<const char *, Component * > Component::cache;
 Map<uint64, Component*>  Component::componentsByIndex;
-
-Component * Component::instance = 0;
 
 Component * Component::GetComponentByIndex(uint64 index)
 {
@@ -18,19 +17,9 @@ Component * Component::GetComponentByIndex(uint64 index)
     return 0;
 }
     
-uint32 Component::GetPoolCount()
-{
-    return (uint32)pools.size();
-}
-
-Component * Component::Get()
-{
-    return instance;
-}
 void Component::RegisterComponent(const char * componentName, Component * component)
 {
     cache[componentName] = component;
-    instance = component;
 }
     
 Component * Component::GetComponent(const char * componentName)
@@ -42,6 +31,7 @@ Component * Component::GetComponent(const char * componentName)
     }
     return 0;
 }
+
     
 };
 
