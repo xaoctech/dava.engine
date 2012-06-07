@@ -25,76 +25,74 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __DAVAENGINE_MONGODB_CLIENT_H__
-#define __DAVAENGINE_MONGODB_CLIENT_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
+#include "BaseScreen.h"
+#include "GameCore.h"
 
-namespace DAVA 
+int32 BaseScreen::globalScreenId = 1;
+
+BaseScreen::BaseScreen(const String & _screenName, int32 skipBeforeTests)
+    :   UIScreen()
 {
+	SetName(_screenName);
     
-/**
-	\defgroup Mongodb 
- */
+    skipCount = skipBeforeTests;
+    skipCounter = 0;
+    readyForTests = false;
 
-/** 
-	\ingroup Mongodb
-	\brief this class is mongodb client and it used if you want to work with mongodb
- */
+    currentScreenId = globalScreenId++;
+    GameCore::Instance()->RegisterScreen(this);
+}
 
-class MongodbObject;
-class MongodbClientInternalData;
-class MongodbClient: public BaseObject
+BaseScreen::BaseScreen()
+    :   UIScreen()
 {
-protected:
-	MongodbClient();
-	
-public:
-	virtual ~MongodbClient();
+    SetName("Dummy");
 
-	static MongodbClient *Create(const String &ip, int32 port);
-	
-    bool Connect(const String &ip, int32 port);
-    void Disconnect();
-    
-    void SetDatabaseName(const String &newDatabase);
-    void SetCollectionName(const String &newCollection);
-
-    void DropDatabase();
-    void DropCollection();
-    
-    bool IsConnected();
-
-    MongodbObject * CreateObject();
-    void DestroyObject(MongodbObject *object);
-
-    bool SaveObject(MongodbObject *object);
+    skipCount = 10;
+    skipCounter = 0;
+    readyForTests = false;
 
     
-    bool SaveBinary(const String &key, uint8 *data, int32 dataSize);
-    int32 GetBinarySize(const String &key);
-    bool GetBinary(const String &key, uint8 *outData, int32 dataSize);
+    currentScreenId = globalScreenId++;
+    GameCore::Instance()->RegisterScreen(this);
+}
 
-    void DumpDB();
-protected:
+int32 BaseScreen::GetScreenId()
+{
+    return currentScreenId;
+}
 
-    void LogError(const String functionName, int32 errorCode);
-    MongodbObject * FindObjectbByKey(const String &key);
+void BaseScreen::WillAppear()
+{
+    skipCounter = 0;
+    readyForTests = (skipCounter == skipCount);
+}
 
-protected:
+
+void BaseScreen::DidAppear()
+{
+    skipCounter = 0;
+    readyForTests = (skipCounter == skipCount);
+}
+
+bool BaseScreen::ReadyForTests()
+{
+    return readyForTests;
+}
+
+void BaseScreen::Update(float32 timeElapsed)
+{
+    if(!readyForTests)
+    {
+        ++skipCounter;
+        if(skipCount == skipCounter)
+        {
+            readyForTests = true;
+        }
+    }
     
-	MongodbClientInternalData *clientData;
-    String database;
-    String collection;
-    String namespaceName;
-
-    Vector<MongodbObject *> objects;
-};
-
-};
-
-#endif // __DAVAENGINE_MONGODB_CLIENT_H__
-
+    UIScreen::Update(timeElapsed);
+}
