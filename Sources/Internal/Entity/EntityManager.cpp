@@ -18,28 +18,60 @@ Entity * EntityManager::CreateEntity()
 void EntityManager::AddComponent(Entity * entity, Component * component)
 {
     const ComponentType & addType = component->GetType();
-    EntityFamilyType oldFamilyType = entity->GetFamily();
-    EntityFamilyType newFamilyType = EntityFamilyType::AddComponentType(oldFamilyType, addType);
 
-	ProcessAddRemoveComponent(entity, oldFamilyType, newFamilyType);
+	Map<Entity*, EntityFamilyType>::iterator it = newFamilyEntities.find(entity);
+	if(newFamilyEntities.end() != it)
+	{
+		EntityFamilyType newFamilyType = EntityFamilyType::AddComponentType(it->second, addType);
+		it->second = newFamilyType;
+	}
+	else
+	{
+		EntityFamilyType oldFamilyType = entity->GetFamily();
+		EntityFamilyType newFamilyType = EntityFamilyType::AddComponentType(oldFamilyType, addType);
+		newFamilyEntities[entity] = newFamilyType;
+	}
 }
 
 void EntityManager::AddComponent(Entity * entity, const char * componentName)
 {
-	Map<const char *, Component * >::iterator it = Component::cache.find(componentName);
-	if(it != Component::cache.end())
-	{
-		AddComponent(entity, it->second);
-	}
+	//Map<const char *, Component * >::iterator it = Component::cache.find(componentName);
+	//if(it != Component::cache.end())
+	//{
+	//	AddComponent(entity, it->second);
+	//}
 }
 
 void EntityManager::RemoveComponent(Entity * entity, Component * component)
 {
 	const ComponentType & addType = component->GetType();
-	EntityFamilyType oldFamilyType = entity->GetFamily();
-	EntityFamilyType newFamilyType = EntityFamilyType::RemoveComponentType(oldFamilyType, addType);
 
-	ProcessAddRemoveComponent(entity, oldFamilyType, newFamilyType);
+	Map<Entity*, EntityFamilyType>::iterator it = newFamilyEntities.find(entity);
+	if(newFamilyEntities.end() != it)
+	{
+		EntityFamilyType newFamilyType = EntityFamilyType::RemoveComponentType(it->second, addType);
+		it->second = newFamilyType;
+	}
+	else
+	{
+		EntityFamilyType oldFamilyType = entity->GetFamily();
+		EntityFamilyType newFamilyType = EntityFamilyType::RemoveComponentType(oldFamilyType, addType);
+		newFamilyEntities[entity] = newFamilyType;
+	}
+}
+
+void EntityManager::Flush()
+{
+	Map<Entity*, EntityFamilyType>::iterator it = newFamilyEntities.begin();
+	Map<Entity*, EntityFamilyType>::iterator itEnd = newFamilyEntities.end();
+	for(; it != itEnd; ++it)
+	{
+		Entity * entity = it->first;
+		ProcessAddRemoveComponent(entity, entity->GetFamily(), it->second);
+		entity->changeState = 0;
+	}
+
+	newFamilyEntities.clear();
 }
 
 void EntityManager::ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldFamilyType, const EntityFamilyType & newFamilyType)
@@ -172,6 +204,8 @@ void EntityManager::Dump()
 		}
 	}
 }
+
+
 
 //void EntityManager::EntityChanged(Entity * entity)
 //{
