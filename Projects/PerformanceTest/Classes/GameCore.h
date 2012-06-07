@@ -31,9 +31,12 @@
 #define __GAMECORE_H__
 
 #include "DAVAEngine.h"
+#include "Database/MongodbClient.h"
 
 using namespace DAVA;
 
+class TestData;
+class BaseScreen;
 class GameCore : public ApplicationCore
 {
 public:	
@@ -56,20 +59,43 @@ public:
 	virtual void Update(DAVA::float32 update);
 	virtual void Draw();
 
-    
-	File * logFile;
-    
-    void TestFinished();
-    
-    void RegisterScreen(DAVA::UIScreen *screen);
+    void RegisterScreen(BaseScreen *screen);
+
+    void LogMessage(const String &message);
     
 protected:
     
-    void RunCurrentTest();
+    bool ConnectToDB();
+    
+    void RunAllTests();
+    void RunTestByName(const String &testName);
+
+    void ProcessTests();
+    void FinishTests();
+    
+    void FlushTestResults();
+    
     bool CreateLogFile();
     
+    String GetPlatformName();
+    
+    
+    int32 TestCount();
+    
+    void SaveTestResult(MongodbObject *logObject, TestData *testData, int32 index);
+    
+protected:
+    
+    File * logFile;
+
+    MongodbClient *dbClient;
+    
+    BaseScreen *currentScreen;
+
     int32 currentScreenIndex;
-    Vector<DAVA::UIScreen *> screens;
+    Vector<BaseScreen *> screens;
+    
+    int32 currentTestIndex;
 };
 
 
