@@ -15,5 +15,6 @@ do
    # run and wait until finishes
    open -W ./build/$3/$2.app 
 done
+cd ../dava.framework/Projects/Autotesting/Scripts
 sh autotesting_finish.sh
 echo "autotesting_macos.sh finished"
