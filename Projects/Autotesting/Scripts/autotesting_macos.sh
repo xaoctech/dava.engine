@@ -7,8 +7,9 @@ sh autotesting_init.sh
 cd ../../../../$1
 for filename in ./Tests/*
 do
+   echo "copy $filename"
    # copy test scenario from Tests folder into autotesting.yaml in Data/Tests
-   cp -Rf filename ./Data/Tests/autotesting.yaml
+   cp -Rf $filename ./Data/Tests/autotesting.yaml
    # build project
    xcodebuild -project $2.xcodeproj -configuration $3 -alltargets
    # run and wait until finishes
