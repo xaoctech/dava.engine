@@ -1,5 +1,5 @@
 # !/bin/bash 
 #  autotesting_init.sh
 
-echo "autotesting finish"
-sh copy_config_restore.sh
+echo "autotesting_finish.sh"
+#TODO: create report
