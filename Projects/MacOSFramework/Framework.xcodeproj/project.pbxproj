@@ -472,6 +472,8 @@
 		FEEB6E7C131BC61C00958ACB /* Replay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEEB6E7A131BC61C00958ACB /* Replay.cpp */; };
 		FEEB6E7D131BC61C00958ACB /* Replay.h in Headers */ = {isa = PBXBuildFile; fileRef = FEEB6E7B131BC61C00958ACB /* Replay.h */; };
 		FEF4E23212CD3C1F004B850E /* libBox2D_MacOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4E22C12CD3BED004B850E /* libBox2D_MacOS.a */; };
+		FEF538A91583348A0014679C /* Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = FEF538A81583348A0014679C /* Backtrace.h */; };
+		FEF538AB158334970014679C /* Backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEF538AA158334970014679C /* Backtrace.cpp */; };
 		FEFD184B1305D49C0050D7E6 /* AABBox2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEFD182D1305D49C0050D7E6 /* AABBox2.cpp */; };
 		FEFD184C1305D49C0050D7E6 /* AABBox2.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFD182E1305D49C0050D7E6 /* AABBox2.h */; };
 		FEFD184D1305D49C0050D7E6 /* AABBox3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEFD182F1305D49C0050D7E6 /* AABBox3.cpp */; };
@@ -997,6 +999,8 @@
 		FEEB6E7A131BC61C00958ACB /* Replay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Replay.cpp; sourceTree = "<group>"; };
 		FEEB6E7B131BC61C00958ACB /* Replay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Replay.h; sourceTree = "<group>"; };
 		FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FEF538A81583348A0014679C /* Backtrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Backtrace.h; sourceTree = "<group>"; };
+		FEF538AA158334970014679C /* Backtrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Backtrace.cpp; sourceTree = "<group>"; };
 		FEFD182D1305D49C0050D7E6 /* AABBox2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AABBox2.cpp; sourceTree = "<group>"; };
 		FEFD182E1305D49C0050D7E6 /* AABBox2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AABBox2.h; sourceTree = "<group>"; };
 		FEFD182F1305D49C0050D7E6 /* AABBox3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AABBox3.cpp; sourceTree = "<group>"; };
@@ -1336,6 +1340,8 @@
 		FECFC0DF12E87E3000C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FEF538A81583348A0014679C /* Backtrace.h */,
+				FEF538AA158334970014679C /* Backtrace.cpp */,
 				FEE76B93153851CB00784D5F /* Stats.cpp */,
 				FEE76B94153851CB00784D5F /* Stats.h */,
 				FECFC0E012E87E3000C71562 /* DVAssert.h */,
@@ -2092,6 +2098,7 @@
 				C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */,
 				C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */,
 				C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */,
+				FEF538A91583348A0014679C /* Backtrace.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2393,6 +2400,7 @@
 				C7DE5977157F8CA10045CA41 /* AssertAction.cpp in Sources */,
 				C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */,
 				C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */,
+				FEF538AB158334970014679C /* Backtrace.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
