@@ -562,7 +562,7 @@ protected:
     int oldNormalArrayEnabled;                      // state
 	int oldTextureCoordArrayEnabled[RenderStateBlock::MAX_TEXTURE_LEVELS];                // state
 	int oldColorArrayEnabled;                       // state
-	int oldBlendingEnabled;                         // state
+//	int oldBlendingEnabled;                         // state
 
     
     /*int newTextureEnabled, oldTextureEnabled;       // Enable or disable texturing
