@@ -406,7 +406,9 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
     // Enter FullScreen mode and make our FullScreen context the active context for OpenGL commands.
 	//NSLog(@"[CoreMacOSPlatform] failed to create fullScreenContext");
 	NSLog(@"[CoreMacOSPlatform] setFullscreen (before)");
-	[fullScreenContext setFullScreen];
+	//[fullScreenContext setFullScreen];
+    CGLContextObj obj = (CGLContextObj)[fullScreenContext CGLContextObj];
+    CGLError errr = CGLSetFullScreenOnDisplay(obj, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay));
 	NSLog(@"[CoreMacOSPlatform] makeCurrentContext (before)");
     [fullScreenContext makeCurrentContext];
 	
