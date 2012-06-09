@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/RenderStateBlock.h"
 #include "Render/RenderManager.h"
+#include "Debug/Backtrace.h"
 #include "Render/Shader.h"
 #include "Platform/Thread.h"
 #include "Utils/Utils.h"
@@ -52,13 +53,14 @@ RenderStateBlock::~RenderStateBlock()
     
 }
     
+//#define LOG_FINAL_RENDER_STATE
     
 /**
     Function to reset state to original zero state.
  */
 void RenderStateBlock::Reset(bool doHardwareReset)
 {
-    state = 0;
+    state = DEFAULT_2D_STATE_BLEND;
     changeSet = 0;
     color.r = 1.0f;
     color.g = 1.0f;
@@ -77,6 +79,8 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     
     if (doHardwareReset)
     {
+        Logger::Debug("Do hardware reset");
+        PrintBackTraceToLog();
         SetColorInHW();
         SetEnableBlendingInHW();
         SetBlendModeInHW();
@@ -313,7 +317,12 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 inline void RenderStateBlock::SetColorInHW()
 {
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+    {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::color = (%f, %f, %f, %f)", color.r * color.a, color.g * color.a, color.b * color.a, color.a);
+#endif
         RENDER_VERIFY(glColor4f(color.r * color.a, color.g * color.a, color.b * color.a, color.a));
+    }
 }
     
 inline void RenderStateBlock::SetColorMaskInHW()
@@ -323,6 +332,9 @@ inline void RenderStateBlock::SetColorMaskInHW()
     GLboolean blueMask = (state & STATE_COLORMASK_BLUE) != 0;
     GLboolean alphaMask = (state & STATE_COLORMASK_ALPHA) != 0;
     
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::colormask = %d %d %d %d", redMask, greenMask, blueMask, alphaMask);
+#endif    
     RENDER_VERIFY(glColorMask(redMask, 
                               greenMask, 
                               blueMask, 
@@ -333,10 +345,16 @@ inline void RenderStateBlock::SetStensilTestInHW()
 {
 	if (state & STATE_STENCIL_TEST)
 	{
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::stencil = true");
+#endif    
 		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
 	}
 	else
 	{
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::stencil = false");
+#endif    
 		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
 	}
 }
@@ -345,10 +363,16 @@ inline void RenderStateBlock::SetEnableBlendingInHW()
 {
     if (state & STATE_BLEND)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::blend = true");
+#endif    
         RENDER_VERIFY(glEnable(GL_BLEND));
     }
     else 
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::blend = false");
+#endif    
         RENDER_VERIFY(glDisable(GL_BLEND));
     }
 }
@@ -357,22 +381,37 @@ inline void RenderStateBlock::SetCullInHW()
 {
     if (state & STATE_CULL)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::cullface = true");
+#endif    
+
         RENDER_VERIFY(glEnable(GL_CULL_FACE));
     }
     else 
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::cullface = false");
+#endif    
         RENDER_VERIFY(glDisable(GL_CULL_FACE));
     }
 }
 
 inline void RenderStateBlock::SetCullModeInHW()
 {
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::cull_mode = %d", cullMode);
+#endif    
+
     RENDER_VERIFY(glCullFace(CULL_FACE_MAP[cullMode]));
 }
 
 
 inline void RenderStateBlock::SetBlendModeInHW()
 {
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::blend_src_dst = (%d, %d)", sourceFactor, destFactor);
+#endif    
+
     RENDER_VERIFY(glBlendFunc(BLEND_MODE_MAP[sourceFactor], BLEND_MODE_MAP[destFactor]));
 }
 
