@@ -79,8 +79,9 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     
     if (doHardwareReset)
     {
+        RenderManager::Instance()->LockNonMain();
         Logger::Debug("Do hardware reset");
-        PrintBackTraceToLog();
+        // PrintBackTraceToLog();
         SetColorInHW();
         SetEnableBlendingInHW();
         SetBlendModeInHW();
@@ -98,6 +99,8 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         {
             SetTextureLevelInHW(textureLevel);
         }
+        RenderManager::Instance()->UnlockNonMain();
+
     }
 }
 bool RenderStateBlock::IsEqual(RenderStateBlock * anotherState)
@@ -128,6 +131,8 @@ bool RenderStateBlock::IsEqual(RenderStateBlock * anotherState)
 
 void RenderStateBlock::Flush(RenderStateBlock * previousState)
 {
+    RenderManager::Instance()->LockNonMain();
+
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::Flush started");
 #endif    
@@ -199,16 +204,18 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
                 }
 
 		if (changeSet & STATE_CHANGED_DEPTH_FUNC)
-		{
-			SetDepthFuncInHW();
-			previousState->depthFunc = depthFunc;
-		}
+            if (previousState->depthFunc != depthFunc)
+            {
+                SetDepthFuncInHW();
+                previousState->depthFunc = depthFunc;
+            }
 
 		if (changeSet & STATE_CHANGED_SCISSOR_RECT)
-		{
-			SetScissorRectInHW();
-			previousState->scissorRect = scissorRect;
-		}
+            if(previousState->scissorRect != scissorRect)
+            {
+                SetScissorRectInHW();
+                previousState->scissorRect = scissorRect;
+            }
         
         if (changeSet & STATE_CHANGED_TEXTURE0)
         {
@@ -317,6 +324,8 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::Flush finished");
 #endif    
+    RenderManager::Instance()->UnlockNonMain();
+
 }
     
     
