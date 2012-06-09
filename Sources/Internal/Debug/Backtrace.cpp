@@ -1,6 +1,8 @@
 #include "Debug/Backtrace.h"
 #include "FileSystem/Logger.h"
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 #include <execinfo.h>
+#endif
 
 
 namespace DAVA 
