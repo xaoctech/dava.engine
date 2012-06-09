@@ -181,7 +181,8 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 #if defined(__DAVAENGINE_DIRECTX9__)
 	currentState.direct3DDevice = GetD3DDevice();
 #endif
-	currentState.Reset(true);
+	currentState.Reset(false);
+    hardwareState.Reset(true);
 
 #if defined(__DAVAENGINE_OPENGL__)
     glDisableClientState(GL_VERTEX_ARRAY);
