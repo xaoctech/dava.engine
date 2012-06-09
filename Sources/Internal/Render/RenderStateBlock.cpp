@@ -80,7 +80,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     if (doHardwareReset)
     {
         Logger::Debug("Do hardware reset");
-        PrintBackTraceToLog();
+        // PrintBackTraceToLog();
         SetColorInHW();
         SetEnableBlendingInHW();
         SetBlendModeInHW();
