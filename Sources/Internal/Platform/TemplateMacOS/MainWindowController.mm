@@ -350,19 +350,20 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 		
         // Specify that we want a full-screen OpenGL context.
         NSOpenGLPFAFullScreen,
-		NSOpenGLPFADoubleBuffer,
-		
         // We may be on a multi-display system (and each screen may be driven by a different renderer), so we need to specify which screen we want to take over.  For this demo, we'll specify the main screen.
         NSOpenGLPFAScreenMask, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay),
-		
         // Attributes Common to FullScreen and non-FullScreen
+
+        NSOpenGLPFANoRecovery,	/* disable all failure recovery systems         */
 
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFAColorSize, [openGLView displayBitsPerPixel:kCGDirectMainDisplay], //24,
 #else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay), //24,
 #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+
         NSOpenGLPFADepthSize, 16,
+        NSOpenGLPFAStencilSize, 8,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
         0
