@@ -181,6 +181,8 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 #if defined(__DAVAENGINE_DIRECTX9__)
 	currentState.direct3DDevice = GetD3DDevice();
 #endif
+    
+    RenderManager::LockNonMain();
 	currentState.Reset(false);
     hardwareState.Reset(true);
 
@@ -201,7 +203,8 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
     glDisableClientState(GL_COLOR_ARRAY);
     oldColorArrayEnabled = 0;                       
 
-    
+    RenderManager::UnlockNonMain();
+
     
 #endif
     
