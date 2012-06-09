@@ -33,13 +33,8 @@
 SpriteTest::SpriteTest()
 : TestTemplate<SpriteTest>("Sprite")
 {
-
-}
-
-void SpriteTest::LoadResources()
-{
-	int32 repeatCount = 2;
-
+	int32 repeatCount = 10;
+    
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position)", repeatCount, (void*)(SET_POSITION));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | all default setters)", repeatCount, (void*)(SET_POSITION | SET_ALL_DEFAULT_SETTERS));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | pivot)", repeatCount, (void*)(SET_POSITION | SET_PIVOT_POINT));
@@ -49,7 +44,7 @@ void SpriteTest::LoadResources()
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | scale | pivot)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_PIVOT_POINT));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | angle | scale)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_ANGLE));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888Draw, "SpriteRGBA888Draw(position | angle | scale | pivot)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_ANGLE | SET_PIVOT_POINT));
-
+    
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888DrawStateDraw, "SpriteRGBA888DrawStateDraw(position)", repeatCount, (void*)(SET_POSITION));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888DrawStateDraw, "SpriteRGBA888DrawStateDraw(position | pivot)", repeatCount, (void*)(SET_POSITION | SET_PIVOT_POINT));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888DrawStateDraw, "SpriteRGBA888DrawStateDraw(position | angle)", repeatCount, (void*)(SET_POSITION | SET_ANGLE));
@@ -58,7 +53,7 @@ void SpriteTest::LoadResources()
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888DrawStateDraw, "SpriteRGBA888DrawStateDraw(position | scale | pivot)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_PIVOT_POINT));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888DrawStateDraw, "SpriteRGBA888DrawStateDraw(position | angle | scale)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_ANGLE));
 	RegisterFunction(this, &SpriteTest::SpriteRGBA888DrawStateDraw, "SpriteRGBA888DrawStateDraw(position | angle | scale | pivot)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_ANGLE | SET_PIVOT_POINT));
-
+    
 	RegisterFunction(this, &SpriteTest::GameObjectRGBA888Draw, "GameObjectRGBA888Draw(position)", repeatCount, (void*)(SET_POSITION));
 	RegisterFunction(this, &SpriteTest::GameObjectRGBA888Draw, "GameObjectRGBA888Draw(position | pivot)", repeatCount, (void*)(SET_POSITION | SET_PIVOT_POINT));
 	RegisterFunction(this, &SpriteTest::GameObjectRGBA888Draw, "GameObjectRGBA888Draw(position | angle)", repeatCount, (void*)(SET_POSITION | SET_ANGLE));
@@ -67,7 +62,10 @@ void SpriteTest::LoadResources()
 	RegisterFunction(this, &SpriteTest::GameObjectRGBA888Draw, "GameObjectRGBA888Draw(position | scale | pivot)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_PIVOT_POINT));
 	RegisterFunction(this, &SpriteTest::GameObjectRGBA888Draw, "GameObjectRGBA888Draw(position | angle | scale)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_ANGLE));
 	RegisterFunction(this, &SpriteTest::GameObjectRGBA888Draw, "GameObjectRGBA888Draw(position | angle | scale | pivot)", repeatCount, (void*)(SET_POSITION | SET_SCALE | SET_ANGLE | SET_PIVOT_POINT));
+}
 
+void SpriteTest::LoadResources()
+{
 	redSprite = Sprite::Create("~res:/Gfx/SpriteTest/redsprite");
 	greenSprite = Sprite::Create("~res:/Gfx/SpriteTest/greensprite");
 	blueSprite = Sprite::Create("~res:/Gfx/SpriteTest/bluesprite");
@@ -89,9 +87,9 @@ void SpriteTest::UnloadResources()
 void SpriteTest::SpriteRGBA888Draw(PerfFuncData * data)
 {
 #if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-	int32 type = (int64)data->userData;
+	int32 type = (int64)data->testData.userData;
 #else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-	int32 type = (int32)data->userData;
+	int32 type = (int32)data->testData.userData;
 #endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
@@ -150,9 +148,9 @@ void SpriteTest::SpriteRGBA888Draw(PerfFuncData * data)
 void SpriteTest::SpriteRGBA888DrawStateDraw(PerfFuncData * data)
 {
 #if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-	int32 type = (int64)data->userData;
+	int32 type = (int64)data->testData.userData;
 #else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-	int32 type = (int32)data->userData;
+	int32 type = (int32)data->testData.userData;
 #endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;
@@ -221,9 +219,9 @@ void SpriteTest::SpriteRGBA888DrawStateDraw(PerfFuncData * data)
 void SpriteTest::GameObjectRGBA888Draw(PerfFuncData * data)
 {
 #if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-	int32 type = (int64)data->userData;
+	int32 type = (int64)data->testData.userData;
 #else //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
-	int32 type = (int32)data->userData;
+	int32 type = (int32)data->testData.userData;
 #endif //#if defined (__DAVAENGINE_MACOS__) && defined (__x86_64__) 
 
 	float x = 0;

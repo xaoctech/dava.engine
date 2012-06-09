@@ -20,7 +20,7 @@
     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
@@ -28,43 +28,71 @@
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
 
-#ifndef __LANDSCAPE_TEST_H__
-#define __LANDSCAPE_TEST_H__
+#include "BaseScreen.h"
+#include "GameCore.h"
 
-#include "DAVAEngine.h"
-using namespace DAVA;
+int32 BaseScreen::globalScreenId = 1;
 
-#include "TestTemplate.h"
-
-class LandscapeTest: public TestTemplate<LandscapeTest>
+BaseScreen::BaseScreen(const String & _screenName, int32 skipBeforeTests)
+    :   UIScreen()
 {
-    enum eConst
+	SetName(_screenName);
+    
+    skipCount = skipBeforeTests;
+    skipCounter = 0;
+    readyForTests = false;
+
+    currentScreenId = globalScreenId++;
+    GameCore::Instance()->RegisterScreen(this);
+}
+
+BaseScreen::BaseScreen()
+    :   UIScreen()
+{
+    SetName("Dummy");
+
+    skipCount = 10;
+    skipCounter = 0;
+    readyForTests = false;
+
+    
+    currentScreenId = globalScreenId++;
+    GameCore::Instance()->RegisterScreen(this);
+}
+
+int32 BaseScreen::GetScreenId()
+{
+    return currentScreenId;
+}
+
+void BaseScreen::WillAppear()
+{
+    skipCounter = 0;
+    readyForTests = (skipCounter == skipCount);
+}
+
+
+void BaseScreen::DidAppear()
+{
+    skipCounter = 0;
+    readyForTests = (skipCounter == skipCount);
+}
+
+bool BaseScreen::ReadyForTests()
+{
+    return readyForTests;
+}
+
+void BaseScreen::Update(float32 timeElapsed)
+{
+    if(!readyForTests)
     {
-        TEST_FRAMES_COUNT = 100
-    };
+        ++skipCounter;
+        if(skipCount == skipCounter)
+        {
+            readyForTests = true;
+        }
+    }
     
-public:
-	LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode);
-
-	virtual void LoadResources();
-	virtual void UnloadResources();
-    
-    virtual void Draw(const UIGeometricData &geometricData);
-    
-    virtual bool RunTest(int32 testNum);
-
-protected:
-    
-    void DrawSprite(PerfFuncData * data);
-
-    int32 testCounter;
-    
-    uint64 startTime;
-
-    LandscapeNode::eTiledShaderMode shaderMode;
-    
-    Sprite *textures[LandscapeNode::TEXTURE_COUNT];
-};
-
-
-#endif // __LANDSCAPE_TEST_H__
+    UIScreen::Update(timeElapsed);
+}

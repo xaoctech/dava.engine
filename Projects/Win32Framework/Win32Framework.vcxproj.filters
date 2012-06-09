@@ -100,6 +100,9 @@
     <Filter Include="Internal\Scene3D\Imposter">
       <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Autotesting">
+      <UniqueIdentifier>{9c48b596-2306-460c-82bd-f3a4279468b9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Internal\Entity">
       <UniqueIdentifier>{8f66ae0b-aa43-4803-a2d8-3f693710b865}</UniqueIdentifier>
     </Filter>
@@ -975,7 +978,19 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
+      <Filter>Internal\Autotesting</Filter>
+    </ClInclude>
+        <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
@@ -1747,6 +1762,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
       <Filter>Internal\Entity</Filter>
+    </ClCompile>
+        <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp">
+      <Filter>Internal\Autotesting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -42,6 +42,8 @@ public:
         
 	void Dump();
 
+	void Flush(); //process newFamilyEntities
+
 	//TODO: GC(); //remove empty EntityFamilies
     
 private:
@@ -54,8 +56,8 @@ private:
     Map<const char *, Pool *> pools;
     
 	void ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldType, const EntityFamilyType & newType);
-                              
-//	Set<Entity*> changedEntities;
+
+	Map<Entity*, EntityFamilyType> newFamilyEntities;
 //
 //	void FlushEntity(Entity * entity);
 //	void RemoveFromMap(Entity * entity );
