@@ -96,9 +96,9 @@ void SpriteBasicsScreen::WillDisappear()
 
 void SpriteBasicsScreen::Input(UIEvent * touch)
 {
-	//if ((touch->phase == UIEvent::PHASE_ENDED) /*&& (touch->tid == UIEvent::BUTTON_2)*/)
+	if ((touch->phase == UIEvent::PHASE_ENDED) && (touch->tid == UIEvent::BUTTON_2))
 	{
-		//Core::Instance()->ToggleFullscreen();
+		Core::Instance()->ToggleFullscreen();
         
         //UIScreenManager::Instance()->SetScreen(SCREEN_PARTICLE_TEST, holeTransition);
     }
