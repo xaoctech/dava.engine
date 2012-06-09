@@ -20,81 +20,32 @@
     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __DAVAENGINE_MONGODB_CLIENT_H__
-#define __DAVAENGINE_MONGODB_CLIENT_H__
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
+//#define SINGLE_MODE
 
-namespace DAVA 
-{
-    
-/**
-	\defgroup Mongodb 
- */
+#if defined (SINGLE_MODE)
+    #define SINGLE_TEST_NAME        String("Landscape Mixed Mode")
+#endif //#if defined (SINGLE_MODE)
 
-/** 
-	\ingroup Mongodb
-	\brief this class is mongodb client and it used if you want to work with mongodb
- */
 
-class MongodbObject;
-class MongodbClientInternalData;
-class MongodbClient: public BaseObject
-{
-protected:
-	MongodbClient();
-	
-public:
-	virtual ~MongodbClient();
+#define DATABASE_IP               String("10.128.128.131")
+//#define DATABASE_IP                 String("127.0.0.1")
+#define DATAPASE_PORT               27017
 
-	static MongodbClient *Create(const String &ip, int32 port);
-	
-    bool Connect(const String &ip, int32 port);
-    void Disconnect();
-    
-    void SetDatabaseName(const String &newDatabase);
-    void SetCollectionName(const String &newCollection);
+#define DATABASE_NAME               String("PerformanceTest")
+#if defined (SINGLE_MODE)
+    #define DATABASE_COLLECTION     String("Single Test")
+#else //#if defined (SINGLE_MODE)
+    #define DATABASE_COLLECTION     String("Multiple Tests")
+#endif //#if defined (SINGLE_MODE)
 
-    void DropDatabase();
-    void DropCollection();
-    
-    bool IsConnected();
-
-    MongodbObject * CreateObject();
-    void DestroyObject(MongodbObject *object);
-
-    bool SaveObject(MongodbObject *object);
-
-    
-    bool SaveBinary(const String &key, uint8 *data, int32 dataSize);
-    int32 GetBinarySize(const String &key);
-    bool GetBinary(const String &key, uint8 *outData, int32 dataSize);
-
-    void DumpDB();
-protected:
-
-    void LogError(const String functionName, int32 errorCode);
-    MongodbObject * FindObjectbByKey(const String &key);
-
-protected:
-    
-	MongodbClientInternalData *clientData;
-    String database;
-    String collection;
-    String namespaceName;
-
-    Vector<MongodbObject *> objects;
-};
-
-};
-
-#endif // __DAVAENGINE_MONGODB_CLIENT_H__
-
+#endif // __CONFIG_H__

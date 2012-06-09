@@ -31,6 +31,9 @@
 #include "Database/MongodbObject.h"
 #include "mongodb/mongo.h"
 
+#include "Utils/StringFormat.h"
+
+
 namespace DAVA 
 {
 class MongodbClientInternalData: public BaseObject
@@ -42,7 +45,7 @@ public:
 		connection = new mongo();
 		DVASSERT(connection);
 
-		Memset(connection, 0, sizeof(connection));
+		Memset(connection, 0, sizeof(mongo));
 		mongo_init(connection);
 	}
 
@@ -65,6 +68,7 @@ MongodbClient * MongodbClient::Create(const String &ip, int32 port)
         bool ret = client->Connect(ip, port);
         if(!ret)
         {
+            SafeRelease(client);
             Logger::Error("[MongodbClient] can't connect to database");
         }
 	}
@@ -85,7 +89,7 @@ MongodbClient::MongodbClient()
 
 MongodbClient::~MongodbClient()
 {
-    for(int32 i = 0; i < objects.size(); ++i)
+    for(int32 i = 0; i < (int32)objects.size(); ++i)
     {
         SafeRelease(objects[i]);
     }
@@ -191,7 +195,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
         DVASSERT(binary);
         
         binary->SetObjectName(key);
-        binary->AddInt(String("DataSize").c_str(), dataSize);
+        binary->AddInt32(String("DataSize").c_str(), dataSize);
         binary->AddData(String("Data").c_str(), data, dataSize);
         binary->Finish();
         
@@ -231,7 +235,7 @@ int32 MongodbClient::GetBinarySize(const String &key)
     MongodbObject *object = FindObjectbByKey(key);
     if(object)
     {
-        retSize = object->GetInt(String("DataSize"));
+        retSize = object->GetInt32(String("DataSize"));
         DestroyObject(object);
     }
     else 
@@ -304,32 +308,60 @@ void MongodbClient::DestroyObject(DAVA::MongodbObject *object)
     }
 }
     
-//void MongodbClient::Dump()
-//{
-//    Logger::Debug("***** MONGO DUMP *******");
-//
-//    bson query;
-//    bson_empty(&query);
-//    
-//    mongo_cursor *cursor = mongo_find(&connection, namespaceName.c_str(), &query, NULL, 0, 0, 0);
-//    int32 count = 0;
-//    while( mongo_cursor_next( cursor ) == MONGO_OK )
-//    {
-//        Logger::Debug("BSON[%d]:", count);
-//        
-//        const bson *currentObject = mongo_cursor_bson(cursor);
-//        bson_print(currentObject);
-//        
-//        ++count;
-//    }
-//
-//    mongo_cursor_destroy(cursor);
-//    
-//    Logger::Debug("Count: %d", count);
-//    
-//    
-//    Logger::Debug("************************");
-//}
+bool MongodbClient::SaveObject(MongodbObject *object)
+{
+    int32 status = MONGO_ERROR;
+    if(IsConnected())
+    {
+        MongodbObject *foundObject = FindObjectbByKey(object->GetObjectName());
+        if(foundObject)
+        {
+            status = mongo_update(clientData->connection, namespaceName.c_str(), (bson *)foundObject->InternalObject(), (bson *)object->InternalObject(), 0, NULL);
+            if(MONGO_OK != status)
+            {
+                LogError(String("SaveObject, update"), clientData->connection->err);
+            }
+            
+            DestroyObject(foundObject);
+        }
+        else 
+        {
+            status = mongo_insert(clientData->connection, namespaceName.c_str(), (bson *)object->InternalObject(), NULL);
+            if(MONGO_OK != status)
+            {
+                LogError(String("SaveObject, insert"), clientData->connection->err);
+            }
+        }
+    }
+    
+    return (MONGO_OK == status);
+}
+
+    
+void MongodbClient::DumpDB()
+{
+    Logger::Debug("***** MONGO DUMP *******");
+
+    bson query;
+    bson_empty(&query);
+    
+    mongo_cursor *cursor = mongo_find(clientData->connection, namespaceName.c_str(), &query, NULL, 0, 0, 0);
+    int32 count = 0;
+    while( mongo_cursor_next( cursor ) == MONGO_OK )
+    {
+        const bson *currentObject = mongo_cursor_bson(cursor);
+        
+        Logger::Debug(Format("BSON[%d]:", count));
+        bson_print(currentObject);
+        
+        ++count;
+    }
+
+    mongo_cursor_destroy(cursor);
+    
+    Logger::Debug("Count: %d", count);
+    Logger::Debug("************************");
+}
     
     
 }

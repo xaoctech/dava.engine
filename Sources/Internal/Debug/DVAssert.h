@@ -93,21 +93,21 @@ template <> struct CompileTimeError<true> {};
 #define DVASSERT(expr)\
 	if (!(expr))\
 	{\
-		Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
+		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
 		DebugBreak()\
 	}\
 
 #define DVASSERT_MSG(expr, msg)\
 	if (!(expr))\
 	{\
-		Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
 		DebugBreak()\
 	}\
 
 #define DVWARNING(expr, msg)\
     if (!(expr))\
     {\
-        Logger::Instance()->Warning("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+        DAVA::Logger::Instance()->Warning("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
     }\
 
 #define DVVERIFY(expr) DVASSERT(expr)
