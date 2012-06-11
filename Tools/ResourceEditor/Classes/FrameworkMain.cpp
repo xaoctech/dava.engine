@@ -21,7 +21,7 @@ void EntityTest();
 
 void FrameworkDidLaunched()
 {
-	EntityTest();
+	//EntityTest();
 
 	if (Core::Instance()->IsConsoleMode())
 	{
