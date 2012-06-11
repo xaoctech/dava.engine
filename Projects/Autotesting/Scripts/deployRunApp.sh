@@ -1,17 +1,35 @@
 # !/bin/bash
-echo "copy PerfomanceTest.app"
-cp -Rf "../build/Release-iphoneos/PerfomanceTest.app" "./"
 
-echo "sign and create PerfomanceTest.ipa"
-sh floatsign.sh PerfomanceTest.app 4L7VSNH4R3 PerfomanceTest.ipa
+# $1 - configuration
+# $2 - target product name
+# $3 - certificate id
+# $4 - device id
 
-echo "deploy ipa on device"
-./transporter_chief.rb PerfomanceTest.ipa
+echo "cd .."
+cd ..
 
-echo "run app on device"
-instruments -w 3a80111143a4bf963e27ea94197a85d33039cec9 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "PerfomanceTest" -e UIASCRIPT testRun.js
+echo "rm -rf Autotesting/$2.app"
+rm -rf Autotesting/$2.app
+
+echo "copy build/$3-iphoneos/$2.app to Autotesting/$2.app"
+cp -Rf build/$1-iphoneos/$2.app Autotesting/$2.app
+
+echo "cd Autotesting"
+cd Autotesting
+
+echo "sign with $3 and create $2"
+sh floatsign.sh $2.app $3 $2.ipa
+
+echo "deploy $2.ipa on device"
+./transporter_chief.rb $2.ipa
+
+echo "run app on device $4"
+instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
+
+echo "cd .."
+cd ..
 
 #del temporary files
-rm -rf ./PerfomanceTest.*
-rm -rf ./fruitstrap
-rm -rf ./instrumentscli*
+#rm -rf ./AutoTest.*
+#rm -rf ./fruitstrap
+#rm -rf ./instrumentscli*
