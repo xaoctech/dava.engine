@@ -11,20 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\BaseScreen.h" />
     <ClInclude Include="Classes\CacheTest.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\LandscapeTest.h" />
-    <ClInclude Include="Classes\MongodbTest.h" />
     <ClInclude Include="Classes\SpriteTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\BaseScreen.cpp" />
     <ClCompile Include="Classes\CacheTest.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\LandscapeTest.cpp" />
-    <ClCompile Include="Classes\MongodbTest.cpp" />
     <ClCompile Include="Classes\SpriteTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
