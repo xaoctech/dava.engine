@@ -24,6 +24,9 @@
 #include "SceneEditor/PVRConverter.h"
 #include "SceneEditor/PVRUtils.h"
 
+#include "SceneEditor/CommandLineTool.h"
+#include "SceneEditor/ExporterScreen.h"
+
 using namespace DAVA;
 
 
@@ -59,23 +62,34 @@ void GameCore::OnAppStarted()
     
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();
+    
+    exporterScreen = new ExporterScreen();
 
 	UIScreenManager::Instance()->RegisterScreen(SCREEN_RESOURCE_PACKER, resourcePackerScreen);
     UIScreenManager::Instance()->RegisterScreen(SCREEN_SCENE_EDITOR_MAIN, sceneEditorScreenMain);
     
-    UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
+    UIScreenManager::Instance()->RegisterScreen(SCREEN_EXPORTER, exporterScreen);
+
+    if(CommandLineTool::Instance() && CommandLineTool::Instance()->CommandIsFound(String("-sceneexporter")))
+    {
+        UIScreenManager::Instance()->SetFirst(SCREEN_EXPORTER);
+    }
+    else 
+    {
+        UIScreenManager::Instance()->SetFirst(SCREEN_SCENE_EDITOR_MAIN);
+    }
 }
 
 void GameCore::OnAppFinished()
 {
     PVRUtils::Instance()->Release();
 	PVRConverter::Instance()->Release();
-    EditorSettings::Instance()->Release();
     OutputManager::Instance()->Release();
     SceneValidator::Instance()->Release();
     
 	SafeRelease(resourcePackerScreen);
     SafeRelease(sceneEditorScreenMain);
+    SafeRelease(exporterScreen);
 }
 
 void GameCore::OnSuspend()

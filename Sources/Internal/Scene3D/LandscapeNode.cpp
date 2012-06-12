@@ -1335,8 +1335,16 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel level)
 {
+    DVASSERT(0 <= level && level < TEXTURE_COUNT);
     return textureNames[level];
 }
+    
+void LandscapeNode::SetTextureName(eTextureLevel level, const String &newTextureName)
+{
+    DVASSERT(0 <= level && level < TEXTURE_COUNT);
+    textureNames[level] = newTextureName;
+}
+
 
 void LandscapeNode::CursorEnable()
 {
