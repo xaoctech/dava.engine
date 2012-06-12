@@ -174,7 +174,11 @@ bool SceneValidator::IsntPower2(int32 num)
 
 void SceneValidator::ShowErrors()
 {
-    ErrorNotifier::Instance()->ShowError(errorMessages);
+//    ErrorNotifier::Instance()->ShowError(errorMessages);
+	for (Set<String>::iterator it = errorMessages.begin(); it != errorMessages.end(); it++)
+	{
+		Logger::Error((*it).c_str());
+	}
 }
 
 void SceneValidator::ValidateMeshInstanceInternal(MeshInstanceNode *meshNode)
