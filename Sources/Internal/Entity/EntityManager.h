@@ -16,6 +16,7 @@ class EntityManager : public Singleton<EntityManager>
 {
 public:
     Entity * CreateEntity();
+	void DestroyEntity(Entity * & entity);
 	
     void AddComponent(Entity * entity, Component * component);
 	void AddComponent(Entity * entity, const char * componentName);
@@ -51,17 +52,16 @@ private:
     Map<uint64, EntityFamily*> families;
     std::multimap<Component*, EntityFamily*> familiesWithComponent; // all families with given component
     
-    //
     static Map<const char *, Pool *> poolAllocators;
     Map<const char *, Pool *> pools;
     
 	void ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldType, const EntityFamilyType & newType);
 
 	Map<Entity*, EntityFamilyType> newFamilyEntities;
-//
-//	void FlushEntity(Entity * entity);
-//	void RemoveFromMap(Entity * entity );
-//	void FlushFamily(EntityFamily * family);
+	Vector<Entity*> deleteEntities;
+
+	void FlushChangeFamily();
+	void FlushDestroy();
 };
     
     

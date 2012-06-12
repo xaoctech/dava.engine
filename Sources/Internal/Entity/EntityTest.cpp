@@ -305,6 +305,18 @@ void EntityTest()
 		DVASSERT(testResults[i] == expectedResultsResize[i]);
 	}
 
+	manager->DestroyEntity(entity11);
+	manager->Flush();
+	visibilityAABBoxSystem.Run();
+	visibilityBSphereSystem.Run();
+	drawSystem.Run();
+
+	int32 expectedResultsDelete[15] = {0,1,0,0,1,1,1,1,1,1,1,1,1,1,0};
+	for(int32 i = 0; i < 15; ++i)
+	{
+		DVASSERT(testResults[i] == expectedResultsDelete[i]);
+	}
+
 	manager->Dump();
     
     SafeRelease(manager);
