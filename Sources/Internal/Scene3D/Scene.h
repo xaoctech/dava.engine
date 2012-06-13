@@ -60,7 +60,7 @@ class MeshInstanceNode;
 class BVHierarchy;
 class ImposterManager;
 class ImposterNode;
-	
+class EntityManager;
 /** 
     \ingroup scene3d
     \brief This class is a code of our 3D Engine scene graph. 
@@ -224,6 +224,8 @@ public:
 
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
+
+	EntityManager * entityManager;
     
 protected:	
     
@@ -258,6 +260,8 @@ protected:
 
 	ImposterManager * imposterManager;
 	bool enableImposters;
+
+	
 
     friend class SceneNode;
 };

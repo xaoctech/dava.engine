@@ -788,6 +788,9 @@
     <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1887,6 +1890,9 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>

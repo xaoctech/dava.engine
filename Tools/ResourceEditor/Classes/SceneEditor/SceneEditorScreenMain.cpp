@@ -103,15 +103,17 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(sceneInfoButton);
     
     
-    sceneGraphButton = ControlsFactory::CreateButton(
-                                        Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.scene"));
+    sceneGraphButton = ControlsFactory::CreateButton( Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.scene"));
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
-    dataGraphButton = ControlsFactory::CreateButton(
-                                                     Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.data"));
+    dataGraphButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.data"));
     dataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnDataGraphPressed));
     AddControl(dataGraphButton);
+
+	entitiesButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::BUTTON_WIDTH*2, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.entities"));
+	entitiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnEntitiesPressed));
+	AddControl(entitiesButton);
     
     InitializeBodyList();
     
@@ -132,6 +134,7 @@ void SceneEditorScreenMain::UnloadResources()
     
     SafeRelease(sceneGraphButton);
     SafeRelease(dataGraphButton);
+	SafeRelease(entitiesButton);
     
     ReleaseNodeDialogs();
     
@@ -733,6 +736,13 @@ void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
 
 //    bool areShown = iBody->bodyControl->DataGraphAreShown();
 //    iBody->bodyControl->ShowDataGraph(!areShown);
+}
+
+void SceneEditorScreenMain::OnEntitiesPressed(BaseObject * obj, void *, void *)
+{
+	BodyItem *iBody = FindCurrentBody();
+
+	iBody->bodyControl->ToggleEntities();
 }
 
 
