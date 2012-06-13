@@ -25,10 +25,10 @@ LOCAL_SRC_FILES :=  \
                     \
                     ../../classes/FrameworkMain.cpp \
                     ../../classes/GameCore.cpp \
+                    ../../classes/BaseScreen.cpp \
+                    ../../classes/SpriteTest.cpp \
                     ../../classes/CacheTest.cpp \
                     ../../classes/LandscapeTest.cpp \
-                    ../../classes/MongodbTest.cpp \
-                    ../../classes/SpriteTest.cpp \
                     ../../classes/TestTemplate.cpp \
 
 LOCAL_CFLAGS := -g -O2

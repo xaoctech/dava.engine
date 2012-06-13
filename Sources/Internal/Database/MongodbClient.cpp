@@ -200,7 +200,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
         binary->Finish();
         
         
-        MongodbObject *foundObject = FindObjectbByKey(key);
+        MongodbObject *foundObject = FindObjectByKey(key);
         if(foundObject)
         {
             status = mongo_update(clientData->connection, namespaceName.c_str(), (bson *)foundObject->InternalObject(), (bson *)binary->InternalObject(), 0, NULL);
@@ -232,7 +232,7 @@ int32 MongodbClient::GetBinarySize(const String &key)
 {
     int32 retSize = 0;
     
-    MongodbObject *object = FindObjectbByKey(key);
+    MongodbObject *object = FindObjectByKey(key);
     if(object)
     {
         retSize = object->GetInt32(String("DataSize"));
@@ -250,7 +250,7 @@ bool MongodbClient::GetBinary(const String &key, uint8 *outData, int32 dataSize)
 {
     bool found = false;
     
-    MongodbObject *object = FindObjectbByKey(key);
+    MongodbObject *object = FindObjectByKey(key);
     if(object)
     {
         found = object->GetData(String("Data"), outData, dataSize);
@@ -264,7 +264,7 @@ bool MongodbClient::GetBinary(const String &key, uint8 *outData, int32 dataSize)
     return found;
 }
 
-MongodbObject * MongodbClient::FindObjectbByKey(const String &key)
+MongodbObject * MongodbClient::FindObjectByKey(const String &key)
 {
     MongodbObject *query = CreateObject();
     DVASSERT(query);
@@ -313,7 +313,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
     int32 status = MONGO_ERROR;
     if(IsConnected())
     {
-        MongodbObject *foundObject = FindObjectbByKey(object->GetObjectName());
+        MongodbObject *foundObject = FindObjectByKey(object->GetObjectName());
         if(foundObject)
         {
             status = mongo_update(clientData->connection, namespaceName.c_str(), (bson *)foundObject->InternalObject(), (bson *)object->InternalObject(), 0, NULL);

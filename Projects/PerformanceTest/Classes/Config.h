@@ -37,8 +37,8 @@
 #endif //#if defined (SINGLE_MODE)
 
 
-#define DATABASE_IP               String("10.128.128.131")
-//#define DATABASE_IP                 String("127.0.0.1")
+//#define DATABASE_IP               String("10.128.128.131")
+#define DATABASE_IP                 String("127.0.0.1")
 #define DATAPASE_PORT               27017
 
 #define DATABASE_NAME               String("PerformanceTest")
@@ -47,5 +47,22 @@
 #else //#if defined (SINGLE_MODE)
     #define DATABASE_COLLECTION     String("Multiple Tests")
 #endif //#if defined (SINGLE_MODE)
+
+//Set your name for filter test results at DB
+#define TEST_OWNER                  String("klesch")
+
+
+#if defined (__DAVAENGINE_MACOS__)
+    #define PLATFORM_NAME           String("MacOS")
+#elif defined (__DAVAENGINE_IPHONE_)
+    #define PLATFORM_NAME           String("iPhone")
+#elif defined (__DAVAENGINE_WIN32_)
+    #define PLATFORM_NAME           String("Win32")
+#elif defined (__DAVAENGINE_ANDROID_)
+    #define PLATFORM_NAME           String("Android")
+#else
+    #define PLATFORM_NAME           String("Unknown")
+#endif //PLATFORMS    
+
 
 #endif // __CONFIG_H__
