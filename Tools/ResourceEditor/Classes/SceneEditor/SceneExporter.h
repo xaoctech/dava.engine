@@ -23,6 +23,8 @@ public:
     void ExportFile(const String &fileName, Set<String> &errorLog);
     void ExportFolder(const String &folderName, Set<String> &errorLog);
     
+    void ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog);
+    
 protected:
     
     String NormalizeFolderPath(const String &pathname);
