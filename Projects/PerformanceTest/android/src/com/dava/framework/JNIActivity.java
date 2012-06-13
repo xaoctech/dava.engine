@@ -2,8 +2,8 @@ package com.dava.framework;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
+//import android.content.pm.ApplicationInfo;
+//import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;

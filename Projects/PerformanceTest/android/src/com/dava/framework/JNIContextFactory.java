@@ -6,14 +6,13 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
 import android.opengl.GLSurfaceView;
-import android.util.Log;
+//import android.util.Log;
 
 public class JNIContextFactory implements GLSurfaceView.EGLContextFactory 
 {
     private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
     
-	@Override
-    public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) 
+	public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) 
     {
 //        Log.w(JNIConst.LOG_TAG, "[JNIContextFactory] ___ eglConfig _____");
         JNIConfigChooser.printConfig(egl, display, eglConfig);
@@ -28,8 +27,7 @@ public class JNIContextFactory implements GLSurfaceView.EGLContextFactory
         return context;
     }
 
-	@Override
-    public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) 
+	public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) 
     {
         egl.eglDestroyContext(display, context);
     }
