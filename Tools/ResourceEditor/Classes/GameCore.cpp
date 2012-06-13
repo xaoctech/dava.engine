@@ -41,6 +41,7 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
+	Logger::Instance()->SetLogFilename("ResEditor.txt");
 	RenderManager::Instance()->SetFPS(30);
     
     Stats::Instance()->EnableStatsOutputEventNFrame(30);

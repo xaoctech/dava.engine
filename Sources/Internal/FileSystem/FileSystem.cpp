@@ -219,7 +219,7 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
         String::size_type pos = path.find(tokens[0]);
         if(String::npos != pos)
         {
-            tokens[0] = path.substr(0, pos+1) + tokens[0];
+            tokens[0] = path.substr(0, pos) + tokens[0];
         }
     }
 #else //#if defined (__DAVAENGINE_WIN32__)
@@ -237,7 +237,14 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 		BOOL res = ::CreateDirectoryA(dir.c_str(), 0);
 		if (k == tokens.size() - 1)
 		{
-			return (res == 0) ? DIRECTORY_CANT_CREATE : DIRECTORY_CREATED;
+			if (!res)
+			{
+				if (GetLastError() == ERROR_ALREADY_EXISTS)
+					return DIRECTORY_EXISTS;
+				else
+					return DIRECTORY_CANT_CREATE;
+			}
+			return DIRECTORY_CREATED;
 		}
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 		int res = mkdir(dir.c_str(), 0777);
