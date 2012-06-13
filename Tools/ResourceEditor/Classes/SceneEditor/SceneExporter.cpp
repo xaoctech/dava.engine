@@ -53,16 +53,22 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
             SceneNode *node = rootNode->GetChild(i);
             scene->AddNode(node);
         }
-        
-        SceneValidator::Instance()->ValidateScene(scene);
     }
     
+    ExportScene(scene, fileName, errorLog);
+
+    SafeRelease(scene);
+}
+
+void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
+{
     //Create destination folder
     String workingFile;
     FileSystem::SplitPath(fileName, workingFolder, workingFile);
     FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder); 
     
     //Export scene data
+    SceneValidator::Instance()->ValidateScene(scene, errorLog);
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
     ExportMeshLightmaps(scene, errorLog);
@@ -70,12 +76,12 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
     //save scene to new place
     SceneFileV2 * outFile = new SceneFileV2();
     outFile->EnableSaveForGame(true);
-    outFile->EnableDebugLog(true);
+    outFile->EnableDebugLog(false);
     outFile->SaveScene(dataFolder + fileName, scene);
     SafeRelease(outFile);
-
-    SafeRelease(scene);
 }
+
+
 
 void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
 {
