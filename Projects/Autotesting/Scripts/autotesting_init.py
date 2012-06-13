@@ -23,6 +23,9 @@ print sys.argv
 index_OS = 1;
 index_Project = 2;
 
+def ignored_svn_files(adir,filenames):
+    return [filename for filename in filenames if filename.endswith(".svn")]
+
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
 projectDir = os.path.realpath(currentDir + "/../../../../" + sys.argv[index_Project])
@@ -58,7 +61,7 @@ if os.path.exists(autotestingDestFolder):
     print "Autotesting already exists - delete " + autotestingDestFolder
     shutil.rmtree(autotestingDestFolder)
 print "copy " + autotestingSrcFolder + " to " + autotestingDestFolder
-shutil.copytree(autotestingSrcFolder, autotestingDestFolder)
+shutil.copytree(autotestingSrcFolder, autotestingDestFolder, ignore=ignored_svn_files)
 
 randomNumber = random.randint(0, 100000)
 print "randomNumber: " + str(randomNumber)
