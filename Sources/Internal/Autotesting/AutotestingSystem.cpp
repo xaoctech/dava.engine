@@ -34,6 +34,14 @@ void AutotestingSystem::OnAppStarted()
 {
     if(!isInit)
     {
+        // get files list for ~res:Autotesting/Tests
+        FileList fileList("~res:Autotesting/Tests");
+        int32 fileListSize = fileList.GetCount();
+        if(fileListSize == 0)
+        {
+            return;
+        }
+        
         // read current test index and autotesting id from ~doc:autotesting.archive
         KeyedArchive* autotestingArchive = new KeyedArchive();
         int32 savedIndex = 0;
@@ -65,13 +73,9 @@ void AutotestingSystem::OnAppStarted()
             savedId = autotestingId;
         }
         
-        // get files list for ~res:Autotesting/Tests
-        FileList fileList("~res:Autotesting/Tests");
         int32 indexInFileList = (savedIndex + 2);
-        int32 fileListSize = fileList.GetCount();
-
         // skip directories
-        for(int32 i = 2; i < indexInFileList; ++i)
+        for(int32 i = 2; i < indexInFileList && i < fileListSize; ++i)
         {
             if(fileList.IsDirectory(i)) indexInFileList++;
         }

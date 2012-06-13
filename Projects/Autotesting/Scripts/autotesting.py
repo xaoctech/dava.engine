@@ -10,86 +10,130 @@
 import os;
 import sys;
 import os.path;
-import pickle;
-import zlib;
 import string;
-import sys;
 import platform;
 import shutil;
 import random;
 
 print "*** DAVA Launching autotesting"
 
-framework_path = { "Darwin": "./../../../dava.framework", "Windows": "./../../../dava.framework", "Microsoft": "./../../../dava.framework" }
-
 print "platform.system: " + platform.system()
 print sys.argv
 
+index_OS = 1;
+index_Project = 2;
+index_Target = 3;
+index_Configuration = 4;
+index_Certificate = 5;
+index_Device = 6;
+
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + sys.argv[1])
+projectDir = os.path.realpath(currentDir + "/../../../../" + sys.argv[index_Project])
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
-    
-if os.path.exists(autotestingDestFolder):    
-    print "Autotesting already exists - delete " + autotestingDestFolder
-    shutil.rmtree(autotestingDestFolder)
-print "copy " + autotestingSrcFolder + " to " + autotestingDestFolder
-shutil.copytree(autotestingSrcFolder, autotestingDestFolder)
-
-randomNumber = random.randint(0, 100000)
-print "randomNumber: " + str(randomNumber)
-idFilePath = os.path.realpath(projectDir + "/Data/Autotesting/id.txt")
-print "write to file " + idFilePath
-file=open(idFilePath,'w')
-file.write(str(randomNumber))
-file.close()
-
-testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
-testFiles = os.listdir(testsFolder)
 
 executableName = ""
 executableBuildPath = ""
 executableRunPath = ""
-#TODO: different name depending on OS
 if (platform.system() == "Windows"):
-    #TODO: Windows
-    executableName = sys.argv[2] + ".exe"
+    executableName = sys.argv[index_Target] + ".exe"
     print "executableName: " +executableName
     
-    buildFolder = "/" + sys.argv[3] + "/"
+    if(sys.argv[index_OS] == "Windows"):
+        #TODO: Windows
+        print "prepare to run " + executableName + " on Windows"
 
-    executableBuildPath = os.path.realpath(projectDir + buildFolder + executableName)
-    executableRunPath = os.path.realpath(projectDir + "/" + executableName)
+        executableBuildPath = os.path.realpath(projectDir + "/" + sys.argv[index_Configuration] + "/" + executableName)
+        executableRunPath = os.path.realpath(projectDir + "/" + executableName)
     
-    if os.path.exists(executableRunPath):    
-        print "delete " + executableRunPath
-        os.remove(executableRunPath)
-    print "copy " + executableBuildPath + " to " + executableRunPath
-    shutil.copy(executableBuildPath, executableRunPath)
+        if os.path.exists(executableRunPath):    
+            print "delete " + executableRunPath
+            os.remove(executableRunPath)
+        print "copy " + executableBuildPath + " to " + executableRunPath
+        shutil.copy(executableBuildPath, executableRunPath)
+
+    else:
+        print "Error: wrong OS " + sys.argv[index_OS]
+
 elif (platform.system() == "Darwin"):
-    #TODO: iOS
-    executableName = sys.argv[3] + "/" + sys.argv[2] + ".app"
+    executableName = sys.argv[index_Target] + ".app"
     print "executableName: " +executableName
+    
+    if (sys.argv[index_OS] == "iOS"):
+        #TODO: iOS
+        print "prepare to run " + executableName + " on iOS"
+        #TODO: copy executable to Autotesting
+        executableBuildPath = os.path.realpath(projectDir + "/build/" + sys.argv[index_Configuration] + "-iphoneos/" + executableName)
+        executableRunPath = os.path.realpath(autotestingSrcFolder + "/" + executableName)
+        if os.path.exists(executableRunPath):    
+            print "delete " + executableRunPath
+            os.remove(executableRunPath)
+        print "copy " + executableBuildPath + " to " + executableRunPath
+        shutil.copy(executableBuildPath, executableRunPath)
+        
+        #TODO: resign and deploy
+        os.chdir(autotestingSrcFolder)
+    
+        #sh floatsign.sh $2.app $3 $2.ipa
+        ipaName = sys.argv[index_Target] + ".app"
+        params = ["./floatsign.sh", executableName, sys.argv[index_Certificate], ipaName]
+        print "sign with " + sys.argv[index_Certificate] + " and create " + ipaName
+        print "run script " + params
+        os.spawnv(os.P_WAIT, params[0], params)
+
+        print "deploy "+ ipaName +" on device"
+        params = ["./transporter_chief.rb", ipaName]
+        print "run script " + params
+
+    elif (sys.argv[index_OS] == "MacOS"):
+        #TODO: MacOS
+        print "prepare to run " + executableName + " on MacOS"
+        executableBuildPath = os.path.realpath(projectDir + "/build/" + sys.argv[index_Configuration] + "/" + executableName)
+        executableRunPath = executableBuildPath
+    else:
+        print "Error: wrong OS " + sys.argv[index_OS]
+
 else:
     print "Error: unsupported platform.system: " + platform.system()    
 
 os.chdir(projectDir)
+
+testsFolder = os.path.realpath(projectDir + "/Data/Autotesting/Tests")
+testFiles = os.listdir(testsFolder)
+
 for testFile in testFiles:
     print "current file is: " + testFile
    
     if (platform.system() == "Windows"):
-        print "run " + executableRunPath
-        
-        params = [executableRunPath]
-        os.system("start /WAIT "+executableName)
+        if(sys.argv[index_OS] == "Windows"):
+            #TODO: Windows
+            print "run " + executableName + " on Windows"
+            os.system("start /WAIT " + executableName)
+        else:
+            print "Error: wrong OS " + sys.argv[index_OS]
     elif (platform.system() == "Darwin"):
-        #TODO: iOS
-        print "TODO: run on MacOS or deploy and run on iOS " + executableName
-        #os.spawnv(os.P_WAIT, "./ResourcePacker", params)
+        if (sys.argv[index_OS] == "iOS"):
+            #TODO: iOS
+            print "run " + executableName + " on iOS"
+            
+            os.chdir(autotestingSrcFolder)
+            
+            #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
+            params = ["./runOnDevice.sh", sys.argv[index_Target], sys.argv[index_Device]]
+            print "run script " + params
+            os.spawnv(os.P_WAIT, params[0], params)
+
+        elif (sys.argv[index_OS] == "MacOS"):
+            #TODO: MacOS
+            print "run " + executableRunPath + " on MacOS"
+            os.system("open -W " + executableRunPath)
+        
+        else:
+            print "Error: wrong OS " + sys.argv[index_OS]
     else:
         print "Error: unsupported platform.system: " + platform.system()
     
@@ -99,7 +143,10 @@ print "TODO: cleanup"
 if os.path.exists(autotestingDestFolder):    
     print "Delete " + autotestingDestFolder
     shutil.rmtree(autotestingDestFolder)
-if os.path.exists(executableRunPath):    
-    print "delete " + executableRunPath
-    os.remove(executableRunPath)    
+
+if (sys.argv[index_OS] != "MacOS"):
+    if os.path.exists(executableRunPath):    
+        print "delete " + executableRunPath
+        os.remove(executableRunPath)
+
 print "*** DAVA Finished autotesting"
