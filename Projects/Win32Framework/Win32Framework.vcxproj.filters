@@ -990,7 +990,7 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-        <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
@@ -1022,6 +1022,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h">
       <Filter>Internal\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h">
+      <Filter>Internal\Autotesting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1763,7 +1766,7 @@
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
       <Filter>Internal\Entity</Filter>
     </ClCompile>
-        <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
