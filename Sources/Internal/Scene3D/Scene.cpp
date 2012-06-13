@@ -52,6 +52,9 @@
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
 
+#include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Components.h"
 
 namespace DAVA 
 {
@@ -70,6 +73,9 @@ Scene::Scene()
     bvHierarchy = new BVHierarchy();
     bvHierarchy->ChangeScene(this);
     
+	entityManager = new EntityManager();
+	VisibilityAABBoxComponent::Create();
+
     Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
     Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
     Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
@@ -100,12 +106,15 @@ Scene::~Scene()
     }
     rootNodes.clear();
 
-    // Childrens should be removed first because they should unregister themselves in managers
+    // Children should be removed first because they should unregister themselves in managers
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
     SafeRelease(bvHierarchy);
 	SafeRelease(shadowRect);
+
+	entityManager->Flush();
+	SafeRelease(entityManager);
 }
 
 void Scene::RegisterNode(SceneNode * node)
@@ -128,6 +137,14 @@ void Scene::RegisterNode(SceneNode * node)
 	{
         bvHierarchy->RegisterNode(node);
 	}
+
+	Entity * entity = entityManager->CreateEntity();
+	node->entity = entity;
+	MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+	if(meshInstance)
+	{
+		node->entity->AddComponent(VisibilityAABBoxComponent::Get());
+	}
 }
 
 void Scene::UnregisterNode(SceneNode * node)
@@ -146,14 +163,14 @@ void Scene::UnregisterNode(SceneNode * node)
     
     if (bvHierarchy)
         bvHierarchy->UnregisterNode(node);
+
+	entityManager->DestroyEntity(node->entity);
 }
 
 Scene * Scene::GetScene()
 {
     return this;
 }
-    
-
     
 void Scene::AddAnimatedMesh(AnimatedMesh * mesh)
 {
@@ -393,6 +410,8 @@ void Scene::Update(float timeElapsed)
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Update", this);
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
+
+	entityManager->Flush();
 
     // lights 
     flags &= ~SCENE_LIGHTS_MODIFIED;

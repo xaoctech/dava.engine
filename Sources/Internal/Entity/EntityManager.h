@@ -45,6 +45,8 @@ public:
 
 	void Flush(); //process newFamilyEntities
 
+	Vector<Entity*> & GetAllEntities();
+
 	//TODO: GC(); //remove empty EntityFamilies
     
 private:
@@ -62,6 +64,8 @@ private:
 
 	void FlushChangeFamily();
 	void FlushDestroy();
+
+	Vector<Entity*> entities;
 };
     
     

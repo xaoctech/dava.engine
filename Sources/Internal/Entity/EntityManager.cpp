@@ -12,6 +12,7 @@ Map<const char *, Pool *> EntityManager::poolAllocators;
 Entity * EntityManager::CreateEntity()
 {
 	Entity * entity = new Entity(this);
+	entities.push_back(entity);
 	return entity;
 }
 
@@ -91,9 +92,11 @@ void EntityManager::FlushDestroy()
 		}
 		else
 		{
-			DVASSERT(0);
+			//entity with no family
 		}
 	}
+
+	deleteEntities.clear();
 }
 
 void EntityManager::FlushChangeFamily()
@@ -241,6 +244,11 @@ void EntityManager::Dump()
 			Logger::Info("    ----------------------------");
 		}
 	}
+}
+
+Vector<Entity*> & EntityManager::GetAllEntities()
+{
+	return entities;
 }
 
 

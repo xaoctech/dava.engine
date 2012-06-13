@@ -17,7 +17,7 @@ using namespace DAVA;
 
 #define VERSION     "0.0.3"
 
-void EntityTest();
+//void EntityTest();
 
 void FrameworkDidLaunched()
 {

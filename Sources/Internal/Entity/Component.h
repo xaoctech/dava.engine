@@ -7,9 +7,6 @@
 #include <typeinfo>
 
 
-namespace DAVA 
-{
-
 #define DECLARE_COMPONENT(ComponentName) \
 class ComponentName : public Component \
 { \
@@ -28,10 +25,16 @@ private: \
 	{ \
 		instance = this; \
 	} \
-	void Register();	\
+	inline void Register();	\
 \
-}; \
+}; 
+
+
+#define IMPLEMENT_COMPONENT(ComponentName) \
 ComponentName * ComponentName::instance = 0;
+
+namespace DAVA 
+{
 
 class Component
 {

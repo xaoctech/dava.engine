@@ -109,6 +109,9 @@
     <Filter Include="Internal\Database">
       <UniqueIdentifier>{aacba949-a20d-4b44-821d-8170cd6d7aa2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Entity\Components">
+      <UniqueIdentifier>{a5ec0fc5-fc27-47e4-90f3-6665b4a190a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1026,6 +1029,12 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h">
       <Filter>Internal\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1760,9 +1769,6 @@
     <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp">
       <Filter>Internal\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityTest.cpp">
-      <Filter>Internal\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
       <Filter>Internal\Entity</Filter>
     </ClCompile>
@@ -1780,6 +1786,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp">
       <Filter>Internal\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp">
+      <Filter>Internal\Entity\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
