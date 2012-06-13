@@ -34,20 +34,20 @@ void AutotestingSystem::OnAppStarted()
 {
     if(!isInit)
     {
-        // get files list for ~res:Autotesting/Tests
-        FileList fileList("~res:Autotesting/Tests");
+        // get files list for ~res:/Autotesting/Tests
+        FileList fileList("~res:/Autotesting/Tests");
         int32 fileListSize = fileList.GetCount();
         if(fileListSize == 0)
         {
             return;
         }
         
-        // read current test index and autotesting id from ~doc:autotesting.archive
+        // read current test index and autotesting id from ~doc:/autotesting.archive
         KeyedArchive* autotestingArchive = new KeyedArchive();
         int32 savedIndex = 0;
         int32 savedId = 0;
 
-        if(autotestingArchive->Load("~doc:autotesting/autotesting.archive"))
+        if(autotestingArchive->Load("~doc:/autotesting/autotesting.archive"))
         {
             savedIndex = autotestingArchive->GetInt32("index");
             savedId = autotestingArchive->GetInt32("id");
@@ -55,8 +55,8 @@ void AutotestingSystem::OnAppStarted()
 
         int32 autotestingId = 1;
 
-        //TODO: read autotesting id from ~res:Autotesting/autotesting.archive
-        File* file = File::Create("~res:Autotesting/id.txt", File::OPEN | File::READ);
+        //TODO: read autotesting id from ~res:/Autotesting/autotesting.archive
+        File* file = File::Create("~res:/Autotesting/id.txt", File::OPEN | File::READ);
         if(file)
         {
             char tempBuf[1024];
@@ -126,7 +126,7 @@ void AutotestingSystem::OnAppStarted()
         autotestingArchive->SetInt32("id", savedId);
         autotestingArchive->SetInt32("index", savedIndex);
 
-        autotestingArchive->Save("~doc:autotesting/autotesting.archive");
+        autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
     }
 }
 
@@ -135,7 +135,7 @@ void AutotestingSystem::Init(const String &_testName)
     if(!isInit)
     {
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
-        testReportsFolder = "~doc:autotesting";
+        testReportsFolder = "~doc:/autotesting";
         FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
         reportFile = DAVA::File::Create(Format("%s/autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
 #endif
