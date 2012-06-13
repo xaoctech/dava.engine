@@ -7,6 +7,8 @@
 
 #include "Core/Core.h"
 
+#include "FileSystem/FileList.h"
+
 namespace DAVA
 {
 
@@ -32,34 +34,95 @@ void AutotestingSystem::OnAppStarted()
 {
     if(!isInit)
     {
-        //check if autotesting.yaml exists, run if exists
-        String yamlFilePath = "~res:/Tests/autotesting.yaml";
+        // read current test index and autotesting id from ~doc:autotesting.archive
+        KeyedArchive* autotestingArchive = new KeyedArchive();
+        int32 savedIndex = 0;
+        int32 savedId = 0;
 
-        YamlParser* parser = YamlParser::Create(yamlFilePath);
-        if(parser)
+        if(autotestingArchive->Load("~doc:autotesting/autotesting.archive"))
         {
-            YamlNode* rootNode = parser->GetRootNode();
-            if(rootNode)
-            {
-                String testName = "";
-                YamlNode* testNameNode = rootNode->Get("testName");
-                if(testNameNode)
-                {
-                    testName = testNameNode->AsString();
-                }
-                Init(testName);
-
-                YamlNode* actionsNode = rootNode->Get("actions");
-                AddActionsFromYamlNode(actionsNode);
-
-                AutotestingSystem::Instance()->RunTests();
-            }
-            else
-            {
-                OnError(Format("parsing %s failed - no root node", yamlFilePath.c_str()));
-            }
+            savedIndex = autotestingArchive->GetInt32("index");
+            savedId = autotestingArchive->GetInt32("id");
         }
-        SafeRelease(parser);
+
+        int32 autotestingId = 1;
+
+        //TODO: read autotesting id from ~res:Autotesting/autotesting.archive
+        File* file = File::Create("~res:Autotesting/id.txt", File::OPEN | File::READ);
+        if(file)
+        {
+            char tempBuf[1024];
+            file->ReadLine(tempBuf, 1024);
+            sscanf(tempBuf, "%d", &autotestingId);
+        }
+        SafeRelease(file);
+        
+        String yamlFilePath = "";
+        // compare ids
+        if(savedId != autotestingId)
+        {
+            savedIndex = 0;
+            savedId = autotestingId;
+        }
+        
+        // get files list for ~res:Autotesting/Tests
+        FileList fileList("~res:Autotesting/Tests");
+        int32 indexInFileList = (savedIndex + 2);
+        int32 fileListSize = fileList.GetCount();
+
+        // skip directories
+        for(int32 i = 2; i < indexInFileList; ++i)
+        {
+            if(fileList.IsDirectory(i)) indexInFileList++;
+        }
+
+        if(indexInFileList < fileListSize)
+        {
+            yamlFilePath = fileList.GetPathname(indexInFileList);
+
+            YamlParser* parser = YamlParser::Create(yamlFilePath);
+            if(parser)
+            {
+                YamlNode* rootNode = parser->GetRootNode();
+                if(rootNode)
+                {
+                    String testName = "";
+                    YamlNode* testNameNode = rootNode->Get("testName");
+                    if(testNameNode)
+                    {
+                        testName = testNameNode->AsString();
+                    }
+                    Init(testName);
+
+                    YamlNode* actionsNode = rootNode->Get("actions");
+                    AddActionsFromYamlNode(actionsNode);
+
+                    AutotestingSystem::Instance()->RunTests();
+                }
+                else
+                {
+                    OnError(Format("parsing %s failed - no root node", yamlFilePath.c_str()));
+                }
+            }
+            SafeRelease(parser);
+        }
+
+        
+        if(indexInFileList == (fileListSize - 1))
+        {
+            // last file - reset id and index
+            savedIndex = 0;
+            savedId = 0;
+        }
+        else
+        {
+            // save next index and autotesting id
+            savedIndex++;
+        }
+        autotestingArchive->SetInt32("id", savedId);
+        autotestingArchive->SetInt32("index", savedIndex);
+
+        autotestingArchive->Save("~doc:autotesting/autotesting.archive");
     }
 }
 
