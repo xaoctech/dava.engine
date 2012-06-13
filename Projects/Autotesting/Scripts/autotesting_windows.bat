@@ -11,6 +11,7 @@ md Data\Autotesting\Tests
 
 cd Data\Autotesting
 del /f id.txt
+echo "writing random id to id.txt"
 echo %random%>> id.txt
 cd ..\..
 
