@@ -205,28 +205,30 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 #endif //PLATFORMS
 	}
 
+
 	String path = filePath;
 	std::replace(path.begin(), path.end(),'\\','/');
-	const String & delims="/";
-	String::size_type lastPos = path.find_first_not_of(delims, 0);
-	String::size_type pos     = path.find_first_of(delims, lastPos);
 	Vector<String> tokens;
-	while (String::npos != pos || String::npos != lastPos)
-	{
-		tokens.push_back(path.substr(lastPos, pos - lastPos));
-		lastPos = path.find_first_not_of(delims, pos);
-		pos     = path.find_first_of(delims, lastPos);
-	}
-	
+    Split(path, "/", tokens);
+    
 	String dir = "";
 
-#ifndef __DAVAENGINE_WIN32__
+#if defined (__DAVAENGINE_WIN32__)
+    if(0 < tokens.size() && 0 < tokens[0].length())
+    {
+        String::size_type pos = path.find(tokens[0]);
+        if(String::npos != pos)
+        {
+            tokens[0] = path.substr(0, pos) + tokens[0];
+        }
+    }
+#else //#if defined (__DAVAENGINE_WIN32__)
     size_t find = path.find(":");
     if(find == path.npos)
 	{
         dir = "/";
     }
-#endif
+#endif //#if defined (__DAVAENGINE_WIN32__)
 	
 	for (size_t k = 0; k < tokens.size(); ++k)
 	{
@@ -235,7 +237,14 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 		BOOL res = ::CreateDirectoryA(dir.c_str(), 0);
 		if (k == tokens.size() - 1)
 		{
-			return (res == 0) ? DIRECTORY_CANT_CREATE : DIRECTORY_CREATED;
+			if (!res)
+			{
+				if (GetLastError() == ERROR_ALREADY_EXISTS)
+					return DIRECTORY_EXISTS;
+				else
+					return DIRECTORY_CANT_CREATE;
+			}
+			return DIRECTORY_CREATED;
 		}
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 		int res = mkdir(dir.c_str(), 0777);

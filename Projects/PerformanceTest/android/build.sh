@@ -27,7 +27,7 @@ SDK_ROOT=`pwd`/../../../Sources
 
 export NDK_MODULE_PATH=`pwd`/jni:$SDK_ROOT/External:$SDK_ROOT/External/Box2D:$SDK_ROOT/Internal:$SDK_ROOT
 
-export ANDROID_NDK_ROOT=/Users/klesch/Work/Android_install/android-ndk-r8
+export ANDROID_NDK_ROOT=/Users/klesch/NVPACK/android-ndk-r8
 
 $ANDROID_NDK_ROOT/ndk-build NDK_DEBUG=1
 if [ $? != 0 ]; then

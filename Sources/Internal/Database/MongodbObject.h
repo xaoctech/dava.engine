@@ -55,26 +55,30 @@ protected:
     
 public:
     
+    void EnableForEdit();
     void Finish();
 
     void SetObjectName(const String &objectname);
     String GetObjectName();
 
-    void AddInt32(const String fieldname, int32 value);
+    void AddInt32(const String &fieldname, int32 value);
     int32 GetInt32(const String &fieldname);
 
-    void AddInt64(const String fieldname, int64 value);
+    void AddInt64(const String &fieldname, int64 value);
     int64 GetInt64(const String &fieldname);
 
     void AddData(const String &fieldname, uint8 *data, int32 dataSize);
     bool GetData(const String &fieldname, uint8 *outData, int32 dataSize);
 
-    void AddString(const String fieldname, const String &value);
+    void AddString(const String &fieldname, const String &value);
     String GetString(const String &fieldname);
 
-    void AddDouble(const String fieldname, double value);
+    void AddDouble(const String &fieldname, double value);
     double GetDouble(const String &fieldname);
 
+    void AddObject(const String &fieldname, MongodbObject *addObject);
+    
+    
     
     void StartArray(const String &fieldname);
     void FinishArray();

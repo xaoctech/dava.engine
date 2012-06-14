@@ -68,6 +68,7 @@ public:
     
     bool IsConnected();
 
+    MongodbObject * FindObjectByKey(const String &key);
     MongodbObject * CreateObject();
     void DestroyObject(MongodbObject *object);
 
@@ -82,7 +83,6 @@ public:
 protected:
 
     void LogError(const String functionName, int32 errorCode);
-    MongodbObject * FindObjectbByKey(const String &key);
 
 protected:
     
