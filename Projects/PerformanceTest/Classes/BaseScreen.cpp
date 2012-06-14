@@ -49,7 +49,7 @@ BaseScreen::BaseScreen(const String & _screenName, int32 skipBeforeTests)
 BaseScreen::BaseScreen()
     :   UIScreen()
 {
-    SetName("Dummy");
+    SetName("BaseScreen");
 
     skipCount = 10;
     skipCounter = 0;
