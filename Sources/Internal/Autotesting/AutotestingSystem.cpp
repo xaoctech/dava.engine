@@ -75,7 +75,7 @@ void AutotestingSystem::OnAppStarted()
         
         int32 indexInFileList = savedIndex;
         // skip directories
-        for(int32 i = 0; i < indexInFileList && i < fileListSize; ++i)
+        for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
         {
             if((fileList.IsDirectory(i)) || (fileList.IsNavigationDirectory(i))) indexInFileList++;
         }
