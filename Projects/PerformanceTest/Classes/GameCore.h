@@ -77,12 +77,11 @@ protected:
     
     bool CreateLogFile();
     
-    String GetPlatformName();
-    
-    
     int32 TestCount();
     
-    void SaveTestResult(MongodbObject *logObject, TestData *testData, int32 index);
+    void SaveTestResult(const String &testTimeString, TestData *testData, int32 index);
+    
+    MongodbObject *GetObjectForName(const String &testName);
     
 protected:
     

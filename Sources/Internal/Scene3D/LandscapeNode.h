@@ -205,10 +205,17 @@ public:
     
 	/**
         \brief Get texture name that was previously set in SetTexture.
-        \param[in] level 
+        \param[in] level level of texture you want to get name
         \returns current texture name
 	 */
     const String & GetTextureName(eTextureLevel level);
+
+	/**
+        \brief Set texture name for export.
+        \param[in] level level of texture you want to set name
+        \param[in] newTextureName new texture name
+	 */
+    void SetTextureName(eTextureLevel level, const String &newTextureName);
     
     
 	/**

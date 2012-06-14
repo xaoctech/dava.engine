@@ -48,4 +48,21 @@
     #define DATABASE_COLLECTION     String("Multiple Tests")
 #endif //#if defined (SINGLE_MODE)
 
+//Set your name for filter test results at DB
+#define TEST_OWNER                  String("klesch")
+
+
+#if defined (__DAVAENGINE_MACOS__)
+    #define PLATFORM_NAME           String("MacOS")
+#elif defined (__DAVAENGINE_IPHONE_)
+    #define PLATFORM_NAME           String("iPhone")
+#elif defined (__DAVAENGINE_WIN32_)
+    #define PLATFORM_NAME           String("Win32")
+#elif defined (__DAVAENGINE_ANDROID_)
+    #define PLATFORM_NAME           String("Android")
+#else
+    #define PLATFORM_NAME           String("Unknown")
+#endif //PLATFORMS    
+
+
 #endif // __CONFIG_H__

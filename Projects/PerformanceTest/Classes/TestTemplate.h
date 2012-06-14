@@ -132,8 +132,6 @@ TestTemplate<T>::TestTemplate(const String & _screenName)
 	runIndex = -1;
     
     currentScreenId = globalScreenId++;
-    
-//    GameCore::Instance()->RegisterScreen(this);
 }
 
 template <class T>
@@ -149,47 +147,6 @@ void TestTemplate<T>::Draw(const UIGeometricData &geometricData)
     UIScreen::Draw(geometricData);
 }
 
-//template <class T>
-//void TestTemplate<T>::RunTests()
-//{
-//	int32 funcsCount = perfFuncs.size();
-//	if(funcIndex >= 0 && funcIndex < funcsCount)
-//	{
-//		PerfFuncData * data = &(perfFuncs[funcIndex]);
-//		if(runIndex < data->testData.runCount)
-//		{
-//			uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
-//			if(0 == runIndex)
-//			{
-//				data->testData.startTime = startTime;
-//			}
-//			
-//            (data->screen->*data->func)(data);
-//            
-//			uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-//			SubmitTime(data, endTime-startTime);
-//
-//			runIndex++;
-//			if(data->testData.runCount == runIndex)
-//			{
-//				data->testData.endTime = endTime;
-//			}
-//		}
-//		else
-//		{
-////			WriteLog(data);
-////
-////			Logger::Debug("%s %s", GetName().c_str(), data->testData.name.c_str());
-//
-//			runIndex = 0;
-//			funcIndex++;
-//		}
-//	}
-//	else
-//	{
-////        GameCore::Instance()->TestFinished();
-//	}
-//}
 
 template <class T>
 bool TestTemplate<T>::RunTest(int32 testNum)

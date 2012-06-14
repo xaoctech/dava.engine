@@ -6,14 +6,10 @@ ErrorDialog::ErrorDialog()
 {
     draggableDialog->SetRect(DialogRect());
     
+    errorList = NULL;
+    RecreateListControl();
+    
     Rect rect = DialogRect();
-    
-    errorList = new UIList(Rect(0, 0, rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT), UIList::ORIENTATION_VERTICAL);
-    ControlsFactory::SetScrollbar(errorList);
-    errorList->SetDelegate(this);
-    draggableDialog->AddControl(errorList);
-    
-    
     float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
     float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
     closeButton = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.close"));
@@ -25,6 +21,21 @@ ErrorDialog::~ErrorDialog()
 {
     SafeRelease(closeButton);
     SafeRelease(errorList);
+}
+
+void ErrorDialog::RecreateListControl()
+{
+    if(errorList)
+    {
+        draggableDialog->RemoveControl(errorList);
+        SafeRelease(errorList);
+    }
+    
+    Rect rect = DialogRect();
+    errorList = new UIList(Rect(0, 0, rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT), UIList::ORIENTATION_VERTICAL);
+    ControlsFactory::SetScrollbar(errorList);
+    errorList->SetDelegate(this);
+    draggableDialog->AddControl(errorList);
 }
 
 int32 ErrorDialog::ElementsCount(UIList * list)
@@ -68,14 +79,16 @@ void ErrorDialog::Show(const Set<String> &newErrorMessages)
     if(!GetParent())
     {
         errorMessages = newErrorMessages;
-        errorList->Refresh();
-        
+
         Rect r = DialogRect();
         draggableDialog->SetRect(r);
-        
+
         Vector2 pos = closeButton->GetPosition();
         pos.y = r.dy - ControlsFactory::BUTTON_HEIGHT;
         closeButton->SetPosition(pos);
+
+        RecreateListControl();
+        errorList->Refresh();
         
         UIScreen *screen = UIScreenManager::Instance()->GetScreen();
         screen->AddControl(this);

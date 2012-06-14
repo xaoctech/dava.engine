@@ -23,6 +23,8 @@ protected:
     virtual const Rect DialogRect();
     void OnCancel(BaseObject * owner, void * userData, void * callerData);
 
+    void RecreateListControl();
+    
     Set<String> errorMessages;
     UIButton *closeButton;
     UIList *errorList;

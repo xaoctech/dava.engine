@@ -434,6 +434,7 @@
     <ClInclude Include="Classes\SceneEditor\ColorPicker.h" />
     <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h" />
     <ClInclude Include="Classes\SceneEditor\ComboBox.h" />
+    <ClInclude Include="Classes\SceneEditor\CommandLineTool.h" />
     <ClInclude Include="Classes\SceneEditor\ControlsFactory.h" />
     <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h" />
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h" />
@@ -446,6 +447,7 @@
     <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h" />
     <ClInclude Include="Classes\SceneEditor\ErrorDialog.h" />
     <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
+    <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
@@ -483,6 +485,7 @@
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h" />
     <ClInclude Include="Classes\SceneEditor\PVRUtils.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
+    <ClInclude Include="Classes\SceneEditor\SceneExporter.h" />
     <ClInclude Include="Classes\SceneEditor\SceneGraph.h" />
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h" />
     <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h" />
@@ -708,6 +711,7 @@
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp" />
     <ClCompile Include="Classes\SceneEditor\ComboBox.cpp" />
+    <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp" />
@@ -720,6 +724,7 @@
     <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
@@ -757,6 +762,7 @@
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp" />
     <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SceneExporter.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp" />

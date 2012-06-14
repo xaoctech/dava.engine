@@ -156,6 +156,7 @@ namespace DAVA
 	DisplayMode fullscreenMode = Core::Instance()->GetCurrentDisplayMode();
 	
 	// launch framework and setup all preferences
+    //TODO: maybe we need reorder calls 
 	FrameworkDidLaunched();
     RenderManager::Create(Core::RENDERER_OPENGL);
     
@@ -760,6 +761,22 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	NSLog(@"[CoreMacOSPlatform] Application did finish launching");	
+    
+    if(core)
+    {
+        core->OnResume();
+    }
+    else 
+    {
+        Core::Instance()->SetIsActive(true);
+    }    
+    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
+    if (activeCursor)
+    {
+        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
+        [cursor set];
+    }
+
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
@@ -779,20 +796,20 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 - (void)applicationDidBecomeActive:(NSNotification *)aNotification
 {
 	NSLog(@"[CoreMacOSPlatform] Application did become active");
-    if(core)
-    {
-        core->OnResume();
-    }
-    else 
-    {
-        Core::Instance()->SetIsActive(true);
-    }    
-    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
-    if (activeCursor)
-    {
-        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
-        [cursor set];
-    }
+//    if(core)
+//    {
+//        core->OnResume();
+//    }
+//    else 
+//    {
+//        Core::Instance()->SetIsActive(true);
+//    }    
+//    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
+//    if (activeCursor)
+//    {
+//        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
+//        [cursor set];
+//    }
 }
 
 - (void)applicationDidResignActive:(NSNotification *)aNotification
