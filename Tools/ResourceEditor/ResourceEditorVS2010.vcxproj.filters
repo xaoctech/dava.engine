@@ -788,9 +788,9 @@
     <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp">
-=======
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
@@ -798,7 +798,6 @@
       <Filter>SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneExporter.cpp">
->>>>>>> 059077b38e716ee16323ab832ac89828c1f738d5
       <Filter>SceneEditor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1902,9 +1901,9 @@
     <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h">
-=======
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CommandLineTool.h">
       <Filter>SceneEditor</Filter>
     </ClInclude>
@@ -1912,7 +1911,6 @@
       <Filter>SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneExporter.h">
->>>>>>> 059077b38e716ee16323ab832ac89828c1f738d5
       <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
