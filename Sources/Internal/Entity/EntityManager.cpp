@@ -12,7 +12,7 @@ Map<const char *, Pool *> EntityManager::poolAllocators;
 Entity * EntityManager::CreateEntity()
 {
 	Entity * entity = new Entity(this);
-	entities.push_back(entity);
+	AddToGlobalList(entity);
 	return entity;
 }
 
@@ -20,8 +20,6 @@ void EntityManager::DestroyEntity(Entity * & entity)
 {
 	deleteEntities.push_back(entity);
 	entity = 0; //seems to be dead now
-
-
 }
     
 void EntityManager::AddComponent(Entity * entity, Component * component)
@@ -87,6 +85,7 @@ void EntityManager::FlushDestroy()
 		{
 			EntityFamily * family = it->second;
 			family->DeleteEntity(entity);
+			RemoveFromGlobalList(entity);
 
 			delete(entity);
 		}
@@ -252,5 +251,24 @@ Vector<Entity*> & EntityManager::GetAllEntities()
 }
 
 
+//TODO: those are slow debug(editor?) functions for global view
+void EntityManager::AddToGlobalList(Entity * entity)
+{
+	entities.push_back(entity);
+}
+
+void EntityManager::RemoveFromGlobalList(Entity * entity)
+{
+	int32 size = entities.size();
+	for(int32 i = 0; i < size; ++i)
+	{
+		if(entity == entities[i])
+		{
+			entities[i] = entities[size-1];
+			entities.pop_back();
+			return;
+		}
+	}
+}
 
 };
