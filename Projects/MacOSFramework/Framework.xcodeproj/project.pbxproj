@@ -78,6 +78,24 @@
 		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
+		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
+		ED2F52F5158A4B0D009E0EC7 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DD158A4B0D009E0EC7 /* Component.h */; };
+		ED2F52F6158A4B0D009E0EC7 /* ComponentDataMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */; };
+		ED2F52F7158A4B0D009E0EC7 /* Components.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DF158A4B0D009E0EC7 /* Components.h */; };
+		ED2F52F8158A4B0D009E0EC7 /* ComponentTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52E0158A4B0D009E0EC7 /* ComponentTypes.cpp */; };
+		ED2F52F9158A4B0D009E0EC7 /* ComponentTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E1158A4B0D009E0EC7 /* ComponentTypes.h */; };
+		ED2F52FA158A4B0D009E0EC7 /* DumpVariable.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E4158A4B0D009E0EC7 /* DumpVariable.h */; };
+		ED2F52FB158A4B0D009E0EC7 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52E6158A4B0D009E0EC7 /* Entity.cpp */; };
+		ED2F52FC158A4B0D009E0EC7 /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E7158A4B0D009E0EC7 /* Entity.h */; };
+		ED2F52FD158A4B0D009E0EC7 /* EntityFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52E8158A4B0D009E0EC7 /* EntityFamily.cpp */; };
+		ED2F52FE158A4B0D009E0EC7 /* EntityFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E9158A4B0D009E0EC7 /* EntityFamily.h */; };
+		ED2F52FF158A4B0D009E0EC7 /* EntityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52EA158A4B0D009E0EC7 /* EntityManager.cpp */; };
+		ED2F5300158A4B0D009E0EC7 /* EntityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52EB158A4B0D009E0EC7 /* EntityManager.h */; };
+		ED2F5302158A4B0D009E0EC7 /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52ED158A4B0D009E0EC7 /* Pool.h */; };
+		ED2F5303158A4B0D009E0EC7 /* PoolSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52EE158A4B0D009E0EC7 /* PoolSystem.cpp */; };
+		ED2F5304158A4B0D009E0EC7 /* PoolSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52EF158A4B0D009E0EC7 /* PoolSystem.h */; };
+		ED2F5305158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52F0158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp */; };
+		ED2F5306158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52F1158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h */; };
 		FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9BC14A8591A008675BD /* CubeNode.cpp */; };
 		FE01C9BF14A8591A008675BD /* CubeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE01C9BD14A8591A008675BD /* CubeNode.h */; };
 		FE01C9C214A85924008675BD /* SphereNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9C014A85924008675BD /* SphereNode.cpp */; };
@@ -603,6 +621,24 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
+		ED2F52DC158A4B0D009E0EC7 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
+		ED2F52DD158A4B0D009E0EC7 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
+		ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentDataMapper.h; path = Entity/ComponentDataMapper.h; sourceTree = "<group>"; };
+		ED2F52DF158A4B0D009E0EC7 /* Components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Components.h; path = Entity/Components.h; sourceTree = "<group>"; };
+		ED2F52E0158A4B0D009E0EC7 /* ComponentTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ComponentTypes.cpp; path = Entity/ComponentTypes.cpp; sourceTree = "<group>"; };
+		ED2F52E1158A4B0D009E0EC7 /* ComponentTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentTypes.h; path = Entity/ComponentTypes.h; sourceTree = "<group>"; };
+		ED2F52E4158A4B0D009E0EC7 /* DumpVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DumpVariable.h; path = Entity/DumpVariable.h; sourceTree = "<group>"; };
+		ED2F52E6158A4B0D009E0EC7 /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = Entity/Entity.cpp; sourceTree = "<group>"; };
+		ED2F52E7158A4B0D009E0EC7 /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = Entity/Entity.h; sourceTree = "<group>"; };
+		ED2F52E8158A4B0D009E0EC7 /* EntityFamily.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityFamily.cpp; path = Entity/EntityFamily.cpp; sourceTree = "<group>"; };
+		ED2F52E9158A4B0D009E0EC7 /* EntityFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityFamily.h; path = Entity/EntityFamily.h; sourceTree = "<group>"; };
+		ED2F52EA158A4B0D009E0EC7 /* EntityManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityManager.cpp; path = Entity/EntityManager.cpp; sourceTree = "<group>"; };
+		ED2F52EB158A4B0D009E0EC7 /* EntityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityManager.h; path = Entity/EntityManager.h; sourceTree = "<group>"; };
+		ED2F52ED158A4B0D009E0EC7 /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pool.h; path = Entity/Pool.h; sourceTree = "<group>"; };
+		ED2F52EE158A4B0D009E0EC7 /* PoolSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PoolSystem.cpp; path = Entity/PoolSystem.cpp; sourceTree = "<group>"; };
+		ED2F52EF158A4B0D009E0EC7 /* PoolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PoolSystem.h; path = Entity/PoolSystem.h; sourceTree = "<group>"; };
+		ED2F52F0158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityAABBoxComponent.cpp; path = Entity/VisibilityAABBoxComponent.cpp; sourceTree = "<group>"; };
+		ED2F52F1158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxComponent.h; path = Entity/VisibilityAABBoxComponent.h; sourceTree = "<group>"; };
 		FE01C9BC14A8591A008675BD /* CubeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeNode.cpp; sourceTree = "<group>"; };
 		FE01C9BD14A8591A008675BD /* CubeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeNode.h; sourceTree = "<group>"; };
 		FE01C9C014A85924008675BD /* SphereNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SphereNode.cpp; sourceTree = "<group>"; };
@@ -1158,6 +1194,31 @@
 			path = Autotesting;
 			sourceTree = "<group>";
 		};
+		ED2F52DA158A4AD1009E0EC7 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				ED2F52DC158A4B0D009E0EC7 /* Component.cpp */,
+				ED2F52DD158A4B0D009E0EC7 /* Component.h */,
+				ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */,
+				ED2F52DF158A4B0D009E0EC7 /* Components.h */,
+				ED2F52E0158A4B0D009E0EC7 /* ComponentTypes.cpp */,
+				ED2F52E1158A4B0D009E0EC7 /* ComponentTypes.h */,
+				ED2F52E4158A4B0D009E0EC7 /* DumpVariable.h */,
+				ED2F52E6158A4B0D009E0EC7 /* Entity.cpp */,
+				ED2F52E7158A4B0D009E0EC7 /* Entity.h */,
+				ED2F52E8158A4B0D009E0EC7 /* EntityFamily.cpp */,
+				ED2F52E9158A4B0D009E0EC7 /* EntityFamily.h */,
+				ED2F52EA158A4B0D009E0EC7 /* EntityManager.cpp */,
+				ED2F52EB158A4B0D009E0EC7 /* EntityManager.h */,
+				ED2F52ED158A4B0D009E0EC7 /* Pool.h */,
+				ED2F52EE158A4B0D009E0EC7 /* PoolSystem.cpp */,
+				ED2F52EF158A4B0D009E0EC7 /* PoolSystem.h */,
+				ED2F52F0158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp */,
+				ED2F52F1158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h */,
+			);
+			name = Entity;
+			sourceTree = "<group>";
+		};
 		FE578BB513278DAD0081BDE9 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -1227,6 +1288,7 @@
 		FECFC0A512E87E3000C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				ED2F52DA158A4AD1009E0EC7 /* Entity */,
 				C7DE596A157F8CA10045CA41 /* Autotesting */,
 				FECFC0A612E87E3000C71562 /* Animation */,
 				FECFC0B612E87E3000C71562 /* Base */,
@@ -2099,6 +2161,17 @@
 				C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */,
 				C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */,
 				FEF538A91583348A0014679C /* Backtrace.h in Headers */,
+				ED2F52F5158A4B0D009E0EC7 /* Component.h in Headers */,
+				ED2F52F6158A4B0D009E0EC7 /* ComponentDataMapper.h in Headers */,
+				ED2F52F7158A4B0D009E0EC7 /* Components.h in Headers */,
+				ED2F52F9158A4B0D009E0EC7 /* ComponentTypes.h in Headers */,
+				ED2F52FA158A4B0D009E0EC7 /* DumpVariable.h in Headers */,
+				ED2F52FC158A4B0D009E0EC7 /* Entity.h in Headers */,
+				ED2F52FE158A4B0D009E0EC7 /* EntityFamily.h in Headers */,
+				ED2F5300158A4B0D009E0EC7 /* EntityManager.h in Headers */,
+				ED2F5302158A4B0D009E0EC7 /* Pool.h in Headers */,
+				ED2F5304158A4B0D009E0EC7 /* PoolSystem.h in Headers */,
+				ED2F5306158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2401,6 +2474,13 @@
 				C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */,
 				C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */,
 				FEF538AB158334970014679C /* Backtrace.cpp in Sources */,
+				ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */,
+				ED2F52F8158A4B0D009E0EC7 /* ComponentTypes.cpp in Sources */,
+				ED2F52FB158A4B0D009E0EC7 /* Entity.cpp in Sources */,
+				ED2F52FD158A4B0D009E0EC7 /* EntityFamily.cpp in Sources */,
+				ED2F52FF158A4B0D009E0EC7 /* EntityManager.cpp in Sources */,
+				ED2F5303158A4B0D009E0EC7 /* PoolSystem.cpp in Sources */,
+				ED2F5305158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
