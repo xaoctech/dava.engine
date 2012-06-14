@@ -60,12 +60,24 @@ if (platform.system() == "Darwin"):
 if os.path.exists(autotestingDestFolder):    
     print "Autotesting already exists - delete " + autotestingDestFolder
     shutil.rmtree(autotestingDestFolder)
-print "copy " + autotestingSrcFolder + " to " + autotestingDestFolder
-shutil.copytree(autotestingSrcFolder, autotestingDestFolder, ignore=ignored_svn_files)
+
+os.mkdir(autotestingDestFolder)
+
+autotestingActionsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Actions")
+autotestingActionsDestFolder = os.path.realpath(autotestingDestFolder + "/Actions")
+
+autotestingTestsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Tests")
+autotestingTestsDestFolder = os.path.realpath(autotestingDestFolder + "/Tests")
+
+print "copy " + autotestingActionsSrcFolder + " to " + autotestingActionsDestFolder
+shutil.copytree(autotestingActionsSrcFolder, autotestingActionsDestFolder, ignore=ignored_svn_files)
+
+print "copy " + autotestingTestsSrcFolder + " to " + autotestingTestsDestFolder
+shutil.copytree(autotestingTestsSrcFolder, autotestingTestsDestFolder, ignore=ignored_svn_files)
 
 randomNumber = random.randint(0, 100000)
 print "randomNumber: " + str(randomNumber)
-idFilePath = os.path.realpath(projectDir + "/Data/Autotesting/id.txt")
+idFilePath = os.path.realpath(autotestingDestFolder + "/id.txt")
 print "write to file " + idFilePath
 file=open(idFilePath,'w')
 file.write(str(randomNumber))
