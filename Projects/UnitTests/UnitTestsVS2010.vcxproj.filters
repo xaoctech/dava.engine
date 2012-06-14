@@ -10,12 +10,6 @@
     <Filter Include="Win32Specific">
       <UniqueIdentifier>{e55bb3b1-e945-4700-9c18-9271a3ed5649}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests\Landscape">
-      <UniqueIdentifier>{e41267d1-e87f-4671-a752-d5706d31f419}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Tests\CacheTest">
-      <UniqueIdentifier>{4a7edc7e-2c8e-4d46-8d7d-7eb19f5fb87e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="TestSuite">
       <UniqueIdentifier>{a1d2209f-7378-4554-9b63-0aa77b2ca427}</UniqueIdentifier>
     </Filter>
@@ -27,20 +21,17 @@
     <ClInclude Include="Classes\GameCore.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SpriteTest.h">
-      <Filter>Tests</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\LandscapeTest.h">
-      <Filter>Tests\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\CacheTest.h">
-      <Filter>Tests\CacheTest</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\TestTemplate.h">
       <Filter>TestSuite</Filter>
     </ClInclude>
     <ClInclude Include="Classes\BaseScreen.h">
       <Filter>TestSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Config.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SampleTest.h">
+      <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -50,23 +41,17 @@
     <ClCompile Include="Classes\GameCore.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SpriteTest.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
     <ClCompile Include="Win32Specific\main.cpp">
       <Filter>Win32Specific</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\LandscapeTest.cpp">
-      <Filter>Tests\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\CacheTest.cpp">
-      <Filter>Tests\CacheTest</Filter>
     </ClCompile>
     <ClCompile Include="Classes\TestTemplate.cpp">
       <Filter>TestSuite</Filter>
     </ClCompile>
     <ClCompile Include="Classes\BaseScreen.cpp">
       <Filter>TestSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SampleTest.cpp">
+      <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
