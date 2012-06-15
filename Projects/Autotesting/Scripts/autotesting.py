@@ -82,8 +82,12 @@ elif (platform.system() == "Darwin"):
         
         #sh floatsign.sh $2.app $3 $2.ipa
         ipaName = sys.argv[index_Target] + ".ipa"
-        params = ["sh", "./floatsign.sh", executableName, sys.argv[index_Certificate], ipaName]
-        print "sign with " + sys.argv[index_Certificate] + " and create " + ipaName
+        #params = ["sh", "./floatsign.sh", executableName, sys.argv[index_Certificate], ipaName]
+        #print "sign with " + sys.argv[index_Certificate] + " and create " + ipaName
+        
+        params = ["sh", "./packipa.sh", executableName, ipaName]
+        print "create " + ipaName
+        
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
         

@@ -333,37 +333,42 @@ void GameCore::FlushTestResults()
 void GameCore::SaveTestResult(const String &testTimeString, TestData *testData, int32 index)
 {
     MongodbObject *dbObject = GetObjectForName(testData->name);
-    
-    MongodbObject *logObject = dbClient->CreateObject();
-    logObject->SetObjectName(testTimeString);
-    logObject->AddString(String("Platform"), PLATFORM_NAME);
-    logObject->AddString(String("Owner"), TEST_OWNER);
-    logObject->AddInt64(String("TotalTime"), testData->totalTime);
-    logObject->AddInt64(String("MinTime"), testData->minTime);
-    logObject->AddInt64(String("MaxTime"), testData->maxTime);
-    logObject->AddInt32(String("MaxTimeIndex"), testData->maxTimeIndex);
-    logObject->AddInt64(String("StartTime"), testData->startTime);
-    logObject->AddInt64(String("EndTime"), testData->endTime);
-
-    logObject->AddInt32(String("RunCount"), testData->runCount);
-    
-    if(testData->runCount)
+    if(dbObject)
     {
-        logObject->AddDouble(String("Average"), (double)testData->totalTime / (double)testData->runCount);
+        MongodbObject *logObject = dbClient->CreateObject();
+        if(logObject)
+        {
+            logObject->SetObjectName(testTimeString);
+            logObject->AddString(String("Platform"), PLATFORM_NAME);
+            logObject->AddString(String("Owner"), TEST_OWNER);
+            logObject->AddInt64(String("TotalTime"), testData->totalTime);
+            logObject->AddInt64(String("MinTime"), testData->minTime);
+            logObject->AddInt64(String("MaxTime"), testData->maxTime);
+            logObject->AddInt32(String("MaxTimeIndex"), testData->maxTimeIndex);
+            logObject->AddInt64(String("StartTime"), testData->startTime);
+            logObject->AddInt64(String("EndTime"), testData->endTime);
+            
+            logObject->AddInt32(String("RunCount"), testData->runCount);
+            
+            if(testData->runCount)
+            {
+                logObject->AddDouble(String("Average"), (double)testData->totalTime / (double)testData->runCount);
+            }
+            else 
+            {
+                logObject->AddDouble(String("Average"), (double)0.0f);
+            }
+            logObject->Finish();
+            
+            dbObject->AddObject(testTimeString, logObject);
+            dbObject->Finish();
+            
+            
+            dbClient->SaveObject(dbObject);
+            dbClient->DestroyObject(logObject);
+            dbClient->DestroyObject(dbObject);
+        }
     }
-    else 
-    {
-        logObject->AddDouble(String("Average"), (double)0.0f);
-    }
-    logObject->Finish();
-    
-
-    dbObject->AddObject(testTimeString, logObject);
-    dbObject->Finish();
-    
-    dbClient->SaveObject(dbObject);
-    dbClient->DestroyObject(logObject);
-    dbClient->DestroyObject(dbObject);
 }
 
 
