@@ -60,6 +60,9 @@ public:
 		
 		//! Error messages (critical situations)
 		LEVEL_ERROR,
+        
+        //! Disable logs
+        LEVEL__DISABLE
 	};
 	
 	Logger();
