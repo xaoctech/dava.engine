@@ -35,7 +35,7 @@
 #define DATAPASE_PORT               27017
 
 #define DATABASE_NAME               String("UnitTests")
-#define DATABASE_COLLECTION         String("UnitTests")
+#define DATABASE_COLLECTION         String("UnitTestsResult")
 
 #if defined (__DAVAENGINE_MACOS__)
     #define PLATFORM_NAME           String("MacOS")
