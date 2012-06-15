@@ -214,6 +214,10 @@
 #include "Network/NetworkDelegate.h"
 #include "Network/NetworkPacket.h"
 
+// Entity
+#include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Component.h"
 
 #endif // __DAVAENGINE_H__
 

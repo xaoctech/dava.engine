@@ -35,7 +35,7 @@
 #include "Config.h"
 #include "BaseScreen.h"
 #include "SampleTest.h"
-
+#include "EntityTest.h"
 
 using namespace DAVA;
 
@@ -62,7 +62,8 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
     new SampleTest();
-
+	new EntityTest(); 
+    
     errors.reserve(TestCount());
 
     RunTests();
@@ -99,14 +100,16 @@ File * GameCore::CreateDocumentsFile(const String &filePathname)
 
 void GameCore::OnAppFinished()
 {
-    for(int32 i = 0; i < errors.size(); ++i)
+	int32 errorsSize = errors.size();
+    for(int32 i = 0; i < errorsSize; ++i)
     {
         SafeDelete(errors[i]);
     }
     errors.clear();
 
     
-    for(int32 i = 0; i < screens.size(); ++i)
+	int32 screensSize = screens.size();
+    for(int32 i = 0; i < screensSize; ++i)
     {
         SafeRelease(screens[i]);
     }
@@ -148,7 +151,8 @@ void GameCore::Draw()
 void GameCore::RunTests()
 {
     currentTestIndex = 0;
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+	int32 screensSize = screens.size();
+    for(int32 iScr = 0; iScr < screensSize; ++iScr)
     {
         int32 count = screens[iScr]->GetTestCount();
         if(0 < count)
@@ -195,8 +199,8 @@ void GameCore::LogMessage(const String &message)
 int32 GameCore::TestCount()
 {
     int32 count = 0;
-    
-    for(int32 i = 0; i < screens.size(); ++i)
+    int32 screensSize = screens.size();
+    for(int32 i = 0; i < screensSize; ++i)
     {
         count += screens[i]->GetTestCount();
     }
