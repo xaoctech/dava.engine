@@ -24,6 +24,11 @@
 # Please let us know about any improvements you make to this script!
 # ./sign source identity -p "path/to/profile" -e "path/to/entitlements" target
 
+if [ $# -lt 2 ]; then
+	echo "usage: $0 source target" >&2
+	exit 1
+fi
+
 #if [ $# -lt 3 ]; then
 #	echo "usage: $0 source identity [-p provisioning] [-e entitlements] target" >&2
 #	exit 1
@@ -58,7 +63,8 @@ ORIGINAL_FILE="$1"
 
 #shift $((OPTIND-1))
 
-NEW_FILE="$1"
+#NEW_FILE="$1"
+NEW_FILE="$2"
 
 # Check if the supplied file is an ipa or an app file
 #if [ "${ORIGINAL_FILE#*.}" = "ipa" ]
