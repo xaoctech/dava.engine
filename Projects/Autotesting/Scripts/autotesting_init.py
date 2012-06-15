@@ -47,7 +47,7 @@ if (platform.system() == "Darwin"):
     if (sys.argv[index_OS] == "iOS"):
         print "copy iOS scripts from " + currentDir + " to " + autotestingSrcFolder
         
-        scripts = ["/runOnDevice.sh", "/floatsign.sh", "/transporter_chief.rb", "/testRun.js"]
+        scripts = ["/runOnDevice.sh", "/floatsign.sh", "/packipa.sh", "/transporter_chief.rb", "/testRun.js"]
         for scriptName in scripts:
             scriptSrcPath = os.path.realpath(currentDir + scriptName)
             scriptDestPath = os.path.realpath(autotestingSrcFolder + scriptName)
