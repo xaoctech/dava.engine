@@ -138,11 +138,11 @@ void Scene::RegisterNode(SceneNode * node)
         bvHierarchy->RegisterNode(node);
 	}
 
-	Entity * entity = entityManager->CreateEntity();
-	node->entity = entity;
 	MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
 	if(meshInstance)
 	{
+		Entity * entity = entityManager->CreateEntity();
+		node->entity = entity;
 		node->entity->AddComponent(VisibilityAABBoxComponent::Get());
 	}
 }
@@ -164,7 +164,10 @@ void Scene::UnregisterNode(SceneNode * node)
     if (bvHierarchy)
         bvHierarchy->UnregisterNode(node);
 
-	entityManager->DestroyEntity(node->entity);
+	if(node->entity)
+	{
+		entityManager->DestroyEntity(node->entity);
+	}
 }
 
 Scene * Scene::GetScene()

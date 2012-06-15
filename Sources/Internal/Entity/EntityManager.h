@@ -65,6 +65,8 @@ private:
 	void FlushChangeFamily();
 	void FlushDestroy();
 
+	void AddToGlobalList(Entity * entity);
+	void RemoveFromGlobalList(Entity * entity);
 	Vector<Entity*> entities;
 };
     
