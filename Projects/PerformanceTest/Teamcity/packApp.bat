@@ -8,4 +8,4 @@ xcopy /e ..\Data\*.* app\Data\
 xcopy PerformanceTestVS2010.exe app\
 xcopy ..\glew32.dll app\
 
-wzzip -p -r app.zip app\*.*
+wzzip -p -r PerformanceTestWin.zip app\*.*
