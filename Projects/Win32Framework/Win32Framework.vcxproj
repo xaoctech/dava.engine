@@ -141,6 +141,7 @@
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
     <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
@@ -177,6 +178,8 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h" />
@@ -467,6 +470,7 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
@@ -475,8 +479,8 @@
     <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Entity\EntityTest.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />

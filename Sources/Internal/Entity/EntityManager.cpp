@@ -12,7 +12,14 @@ Map<const char *, Pool *> EntityManager::poolAllocators;
 Entity * EntityManager::CreateEntity()
 {
 	Entity * entity = new Entity(this);
+	AddToGlobalList(entity);
 	return entity;
+}
+
+void EntityManager::DestroyEntity(Entity * & entity)
+{
+	deleteEntities.push_back(entity);
+	entity = 0; //seems to be dead now
 }
     
 void EntityManager::AddComponent(Entity * entity, Component * component)
@@ -62,6 +69,37 @@ void EntityManager::RemoveComponent(Entity * entity, Component * component)
 
 void EntityManager::Flush()
 {
+	FlushChangeFamily();
+	FlushDestroy();
+}
+
+void EntityManager::FlushDestroy()
+{
+	int32 size = deleteEntities.size();
+
+	for(int32 i = 0; i < size; ++i)
+	{
+		Entity * entity = deleteEntities[i];
+		Map<uint64, EntityFamily*>::iterator it = families.find(entity->GetFamily().GetBit());
+		if(it != families.end())
+		{
+			EntityFamily * family = it->second;
+			family->DeleteEntity(entity);
+			RemoveFromGlobalList(entity);
+
+			delete(entity);
+		}
+		else
+		{
+			//entity with no family
+		}
+	}
+
+	deleteEntities.clear();
+}
+
+void EntityManager::FlushChangeFamily()
+{
 	Map<Entity*, EntityFamilyType>::iterator it = newFamilyEntities.begin();
 	Map<Entity*, EntityFamilyType>::iterator itEnd = newFamilyEntities.end();
 	for(; it != itEnd; ++it)
@@ -73,6 +111,8 @@ void EntityManager::Flush()
 
 	newFamilyEntities.clear();
 }
+
+
 
 void EntityManager::ProcessAddRemoveComponent(Entity * entity, const EntityFamilyType & oldFamilyType, const EntityFamilyType & newFamilyType)
 {
@@ -205,69 +245,30 @@ void EntityManager::Dump()
 	}
 }
 
-
-
-//void EntityManager::EntityChanged(Entity * entity)
-//{
-//	changedEntities.insert(entity);
-//}
-//
-//void EntityManager::Update()
-//{
-//
-//}
-/*
-void EntityManager::Flush()
+Vector<Entity*> & EntityManager::GetAllEntities()
 {
-	Set<Entity*>::iterator entityIter = changedEntities.begin();
-	Set<Entity*>::iterator entitiesEnd = changedEntities.end();
-	for(; entityIter != entitiesEnd; ++entityIter)
-	{
-		FlushEntity(*entityIter);
-	}
-
-	Map<int32, EntityFamily>::iterator familyIter = families.begin();
-	Map<int32, EntityFamily>::iterator familiesEnd = families.end();
-	for(; familyIter != familiesEnd; ++familyIter)
-	{
-		FlushFamily(&(familyIter->second));
-	}
+	return entities;
 }
 
-void EntityManager::FlushEntity(Entity * entity)
+
+//TODO: those are slow debug(editor?) functions for global view
+void EntityManager::AddToGlobalList(Entity * entity)
 {
-	if(entity->GetChangeState() & Entity::CREATED ||
-		entity->GetChangeState() & Entity::COMPONENT_ADDED)
+	entities.push_back(entity);
+}
+
+void EntityManager::RemoveFromGlobalList(Entity * entity)
+{
+	int32 size = entities.size();
+	for(int32 i = 0; i < size; ++i)
 	{
-		if(entity->GetIndex() != -1)
+		if(entity == entities[i])
 		{
-			RemoveFromMap(entity);
+			entities[i] = entities[size-1];
+			entities.pop_back();
+			return;
 		}
-
-		uint32 entityType = entity->CalculateFamily();
-		families[entityType].entities.push_back(entity);
-		entity->SetIndex((uint32)families[entityType].entities.size() - 1);
-	}
-
-}
-
-void EntityManager::RemoveFromMap(Entity * entity)
-{
-	if(entity->GetIndex() != -1)
-	{
-		uint32 oldType = entity->GetFamily();
-		//entities[oldType][entity->GetIndex()]
-		//TODO: 
 	}
 }
-
-void EntityManager::FlushFamily(EntityFamily * family)
-{
-	family->Flush();
-}*/
-
-
-
-
 
 };

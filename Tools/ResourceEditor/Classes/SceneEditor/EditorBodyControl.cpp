@@ -22,6 +22,7 @@
 
 #include "SceneGraph.h"
 #include "DataGraph.h"
+#include "EntitiesGraph.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -35,6 +36,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 
     sceneGraph = new SceneGraph(this, rect);
     dataGraph = new DataGraph(this, rect);
+	entitiesGraph = new EntitiesGraph(this, rect);
     currentGraph = NULL;
     
     bool showOutput = EditorSettings::Instance()->GetShowOutput();
@@ -98,6 +100,7 @@ EditorBodyControl::~EditorBodyControl()
 {
     SafeRelease(dataGraph);
     SafeRelease(sceneGraph);
+	SafeRelease(entitiesGraph);
     currentGraph = NULL;
     
     SafeRelease(sceneInfoControl);
@@ -156,6 +159,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
     
     sceneGraph->SetScene(scene);
     dataGraph->SetScene(scene);
+	entitiesGraph->SetScene(scene);
 }
 
 void RemoveDeepCamera(SceneNode * curr)
@@ -796,6 +800,7 @@ void EditorBodyControl::WillAppear()
     
     sceneGraph->SelectNode(NULL);
     dataGraph->SelectNode(NULL);
+	entitiesGraph->SelectNode(NULL);
 }
 
 void EditorBodyControl::ShowProperties(bool show)
@@ -933,6 +938,11 @@ void EditorBodyControl::ToggleSceneGraph()
 void EditorBodyControl::ToggleDataGraph()
 {
     ToggleGraph(dataGraph);
+}
+
+void EditorBodyControl::ToggleEntities()
+{
+	ToggleGraph(entitiesGraph);
 }
 
 

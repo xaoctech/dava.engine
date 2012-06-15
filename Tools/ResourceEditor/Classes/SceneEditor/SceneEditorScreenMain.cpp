@@ -21,6 +21,8 @@
 
 #include "UNDOManager.h"
 
+#include "SceneExporter.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
@@ -103,15 +105,17 @@ void SceneEditorScreenMain::LoadResources()
     AddControl(sceneInfoButton);
     
     
-    sceneGraphButton = ControlsFactory::CreateButton(
-                                        Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.scene"));
+    sceneGraphButton = ControlsFactory::CreateButton( Vector2(0, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.scene"));
     sceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneGraphPressed));
     AddControl(sceneGraphButton);
     
-    dataGraphButton = ControlsFactory::CreateButton(
-                                                     Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.data"));
+    dataGraphButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.data"));
     dataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnDataGraphPressed));
     AddControl(dataGraphButton);
+
+	entitiesButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::BUTTON_WIDTH*2, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.entities"));
+	entitiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnEntitiesPressed));
+	AddControl(entitiesButton);
     
     InitializeBodyList();
     
@@ -132,6 +136,7 @@ void SceneEditorScreenMain::UnloadResources()
     
     SafeRelease(sceneGraphButton);
     SafeRelease(dataGraphButton);
+	SafeRelease(entitiesButton);
     
     ReleaseNodeDialogs();
     
@@ -395,61 +400,61 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
     }
 }
 
-void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
-{
-    Logger::Debug("[ExportTexture] %s", textureDataSourcePath.c_str());
-    
-    String fileOnly;
-    String pathOnly;
-    String pathTo = textureDataSourcePath;
-    pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
-    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-
-	//default pathTo  -gith
-	if(useConvertedTextures)
-	{
-		// texture.pvr.png -> texture.pvr
-        if(String::npos != pathTo.find(".pvr.png"))
-        {
-            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
-        }
-        else if(String::npos != pathTo.find(".png"))
-        {
-            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
-        }
-	}
-
-    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-	FileSystem::Instance()->DeleteFile(pathTo);
-    FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
-}
-
-void SceneEditorScreenMain::ExportLandscapeFile(const String &fileDataSourcePath)
-{
-    String fileOnly;
-    String pathOnly;
-    String pathTo = fileDataSourcePath;
-    pathTo.replace(fileDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
-    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-    
-	//default pathTo  -gith
-	if(useConvertedTextures)
-	{
-		// texture.pvr.png -> texture.pvr
-        if(String::npos != pathTo.find(".pvr.png"))
-        {
-            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
-        }
-        else if(String::npos != pathTo.find(".png"))
-        {
-            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
-        }
-	}
-    
-    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-	FileSystem::Instance()->DeleteFile(pathTo);
-    FileSystem::Instance()->CopyFile(fileDataSourcePath, pathTo);
-}
+//void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
+//{
+//    Logger::Debug("[ExportTexture] %s", textureDataSourcePath.c_str());
+//    
+//    String fileOnly;
+//    String pathOnly;
+//    String pathTo = textureDataSourcePath;
+//    pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
+//    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+//
+//	//default pathTo  -gith
+//	if(useConvertedTextures)
+//	{
+//		// texture.pvr.png -> texture.pvr
+//        if(String::npos != pathTo.find(".pvr.png"))
+//        {
+//            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
+//        }
+//        else if(String::npos != pathTo.find(".png"))
+//        {
+//            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
+//        }
+//	}
+//
+//    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+//	FileSystem::Instance()->DeleteFile(pathTo);
+//    FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
+//}
+//
+//void SceneEditorScreenMain::ExportLandscapeFile(const String &fileDataSourcePath)
+//{
+//    String fileOnly;
+//    String pathOnly;
+//    String pathTo = fileDataSourcePath;
+//    pathTo.replace(fileDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
+//    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
+//    
+//	//default pathTo  -gith
+//	if(useConvertedTextures)
+//	{
+//		// texture.pvr.png -> texture.pvr
+//        if(String::npos != pathTo.find(".pvr.png"))
+//        {
+//            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
+//        }
+//        else if(String::npos != pathTo.find(".png"))
+//        {
+//            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
+//        }
+//	}
+//    
+//    FileSystem::Instance()->CreateDirectory(pathOnly, true);
+//	FileSystem::Instance()->DeleteFile(pathTo);
+//    FileSystem::Instance()->CopyFile(fileDataSourcePath, pathTo);
+//}
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
 {
@@ -733,6 +738,13 @@ void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
 
 //    bool areShown = iBody->bodyControl->DataGraphAreShown();
 //    iBody->bodyControl->ShowDataGraph(!areShown);
+}
+
+void SceneEditorScreenMain::OnEntitiesPressed(BaseObject * obj, void *, void *)
+{
+	BodyItem *iBody = FindCurrentBody();
+
+	iBody->bodyControl->ToggleEntities();
 }
 
 
@@ -1234,138 +1246,115 @@ void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, vo
 
 void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
 {
+    String format;
     switch (actionID) 
     {
         case EETGMID_PNG:
-            useConvertedTextures = false;
+            format = String("png");
             break;
-
+            
         case EETGMID_PVR:
-            useConvertedTextures = true;
+            format = String("pvr");
             break;
-
+            
         case EETGMID_DXT:
             DVASSERT(0);
-            break;
-
+            return;
+            
         default:
 			DVASSERT(0);
-            break;
+            return;
     }
-    
-//  old code
+
+
     BodyItem *iBody = FindCurrentBody();
-    String path = iBody->bodyControl->GetFilePath();
-	String lightmapsSource = path + "_lightmaps/";
-	String lightmapsDestination = lightmapsSource;
-    if(String::npos == path.find("DataSource"))
-    {
-        return;
-    }
-    path.replace(path.find("DataSource"), strlen("DataSource"), "Data");
-    
-    String fileOnly;
-    String pathOnly;
-    FileSystem::SplitPath(path, pathOnly, fileOnly);
-    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-    path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-
 	iBody->bodyControl->PushDebugCamera();
-	
-    Scene * scene = iBody->bodyControl->GetScene();
-    
-    Vector<Material*> materials;
-    scene->GetDataNodes(materials);
-    for (int i = 0; i < (int)materials.size(); i++)
-    {
-        Material *m = materials[i];
-        if (m->GetName().find("editor.") == String::npos)
-        {
 
-			if (m->textures[Material::TEXTURE_DIFFUSE])
-			{
-				if (!m->textures[Material::TEXTURE_DIFFUSE]->relativePathname.empty()) 
-				{
-					if(useConvertedTextures)
-					{
-						ExportTexture(m->names[Material::TEXTURE_DIFFUSE]);
-					}
-					else
-					{
-						ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
-					}
-				}
-			}
-        }
+    String filePath = iBody->bodyControl->GetFilePath();
+
+    String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+    String::size_type pos = filePath.find(dataSourcePath);
+    if(String::npos != pos)
+    {
+        filePath = filePath.replace(pos, dataSourcePath.length(), "");
+    }
+    else 
+    {
+        DVASSERT(0);
     }
     
-    ExportLandscapeAndMeshLightmaps(scene);
+    // Get project path
+    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
+    String projectPath = keyedArchieve->GetString(String("ProjectPath"));
 
-	//lightmapsDestination.replace(lightmapsDestination.find("DataSource"), strlen("DataSource"), "Data");
-	//FileSystem::Instance()->CreateDirectory(lightmapsDestination, false);
- //   FileSystem::Instance()->CopyDirectory(lightmapsSource, lightmapsDestination);
+    if(!SceneExporter::Instance()) new SceneExporter();
 
-    SceneFileV2 * file = new SceneFileV2();
-    file->EnableSaveForGame(true);
-    file->EnableDebugLog(true);
-    file->SaveScene(path.c_str(), scene);
-    SafeRelease(file);
+    String inFolder = projectPath + String("DataSource/3d/");
+    SceneExporter::Instance()->SetInFolder(inFolder);
+    SceneExporter::Instance()->SetOutFolder(projectPath + String("Data/3d/"));
 
+    SceneExporter::Instance()->SetExportingFormat(format);
+  
+    //TODO: how to be with removed nodes?
+    Set<String> errorsLog;
+    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
-
-	
     libraryControl->RefreshTree();
     
+    if(0 < errorsLog.size())
+    {
+        ErrorNotifier::Instance()->ShowError(errorsLog);
+    }
 }
 
-void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
-{
-	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
-    if(land) 
-    {
-        String fullTiledTexture = land->SaveFullTiledTexture();
-        land->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, fullTiledTexture);
-        
-        ExportLandscapeFile(land->GetHeightmapPathname());
-        for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
-        {
-            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
-            if(t) 
-            {
-                ExportLandscapeFile(land->GetTextureName((LandscapeNode::eTextureLevel)i));
-//                if(useConvertedTextures)
-//                {
-//                    ExportTexture(t->names[Material::TEXTURE_DIFFUSE]);
-//                }
-//                else
-//                {
-//                    ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
-//                }
-            }
-        }
-    }
-    // PNG / PVR conversion question??? Save lightmaps as beast batched the lightmaps ignoring settings
-    // TODO: what to do? 
-    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
-    if (meshInstance)
-    {
-        for (int32 li = 0; li < meshInstance->GetLightmapCount(); ++li)
-        {
-            MeshInstanceNode::LightmapData * ld = meshInstance->GetLightmapDataForIndex(li);
-            if (ld)
-            {
-                ExportTexture(ld->lightmapName);  
-            }
-        }
-    }
-
-	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
-	{
-		SceneNode * child = node->GetChild(ci);
-		ExportLandscapeAndMeshLightmaps(child);
-	}
-}
+//void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
+//{
+//	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
+//    if(land) 
+//    {
+//        String fullTiledTexture = land->SaveFullTiledTexture();
+//        land->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, fullTiledTexture);
+//        
+//        ExportLandscapeFile(land->GetHeightmapPathname());
+//        for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+//        {
+//            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
+//            if(t) 
+//            {
+//                ExportLandscapeFile(land->GetTextureName((LandscapeNode::eTextureLevel)i));
+////                if(useConvertedTextures)
+////                {
+////                    ExportTexture(t->names[Material::TEXTURE_DIFFUSE]);
+////                }
+////                else
+////                {
+////                    ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
+////                }
+//            }
+//        }
+//    }
+//    // PNG / PVR conversion question??? Save lightmaps as beast batched the lightmaps ignoring settings
+//    // TODO: what to do? 
+//    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+//    if (meshInstance)
+//    {
+//        for (int32 li = 0; li < meshInstance->GetLightmapCount(); ++li)
+//        {
+//            MeshInstanceNode::LightmapData * ld = meshInstance->GetLightmapDataForIndex(li);
+//            if (ld)
+//            {
+//                ExportTexture(ld->lightmapName);  
+//            }
+//        }
+//    }
+//
+//	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
+//	{
+//		SceneNode * child = node->GetChild(ci);
+//		ExportLandscapeAndMeshLightmaps(child);
+//	}
+//}
 
 void SceneEditorScreenMain::RecreteFullTilingTexture()
 {

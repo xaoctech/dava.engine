@@ -33,6 +33,8 @@ public:
 	int32 GetIndexInFamily();
 private:
 	Entity(EntityManager * manager);
+	Entity();
+	~Entity();
     
 	EntityFamilyType  family;
 	int32   indexInFamily;

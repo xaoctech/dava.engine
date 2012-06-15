@@ -476,6 +476,8 @@
 		FEEB6EBA131BC67400958ACB /* Replay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEEB6EB8131BC67400958ACB /* Replay.cpp */; };
 		FEEB6EBB131BC67400958ACB /* Replay.h in Headers */ = {isa = PBXBuildFile; fileRef = FEEB6EB9131BC67400958ACB /* Replay.h */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
+		FEF538B615835B820014679C /* Backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEF538B415835B820014679C /* Backtrace.cpp */; };
+		FEF538B715835B820014679C /* Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = FEF538B515835B820014679C /* Backtrace.h */; };
 		FEFD19B513096A4C0050D7E6 /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFD19B413096A4C0050D7E6 /* DoxygenDocumenation.h */; };
 /* End PBXBuildFile section */
 
@@ -968,6 +970,8 @@
 		FEEB6EB8131BC67400958ACB /* Replay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Replay.cpp; sourceTree = "<group>"; };
 		FEEB6EB9131BC67400958ACB /* Replay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Replay.h; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FEF538B415835B820014679C /* Backtrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Backtrace.cpp; sourceTree = "<group>"; };
+		FEF538B515835B820014679C /* Backtrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Backtrace.h; sourceTree = "<group>"; };
 		FEFD19B413096A4C0050D7E6 /* DoxygenDocumenation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoxygenDocumenation.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1214,6 +1218,8 @@
 		FECFB36312E5904400C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FEF538B415835B820014679C /* Backtrace.cpp */,
+				FEF538B515835B820014679C /* Backtrace.h */,
 				FE5E1668153DA0870047FAC5 /* Stats.cpp */,
 				FE5E1669153DA0870047FAC5 /* Stats.h */,
 				FECFB36412E5904400C71562 /* DVAssert.h */,
@@ -1962,6 +1968,7 @@
 				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
 				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
 				FE40BC901579567C0014BB7D /* NeonMath.h in Headers */,
+				FEF538B715835B820014679C /* Backtrace.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2253,6 +2260,7 @@
 				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
 				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
 				FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */,
+				FEF538B615835B820014679C /* Backtrace.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -46,7 +46,7 @@ LandscapeTest::LandscapeTest(const String &testName, LandscapeNode::eTiledShader
     {
         for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
         {
-            RegisterFunction(this, &LandscapeTest::DrawSprite, "TestLandscapeTexture", TEST_FRAMES_COUNT/2, (void *)i);
+            RegisterFunction(this, &LandscapeTest::DrawSprite, Format("TestLandscapeTexture_%02d", i), TEST_FRAMES_COUNT/2, (void *)i);
         }
     }
     else 

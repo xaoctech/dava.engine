@@ -38,7 +38,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
-
+#include "Entity/Entity.h"
 
 namespace DAVA
 {
@@ -51,6 +51,7 @@ SceneNode::SceneNode()
 	, parent(0)
     , inUpdate(false)
     , tag(0)
+	, entity(0)
 {
 //    Logger::Debug("SceneNode: %p", this);
 
@@ -85,6 +86,8 @@ SceneNode::~SceneNode()
 
     SafeRelease(customProperties);
 //  Logger::Debug("~SceneNode: %p", this);
+
+	//TODO: delete entity?
 }
 
 void SceneNode::SetScene(Scene * _scene)

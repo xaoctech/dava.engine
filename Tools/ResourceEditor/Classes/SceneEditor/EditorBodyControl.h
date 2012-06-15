@@ -23,6 +23,7 @@ using namespace DAVA;
 
 class SceneGraph;
 class DataGraph;
+class EntitiesGraph;
 
 class SceneInfoControl;
 class BeastManager;
@@ -77,6 +78,7 @@ public:
 
     void ToggleSceneGraph();
     void ToggleDataGraph();
+	void ToggleEntities();
     
     void UpdateLibraryState(bool isShown, int32 width);
 
@@ -216,6 +218,7 @@ protected:
     //graps
     SceneGraph *sceneGraph;
     DataGraph *dataGraph;
+	EntitiesGraph *entitiesGraph;
     GraphBase *currentGraph;
     ePropertyShowState propertyShowState;
     

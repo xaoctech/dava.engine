@@ -1335,8 +1335,16 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel level)
 {
+    DVASSERT(0 <= level && level < TEXTURE_COUNT);
     return textureNames[level];
 }
+    
+void LandscapeNode::SetTextureName(eTextureLevel level, const String &newTextureName)
+{
+    DVASSERT(0 <= level && level < TEXTURE_COUNT);
+    textureNames[level] = newTextureName;
+}
+
 
 void LandscapeNode::CursorEnable()
 {
@@ -1428,7 +1436,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     
     Texture *fullTiled = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888, Texture::DEPTH_NONE);
     RenderManager::Instance()->SetRenderTarget(fullTiled);
-    RenderManager::Instance()->SetViewport(Rect(0.f, 0.f, fullTiled->GetWidth(), fullTiled->GetHeight()), true);
+    RenderManager::Instance()->SetViewport(Rect(0.f, 0.f, (float32)fullTiled->GetWidth(), (float32)fullTiled->GetHeight()), true);
 
 
 	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);

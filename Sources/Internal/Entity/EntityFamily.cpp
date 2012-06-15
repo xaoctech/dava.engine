@@ -88,6 +88,7 @@ void EntityFamily::DeleteEntity(Entity * entity)
     }
 
 	entities[oldIndex] = entities[lastIndex];
+	entities[oldIndex]->SetIndexInFamily(oldIndex);
 	entities.pop_back();
 
 	currentSize--;

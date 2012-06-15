@@ -133,12 +133,12 @@ public:
         typedef U ReferenceType;
     };
     
-    template<typename U>
+    template<class U>
     struct P2MTraits
     {
         enum{result = false };
     };
-    template <typename R, typename V>
+    template <class R, class V>
     struct P2MTraits<R V::*>
     {
         enum{result = true };
@@ -151,6 +151,34 @@ public:
     
 };
 
+    
+    /* TEST, need to transfer to unit tests.
+     Logger::Debug("%d", Conversion<double, int>::exists);
+     Logger::Debug("%d", Conversion<Component*, VisibilityAABBoxComponent*>::exists);
+     Logger::Debug("%d", Conversion<VisibilityAABBoxComponent*, Component*>::exists);
+     Logger::Debug("%d", SUPERSUBCLASS(VisibilityAABBoxComponent, Component));
+     Logger::Debug("%d", SUPERSUBCLASS(Component, VisibilityAABBoxComponent));
+     Logger::Debug("%d", SUPERSUBCLASS(void*, VisibilityAABBoxComponent));
+     Logger::Debug("%d", SUPERSUBCLASS(BaseObject, VisibilityAABBoxComponent));
+     
+     
+     Logger::Debug("(BaseObject*) isPointer: %d", TypeTraits<BaseObject*>::isPointer);
+     Logger::Debug("(BaseObject*) isReference: %d", TypeTraits<BaseObject*>::isReference);
+     Logger::Debug("(BaseObject*) isPointerToMemberFunction: %d", TypeTraits<BaseObject*>::isPointerToMemberFunction);
+     
+     Logger::Debug("(BaseObject&) isPointer: %d", TypeTraits<BaseObject&>::isPointer);
+     Logger::Debug("(BaseObject&) isReference: %d", TypeTraits<BaseObject&>::isReference);
+     Logger::Debug("(BaseObject&) isPointerToMemberFunction: %d", TypeTraits<BaseObject&>::isPointerToMemberFunction);
+     
+     void(VisibilityAABBoxSystem::*func)() = &VisibilityAABBoxSystem::Run;
+     
+     //    Logger::Debug("(&VisibilityAABBoxSystem::Run) isPointer: %d", TypeTraits<VisibilityAABBoxSystem::Run>::isPointer);
+     //    Logger::Debug("(&VisibilityAABBoxSystem::Run) isReference: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isReference);
+     //    Logger::Debug("(&VisibilityAABBoxSystem::Run) isPointerToMemberFunction: %d", TypeTraits<&VisibilityAABBoxSystem::Run>::isPointerToMemberFunction);
+     */    
+
+    
+    
 };
 
 
