@@ -2,6 +2,7 @@
 #define __DAVAENGINE_DUMP_VARIABLE_H__
 
 #include "Math/AABBox3.h"
+#include <typeinfo>
 
 namespace DAVA
 {

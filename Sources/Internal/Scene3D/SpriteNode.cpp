@@ -265,24 +265,26 @@ void SpriteNode::Draw()
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 
-    
-    
+	eBlendMode sblend = RenderManager::Instance()->GetSrcBlend();
+	eBlendMode dblend = RenderManager::Instance()->GetDestBlend();
     
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
 //    RenderManager::Instance()->EnableBlending(true);
 //    RenderManager::Instance()->EnableTexturing(true);//TODO: Move all this code to the RenderState node
 //    RenderManager::Instance()->EnableDepthTest(false);
 //    RenderManager::Instance()->EnableDepthWrite(false);
     
     
-    RenderManager::Instance()->SetState(RenderStateBlock::STATE_BLEND | RenderStateBlock::STATE_TEXTURE0 | RenderStateBlock::STATE_CULL);
+    //RenderManager::Instance()->SetState(RenderStateBlock::STATE_BLEND | RenderStateBlock::STATE_TEXTURE0 | RenderStateBlock::STATE_CULL);
     
     RenderManager::Instance()->SetTexture(sprite->GetTexture(frame));
 //	RenderManager::Instance()->FlushState();
     
     RenderManager::Instance()->SetRenderData(renderData);
 
-    
+	RenderManager::Instance()->FlushState();
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, frame * 4, 4);
 
 
@@ -294,6 +296,8 @@ void SpriteNode::Draw()
 //    RenderManager::Instance()->EnableDepthTest(true);
 //    RenderManager::Instance()->EnableDepthWrite(true);
     
+	RenderManager::Instance()->SetBlendMode(sblend, dblend);
+
     if (debugFlags & DEBUG_DRAW_ALL)
     {
         AABBox3 box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));

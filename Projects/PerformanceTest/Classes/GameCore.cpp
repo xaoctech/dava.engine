@@ -63,10 +63,10 @@ void GameCore::OnAppStarted()
 
     if(ConnectToDB())
     {
-//        //TODO: test only
+        //TODO: test only
 //        dbClient->DropCollection();
 //        dbClient->DropDatabase();
-//        //TODO: test only
+        //TODO: test only
         
         new SpriteTest();
         new CacheTest("Cache Test");
@@ -241,68 +241,6 @@ void GameCore::RunTestByName(const String &testName)
 }
 
 
-void GameCore::FlushTestResults()
-{
-    MongodbObject *logObject = dbClient->CreateObject();
-    
-    time_t logStartTime = time(0);
-    String objectName = Format("%lld", logStartTime);
-    logObject->SetObjectName(objectName);
-    
-    logObject->AddString(String("Platform"), GetPlatformName());
-    
-#if defined (SINGLE_MODE)
-    logObject->AddInt32(String("TestCount"), 1);
-#else //#if defined (SINGLE_MODE)
-    logObject->AddInt32(String("TestCount"), TestCount());
-#endif //#if defined (SINGLE_MODE)
-    
-    
-    logObject->StartArray(String("TestResults"));
-    
-    int32 testIndex = 0;
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
-    {
-        int32 count = screens[iScr]->GetTestCount();
-        for(int32 iTest = 0; iTest < count; ++iTest)
-        {
-            TestData *td = screens[iScr]->GetTestData(iTest);
-#if defined (SINGLE_MODE)
-            if(SINGLE_TEST_NAME == td->name)
-            {
-                SaveTestResult(logObject, td, testIndex);
-                break;
-            }
-#else //#if defined (SINGLE_MODE)
-            SaveTestResult(logObject, td, testIndex);
-            ++testIndex;
-#endif //#if defined (SINGLE_MODE)
-        }
-    }
-    
-    logObject->FinishArray();
-    
-    
-    logObject->Finish();
-    dbClient->SaveObject(logObject);
-    dbClient->DestroyObject(logObject);
-}
-
-String GameCore::GetPlatformName()
-{
-#if defined (__DAVAENGINE_MACOS__)
-    return String("MacOS");
-#elif defined (__DAVAENGINE_IPHONE_)
-    return String("iPhone");
-#elif defined (__DAVAENGINE_WIN32_)
-    return String("Win32");
-#elif defined (__DAVAENGINE_ANDROID_)
-    return String("Android");
-#else
-    return String("Unknown");
-#endif //PLATFORMS    
-    
-}
 
 void GameCore::FinishTests()
 {
@@ -365,11 +303,41 @@ void GameCore::ProcessTests()
 }
 
 
-void GameCore::SaveTestResult(MongodbObject *logObject, TestData *testData, int32 index)
+void GameCore::FlushTestResults()
 {
-    logObject->StartObject(String(Format("TestResult_%d", index)));
+    time_t logStartTime = time(0);
+    String testTimeString = Format("%lld", logStartTime);
     
-    logObject->AddString(String("TestName"), testData->name);
+    int32 testIndex = 0;
+    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+    {
+        int32 count = screens[iScr]->GetTestCount();
+        for(int32 iTest = 0; iTest < count; ++iTest)
+        {
+            TestData *td = screens[iScr]->GetTestData(iTest);
+#if defined (SINGLE_MODE)
+            if(SINGLE_TEST_NAME == td->name)
+            {
+                SaveTestResult(testTimeString, td, testIndex);
+                break;
+            }
+#else //#if defined (SINGLE_MODE)
+            SaveTestResult(testTimeString, td, testIndex);
+            ++testIndex;
+#endif //#if defined (SINGLE_MODE)
+        }
+    }
+}
+
+
+void GameCore::SaveTestResult(const String &testTimeString, TestData *testData, int32 index)
+{
+    MongodbObject *dbObject = GetObjectForName(testData->name);
+    
+    MongodbObject *logObject = dbClient->CreateObject();
+    logObject->SetObjectName(testTimeString);
+    logObject->AddString(String("Platform"), PLATFORM_NAME);
+    logObject->AddString(String("Owner"), TEST_OWNER);
     logObject->AddInt64(String("TotalTime"), testData->totalTime);
     logObject->AddInt64(String("MinTime"), testData->minTime);
     logObject->AddInt64(String("MaxTime"), testData->maxTime);
@@ -387,10 +355,33 @@ void GameCore::SaveTestResult(MongodbObject *logObject, TestData *testData, int3
     {
         logObject->AddDouble(String("Average"), (double)0.0f);
     }
+    logObject->Finish();
     
-    logObject->FinishObject();
+
+    dbObject->AddObject(testTimeString, logObject);
+    dbObject->Finish();
+    
+    dbClient->SaveObject(dbObject);
+    dbClient->DestroyObject(logObject);
+    dbClient->DestroyObject(dbObject);
 }
 
+
+MongodbObject * GameCore::GetObjectForName(const String &testName)
+{
+    MongodbObject *logObject = dbClient->FindObjectByKey(testName);
+    if(logObject)
+    {
+        logObject->EnableForEdit();
+    }
+    else
+    {
+        logObject = dbClient->CreateObject();
+        logObject->SetObjectName(testName);
+    }
+    
+    return logObject;
+}
 
 
 

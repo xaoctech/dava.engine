@@ -40,7 +40,7 @@ class LandscapeTest: public TestTemplate<LandscapeTest>
 {
     enum eConst
     {
-        TEST_FRAMES_COUNT = 100
+        TEST_FRAMES_COUNT = 10
     };
     
 public:

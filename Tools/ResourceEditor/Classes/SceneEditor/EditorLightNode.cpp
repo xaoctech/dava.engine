@@ -64,3 +64,18 @@ DAVA::String EditorLightNode::GetSceneFile()
 		return String();
 	}
 }
+
+SceneNode* EditorLightNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if(!dstNode)
+	{
+		dstNode = new EditorLightNode();
+	}
+
+	SceneNode::Clone(dstNode);
+
+	EditorLightNode *lightNode = (EditorLightNode *)dstNode;
+	lightNode->type = type;
+
+	return dstNode;
+}

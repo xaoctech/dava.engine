@@ -12,6 +12,11 @@ Entity::Entity(EntityManager * _manager)
 {
 }
 
+
+Entity::~Entity()
+{
+}
+
 void Entity::AddComponent(Component * component)
 {
     manager->AddComponent(this, component);
@@ -63,5 +68,6 @@ int32 Entity::GetIndexInFamily()
 {
 	return indexInFamily;
 }
+
 
 };
