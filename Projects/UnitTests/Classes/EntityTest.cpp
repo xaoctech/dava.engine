@@ -1,39 +1,8 @@
-#include "Base/BaseMath.h"
-#include "Entity/Entity.h"
-#include "Entity/EntityManager.h"
-#include "Entity/Component.h"
-#include "Entity/ComponentDataMapper.h"
-#include "Scene3D/Camera.h"
-#include "Base/TemplateHelpers.h"
+#include "EntityTest.h"
 
-using namespace DAVA;
-
-
-//class ComponentVar;
-
-DECLARE_COMPONENT(VisibilityAABBoxComponent);  
-//DECLARE_COMPONENT_VAR(VisibilityAABBoxComponent, AABBox3, MeshAABBoxData);
-
-void VisibilityAABBoxComponent::Register()
-{   
-    RegisterData<AABBox3>("meshAABox");
-	RegisterData<uint32>("meshVisibilityFlag");
-}
-
-DECLARE_COMPONENT(VisibilityBSphereComponent);  
-void VisibilityBSphereComponent::Register()
-{   
-	RegisterData<Sphere>("meshBSphere");
-	RegisterData<uint32>("meshVisibilityFlag");
-}
-
-DECLARE_COMPONENT(DrawMeshComponent);
-void DrawMeshComponent::Register()
-{
-	//RegisterData<void*>("mesh");
-	RegisterData<uint32>("meshVisibilityFlag");
-	RegisterData<Matrix4>("worldTransform");
-}
+IMPLEMENT_COMPONENT(TestVisibilityAABBoxComponent);
+IMPLEMENT_COMPONENT(TestVisibilityBSphereComponent);
+IMPLEMENT_COMPONENT(TestDrawMeshComponent);
 
 
 int32 testResults[16];
@@ -42,18 +11,6 @@ class VisibilityAABBoxSystem
 {
 public:
 	EntityManager * manager;
-	//DataIndex meshVisibilityFlag;
-
-	//const char *, Pool *
-	//const char *, int
-	//int, Pool*
-
-	//VisibilityAABBoxSystem()
-	//	meshVisibilityFlag("meshVisibilityFlag")
-	//{
-
-	//}
-
 
 	void Run()
 	{
@@ -114,9 +71,9 @@ class DrawMeshSystem
 {
 public:
 	EntityManager * manager;
-    
-    void Run()
-    {
+
+	void Run()
+	{
 		TemplatePool<uint32> * visibilityFlags = manager->GetLinkedTemplatePools<uint32>("meshVisibilityFlag");
 
 		int32 * result = testResults;
@@ -134,15 +91,31 @@ public:
 
 			visibilityFlags = visibilityFlags->next;
 		}
-    }
-    
+	}
+
 };
 
-void EntityTest()
+EntityTest::EntityTest()
+:	TestTemplate<EntityTest>("Entity Test")
 {
-    VisibilityAABBoxComponent::Create();
-    VisibilityBSphereComponent::Create();
-    DrawMeshComponent::Create();
+
+}
+
+void EntityTest::LoadResources()
+{
+	RegisterFunction(this, &EntityTest::DummyComponents, "DummyComponents", 0);
+}
+
+void EntityTest::UnloadResources()
+{
+
+}
+
+void EntityTest::DummyComponents(PerfFuncData * data)
+{
+	TestVisibilityAABBoxComponent::Create();
+	TestVisibilityBSphereComponent::Create();
+	TestDrawMeshComponent::Create();
 
 	EntityManager * manager = new EntityManager();
 
@@ -156,30 +129,30 @@ void EntityTest()
 	visibilityBSphereSystem.manager = manager;
 
 	Entity * entity0 = EntityManager::Instance()->CreateEntity();
-	entity0->AddComponent(VisibilityAABBoxComponent::Get());
-	entity0->AddComponent(DrawMeshComponent::Get());
+	entity0->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity0->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity1 = EntityManager::Instance()->CreateEntity();
-	entity1->AddComponent(VisibilityAABBoxComponent::Get());
-	entity1->AddComponent(DrawMeshComponent::Get());
+	entity1->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity1->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity2 = EntityManager::Instance()->CreateEntity();
-	entity2->AddComponent(VisibilityAABBoxComponent::Get());
-	entity2->AddComponent(DrawMeshComponent::Get());
+	entity2->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity2->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity3 = EntityManager::Instance()->CreateEntity();
-	entity3->AddComponent(VisibilityAABBoxComponent::Get());
-	entity3->AddComponent(DrawMeshComponent::Get());
+	entity3->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity3->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity4 = EntityManager::Instance()->CreateEntity();
-	entity4->AddComponent(VisibilityBSphereComponent::Get());
-	entity4->AddComponent(DrawMeshComponent::Get());
+	entity4->AddComponent(TestVisibilityBSphereComponent::Get());
+	entity4->AddComponent(TestDrawMeshComponent::Get());
 	Sphere sphere4;
 	sphere4.center = Vector3(1.f, 1.f, 1.f);
 
 	Entity * entity5 = EntityManager::Instance()->CreateEntity();
-	entity5->AddComponent(VisibilityBSphereComponent::Get());
-	entity5->AddComponent(DrawMeshComponent::Get());
+	entity5->AddComponent(TestVisibilityBSphereComponent::Get());
+	entity5->AddComponent(TestDrawMeshComponent::Get());
 	Sphere sphere5;
 	sphere5.center = Vector3(-1.f, -1.f, -1.f);
 
@@ -205,10 +178,10 @@ void EntityTest()
 	int32 expectedResultsAdd[6] = {1,0,0,1,0,1};
 	for(int32 i = 0; i < 6; ++i)
 	{
-		DVASSERT(testResults[i] == expectedResultsAdd[i]);
+		TEST_VERIFY(testResults[i] == expectedResultsAdd[i]);
 	}
 
-	entity2->RemoveComponent(VisibilityAABBoxComponent::Get());
+	entity2->RemoveComponent(TestVisibilityAABBoxComponent::Get());
 
 	manager->Flush();
 
@@ -228,48 +201,48 @@ void EntityTest()
 	int32 expectedResultsRemove[6] = {0,1,0,0,1,1};
 	for(int32 i = 0; i < 6; ++i)
 	{
-		DVASSERT(testResults[i] == expectedResultsRemove[i]);
+		TEST_VERIFY(testResults[i] == expectedResultsRemove[i]);
 	}
 
 	Entity * entity6 = EntityManager::Instance()->CreateEntity();
-	entity6->AddComponent(VisibilityAABBoxComponent::Get());
-	entity6->AddComponent(DrawMeshComponent::Get());
+	entity6->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity6->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity7 = EntityManager::Instance()->CreateEntity();
-	entity7->AddComponent(VisibilityAABBoxComponent::Get());
-	entity7->AddComponent(DrawMeshComponent::Get());
+	entity7->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity7->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity8 = EntityManager::Instance()->CreateEntity();
-	entity8->AddComponent(VisibilityAABBoxComponent::Get());
-	entity8->AddComponent(DrawMeshComponent::Get());;
+	entity8->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity8->AddComponent(TestDrawMeshComponent::Get());;
 
 	Entity * entity9 = EntityManager::Instance()->CreateEntity();
-	entity9->AddComponent(VisibilityAABBoxComponent::Get());
-	entity9->AddComponent(DrawMeshComponent::Get());
+	entity9->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity9->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity10 = EntityManager::Instance()->CreateEntity();
-	entity10->AddComponent(VisibilityAABBoxComponent::Get());
-	entity10->AddComponent(DrawMeshComponent::Get());
+	entity10->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity10->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity11 = EntityManager::Instance()->CreateEntity();
-	entity11->AddComponent(VisibilityAABBoxComponent::Get());
-	entity11->AddComponent(DrawMeshComponent::Get());
+	entity11->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity11->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity12 = EntityManager::Instance()->CreateEntity();
-	entity12->AddComponent(VisibilityAABBoxComponent::Get());
-	entity12->AddComponent(DrawMeshComponent::Get());
+	entity12->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity12->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity13 = EntityManager::Instance()->CreateEntity();
-	entity13->AddComponent(VisibilityAABBoxComponent::Get());
-	entity13->AddComponent(DrawMeshComponent::Get());
+	entity13->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity13->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity14 = EntityManager::Instance()->CreateEntity();
-	entity14->AddComponent(VisibilityAABBoxComponent::Get());
-	entity14->AddComponent(DrawMeshComponent::Get());
+	entity14->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity14->AddComponent(TestDrawMeshComponent::Get());
 
 	Entity * entity15 = EntityManager::Instance()->CreateEntity();
-	entity15->AddComponent(VisibilityAABBoxComponent::Get());
-	entity15->AddComponent(DrawMeshComponent::Get());
+	entity15->AddComponent(TestVisibilityAABBoxComponent::Get());
+	entity15->AddComponent(TestDrawMeshComponent::Get());
 
 	manager->Flush();
 
@@ -302,7 +275,7 @@ void EntityTest()
 	int32 expectedResultsResize[16] = {0,1,0,0,1,1,1,1,1,1,1,0,1,1,0,1};
 	for(int32 i = 0; i < 16; ++i)
 	{
-		DVASSERT(testResults[i] == expectedResultsResize[i]);
+		TEST_VERIFY(testResults[i] == expectedResultsResize[i]);
 	}
 
 	manager->DestroyEntity(entity11);
@@ -314,10 +287,11 @@ void EntityTest()
 	int32 expectedResultsDelete[15] = {0,1,0,0,1,1,1,1,1,1,1,1,1,1,0};
 	for(int32 i = 0; i < 15; ++i)
 	{
-		DVASSERT(testResults[i] == expectedResultsDelete[i]);
+		TEST_VERIFY(testResults[i] == expectedResultsDelete[i]);
 	}
 
 	manager->Dump();
-    
-    SafeRelease(manager);
+
+	SafeRelease(manager);
 }
+
