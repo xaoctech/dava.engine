@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SampleTest.cpp */; };
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
@@ -51,6 +52,8 @@
 		5C6EF11B15751E1B001E45AD /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		5C6EF11D15751E1B001E45AD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		5C6EF11F15751E1B001E45AD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		5CA2461B158F46D600465879 /* EntityTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityTest.cpp; path = Classes/EntityTest.cpp; sourceTree = "<group>"; };
+		5CA2461C158F46D600465879 /* EntityTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityTest.h; path = Classes/EntityTest.h; sourceTree = "<group>"; };
 		5CDC24FA156CC72400742348 /* SampleTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampleTest.cpp; path = Classes/SampleTest.cpp; sourceTree = "<group>"; };
 		5CDC24FB156CC72400742348 /* SampleTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SampleTest.h; path = Classes/SampleTest.h; sourceTree = "<group>"; };
 		5CDC24FC156CC72400742348 /* TestTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestTemplate.cpp; path = Classes/TestTemplate.cpp; sourceTree = "<group>"; };
@@ -168,10 +171,20 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				5CA2461A158F46CD00465879 /* EntityTest */,
 				5CDC24FA156CC72400742348 /* SampleTest.cpp */,
 				5CDC24FB156CC72400742348 /* SampleTest.h */,
 			);
 			name = Tests;
+			sourceTree = "<group>";
+		};
+		5CA2461A158F46CD00465879 /* EntityTest */ = {
+			isa = PBXGroup;
+			children = (
+				5CA2461B158F46D600465879 /* EntityTest.cpp */,
+				5CA2461C158F46D600465879 /* EntityTest.h */,
+			);
+			name = EntityTest;
 			sourceTree = "<group>";
 		};
 		5CF2253D157E3FDE00DF5395 /* TestSuite */ = {
@@ -325,6 +338,7 @@
 				5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */,
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
+				5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
