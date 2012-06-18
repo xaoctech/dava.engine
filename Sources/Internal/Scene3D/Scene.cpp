@@ -51,10 +51,15 @@
 #include "Scene3D/MeshInstanceNode.h"
 #include "Scene3D/ImposterManager.h"
 #include "Scene3D/ImposterNode.h"
+#include "Scene3D/LandscapeNode.h"
 
 #include "Entity/Entity.h"
 #include "Entity/EntityManager.h"
 #include "Entity/Components.h"
+
+#include "Entity/VisibilityAABBoxSystem.h"
+#include "Entity/MeshInstanceDrawSystem.h"
+#include "Entity/LandscapeGeometrySystem.h"
 
 namespace DAVA 
 {
@@ -69,16 +74,28 @@ Scene::Scene()
 	,	shadowRect(0)
 	,	imposterManager(0)
 	,	enableImposters(true)
+	,	entityManager(0)
 {   
-    bvHierarchy = new BVHierarchy();
-    bvHierarchy->ChangeScene(this);
-    
 	entityManager = new EntityManager();
-	VisibilityAABBoxComponent::Create();
+	
+	CreateComponents();
+	CreateSystems();
 
     Stats::Instance()->RegisterEvent("Scene", "Time spend in scene processing");
     Stats::Instance()->RegisterEvent("Scene.Update", "Time spend in draw function");
     Stats::Instance()->RegisterEvent("Scene.Draw", "Time spend in draw function");
+}
+
+void Scene::CreateComponents()
+{
+	VisibilityAABBoxComponent::Create();
+	MeshInstanceComponent::Create();
+	LandscapeGeometryComponent::Create();
+}
+
+void Scene::CreateSystems()
+{
+
 }
 
 Scene::~Scene()
@@ -110,7 +127,6 @@ Scene::~Scene()
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
-    SafeRelease(bvHierarchy);
 	SafeRelease(shadowRect);
 
 	entityManager->Flush();
@@ -132,11 +148,6 @@ void Scene::RegisterNode(SceneNode * node)
 	{
 		RegisterImposter(imposter);
 	}
-    
-    if (bvHierarchy)
-	{
-        bvHierarchy->RegisterNode(node);
-	}
 
 	MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
 	if(meshInstance)
@@ -144,6 +155,17 @@ void Scene::RegisterNode(SceneNode * node)
 		Entity * entity = entityManager->CreateEntity();
 		node->entity = entity;
 		node->entity->AddComponent(VisibilityAABBoxComponent::Get());
+		node->entity->AddComponent(MeshInstanceComponent::Get());
+	}
+
+	LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
+	if(landscapeNode)
+	{
+		Entity * entity = entityManager->CreateEntity();
+		node->entity = entity;
+		node->entity->AddComponent(LandscapeGeometryComponent::Get());
+		entityManager->Flush();
+		node->entity->SetData("landscapeNode", landscapeNode);
 	}
 }
 
@@ -160,9 +182,6 @@ void Scene::UnregisterNode(SceneNode * node)
 	{
 		UnregisterImposter(imposter);
 	}
-    
-    if (bvHierarchy)
-        bvHierarchy->UnregisterNode(node);
 
 	if(node->entity)
 	{
@@ -341,23 +360,6 @@ void Scene::ReleaseRootNode(SceneNode *nodeToRelease)
 //	}
 }
     
-    
-void Scene::SetBVHierarchy(BVHierarchy * _bvHierarchy)
-{
-    if (bvHierarchy)
-    {
-        bvHierarchy->ChangeScene(0);
-        SafeRelease(bvHierarchy);
-    }
-    bvHierarchy = SafeRetain(_bvHierarchy);
-}
-    
-BVHierarchy * Scene::GetBVHierarchy()
-{
-    return bvHierarchy;
-}
-
-    
 void Scene::SetupTestLighting()
 {
 #ifdef __DAVAENGINE_IPHONE__
@@ -467,15 +469,21 @@ void Scene::Draw()
     {
         currentCamera->Set();
     }
-    if (bvHierarchy)
-        bvHierarchy->Cull();
+    
+	//if (bvHierarchy)
+    //    bvHierarchy->Cull();
+	VisibilityAABBoxSystem::Run(this);
+
+	//entityManager->Dump();
 
 	if(imposterManager)
 	{
 		imposterManager->Draw();
 	}
 
-    SceneNode::Draw();
+    //SceneNode::Draw();
+	LandscapeGeometrySystem::Run(this);
+	MeshInstanceDrawSystem::Run(this);
 
 	if(shadowVolumes.size() > 0)
 	{
@@ -704,6 +712,8 @@ bool Scene::IsImposterEnabled()
 {
 	return enableImposters;
 }
+
+
 
 
 /*void Scene::Save(KeyedArchive * archive)

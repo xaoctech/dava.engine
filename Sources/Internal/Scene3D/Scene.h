@@ -57,7 +57,6 @@ class LightNode;
 class ShadowRect;
 class QuadTree;
 class MeshInstanceNode;
-class BVHierarchy;
 class ImposterManager;
 class ImposterNode;
 class EntityManager;
@@ -108,10 +107,6 @@ public:
     
     
 //    DataNode * GetScenes();
-    
-    void SetBVHierarchy(BVHierarchy * bvHierarchy);
-    BVHierarchy * GetBVHierarchy();
-    
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -225,6 +220,9 @@ public:
 	void RegisterImposter(ImposterNode * imposter);
 	void UnregisterImposter(ImposterNode * imposter);
 
+	void CreateComponents();
+	void CreateSystems();
+
 	EntityManager * entityManager;
     
 protected:	
@@ -255,8 +253,6 @@ protected:
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
 	ShadowRect * shadowRect;
-    
-    BVHierarchy * bvHierarchy;
 
 	ImposterManager * imposterManager;
 	bool enableImposters;

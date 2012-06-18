@@ -179,6 +179,10 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Components.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
@@ -189,6 +193,7 @@
     <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
@@ -479,6 +484,8 @@
     <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
