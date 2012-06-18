@@ -28,6 +28,7 @@ LOCAL_SRC_FILES :=  \
                     ../../classes/BaseScreen.cpp \
                     ../../classes/TestTemplate.cpp \
                     ../../classes/SampleTest.cpp \
+                    ../../classes/EntityTest.cpp \
 
 LOCAL_CFLAGS := -g -O2
 
