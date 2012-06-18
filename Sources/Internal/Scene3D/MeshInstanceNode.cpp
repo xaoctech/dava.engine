@@ -138,6 +138,7 @@ void MeshInstanceNode::Update(float32 timeElapsed)
         bbox.GetTransformedBox(worldTransform, transformedBox);
 		entity->SetData("meshAABox", transformedBox);
 	}
+	entity->SetData("meshInstanceNode", this);
 
     //Stats::Instance()->EndTimeMeasure("Scene.Update.MeshInstanceNode.Update", this);
 }
@@ -156,11 +157,12 @@ void MeshInstanceNode::Draw()
 //        RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //    }    
 
-    if (flags & NODE_CLIPPED_THIS_FRAME)
-    {
-        // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
-        return;
-    }
+	//now clipping in entity system
+    //if (flags & NODE_CLIPPED_THIS_FRAME)
+    //{
+    //    // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
+    //    return;
+    //}
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;

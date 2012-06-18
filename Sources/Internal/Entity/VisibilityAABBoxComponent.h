@@ -2,7 +2,6 @@
 #define __DAVAENGINE_COMPONENT_VISIBILITY_AABBOX__
 
 #include "Entity/Component.h"
-
 #include "Math/AABBox3.h"
 
 namespace DAVA

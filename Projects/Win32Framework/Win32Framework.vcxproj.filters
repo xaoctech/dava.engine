@@ -993,7 +993,7 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
-        <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
@@ -1036,6 +1036,21 @@
       <Filter>Internal\Entity\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Entity\Components.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h">
       <Filter>Internal\Entity\Components</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1775,7 +1790,7 @@
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp">
       <Filter>Internal\Entity</Filter>
     </ClCompile>
-        <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp">
@@ -1791,6 +1806,12 @@
       <Filter>Internal\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp">
       <Filter>Internal\Entity\Components</Filter>
     </ClCompile>
   </ItemGroup>
