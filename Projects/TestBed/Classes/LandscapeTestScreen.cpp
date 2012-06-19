@@ -42,7 +42,7 @@ void LandscapeTestScreen::LoadResources()
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
     
-    camera = new Camera(scene);
+    camera = new Camera();
     scene->AddCamera(camera);
     camera->Setup(70.0f, 480.0f / 320.0f, 1.0f, 5000.0f); 
     scene->SetCurrentCamera(camera);
@@ -52,7 +52,7 @@ void LandscapeTestScreen::LoadResources()
     scene->SetCurrentCamera(camera);
     scene->SetDebugFlags(SceneNode::DEBUG_DRAW_ALL);
  
-    LandscapeNode * node = new LandscapeNode(scene);
+    LandscapeNode * node = new LandscapeNode();
     AABBox3 box(Vector3(445.0f / 2.0f, 445.0f / 2.0f, 0), Vector3(-445.0f / 2.0f, -445.0f / 2.0f, 50.0f));
     
     //node->SetDebugFlags(LandscapeNode::DEBUG_DRAW_ALL);
@@ -72,7 +72,7 @@ void LandscapeTestScreen::LoadResources()
 //     node->SetTexture(LandscapeNode::TEXTURE_DETAIL, "~res:/Landscape/detail_gravel.png");
 //     Texture::DisableMipmapGeneration();
 #else
-    node->BuildLandscapeFromHeightmapImage(LandscapeNode::RENDERING_MODE_TILE_MASK_SHADER, "~res:/Landscape/hmp2_1.png", box);
+    node->BuildLandscapeFromHeightmapImage("~res:/Landscape/hmp2_1.png", box);
     
     Texture::EnableMipmapGeneration();
     node->SetTexture(LandscapeNode::TEXTURE_COLOR, "~res:/Landscape/diffuse.png");

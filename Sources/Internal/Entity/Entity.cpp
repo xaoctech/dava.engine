@@ -6,52 +6,68 @@ namespace DAVA
 
 Entity::Entity(EntityManager * _manager)
 :	manager(_manager),
-	changeState(CREATED),
 	family(0),
-	indexInFamily(-1)
+	indexInFamily(-1),
+	changeState(0)
 {
-	manager->EntityChanged(this);
+}
+
+
+Entity::~Entity()
+{
 }
 
 void Entity::AddComponent(Component * component)
 {
-    components.push_back(component);
-	changeState |= COMPONENT_ADDED;
-	manager->EntityChanged(this);
+    manager->AddComponent(this, component);
+
+	changeState |= FAMILY_CHANGED;
 }
 
-uint32 Entity::CalculateFamily()
+void Entity::AddComponent(const char * component)
 {
-	family = 0;
-	int32 componentsCount = components.size();
-	for(int32 i = 0; i < componentsCount; ++i)
-	{
-		family |= (1 << components[i]->type);
-	}
+	//manager->AddComponent(this, component);
+}
 
+void Entity::RemoveComponent(Component * component)
+{
+	manager->RemoveComponent(this, component);
+
+	changeState |= FAMILY_CHANGED;
+}
+
+//uint32 Entity::CalculateFamily()
+//{
+//	family = 0;
+//    // TODO: Check how to write correct STL code, with size_type. Without 64 => 32 bit conversions.
+//	uint32 componentsCount = (uint32)components.size();
+//	for(uint32 i = 0; i < componentsCount; ++i)
+//	{
+//		family |= (1 << components[i]->type);
+//	}
+//
+//	return family;
+//}
+
+void Entity::SetFamily(EntityFamilyType newFamily)
+{
+    family = newFamily;
+}
+
+const EntityFamilyType & Entity::GetFamily()
+{
 	return family;
 }
 
-uint32 Entity::GetFamily()
-{
-	return family;
-}
-
-int32 Entity::GetChangeState()
-{
-	return changeState;
-}
-
-void Entity::SetIndex(int32 _index)
+void Entity::SetIndexInFamily(int32 _index)
 {
 	indexInFamily = _index;
 }
 
-int32 Entity::GetIndex()
+int32 Entity::GetIndexInFamily()
 {
 	return indexInFamily;
 }
-
 
 
 };

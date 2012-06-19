@@ -72,7 +72,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;C:\Program Files (x86)\OpenAL 1.1 SDK\include;C:\Program Files\OpenAL 1.1 SDK\include;./../../Libs/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;CODE_INLINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -131,11 +131,17 @@
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.h" />
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AssertAction.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
     <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
     <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
@@ -172,6 +178,17 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
@@ -423,6 +440,10 @@
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2RopeJoint.cpp" />
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
     <ClCompile Include="..\..\Sources\External\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
@@ -449,9 +470,17 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />

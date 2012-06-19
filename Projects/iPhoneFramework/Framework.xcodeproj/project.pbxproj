@@ -66,6 +66,32 @@
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
+		C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895CE157FA00C00B0E00A /* Action.cpp */; };
+		C7E895D9157FA00C00B0E00A /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895CF157FA00C00B0E00A /* Action.h */; };
+		C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D0157FA00C00B0E00A /* AssertAction.cpp */; };
+		C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D1157FA00C00B0E00A /* AssertAction.h */; };
+		C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */; };
+		C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */; };
+		C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D6157FA00C00B0E00A /* TouchAction.cpp */; };
+		C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D7157FA00C00B0E00A /* TouchAction.h */; };
+		C7EFBC59158B4D1000BF42E0 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC47158B4D0F00BF42E0 /* Component.cpp */; };
+		C7EFBC5A158B4D1000BF42E0 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC48158B4D0F00BF42E0 /* Component.h */; };
+		C7EFBC5B158B4D1000BF42E0 /* ComponentDataMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */; };
+		C7EFBC5C158B4D1000BF42E0 /* Components.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4A158B4D0F00BF42E0 /* Components.h */; };
+		C7EFBC5D158B4D1000BF42E0 /* ComponentTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC4B158B4D0F00BF42E0 /* ComponentTypes.cpp */; };
+		C7EFBC5E158B4D1000BF42E0 /* ComponentTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4C158B4D0F00BF42E0 /* ComponentTypes.h */; };
+		C7EFBC5F158B4D1000BF42E0 /* DumpVariable.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4D158B4D0F00BF42E0 /* DumpVariable.h */; };
+		C7EFBC60158B4D1000BF42E0 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC4E158B4D0F00BF42E0 /* Entity.cpp */; };
+		C7EFBC61158B4D1000BF42E0 /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC4F158B4D1000BF42E0 /* Entity.h */; };
+		C7EFBC62158B4D1000BF42E0 /* EntityFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC50158B4D1000BF42E0 /* EntityFamily.cpp */; };
+		C7EFBC63158B4D1000BF42E0 /* EntityFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC51158B4D1000BF42E0 /* EntityFamily.h */; };
+		C7EFBC64158B4D1000BF42E0 /* EntityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC52158B4D1000BF42E0 /* EntityManager.cpp */; };
+		C7EFBC65158B4D1000BF42E0 /* EntityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC53158B4D1000BF42E0 /* EntityManager.h */; };
+		C7EFBC66158B4D1000BF42E0 /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC54158B4D1000BF42E0 /* Pool.h */; };
+		C7EFBC67158B4D1000BF42E0 /* PoolSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC55158B4D1000BF42E0 /* PoolSystem.cpp */; };
+		C7EFBC68158B4D1000BF42E0 /* PoolSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC56158B4D1000BF42E0 /* PoolSystem.h */; };
+		C7EFBC69158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC57158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp */; };
+		C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC58158B4D1000BF42E0 /* VisibilityAABBoxComponent.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA6D63114753FF0000898F8 /* TextGameObject.cpp */; };
 		EDA6D63414753FF0000898F8 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA6D63214753FF0000898F8 /* TextGameObject.h */; };
@@ -93,6 +119,8 @@
 		FE127707144444E80082901E /* UIScrollBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE127705144444E80082901E /* UIScrollBar.cpp */; };
 		FE127708144444E80082901E /* UIScrollBar.h in Headers */ = {isa = PBXBuildFile; fileRef = FE127706144444E80082901E /* UIScrollBar.h */; };
 		FE203F3F13BCCD3400350E9A /* RenderManagerFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE203F3E13BCCD3400350E9A /* RenderManagerFactory.cpp */; };
+		FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE40BC8D1579567C0014BB7D /* NeonMath.cpp */; };
+		FE40BC901579567C0014BB7D /* NeonMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FE40BC8E1579567C0014BB7D /* NeonMath.h */; };
 		FE4E01E513AAA9D00013464E /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE4E01E313AAA9D00013464E /* Camera.cpp */; };
 		FE4E01E613AAA9D00013464E /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = FE4E01E413AAA9D00013464E /* Camera.h */; };
 		FE4E01E913AAA9EF0013464E /* UI3DView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE4E01E713AAA9EF0013464E /* UI3DView.cpp */; };
@@ -466,6 +494,8 @@
 		FEEB6EBA131BC67400958ACB /* Replay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEEB6EB8131BC67400958ACB /* Replay.cpp */; };
 		FEEB6EBB131BC67400958ACB /* Replay.h in Headers */ = {isa = PBXBuildFile; fileRef = FEEB6EB9131BC67400958ACB /* Replay.h */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
+		FEF538B615835B820014679C /* Backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEF538B415835B820014679C /* Backtrace.cpp */; };
+		FEF538B715835B820014679C /* Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = FEF538B515835B820014679C /* Backtrace.h */; };
 		FEFD19B513096A4C0050D7E6 /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFD19B413096A4C0050D7E6 /* DoxygenDocumenation.h */; };
 /* End PBXBuildFile section */
 
@@ -546,6 +576,32 @@
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
+		C7E895CE157FA00C00B0E00A /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
+		C7E895CF157FA00C00B0E00A /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
+		C7E895D0157FA00C00B0E00A /* AssertAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssertAction.cpp; sourceTree = "<group>"; };
+		C7E895D1157FA00C00B0E00A /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
+		C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
+		C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
+		C7E895D6157FA00C00B0E00A /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
+		C7E895D7157FA00C00B0E00A /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
+		C7EFBC47158B4D0F00BF42E0 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
+		C7EFBC48158B4D0F00BF42E0 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
+		C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentDataMapper.h; path = Entity/ComponentDataMapper.h; sourceTree = "<group>"; };
+		C7EFBC4A158B4D0F00BF42E0 /* Components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Components.h; path = Entity/Components.h; sourceTree = "<group>"; };
+		C7EFBC4B158B4D0F00BF42E0 /* ComponentTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ComponentTypes.cpp; path = Entity/ComponentTypes.cpp; sourceTree = "<group>"; };
+		C7EFBC4C158B4D0F00BF42E0 /* ComponentTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentTypes.h; path = Entity/ComponentTypes.h; sourceTree = "<group>"; };
+		C7EFBC4D158B4D0F00BF42E0 /* DumpVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DumpVariable.h; path = Entity/DumpVariable.h; sourceTree = "<group>"; };
+		C7EFBC4E158B4D0F00BF42E0 /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = Entity/Entity.cpp; sourceTree = "<group>"; };
+		C7EFBC4F158B4D1000BF42E0 /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = Entity/Entity.h; sourceTree = "<group>"; };
+		C7EFBC50158B4D1000BF42E0 /* EntityFamily.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityFamily.cpp; path = Entity/EntityFamily.cpp; sourceTree = "<group>"; };
+		C7EFBC51158B4D1000BF42E0 /* EntityFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityFamily.h; path = Entity/EntityFamily.h; sourceTree = "<group>"; };
+		C7EFBC52158B4D1000BF42E0 /* EntityManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityManager.cpp; path = Entity/EntityManager.cpp; sourceTree = "<group>"; };
+		C7EFBC53158B4D1000BF42E0 /* EntityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityManager.h; path = Entity/EntityManager.h; sourceTree = "<group>"; };
+		C7EFBC54158B4D1000BF42E0 /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pool.h; path = Entity/Pool.h; sourceTree = "<group>"; };
+		C7EFBC55158B4D1000BF42E0 /* PoolSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PoolSystem.cpp; path = Entity/PoolSystem.cpp; sourceTree = "<group>"; };
+		C7EFBC56158B4D1000BF42E0 /* PoolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PoolSystem.h; path = Entity/PoolSystem.h; sourceTree = "<group>"; };
+		C7EFBC57158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityAABBoxComponent.cpp; path = Entity/VisibilityAABBoxComponent.cpp; sourceTree = "<group>"; };
+		C7EFBC58158B4D1000BF42E0 /* VisibilityAABBoxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxComponent.h; path = Entity/VisibilityAABBoxComponent.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
@@ -575,6 +631,8 @@
 		FE127705144444E80082901E /* UIScrollBar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollBar.cpp; sourceTree = "<group>"; };
 		FE127706144444E80082901E /* UIScrollBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollBar.h; sourceTree = "<group>"; };
 		FE203F3E13BCCD3400350E9A /* RenderManagerFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderManagerFactory.cpp; sourceTree = "<group>"; };
+		FE40BC8D1579567C0014BB7D /* NeonMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NeonMath.cpp; sourceTree = "<group>"; };
+		FE40BC8E1579567C0014BB7D /* NeonMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeonMath.h; sourceTree = "<group>"; };
 		FE4E01E313AAA9D00013464E /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		FE4E01E413AAA9D00013464E /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		FE4E01E713AAA9EF0013464E /* UI3DView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UI3DView.cpp; sourceTree = "<group>"; };
@@ -948,6 +1006,8 @@
 		FEEB6EB8131BC67400958ACB /* Replay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Replay.cpp; sourceTree = "<group>"; };
 		FEEB6EB9131BC67400958ACB /* Replay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Replay.h; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FEF538B415835B820014679C /* Backtrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Backtrace.cpp; sourceTree = "<group>"; };
+		FEF538B515835B820014679C /* Backtrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Backtrace.h; sourceTree = "<group>"; };
 		FEFD19B413096A4C0050D7E6 /* DoxygenDocumenation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoxygenDocumenation.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1021,6 +1081,55 @@
 			name = Database;
 			sourceTree = "<group>";
 		};
+		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
+			isa = PBXGroup;
+			children = (
+				C7E895CE157FA00C00B0E00A /* Action.cpp */,
+				C7E895CF157FA00C00B0E00A /* Action.h */,
+				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
+				C7E895D1157FA00C00B0E00A /* AssertAction.h */,
+				C7E895D2157FA00C00B0E00A /* AutotestingSystem.cpp */,
+				C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */,
+				C7E895D6157FA00C00B0E00A /* TouchAction.cpp */,
+				C7E895D7157FA00C00B0E00A /* TouchAction.h */,
+			);
+			path = Autotesting;
+			sourceTree = "<group>";
+		};
+		C7EFBC6C158B4D1A00BF42E0 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				C7EFBC47158B4D0F00BF42E0 /* Component.cpp */,
+				C7EFBC48158B4D0F00BF42E0 /* Component.h */,
+				C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */,
+				C7EFBC4A158B4D0F00BF42E0 /* Components.h */,
+				C7EFBC4B158B4D0F00BF42E0 /* ComponentTypes.cpp */,
+				C7EFBC4C158B4D0F00BF42E0 /* ComponentTypes.h */,
+				C7EFBC4D158B4D0F00BF42E0 /* DumpVariable.h */,
+				C7EFBC4E158B4D0F00BF42E0 /* Entity.cpp */,
+				C7EFBC4F158B4D1000BF42E0 /* Entity.h */,
+				C7EFBC50158B4D1000BF42E0 /* EntityFamily.cpp */,
+				C7EFBC51158B4D1000BF42E0 /* EntityFamily.h */,
+				C7EFBC52158B4D1000BF42E0 /* EntityManager.cpp */,
+				C7EFBC53158B4D1000BF42E0 /* EntityManager.h */,
+				C7EFBC54158B4D1000BF42E0 /* Pool.h */,
+				C7EFBC55158B4D1000BF42E0 /* PoolSystem.cpp */,
+				C7EFBC56158B4D1000BF42E0 /* PoolSystem.h */,
+				C7EFBC57158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp */,
+				C7EFBC58158B4D1000BF42E0 /* VisibilityAABBoxComponent.h */,
+			);
+			name = Entity;
+			sourceTree = "<group>";
+		};
+		FE40BC8C1579567C0014BB7D /* Neon */ = {
+			isa = PBXGroup;
+			children = (
+				FE40BC8D1579567C0014BB7D /* NeonMath.cpp */,
+				FE40BC8E1579567C0014BB7D /* NeonMath.h */,
+			);
+			path = Neon;
+			sourceTree = "<group>";
+		};
 		FE578B3013278D720081BDE9 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -1058,6 +1167,8 @@
 		FECFB32D12E5904400C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				C7EFBC6C158B4D1A00BF42E0 /* Entity */,
+				C7E895CD157FA00C00B0E00A /* Autotesting */,
 				FECFB32E12E5904400C71562 /* Animation */,
 				FECFB33E12E5904400C71562 /* Base */,
 				FECFB35212E5904400C71562 /* Collision */,
@@ -1169,6 +1280,8 @@
 		FECFB36312E5904400C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FEF538B415835B820014679C /* Backtrace.cpp */,
+				FEF538B515835B820014679C /* Backtrace.h */,
 				FE5E1668153DA0870047FAC5 /* Stats.cpp */,
 				FE5E1669153DA0870047FAC5 /* Stats.h */,
 				FECFB36412E5904400C71562 /* DVAssert.h */,
@@ -1238,6 +1351,7 @@
 		FECFB38C12E5904400C71562 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				FE40BC8C1579567C0014BB7D /* Neon */,
 				5CFD7DFD1564DC67009692EE /* RectPacker.cpp */,
 				5CFD7DFE1564DC67009692EE /* RectPacker.h */,
 				FE9C216612E9A254005C397A /* Circle.h */,
@@ -1909,8 +2023,25 @@
 				5CFD7E061564DC7D009692EE /* ImposterManager.h in Headers */,
 				5CFD7E081564DC7D009692EE /* ImposterNode.h in Headers */,
 				5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */,
+				C7E895D9157FA00C00B0E00A /* Action.h in Headers */,
+				C7E895DB157FA00C00B0E00A /* AssertAction.h in Headers */,
+				C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */,
+				C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */,
 				5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */,
 				5C203F201579362300CB53E9 /* MongodbObject.h in Headers */,
+				FE40BC901579567C0014BB7D /* NeonMath.h in Headers */,
+				FEF538B715835B820014679C /* Backtrace.h in Headers */,
+				C7EFBC5A158B4D1000BF42E0 /* Component.h in Headers */,
+				C7EFBC5B158B4D1000BF42E0 /* ComponentDataMapper.h in Headers */,
+				C7EFBC5C158B4D1000BF42E0 /* Components.h in Headers */,
+				C7EFBC5E158B4D1000BF42E0 /* ComponentTypes.h in Headers */,
+				C7EFBC5F158B4D1000BF42E0 /* DumpVariable.h in Headers */,
+				C7EFBC61158B4D1000BF42E0 /* Entity.h in Headers */,
+				C7EFBC63158B4D1000BF42E0 /* EntityFamily.h in Headers */,
+				C7EFBC65158B4D1000BF42E0 /* EntityManager.h in Headers */,
+				C7EFBC66158B4D1000BF42E0 /* Pool.h in Headers */,
+				C7EFBC68158B4D1000BF42E0 /* PoolSystem.h in Headers */,
+				C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2195,8 +2326,21 @@
 				5CFD7E051564DC7D009692EE /* ImposterManager.cpp in Sources */,
 				5CFD7E071564DC7D009692EE /* ImposterNode.cpp in Sources */,
 				5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */,
+				C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */,
+				C7E895DA157FA00C00B0E00A /* AssertAction.cpp in Sources */,
+				C7E895DC157FA00C00B0E00A /* AutotestingSystem.cpp in Sources */,
+				C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */,
 				5C0105D7157799E000E0B939 /* MongodbClient.cpp in Sources */,
 				5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */,
+				FE40BC8F1579567C0014BB7D /* NeonMath.cpp in Sources */,
+				FEF538B615835B820014679C /* Backtrace.cpp in Sources */,
+				C7EFBC59158B4D1000BF42E0 /* Component.cpp in Sources */,
+				C7EFBC5D158B4D1000BF42E0 /* ComponentTypes.cpp in Sources */,
+				C7EFBC60158B4D1000BF42E0 /* Entity.cpp in Sources */,
+				C7EFBC62158B4D1000BF42E0 /* EntityFamily.cpp in Sources */,
+				C7EFBC64158B4D1000BF42E0 /* EntityManager.cpp in Sources */,
+				C7EFBC67158B4D1000BF42E0 /* PoolSystem.cpp in Sources */,
+				C7EFBC69158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2236,6 +2380,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -2263,6 +2408,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -2414,6 +2560,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};
@@ -2481,6 +2628,7 @@
 					"\"$(SRCROOT)/../../Libs/freetype/lib\"",
 					"\"$(SRCROOT)/../../Libs/libs\"",
 				);
+				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Framework;
 			};

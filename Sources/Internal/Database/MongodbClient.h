@@ -68,18 +68,23 @@ public:
     
     bool IsConnected();
 
+    MongodbObject * FindObjectByKey(const String &key);
     MongodbObject * CreateObject();
     void DestroyObject(MongodbObject *object);
 
+    bool SaveObject(MongodbObject *object);
+
+    
     bool SaveBinary(const String &key, uint8 *data, int32 dataSize);
     int32 GetBinarySize(const String &key);
     bool GetBinary(const String &key, uint8 *outData, int32 dataSize);
 
-//    void Dump();
+    void DumpDB();
 protected:
 
     void LogError(const String functionName, int32 errorCode);
-    MongodbObject * FindObjectbByKey(const String &key);
+
+protected:
     
 	MongodbClientInternalData *clientData;
     String database;

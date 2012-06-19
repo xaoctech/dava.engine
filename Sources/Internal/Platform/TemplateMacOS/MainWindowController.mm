@@ -156,6 +156,7 @@ namespace DAVA
 	DisplayMode fullscreenMode = Core::Instance()->GetCurrentDisplayMode();
 	
 	// launch framework and setup all preferences
+    //TODO: maybe we need reorder calls 
 	FrameworkDidLaunched();
     RenderManager::Create(Core::RENDERER_OPENGL);
     
@@ -350,19 +351,20 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 		
         // Specify that we want a full-screen OpenGL context.
         NSOpenGLPFAFullScreen,
-		NSOpenGLPFADoubleBuffer,
-		
         // We may be on a multi-display system (and each screen may be driven by a different renderer), so we need to specify which screen we want to take over.  For this demo, we'll specify the main screen.
         NSOpenGLPFAScreenMask, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay),
-		
         // Attributes Common to FullScreen and non-FullScreen
+
+        NSOpenGLPFANoRecovery,	/* disable all failure recovery systems         */
 
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFAColorSize, [openGLView displayBitsPerPixel:kCGDirectMainDisplay], //24,
 #else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
         NSOpenGLPFAColorSize, CGDisplayBitsPerPixel(kCGDirectMainDisplay), //24,
 #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+
         NSOpenGLPFADepthSize, 16,
+        NSOpenGLPFAStencilSize, 8,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
         0
@@ -406,7 +408,9 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
     // Enter FullScreen mode and make our FullScreen context the active context for OpenGL commands.
 	//NSLog(@"[CoreMacOSPlatform] failed to create fullScreenContext");
 	NSLog(@"[CoreMacOSPlatform] setFullscreen (before)");
-	[fullScreenContext setFullScreen];
+	//[fullScreenContext setFullScreen];
+    CGLContextObj obj = (CGLContextObj)[fullScreenContext CGLContextObj];
+    CGLError errr = CGLSetFullScreenOnDisplay(obj, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay));
 	NSLog(@"[CoreMacOSPlatform] makeCurrentContext (before)");
     [fullScreenContext makeCurrentContext];
 	
@@ -757,6 +761,22 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	NSLog(@"[CoreMacOSPlatform] Application did finish launching");	
+    
+    if(core)
+    {
+        core->OnResume();
+    }
+    else 
+    {
+        Core::Instance()->SetIsActive(true);
+    }    
+    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
+    if (activeCursor)
+    {
+        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
+        [cursor set];
+    }
+
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
@@ -776,20 +796,20 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 - (void)applicationDidBecomeActive:(NSNotification *)aNotification
 {
 	NSLog(@"[CoreMacOSPlatform] Application did become active");
-    if(core)
-    {
-        core->OnResume();
-    }
-    else 
-    {
-        Core::Instance()->SetIsActive(true);
-    }    
-    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
-    if (activeCursor)
-    {
-        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
-        [cursor set];
-    }
+//    if(core)
+//    {
+//        core->OnResume();
+//    }
+//    else 
+//    {
+//        Core::Instance()->SetIsActive(true);
+//    }    
+//    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
+//    if (activeCursor)
+//    {
+//        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
+//        [cursor set];
+//    }
 }
 
 - (void)applicationDidResignActive:(NSNotification *)aNotification
@@ -880,6 +900,7 @@ void CoreMacOSPlatform::SwitchScreenToMode(eScreenMode screenMode)
 
 void CoreMacOSPlatform::Quit()
 {
+	mainWindowController->openGLView.willQuit = true;
 	[[NSApplication sharedApplication] terminate: nil];
 }
 	

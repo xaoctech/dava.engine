@@ -30,7 +30,7 @@ class SceneEditorScreenMain:
 
         BODY_Y_OFFSET = 50,
         
-        TAB_BUTTONS_OFFSET = 200,
+        TAB_BUTTONS_OFFSET = 250,
     };
 
     enum DIALOG_OPERATION
@@ -189,6 +189,9 @@ private:
     UIButton *dataGraphButton;
     void OnDataGraphPressed(BaseObject * obj, void *, void *);
 
+	//Entities
+	UIButton *entitiesButton;
+	void OnEntitiesPressed(BaseObject * obj, void *, void *);
     
     //Library
     UIButton *libraryButton;
@@ -202,9 +205,9 @@ private:
     void OnSceneInfoPressed(BaseObject * obj, void *, void *);
     
 
-    void ExportLandscapeAndMeshLightmaps(SceneNode *node);//expand this methods if you need to expand export functionality
-    void ExportTexture(const String &textureDataSourcePath);
-    void ExportLandscapeFile(const String &fileDataSourcePath);
+//    void ExportLandscapeAndMeshLightmaps(SceneNode *node);//expand this methods if you need to expand export functionality
+//    void ExportTexture(const String &textureDataSourcePath);
+//    void ExportLandscapeFile(const String &fileDataSourcePath);
     
     // menu
     MenuPopupControl *menuPopup;

@@ -13,21 +13,18 @@
     <Filter Include="Tests\Landscape">
       <UniqueIdentifier>{e41267d1-e87f-4671-a752-d5706d31f419}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests\Mongodb">
-      <UniqueIdentifier>{47258a6d-445b-481e-a110-4c2a1ffe5449}</UniqueIdentifier>
+    <Filter Include="Tests\CacheTest">
+      <UniqueIdentifier>{4a7edc7e-2c8e-4d46-8d7d-7eb19f5fb87e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestSuite">
+      <UniqueIdentifier>{a1d2209f-7378-4554-9b63-0aa77b2ca427}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\AppScreens.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\FrameworkMain.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Classes\GameCore.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\TestTemplate.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SpriteTest.h">
@@ -36,8 +33,14 @@
     <ClInclude Include="Classes\LandscapeTest.h">
       <Filter>Tests\Landscape</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\MongodbTest.h">
-      <Filter>Tests\Mongodb</Filter>
+    <ClInclude Include="Classes\CacheTest.h">
+      <Filter>Tests\CacheTest</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TestTemplate.h">
+      <Filter>TestSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BaseScreen.h">
+      <Filter>TestSuite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -45,9 +48,6 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="Classes\GameCore.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\TestTemplate.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SpriteTest.cpp">
@@ -59,8 +59,14 @@
     <ClCompile Include="Classes\LandscapeTest.cpp">
       <Filter>Tests\Landscape</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\MongodbTest.cpp">
-      <Filter>Tests\Mongodb</Filter>
+    <ClCompile Include="Classes\CacheTest.cpp">
+      <Filter>Tests\CacheTest</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TestTemplate.cpp">
+      <Filter>TestSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BaseScreen.cpp">
+      <Filter>TestSuite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

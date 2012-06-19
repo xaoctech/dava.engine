@@ -37,6 +37,8 @@
 #include "Utils/StringFormat.h"
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Debug/Stats.h"
+#include "Entity/Components.h"
+#include "Entity/Entity.h"
 
 namespace DAVA 
 {
@@ -132,7 +134,10 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     SceneNode::Update(timeElapsed);
     
     if (needUpdateTransformBox)
+	{
         bbox.GetTransformedBox(worldTransform, transformedBox);
+		entity->SetData("meshAABox", transformedBox);
+	}
 
     //Stats::Instance()->EndTimeMeasure("Scene.Update.MeshInstanceNode.Update", this);
 }

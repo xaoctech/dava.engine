@@ -32,12 +32,13 @@
 
 #include "DAVAConfig.h"
 #include "Debug/MemoryManager.h"
+#include "Debug/Stats.h"
+#include "Debug/Backtrace.h"
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Utils/StringFormat.h"
 
-#include "Debug/Stats.h"
 
 #include "FileSystem/Logger.h"
 #include "Platform/SystemTimer.h"
@@ -213,6 +214,10 @@
 #include "Network/NetworkDelegate.h"
 #include "Network/NetworkPacket.h"
 
+// Entity
+#include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Component.h"
 
 #endif // __DAVAENGINE_H__
 

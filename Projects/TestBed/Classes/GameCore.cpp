@@ -103,7 +103,7 @@ void GameCore::OnAppStarted()
 
 //	UIScreenManager::Instance()->SetFirst(SCREEN_TEXTINPUT_TEST_1);
     
-	UIScreenManager::Instance()->SetFirst(SCREEN_LANDSCAPE_TEST);
+	UIScreenManager::Instance()->SetFirst(SCREEN_SPRITE_BASICS);
 	cursor = 0;
 }
 

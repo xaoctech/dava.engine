@@ -68,8 +68,34 @@
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
 		C7AB37101473F31E00D52251 /* NSFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */; };
+		C7DE5975157F8CA10045CA41 /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596B157F8CA10045CA41 /* Action.cpp */; };
+		C7DE5976157F8CA10045CA41 /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE596C157F8CA10045CA41 /* Action.h */; };
+		C7DE5977157F8CA10045CA41 /* AssertAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596D157F8CA10045CA41 /* AssertAction.cpp */; };
+		C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE596E157F8CA10045CA41 /* AssertAction.h */; };
+		C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */; };
+		C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */; };
+		C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5973157F8CA10045CA41 /* TouchAction.cpp */; };
+		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
+		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
+		ED2F52F5158A4B0D009E0EC7 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DD158A4B0D009E0EC7 /* Component.h */; };
+		ED2F52F6158A4B0D009E0EC7 /* ComponentDataMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */; };
+		ED2F52F7158A4B0D009E0EC7 /* Components.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52DF158A4B0D009E0EC7 /* Components.h */; };
+		ED2F52F8158A4B0D009E0EC7 /* ComponentTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52E0158A4B0D009E0EC7 /* ComponentTypes.cpp */; };
+		ED2F52F9158A4B0D009E0EC7 /* ComponentTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E1158A4B0D009E0EC7 /* ComponentTypes.h */; };
+		ED2F52FA158A4B0D009E0EC7 /* DumpVariable.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E4158A4B0D009E0EC7 /* DumpVariable.h */; };
+		ED2F52FB158A4B0D009E0EC7 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52E6158A4B0D009E0EC7 /* Entity.cpp */; };
+		ED2F52FC158A4B0D009E0EC7 /* Entity.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E7158A4B0D009E0EC7 /* Entity.h */; };
+		ED2F52FD158A4B0D009E0EC7 /* EntityFamily.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52E8158A4B0D009E0EC7 /* EntityFamily.cpp */; };
+		ED2F52FE158A4B0D009E0EC7 /* EntityFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52E9158A4B0D009E0EC7 /* EntityFamily.h */; };
+		ED2F52FF158A4B0D009E0EC7 /* EntityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52EA158A4B0D009E0EC7 /* EntityManager.cpp */; };
+		ED2F5300158A4B0D009E0EC7 /* EntityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52EB158A4B0D009E0EC7 /* EntityManager.h */; };
+		ED2F5302158A4B0D009E0EC7 /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52ED158A4B0D009E0EC7 /* Pool.h */; };
+		ED2F5303158A4B0D009E0EC7 /* PoolSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52EE158A4B0D009E0EC7 /* PoolSystem.cpp */; };
+		ED2F5304158A4B0D009E0EC7 /* PoolSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52EF158A4B0D009E0EC7 /* PoolSystem.h */; };
+		ED2F5305158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52F0158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp */; };
+		ED2F5306158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2F52F1158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h */; };
 		FE01C9BE14A8591A008675BD /* CubeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9BC14A8591A008675BD /* CubeNode.cpp */; };
 		FE01C9BF14A8591A008675BD /* CubeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = FE01C9BD14A8591A008675BD /* CubeNode.h */; };
 		FE01C9C214A85924008675BD /* SphereNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE01C9C014A85924008675BD /* SphereNode.cpp */; };
@@ -464,6 +490,8 @@
 		FEEB6E7C131BC61C00958ACB /* Replay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEEB6E7A131BC61C00958ACB /* Replay.cpp */; };
 		FEEB6E7D131BC61C00958ACB /* Replay.h in Headers */ = {isa = PBXBuildFile; fileRef = FEEB6E7B131BC61C00958ACB /* Replay.h */; };
 		FEF4E23212CD3C1F004B850E /* libBox2D_MacOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4E22C12CD3BED004B850E /* libBox2D_MacOS.a */; };
+		FEF538A91583348A0014679C /* Backtrace.h in Headers */ = {isa = PBXBuildFile; fileRef = FEF538A81583348A0014679C /* Backtrace.h */; };
+		FEF538AB158334970014679C /* Backtrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEF538AA158334970014679C /* Backtrace.cpp */; };
 		FEFD184B1305D49C0050D7E6 /* AABBox2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEFD182D1305D49C0050D7E6 /* AABBox2.cpp */; };
 		FEFD184C1305D49C0050D7E6 /* AABBox2.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFD182E1305D49C0050D7E6 /* AABBox2.h */; };
 		FEFD184D1305D49C0050D7E6 /* AABBox3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEFD182F1305D49C0050D7E6 /* AABBox3.cpp */; };
@@ -580,11 +608,38 @@
 		5CFA5D4E156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
+		C784403A158204A000F75358 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSFullScreenWindow.h; sourceTree = "<group>"; };
 		C7AB370E1473F31E00D52251 /* NSFullScreenWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSFullScreenWindow.m; sourceTree = "<group>"; };
+		C7DE596B157F8CA10045CA41 /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
+		C7DE596C157F8CA10045CA41 /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
+		C7DE596D157F8CA10045CA41 /* AssertAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssertAction.cpp; sourceTree = "<group>"; };
+		C7DE596E157F8CA10045CA41 /* AssertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertAction.h; sourceTree = "<group>"; };
+		C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystem.cpp; sourceTree = "<group>"; };
+		C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
+		C7DE5973157F8CA10045CA41 /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
+		C7DE5974157F8CA10045CA41 /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
+		ED2F52DC158A4B0D009E0EC7 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
+		ED2F52DD158A4B0D009E0EC7 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
+		ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentDataMapper.h; path = Entity/ComponentDataMapper.h; sourceTree = "<group>"; };
+		ED2F52DF158A4B0D009E0EC7 /* Components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Components.h; path = Entity/Components.h; sourceTree = "<group>"; };
+		ED2F52E0158A4B0D009E0EC7 /* ComponentTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ComponentTypes.cpp; path = Entity/ComponentTypes.cpp; sourceTree = "<group>"; };
+		ED2F52E1158A4B0D009E0EC7 /* ComponentTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentTypes.h; path = Entity/ComponentTypes.h; sourceTree = "<group>"; };
+		ED2F52E4158A4B0D009E0EC7 /* DumpVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DumpVariable.h; path = Entity/DumpVariable.h; sourceTree = "<group>"; };
+		ED2F52E6158A4B0D009E0EC7 /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = Entity/Entity.cpp; sourceTree = "<group>"; };
+		ED2F52E7158A4B0D009E0EC7 /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = Entity/Entity.h; sourceTree = "<group>"; };
+		ED2F52E8158A4B0D009E0EC7 /* EntityFamily.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityFamily.cpp; path = Entity/EntityFamily.cpp; sourceTree = "<group>"; };
+		ED2F52E9158A4B0D009E0EC7 /* EntityFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityFamily.h; path = Entity/EntityFamily.h; sourceTree = "<group>"; };
+		ED2F52EA158A4B0D009E0EC7 /* EntityManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityManager.cpp; path = Entity/EntityManager.cpp; sourceTree = "<group>"; };
+		ED2F52EB158A4B0D009E0EC7 /* EntityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EntityManager.h; path = Entity/EntityManager.h; sourceTree = "<group>"; };
+		ED2F52ED158A4B0D009E0EC7 /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pool.h; path = Entity/Pool.h; sourceTree = "<group>"; };
+		ED2F52EE158A4B0D009E0EC7 /* PoolSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PoolSystem.cpp; path = Entity/PoolSystem.cpp; sourceTree = "<group>"; };
+		ED2F52EF158A4B0D009E0EC7 /* PoolSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PoolSystem.h; path = Entity/PoolSystem.h; sourceTree = "<group>"; };
+		ED2F52F0158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VisibilityAABBoxComponent.cpp; path = Entity/VisibilityAABBoxComponent.cpp; sourceTree = "<group>"; };
+		ED2F52F1158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxComponent.h; path = Entity/VisibilityAABBoxComponent.h; sourceTree = "<group>"; };
 		FE01C9BC14A8591A008675BD /* CubeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CubeNode.cpp; sourceTree = "<group>"; };
 		FE01C9BD14A8591A008675BD /* CubeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CubeNode.h; sourceTree = "<group>"; };
 		FE01C9C014A85924008675BD /* SphereNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SphereNode.cpp; sourceTree = "<group>"; };
@@ -981,6 +1036,8 @@
 		FEEB6E7A131BC61C00958ACB /* Replay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Replay.cpp; sourceTree = "<group>"; };
 		FEEB6E7B131BC61C00958ACB /* Replay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Replay.h; sourceTree = "<group>"; };
 		FEF4E22712CD3BED004B850E /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		FEF538A81583348A0014679C /* Backtrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Backtrace.h; sourceTree = "<group>"; };
+		FEF538AA158334970014679C /* Backtrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Backtrace.cpp; sourceTree = "<group>"; };
 		FEFD182D1305D49C0050D7E6 /* AABBox2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AABBox2.cpp; sourceTree = "<group>"; };
 		FEFD182E1305D49C0050D7E6 /* AABBox2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AABBox2.h; sourceTree = "<group>"; };
 		FEFD182F1305D49C0050D7E6 /* AABBox3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AABBox3.cpp; sourceTree = "<group>"; };
@@ -1123,6 +1180,47 @@
 			name = DLC;
 			sourceTree = "<group>";
 		};
+		C7DE596A157F8CA10045CA41 /* Autotesting */ = {
+			isa = PBXGroup;
+			children = (
+				C7DE596B157F8CA10045CA41 /* Action.cpp */,
+				C7DE596C157F8CA10045CA41 /* Action.h */,
+				C7DE596D157F8CA10045CA41 /* AssertAction.cpp */,
+				C7DE596E157F8CA10045CA41 /* AssertAction.h */,
+				C7DE596F157F8CA10045CA41 /* AutotestingSystem.cpp */,
+				C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */,
+				C7DE5973157F8CA10045CA41 /* TouchAction.cpp */,
+				C7DE5974157F8CA10045CA41 /* TouchAction.h */,
+				C784403A158204A000F75358 /* Config.h */,
+			);
+			path = Autotesting;
+			sourceTree = "<group>";
+		};
+		ED2F52DA158A4AD1009E0EC7 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				ED2F52DC158A4B0D009E0EC7 /* Component.cpp */,
+				ED2F52DD158A4B0D009E0EC7 /* Component.h */,
+				ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */,
+				ED2F52DF158A4B0D009E0EC7 /* Components.h */,
+				ED2F52E0158A4B0D009E0EC7 /* ComponentTypes.cpp */,
+				ED2F52E1158A4B0D009E0EC7 /* ComponentTypes.h */,
+				ED2F52E4158A4B0D009E0EC7 /* DumpVariable.h */,
+				ED2F52E6158A4B0D009E0EC7 /* Entity.cpp */,
+				ED2F52E7158A4B0D009E0EC7 /* Entity.h */,
+				ED2F52E8158A4B0D009E0EC7 /* EntityFamily.cpp */,
+				ED2F52E9158A4B0D009E0EC7 /* EntityFamily.h */,
+				ED2F52EA158A4B0D009E0EC7 /* EntityManager.cpp */,
+				ED2F52EB158A4B0D009E0EC7 /* EntityManager.h */,
+				ED2F52ED158A4B0D009E0EC7 /* Pool.h */,
+				ED2F52EE158A4B0D009E0EC7 /* PoolSystem.cpp */,
+				ED2F52EF158A4B0D009E0EC7 /* PoolSystem.h */,
+				ED2F52F0158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp */,
+				ED2F52F1158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h */,
+			);
+			name = Entity;
+			sourceTree = "<group>";
+		};
 		FE578BB513278DAD0081BDE9 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -1192,6 +1290,8 @@
 		FECFC0A512E87E3000C71562 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				ED2F52DA158A4AD1009E0EC7 /* Entity */,
+				C7DE596A157F8CA10045CA41 /* Autotesting */,
 				FECFC0A612E87E3000C71562 /* Animation */,
 				FECFC0B612E87E3000C71562 /* Base */,
 				FECFC0CA12E87E3000C71562 /* Collision */,
@@ -1304,6 +1404,8 @@
 		FECFC0DF12E87E3000C71562 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
+				FEF538A81583348A0014679C /* Backtrace.h */,
+				FEF538AA158334970014679C /* Backtrace.cpp */,
 				FEE76B93153851CB00784D5F /* Stats.cpp */,
 				FEE76B94153851CB00784D5F /* Stats.h */,
 				FECFC0E012E87E3000C71562 /* DVAssert.h */,
@@ -2056,6 +2158,22 @@
 				5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */,
 				5C7BE5901574BAF8004FF01C /* MongodbClient.h in Headers */,
 				5C203F321579362300CB53E9 /* MongodbObject.h in Headers */,
+				C7DE5976157F8CA10045CA41 /* Action.h in Headers */,
+				C7DE5978157F8CA10045CA41 /* AssertAction.h in Headers */,
+				C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */,
+				C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */,
+				FEF538A91583348A0014679C /* Backtrace.h in Headers */,
+				ED2F52F5158A4B0D009E0EC7 /* Component.h in Headers */,
+				ED2F52F6158A4B0D009E0EC7 /* ComponentDataMapper.h in Headers */,
+				ED2F52F7158A4B0D009E0EC7 /* Components.h in Headers */,
+				ED2F52F9158A4B0D009E0EC7 /* ComponentTypes.h in Headers */,
+				ED2F52FA158A4B0D009E0EC7 /* DumpVariable.h in Headers */,
+				ED2F52FC158A4B0D009E0EC7 /* Entity.h in Headers */,
+				ED2F52FE158A4B0D009E0EC7 /* EntityFamily.h in Headers */,
+				ED2F5300158A4B0D009E0EC7 /* EntityManager.h in Headers */,
+				ED2F5302158A4B0D009E0EC7 /* Pool.h in Headers */,
+				ED2F5304158A4B0D009E0EC7 /* PoolSystem.h in Headers */,
+				ED2F5306158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2353,6 +2471,18 @@
 				5CFA5D4F156E3EBF00EDB730 /* UserNode.cpp in Sources */,
 				5C7BE58F1574BAF8004FF01C /* MongodbClient.cpp in Sources */,
 				5C203F311579362300CB53E9 /* MongodbObject.cpp in Sources */,
+				C7DE5975157F8CA10045CA41 /* Action.cpp in Sources */,
+				C7DE5977157F8CA10045CA41 /* AssertAction.cpp in Sources */,
+				C7DE5979157F8CA10045CA41 /* AutotestingSystem.cpp in Sources */,
+				C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */,
+				FEF538AB158334970014679C /* Backtrace.cpp in Sources */,
+				ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */,
+				ED2F52F8158A4B0D009E0EC7 /* ComponentTypes.cpp in Sources */,
+				ED2F52FB158A4B0D009E0EC7 /* Entity.cpp in Sources */,
+				ED2F52FD158A4B0D009E0EC7 /* EntityFamily.cpp in Sources */,
+				ED2F52FF158A4B0D009E0EC7 /* EntityManager.cpp in Sources */,
+				ED2F5303158A4B0D009E0EC7 /* PoolSystem.cpp in Sources */,
+				ED2F5305158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

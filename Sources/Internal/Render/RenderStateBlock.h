@@ -396,7 +396,7 @@ public:
 // Implementation of inline functions
 inline void RenderStateBlock::SetColor(float32 _r, float32 _g, float32 _b, float32 _a)
 {
-    if ((color.r != _r) || (color.g != _g) || (color.b != _b) || (color.a != _a))
+    //if ((color.r != _r) || (color.g != _g) || (color.b != _b) || (color.a != _a))
     {
         color.r = _r;
         color.g = _g;
@@ -408,7 +408,7 @@ inline void RenderStateBlock::SetColor(float32 _r, float32 _g, float32 _b, float
 
 inline void RenderStateBlock::SetColor(const Color & _color)
 {
-    if (color != _color)
+    //if (color != _color)
     {
         color = _color;
         changeSet |= STATE_CHANGED_COLOR;
@@ -417,7 +417,7 @@ inline void RenderStateBlock::SetColor(const Color & _color)
 
 inline void RenderStateBlock::ResetColor()
 {
-    if ((color.r != 1.0f) || (color.g != 1.0f) || (color.b != 1.0f) || (color.a != 1.0f))
+    //if ((color.r != 1.0f) || (color.g != 1.0f) || (color.b != 1.0f) || (color.a != 1.0f))
     {
         color.r = color.g = color.b = color.a = 1.0f;
         changeSet |= STATE_CHANGED_COLOR;
@@ -432,7 +432,7 @@ inline const Color & RenderStateBlock::GetColor() const
 
 inline void RenderStateBlock::SetBlendMode(eBlendMode _sourceFactor, eBlendMode _destFactor)
 {
-    if ((sourceFactor != _sourceFactor) || (destFactor != _destFactor))
+    //if ((sourceFactor != _sourceFactor) || (destFactor != _destFactor))
     {       
         sourceFactor = _sourceFactor;
         destFactor = _destFactor;
@@ -455,7 +455,7 @@ inline void RenderStateBlock::SetShader(Shader * _shader)
 // CULL MODE
 inline void RenderStateBlock::SetCullMode(eFace _cullMode)
 {
-    if (cullMode != _cullMode)
+    //if (cullMode != _cullMode)
     {   
         cullMode = _cullMode;
         changeSet |= STATE_CHANGED_CULLMODE;
@@ -465,7 +465,7 @@ inline void RenderStateBlock::SetCullMode(eFace _cullMode)
 inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
 {
     uint8 newCmpValue = (uint8)(cmpValue * 255.0f);
-    if ((alphaFunc != func) || (alphaFuncCmpValue != newCmpValue))
+    //if ((alphaFunc != func) || (alphaFuncCmpValue != newCmpValue))
     {
         alphaFunc = func;
         alphaFuncCmpValue = newCmpValue;
@@ -475,7 +475,7 @@ inline void RenderStateBlock::SetAlphaFunc(eCmpFunc func, float32 cmpValue)
 
 inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
 {
-	if(depthFunc != func)
+	//if(depthFunc != func)
 	{
 		depthFunc = func;
 		changeSet |= STATE_CHANGED_DEPTH_FUNC;
@@ -484,7 +484,7 @@ inline void RenderStateBlock::SetDepthFunc(eCmpFunc func)
 
 inline void RenderStateBlock::SetScissorRect(const Rect & rect)
 {
-	if(scissorRect != rect)
+	//if(scissorRect != rect)
 	{
 		scissorRect = rect;
 		changeSet |= STATE_CHANGED_SCISSOR_RECT;

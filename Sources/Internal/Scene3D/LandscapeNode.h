@@ -205,10 +205,17 @@ public:
     
 	/**
         \brief Get texture name that was previously set in SetTexture.
-        \param[in] level 
+        \param[in] level level of texture you want to get name
         \returns current texture name
 	 */
     const String & GetTextureName(eTextureLevel level);
+
+	/**
+        \brief Set texture name for export.
+        \param[in] level level of texture you want to set name
+        \param[in] newTextureName new texture name
+	 */
+    void SetTextureName(eTextureLevel level, const String &newTextureName);
     
     
 	/**
@@ -252,7 +259,7 @@ public:
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
     
     // TODO: Need comment here
-	bool PlacePoint(const Vector3 & point, Vector3 & result);
+	bool PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal = 0) const;
 	Vector3 GetPoint(int16 x, int16 y, uint16 height);
 
 	void CursorEnable();

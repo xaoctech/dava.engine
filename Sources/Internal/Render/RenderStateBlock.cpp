@@ -29,6 +29,7 @@
 =====================================================================================*/
 #include "Render/RenderStateBlock.h"
 #include "Render/RenderManager.h"
+#include "Debug/Backtrace.h"
 #include "Render/Shader.h"
 #include "Platform/Thread.h"
 #include "Utils/Utils.h"
@@ -52,13 +53,14 @@ RenderStateBlock::~RenderStateBlock()
     
 }
     
+//#define LOG_FINAL_RENDER_STATE
     
 /**
     Function to reset state to original zero state.
  */
 void RenderStateBlock::Reset(bool doHardwareReset)
 {
-    state = 0;
+    state = DEFAULT_2D_STATE;
     changeSet = 0;
     color.r = 1.0f;
     color.g = 1.0f;
@@ -77,6 +79,9 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     
     if (doHardwareReset)
     {
+        RenderManager::Instance()->LockNonMain();
+        Logger::Debug("Do hardware reset");
+        // PrintBackTraceToLog();
         SetColorInHW();
         SetEnableBlendingInHW();
         SetBlendModeInHW();
@@ -94,6 +99,8 @@ void RenderStateBlock::Reset(bool doHardwareReset)
         {
             SetTextureLevelInHW(textureLevel);
         }
+        RenderManager::Instance()->UnlockNonMain();
+
     }
 }
 bool RenderStateBlock::IsEqual(RenderStateBlock * anotherState)
@@ -124,6 +131,12 @@ bool RenderStateBlock::IsEqual(RenderStateBlock * anotherState)
 
 void RenderStateBlock::Flush(RenderStateBlock * previousState)
 {
+    RenderManager::Instance()->LockNonMain();
+
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::Flush started");
+#endif    
+
     uint32 diffState = state ^ previousState->state;
     if (diffState != 0)
     {
@@ -191,16 +204,18 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
                 }
 
 		if (changeSet & STATE_CHANGED_DEPTH_FUNC)
-		{
-			SetDepthFuncInHW();
-			previousState->depthFunc = depthFunc;
-		}
+            if (previousState->depthFunc != depthFunc)
+            {
+                SetDepthFuncInHW();
+                previousState->depthFunc = depthFunc;
+            }
 
 		if (changeSet & STATE_CHANGED_SCISSOR_RECT)
-		{
-			SetScissorRectInHW();
-			previousState->scissorRect = scissorRect;
-		}
+            if(previousState->scissorRect != scissorRect)
+            {
+                SetScissorRectInHW();
+                previousState->scissorRect = scissorRect;
+            }
         
         if (changeSet & STATE_CHANGED_TEXTURE0)
         {
@@ -305,6 +320,11 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
     if (shader)shader->Bind();
     else Shader::Unbind();
     previousState->shader = shader;
+    
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::Flush finished");
+#endif    
+    RenderManager::Instance()->UnlockNonMain();
 
 }
     
@@ -313,7 +333,12 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 inline void RenderStateBlock::SetColorInHW()
 {
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+    {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::color = (%f, %f, %f, %f)", color.r * color.a, color.g * color.a, color.b * color.a, color.a);
+#endif
         RENDER_VERIFY(glColor4f(color.r * color.a, color.g * color.a, color.b * color.a, color.a));
+    }
 }
     
 inline void RenderStateBlock::SetColorMaskInHW()
@@ -323,6 +348,9 @@ inline void RenderStateBlock::SetColorMaskInHW()
     GLboolean blueMask = (state & STATE_COLORMASK_BLUE) != 0;
     GLboolean alphaMask = (state & STATE_COLORMASK_ALPHA) != 0;
     
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::colormask = %d %d %d %d", redMask, greenMask, blueMask, alphaMask);
+#endif    
     RENDER_VERIFY(glColorMask(redMask, 
                               greenMask, 
                               blueMask, 
@@ -333,10 +361,16 @@ inline void RenderStateBlock::SetStensilTestInHW()
 {
 	if (state & STATE_STENCIL_TEST)
 	{
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::stencil = true");
+#endif    
 		RENDER_VERIFY(glEnable(GL_STENCIL_TEST));
 	}
 	else
 	{
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::stencil = false");
+#endif    
 		RENDER_VERIFY(glDisable(GL_STENCIL_TEST));
 	}
 }
@@ -345,10 +379,16 @@ inline void RenderStateBlock::SetEnableBlendingInHW()
 {
     if (state & STATE_BLEND)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::blend = true");
+#endif    
         RENDER_VERIFY(glEnable(GL_BLEND));
     }
     else 
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::blend = false");
+#endif    
         RENDER_VERIFY(glDisable(GL_BLEND));
     }
 }
@@ -357,22 +397,37 @@ inline void RenderStateBlock::SetCullInHW()
 {
     if (state & STATE_CULL)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::cullface = true");
+#endif    
+
         RENDER_VERIFY(glEnable(GL_CULL_FACE));
     }
     else 
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::cullface = false");
+#endif    
         RENDER_VERIFY(glDisable(GL_CULL_FACE));
     }
 }
 
 inline void RenderStateBlock::SetCullModeInHW()
 {
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::cull_mode = %d", cullMode);
+#endif    
+
     RENDER_VERIFY(glCullFace(CULL_FACE_MAP[cullMode]));
 }
 
 
 inline void RenderStateBlock::SetBlendModeInHW()
 {
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::blend_src_dst = (%d, %d)", sourceFactor, destFactor);
+#endif    
+
     RENDER_VERIFY(glBlendFunc(BLEND_MODE_MAP[sourceFactor], BLEND_MODE_MAP[destFactor]));
 }
 
@@ -394,6 +449,10 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
             }
         }
         
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, currentTexture[textureLevel]->id);
+#endif    
+
         BindTexture(currentTexture[textureLevel]->id);
     }else
     {
@@ -409,7 +468,11 @@ inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
                 RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
             }
         }
-        
+
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, 0);
+#endif    
+
         BindTexture(0);
     }    
 }
@@ -417,10 +480,16 @@ inline void RenderStateBlock::SetDepthTestInHW()
 {
     if(state & STATE_DEPTH_TEST)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::depth_test = true");
+#endif    
         RENDER_VERIFY(glEnable(GL_DEPTH_TEST));
     }
     else
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::depth_test = false");
+#endif    
         RENDER_VERIFY(glDisable(GL_DEPTH_TEST));
     }    
 }
@@ -429,10 +498,17 @@ inline void RenderStateBlock::SetDepthWriteInHW()
 {
     if(state & STATE_DEPTH_WRITE)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::depth_mask = true");
+#endif    
+
         RENDER_VERIFY(glDepthMask(GL_TRUE));
     }
     else
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::depth_mask = false");
+#endif    
         RENDER_VERIFY(glDepthMask(GL_FALSE));
     }
 }
@@ -441,10 +517,17 @@ inline void RenderStateBlock::SetAlphaTestInHW()
 {
     if(state & STATE_ALPHA_TEST)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::alpha_test = true");
+#endif    
+
         RENDER_VERIFY(glEnable(GL_ALPHA_TEST));
     }
     else
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::alpha_test = false");
+#endif    
         RENDER_VERIFY(glDisable(GL_ALPHA_TEST));
     }
 }
@@ -453,15 +536,26 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
 {
     if (renderer == Core::RENDERER_OPENGL)
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::alpha func = (%d, %d)", alphaFunc, alphaFuncCmpValue);
+#endif    
+
         RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], (float32)alphaFuncCmpValue / 255.0f) );
     }else
     {
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::alpha func = (%d, %d)", alphaFunc, alphaFuncCmpValue);
+#endif    
         RENDER_VERIFY(glAlphaFunc(COMPARE_FUNCTION_MAP[alphaFunc], alphaFuncCmpValue) );
     }
 }
 
 inline void RenderStateBlock::SetDepthFuncInHW()
 {
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::depth func = (%d)", depthFunc);
+#endif    
+
 	RENDER_VERIFY(glDepthFunc(COMPARE_FUNCTION_MAP[depthFunc]));
 }
 
@@ -469,16 +563,26 @@ inline void RenderStateBlock::SetScissorTestInHW()
 {
 	if(state & STATE_SCISSOR_TEST)
 	{
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::scissor_test = true");
+#endif  
 		RENDER_VERIFY(glEnable(GL_SCISSOR_TEST));
 	}
 	else
 	{
+#if defined (LOG_FINAL_RENDER_STATE)
+        Logger::Debug("RenderState::scissor_test = false");
+#endif  
 		RENDER_VERIFY(glDisable(GL_SCISSOR_TEST));
 	}
 }
 
 inline void RenderStateBlock::SetScissorRectInHW()
 {
+#if defined (LOG_FINAL_RENDER_STATE)
+    Logger::Debug("RenderState::scissor_rect = (%d, %d, %d, %d)", scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
+#endif  
+
 	RENDER_VERIFY(glScissor(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy));
 }
 

@@ -33,9 +33,10 @@
 #include "DAVAEngine.h"
 using namespace DAVA;
 #include "GameCore.h"
+#include "BaseScreen.h"
 
 template <class T>
-class TestTemplate : public UIScreen
+class TestTemplate : public BaseScreen
 {
 public:
 
@@ -43,82 +44,84 @@ public:
 	{
 		void (T::*func)(PerfFuncData * data);
 		T				* screen;
-		String			name;
-		uint64			totalTime;
-		uint64			minTime;
-		uint64			maxTime;
-		uint64			startTime;
-		uint64			endTime;
-		int32			runCount;
-		void			* userData;
+
+        TestData testData;
 	};
+    
 
 	TestTemplate(const String & screenName);
 
-	virtual void Update(float32 timeElapsed);
 	virtual void Draw(const UIGeometricData &geometricData);
 	virtual void DidAppear();
-
 
 	void RegisterFunction(T * screen, void (T::*func)(PerfFuncData * data), const String & name, int32 runCount, void * userData);
 
 	void SubmitTime(PerfFuncData * data, uint64 time);
-	void WriteLog(PerfFuncData * data);
+	void LogError(PerfFuncData * data, const String &errorMessage);
     
+    int32 GetScreenId();
+    
+    virtual int32 GetTestCount();
+    virtual TestData * GetTestData(int32 iTest);
 
+    virtual bool RunTest(int32 testNum);
+    
 protected:
     
-    virtual void RunTests();
     
 	Vector<PerfFuncData> perfFuncs;
-	int32 funcIndex;
 	int32 runIndex;
 	String screenName;
 
 private:
+    
+    static int32 globalScreenId; // 1, on create of screen increment  
+    int32 currentScreenId;
+    
 	TestTemplate();
 };
+
+template <class T>
+int32 TestTemplate<T>::globalScreenId = 1;
 
 template <class T>
 void TestTemplate<T>::RegisterFunction(T * screen, void (T::*func)(PerfFuncData * data), const String & name, int32 runCount, void * userData)
 {
 	PerfFuncData data;
-	data.name = name;
+	data.testData.name = name;
 	data.func = func;
 	data.screen = screen;
-	data.runCount = runCount;
-	data.userData = userData;
-	data.totalTime = 0;
-	data.minTime = 0;
-	data.maxTime = 0;
+	data.testData.runCount = runCount;
+	data.testData.userData = userData;
 
 	perfFuncs.push_back(data);
 }
 
 template <class T>
-void TestTemplate<T>::WriteLog(PerfFuncData * data)
+void TestTemplate<T>::LogError(PerfFuncData * data, const String &errorMessage)
 {
-	File * log = GameCore::Instance()->logFile;
-	log->WriteLine(Format("%s", data->name.c_str()));
-	log->WriteLine(Format("%lld %lld %lld %lld %d", data->endTime-data->startTime, data->totalTime, data->minTime, data->maxTime, data->runCount));
+	GameCore::Instance()->LogMessage(Format("Error %s at test: %s", errorMessage.c_str(), data->testData.name.c_str()));
 }
 
 template <class T>
 void TestTemplate<T>::SubmitTime(PerfFuncData * data, uint64 time)
 {
-	data->totalTime += time;
+	data->testData.totalTime += time;
 	if (runIndex == 0)
 	{
-		data->minTime = time;
-		data->maxTime = time;
+		data->testData.minTime = time;
+		
+        data->testData.maxTime = time;
+        data->testData.maxTimeIndex = 0;
 	}
-	if(time < data->minTime)
+	if(time < data->testData.minTime)
 	{
-		data->minTime = time;
+		data->testData.minTime = time;
 	}
-	if(time > data->maxTime)
+	if(time > data->testData.maxTime)
 	{
-		data->maxTime = time;
+		data->testData.maxTime = time;
+        data->testData.maxTimeIndex = runIndex;
 	}
 }
 
@@ -126,26 +129,17 @@ template <class T>
 TestTemplate<T>::TestTemplate(const String & _screenName)
 {
 	screenName = _screenName;
-	funcIndex = -1;
 	runIndex = -1;
+    
+    currentScreenId = globalScreenId++;
 }
 
 template <class T>
 void TestTemplate<T>::DidAppear()
 {
-	funcIndex = 0;
 	runIndex = 0;
-
-	File * log = GameCore::Instance()->logFile;
-	log->WriteLine(Format("$%s", screenName.c_str()));
 }
 
-template <class T>
-void TestTemplate<T>::Update(float32 timeElapsed)
-{
-    RunTests();
-    UIScreen::Update(timeElapsed);
-}
 
 template <class T>
 void TestTemplate<T>::Draw(const UIGeometricData &geometricData)
@@ -153,45 +147,56 @@ void TestTemplate<T>::Draw(const UIGeometricData &geometricData)
     UIScreen::Draw(geometricData);
 }
 
+
 template <class T>
-void TestTemplate<T>::RunTests()
+bool TestTemplate<T>::RunTest(int32 testNum)
 {
-	int32 funcsCount = perfFuncs.size();
-	if(funcIndex >= 0 && funcIndex < funcsCount)
-	{
-		PerfFuncData * data = &(perfFuncs[funcIndex]);
-		if(runIndex < data->runCount)
+	int32 testCount = perfFuncs.size();
+    
+    if(0 <= testNum && testNum < testCount)
+    {
+		PerfFuncData * data = &(perfFuncs[testNum]);
+		if(runIndex < data->testData.runCount)
 		{
 			uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
 			if(0 == runIndex)
 			{
-				data->startTime = startTime;
+				data->testData.startTime = startTime;
 			}
-			(data->screen->*data->func)(data);
+			
+            (data->screen->*data->func)(data);
+            
 			uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
 			SubmitTime(data, endTime-startTime);
-
-			runIndex++;
-			if(data->runCount == runIndex)
+            
+			++runIndex;
+			if(data->testData.runCount == runIndex)
 			{
-				data->endTime = endTime;
+				data->testData.endTime = endTime;
+                runIndex = 0;
+                return true;
 			}
 		}
-		else
-		{
-			WriteLog(data);
-
-			Logger::Debug("%s %s", screenName.c_str(), data->name.c_str());
-
-			runIndex = 0;
-			funcIndex++;
-		}
-	}
-	else
-	{
-        GameCore::Instance()->TestFinished();
-	}
+    }
+    
+    return false;
 }
+
+
+template <class T>
+int32 TestTemplate<T>::GetTestCount()
+{
+    return perfFuncs.size();
+}
+
+template <class T>
+TestData * TestTemplate<T>::GetTestData(int32 iTest)
+{
+    DVASSERT((0 <= iTest) && (iTest < GetTestCount()));
+    
+    return &perfFuncs[iTest].testData;
+}
+
 
 
 #endif // __TESTTEMPLATE_H__
