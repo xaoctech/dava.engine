@@ -71,7 +71,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     GraphBase::CreateGraphPanel(rect);
     
     Rect graphRect = graphPanel->GetRect();
-    graphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 6);
+    graphRect.dy -= (ControlsFactory::BUTTON_HEIGHT * 7);
     graphTree = new UIHierarchy(graphRect);
     ControlsFactory::CusomizeListControl(graphTree);
     ControlsFactory::SetScrollbar(graphTree);
@@ -82,6 +82,11 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
     int32 y = graphRect.dy;
+    
+    UIButton * removeRootNodes = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth,ControlsFactory::BUTTON_HEIGHT), 
+                                                                       LocalizedString(L"scenegraph.removerootnode"));
+    y += ControlsFactory::BUTTON_HEIGHT;
+    
     UIButton * refreshSceneGraphButton = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth,ControlsFactory::BUTTON_HEIGHT), 
                                                                        LocalizedString(L"panel.refresh"));
     y += ControlsFactory::BUTTON_HEIGHT;
@@ -103,6 +108,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
                                                             LocalizedString(L"scenegraph.buildquadtree"));
     
     
+    removeRootNodes->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRemoveRootNodesButtonPressed));
     refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRefreshGraph));
     lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnLookAtButtonPressed));
     removeNodeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRemoveNodeButtonPressed));
@@ -110,6 +116,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     bakeMatrices->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBakeMatricesPressed));
     buildQuadTree->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBuildQuadTreePressed));
     
+    graphPanel->AddControl(removeRootNodes);
     graphPanel->AddControl(refreshSceneGraphButton);
     graphPanel->AddControl(lookAtButton);
     graphPanel->AddControl(removeNodeButton);
@@ -117,6 +124,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     graphPanel->AddControl(bakeMatrices);
     graphPanel->AddControl(buildQuadTree);
     
+    SafeRelease(removeRootNodes);
     SafeRelease(refreshSceneGraphButton);
     SafeRelease(lookAtButton);
     SafeRelease(removeNodeButton);
@@ -242,6 +250,12 @@ void SceneGraph::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *)
     RemoveWorkingNode();
 }
 
+void SceneGraph::OnRemoveRootNodesButtonPressed(BaseObject * obj, void *, void *)
+{
+    RemoveRootNodes();
+}
+
+
 void SceneGraph::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
 {
     MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(workingNode);
@@ -325,6 +339,57 @@ void SceneGraph::RemoveWorkingNode()
     }
 }
 
+void SceneGraph::RemoveRootNodes()
+{
+    if (workingNode && workingScene)
+    {
+        if(workingNode->GetParent() == workingScene) 
+        {
+            String referenceToOwner;
+            
+            KeyedArchive *customProperties = workingNode->GetCustomProperties();
+            if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+            {
+                referenceToOwner = customProperties->GetString("editor.referenceToOwner");
+            }
+
+            
+            Vector<SceneNode *>nodesForDeletion;
+            nodesForDeletion.reserve(workingScene->GetChildrenCount());
+            
+            for(int32 i = 0; i < workingScene->GetChildrenCount(); ++i)
+            {
+                SceneNode *node = workingScene->GetChild(i);
+
+                customProperties = node->GetCustomProperties();
+                if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+                {
+                    if(customProperties->GetString("editor.referenceToOwner") == referenceToOwner)
+                    {
+                        nodesForDeletion.push_back(SafeRetain(node));
+                    }
+                }
+            }
+            
+            workingScene->SetSelection(NULL);
+            workingNode = NULL;
+            for(int32 i = 0; i < nodesForDeletion.size(); ++i)
+            {
+                SceneNode *node = nodesForDeletion[i];
+                
+                workingScene->ReleaseUserData(node);
+                workingScene->RemoveNode(node);
+                
+                SafeRelease(node);
+            }
+            nodesForDeletion.clear();
+            
+            UpdatePropertyPanel();
+            graphTree->Refresh();
+            SceneValidator::Instance()->EnumerateSceneTextures();
+        }
+    }
+}
 
 
 #pragma mark --UIHierarchyDelegate
