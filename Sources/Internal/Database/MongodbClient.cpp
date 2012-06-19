@@ -337,6 +337,33 @@ bool MongodbClient::SaveObject(MongodbObject *object)
     return (MONGO_OK == status);
 }
 
+bool MongodbClient::SaveObject(MongodbObject *newObject, MongodbObject *oldObject)
+{
+    int32 status = MONGO_ERROR;
+    if(IsConnected())
+    {
+        if(oldObject)
+        {
+            status = mongo_update(clientData->connection, namespaceName.c_str(), (bson *)oldObject->InternalObject(), (bson *)newObject->InternalObject(), 0, NULL);
+            if(MONGO_OK != status)
+            {
+                LogError(String("SaveObject, update"), clientData->connection->err);
+            }
+        }
+        else 
+        {
+            status = mongo_insert(clientData->connection, namespaceName.c_str(), (bson *)newObject->InternalObject(), NULL);
+            if(MONGO_OK != status)
+            {
+                LogError(String("SaveObject, insert"), clientData->connection->err);
+            }
+        }
+    }
+    
+    return (MONGO_OK == status);
+}
+
+    
     
 void MongodbClient::DumpDB()
 {
