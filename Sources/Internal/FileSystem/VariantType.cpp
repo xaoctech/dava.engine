@@ -157,62 +157,59 @@ void VariantType::SetKeyedArchive(KeyedArchive *archive)
 }
     
 	
-bool VariantType::AsBool()
+bool VariantType::AsBool() const
 {
 	DVASSERT(type == TYPE_BOOLEAN);
 	return boolValue;
 }
 
-int32  VariantType::AsInt32()
+int32  VariantType::AsInt32() const
 {
 	DVASSERT(type == TYPE_INT32);
 	return int32Value;
 }
     
-uint32  VariantType::AsUInt32()
+uint32  VariantType::AsUInt32() const
 {
     DVASSERT(type == TYPE_UINT32);
     return uint32Value;
 }
 
-float32  VariantType::AsFloat()
+float32  VariantType::AsFloat() const
 {
 	DVASSERT(type == TYPE_FLOAT);
 	return floatValue;
 }
 
-const String &  VariantType::AsString()
+const String &  VariantType::AsString() const
 {
 	DVASSERT(type == TYPE_STRING);
 	return stringValue;
 }
 
-const WideString & VariantType::AsWideString()
+const WideString & VariantType::AsWideString() const
 {
 	DVASSERT(type == TYPE_WIDE_STRING);
 	return wideStringValue;
 }
 	
-const uint8 *VariantType::AsByteArray()
+const uint8 *VariantType::AsByteArray() const
 {
 	DVASSERT(type == TYPE_BYTE_ARRAY);
 	return &((Vector<uint8>*)pointerValue)->front();
 }
 	
-int32 VariantType::AsByteArraySize()
+int32 VariantType::AsByteArraySize() const
 {
 	DVASSERT(type == TYPE_BYTE_ARRAY);
 	return (int32)((Vector<uint8>*)pointerValue)->size();
 }
 
-KeyedArchive *VariantType::AsKeyedArchive()
+KeyedArchive *VariantType::AsKeyedArchive() const
 {
     DVASSERT(type == TYPE_KEYED_ARCHIVE);
     return (KeyedArchive*)pointerValue;
 }
-	
-
-
 	
 bool VariantType::Write(File * fp) const
 {
@@ -416,5 +413,96 @@ void VariantType::ReleasePointer()
     }
 }
 
+bool VariantType::operator==(const VariantType& other) const
+{
+    bool isEqual = false;
+    if(type == other.type)
+    {
+        switch(type)
+        {
+            case TYPE_BOOLEAN:
+                isEqual = (AsBool() == other.AsBool());
+                break;
+		    case TYPE_INT32:
+                isEqual = (AsInt32() == other.AsInt32());
+                break;
+		    case TYPE_FLOAT:
+                isEqual = (AsFloat() == other.AsFloat());
+                break;
+		    case TYPE_STRING:
+                isEqual = (AsString() == other.AsString());
+                break;
+            case TYPE_WIDE_STRING:
+                isEqual = (AsWideString() == other.AsWideString());
+                break;
+		    case TYPE_BYTE_ARRAY:
+            {
+                int32 byteArraySize = AsByteArraySize();
+                if(byteArraySize == other.AsByteArraySize())
+                {
+                    isEqual = true;
+                    const uint8* byteArray = AsByteArray();
+                    const uint8* otherByteArray = other.AsByteArray();
+                    if(byteArray != otherByteArray)
+                    {
+                        for(int32 i = 0; i < byteArraySize; ++i)
+                        {
+                            if(byteArray[i]!=otherByteArray[i])
+                            {
+                                isEqual = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+                break;
+            case TYPE_UINT32:
+                isEqual = (AsUInt32() == other.AsUInt32());
+                break;
+            case TYPE_KEYED_ARCHIVE:
+                {
+                    KeyedArchive* keyedArchive = AsKeyedArchive();
+                    KeyedArchive* otherKeyedArchive = other.AsKeyedArchive();
+                    if(keyedArchive && otherKeyedArchive)
+                    {
+                        isEqual = true;
+                        if(keyedArchive != otherKeyedArchive)
+                        {                                
+                            const Map<String, VariantType*> data = keyedArchive->GetArchieveData();
+                            const Map<String, VariantType*> otherData = otherKeyedArchive->GetArchieveData();
+                            for(Map<String, VariantType*>::const_iterator it = data.begin(); it != data.end(); ++it)
+                            {
+                                Map<String, VariantType*>::const_iterator findIt = otherData.find(it->first);
+                                if(findIt != otherData.end())
+                                {
+                                    if(it->second != findIt->second)
+                                    {
+                                        if((*it->second) != (*findIt->second))
+                                        {
+                                            isEqual = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    isEqual = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+    }
+    return isEqual;
+}
+
+bool VariantType::operator!=(const VariantType& other) const
+{
+    return (!(*this == other));
+}
 	
 };

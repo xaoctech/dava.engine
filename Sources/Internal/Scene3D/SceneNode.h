@@ -46,6 +46,8 @@ class SceneNodeAnimationKey;
 class KeyedArchive;
 class SceneFileV2;
 class DataNode;
+class Entity;
+
 /**
     \brief Base class of 3D scene hierarchy. All nodes in our scene graph is inherited from this node.
  */
@@ -312,6 +314,9 @@ public:
 		\brief Enable/disable imposters for node and it's children.
 	*/
 	void RecursiveEnableImposters(bool enable);
+
+	//temporary solution
+	Entity * entity;
     
 protected:
 

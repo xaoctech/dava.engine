@@ -59,6 +59,7 @@ scenegraph.removeobject: "Удалить объект"
 scenegraph.debugflags: "Debug Flags"
 scenegraph.bakematrices: "Bake Matrices"
 scenegraph.buildquadtree: "Build Quad Tree"
+scenegraph.removerootnode: "Remove Root Nodes"
 
 #Library
 library.refresh: "ОБновить библиотеку"

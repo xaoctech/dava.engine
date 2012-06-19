@@ -48,9 +48,11 @@
 //#define __DAVAENGINE_DIRECTX9__
 #define __DAVAENGINE_OPENGL__
 
-
 // This flag allow to enable debug stats 
 //#define __DAVAENGINE_ENABLE_DEBUG_STATS__
+
+#include "Autotesting/Config.h"
+
 
 #endif // __DAVAENGINE_CONFIG_H__
 

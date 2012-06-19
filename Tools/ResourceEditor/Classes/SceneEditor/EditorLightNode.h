@@ -13,6 +13,8 @@ public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
 
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+
 	static LightNode * CreateSceneAndEditorLight();
 
 private:

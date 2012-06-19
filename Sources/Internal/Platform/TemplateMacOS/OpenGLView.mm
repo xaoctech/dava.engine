@@ -34,6 +34,7 @@
 extern void FrameworkMain(int argc, char *argv[]);
 
 @implementation OpenGLView
+@synthesize willQuit;
 
 -(id) initWithFrame: (NSRect) frameRect
 {
@@ -91,6 +92,8 @@ extern void FrameworkMain(int argc, char *argv[]);
     
     //RenderManager::Create(Core::RENDERER_OPENGL);
 	
+    willQuit = false;
+    
 	return self;	
 }
 
@@ -158,6 +161,9 @@ extern void FrameworkMain(int argc, char *argv[]);
 	
 - (void)drawRect:(NSRect)theRect
 {
+    if(willQuit)
+        return;
+    
 //	Logger::Debug("drawRect started");
 	
 	if (activeCursor != RenderManager::Instance()->GetCursor())

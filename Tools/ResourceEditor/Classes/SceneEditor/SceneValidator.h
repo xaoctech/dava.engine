@@ -13,11 +13,88 @@ public:
     SceneValidator();
     virtual ~SceneValidator();
 
+    /*
+     \brief Function to validate Scene errors
+
+     Displays errors log at Errors Dialog
+     
+     \param[in] scene scene for validation
+	 */
     void ValidateScene(Scene *scene);
+    
+    /*
+     \brief Function to validate Scene errors
+     \param[in] scene scene for validation
+     \param[out] errorsLog set for validation erros
+	 */
+    void ValidateScene(Scene *scene, Set<String> &errorsLog);
+    
+    
+    /*
+     \brief Function to validate Texture errors
+     
+     Displays errors log at Errors Dialog
+     
+     \param[in] texture texture for validation
+	 */
     void ValidateTexture(Texture *texture);
+
+    /*
+     \brief Function to validate Texture errors
+     \param[in] texture texture for validation
+     \param[out] errorsLog set for validation erros
+	 */
+    
+    void ValidateTexture(Texture *texture, Set<String> &errorsLog);
+
+    /*
+     \brief Function to validate LandscapeNode errors
+     
+     Displays errors log at Errors Dialog
+     
+     \param[in] landscape landscape for validation
+	 */
     void ValidateLandscape(LandscapeNode *landscape);
+
+    /*
+     \brief Function to validate LandscapeNode errors
+     \param[in] landscape landscape for validation
+     \param[out] errorsLog set for validation erros
+	 */
+    void ValidateLandscape(LandscapeNode *landscape, Set<String> &errorsLog);
+    
+    /*
+     \brief Function to validate SceneNode errors
+     
+     Displays errors log at Errors Dialog
+     
+     \param[in] sceneNode sceneNode for validation
+	 */
     void ValidateSceneNode(SceneNode *sceneNode);
+    
+    /*
+     \brief Function to validate SceneNode errors
+     \param[in] sceneNode sceneNode for validation
+     \param[out] errorsLog set for validation erros
+	 */
+    void ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog);
+    
+    /*
+     \brief Function to validate Material errors
+
+     Displays errors log at Errors Dialog
+     
+     \param[in] material material for validation
+	 */
     void ValidateMaterial(Material *material);
+
+    /*
+     \brief Function to validate Material errors
+     \param[in] material material for validation
+     \param[out] errorsLog set for validation erros
+	 */
+    void ValidateMaterial(Material *material, Set<String> &errorsLog);
+
     
     void EnumerateSceneTextures();
     void CollectSceneStats(const RenderManager::Stats &newStats);
@@ -30,13 +107,8 @@ public:
     
 protected:
     
-    void ValidateTextureInternal(Texture *texture);
-    void ValidateLandscapeInternal(LandscapeNode *landscape);
-    void ValidateSceneNodeInternal(SceneNode *sceneNode);
-    void ValidateMeshInstanceInternal(MeshInstanceNode *meshNode);
-    void ValidateMaterialInternal(Material *material);
-    
-    void ValidateLodNodes(Scene *scen);
+    void ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog);
+    void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
     
     void ShowErrors();
     

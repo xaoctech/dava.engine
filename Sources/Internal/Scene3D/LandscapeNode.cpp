@@ -287,7 +287,7 @@ Vector3 LandscapeNode::GetPoint(int16 x, int16 y, uint16 height)
     return res;
 };
 
-bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
+bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal) const
 {
 	if (point.x > box.max.x ||
 		point.x < box.min.x ||
@@ -340,6 +340,14 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result)
 
 	result.z = (D - B * y - A * x) / C;
 	result.z = box.min.z + result.z / ((float32)Heightmap::MAX_VALUE) * (box.max.z - box.min.z);
+
+	if (normal != 0)
+	{
+		normal->x = A;
+		normal->y = B;
+		normal->x = C;
+		normal->Normalize();
+	}
 	return true;
 };
 	
@@ -1327,8 +1335,16 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 
 const String & LandscapeNode::GetTextureName(DAVA::LandscapeNode::eTextureLevel level)
 {
+    DVASSERT(0 <= level && level < TEXTURE_COUNT);
     return textureNames[level];
 }
+    
+void LandscapeNode::SetTextureName(eTextureLevel level, const String &newTextureName)
+{
+    DVASSERT(0 <= level && level < TEXTURE_COUNT);
+    textureNames[level] = newTextureName;
+}
+
 
 void LandscapeNode::CursorEnable()
 {
@@ -1420,7 +1436,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     
     Texture *fullTiled = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888, Texture::DEPTH_NONE);
     RenderManager::Instance()->SetRenderTarget(fullTiled);
-    RenderManager::Instance()->SetViewport(Rect(0.f, 0.f, fullTiled->GetWidth(), fullTiled->GetHeight()), true);
+    RenderManager::Instance()->SetViewport(Rect(0.f, 0.f, (float32)fullTiled->GetWidth(), (float32)fullTiled->GetHeight()), true);
 
 
 	RenderManager::Instance()->ClearWithColor(1.f, 1.f, 1.f, 1.f);
@@ -1482,10 +1498,12 @@ void LandscapeNode::UpdateFullTiledTexture()
 {
     if(0 == textureNames[TEXTURE_TILE_FULL].length())
     {
+		RenderManager::Instance()->LockNonMain();
         Texture *t = CreateFullTiledTexture();
         t->GenerateMipmaps();
         SetTexture(TEXTURE_TILE_FULL, t);
         SafeRelease(t);
+		RenderManager::Instance()->UnlockNonMain();
     }
 }
     
