@@ -16,8 +16,12 @@ public:
     virtual void SelectNode(BaseObject *node);
     virtual void RemoveWorkingNode();
     virtual void UpdatePropertyPanel();
+
+
     
 protected:
+
+    void RemoveRootNodes();
 
     //NodesPropertyDelegate
     virtual bool IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode);
@@ -30,6 +34,7 @@ protected:
 
     virtual void CreateGraphPanel(const Rect &rect);
     
+	void OnRemoveRootNodesButtonPressed(BaseObject * obj, void *, void *);
 	void OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *);
     void OnLookAtButtonPressed(BaseObject * obj, void *, void *);
     void OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *);
