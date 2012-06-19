@@ -32,8 +32,8 @@
 
 //#define SINGLE_MODE
 
-#if defined (SINGLE_MODE)
-    #define SINGLE_TEST_NAME        String("Landscape Mixed Mode")
+#if defined (SINGLE_MODE)   
+    #define SINGLE_TEST_NAME        String("Cache Test")      //Screen Name
 #endif //#if defined (SINGLE_MODE)
 
 
