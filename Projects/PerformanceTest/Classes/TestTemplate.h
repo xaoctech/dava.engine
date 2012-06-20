@@ -68,10 +68,8 @@ public:
     
 protected:
     
-    
 	Vector<PerfFuncData> perfFuncs;
 	int32 runIndex;
-	String screenName;
 
 private:
     
@@ -128,7 +126,7 @@ void TestTemplate<T>::SubmitTime(PerfFuncData * data, uint64 time)
 template <class T>
 TestTemplate<T>::TestTemplate(const String & _screenName)
 {
-	screenName = _screenName;
+    SetName(_screenName);
 	runIndex = -1;
     
     currentScreenId = globalScreenId++;

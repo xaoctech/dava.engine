@@ -78,13 +78,19 @@ public:
 
     void AddObject(const String &fieldname, MongodbObject *addObject);
     
-    
+    bool GetSubObject(MongodbObject *subObject, const String &fieldname);
     
     void StartArray(const String &fieldname);
     void FinishArray();
     
     void StartObject(const String &fieldname);
     void FinishObject();
+    
+    void CopyFinished(MongodbObject *fromObject);
+    
+    void Copy(MongodbObject *toObject);
+    
+    void Print();
     
 protected:
 

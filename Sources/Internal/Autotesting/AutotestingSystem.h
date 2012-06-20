@@ -46,6 +46,25 @@
 #include "FileSystem/FileSystem.h"
 #endif
 
+#define AUTOTESTING_DB_IP    "10.128.128.131"
+#define AUTOTESTING_DB_PORT  27017
+#define AUTOTESTING_DB_NAME  "Autotesting"
+
+#if defined (__DAVAENGINE_MACOS__)
+#define AUTOTESTING_PLATFORM_NAME  "MacOS"
+#elif defined (__DAVAENGINE_IPHONE_)
+#define AUTOTESTING_PLATFORM_NAME  "iOS"
+#elif defined (__DAVAENGINE_WIN32_)
+#define AUTOTESTING_PLATFORM_NAME  "Win32"
+#elif defined (__DAVAENGINE_ANDROID_)
+#define AUTOTESTING_PLATFORM_NAME  "Android"
+#else
+#define AUTOTESTING_PLATFORM_NAME  "Unknown"
+#endif //PLATFORMS    
+
+#include "Database/MongodbClient.h"
+#include "Database/MongodbObject.h"
+
 namespace DAVA
 {
 
@@ -56,8 +75,11 @@ public:
     ~AutotestingSystem();
 
     void OnAppStarted();
+    void OnAppFinished();
 
     void Init(const String & _testName);
+    
+    void SetProjectName(const String &_projectName);
 
     void AddAction(Action* action);
     void AddActionsFromYaml(const String &yamlFilePath);
@@ -120,6 +142,11 @@ protected:
     Vector<String> ParseControlPath(YamlNode* controlPathNode);
 
     void ExitApp();
+    
+    //DB
+    bool ConnectToDB();
+    void SaveTestToDB(const String & text, bool isPassed);
+    //
 
     bool isInit;
     bool isRunning;
@@ -127,7 +154,21 @@ protected:
     Action* currentAction;
     Deque<Action*> actions;
 
+    String projectName;
+    uint32 testsId;
+    uint32 testsDate;
+    int32 testIndex;
+    
     String testName;
+    String testFileName;
+    String testFilePath;
+    
+
+    
+    
+    MongodbClient *dbClient;
+    
+    
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     String testReportsFolder;
     File* reportFile;

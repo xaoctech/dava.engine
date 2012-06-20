@@ -572,6 +572,9 @@ void Core::SystemAppStarted()
 	
 void Core::SystemAppFinished()
 {
+#ifdef __DAVAENGINE_AUTOTESTING__
+    AutotestingSystem::Instance()->OnAppFinished();
+#endif //__DAVAENGINE_AUTOTESTING__    
 	if (core)core->OnAppFinished();
 }
 
