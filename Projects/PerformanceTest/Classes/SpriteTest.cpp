@@ -30,8 +30,8 @@
 
 #include "SpriteTest.h"
 
-SpriteTest::SpriteTest()
-: TestTemplate<SpriteTest>("Sprite")
+SpriteTest::SpriteTest(const String &screenName)
+: TestTemplate<SpriteTest>(screenName)
 {
 	int32 repeatCount = 1;
     

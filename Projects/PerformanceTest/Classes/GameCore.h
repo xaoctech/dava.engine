@@ -79,9 +79,8 @@ protected:
     
     int32 TestCount();
     
-    void SaveTestResult(const String &testTimeString, TestData *testData, int32 index);
-    
-    MongodbObject *GetObjectForName(const String &testName);
+    MongodbObject * CreateTestDataObject(const String &testTimeString, TestData *testData);
+    MongodbObject * CreateTestObject(const String &testName, MongodbObject *oldScreenOnject);
     
 protected:
     
