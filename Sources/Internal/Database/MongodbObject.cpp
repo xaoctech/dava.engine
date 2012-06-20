@@ -137,6 +137,11 @@ public:
         }
     }
     
+    void InitFinished(bson *obj)
+    {
+        bson_copy(object, obj);
+    }
+    
 public:
 	bson *object;
 };
@@ -363,6 +368,11 @@ void MongodbObject::EnableForEdit()
     objectData->object = newObject;
 }
 
+void MongodbObject::CopyFinished(MongodbObject *fromObject)
+{
+    objectData->InitFinished(fromObject->objectData->object);
+}    
+    
 void MongodbObject::Copy(MongodbObject *toObject)
 {
     toObject->objectData->InitWith(objectData->object);

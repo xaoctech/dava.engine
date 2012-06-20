@@ -86,6 +86,8 @@ public:
     void StartObject(const String &fieldname);
     void FinishObject();
     
+    void CopyFinished(MongodbObject *fromObject);
+    
     void Copy(MongodbObject *toObject);
     
     void Print();
