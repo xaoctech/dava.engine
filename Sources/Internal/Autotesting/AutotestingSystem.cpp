@@ -224,62 +224,65 @@ void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
     
     bool isTestPassed = isPassed;
     bool isTestSuitePassed = isTestPassed;
+    int32 testsCount = 1;
     
     if(newDBObject)
     {
-        newDBObject->SetObjectName(testsName);
-        
         // find platform object
-        
-        if(oldDBObject->GetSubObject(newPlatformObject, AUTOTESTING_PLATFORM_NAME))
+        if(oldDBObject)
         {
-            // found platform object
-            oldPlatformObject = dbClient->CreateObject();
-            oldPlatformObject->CopyFinished(newPlatformObject);
-
-            // find log object
-            if(oldPlatformObject->GetSubObject(newLogObject, "log"))
+            if(oldDBObject->GetSubObject(newPlatformObject, AUTOTESTING_PLATFORM_NAME))
             {
-                // found log object
-                oldLogObject = dbClient->CreateObject();
-                oldLogObject->CopyFinished(newLogObject);
-                
-                // find test object
-                if(oldLogObject->GetSubObject(newTestObject, testName))
+                // found platform object
+                oldPlatformObject = dbClient->CreateObject();
+                oldPlatformObject->CopyFinished(newPlatformObject);
+
+                // find log object
+                if(oldPlatformObject->GetSubObject(newLogObject, "log"))
                 {
-                    // found test object
-                    oldTestObject = dbClient->CreateObject();
-                    oldTestObject->CopyFinished(newTestObject);
+                    // found log object
+                    oldLogObject = dbClient->CreateObject();
+                    oldLogObject->CopyFinished(newLogObject);
                     
-                    isTestPassed = (oldTestObject->GetInt32("Success") == 1);
+                    // find test object
+                    if(oldLogObject->GetSubObject(newTestObject, testName))
+                    {
+                        // found test object
+                        oldTestObject = dbClient->CreateObject();
+                        oldTestObject->CopyFinished(newTestObject);
+                        
+                        isTestPassed = (oldTestObject->GetInt32("Success") == 1);
+                    }
                 }
+                
+                testsCount = (oldPlatformObject->GetInt32("TestsCount") + 1);
+                isTestSuitePassed = (isTestPassed && (oldPlatformObject->GetInt32("Success") == 1) );
             }
-            
-            isTestSuitePassed = (isTestPassed && (oldPlatformObject->GetInt32("Success") == 1) );
         }
         
-        //TODO: update test object
+        //update test object
         newTestObject->SetObjectName(testName);
         newTestObject->AddInt32("RunId", testsId);
         newTestObject->AddInt32("Success", (int32)isTestPassed);
         newTestObject->AddInt32(text, (int32)isPassed);
         newTestObject->Finish();
         
-        //TODO: update log object
+        //update log object
         newLogObject->SetObjectName("log");
         newLogObject->AddObject(testName, newTestObject);
         newLogObject->Finish();
         
-        //TODO: update platform object
+        //update platform object
         newPlatformObject->SetObjectName(AUTOTESTING_PLATFORM_NAME);
         newPlatformObject->AddInt32("RunId", testsId);
-        newPlatformObject->AddInt32("TestsCount", (testIndex + 1));
+        newPlatformObject->AddInt32("TestsCount", testsCount);
         newPlatformObject->AddInt32("Success", (int32)isTestSuitePassed);
         newPlatformObject->AddInt32(testAndFileName, (int32)isTestPassed);
         newPlatformObject->AddObject("log", newLogObject);
         newPlatformObject->Finish();
         
-        //TODO: update DB object
+        //update DB object
+        newDBObject->SetObjectName(testsName);
         newDBObject->AddInt32("RunId", testsId);
         newDBObject->AddObject(AUTOTESTING_PLATFORM_NAME, newPlatformObject);
         
