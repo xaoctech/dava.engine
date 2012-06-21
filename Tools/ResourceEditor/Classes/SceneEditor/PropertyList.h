@@ -95,6 +95,8 @@ public:
     const Color &GetColorPropertyValue(const String &sectrionName);
     float32 GetSliderPropertyValue(const String &propertyName);
     bool GetTexturePreviewPropertyValue(const String &propertyName);
+
+    int32 GetDistancePropertyCount(const String &propertyName);
     float32 GetDistancePropertyValue(const String &propertyName, int32 index);
 
     virtual int32 ElementsCount(UIList *forList);

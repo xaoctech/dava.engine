@@ -11,13 +11,13 @@ public:
 	LodNodePropertyControl(const Rect & rect, bool createNodeProperties);
 	virtual ~LodNodePropertyControl();
 
-    virtual void WillDisappear();
+//    virtual void WillDisappear();
     
 	virtual void ReadFrom(SceneNode * sceneNode);
     
-    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
-    virtual void OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index);
-    virtual void OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue);
+//    virtual void OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue);
+//    virtual void OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index);
+//    virtual void OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue);
 };
 
 #endif //__LODNODE_PROPERTY_CONTROL_H__
