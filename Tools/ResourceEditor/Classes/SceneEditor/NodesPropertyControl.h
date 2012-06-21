@@ -29,6 +29,7 @@ public:
     virtual ~NodesPropertyControl();
     
     virtual void WillAppear();
+    virtual void WillDisappear();
 
     virtual void ReadFrom(SceneNode *sceneNode);
     virtual void ReadFrom(DataNode *dataNode);
@@ -44,7 +45,11 @@ public:
     virtual void OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey);
     virtual void OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4);
     virtual void OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded);
+    virtual void OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index);
+    virtual void OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue);
 
+    
+    
     void SetDelegate(NodesPropertyDelegate *delegate);
     
     virtual void NodeCreated(bool success);
@@ -63,6 +68,14 @@ protected:
     void SetHeaderState(const String & headerName, bool newState);
     
     
+    void AddChildLodSection();
+    void ReleaseChildLodData();
+    
+    void SetChildLodDistances();
+    void RestoreChildLodDistances();
+    
+    
+    
     NodesPropertyDelegate *nodesDelegate;
     PropertyList *propertyList;
     
@@ -70,6 +83,9 @@ protected:
     
     UIButton *btnPlus;
     UIButton *btnMinus;
+
+    void OnSetDistancesForLodNodes(BaseObject * object, void * userData, void * callerData);
+
     
     void OnPlus(BaseObject * object, void * userData, void * callerData);
     void OnMinus(BaseObject * object, void * userData, void * callerData);
@@ -85,6 +101,9 @@ protected:
     UIControl *listHolder;
     UIButton *btnCancel;
     void OnCancel(BaseObject * object, void * userData, void * callerData);
+    
+    Vector<LodNode *>childLodNodes;
+    Vector<float32 *>childDistances;
 };
 
 
