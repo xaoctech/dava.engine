@@ -378,8 +378,12 @@ void MongodbObject::Copy(MongodbObject *toObject)
     toObject->objectData->InitWith(objectData->object);
 }
 
-    
 bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname)
+{
+    return GetSubObject(subObject, fieldname, false);
+}
+    
+bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname, bool needFinished)
 {
     bool found = false;
     
@@ -396,7 +400,15 @@ bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldna
             bson sub;
             bson_iterator_subobject(&it, &sub);
 
-            subObject->objectData->InitWith(&sub);
+            if(needFinished)
+            {
+                subObject->objectData->InitFinished(&sub);
+            }
+            else 
+            {
+                
+                subObject->objectData->InitWith(&sub);
+            }
         }
     }
     

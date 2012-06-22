@@ -79,6 +79,7 @@ public:
     void AddObject(const String &fieldname, MongodbObject *addObject);
     
     bool GetSubObject(MongodbObject *subObject, const String &fieldname);
+    bool GetSubObject(MongodbObject *subObject, const String &fieldname, bool needFinished);
     
     void StartArray(const String &fieldname);
     void FinishArray();
