@@ -1,6 +1,6 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python2.6
 #
-#  autotesting.py
+#  autotesting_init.py
 #  DAVA SDK
 #
 #  Created by Dmitry Shpakov on 6/13/12.
@@ -13,7 +13,7 @@ import os.path;
 import string;
 import platform;
 import shutil;
-import random;
+import subprocess;
 
 print "*** DAVA Initializing autotesting"
 
@@ -43,19 +43,25 @@ shutil.copy(autotestingConfigSrcPath, autotestingConfigDestPath)
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
     
+scripts = ["/generate_id.py"]
+
 if (platform.system() == "Darwin"):
     if (sys.argv[index_OS] == "iOS"):
-        print "copy iOS scripts from " + currentDir + " to " + autotestingSrcFolder
-        
-        scripts = ["/runOnDevice.sh", "/floatsign.sh", "/packipa.sh", "/transporter_chief.rb", "/testRun.js"]
-        for scriptName in scripts:
-            scriptSrcPath = os.path.realpath(currentDir + scriptName)
-            scriptDestPath = os.path.realpath(autotestingSrcFolder + scriptName)
-            if os.path.exists(scriptDestPath):    
-                print "delete " + scriptDestPath
-                os.remove(scriptDestPath)
-            print "copy " + scriptSrcPath + " to " + scriptDestPath
-            shutil.copy(scriptSrcPath, scriptDestPath)
+        scripts.append("/runOnDevice.sh")
+        scripts.append("/floatsign.sh")
+        scripts.append("/packipa.sh")
+        scripts.append("/transporter_chief.rb")
+        scripts.append("/testRun.js")
+
+print "copy iOS scripts from " + currentDir + " to " + autotestingSrcFolder
+for scriptName in scripts:
+    scriptSrcPath = os.path.realpath(currentDir + scriptName)
+    scriptDestPath = os.path.realpath(autotestingSrcFolder + scriptName)
+    if os.path.exists(scriptDestPath):    
+        print "delete " + scriptDestPath
+        os.remove(scriptDestPath)
+    print "copy " + scriptSrcPath + " to " + scriptDestPath
+    shutil.copy(scriptSrcPath, scriptDestPath)
 
 if os.path.exists(autotestingDestFolder):    
     print "Autotesting already exists - delete " + autotestingDestFolder
@@ -75,12 +81,12 @@ shutil.copytree(autotestingActionsSrcFolder, autotestingActionsDestFolder, ignor
 print "copy " + autotestingTestsSrcFolder + " to " + autotestingTestsDestFolder
 shutil.copytree(autotestingTestsSrcFolder, autotestingTestsDestFolder, ignore=ignored_svn_files)
 
-randomNumber = random.randint(0, 100000)
-print "randomNumber: " + str(randomNumber)
-idFilePath = os.path.realpath(autotestingDestFolder + "/id.txt")
-print "write to file " + idFilePath
-file=open(idFilePath,'w')
-file.write(str(randomNumber))
-file.close()
+os.chdir(autotestingSrcFolder)
+
+params = ["python", "./generate_id.py", sys.argv[index_Project], autotestingDestFolder]
+print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
+subprocess.call(params)
+
+os.chdir(currentDir)
    
 print "*** DAVA Initialized autotesting"

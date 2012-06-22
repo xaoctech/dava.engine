@@ -73,6 +73,7 @@ public:
     void DestroyObject(MongodbObject *object);
 
     bool SaveObject(MongodbObject *object);
+    bool SaveObject(MongodbObject *newObject, MongodbObject *oldObject);
 
     
     bool SaveBinary(const String &key, uint8 *data, int32 dataSize);

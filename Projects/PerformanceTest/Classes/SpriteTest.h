@@ -39,7 +39,7 @@ using namespace DAVA;
 class SpriteTest : public TestTemplate<SpriteTest>
 {
 public:
-	SpriteTest();
+	SpriteTest(const String &screenName);
 
 	virtual void LoadResources();
 	virtual void UnloadResources();

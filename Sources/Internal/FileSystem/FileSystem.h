@@ -155,7 +155,14 @@ public:
          */
         virtual const String GetPublicDocumentsPath();
 
-
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)  
+        /**
+        \brief Function to retrieve user’s home path
+        \returns user’s home path
+        */
+        virtual const String GetHomePath();
+#endif
+    
 	/**
 		\brief Function to compute CRC32 
 	 */
