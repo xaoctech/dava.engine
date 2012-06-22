@@ -110,7 +110,7 @@ int32 SoundWVProvider::LoadData(int8 ** buffer, int32 desiredSize)
 	int8 * data = (int8*)Alloc(desiredSize);
 	int32 actualSize = file->Read(data, desiredSize);
 	leftDataSize -= actualSize;
-
+    
 	*buffer = data;
 
 	return actualSize;

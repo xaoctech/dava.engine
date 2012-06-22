@@ -45,7 +45,17 @@ int32 SoundDataProvider::GetSampleRate()
 {
 	return sampleRate;
 }
-
+    
+int32 SoundDataProvider::GetSampleSize()
+{
+    return sampleSize;
+}
+    
+int32 SoundDataProvider::GetChannelsCount()
+{
+    return channelsCount;
+}
+    
 bool SoundDataProvider::Init()
 {
     isInited = true;
