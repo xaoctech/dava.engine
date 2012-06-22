@@ -22,8 +22,12 @@ fi
 echo "deploy ipa on device"
 ./transporter_chief.rb $APP.ipa
 
+echo "get udid device" 
+UDID_device=`system_profiler SPUSBDataType | sed -n -e '/iPad/,/Serial/p' -e '/iPhone/,/Serial/p' -e '/iPod/,/Serial/p' | grep "Serial Number:" | awk -F ": " '{print $2}'`
+echo "udid is ${UDID_device}"
+
 echo "run app on device"
-instruments -w 3a80111143a4bf963e27ea94197a85d33039cec9 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$APP" -e UIASCRIPT testRun.js
+instruments -w ${UDID_device} -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$APP" -e UIASCRIPT testRun.js
 
 #del temporary files
 rm -rf ./$APP.*
