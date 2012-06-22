@@ -197,6 +197,11 @@ void NodesPropertyControl::ReadFrom(DataNode *dataNode)
     }
 }
 
+void NodesPropertyControl::ReadFrom(Entity *entity)
+{
+
+}
+
 
 void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
 {
