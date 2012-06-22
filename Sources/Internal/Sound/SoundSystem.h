@@ -34,11 +34,13 @@
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
 
+#ifdef __DAVAENGINE_ANDROID__
+#include <SLES/OpenSLES.h>
+#endif //#ifdef __DAVAENGINE_ANDROID__
 
 
 namespace DAVA
 {
-
 class SoundChannel;
 class SoundInstance;
 class Sound;
@@ -62,6 +64,12 @@ public:
 	SoundGroup		* GroupFX();
 	SoundGroup		* GroupMusic();
 
+#ifdef __DAVAENGINE_ANDROID__
+    SLObjectItf getEngineObject();
+    SLEngineItf getEngineEngine();
+    SLObjectItf getOutputMixObject();
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 protected:
 	int32 maxChannels;
 	Deque<SoundChannel*> channelsPool;
@@ -71,6 +79,12 @@ protected:
 
 	SoundGroup		* groupFX;
 	SoundGroup		* groupMusic;
+    
+#ifdef __DAVAENGINE_ANDROID__
+    SLObjectItf engineObject;
+    SLEngineItf engineEngine;
+    SLObjectItf outputMixObject;
+#endif //#ifdef __DAVAENGINE_ANDROID__
 };
 
 

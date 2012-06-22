@@ -1,4 +1,4 @@
-package com.dava.wotsniper;
+package com.dava.template;
 
 import javax.microedition.khronos.egl.EGL10;
 
@@ -7,8 +7,8 @@ import android.util.Log;
 
 public class JNIConst
 {
-	public static String LOG_TAG = "WoT.Sniper";
-	public static String PACKAGE_NAME = "com.dava.wotsniper";
+	public static String LOG_TAG = "TemplateProject";
+	public static String PACKAGE_NAME = "com.dava.template";
 	
 	public static void checkEglError(String prompt, EGL10 egl) 
 	{
