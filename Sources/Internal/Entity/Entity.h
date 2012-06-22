@@ -25,12 +25,21 @@ public:
     template<class T>
     void SetData(const char * dataName, const T & value);
     
+	template<class T>
+	const T * GetData(const char * dataName);
 
     void SetFamily(EntityFamilyType newFamily);
 	const EntityFamilyType & GetFamily();
 
 	void SetIndexInFamily(int32 index);
 	int32 GetIndexInFamily();
+
+	EntityManager * GetManager() { return manager; }
+
+	//for navigating through entitie's data
+	int32 GetDataCount();
+	const char * GetDataName(int32 dataIndex); //data index
+
 private:
 	Entity(EntityManager * manager);
 	Entity();
@@ -45,7 +54,8 @@ private:
 
 	friend class EntityManager;
 };
-    
+
+
 template<class T>
 void Entity::SetData(const char * dataName, const T & value)
 {
@@ -65,6 +75,28 @@ void Entity::SetData(const char * dataName, const T & value)
     T * t = enFamily->GetPtr<T>(dataName);
     t[indexInFamily] = value;
 }
+
+template<class T>
+const T * Entity::GetData(const char * dataName)
+{
+	if(changeState & FAMILY_CHANGED)
+	{
+		DVASSERT(0 && "Entity::SetData called before manager->Flush()");
+		Logger::Error("Entity::SetData called before manager->Flush()");
+	}
+
+	EntityFamily * enFamily = manager->GetFamilyByType(family);
+	if(0 == enFamily)
+	{
+		Logger::Error("Entity::SetData enFamily==0");
+		return;
+	}
+
+	T * t = enFamily->GetPtr<T>(dataName);
+	
+	return t;
+}
+
 };
 
 #endif // __DAVAENGINE_ENTITY_H__

@@ -32,6 +32,7 @@ public:
 
     virtual void ReadFrom(SceneNode *sceneNode);
     virtual void ReadFrom(DataNode *dataNode);
+	virtual void ReadFrom(Entity *entity);
     
     void UpdateFieldsForCurrentNode();
 

@@ -25,6 +25,8 @@ protected:
 
 	virtual void CreateGraphPanel(const Rect &rect);
 
+	void RecreatePropertiesPanelForEntity(Entity * entity);
+
 	Entity * workingEntity;
 };
 
