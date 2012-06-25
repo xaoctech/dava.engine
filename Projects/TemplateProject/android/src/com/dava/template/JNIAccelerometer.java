@@ -1,4 +1,4 @@
-package com.dava.wotsniper;
+package com.dava.template;
 
 import java.util.List;
 

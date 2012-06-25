@@ -194,6 +194,14 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
                     m->names[Material::TEXTURE_DIFFUSE] = ExportTexture(m->names[Material::TEXTURE_DIFFUSE], errorLog);
 				}
 			}
+            
+			if (m->textures[Material::TEXTURE_DECAL])
+			{
+				if (!m->textures[Material::TEXTURE_DECAL]->relativePathname.empty()) 
+				{
+                    m->names[Material::TEXTURE_DECAL] = ExportTexture(m->names[Material::TEXTURE_DECAL], errorLog);
+				}
+			}
         }
     }
 }

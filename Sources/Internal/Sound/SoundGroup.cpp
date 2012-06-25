@@ -31,6 +31,10 @@
 #include "Sound/SoundGroup.h"
 #include "Sound/Sound.h"
 
+#ifdef __DAVAENGINE_ANDROID__
+#include <SLES/OpenSLES.h>
+#endif //#ifdef __DAVAENGINE_ANDROID__
+
 namespace DAVA
 {
 
@@ -79,4 +83,27 @@ float32 SoundGroup::GetVolume()
 	return volume;
 }
 
+#ifdef __DAVAENGINE_ANDROID__
+void SoundGroup::Suspend()
+{
+    List<Sound*>::iterator it;
+	for(it = sounds.begin(); it != sounds.end(); ++it)
+	{
+		Sound * sound = *it;
+        if(sound->GetPlayState() == SL_PLAYSTATE_PLAYING)
+            sound->Pause(true);
+	}
+}
+void SoundGroup::Resume()
+{
+    List<Sound*>::iterator it;
+	for(it = sounds.begin(); it != sounds.end(); ++it)
+	{
+		Sound * sound = *it;
+        if(sound->GetPlayState() == SL_PLAYSTATE_PAUSED)
+            sound->Pause(false);
+	}
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 };

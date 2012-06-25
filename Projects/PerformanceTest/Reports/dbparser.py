@@ -1,15 +1,9 @@
 #!/usr/bin/python
 
-import datetime
-
-#temporary solution
-import sys
-sys.path.insert(1, '/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages')
-
-#start work with mongo
 import pymongo
 import bson
 
+import sys
 arguments = sys.argv[1:]
 
 if 0 == len(arguments) or 2 != len(arguments):
@@ -30,7 +24,7 @@ def LogError(logfile, message):
 	logfile.write('</font>')
 
 
-report = open('!report.html', 'w')
+report = open('report.html', 'w')
 report.write('<!DOCTYPE html>')
 report.write('<html> <head>')
 report.write('<title> PerformanceTest Report </title>')
