@@ -72,6 +72,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder); 
     
     //Export scene data
+    RemoveEditorNodes(scene);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
