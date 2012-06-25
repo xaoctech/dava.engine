@@ -28,8 +28,8 @@ public:
 
 			for(int32 i = 0; i < count; ++i)
 			{
-				*flag = !frustum->IsInside(box);
-				
+				*flag = frustum->IsInside(box);
+
 				box++;
 				flag++;
 			}

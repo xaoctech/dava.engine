@@ -91,6 +91,7 @@ void Scene::CreateComponents()
 	VisibilityAABBoxComponent::Create();
 	MeshInstanceComponent::Create();
 	LandscapeGeometryComponent::Create();
+	TransformComponent::Create();
 }
 
 void Scene::CreateSystems()
@@ -156,6 +157,7 @@ void Scene::RegisterNode(SceneNode * node)
 		node->entity = entity;
 		node->entity->AddComponent(VisibilityAABBoxComponent::Get());
 		node->entity->AddComponent(MeshInstanceComponent::Get());
+		node->entity->AddComponent(TransformComponent::Get());
 	}
 
 	LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);

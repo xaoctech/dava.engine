@@ -1053,6 +1053,9 @@
     <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h">
       <Filter>Internal\Entity\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1812,6 +1815,9 @@
       <Filter>Internal\Entity\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp">
+      <Filter>Internal\Entity\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp">
       <Filter>Internal\Entity\Components</Filter>
     </ClCompile>
   </ItemGroup>
