@@ -1,4 +1,4 @@
-package com.dava.wotsniper;
+package com.dava.template;
 
 import android.app.Activity;
 import android.content.Context;
@@ -92,7 +92,7 @@ public class JNIActivity extends Activity implements JNIAccelerometer.JNIAcceler
             }
             
     		PackageManager packMgmr = getPackageManager();
-    		ApplicationInfo appInfo = packMgmr.getApplicationInfo("com.dava.wotsniper", 0);
+    		ApplicationInfo appInfo = packMgmr.getApplicationInfo("com.dava.template", 0);
     		apkFileString = appInfo.sourceDir;
     		
     		pathFound = true;

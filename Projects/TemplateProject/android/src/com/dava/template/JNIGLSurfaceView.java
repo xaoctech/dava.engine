@@ -1,4 +1,4 @@
-package com.dava.wotsniper;
+package com.dava.template;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -32,7 +32,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
      
         this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         
-        setPreserveEGLContextOnPause(true);
+        //setPreserveEGLContextOnPause(true);
         setEGLContextFactory(new JNIContextFactory());
         setEGLConfigChooser(new JNIConfigChooser(8, 8, 8, 8, 16, 8));
         
