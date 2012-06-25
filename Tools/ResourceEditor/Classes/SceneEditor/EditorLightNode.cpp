@@ -31,15 +31,15 @@ void EditorLightNode::Update(float32 timeElapsed)
 {
 	SceneNode::Update(timeElapsed);
 	LightNode * parent = (LightNode*)GetParent();
-	if(type != parent->GetType())
-	{
-		RemoveAllChildren();
+	//if(type != parent->GetType())
+	//{
+	//	RemoveAllChildren();
 
-		type = parent->GetType();
-		SceneNode * lightDrawNode = scene->GetRootNode(GetSceneFile())->Clone();
-		AddNode(lightDrawNode);
-		SafeRelease(lightDrawNode);
-	}
+	//	type = parent->GetType();
+	//	SceneNode * lightDrawNode = scene->GetRootNode(GetSceneFile())->Clone();
+	//	AddNode(lightDrawNode);
+	//	SafeRelease(lightDrawNode);
+	//}
 }
 
 void EditorLightNode::Draw()

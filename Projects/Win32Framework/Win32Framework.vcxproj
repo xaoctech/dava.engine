@@ -183,6 +183,7 @@
     <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
     <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
@@ -487,6 +488,7 @@
     <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
