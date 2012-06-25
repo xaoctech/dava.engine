@@ -24,7 +24,7 @@ def LogError(logfile, message):
 	logfile.write('</font>')
 
 
-report = open('!report.html', 'w')
+report = open('report.html', 'w')
 report.write('<!DOCTYPE html>')
 report.write('<html> <head>')
 report.write('<title> PerformanceTest Report </title>')
