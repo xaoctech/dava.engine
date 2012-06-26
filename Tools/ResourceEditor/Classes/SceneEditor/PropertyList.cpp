@@ -193,6 +193,8 @@ PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 
 void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
 {
+    if(!delegate)   return;
+    
     //ADD Combobox
     switch (changedProperty->GetValueType())
     {
