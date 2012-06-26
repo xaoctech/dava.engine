@@ -20,7 +20,6 @@ platformName = arguments[0]
 def LogError(message):
 	print "##teamcity[message text='" + message + "' errorDetails='' status='ERROR']"
 
-
 # connection = pymongo.Connection("localhost", 27017)
 connection = pymongo.Connection("10.128.128.131", 27017)
 
@@ -57,9 +56,12 @@ if None != connection:
 			index = index + 1
 			
 		if 1 == errorWasFound:
+			sys.stdout.flush()
 			exit(1)
 		else:
-			print 'All tests passed.'
+			print "##teamcity[message text='All tests passed.' errorDetails='' status='NORMAL']"
+			
+			sys.stdout.flush()
 			exit(0)
 		
 
