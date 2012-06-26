@@ -18,8 +18,20 @@ platformName = arguments[0]
 
 
 def LogError(message):
-#	print "##teamcity[message text='" + message + "' errorDetails='' status='ERROR']"
-	print "##teamcity[message text='Test Message for Build' errorDetails='' status='ERROR']"
+	message = message.replace("|", "||")
+
+	message = message.replace("'", "|'")
+	message = message.replace("\n", "|n")
+	message = message.replace("\r", "|r")
+
+	message = message.replace("\u0085", "|x")
+	message = message.replace("\u2028", "|l")
+	message = message.replace("\u2029", "|p")
+
+	message = message.replace("[", "|[")
+	message = message.replace("]", "|]")
+
+	print "##teamcity[message text='" + message + "' errorDetails='' status='ERROR']"
 
 # connection = pymongo.Connection("localhost", 27017)
 connection = pymongo.Connection("10.128.128.131", 27017)
@@ -45,6 +57,7 @@ if None != connection:
 			if count - 2 == index:
 				testData = platform[testName]
 				errorNames = testData.keys()
+				errorNames.sort()
 				for errorName in errorNames:
 					if 'TestResult' == errorName and 'All test passed.' == testData[errorName]:
 						break
