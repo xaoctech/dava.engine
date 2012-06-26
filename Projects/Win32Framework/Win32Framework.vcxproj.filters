@@ -1056,6 +1056,9 @@
     <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h">
       <Filter>Internal\Entity\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1819,6 +1822,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp">
       <Filter>Internal\Entity\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp">
+      <Filter>Internal\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

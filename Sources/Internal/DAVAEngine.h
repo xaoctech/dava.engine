@@ -156,6 +156,8 @@
 
 #include "UI/UIScreenManager.h"
 
+#include "UI/TheoraPlayer.h"
+
 
 // Game object manager / 2D Scene
 #include "Scene2D/GameObject.h"

@@ -158,6 +158,10 @@ void Scene::RegisterNode(SceneNode * node)
 		node->entity->AddComponent(VisibilityAABBoxComponent::Get());
 		node->entity->AddComponent(MeshInstanceComponent::Get());
 		node->entity->AddComponent(TransformComponent::Get());
+
+		//TODO: move Flush and data init to some Init() function
+		entityManager->Flush();
+		node->entity->SetData("flags", (uint32)0);
 	}
 
 	LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
