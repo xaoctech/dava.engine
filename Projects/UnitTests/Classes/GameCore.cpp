@@ -237,69 +237,57 @@ void GameCore::ProcessTests()
 
 void GameCore::FlushTestResults()
 {
-    MongodbObject *logObject = NULL;
-    if(ConnectToDB())
- 	{
-        //TODO: test only
-//      dbClient->DropCollection();
-//      dbClient->DropDatabase();
-        //TODO: test only
-
-        logObject = GetObjectForName(PLATFORM_NAME);
- 	}
- 	else
- 	{
-        LogMessage(String("Can't connect to DB"));
- 	}
-    
-    
-    int32 errorCount = (int32)errors.size();
-    
-    File *reportFile = CreateDocumentsFile(String("Errors.txt"));
-    if(reportFile)
+    bool connected = ConnectToDB();
+    if(!connected)
     {
-        if(0 < errorCount)
-        {
-            reportFile->WriteLine(String("Failed tests:"));
-            for(int32 i = 0; i < errorCount; ++i)
-            {
-                ErrorData *error = errors[i];
-
-                String errorString = String(Format("command %s at file %s at line %d", 
-                                                   error->command.c_str(), error->filename.c_str(), error->line));
-                
-                reportFile->WriteLine(String(Format("Error[%d]: ", i+1)) + errorString);
-                if(logObject)
-                {
-                    logObject->AddString(String(Format("Error_%d", i+1)), errorString);
-                }
-            }
-        }
-        else 
-        {
-            String successString = String("All test passed.");
-            reportFile->WriteLine(successString);
-            if(logObject)
-            {
-                logObject->AddString(String("TestResult"), successString);
-            }
-        }
-        
-        SafeRelease(reportFile);
+        LogMessage(String("Can't connect to DB"));
+        return;
     }
+
+//    //TODO: test
+//    dbClient->DropCollection();
+//    dbClient->DropDatabase();
+//    //end of test
     
+    
+    time_t logStartTime = time(0);
+    String testTimeString = Format("%lld", logStartTime);
+
+    
+    MongodbObject *logObject = CreateLogObject(testTimeString);
     if(logObject)
     {
-        logObject->Finish();
-        dbClient->SaveObject(logObject);
+        MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
+        MongodbObject *newPlatformObject = dbClient->CreateObject();
+        if(newPlatformObject)
+        {
+            if(oldPlatformObject)
+            {
+                oldPlatformObject->Print();
+                
+                newPlatformObject->Copy(oldPlatformObject);
+            }
+            else 
+            {
+                newPlatformObject->SetObjectName(PLATFORM_NAME);
+            }
+            
+            newPlatformObject->AddObject(testTimeString, logObject);
+            newPlatformObject->Finish();
+            dbClient->SaveObject(newPlatformObject, oldPlatformObject);
+            dbClient->DestroyObject(newPlatformObject);
+        }
+        
+        if(oldPlatformObject)
+        {
+            dbClient->DestroyObject(oldPlatformObject);
+        }
+        
         dbClient->DestroyObject(logObject);
     }
-    
-    if(dbClient)
-    {
-        dbClient->Disconnect();
-        SafeRelease(dbClient);
-    }
+
+    dbClient->Disconnect();
+    SafeRelease(dbClient);
 }
 
 
@@ -335,13 +323,71 @@ bool GameCore::ConnectToDB()
     return (NULL != dbClient);
 }
 
-MongodbObject * GameCore::GetObjectForName(const String &testName)
+
+MongodbObject * GameCore::CreateLogObject(const String &logName)
 {
     MongodbObject *logObject = dbClient->CreateObject();
     if(logObject)
     {
-        logObject->SetObjectName(testName);
+        logObject->SetObjectName(logName);
+    }
+    
+    int32 errorCount = (int32)errors.size();
+    File *reportFile = CreateDocumentsFile(String("Errors.txt"));
+    if(reportFile)
+    {
+        if(0 < errorCount)
+        {
+            reportFile->WriteLine(String("Failed tests:"));
+            for(int32 i = 0; i < errorCount; ++i)
+            {
+                ErrorData *error = errors[i];
+                
+                String errorString = String(Format("command %s at file %s at line %d", 
+                                                   error->command.c_str(), error->filename.c_str(), error->line));
+                
+                reportFile->WriteLine(String(Format("Error[%06d]: ", i+1)) + errorString);
+                if(logObject)
+                {
+                    logObject->AddString(String(Format("Error_%06d", i+1)), errorString);
+                }
+            }
+        }
+        else 
+        {
+            String successString = String("All test passed.");
+            reportFile->WriteLine(successString);
+            if(logObject)
+            {
+                logObject->AddString(String("TestResult"), successString);
+            }
+        }
+        
+        SafeRelease(reportFile);
     }
 
+    if(logObject)
+    {
+        logObject->Finish();
+    }
+    
     return logObject;
 }
+
+MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
+{
+    MongodbObject *subObject = dbClient->CreateObject();
+    if(dbObject)
+    {
+        bool ret = dbObject->GetSubObject(subObject, objectName, needFinished);
+        if(ret)
+        {
+            return subObject;
+        }
+    }
+    
+    subObject->SetObjectName(objectName);
+    return subObject;
+}
+
+
