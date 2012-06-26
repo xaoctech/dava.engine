@@ -46,7 +46,7 @@ public:
 
 	static void Run(Scene * scene)
 	{
-		TemplatePool<uint32> * visibilityFlags = scene->entityManager->GetLinkedTemplatePools<uint32>("meshVisibilityFlag");
+		TemplatePool<uint32> * visibilityFlags = scene->entityManager->GetLinkedTemplatePools<uint32>("flags");
 
 		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 
@@ -62,7 +62,7 @@ public:
 			Matrix4 * transform = transforms->GetPtr(0);
 			for(int32 i = 0; i < count; ++i)
 			{
-				if((*flag))
+				if((*flag) & SceneNode::NODE_CLIPPED_THIS_FRAME)
 				{
 					Matrix4 meshFinalMatrix = (*transform) * prevMatrix;
 					RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);

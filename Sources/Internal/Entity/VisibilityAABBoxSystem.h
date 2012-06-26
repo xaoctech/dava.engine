@@ -20,7 +20,7 @@ public:
 		while(boxes)
 		{
 			EntityFamily * family = boxes->GetEntityFamily();
-			TemplatePool<uint32> * visibilityFlags = (TemplatePool<uint32>*)family->GetPoolByDataName("meshVisibilityFlag");
+			TemplatePool<uint32> * visibilityFlags = (TemplatePool<uint32>*)family->GetPoolByDataName("flags");
 
 			int32 count = boxes->GetCount();
 			AABBox3 * box = boxes->GetPtr(0);
@@ -28,7 +28,14 @@ public:
 
 			for(int32 i = 0; i < count; ++i)
 			{
-				*flag = frustum->IsInside(box);
+				if(frustum->IsInside(box))
+				{
+					*flag |= SceneNode::NODE_CLIPPED_THIS_FRAME;
+				}
+				else
+				{
+					*flag &= ~SceneNode::NODE_CLIPPED_THIS_FRAME;
+				}
 
 				box++;
 				flag++;

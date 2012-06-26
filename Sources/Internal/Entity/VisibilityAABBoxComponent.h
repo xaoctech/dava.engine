@@ -12,7 +12,7 @@ DECLARE_COMPONENT(VisibilityAABBoxComponent);
 void VisibilityAABBoxComponent::Register()
 {   
 	RegisterData<AABBox3>("meshAABox");
-	RegisterData<uint32>("meshVisibilityFlag");
+	RegisterData<uint32>("flags");
 }
 
 };
