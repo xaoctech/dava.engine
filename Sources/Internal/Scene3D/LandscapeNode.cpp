@@ -77,6 +77,9 @@ LandscapeNode::LandscapeNode()
     }
     uniformFogDensity = -1;
     uniformFogColor = -1;
+    uniformFogDensityFT = -1;
+    uniformFogColorFT = -1;
+
     
     heightmap = new Heightmap();
     
@@ -85,6 +88,10 @@ LandscapeNode::LandscapeNode()
     Stats::Instance()->RegisterEvent("Scene.LandscapeNode.Draw", "Time spent in LandscapeNode Draw");
     
     prevLodLayer = -1;
+    
+    isFogEnabled = false;
+    fogDensity = 0.006f;
+    fogColor = Color::White();
 }
 
 LandscapeNode::~LandscapeNode()
@@ -104,9 +111,15 @@ LandscapeNode::~LandscapeNode()
     
 void LandscapeNode::InitShaders()
 {
+    SafeRelease(tileMaskShader);
+    SafeRelease(fullTiledShader);
+    
     tileMaskShader = new Shader();
     tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
-    //tileMaskShader->SetDefineList("VERTEX_FOG");
+    if(isFogEnabled)
+    {
+        tileMaskShader->SetDefineList("VERTEX_FOG");   
+    }
     tileMaskShader->Recompile();
     
     uniformTextures[TEXTURE_TILE0] = tileMaskShader->FindUniformLocationByName("tileTexture0");
@@ -123,12 +136,27 @@ void LandscapeNode::InitShaders()
     uniformTextureTiling[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("texture2Tiling");
     uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("texture3Tiling");
     
-    uniformFogColor = tileMaskShader->FindUniformLocationByName("fogColor");
-    uniformFogDensity = tileMaskShader->FindUniformLocationByName("fogDensity");   
+    if(isFogEnabled)
+    {
+        uniformFogColor = tileMaskShader->FindUniformLocationByName("fogColor");
+        uniformFogDensity = tileMaskShader->FindUniformLocationByName("fogDensity");   
+    }
     
     fullTiledShader = new Shader();
     fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
+    if(isFogEnabled)
+    {
+        fullTiledShader->SetDefineList("VERTEX_FOG");   
+    }
+    
     fullTiledShader->Recompile();
+    
+    if(isFogEnabled)
+    {
+        uniformFogColorFT = fullTiledShader->FindUniformLocationByName("fogColor");
+        uniformFogDensityFT = fullTiledShader->FindUniformLocationByName("fogDensity");   
+    }
+
 }
     
 void LandscapeNode::ReleaseShaders()
@@ -993,9 +1021,9 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
             tileMaskShader->SetUniformValue(uniformTextureTiling[TEXTURE_TILE3], textureTiling[TEXTURE_TILE3]);
 
         if (uniformFogColor != -1)
-            tileMaskShader->SetUniformValue(uniformFogColor, Color((float32)0x87 / 255.0f, (float32)0xbe / 255.0f, (float32)0xd7 / 255.0f, 1.0f));
+            tileMaskShader->SetUniformValue(uniformFogColor, fogColor);
         if (uniformFogDensity != -1)
-            tileMaskShader->SetUniformValue(uniformFogDensity, 0.006f);
+            tileMaskShader->SetUniformValue(uniformFogDensity, fogDensity);
     }
     else 
     {
@@ -1005,6 +1033,11 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
 
         RenderManager::Instance()->SetShader(fullTiledShader);
         RenderManager::Instance()->FlushState();
+        
+        if (uniformFogColor != -1)
+            tileMaskShader->SetUniformValue(uniformFogColorFT, fogColor);
+        if (uniformFogDensity != -1)
+            tileMaskShader->SetUniformValue(uniformFogDensityFT, fogDensity);
     }
     
     prevLodLayer = lodLayer;
@@ -1291,6 +1324,10 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         archive->SetString(Format("tex_%d", k), relPath);
         archive->SetByteArrayAsType(Format("tiling_%d", k), textureTiling[k]);
     }
+    
+    archive->SetByteArrayAsType("fogcolor", fogColor);
+    archive->SetFloat("fogdencity", fogDensity);
+    archive->SetBool("isFogEnabled", isFogEnabled);
 }
     
 void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -1305,6 +1342,10 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     eTiledShaderMode tiledMode = (eTiledShaderMode)archive->GetInt32("tiledShaderMode", TILED_MODE_MIXED);
     SetTiledShaderMode(tiledMode);
     
+    fogColor = archive->GetByteArrayAsType("fogcolor", fogColor);
+	isFogEnabled = archive->GetBool("isFogEnabled", isFogEnabled);
+    fogDensity = archive->GetFloat("fogdencity", fogDensity);
+
     BuildLandscapeFromHeightmapImage(path, boxDef);
         
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -1385,6 +1426,9 @@ Heightmap * LandscapeNode::GetHeightmap()
 Texture * LandscapeNode::CreateFullTiledTexture()
 {
     Logger::Debug("[LN] CreateFullTiledTexture");
+    
+    bool savedIsFogEnabled = isFogEnabled;
+    SetFog(false);
 
     //Set indexes
     Vector<float32> ftVertexes;
@@ -1461,6 +1505,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
 
+    SetFog(savedIsFogEnabled);
     return fullTiled;
 }
     
@@ -1532,5 +1577,42 @@ void LandscapeNode::SetTiledShaderMode(DAVA::LandscapeNode::eTiledShaderMode _ti
             break;
     }
 }
+    
+void LandscapeNode::SetFog(bool _isFogEnabled)
+{
+    if(isFogEnabled != _isFogEnabled)
+    {
+        isFogEnabled = _isFogEnabled;
+        
+        InitShaders();
+    }
+}
+
+bool LandscapeNode::IsFogEnabled() const
+{
+    return isFogEnabled;
+}
+
+void LandscapeNode::SetFogDensity(float32 _fogDensity)
+{
+    fogDensity = _fogDensity;
+}
+
+float32 LandscapeNode::GetFogDensity() const
+{
+    return fogDensity;
+}
+
+void LandscapeNode::SetFogColor(const Color & _fogColor)
+{
+    fogColor = _fogColor;
+}
+
+const Color & LandscapeNode::GetFogColor() const
+{
+    return fogColor;
+}
+
+    
     
 };
