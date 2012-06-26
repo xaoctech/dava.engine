@@ -18,7 +18,7 @@ platformName = arguments[0]
 
 
 def LogError(message):
-	print "##teamcity[message text=" + message + "' errorDetails='' status='ERROR']"
+	print "##teamcity[message text='" + message + "' errorDetails='' status='ERROR']"
 
 
 # connection = pymongo.Connection("localhost", 27017)
