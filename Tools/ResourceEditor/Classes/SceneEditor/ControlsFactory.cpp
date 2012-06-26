@@ -1,5 +1,7 @@
 #include "ControlsFactory.h"
 
+#include "PropertyList.h"
+
 Font* ControlsFactory::fontLight = NULL;
 Font* ControlsFactory::fontDark = NULL;
 Font* ControlsFactory::fontError = NULL;
@@ -469,3 +471,18 @@ void ControlsFactory::AddBorder(DAVA::UIControl *c)
         SafeRelease(bottomtLine);
     }
 }
+
+
+void ControlsFactory::AddFogSubsection(PropertyList *propertyList, bool enabled, float32 dencity, const Color &newColor)
+{
+    propertyList->AddSubsection(String("property.material.fogsettings"));
+    propertyList->AddBoolProperty("property.material.fogenabled");
+    propertyList->SetBoolPropertyValue("property.material.fogenabled", enabled);
+    
+    propertyList->AddFloatProperty("property.material.dencity");
+    propertyList->SetFloatPropertyValue("property.material.dencity", dencity);
+    
+    propertyList->AddColorProperty("property.material.fogcolor");
+    propertyList->SetColorPropertyValue("property.material.fogcolor", newColor);
+}
+
