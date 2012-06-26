@@ -16,9 +16,30 @@ uniform mat4 modelViewProjectionMatrix;
 //varying lowp vec4 varColor;
 varying mediump vec2 varTexCoord;
 
+#if defined(VERTEX_FOG)
+uniform mat4 modelViewMatrix;
+uniform float fogDensity;
+#endif
+
+#if defined(VERTEX_FOG)
+varying float varFogFactor;
+#endif
+
+
 void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;
 //	varColor = flatColor * flatColor.a;
 	varTexCoord = inTexCoord0;
+
+#if defined(VERTEX_FOG)
+    const float LOG2 = 1.442695;
+    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+    float fogFragCoord = length(eyeCoordsPosition);
+    varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
+    varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+#endif
+
+
+
 }
