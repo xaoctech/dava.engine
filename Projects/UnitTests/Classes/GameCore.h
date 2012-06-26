@@ -85,8 +85,8 @@ protected:
     File * CreateDocumentsFile(const String &filePathname);
     
     bool ConnectToDB();
-    MongodbObject *GetObjectForName(const String &testName);
-
+    MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
+    MongodbObject * CreateLogObject(const String &logName);
 
 protected:
     
