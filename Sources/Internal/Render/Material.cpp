@@ -484,6 +484,7 @@ float32 Material::GetShininess() const
 void Material::SetFog(bool _isFogEnabled)
 {
     isFogEnabled = _isFogEnabled;
+    RebuildShader();
 }
     
 bool Material::IsFogEnabled() const
