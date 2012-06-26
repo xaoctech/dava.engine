@@ -274,6 +274,14 @@ public:
     void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
     
+    void SetFog(bool _fogEnabled);
+    bool IsFogEnabled() const;
+    void SetFogDensity(float32 _fogDensity);
+    float32 GetFogDensity() const;
+    void SetFogColor(const Color & _fogColor);
+    const Color & GetFogColor() const;
+
+    
 protected:	
     
     class LandscapeQuad
@@ -349,6 +357,8 @@ protected:
     
     int32 uniformFogDensity;
     int32 uniformFogColor;
+    int32 uniformFogDensityFT;
+    int32 uniformFogColorFT;
 
     
     Shader * tileMaskShader;
@@ -384,6 +394,11 @@ protected:
     
     int32 nearLodIndex;
     int32 farLodIndex;
+    
+    
+    bool    isFogEnabled;
+    float32 fogDensity;
+    Color   fogColor;
 };
 
 inline AABBox3 & LandscapeNode::GetBoundingBox()
