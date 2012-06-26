@@ -89,7 +89,7 @@ public:
     
     void CopyFinished(MongodbObject *fromObject);
     
-    void Copy(MongodbObject *toObject);
+    void Copy(MongodbObject *fromObject);
     
     void Print();
     

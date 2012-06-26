@@ -373,9 +373,9 @@ void MongodbObject::CopyFinished(MongodbObject *fromObject)
     objectData->InitFinished(fromObject->objectData->object);
 }    
     
-void MongodbObject::Copy(MongodbObject *toObject)
+void MongodbObject::Copy(MongodbObject *fromObject)
 {
-    toObject->objectData->InitWith(objectData->object);
+    objectData->InitWith(fromObject->objectData->object);
 }
 
 bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname)
