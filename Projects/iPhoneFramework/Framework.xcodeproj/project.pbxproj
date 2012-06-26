@@ -11,6 +11,8 @@
 		0224B7341598AC2800CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7321598AC2800CDEF9E /* libtheora_macos.a */; };
 		0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7481598B40100CDEF9E /* libogg_ios.a */; };
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
+		022CC0BC159A0FA800A3FE06 /* TheoraPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */; };
+		022CC0BD159A0FA800A3FE06 /* TheoraPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */; };
 		475D59561300236500A18EC7 /* Box2DGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D59501300236500A18EC7 /* Box2DGameObject.cpp */; };
 		475D59571300236500A18EC7 /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D59511300236500A18EC7 /* Box2DGameObject.h */; };
 		475D59581300236500A18EC7 /* Box2DHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 475D59521300236500A18EC7 /* Box2DHelper.cpp */; };
@@ -525,6 +527,8 @@
 		0224B7321598AC2800CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		0224B7481598B40100CDEF9E /* libogg_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_ios.a; path = ../../Libs/libs/libogg_ios.a; sourceTree = "<group>"; };
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TheoraPlayer.cpp; sourceTree = "<group>"; };
+		022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TheoraPlayer.h; sourceTree = "<group>"; };
 		475D59501300236500A18EC7 /* Box2DGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DGameObject.cpp; sourceTree = "<group>"; };
 		475D59511300236500A18EC7 /* Box2DGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2DGameObject.h; sourceTree = "<group>"; };
 		475D59521300236500A18EC7 /* Box2DHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Box2DHelper.cpp; sourceTree = "<group>"; };
@@ -1671,6 +1675,8 @@
 		FECFB44812E5904500C71562 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				022CC0BA159A0FA800A3FE06 /* TheoraPlayer.cpp */,
+				022CC0BB159A0FA800A3FE06 /* TheoraPlayer.h */,
 				FECFB44912E5904500C71562 /* ScrollHelper.cpp */,
 				FECFB44A12E5904500C71562 /* ScrollHelper.h */,
 				FECFB44B12E5904500C71562 /* UIButton.cpp */,
@@ -2058,6 +2064,7 @@
 				C7EFBC66158B4D1000BF42E0 /* Pool.h in Headers */,
 				C7EFBC68158B4D1000BF42E0 /* PoolSystem.h in Headers */,
 				C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */,
+				022CC0BD159A0FA800A3FE06 /* TheoraPlayer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2357,6 +2364,7 @@
 				C7EFBC64158B4D1000BF42E0 /* EntityManager.cpp in Sources */,
 				C7EFBC67158B4D1000BF42E0 /* PoolSystem.cpp in Sources */,
 				C7EFBC69158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp in Sources */,
+				022CC0BC159A0FA800A3FE06 /* TheoraPlayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
