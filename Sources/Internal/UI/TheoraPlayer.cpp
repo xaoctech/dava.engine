@@ -29,54 +29,70 @@
  =====================================================================================*/
 
 #include "UI/TheoraPlayer.h"
+#include <theora/theoradec.h>
 
 namespace DAVA
 {
     
 REGISTER_CLASS(TheoraPlayer);
-
+struct TheoraData
+{
+    th_info             thInfo;
+    th_comment          thComment;
+    th_setup_info       * thSetup;
+    th_dec_ctx          * thCtx;
+    ogg_sync_state      syncState;
+    ogg_stream_state    state;
+    ogg_page            page;
+    ogg_packet          packet;
+    th_ycbcr_buffer     yuvBuffer;
+    ogg_int64_t         videoBufGranulePos;
+};
+    
 TheoraPlayer::TheoraPlayer(const String & filePath) :
-thSetup(0),
-thCtx(0),
 isPlaying(false),
 theora_p(0),
 isVideoBufReady(false),
-videoBufGranulePos(-1),
 videoTime(0),
 isRepeat(false),
 currFrameTime(0),
 frameTime(0)
 {
+    theoraData = new TheoraData();
+    theoraData->thSetup = 0;
+    theoraData->thCtx = 0;
+    theoraData->videoBufGranulePos = -1;
     SetClipContents(true);
     OpenFile(filePath);
 }
 
 TheoraPlayer::~TheoraPlayer()
 {
+    SafeDelete(theoraData);
     CloseFile();
 }
 
 int32 TheoraPlayer::BufferData()
 {
-    char * buffer = ogg_sync_buffer(&syncState, 4096);
+    char * buffer = ogg_sync_buffer(&theoraData->syncState, 4096);
     int32 bytes = file->Read(buffer, 4096);
-    ogg_sync_wrote(&syncState, bytes);
+    ogg_sync_wrote(&theoraData->syncState, bytes);
     return bytes;
 }
 
 void TheoraPlayer::CloseFile()
 {
-    if(thSetup)
-        th_setup_free(thSetup);
-    thSetup = 0;
-    if(thCtx)
-        th_decode_free(thCtx);
-    thCtx = 0;
+    if(theoraData->thSetup)
+        th_setup_free(theoraData->thSetup);
+    theoraData->thSetup = 0;
+    if(theoraData->thCtx)
+        th_decode_free(theoraData->thCtx);
+    theoraData->thCtx = 0;
     theora_p = 0;
     isVideoBufReady = false;
-    videoBufGranulePos = -1;
+    theoraData->videoBufGranulePos = -1;
     videoTime = 0;
-    ogg_sync_clear(&syncState);
+    ogg_sync_clear(&theoraData->syncState);
     SafeRelease(file);
     SafeDelete(frameBuffer);
 }
@@ -89,9 +105,9 @@ void TheoraPlayer::OpenFile(const String &path)
     filePath = path;
     
     file = File::Create(path, File::OPEN | File::READ);
-    ogg_sync_init(&syncState);
-    th_info_init(&thInfo);
-    th_comment_init(&thComment);
+    ogg_sync_init(&theoraData->syncState);
+    th_info_init(&theoraData->thInfo);
+    th_comment_init(&theoraData->thComment);
     
     int32 stateflag = 0;
     while(!stateflag)
@@ -99,28 +115,28 @@ void TheoraPlayer::OpenFile(const String &path)
         if(!BufferData())
             break;
         
-        while(ogg_sync_pageout(&syncState, &page) > 0)
+        while(ogg_sync_pageout(&theoraData->syncState, &theoraData->page) > 0)
         {
             ogg_stream_state test;
             
             /* is this a mandated initial header? If not, stop parsing */
-            if(!ogg_page_bos(&page))
+            if(!ogg_page_bos(&theoraData->page))
             {
                 /* don't leak the page; get it into the appropriate stream */
-                ogg_stream_pagein(&state, &page);
+                ogg_stream_pagein(&theoraData->state, &theoraData->page);
                 stateflag = 1;
                 break;
             }
             
-            ogg_stream_init(&test, ogg_page_serialno(&page));
-            ogg_stream_pagein(&test, &page);
-            ogg_stream_packetout(&test, &packet);
+            ogg_stream_init(&test, ogg_page_serialno(&theoraData->page));
+            ogg_stream_pagein(&test, &theoraData->page);
+            ogg_stream_packetout(&test, &theoraData->packet);
             
             /* identify the codec: try theora */
-            if(!theora_p && th_decode_headerin(&thInfo, &thComment, &thSetup, &packet) >= 0)
+            if(!theora_p && th_decode_headerin(&theoraData->thInfo, &theoraData->thComment, &theoraData->thSetup, &theoraData->packet) >= 0)
             {
                 /* it is theora */
-                memcpy(&state, &test, sizeof(test));
+                memcpy(&theoraData->state, &test, sizeof(test));
                 theora_p = 1;
             }
             else
@@ -137,14 +153,14 @@ void TheoraPlayer::OpenFile(const String &path)
         int ret;
         
         /* look for further theora headers */
-        while(theora_p && (theora_p < 3) && (ret = ogg_stream_packetout(&state, &packet)))
+        while(theora_p && (theora_p < 3) && (ret = ogg_stream_packetout(&theoraData->state, &theoraData->packet)))
         {
             if(ret < 0)
             {
                 Logger::Error("TheoraPlayer: Error parsing Theora stream headers; corrupt stream?\n");
                 return;
             }
-            if(!th_decode_headerin(&thInfo, &thComment, &thSetup, &packet))
+            if(!th_decode_headerin(&theoraData->thInfo, &theoraData->thComment, &theoraData->thSetup, &theoraData->packet))
             {
                 Logger::Error("TheoraPlayer: Error parsing Theora stream headers; corrupt stream?\n");
                 return;
@@ -155,9 +171,9 @@ void TheoraPlayer::OpenFile(const String &path)
         /* The header pages/packets will arrive before anything else we
          care about, or the stream is not obeying spec */
         
-        if(ogg_sync_pageout(&syncState, &page) > 0)
+        if(ogg_sync_pageout(&theoraData->syncState, &theoraData->page) > 0)
         {
-            ogg_stream_pagein(&state, &page); /* demux into the appropriate stream */
+            ogg_stream_pagein(&theoraData->state, &theoraData->page); /* demux into the appropriate stream */
         }
         else
         {
@@ -171,32 +187,32 @@ void TheoraPlayer::OpenFile(const String &path)
     }
     if(theora_p)
     {
-        thCtx = th_decode_alloc(&thInfo, thSetup);
+        theoraData->thCtx = th_decode_alloc(&theoraData->thInfo, theoraData->thSetup);
         
-        th_decode_ctl(thCtx, TH_DECCTL_GET_PPLEVEL_MAX, &pp_level_max, sizeof(pp_level_max));
+        th_decode_ctl(theoraData->thCtx, TH_DECCTL_GET_PPLEVEL_MAX, &pp_level_max, sizeof(pp_level_max));
         pp_level=pp_level_max;
-        th_decode_ctl(thCtx, TH_DECCTL_SET_PPLEVEL, &pp_level, sizeof(pp_level));
+        th_decode_ctl(theoraData->thCtx, TH_DECCTL_SET_PPLEVEL, &pp_level, sizeof(pp_level));
         pp_inc=0;
     }
     else
     {
         /* tear down the partial theora setup */
-        th_info_clear(&thInfo);
-        th_comment_clear(&thComment);
+        th_info_clear(&theoraData->thInfo);
+        th_comment_clear(&theoraData->thComment);
     }
     
-    if(thSetup)
-        th_setup_free(thSetup);
-    thSetup = 0;
+    if(theoraData->thSetup)
+        th_setup_free(theoraData->thSetup);
+    theoraData->thSetup = 0;
 
-    frameBufferW = binCeil(thInfo.pic_width);
-    frameBufferH = binCeil(thInfo.pic_height);
+    frameBufferW = binCeil(theoraData->thInfo.pic_width);
+    frameBufferH = binCeil(theoraData->thInfo.pic_height);
     
     frameBuffer = new unsigned char[frameBufferW * frameBufferH * 4];
     
     repeatFilePos = file->GetPos();
     
-    frameTime = (float32)(thInfo.fps_denominator)/(float32)(thInfo.fps_numerator);
+    frameTime = (float32)(theoraData->thInfo.fps_denominator)/(float32)(theoraData->thInfo.fps_numerator);
 }
 
 void TheoraPlayer::SetPlaying(bool _isPlaying)
@@ -240,21 +256,21 @@ void TheoraPlayer::Update(float32 timeElapsed)
     
     while(theora_p && !isVideoBufReady)
     {
-        ret = ogg_stream_packetout(&state, &packet);
+        ret = ogg_stream_packetout(&theoraData->state, &theoraData->packet);
         if(ret > 0)
         {
             if(pp_inc)
             {
                 pp_level += pp_inc;
-                th_decode_ctl(thCtx, TH_DECCTL_SET_PPLEVEL, &pp_level, sizeof(pp_level));
+                th_decode_ctl(theoraData->thCtx, TH_DECCTL_SET_PPLEVEL, &pp_level, sizeof(pp_level));
                 pp_inc = 0;
             }
-            if(packet.granulepos >= 0)
-                th_decode_ctl(thCtx, TH_DECCTL_SET_GRANPOS, &packet.granulepos, sizeof(packet.granulepos));
+            if(theoraData->packet.granulepos >= 0)
+                th_decode_ctl(theoraData->thCtx, TH_DECCTL_SET_GRANPOS, &theoraData->packet.granulepos, sizeof(theoraData->packet.granulepos));
 
-            if(th_decode_packetin(thCtx, &packet, &videoBufGranulePos) == 0)
+            if(th_decode_packetin(theoraData->thCtx, &theoraData->packet, &theoraData->videoBufGranulePos) == 0)
             {
-                if((videoBufTime = th_granule_time(thCtx, videoBufGranulePos)) >= videoTime)
+                if((videoBufTime = th_granule_time(theoraData->thCtx, theoraData->videoBufGranulePos)) >= videoTime)
                     isVideoBufReady = true;
                 else
                     pp_inc = (pp_level > 0)? -1 : 0;
@@ -270,29 +286,29 @@ void TheoraPlayer::Update(float32 timeElapsed)
     if(!isVideoBufReady)
     {
         BufferData();
-        while(ogg_sync_pageout(&syncState, &page) > 0)
-            ogg_stream_pagein(&state, &page);
+        while(ogg_sync_pageout(&theoraData->syncState, &theoraData->page) > 0)
+            ogg_stream_pagein(&theoraData->state, &theoraData->page);
     }
     
     if(isVideoBufReady)
     {
         isVideoBufReady = false;
-        ret = th_decode_ycbcr_out(thCtx, yuvBuffer);
+        ret = th_decode_ycbcr_out(theoraData->thCtx, theoraData->yuvBuffer);
     
         for(int i = 0; i < frameBufferH; i++) //Y
         {
-            int yShift = yuvBuffer[0].stride * i;
-            int uShift = yuvBuffer[1].stride * (i / 2);
-            int vShift = yuvBuffer[2].stride * (i / 2);
+            int yShift = theoraData->yuvBuffer[0].stride * i;
+            int uShift = theoraData->yuvBuffer[1].stride * (i / 2);
+            int vShift = theoraData->yuvBuffer[2].stride * (i / 2);
             for(int j = 0; j < frameBufferW; j++) //X
             {
                 int index = (i * frameBufferW + j) * 4;
                 
-                if(i <= yuvBuffer[0].height && j <= yuvBuffer[0].width)
+                if(i <= theoraData->yuvBuffer[0].height && j <= theoraData->yuvBuffer[0].width)
                 {
-                    unsigned char Y = *(yuvBuffer[0].data + yShift + j);
-                    unsigned char U = *(yuvBuffer[1].data + uShift + j / 2);
-                    unsigned char V = *(yuvBuffer[2].data + vShift + j / 2);
+                    unsigned char Y = *(theoraData->yuvBuffer[0].data + yShift + j);
+                    unsigned char U = *(theoraData->yuvBuffer[1].data + uShift + j / 2);
+                    unsigned char V = *(theoraData->yuvBuffer[2].data + vShift + j / 2);
                 
                     frameBuffer[index]   = ClampFloatToByte(Y + 1.371f * (V - 128));
                     frameBuffer[index+1] = ClampFloatToByte(Y - 0.698f * (V - 128) - 0.336f * (U - 128));
@@ -322,11 +338,11 @@ void TheoraPlayer::Update(float32 timeElapsed)
     {
         double tdiff = videoBufTime - videoTime;
         /*If we have lots of extra time, increase the post-processing level.*/
-        if(tdiff > thInfo.fps_denominator * 0.25f / thInfo.fps_numerator)
+        if(tdiff > theoraData->thInfo.fps_denominator * 0.25f / theoraData->thInfo.fps_numerator)
         {
             pp_inc = (pp_level < pp_level_max) ? 1 : 0;
         }
-        else if(tdiff < thInfo.fps_denominator * 0.05 / thInfo.fps_numerator)
+        else if(tdiff < theoraData->thInfo.fps_denominator * 0.05 / theoraData->thInfo.fps_numerator)
         {
             pp_inc = (pp_level > 0)? -1 : 0;
         }
@@ -370,9 +386,9 @@ void TheoraPlayer::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
     {
         Rect rect = rectNode->AsRect();
         if(rect.dx == -1)
-            rect.dx = thInfo.pic_width;
+            rect.dx = theoraData->thInfo.pic_width;
         if(rect.dy == -1)
-            rect.dy = thInfo.pic_height;
+            rect.dy = theoraData->thInfo.pic_height;
         
         SetRect(rect);
     }
