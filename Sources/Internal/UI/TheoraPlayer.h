@@ -34,11 +34,12 @@
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
 #include "FileSystem/File.h"
-#include <theora/theoradec.h>
 
 namespace DAVA
 {
 
+struct TheoraData;
+    
 class TheoraPlayer : public UIControl
 {
 public:
@@ -120,16 +121,7 @@ private:
     unsigned char       * frameBuffer;
     int32               frameBufferW;
     int32               frameBufferH;
-    th_info             thInfo;
-    th_comment          thComment;
-    th_setup_info       * thSetup;
-    th_dec_ctx          * thCtx;
-    ogg_sync_state      syncState;
-    ogg_stream_state    state;
-    ogg_page            page;
-    ogg_packet          packet;
-    th_ycbcr_buffer     yuvBuffer;
-    ogg_int64_t         videoBufGranulePos;
+    TheoraData          * theoraData;
     int32               theora_p;
     bool                isVideoBufReady;
     bool                isPlaying;

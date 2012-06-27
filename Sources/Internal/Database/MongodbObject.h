@@ -47,12 +47,14 @@ class MongodbObject: public BaseObject
     friend class MongodbClient;
     
 protected:
-    virtual ~MongodbObject();
     
     void * InternalObject();
     
 public:
-    MongodbObject();    
+    
+    MongodbObject();
+    virtual ~MongodbObject();
+    
     
     void EnableForEdit();
     void Finish();

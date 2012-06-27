@@ -1,6 +1,8 @@
 #include "LandscapePropertyControl.h"
 #include "EditorSettings.h"
 #include "SceneValidator.h"
+#include "ControlsFactory.h"
+
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -90,6 +92,8 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     propertyList->SetFloatPropertyValue("property.landscape.texture3.tilex", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE3).x);
     propertyList->AddFloatProperty("property.landscape.texture3.tiley");
     propertyList->SetFloatPropertyValue("property.landscape.texture3.tiley", landscape->GetTextureTiling(LandscapeNode::TEXTURE_TILE3).y);
+    
+    ControlsFactory::AddFogSubsection(propertyList, landscape->IsFogEnabled(), landscape->GetFogDensity(), landscape->GetFogColor());
 }
 
 void LandscapePropertyControl::AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level)
@@ -158,6 +162,12 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
 			propertyList->GetFloatPropertyValue("property.landscape.texture3.tiley"));
 		landscape->SetTextureTiling(LandscapeNode::TEXTURE_TILE3, tiling);
 	}
+    
+    if ("property.material.dencity" == forKey)
+    {
+		LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+        landscape->SetFogDensity(newValue);
+    }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);
 }
@@ -328,9 +338,26 @@ void LandscapePropertyControl::OnBoolPropertyChanged(PropertyList *forList, cons
             landscape->SetDebugFlags(landscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
         }
     }
-    
+    else if (String("property.material.fogenabled") == forKey)
+    {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+        landscape->SetFog(newValue);
+    }
+
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
+
+void LandscapePropertyControl::OnColorPropertyChanged(PropertyList *forList, const String &forKey, const Color& newColor)
+{
+    if("property.material.fogcolor" == forKey)
+    {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+        landscape->SetFogColor(newColor);
+    }
+    
+    PropertyListDelegate::OnColorPropertyChanged(forList, forKey, newColor);
+}
+
 
 void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object, void *userData, void *callerData)
 {

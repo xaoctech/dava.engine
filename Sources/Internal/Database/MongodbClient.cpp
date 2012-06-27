@@ -89,12 +89,6 @@ MongodbClient::MongodbClient()
 
 MongodbClient::~MongodbClient()
 {
-    for(int32 i = 0; i < (int32)objects.size(); ++i)
-    {
-        SafeRelease(objects[i]);
-    }
-	objects.clear();
-	
 	Disconnect();
 
 	SafeRelease(clientData);
@@ -191,7 +185,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
     int32 status = MONGO_ERROR;
     if(IsConnected())
     {
-        MongodbObject * binary = CreateObject();
+        MongodbObject * binary = new MongodbObject();
         DVASSERT(binary);
         
         binary->SetObjectName(key);
@@ -209,7 +203,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
                 LogError(String("SaveBinary, update"), clientData->connection->err);
             }
             
-            DestroyObject(foundObject);
+            SafeRelease(foundObject);
         }
         else 
         {
@@ -220,7 +214,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
             }
         }
         
-        DestroyObject(binary);
+        SafeRelease(binary);
     }
     
     return (MONGO_OK == status);
@@ -236,7 +230,7 @@ int32 MongodbClient::GetBinarySize(const String &key)
     if(object)
     {
         retSize = object->GetInt32(String("DataSize"));
-        DestroyObject(object);
+        SafeRelease(object);
     }
     else 
     {
@@ -254,7 +248,7 @@ bool MongodbClient::GetBinary(const String &key, uint8 *outData, int32 dataSize)
     if(object)
     {
         found = object->GetData(String("Data"), outData, dataSize);
-        DestroyObject(object);
+        SafeRelease(object);
     }
     else 
     {
@@ -266,67 +260,44 @@ bool MongodbClient::GetBinary(const String &key, uint8 *outData, int32 dataSize)
 
 MongodbObject * MongodbClient::FindObjectByKey(const String &key)
 {
-    MongodbObject *query = CreateObject();
-    DVASSERT(query);
-    
-    query->SetObjectName(key);
-    query->Finish();
-    
-    MongodbObject *foundObject = CreateObject();
-    DVASSERT(foundObject);
-    
-    int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
-    if(MONGO_OK != status)
-    {
-        DestroyObject(foundObject);
-        foundObject = NULL;
-    }
-        
-    DestroyObject(query);
-    return foundObject;
-}
-    
-bool MongodbClient::FindObjectByKey(const String &key, MongodbObject *foundObject)
-{
     MongodbObject *query = new MongodbObject();
     DVASSERT(query);
     
     query->SetObjectName(key);
     query->Finish();
     
+    MongodbObject *foundObject = new MongodbObject();
     DVASSERT(foundObject);
     
     int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
     if(MONGO_OK != status)
     {
-        DestroyObject(foundObject);
+        SafeRelease(foundObject);
+        foundObject = NULL;
+    }
+        
+    SafeRelease(query);
+    return foundObject;
+}
+    
+bool MongodbClient::FindObjectByKey(const String &key, MongodbObject * foundObject)
+{
+    DVASSERT(foundObject);
+    
+    MongodbObject *query = new MongodbObject();
+    DVASSERT(query);
+    
+    query->SetObjectName(key);
+    query->Finish();
+    
+    int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
+    if(MONGO_OK != status)
+    {
         return false;
     }
     
     SafeRelease(query);
     return true;
-}
-    
-MongodbObject * MongodbClient::CreateObject()
-{
-    MongodbObject *object = new MongodbObject();
-    objects.push_back(object);
-    
-    return object;
-}
-
-void MongodbClient::DestroyObject(DAVA::MongodbObject *object)
-{
-    Vector<MongodbObject *>::const_iterator endIt = objects.end();
-    for(Vector<MongodbObject *>::iterator it= objects.begin(); it != endIt; ++it)
-    {
-        if(*it == object)
-        {
-            SafeRelease(object);
-            objects.erase(it);
-            break;
-        }
-    }
 }
     
 bool MongodbClient::SaveObject(MongodbObject *object)
@@ -343,7 +314,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
                 LogError(String("SaveObject, update"), clientData->connection->err);
             }
             
-            DestroyObject(foundObject);
+            SafeRelease(foundObject);
         }
         else 
         {
