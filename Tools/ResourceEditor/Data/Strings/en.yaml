@@ -3,6 +3,7 @@ dialog.ok: "Ok"
 dialog.cancel: "Cancel"
 dialog.create: "Create"
 dialog.close: "Close"
+dialog.set: "Set"
 
 #menu strings
 menu.open: "Open" 
@@ -117,6 +118,7 @@ materialeditor.materials: "Materials:"
 materialeditor.selected: "Selected"
 materialeditor.all: "All"
 materialeditor.nomaterials: "No materials."
+materialeditor.setupfog: "Setup Fog"
 
 #Modification Panel
 modificationpanel.modification: "Modification:"
@@ -225,6 +227,11 @@ property.material.specularshininess: "Specular shininess:"
 property.material.alphablend: "Alpha blend"
 property.material.blendSrc: "Source factor"
 property.material.blendDst: "Destination factor"
+property.material.dencity: "Dencity:"
+property.material.fogenabled: "Fog enabled:"
+property.material.fogsettings: "Fog Settings"
+property.material.fogcolor: "Fog Color"
+
 
 #LodNode
 property.lodnode: "LodNode"
