@@ -44,6 +44,10 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 	btnPlaceOn = ControlsFactory::CreateButton(Rect(115, 0, BUTTON_W, BUTTON_W), L"P");
 	btnPlaceOn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModificationPressed));
 	modificationPanel->AddControl(btnPlaceOn);
+    
+	btnLandscape = ControlsFactory::CreateButton(Rect(115, BUTTON_W + BUTTON_B, BUTTON_W, BUTTON_W), L"L");
+	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnLandscapeRelative));
+	modificationPanel->AddControl(btnLandscape);
 	
 	btnPopUp = ControlsFactory::CreateButton(Rect(140, 0, BUTTON_W, BUTTON_W), L"#");
 	btnPopUp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModificationPopUpPressed));
@@ -59,6 +63,8 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModePressed));
 	AddControl(btnModeModification);
 
+    isLandscapeRelative = false;
+    
 	UpdateModState();
 	OnModePressed(btnModeSelection, 0, 0);
 }
@@ -67,6 +73,7 @@ ModificationsPanel::~ModificationsPanel()
 {
     SafeRelease(workingScene);
     
+    SafeRelease(btnLandscape);
 	for (int32 i = 0; i < 3; ++i)
 	{
 		SafeRelease(btnMod[i]);
@@ -99,6 +106,20 @@ void ModificationsPanel::OnModePressed(BaseObject * object, void * userData, voi
 	}
 }
 
+void ModificationsPanel::OnLandscapeRelative(BaseObject * object, void * userData, void * callerData)
+{
+    isLandscapeRelative = !isLandscapeRelative;
+	if (isLandscapeRelative)
+	{
+		btnLandscape->SetState(UIControl::STATE_SELECTED);
+	}
+	else
+	{
+		btnLandscape->SetState(UIControl::STATE_NORMAL);
+	}
+}
+
+
 void ModificationsPanel::OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData)
 {
 	if(modificationPopUp->GetParent())
@@ -119,6 +140,10 @@ void ModificationsPanel::OnModificationPressed(BaseObject * object, void * userD
 	{
         PlaceOnLandscape();
 	}
+    else if(object == btnLandscape)
+    {
+        
+    }
     else 
     {
         for (int32 i = 0; i < 3; ++i)
@@ -280,6 +305,16 @@ void ModificationsPanel::IsModificationMode(bool value)
 {
     isModeModification = value;
 }
+
+bool ModificationsPanel::IsLandscapeRelative()
+{
+    return isLandscapeRelative;
+}
+void ModificationsPanel::IsLandscapeRelative(bool value)
+{
+    isLandscapeRelative = value;
+}
+
 
 void ModificationsPanel::Update(float32 timeElapsed)
 {
