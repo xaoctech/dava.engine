@@ -48,12 +48,13 @@ class MongodbObject: public BaseObject
     
 protected:
     
-    MongodbObject();
-    virtual ~MongodbObject();
-    
     void * InternalObject();
     
 public:
+    
+    MongodbObject();
+    virtual ~MongodbObject();
+
     
     void EnableForEdit();
     void Finish();

@@ -433,6 +433,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
+                if(modificationPanel->IsLandscapeRelative())
+                {
+                    PlaceOnLandscape();
+                }
+                
 				if (selection)
 					scene->SetBulletUpdate(selection, true);				
 			}
