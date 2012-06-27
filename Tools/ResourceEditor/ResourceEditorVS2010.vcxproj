@@ -449,6 +449,7 @@
     <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h" />
     <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
+    <ClInclude Include="Classes\SceneEditor\FogControl.h" />
     <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
     <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
@@ -726,6 +727,7 @@
     <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
+    <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
