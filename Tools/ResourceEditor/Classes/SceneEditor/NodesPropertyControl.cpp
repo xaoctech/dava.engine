@@ -111,6 +111,7 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
     currentSceneNode = sceneNode;
     currentDataNode = NULL;
+    ReleaseChildLodData();
     
     propertyList->ReleaseProperties();
     

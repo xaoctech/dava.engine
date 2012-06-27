@@ -136,6 +136,7 @@ protected:
 	void PrepareModMatrix(const Vector2 & point);
 
 	void PlaceOnLandscape();
+	void PlaceOnLandscape(SceneNode *node);
 	
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);

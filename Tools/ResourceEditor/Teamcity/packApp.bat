@@ -11,4 +11,4 @@ xcopy ..\glew32.dll app\1\2\3
 xcopy ..\..\..\..\dava.resourceeditor.beast\beast\bin\beast32.dll app\1\2\3
 xcopy /e ..\..\..\..\dava.resourceeditor.beast\*.* app\dava.resourceeditor.beast
 
-wzzip -p -r app.zip app\*.*
+wzzip -p -r ResourceEditor_win.zip app\*.*

@@ -2,6 +2,8 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 
+#include "ControlsFactory.h"
+
 static const String textureNames[] = 
 {
     "Diffuse texture", 
@@ -40,6 +42,7 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     propertyList->AddStringProperty("property.material.name", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetStringPropertyValue("property.material.name", material->GetName());
     
+    
     Vector<String> materialTypes;
     for (int i = 0; i < Material::MATERIAL_TYPES_COUNT; i++) 
     {
@@ -76,6 +79,8 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         SetFilepathValue(material, ETT_NORMAL_MAP);
     }
 
+    
+    
     propertyList->AddBoolProperty("property.material.isopaque");
     propertyList->SetBoolPropertyValue("property.material.isopaque", material->GetOpaque());
     
@@ -125,6 +130,10 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         propertyList->AddFloatProperty("property.material.specularshininess");
         propertyList->SetFloatPropertyValue("property.material.specularshininess", material->GetShininess());
     }
+    
+    {   //FOG
+        ControlsFactory::AddFogSubsection(propertyList, material->IsFogEnabled(), material->GetFogDensity(), material->GetFogColor());
+    }
 }
 
 void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
@@ -159,6 +168,11 @@ void MaterialPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const
 		material->SetAlphablend(newValue);
 		ReadFrom(currentDataNode);
 	}
+    else if (String("property.material.fogenabled") == forKey)
+    {
+        Material *material = dynamic_cast<Material *> (currentDataNode);
+        material->SetFog(newValue);
+    }
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
 }
@@ -169,7 +183,7 @@ void MaterialPropertyControl::OnColorPropertyChanged(PropertyList *forList, cons
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetAmbientColor(newColor);
-    }
+    } 
     else if("property.material.diffusecolor" == forKey)
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
@@ -179,6 +193,11 @@ void MaterialPropertyControl::OnColorPropertyChanged(PropertyList *forList, cons
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetSpecularColor(newColor);
+    }
+    else if("property.material.fogcolor" == forKey)
+    {
+        Material *material = dynamic_cast<Material *> (currentDataNode);
+        material->SetFogColor(newColor);
     }
 
     PropertyListDelegate::OnColorPropertyChanged(forList, forKey, newColor);
@@ -215,6 +234,11 @@ void MaterialPropertyControl::OnFloatPropertyChanged(PropertyList *forList, cons
     {
         Material *material = dynamic_cast<Material *> (currentDataNode);
         material->SetShininess(newValue);
+    }
+    else if ("property.material.dencity" == forKey)
+    {
+        Material *material = dynamic_cast<Material *> (currentDataNode);
+        material->SetFogDensity(newValue);
     }
 
     NodesPropertyControl::OnFloatPropertyChanged(forList, forKey, newValue);

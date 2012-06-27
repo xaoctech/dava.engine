@@ -52,7 +52,7 @@ varying lowp float varLightmapSize;
 void main()
 {
     // FETCH PHASE
-#if defined(GLOSS) || defined(OPAQUE)
+#if defined(GLOSS) || defined(OPAQUE) || defined(ALPHABLEND)
     lowp vec4 textureColor0 = texture2D(texture0, varTexCoord0);
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
@@ -137,6 +137,8 @@ void main()
 
 #if defined(VERTEX_FOG)
     gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
+#elif defined(ALPHABLEND)
+	gl_FragColor = vec4(color, textureColor0.a);
 #else
     gl_FragColor = vec4(color, 1.0);
 #endif

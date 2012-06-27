@@ -70,8 +70,6 @@ public:
 
     MongodbObject * FindObjectByKey(const String &key);
     bool FindObjectByKey(const String &key, MongodbObject *foundObject);
-    MongodbObject * CreateObject();
-    void DestroyObject(MongodbObject *object);
 
     bool SaveObject(MongodbObject *object);
     bool SaveObject(MongodbObject *newObject, MongodbObject *oldObject);
@@ -92,8 +90,6 @@ protected:
     String database;
     String collection;
     String namespaceName;
-
-    Vector<MongodbObject *> objects;
 };
 
 };

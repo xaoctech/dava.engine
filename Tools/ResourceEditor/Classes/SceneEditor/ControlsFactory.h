@@ -5,6 +5,7 @@
 
 using namespace DAVA;
 
+class PropertyList;
 class ControlsFactory 
 {
 public:
@@ -101,6 +102,8 @@ public:
     
     static void SetScrollbar(UIList *l);
     static void SetScrollbar(UIHierarchy *l);
+    
+    static void AddFogSubsection(PropertyList *propertyList, bool enabled, float32 dencity, const Color &newColor);
     
     static Font* fontLight;
     static Font* fontDark;
