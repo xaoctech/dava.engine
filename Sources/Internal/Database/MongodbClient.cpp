@@ -286,6 +286,27 @@ MongodbObject * MongodbClient::FindObjectByKey(const String &key)
     return foundObject;
 }
     
+bool MongodbClient::FindObjectByKey(const String &key, MongodbObject *foundObject)
+{
+    MongodbObject *query = new MongodbObject();
+    DVASSERT(query);
+    
+    query->SetObjectName(key);
+    query->Finish();
+    
+    DVASSERT(foundObject);
+    
+    int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
+    if(MONGO_OK != status)
+    {
+        DestroyObject(foundObject);
+        return false;
+    }
+    
+    SafeRelease(query);
+    return true;
+}
+    
 MongodbObject * MongodbClient::CreateObject()
 {
     MongodbObject *object = new MongodbObject();

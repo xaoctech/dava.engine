@@ -148,7 +148,6 @@ protected:
     bool ConnectToDB();
     void AddTestResult(const String &text, bool isPassed);
     void SaveTestToDB();
-    MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
     //
 
     bool isInit;

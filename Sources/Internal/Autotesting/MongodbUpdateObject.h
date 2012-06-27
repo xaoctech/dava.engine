@@ -18,16 +18,30 @@
 
 namespace DAVA
 {
-
-class MongodbUpdateObject : public KeyedArchive
+    
+class MongodbUpdateObject : public MongodbObject
 {
 public:
-    MongodbUpdateObject(MongodbObject* _oldObject, MongodbObject* _newObject);
+    MongodbUpdateObject();
     virtual ~MongodbUpdateObject();
     
+    void LoadData();
+    void SaveData();
+    
+    KeyedArchive* GetData();
+    
+    MongodbObject* GetUpdateObject();
+    
+    bool SaveToDB(MongodbClient* dbClient);
+    
 protected:
-    MongodbObject* oldObject;
-    MongodbObject* newObject;
+    void ReadData(KeyedArchive* archive, void* bsonObj);
+    void WriteData(MongodbObject* mongoObj, const String & key, VariantType *value);
+    
+    MongodbObject* updateObject;
+    Vector<MongodbObject*> updateObjects;
+    
+    KeyedArchive* updateData;
 };
     
 };
