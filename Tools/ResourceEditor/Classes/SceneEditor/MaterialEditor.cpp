@@ -38,6 +38,20 @@ MaterialEditor::MaterialEditor()
                                                 LocalizedString(L"materialeditor.selected"));
     btnSelected->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSelectedPressed));
 
+
+    Rect setupRect(GetRect().dx - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
+    UIButton *btnSetupFog = ControlsFactory::CreateButton(setupRect, LocalizedString(L"materialeditor.setupfog"));
+    btnSetupFog->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSetupFog));
+    AddControl(btnSetupFog);
+    SafeRelease(btnSetupFog);
+
+    UIControl *line = ControlsFactory::CreateLine(Rect(GetRect().dx - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT * 2, ControlsFactory::BUTTON_WIDTH*2, 1), 
+                                                  Color::White());
+    AddControl(line);
+    SafeRelease(line);
+    
+    Rect fogRect(setupRect.x - ControlsFactory::BUTTON_WIDTH, setupRect.dy + setupRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
+    fogControl = new FogControl(fogRect, this);
     
     materialsList = new UIList(Rect(0, ControlsFactory::BUTTON_HEIGHT * 2, 
                                     materialListWidth, size.y - ControlsFactory::BUTTON_HEIGHT * 2), 
@@ -436,8 +450,40 @@ Material * MaterialEditor::GetMaterial(int32 index)
     return mat;
 }
 
+void MaterialEditor::OnSetupFog(BaseObject * object, void * userData, void * callerData)
+{
+    if(fogControl)
+    {
+        AddControl(fogControl);
+    }
+}
+
+
 #pragma mark  --NodesPropertyDelegate
 void MaterialEditor::NodesPropertyChanged()
 {
     RefreshList();
+}
+
+#pragma mark --FogControlDelegate
+void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &newColor)
+{
+    for(int32 i = 0; i < (int32)materials.size(); ++i)
+    {
+        materials[i]->SetFog(enabled);
+        materials[i]->SetFogDensity(dencity);
+        materials[i]->SetFogColor(newColor);
+    }
+    
+    if(workingScene)
+    {
+        Vector<LandscapeNode *> landscapes;
+        workingScene->GetChildNodes(landscapes);
+
+        DVASSERT(1 == landscapes.size());
+        
+        landscapes[0]->SetFog(enabled);
+        landscapes[0]->SetFogDensity(dencity);
+        landscapes[0]->SetFogColor(newColor);
+    }
 }

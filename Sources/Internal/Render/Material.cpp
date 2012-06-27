@@ -359,6 +359,10 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	keyedArchive->SetInt32("mat.blendDst", blendDst);
 
     keyedArchive->SetInt32("mat.type", type);
+    
+    keyedArchive->SetByteArrayAsType("mat.fogcolor", fogColor);
+    keyedArchive->SetFloat("mat.fogdencity", fogDensity);
+    keyedArchive->SetBool("mat.isFogEnabled", isFogEnabled);
 }
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -415,6 +419,10 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
+    
+    fogColor = keyedArchive->GetByteArrayAsType("mat.fogcolor", fogColor);
+	isFogEnabled = keyedArchive->GetBool("mat.isFogEnabled", isFogEnabled);
+    fogDensity = keyedArchive->GetFloat("mat.fogdencity", fogDensity);
 }
 
 void Material::SetOpaque(bool _isOpaque)
@@ -484,6 +492,7 @@ float32 Material::GetShininess() const
 void Material::SetFog(bool _isFogEnabled)
 {
     isFogEnabled = _isFogEnabled;
+    RebuildShader();
 }
     
 bool Material::IsFogEnabled() const

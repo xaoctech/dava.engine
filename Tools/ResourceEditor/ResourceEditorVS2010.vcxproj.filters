@@ -803,6 +803,9 @@
     <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp">
       <Filter>SceneEditor\Properties</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\FogControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1918,6 +1921,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h">
       <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\FogControl.h">
+      <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
