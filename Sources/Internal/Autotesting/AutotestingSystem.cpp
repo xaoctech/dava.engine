@@ -200,11 +200,32 @@ bool AutotestingSystem::ConnectToDB()
     }
     
     return (NULL != dbClient);
-}    
-
-void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
+}
+    
+MongodbObject * AutotestingSystem::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
 {
-    Logger::Debug("AutotestingSystem::SaveTestToDB %s %d",text.c_str(), isPassed);
+    MongodbObject *subObject = dbClient->CreateObject();
+    if(dbObject)
+    {
+        bool ret = dbObject->GetSubObject(subObject, objectName, needFinished);
+        if(ret)
+        {
+            return subObject;
+        }
+    }
+    
+    subObject->SetObjectName(objectName);
+    return subObject;
+}
+    
+void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
+{
+    testResults.push_back(std::pair< String, bool >(text, isPassed));
+}
+
+void AutotestingSystem::SaveTestToDB()
+{
+    Logger::Debug("AutotestingSystem::SaveTestToDB");
     
     String testAndFileName = Format("%s (%s)", testName.c_str(), testFileName.c_str());
     
@@ -212,17 +233,30 @@ void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
     
     MongodbObject *oldDBObject = dbClient->FindObjectByKey(testsName);
     MongodbObject *newDBObject = dbClient->CreateObject();
+
     
+    MongodbObject *oldPlatformObject = dbClient->CreateObject();
     MongodbObject *newPlatformObject = dbClient->CreateObject();
-    MongodbObject *oldPlatformObject = NULL;
     
+    MongodbObject *oldLogObject = dbClient->CreateObject();
     MongodbObject *newLogObject = dbClient->CreateObject();
-    MongodbObject *oldLogObject = NULL;
     
+    MongodbObject *oldTestObject = dbClient->CreateObject();
     MongodbObject *newTestObject = dbClient->CreateObject();
-    MongodbObject *oldTestObject = NULL;
     
-    bool isTestPassed = isPassed;
+    MongodbObject *newTestResultsObject = dbClient->CreateObject();
+    
+    
+    bool isTestPassed = true;
+    for(int32 i = 0; i < testResults.size(); ++i)
+    {
+        if(!testResults[i].second)
+        {
+            isTestPassed = false;
+            break;
+        }
+    }
+    
     bool isTestSuitePassed = isTestPassed;
     int32 testsCount = 1;
     
@@ -231,25 +265,22 @@ void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
         // find platform object
         if(oldDBObject)
         {
-            if(oldDBObject->GetSubObject(newPlatformObject, AUTOTESTING_PLATFORM_NAME))
+            if(oldDBObject->GetSubObject(oldPlatformObject, AUTOTESTING_PLATFORM_NAME, true))
             {
                 // found platform object
-                oldPlatformObject = dbClient->CreateObject();
-                oldPlatformObject->CopyFinished(newPlatformObject);
+                newPlatformObject->Copy(oldPlatformObject);
 
                 // find log object
-                if(oldPlatformObject->GetSubObject(newLogObject, "log"))
+                if(oldPlatformObject->GetSubObject(oldLogObject, "log", true))
                 {
                     // found log object
-                    oldLogObject = dbClient->CreateObject();
-                    oldLogObject->CopyFinished(newLogObject);
+                    newLogObject->Copy(oldLogObject);
                     
                     // find test object
-                    if(oldLogObject->GetSubObject(newTestObject, testName))
+                    if(oldLogObject->GetSubObject(oldTestObject, testName, true))
                     {
                         // found test object
-                        oldTestObject = dbClient->CreateObject();
-                        oldTestObject->CopyFinished(newTestObject);
+                        newTestObject->Copy(oldTestObject);
                         
                         isTestPassed = (oldTestObject->GetInt32("Success") == 1);
                     }
@@ -260,11 +291,19 @@ void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
             }
         }
         
+        //update test results
+        newTestResultsObject->SetObjectName("TestResults");
+        for(int32 i = 0; i < testResults.size(); ++i)
+        {
+            newTestResultsObject->AddInt32(testResults[i].first, (int32)testResults[i].second);
+        }
+        newTestResultsObject->Finish();
+        
         //update test object
         newTestObject->SetObjectName(testName);
         newTestObject->AddInt32("RunId", testsId);
         newTestObject->AddInt32("Success", (int32)isTestPassed);
-        newTestObject->AddInt32(text, (int32)isPassed);
+        newTestObject->AddObject("TestResults", newTestResultsObject);
         newTestObject->Finish();
         
         //update log object
@@ -290,9 +329,48 @@ void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
         newDBObject->Finish();
         
         // save DB object
+        if(oldDBObject)
+        {
+            Logger::Debug("AutotestingSystem::SaveTestToDB old object:");
+            oldDBObject->Print();
+        }
+        if(newDBObject)
+        {
+            Logger::Debug("AutotestingSystem::SaveTestToDB new object:");
+            newDBObject->Print();
+        }
+        
         dbClient->SaveObject(newDBObject, oldDBObject);
         
         // clean up
+        if(oldPlatformObject)
+        {
+            dbClient->DestroyObject(oldPlatformObject);
+        }
+        if(newPlatformObject)
+        {
+            dbClient->DestroyObject(newPlatformObject);
+        }
+        if(newLogObject)
+        {
+            dbClient->DestroyObject(newLogObject);
+        }
+        if(oldLogObject)
+        {
+            dbClient->DestroyObject(oldLogObject);
+        }
+        if(newTestObject)
+        {
+            dbClient->DestroyObject(newTestObject);
+        }
+        if(oldTestObject)
+        {
+            dbClient->DestroyObject(oldTestObject);
+        }
+        if(newTestResultsObject)
+        {
+            dbClient->DestroyObject(newTestResultsObject);
+        }
         dbClient->DestroyObject(newDBObject);
     }
     
@@ -698,7 +776,7 @@ void AutotestingSystem::RunTests()
     
     if(!isRunning)
     {
-        SaveTestToDB("started", true);
+        OnTestsSatrted();
         
         isRunning = true;
     }
@@ -763,34 +841,57 @@ void AutotestingSystem::Draw()
     }
     RenderHelper::Instance()->DrawCircle(GetMousePosition(), 15.0f);
 }
-
-void AutotestingSystem::OnTestsFinished()
-{
-    Logger::Debug("AutotestingSystem::OnTestsFinished");
     
-    SaveTestToDB("finished", true);
+void AutotestingSystem::OnTestsSatrted()
+{
+    Logger::Debug("AutotestingSystem::OnTestsStarted");
+    AddTestResult("started", true);
+}
+    
+void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
+{
+    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
+    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
+    
+    AddTestResult(text, isPassed);
     
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     if(reportFile)
     {
-        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
+        reportFile->WriteLine(assertMsg);
     }
-    SafeRelease(reportFile);
 #endif
-    ExitApp();
 }
 
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
     
-    SaveTestToDB(errorMessage, false);
+    AddTestResult(errorMessage, false);
+    SaveTestToDB();
     
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
     if(reportFile)
     {
         reportFile->WriteLine(exitOnErrorMsg);
+    }
+    SafeRelease(reportFile);
+#endif
+    ExitApp();
+}    
+    
+void AutotestingSystem::OnTestsFinished()
+{
+    Logger::Debug("AutotestingSystem::OnTestsFinished");
+    
+    AddTestResult("finished", true);
+    SaveTestToDB();
+    
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    if(reportFile)
+    {
+        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
     }
     SafeRelease(reportFile);
 #endif
@@ -995,21 +1096,6 @@ void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, co
 
     AddAction(assertBoolAction);
     SafeRelease(assertBoolAction);
-}
-
-void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
-{
-    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
-    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
-    
-    SaveTestToDB(text, isPassed);
-    
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    if(reportFile)
-    {
-        reportFile->WriteLine(assertMsg);
-    }
-#endif
 }
 
 void AutotestingSystem::OnInput(const UIEvent &input)

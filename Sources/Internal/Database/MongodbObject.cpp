@@ -120,7 +120,6 @@ public:
                     
                     bson_iterator_subobject(&it, &sub);
                     bson_append_bson(object, key, &sub);
-                    
                     break;
                 }
                     
@@ -140,6 +139,7 @@ public:
     void InitFinished(bson *obj)
     {
         bson_copy(object, obj);
+        bson_finish(object);
     }
     
 public:
