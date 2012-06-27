@@ -266,6 +266,30 @@ void EditorBodyControl::PlaceOnLandscape()
 	}
 }
 
+void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
+{
+	if(node)
+	{
+		Vector3 result;
+		LandscapeNode * ls = scene->GetLandScape(scene);
+		if (ls)
+		{
+			const Matrix4 & itemWT = node->GetWorldTransform();
+			Vector3 p = Vector3(0,0,0) * itemWT;
+			bool res = ls->PlacePoint(p, result);
+			if (res)
+			{
+				Vector3 offs = result - p;
+				Matrix4 invItem;
+				Matrix4 mod;
+				mod.CreateTranslation(offs);
+				node->SetLocalTransform(node->GetLocalTransform() * mod);
+			}						
+		}
+	}
+}
+
+
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if(LandscapeEditorActive())
@@ -718,11 +742,22 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
                 Vector3 nodePos = pos + 10 * direction;
                 nodePos.z = 0;
                 
-				Matrix4 mod;
-				mod.CreateTranslation(nodePos);
-				rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+                LandscapeNode * ls = scene->GetLandScape(scene);
+                if(ls)
+                {
+                    Vector3 result;
+                    bool res = ls->PlacePoint(nodePos, result);
+                    if(res)
+                    {
+                        nodePos = result;
+                    }
+                }
+
+                Matrix4 mod;
+                mod.CreateTranslation(nodePos);
+                rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
             }
-            
+                        
             SafeRelease(rootNode); 
         }
 
