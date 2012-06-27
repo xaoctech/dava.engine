@@ -69,6 +69,7 @@ public:
     bool IsConnected();
 
     MongodbObject * FindObjectByKey(const String &key);
+    bool FindObjectByKey(const String &key, MongodbObject *foundObject);
     MongodbObject * CreateObject();
     void DestroyObject(MongodbObject *object);
 
