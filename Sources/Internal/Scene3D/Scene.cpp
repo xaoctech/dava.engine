@@ -478,7 +478,7 @@ void Scene::Draw()
     
 	//if (bvHierarchy)
     //    bvHierarchy->Cull();
-	VisibilityAABBoxSystem::Run(this);
+	//VisibilityAABBoxSystem::Run(this);
 
 	//entityManager->Dump();
 
@@ -487,9 +487,9 @@ void Scene::Draw()
 		imposterManager->Draw();
 	}
 
-    //SceneNode::Draw();
-	LandscapeGeometrySystem::Run(this);
-	MeshInstanceDrawSystem::Run(this);
+    SceneNode::Draw();
+	//LandscapeGeometrySystem::Run(this);
+	//MeshInstanceDrawSystem::Run(this);
 
 	if(shadowVolumes.size() > 0)
 	{
