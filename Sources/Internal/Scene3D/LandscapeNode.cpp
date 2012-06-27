@@ -111,8 +111,7 @@ LandscapeNode::~LandscapeNode()
     
 void LandscapeNode::InitShaders()
 {
-    SafeRelease(tileMaskShader);
-    SafeRelease(fullTiledShader);
+    ReleaseShaders();
     
     tileMaskShader = new Shader();
     tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
@@ -156,7 +155,6 @@ void LandscapeNode::InitShaders()
         uniformFogColorFT = fullTiledShader->FindUniformLocationByName("fogColor");
         uniformFogDensityFT = fullTiledShader->FindUniformLocationByName("fogDensity");   
     }
-
 }
     
 void LandscapeNode::ReleaseShaders()
@@ -170,6 +168,11 @@ void LandscapeNode::ReleaseShaders()
         uniformTextures[k] = -1;
         uniformTextureTiling[k] = -1;
     }
+    
+    uniformFogColor = -1;
+    uniformFogDensity = -1;   
+    uniformFogColorFT = -1;
+    uniformFogDensityFT = -1;   
 }
 
 

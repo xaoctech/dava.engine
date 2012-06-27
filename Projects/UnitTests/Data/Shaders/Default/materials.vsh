@@ -81,7 +81,6 @@ uniform float lightmapSize;
 varying lowp float varLightmapSize;
 #endif
 
-
 void main()
 {
 	gl_Position = modelViewProjectionMatrix * inPosition;

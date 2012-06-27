@@ -258,7 +258,7 @@ void GameCore::FlushTestResults()
     if(logObject)
     {
         MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
-        MongodbObject *newPlatformObject = dbClient->CreateObject();
+        MongodbObject *newPlatformObject = new MongodbObject();
         if(newPlatformObject)
         {
             if(oldPlatformObject)
@@ -275,15 +275,11 @@ void GameCore::FlushTestResults()
             newPlatformObject->AddObject(testTimeString, logObject);
             newPlatformObject->Finish();
             dbClient->SaveObject(newPlatformObject, oldPlatformObject);
-            dbClient->DestroyObject(newPlatformObject);
+            SafeRelease(newPlatformObject);
         }
         
-        if(oldPlatformObject)
-        {
-            dbClient->DestroyObject(oldPlatformObject);
-        }
-        
-        dbClient->DestroyObject(logObject);
+        SafeRelease(oldPlatformObject);
+        SafeRelease(logObject);
     }
 
     dbClient->Disconnect();
@@ -326,7 +322,7 @@ bool GameCore::ConnectToDB()
 
 MongodbObject * GameCore::CreateLogObject(const String &logName)
 {
-    MongodbObject *logObject = dbClient->CreateObject();
+    MongodbObject *logObject = new MongodbObject();
     if(logObject)
     {
         logObject->SetObjectName(logName);
@@ -376,7 +372,7 @@ MongodbObject * GameCore::CreateLogObject(const String &logName)
 
 MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
 {
-    MongodbObject *subObject = dbClient->CreateObject();
+    MongodbObject *subObject = new MongodbObject();
     if(dbObject)
     {
         bool ret = dbObject->GetSubObject(subObject, objectName, needFinished);

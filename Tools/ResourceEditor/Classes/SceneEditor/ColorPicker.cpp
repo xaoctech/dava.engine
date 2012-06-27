@@ -6,6 +6,8 @@
 ColorDetailControl::ColorDetailControl(const Rect &rect)
 :   UIControl(rect)
 {
+    markerPoint = Vector2(0.0f, 0.0f);
+    
     colorMap = Sprite::CreateAsRenderTarget(rect.dx, rect.dy, FORMAT_RGBA8888);
     SetSprite(colorMap, 0);
     
@@ -15,6 +17,19 @@ ColorDetailControl::ColorDetailControl(const Rect &rect)
 ColorDetailControl::~ColorDetailControl()
 {
     SafeRelease(colorMap);
+}
+
+void ColorDetailControl::DrawAfterChilds(const DAVA::UIGeometricData &geometricData)
+{
+    Vector2 pos = geometricData.position + markerPoint;
+    
+    RenderManager::Instance()->SetColor(Color::White());
+    RenderHelper::Instance()->DrawLine(pos - Vector2(5.0f, 0.0f), pos + Vector2(5.0f, 0.0f));
+    RenderHelper::Instance()->DrawLine(pos - Vector2(0.0f, 5.0f), pos + Vector2(0.0f, 5.0f));
+
+    RenderManager::Instance()->SetColor(Color::Black());
+    RenderHelper::Instance()->DrawLine(pos - Vector2(5.0f, -1.0f), pos + Vector2(5.0f, 1.0f));
+    RenderHelper::Instance()->DrawLine(pos - Vector2(-1.0f, 5.0f), pos + Vector2(1.0f, 5.0f));
 }
 
 void ColorDetailControl::Input(UIEvent *currentInput)
@@ -72,6 +87,8 @@ ColorSelectorControl::ColorSelectorControl(const Rect &rect)
     RenderManager::Instance()->RestoreRenderTarget();
 
     SetInitialColors();
+    
+    markerPoint.dx = rect.dx / 2;
 }
 
 void ColorSelectorControl::SetInitialColors()
@@ -118,7 +135,49 @@ void ColorSelectorControl::ColorSelected(const Vector2 &point)
             break;
     }
     
+    markerPoint.y = point.y;
+    
     this->PerformEvent(UIControl::EVENT_VALUE_CHANGED);
+}
+
+void ColorSelectorControl::SetColor(const DAVA::Color &color)
+{
+    float32 minLength = 100.f;
+    
+    int32 sectionHeight = GetRect().dy / 6.f;
+    float32 colorDelta = 1.0f / (sectionHeight);
+        
+    
+    Color colors[6];
+    colors[0] = Color(1.0f, 0.f, 0.f, 1.0f);
+    colors[1] = Color(1.0f, 0.f, 1.f, 1.0f);
+    colors[2] = Color(0.0f, 0.f, 1.f, 1.0f);
+    colors[3] = Color(0.0f, 1.f, 1.f, 1.0f);
+    colors[4] = Color(0.0f, 1.f, 0.f, 1.0f);
+    colors[5] = Color(1.0f, 1.f, 0.f, 1.0f);
+
+    
+    for(int32 dy = 0; dy < sectionHeight; ++dy)
+    {
+        for(int32 iSection = 0; iSection < 6; ++iSection)
+        {
+            float32 length =    (colors[iSection].r - color.r) * (colors[iSection].r - color.r) + 
+                                (colors[iSection].g - color.g) * (colors[iSection].g - color.g) + 
+                                (colors[iSection].b - color.b) * (colors[iSection].b - color.b);
+            if(length < minLength)
+            {
+                minLength = length;
+                markerPoint.y = dy + iSection * sectionHeight;
+            }
+        }
+        
+        colors[0].b += colorDelta;
+        colors[1].r -= colorDelta;
+        colors[2].g += colorDelta;
+        colors[3].b -= colorDelta;
+        colors[4].r += colorDelta;
+        colors[5].g -= colorDelta;
+    }
 }
 
 
@@ -140,12 +199,25 @@ void ColorMapControl::SetColor(const Color &color)
     int32 dx = GetRect().dx / 101.f;
     int32 dy = GetRect().dy / 101.f;
     int32 y = 0.f;
+    
+    float32 minLength = 100;
     for(float32 brightness = 1.0f; brightness >= 0.0f; brightness -= 0.01f)
     {
         float32 x = 0.0f;
         for(float32 saturation = 0.0f; saturation <= 1.0f; saturation += 0.01f)
         {
             Color cellColor = HSBToRgb(saturation, brightness);
+            
+            float32 length =  (cellColor.r - color.r) * (cellColor.r - color.r) + 
+                            (cellColor.g - color.g) * (cellColor.g - color.g) + 
+                            (cellColor.b - color.b) * (cellColor.b - color.b);
+            if(length < minLength)
+            {
+                minLength = length;
+                markerPoint.x = x;
+                markerPoint.y = y;
+            }
+            
             RenderManager::Instance()->SetColor(cellColor);
             RenderHelper::Instance()->FillRect(Rect(x, y, dx, dy));
             x += dx;
@@ -252,6 +324,8 @@ int32 ColorMapControl::RGBToH(const DAVA::Color &color)
     
 void ColorMapControl::ColorSelected(const Vector2 &point)
 {
+    markerPoint = point;
+    
     float32 b = 1.f - (point.y/GetRect().dy);
     float32 s = point.x / GetRect().dx;
     
@@ -360,7 +434,7 @@ void ColorPicker::OnIntPropertyChanged(PropertyList *forList, const String &forK
                 colorList->GetIntPropertyValue("colorpicker.a") / 255.f
                 );
 
-    SetColor(currentColor, true);
+    SetColor(currentColor, true, true);
 }
 
 void ColorPicker::OnOk(BaseObject * owner, void * userData, void * callerData)
@@ -387,13 +461,13 @@ void ColorPicker::OnCancel(BaseObject * owner, void * userData, void * callerDat
 void ColorPicker::OnMapColorChanged(BaseObject * owner, void * userData, void * callerData)
 {
     Color color = colorMapControl->GetColor();
-    SetColor(color, false);
+    SetColor(color, false, false);
 }
 
 void ColorPicker::OnSelectorColorChanged(BaseObject * owner, void * userData, void * callerData)
 {
     Color color = colorSelectorControl->GetColor();
-    SetColor(color, true);
+    SetColor(color, true, false);
 }
 
 void ColorPicker::SetColor(const DAVA::Color &newColor)
@@ -403,10 +477,10 @@ void ColorPicker::SetColor(const DAVA::Color &newColor)
     
     colorPreviewPrev->GetBackground()->SetColor(Color(prevColor.r, prevColor.g, prevColor.b, 1.0f));
     
-    SetColor(newColor, true);
+    SetColor(newColor, true, true);
 }
 
-void ColorPicker::SetColor(const Color & newColor, bool updateColorMap)
+void ColorPicker::SetColor(const Color & newColor, bool updateColorMap, bool updateSelector)
 {
     currentColor.r = newColor.r;
     currentColor.g = newColor.g;
@@ -416,6 +490,11 @@ void ColorPicker::SetColor(const Color & newColor, bool updateColorMap)
     if(updateColorMap)
     {
         colorMapControl->SetColor(currentColor);   
+    }
+    
+    if(updateSelector)
+    {
+        colorSelectorControl->SetColor(currentColor);
     }
     
     colorList->SetIntPropertyValue("colorpicker.r", currentColor.r * 255);
@@ -430,7 +509,7 @@ void ColorPicker::SetColor(const Color & newColor, bool updateColorMap)
 void ColorPicker::OnAlphaChanged(BaseObject * owner, void * userData, void * callerData)
 {
     currentColor.a = alphaValue->GetValue();
-    SetColor(currentColor, true);
+    SetColor(currentColor, true, true);
 }
 
 void ColorPicker::Show()
