@@ -28,11 +28,6 @@ print "*** DAVA Initializing autotesting"
 
 print "platform.system: " + platform.system()
 
-
-
-def ignored_svn_files(adir,filenames):
-    return [filename for filename in filenames if filename.endswith(".svn")]
-
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
 projectDir = os.path.realpath(currentDir + "/../../../../" + arguments[index_Project])
@@ -51,7 +46,7 @@ if 2 == len(arguments):
 autotestingSrcFolder = os.path.realpath(projectDir + "/Autotesting")
 autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
     
-scripts = ["/generate_id.py"]
+scripts = ["/generate_id.py", "/copy_tests.py"]
 
 if (platform.system() == "Darwin"):
     if (arguments[index_OS] == "iOS"):
@@ -77,19 +72,11 @@ if os.path.exists(autotestingDestFolder):
 
 os.mkdir(autotestingDestFolder)
 
-autotestingActionsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Actions")
-autotestingActionsDestFolder = os.path.realpath(autotestingDestFolder + "/Actions")
-
-autotestingTestsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Tests")
-autotestingTestsDestFolder = os.path.realpath(autotestingDestFolder + "/Tests")
-
-print "copy " + autotestingActionsSrcFolder + " to " + autotestingActionsDestFolder
-shutil.copytree(autotestingActionsSrcFolder, autotestingActionsDestFolder, ignore=ignored_svn_files)
-
-print "copy " + autotestingTestsSrcFolder + " to " + autotestingTestsDestFolder
-shutil.copytree(autotestingTestsSrcFolder, autotestingTestsDestFolder, ignore=ignored_svn_files)
-
 os.chdir(autotestingSrcFolder)
+
+params = ["python", "./copy_tests.py", arguments[index_Project], autotestingDestFolder]
+print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
+subprocess.call(params)
 
 params = ["python", "./generate_id.py", arguments[index_Project], autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
