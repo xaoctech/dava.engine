@@ -217,7 +217,10 @@ void AutotestingSystem::SaveTestToDB()
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
-    dbUpdateObject->SetObjectName(testsName);
+    if(!isFound)
+    {
+        dbUpdateObject->SetObjectName(testsName);
+    }
     dbUpdateObject->LoadData();
     
     KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
@@ -309,6 +312,7 @@ void AutotestingSystem::SaveTestToDB()
     //update test object
     testArchive->SetInt32("RunId", testsId);
     testArchive->SetInt32("Success", (int32)isTestPassed);
+    testArchive->SetString("File", testFileName);
     testArchive->SetArchive(testResultsKey, testResultsArchive);
 
     //update log object
