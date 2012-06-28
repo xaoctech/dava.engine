@@ -89,6 +89,7 @@
 		C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */; };
 		C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5973157F8CA10045CA41 /* TouchAction.cpp */; };
 		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
+		C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
@@ -645,6 +646,8 @@
 		C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
 		C7DE5973157F8CA10045CA41 /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
 		C7DE5974157F8CA10045CA41 /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
+		C7F60A7B159B022200A57634 /* MongodbUpdateObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
+		C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -1220,6 +1223,8 @@
 				C7DE5973157F8CA10045CA41 /* TouchAction.cpp */,
 				C7DE5974157F8CA10045CA41 /* TouchAction.h */,
 				C784403A158204A000F75358 /* Config.h */,
+				C7F60A7B159B022200A57634 /* MongodbUpdateObject.h */,
+				C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */,
 			);
 			path = Autotesting;
 			sourceTree = "<group>";
@@ -2535,6 +2540,7 @@
 				5CBFD6C6159C6C3300852F1A /* MeshInstanceComponent.cpp in Sources */,
 				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
+				C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
