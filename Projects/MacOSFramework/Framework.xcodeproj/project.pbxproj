@@ -48,6 +48,16 @@
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
 		5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */; };
 		5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */; };
+		5CBFD6C3159C6C3300852F1A /* LandscapeGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6B8159C6C3300852F1A /* LandscapeGeometryComponent.cpp */; };
+		5CBFD6C4159C6C3300852F1A /* LandscapeGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6B9159C6C3300852F1A /* LandscapeGeometryComponent.h */; };
+		5CBFD6C5159C6C3300852F1A /* LandscapeGeometrySystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6BA159C6C3300852F1A /* LandscapeGeometrySystem.h */; };
+		5CBFD6C6159C6C3300852F1A /* MeshInstanceComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6BB159C6C3300852F1A /* MeshInstanceComponent.cpp */; };
+		5CBFD6C7159C6C3300852F1A /* MeshInstanceComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6BC159C6C3300852F1A /* MeshInstanceComponent.h */; };
+		5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6BD159C6C3300852F1A /* MeshInstanceDrawSystem.cpp */; };
+		5CBFD6C9159C6C3300852F1A /* MeshInstanceDrawSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6BE159C6C3300852F1A /* MeshInstanceDrawSystem.h */; };
+		5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */; };
+		5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6C0159C6C3300852F1A /* TransformComponent.h */; };
+		5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */; };
 		5CE063F2154A69630029DF36 /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE063F0154A69630029DF36 /* ImposterManager.cpp */; };
 		5CE063F3154A69630029DF36 /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE063F1154A69630029DF36 /* ImposterManager.h */; };
 		5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEA312A1535A325008E35F5 /* Heightmap.cpp */; };
@@ -593,6 +603,16 @@
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
 		5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
+		5CBFD6B8159C6C3300852F1A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeGeometryComponent.cpp; path = Entity/LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
+		5CBFD6B9159C6C3300852F1A /* LandscapeGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometryComponent.h; path = Entity/LandscapeGeometryComponent.h; sourceTree = "<group>"; };
+		5CBFD6BA159C6C3300852F1A /* LandscapeGeometrySystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometrySystem.h; path = Entity/LandscapeGeometrySystem.h; sourceTree = "<group>"; };
+		5CBFD6BB159C6C3300852F1A /* MeshInstanceComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MeshInstanceComponent.cpp; path = Entity/MeshInstanceComponent.cpp; sourceTree = "<group>"; };
+		5CBFD6BC159C6C3300852F1A /* MeshInstanceComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeshInstanceComponent.h; path = Entity/MeshInstanceComponent.h; sourceTree = "<group>"; };
+		5CBFD6BD159C6C3300852F1A /* MeshInstanceDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MeshInstanceDrawSystem.cpp; path = Entity/MeshInstanceDrawSystem.cpp; sourceTree = "<group>"; };
+		5CBFD6BE159C6C3300852F1A /* MeshInstanceDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeshInstanceDrawSystem.h; path = Entity/MeshInstanceDrawSystem.h; sourceTree = "<group>"; };
+		5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformComponent.cpp; path = Entity/TransformComponent.cpp; sourceTree = "<group>"; };
+		5CBFD6C0159C6C3300852F1A /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransformComponent.h; path = Entity/TransformComponent.h; sourceTree = "<group>"; };
+		5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxSystem.h; path = Entity/VisibilityAABBoxSystem.h; sourceTree = "<group>"; };
 		5CE063F0154A69630029DF36 /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
 		5CE063F1154A69630029DF36 /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
 		5CEA312A1535A325008E35F5 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
@@ -1207,6 +1227,16 @@
 		ED2F52DA158A4AD1009E0EC7 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
+				5CBFD6B8159C6C3300852F1A /* LandscapeGeometryComponent.cpp */,
+				5CBFD6B9159C6C3300852F1A /* LandscapeGeometryComponent.h */,
+				5CBFD6BA159C6C3300852F1A /* LandscapeGeometrySystem.h */,
+				5CBFD6BB159C6C3300852F1A /* MeshInstanceComponent.cpp */,
+				5CBFD6BC159C6C3300852F1A /* MeshInstanceComponent.h */,
+				5CBFD6BD159C6C3300852F1A /* MeshInstanceDrawSystem.cpp */,
+				5CBFD6BE159C6C3300852F1A /* MeshInstanceDrawSystem.h */,
+				5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */,
+				5CBFD6C0159C6C3300852F1A /* TransformComponent.h */,
+				5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */,
 				ED2F52DC158A4B0D009E0EC7 /* Component.cpp */,
 				ED2F52DD158A4B0D009E0EC7 /* Component.h */,
 				ED2F52DE158A4B0D009E0EC7 /* ComponentDataMapper.h */,
@@ -2185,6 +2215,12 @@
 				ED2F5304158A4B0D009E0EC7 /* PoolSystem.h in Headers */,
 				ED2F5306158A4B0D009E0EC7 /* VisibilityAABBoxComponent.h in Headers */,
 				0224B70515989FD900CDEF9E /* TheoraPlayer.h in Headers */,
+				5CBFD6C4159C6C3300852F1A /* LandscapeGeometryComponent.h in Headers */,
+				5CBFD6C5159C6C3300852F1A /* LandscapeGeometrySystem.h in Headers */,
+				5CBFD6C7159C6C3300852F1A /* MeshInstanceComponent.h in Headers */,
+				5CBFD6C9159C6C3300852F1A /* MeshInstanceDrawSystem.h in Headers */,
+				5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */,
+				5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2495,6 +2531,10 @@
 				ED2F5303158A4B0D009E0EC7 /* PoolSystem.cpp in Sources */,
 				ED2F5305158A4B0D009E0EC7 /* VisibilityAABBoxComponent.cpp in Sources */,
 				0224B70415989FD900CDEF9E /* TheoraPlayer.cpp in Sources */,
+				5CBFD6C3159C6C3300852F1A /* LandscapeGeometryComponent.cpp in Sources */,
+				5CBFD6C6159C6C3300852F1A /* MeshInstanceComponent.cpp in Sources */,
+				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
+				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
