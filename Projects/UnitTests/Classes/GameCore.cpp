@@ -339,7 +339,7 @@ MongodbObject * GameCore::CreateLogObject(const String &logName)
             {
                 ErrorData *error = errors[i];
                 
-                String errorString = String(Format("command %s at file %s at line %d", 
+                String errorString = String(Format("command: %s at file: %s at line: %d", 
                                                    error->command.c_str(), error->filename.c_str(), error->line));
                 
                 reportFile->WriteLine(String(Format("Error[%06d]: ", i+1)) + errorString);
