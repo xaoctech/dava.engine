@@ -120,7 +120,6 @@ public:
                     
                     bson_iterator_subobject(&it, &sub);
                     bson_append_bson(object, key, &sub);
-                    
                     break;
                 }
                     
@@ -140,6 +139,7 @@ public:
     void InitFinished(bson *obj)
     {
         bson_copy(object, obj);
+        bson_finish(object);
     }
     
 public:
@@ -195,6 +195,11 @@ void MongodbObject::AddObject(const String &fieldname, DAVA::MongodbObject *addO
 void MongodbObject::Finish()
 {
     bson_finish(objectData->object);
+}
+
+bool MongodbObject::IsFinished()
+{
+    return objectData->object->finished;
 }
     
 String MongodbObject::GetObjectName()
