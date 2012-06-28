@@ -58,6 +58,7 @@ public:
     
     void EnableForEdit();
     void Finish();
+    bool IsFinished();
 
     void SetObjectName(const String &objectname);
     String GetObjectName();

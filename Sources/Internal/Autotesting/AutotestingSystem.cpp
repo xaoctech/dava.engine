@@ -217,9 +217,20 @@ void AutotestingSystem::SaveTestToDB()
     
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
+    dbUpdateObject->SetObjectName(testsName);
     dbUpdateObject->LoadData();
     
     KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+    
+    KeyedArchive* platformArchive = NULL;
+    
+    String logKey = "log";
+    KeyedArchive* logArchive = NULL;
+    
+    KeyedArchive* testArchive = NULL;
+    
+    String testResultsKey = "TestResults";
+    KeyedArchive* testResultsArchive = NULL;
     
     bool isTestPassed = true;
     for(int32 i = 0; i < testResults.size(); ++i)
@@ -232,126 +243,97 @@ void AutotestingSystem::SaveTestToDB()
     }
     
     bool isTestSuitePassed = isTestPassed;
-    int32 testsCount = 1;
     
-
     // find platform object
-//    if(isFound)
-//    {
-//        if(oldDBObject->GetSubObject(oldPlatformObject, AUTOTESTING_PLATFORM_NAME, true))
-//        {
-//            // found platform object
-//            newPlatformObject->Copy(oldPlatformObject);
-//
-//            // find log object
-//            if(oldPlatformObject->GetSubObject(oldLogObject, "log", true))
-//            {
-//                // found log object
-//                newLogObject->Copy(oldLogObject);
-//                
-//                // find test object
-//                if(oldLogObject->GetSubObject(oldTestObject, testName, true))
-//                {
-//                    // found test object
-//                    newTestObject->Copy(oldTestObject);
-//                    
-//                    isTestPassed = (oldTestObject->GetInt32("Success") == 1);
-//                }
-//            }
-//            
-//            testsCount = (oldPlatformObject->GetInt32("TestsCount") + 1);
-//            isTestSuitePassed = (isTestPassed && (oldPlatformObject->GetInt32("Success") == 1) );
-//        }
-//    }
+    if(isFound)
+    {
+        //found database object
+        
+        // find platform object
+        platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
+        
+        if(platformArchive)
+        {
+            // found platform object
+            
+            // find log object
+            logArchive = SafeRetain(platformArchive->GetArchive(logKey, NULL));
+            
+            if(logArchive)
+            {
+                // found log object
+                
+                // find test object
+                testArchive = SafeRetain(logArchive->GetArchive(testName, NULL));
+                if(testArchive)
+                {
+                    // found test object
+                    
+                    isTestPassed = (testArchive->GetInt32("Success") == 1);
+                    
+                    // find test results
+                    testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
+                }
+            }
+            isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+        }
+    }
     
-//    //update test results
-//    newTestResultsObject->SetObjectName("TestResults");
-//    for(int32 i = 0; i < testResults.size(); ++i)
-//    {
-//        newTestResultsObject->AddInt32(testResults[i].first, (int32)testResults[i].second);
-//    }
-//    newTestResultsObject->Finish();
-//    
-//    //update test object
-//    newTestObject->SetObjectName(testName);
-//    newTestObject->AddInt32("RunId", testsId);
-//    newTestObject->AddInt32("Success", (int32)isTestPassed);
-//    newTestObject->AddObject("TestResults", newTestResultsObject);
-//    newTestObject->Finish();
-//    
-//    //update log object
-//    newLogObject->SetObjectName("log");
-//    newLogObject->AddObject(testName, newTestObject);
-//    newLogObject->Finish();
-//    
-//    //update platform object
-//    newPlatformObject->SetObjectName(AUTOTESTING_PLATFORM_NAME);
-//    newPlatformObject->AddInt32("RunId", testsId);
-//    newPlatformObject->AddInt32("TestsCount", testsCount);
-//    newPlatformObject->AddInt32("Success", (int32)isTestSuitePassed);
-//    newPlatformObject->AddInt32(testAndFileName, (int32)isTestPassed);
-//    newPlatformObject->AddObject("log", newLogObject);
-//    newPlatformObject->Finish();
-//    
-//    //update DB object
-//    newDBObject->SetObjectName(testsName);
-//    newDBObject->AddInt32("RunId", testsId);
-//    newDBObject->AddObject(AUTOTESTING_PLATFORM_NAME, newPlatformObject);
-//    
-//    // finish DB object
-//    newDBObject->Finish();
-//    
-//    // save DB object
-//    if(oldDBObject)
-//    {
-//        Logger::Debug("AutotestingSystem::SaveTestToDB old object:");
-//        oldDBObject->Print();
-//    }
-//    if(newDBObject)
-//    {
-//        Logger::Debug("AutotestingSystem::SaveTestToDB new object:");
-//        newDBObject->Print();
-//    }
+    // create archives if not found
+    if(!platformArchive)
+    {
+        platformArchive = new KeyedArchive();
+    }
     
-    //dbClient->SaveObject(newDBObject, oldDBObject);
+    if(!logArchive) 
+    {
+        logArchive = new KeyedArchive();
+    }
     
+    if(!testArchive) 
+    {
+        testArchive = new KeyedArchive();
+    }
     
+    if(!testResultsArchive)
+    {
+        testResultsArchive = new KeyedArchive();
+    }
     
+    //update test results
+    for(int32 i = 0; i < testResults.size(); ++i)
+    {
+        testResultsArchive->SetInt32(testResults[i].first, (int32)testResults[i].second);
+    }
+  
+    //update test object
+    testArchive->SetInt32("RunId", testsId);
+    testArchive->SetInt32("Success", (int32)isTestPassed);
+    testArchive->SetArchive(testResultsKey, testResultsArchive);
+
+    //update log object
+    logArchive->SetArchive(testName, testArchive);
+   
+    //update platform object
+    platformArchive->SetInt32("RunId", testsId);
+    platformArchive->SetInt32("TestsCount", (testIndex + 1));
+    platformArchive->SetInt32("Success", (int32)isTestSuitePassed);
+    platformArchive->SetInt32(testAndFileName, (int32)isTestPassed);
+    platformArchive->SetArchive(logKey, logArchive);
+ 
+    //update DB object
+    dbUpdateData->SetInt32("RunId", testsId);
+    dbUpdateData->SetArchive(AUTOTESTING_PLATFORM_NAME, platformArchive);
+
     dbUpdateObject->SaveToDB(dbClient);
     
-    // clean up
-//    if(oldPlatformObject)
-//    {
-//        dbClient->DestroyObject(oldPlatformObject);
-//    }
-//    if(newPlatformObject)
-//    {
-//        dbClient->DestroyObject(newPlatformObject);
-//    }
-//    if(newLogObject)
-//    {
-//        dbClient->DestroyObject(newLogObject);
-//    }
-//    if(oldLogObject)
-//    {
-//        dbClient->DestroyObject(oldLogObject);
-//    }
-//    if(newTestObject)
-//    {
-//        dbClient->DestroyObject(newTestObject);
-//    }
-//    if(oldTestObject)
-//    {
-//        dbClient->DestroyObject(oldTestObject);
-//    }
-//    if(newTestResultsObject)
-//    {
-//        dbClient->DestroyObject(newTestResultsObject);
-//    }
-//    dbClient->DestroyObject(newDBObject);
+    // delete created archives
+    SafeRelease(platformArchive);
+    SafeRelease(logArchive);
+    SafeRelease(testArchive);
+    SafeRelease(testResultsArchive);
     
-    
-    
+    // delete created update object
     SafeRelease(dbUpdateObject);
 }
     

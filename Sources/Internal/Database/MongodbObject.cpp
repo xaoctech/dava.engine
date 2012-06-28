@@ -196,6 +196,11 @@ void MongodbObject::Finish()
 {
     bson_finish(objectData->object);
 }
+
+bool MongodbObject::IsFinished()
+{
+    return objectData->object->finished;
+}
     
 String MongodbObject::GetObjectName()
 {

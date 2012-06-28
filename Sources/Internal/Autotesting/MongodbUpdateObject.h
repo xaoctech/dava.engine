@@ -35,11 +35,9 @@ public:
     bool SaveToDB(MongodbClient* dbClient);
     
 protected:
-    void ReadData(KeyedArchive* archive, void* bsonObj);
-    void WriteData(MongodbObject* mongoObj, const String & key, VariantType *value);
+    void InitWithData();
     
     MongodbObject* updateObject;
-    Vector<MongodbObject*> updateObjects;
     
     KeyedArchive* updateData;
 };
