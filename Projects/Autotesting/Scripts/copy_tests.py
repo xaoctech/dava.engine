@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-#  autotesting_init.py
+#  copy_tests.py
 #  DAVA SDK
 #
 #  Created by Dmitry Shpakov on 6/13/12.
@@ -14,6 +14,8 @@ import string;
 import platform;
 import shutil;
 import subprocess;
+
+print "copy_tests" 
 
 arguments = sys.argv[1:]
 
@@ -36,16 +38,24 @@ autotestingActionsDestFolder = os.path.realpath(autotestingDestFolder + "/Action
 autotestingTestsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Tests")
 autotestingTestsDestFolder = os.path.realpath(autotestingDestFolder + "/Tests")
 
-if os.path.exists(autotestingActionsDestFolder):    
+if os.path.exists(autotestingActionsDestFolder):   
+    print "shutil.rmtree " + autotestingActionsDestFolder 
     shutil.rmtree(autotestingActionsDestFolder)
-os.mkdir(autotestingActionsDestFolder)
+else:
+    print "os.mkdir " + autotestingActionsDestFolder 
+    os.mkdir(autotestingActionsDestFolder)
 
-if os.path.exists(autotestingTestsDestFolder):    
+if os.path.exists(autotestingTestsDestFolder):   
+    print "shutil.rmtree " + autotestingTestsDestFolder 
     shutil.rmtree(autotestingTestsDestFolder)
-os.mkdir(autotestingTestsDestFolder)
+else:
+    print "os.mkdir " + autotestingTestsDestFolder 
+    os.mkdir(autotestingTestsDestFolder)
 
 print "copy " + autotestingActionsSrcFolder + " to " + autotestingActionsDestFolder
 shutil.copytree(autotestingActionsSrcFolder, autotestingActionsDestFolder, ignore=ignored_svn_files)
 
 print "copy " + autotestingTestsSrcFolder + " to " + autotestingTestsDestFolder
 shutil.copytree(autotestingTestsSrcFolder, autotestingTestsDestFolder, ignore=ignored_svn_files)
+
+print "copy_tests done" 
