@@ -57,7 +57,7 @@
 #elif defined (__DAVAENGINE_IPHONE__)
 #define AUTOTESTING_PLATFORM_NAME  "iOS"
 #elif defined (__DAVAENGINE_WIN32__)
-#define AUTOTESTING_PLATFORM_NAME  "Win32"
+#define AUTOTESTING_PLATFORM_NAME  "Windows"
 #elif defined (__DAVAENGINE_ANDROID__)
 #define AUTOTESTING_PLATFORM_NAME  "Android"
 #else
