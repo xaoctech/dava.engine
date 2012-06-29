@@ -56,7 +56,8 @@ isVideoBufReady(false),
 videoTime(0),
 isRepeat(false),
 currFrameTime(0),
-frameTime(0)
+frameTime(0),
+file(0)
 {
     theoraData = new TheoraData();
     theoraData->thSetup = 0;
@@ -68,8 +69,8 @@ frameTime(0)
 
 TheoraPlayer::~TheoraPlayer()
 {
-    SafeDelete(theoraData);
     CloseFile();
+    SafeDelete(theoraData);
 }
 
 int32 TheoraPlayer::BufferData()
@@ -82,17 +83,20 @@ int32 TheoraPlayer::BufferData()
 
 void TheoraPlayer::CloseFile()
 {
-    if(theoraData->thSetup)
-        th_setup_free(theoraData->thSetup);
-    theoraData->thSetup = 0;
-    if(theoraData->thCtx)
-        th_decode_free(theoraData->thCtx);
-    theoraData->thCtx = 0;
+    if(theoraData)
+    {
+        if(theoraData->thSetup)
+            th_setup_free(theoraData->thSetup);
+        theoraData->thSetup = 0;
+        if(theoraData->thCtx)
+            th_decode_free(theoraData->thCtx);
+        theoraData->thCtx = 0;
+        theoraData->videoBufGranulePos = -1;
+        ogg_sync_clear(&theoraData->syncState);
+    }
     theora_p = 0;
     isVideoBufReady = false;
-    theoraData->videoBufGranulePos = -1;
     videoTime = 0;
-    ogg_sync_clear(&theoraData->syncState);
     SafeRelease(file);
     SafeDelete(frameBuffer);
 }

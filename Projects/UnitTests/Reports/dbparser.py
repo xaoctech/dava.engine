@@ -53,8 +53,10 @@ if None != connection:
 		index = 0
 
 		errorWasFound = 0
+		usedTestName = ""
 		for testName in testNames:
 			if count - 2 == index:
+				usedTestName = testName
 				testData = platform[testName]
 				errorNames = testData.keys()
 				errorNames.sort()
@@ -70,6 +72,7 @@ if None != connection:
 			index = index + 1
 			
 		if 1 == errorWasFound:
+			LogErrror('Errors at test: ' + usedTestName)
 			sys.stdout.flush()
 			exit(1)
 		else:

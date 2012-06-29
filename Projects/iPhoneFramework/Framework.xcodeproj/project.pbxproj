@@ -56,6 +56,16 @@
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CBFD6DC159C6D4500852F1A /* LandscapeGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */; };
+		5CBFD6DD159C6D4500852F1A /* LandscapeGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */; };
+		5CBFD6DE159C6D4500852F1A /* LandscapeGeometrySystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */; };
+		5CBFD6DF159C6D4500852F1A /* MeshInstanceComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D5159C6D4500852F1A /* MeshInstanceComponent.cpp */; };
+		5CBFD6E0159C6D4500852F1A /* MeshInstanceComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D6159C6D4500852F1A /* MeshInstanceComponent.h */; };
+		5CBFD6E1159C6D4500852F1A /* MeshInstanceDrawSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D7159C6D4500852F1A /* MeshInstanceDrawSystem.cpp */; };
+		5CBFD6E2159C6D4500852F1A /* MeshInstanceDrawSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D8159C6D4500852F1A /* MeshInstanceDrawSystem.h */; };
+		5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D9159C6D4500852F1A /* TransformComponent.cpp */; };
+		5CBFD6E4159C6D4500852F1A /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6DA159C6D4500852F1A /* TransformComponent.h */; };
+		5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6DB159C6D4500852F1A /* VisibilityAABBoxSystem.h */; };
 		5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */; };
 		5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D53156E3EBF00EDB730 /* UserNode.h */; };
 		5CFD7DF81564DC58009692EE /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7DF41564DC58009692EE /* ImageConvert.h */; };
@@ -80,6 +90,9 @@
 		C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */; };
 		C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D6157FA00C00B0E00A /* TouchAction.cpp */; };
 		C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D7157FA00C00B0E00A /* TouchAction.h */; };
+		C7EB91DA159DA8E7000F0756 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EB91D7159DA8E7000F0756 /* Config.h */; };
+		C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */; };
+		C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */; };
 		C7EFBC59158B4D1000BF42E0 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC47158B4D0F00BF42E0 /* Component.cpp */; };
 		C7EFBC5A158B4D1000BF42E0 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC48158B4D0F00BF42E0 /* Component.h */; };
 		C7EFBC5B158B4D1000BF42E0 /* ComponentDataMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */; };
@@ -572,6 +585,16 @@
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeGeometryComponent.cpp; path = Entity/LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
+		5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometryComponent.h; path = Entity/LandscapeGeometryComponent.h; sourceTree = "<group>"; };
+		5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometrySystem.h; path = Entity/LandscapeGeometrySystem.h; sourceTree = "<group>"; };
+		5CBFD6D5159C6D4500852F1A /* MeshInstanceComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MeshInstanceComponent.cpp; path = Entity/MeshInstanceComponent.cpp; sourceTree = "<group>"; };
+		5CBFD6D6159C6D4500852F1A /* MeshInstanceComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeshInstanceComponent.h; path = Entity/MeshInstanceComponent.h; sourceTree = "<group>"; };
+		5CBFD6D7159C6D4500852F1A /* MeshInstanceDrawSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MeshInstanceDrawSystem.cpp; path = Entity/MeshInstanceDrawSystem.cpp; sourceTree = "<group>"; };
+		5CBFD6D8159C6D4500852F1A /* MeshInstanceDrawSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeshInstanceDrawSystem.h; path = Entity/MeshInstanceDrawSystem.h; sourceTree = "<group>"; };
+		5CBFD6D9159C6D4500852F1A /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformComponent.cpp; path = Entity/TransformComponent.cpp; sourceTree = "<group>"; };
+		5CBFD6DA159C6D4500852F1A /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransformComponent.h; path = Entity/TransformComponent.h; sourceTree = "<group>"; };
+		5CBFD6DB159C6D4500852F1A /* VisibilityAABBoxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxSystem.h; path = Entity/VisibilityAABBoxSystem.h; sourceTree = "<group>"; };
 		5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		5CFA5D53156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		5CFD7DF41564DC58009692EE /* ImageConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageConvert.h; sourceTree = "<group>"; };
@@ -596,6 +619,9 @@
 		C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
 		C7E895D6157FA00C00B0E00A /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
 		C7E895D7157FA00C00B0E00A /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
+		C7EB91D7159DA8E7000F0756 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
+		C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
 		C7EFBC47158B4D0F00BF42E0 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
 		C7EFBC48158B4D0F00BF42E0 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
 		C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentDataMapper.h; path = Entity/ComponentDataMapper.h; sourceTree = "<group>"; };
@@ -1104,6 +1130,9 @@
 		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C7EB91D7159DA8E7000F0756 /* Config.h */,
+				C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */,
+				C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */,
 				C7E895CE157FA00C00B0E00A /* Action.cpp */,
 				C7E895CF157FA00C00B0E00A /* Action.h */,
 				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
@@ -1119,6 +1148,16 @@
 		C7EFBC6C158B4D1A00BF42E0 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
+				5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */,
+				5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */,
+				5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */,
+				5CBFD6D5159C6D4500852F1A /* MeshInstanceComponent.cpp */,
+				5CBFD6D6159C6D4500852F1A /* MeshInstanceComponent.h */,
+				5CBFD6D7159C6D4500852F1A /* MeshInstanceDrawSystem.cpp */,
+				5CBFD6D8159C6D4500852F1A /* MeshInstanceDrawSystem.h */,
+				5CBFD6D9159C6D4500852F1A /* TransformComponent.cpp */,
+				5CBFD6DA159C6D4500852F1A /* TransformComponent.h */,
+				5CBFD6DB159C6D4500852F1A /* VisibilityAABBoxSystem.h */,
 				C7EFBC47158B4D0F00BF42E0 /* Component.cpp */,
 				C7EFBC48158B4D0F00BF42E0 /* Component.h */,
 				C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */,
@@ -2065,6 +2104,14 @@
 				C7EFBC68158B4D1000BF42E0 /* PoolSystem.h in Headers */,
 				C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */,
 				022CC0BD159A0FA800A3FE06 /* TheoraPlayer.h in Headers */,
+				5CBFD6DD159C6D4500852F1A /* LandscapeGeometryComponent.h in Headers */,
+				5CBFD6DE159C6D4500852F1A /* LandscapeGeometrySystem.h in Headers */,
+				5CBFD6E0159C6D4500852F1A /* MeshInstanceComponent.h in Headers */,
+				5CBFD6E2159C6D4500852F1A /* MeshInstanceDrawSystem.h in Headers */,
+				5CBFD6E4159C6D4500852F1A /* TransformComponent.h in Headers */,
+				5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */,
+				C7EB91DA159DA8E7000F0756 /* Config.h in Headers */,
+				C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2365,6 +2412,11 @@
 				C7EFBC67158B4D1000BF42E0 /* PoolSystem.cpp in Sources */,
 				C7EFBC69158B4D1000BF42E0 /* VisibilityAABBoxComponent.cpp in Sources */,
 				022CC0BC159A0FA800A3FE06 /* TheoraPlayer.cpp in Sources */,
+				5CBFD6DC159C6D4500852F1A /* LandscapeGeometryComponent.cpp in Sources */,
+				5CBFD6DF159C6D4500852F1A /* MeshInstanceComponent.cpp in Sources */,
+				5CBFD6E1159C6D4500852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
+				5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */,
+				C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

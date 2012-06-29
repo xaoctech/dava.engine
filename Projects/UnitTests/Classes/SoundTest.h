@@ -20,42 +20,47 @@
  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  Revision History:
- * Created by Ivan Petrochenko
+ * Created by Igor Solovey
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_MUSIC_IOS_H__
-#define __DAVAENGINE_MUSIC_IOS_H__
+#ifndef __SOUND_TEST_H__
+#define __SOUND_TEST_H__
 
-#include "Sound/Sound.h"
+#include "DAVAEngine.h"
+using namespace DAVA;
 
-namespace DAVA
-{
-	
-class MusicIos : public Sound
+#include "TestTemplate.h"
+
+class SoundTest : public TestTemplate<SoundTest>
 {
 public:
-    virtual SoundInstance	* Play();
-	virtual void			Stop();
-	virtual void			SetVolume(float32 volume); // [0..1]
-	virtual void			SetLooping(bool looping);
+	SoundTest();
     
-    bool                    IsPlaying();
+	virtual void LoadResources();
+	virtual void UnloadResources();
+    virtual void Update(float32 timeElapsed);
     
-protected:
-    MusicIos(const String & fileName);
-    virtual bool Init();
-    virtual ~MusicIos();
+    void CreateInvalidSounds(PerfFuncData * data);
+    void CreateValidSounds(PerfFuncData * data);
     
-    void * avSound;
+    void PlayStopEffect(PerfFuncData * data);
+    void PlayStopMusic(PerfFuncData * data);
     
-    friend class Sound;
-};
+    void PlayEffect(PerfFuncData * data);
     
+private:
+    
+    SoundInstance * effectIns;
+    Sound * sndClick;
+    Sound * music;
+    
+    bool effectPlayTest;
 };
 
-#endif //__DAVAENGINE_MUSIC_IOS_H__
+
+#endif //#ifndef __SOUND_TEST_H__

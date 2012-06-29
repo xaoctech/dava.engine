@@ -42,6 +42,7 @@
 	
 	BOOL				playing;
 	BOOL				interruptedOnPlayback;
+    BOOL                initSuccess;
 }
 
 @property(nonatomic, readonly) AVAudioPlayer * audioPlayer;
@@ -57,6 +58,7 @@
 
 - (id)initWithFileName: (NSString*)name
 {  
+    initSuccess = true;
     if(self == [super init])
 	{  
         NSError * error = 0;
@@ -65,6 +67,7 @@
 		if(error)
         {
             printf("AvSound::initWithFileName error %s", [[error localizedDescription] cStringUsingEncoding:NSASCIIStringEncoding]);
+            initSuccess = false;
         }
         
 		audioPlayer.delegate = self;
@@ -132,10 +135,22 @@ MusicIos::MusicIos(const String & fileName)
 :   Sound(fileName, Sound::TYPE_STREAMED),  
     avSound(0)
 {
-    avSound = [[AvSound alloc] initWithFileName:[NSString stringWithCString:FileSystem::Instance()->SystemPathForFrameworkPath(fileName).c_str() 
-                encoding:NSASCIIStringEncoding]]; 
+
 }
 
+bool MusicIos::Init()
+{
+    avSound = [[AvSound alloc] initWithFileName:[NSString stringWithCString:FileSystem::Instance()->SystemPathForFrameworkPath(fileName).c_str() encoding:NSASCIIStringEncoding]];
+    
+    if(avSound && !((AvSound *)avSound)->initSuccess)
+    {
+        [(AvSound*)avSound release];
+        avSound = 0;
+        return false;
+    }
+    return true;
+}
+    
 MusicIos::~MusicIos()
 {
     [(AvSound*)avSound release];
@@ -158,6 +173,14 @@ SoundInstance * MusicIos::Play()
 
 void MusicIos::Stop()
 {
+    List<SoundInstance*>::iterator sit;
+	List<SoundInstance*>::iterator sitEnd = soundInstances.end();
+	for(sit = soundInstances.begin(); sit != sitEnd; ++sit)
+	{
+		(*sit)->state = SoundInstance::STATE_FORCED_STOPPED;
+	}
+	soundInstances.clear();
+    
     [(AvSound*)avSound stop];
 }
 
@@ -166,7 +189,6 @@ void MusicIos::SetVolume(float32 _volume)
     volume = Clamp(_volume, 0.f, 1.f);
 	((AvSound*)avSound).audioPlayer.volume = volume;
 }
-
 
 void MusicIos::SetLooping(bool looping)
 {

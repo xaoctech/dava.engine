@@ -6,6 +6,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/MeshInstanceNode.h"
 #include "Utils/StringFormat.h"
+#include "Render/Material.h"
 
 namespace DAVA
 {

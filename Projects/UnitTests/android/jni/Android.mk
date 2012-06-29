@@ -29,6 +29,7 @@ LOCAL_SRC_FILES :=  \
                     ../../classes/TestTemplate.cpp \
                     ../../classes/SampleTest.cpp \
                     ../../classes/EntityTest.cpp \
+                    ../../classes/SoundTest.cpp \
 
 LOCAL_CFLAGS := -g -O2
 
