@@ -41,16 +41,16 @@ autotestingTestsDestFolder = os.path.realpath(autotestingDestFolder + "/Tests")
 if os.path.exists(autotestingActionsDestFolder):   
     print "shutil.rmtree " + autotestingActionsDestFolder 
     shutil.rmtree(autotestingActionsDestFolder)
-else:
-    print "os.mkdir " + autotestingActionsDestFolder 
-    os.mkdir(autotestingActionsDestFolder)
+#else:
+#    print "os.mkdir " + autotestingActionsDestFolder 
+#    os.mkdir(autotestingActionsDestFolder)
 
 if os.path.exists(autotestingTestsDestFolder):   
     print "shutil.rmtree " + autotestingTestsDestFolder 
     shutil.rmtree(autotestingTestsDestFolder)
-else:
-    print "os.mkdir " + autotestingTestsDestFolder 
-    os.mkdir(autotestingTestsDestFolder)
+#else:
+#   print "os.mkdir " + autotestingTestsDestFolder 
+#   os.mkdir(autotestingTestsDestFolder)
 
 print "copy " + autotestingActionsSrcFolder + " to " + autotestingActionsDestFolder
 shutil.copytree(autotestingActionsSrcFolder, autotestingActionsDestFolder, ignore=ignored_svn_files)
