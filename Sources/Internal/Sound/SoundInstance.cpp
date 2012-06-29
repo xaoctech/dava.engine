@@ -42,7 +42,7 @@ namespace DAVA
 {
 
 SoundInstance::SoundInstance()
-:	state(STATE_COMPLETED),
+:	state(STATE_PLAYING),
 	animatedVolume(-1.f)
 #if defined(__DAVAENGINE_IPHONE__)
     ,buddyMusic(0)
@@ -50,7 +50,7 @@ SoundInstance::SoundInstance()
 {
 	SoundSystem::Instance()->AddSoundInstance(this);
 }
-    
+
 #ifdef __DAVAENGINE_ANDROID__
 SoundInstance::SoundInstance(Sound * parent)
 :	state(STATE_PLAYING),
