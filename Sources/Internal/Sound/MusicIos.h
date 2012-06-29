@@ -48,6 +48,7 @@ public:
     
 protected:
     MusicIos(const String & fileName);
+    virtual bool Init();
     virtual ~MusicIos();
     
     void * avSound;
