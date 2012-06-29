@@ -419,7 +419,7 @@ bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive
 void MongodbClient::ReadData(KeyedArchive* archive, void* bsonObj)
 {
     if((!archive) || (!bsonObj)) return;
-    
+
     bson_iterator it;
     bson_iterator_init(&it, (bson*)bsonObj);
     
@@ -428,6 +428,8 @@ void MongodbClient::ReadData(KeyedArchive* archive, void* bsonObj)
         String key = String(bson_iterator_key(&it));
         bson_type type = bson_iterator_type(&it);
         
+        if(key == "_id") continue; // ignore _id
+
         switch (type)
         {
             case BSON_STRING:
@@ -477,6 +479,8 @@ void MongodbClient::WriteData(MongodbObject* mongoObj, const String & key, Varia
 {
     if(mongoObj && value)
     {
+        if(key == "_id") return; // ignore _id
+
         //TODO: bool, uint32 and WideString have no corresponding types in mongoDB
         switch (value->type) 
         {
@@ -518,9 +522,10 @@ void MongodbClient::WriteData(MongodbObject* mongoObj, const String & key, Varia
             case VariantType::TYPE_KEYED_ARCHIVE:
             {
                 MongodbObject* subObject = new MongodbObject();
-                
-                KeyedArchiveToDBObject(value->AsKeyedArchive(), subObject);
-            
+                KeyedArchive* subArchive = value->AsKeyedArchive();
+
+                KeyedArchiveToDBObject(subArchive, subObject);
+
                 subObject->SetObjectName(key);
                 subObject->Finish();
                 
