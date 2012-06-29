@@ -90,6 +90,9 @@
 		C7E895DD157FA00C00B0E00A /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */; };
 		C7E895E0157FA00C00B0E00A /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895D6157FA00C00B0E00A /* TouchAction.cpp */; };
 		C7E895E1157FA00C00B0E00A /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895D7157FA00C00B0E00A /* TouchAction.h */; };
+		C7EB91DA159DA8E7000F0756 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EB91D7159DA8E7000F0756 /* Config.h */; };
+		C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */; };
+		C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */; };
 		C7EFBC59158B4D1000BF42E0 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7EFBC47158B4D0F00BF42E0 /* Component.cpp */; };
 		C7EFBC5A158B4D1000BF42E0 /* Component.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC48158B4D0F00BF42E0 /* Component.h */; };
 		C7EFBC5B158B4D1000BF42E0 /* ComponentDataMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */; };
@@ -616,6 +619,9 @@
 		C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
 		C7E895D6157FA00C00B0E00A /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
 		C7E895D7157FA00C00B0E00A /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
+		C7EB91D7159DA8E7000F0756 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
+		C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
 		C7EFBC47158B4D0F00BF42E0 /* Component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Component.cpp; path = Entity/Component.cpp; sourceTree = "<group>"; };
 		C7EFBC48158B4D0F00BF42E0 /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = Entity/Component.h; sourceTree = "<group>"; };
 		C7EFBC49158B4D0F00BF42E0 /* ComponentDataMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentDataMapper.h; path = Entity/ComponentDataMapper.h; sourceTree = "<group>"; };
@@ -1124,6 +1130,9 @@
 		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C7EB91D7159DA8E7000F0756 /* Config.h */,
+				C7EB91D8159DA8E7000F0756 /* MongodbUpdateObject.cpp */,
+				C7EB91D9159DA8E7000F0756 /* MongodbUpdateObject.h */,
 				C7E895CE157FA00C00B0E00A /* Action.cpp */,
 				C7E895CF157FA00C00B0E00A /* Action.h */,
 				C7E895D0157FA00C00B0E00A /* AssertAction.cpp */,
@@ -2101,6 +2110,8 @@
 				5CBFD6E2159C6D4500852F1A /* MeshInstanceDrawSystem.h in Headers */,
 				5CBFD6E4159C6D4500852F1A /* TransformComponent.h in Headers */,
 				5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */,
+				C7EB91DA159DA8E7000F0756 /* Config.h in Headers */,
+				C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2405,6 +2416,7 @@
 				5CBFD6DF159C6D4500852F1A /* MeshInstanceComponent.cpp in Sources */,
 				5CBFD6E1159C6D4500852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */,
+				C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
