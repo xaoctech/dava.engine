@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02B3D3BC159C782F0082111B /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02B3D3BB159C782F0082111B /* SoundTest.cpp */; };
 		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SampleTest.cpp */; };
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
@@ -44,6 +45,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02B3D3BA159C78200082111B /* SoundTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SoundTest.h; path = Classes/SoundTest.h; sourceTree = "<group>"; };
+		02B3D3BB159C782F0082111B /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundTest.cpp; path = Classes/SoundTest.cpp; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -94,6 +97,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		02B3D3B9159C78010082111B /* SoundTest */ = {
+			isa = PBXGroup;
+			children = (
+				02B3D3BB159C782F0082111B /* SoundTest.cpp */,
+				02B3D3BA159C78200082111B /* SoundTest.h */,
+			);
+			name = SoundTest;
+			sourceTree = "<group>";
+		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -171,6 +183,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				02B3D3B9159C78010082111B /* SoundTest */,
 				5CA2461A158F46CD00465879 /* EntityTest */,
 				5CDC24FA156CC72400742348 /* SampleTest.cpp */,
 				5CDC24FB156CC72400742348 /* SampleTest.h */,
@@ -339,6 +352,7 @@
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
 				5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */,
+				02B3D3BC159C782F0082111B /* SoundTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
