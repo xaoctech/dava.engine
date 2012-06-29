@@ -1720,7 +1720,9 @@ void TestScreen::GetLayerPropValue(lProps id, bool getLimits)
     PropertyLineKeyframes<Color> *ck;
     switch (id) {
         case LAYER_SPRITE:
+			SafeRelease(sprite);
             sprite = emitter->GetLayers().at(selectedEmitterElement-1)->GetSprite();
+			sprite = SafeRetain(sprite);
             spriteControl->SetSprite(sprite, 0);
             if(sprite)
                 layers[selectedEmitterElement]->props.at(id)->isDefault = false;
