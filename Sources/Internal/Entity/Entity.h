@@ -89,12 +89,12 @@ const T * Entity::GetData(const char * dataName)
 	if(0 == enFamily)
 	{
 		Logger::Error("Entity::SetData enFamily==0");
-		return;
+		return 0;
 	}
 
 	T * t = enFamily->GetPtr<T>(dataName);
 	
-	return t;
+	return &(t[indexInFamily]);
 }
 
 };

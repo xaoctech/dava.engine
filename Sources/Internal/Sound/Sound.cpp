@@ -55,29 +55,60 @@ namespace DAVA
 
 Sound * Sound::Create(const String & fileName, eType type, int32 priority)
 {
-	Sound * sound = new Sound(fileName, type, priority);
-	sound->Init();
-	return sound;
+    if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
+        return 0;
+    
+    Sound * sound = new Sound(fileName, type, priority);
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    return sound;
 }
 
 Sound	* Sound::CreateFX(const String & fileName, eType type, int32 priority /*= 0*/)
 {
+    if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
+        return 0;
+    
 	Sound * sound = new Sound(fileName, type, priority);
-	sound->Init();
-	SoundSystem::Instance()->GroupFX()->AddSound(sound);
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    else
+    {
+        SoundSystem::Instance()->GroupFX()->AddSound(sound);
+    }
 	return sound;
 }
 
 Sound	* Sound::CreateMusic(const String & fileName, eType type, int32 priority /*= 0*/)
 {
+    if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
+        return 0;
+    
 #if defined(__DAVAENGINE_IPHONE__)
     Sound * sound = new MusicIos(fileName);
-    SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    else
+    {
+        SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    }
     return sound;
 #else
 	Sound * sound = new Sound(fileName, type, priority);
-	sound->Init();
-	SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    else
+    {
+        SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    }
 	return sound;
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
@@ -108,15 +139,18 @@ Sound::~Sound()
 	{
 		group->RemoveSound(this);
 	}
-
+    
 	SafeRelease(buffer);
 	SafeRelease(streamBuffer);
 	SafeDelete(provider);
 }
 
-void Sound::Init()
-{    
+bool Sound::Init()
+{
 	int32 strLength = (int32)fileName.length();
+    if(strLength < 5)
+        return false;
+    
 	String ext = fileName.substr(strLength-4, strLength);
 	if(".wav" == ext)
 	{
@@ -129,10 +163,16 @@ void Sound::Init()
 	}
 #endif //#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 
+#ifdef __DAVAENGINE_ANDROID__    
+    if(TYPE_STATIC == type)
+#endif //#ifdef __DAVAENGINE_ANDROID__ 
+        if(!provider)
+            return false;
+
     if(TYPE_STATIC == type)
 	{
-		PrepareStaticBuffer();
-        
+		if(!PrepareStaticBuffer())
+            return false;
 #ifdef __DAVAENGINE_ANDROID__
         InitBufferQueueAudioPlayer();
 #endif //#ifdef __DAVAENGINE_ANDROID__
@@ -140,15 +180,23 @@ void Sound::Init()
     }
     else if (TYPE_STREAMED == type)
     {
-#ifdef __DAVAENGINE_ANDROID__
-        InitAssetAudioPlayer();
-#endif //#ifdef __DAVAENGINE_ANDROID__        
+#ifndef __DAVAENGINE_ANDROID__
+		if(!provider->Init())
+        {
+            return false;
+        }
+        provider->Rewind();
+#else
+        if(!InitAssetAudioPlayer())
+            return false;
+#endif //#ifndef __DAVAENGINE_ANDROID__        
     }
-    
+
 #ifdef __DAVAENGINE_ANDROID__
     minVolumeLevel = SL_MILLIBEL_MIN;
     (*playerVolume)->GetMaxVolumeLevel(playerVolume, &maxVolumeLevel);
-#endif //#ifdef __DAVAENGINE_ANDROID__        
+#endif //#ifdef __DAVAENGINE_ANDROID__  
+    return true;
 }
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -166,10 +214,12 @@ bool Sound::InitAssetAudioPlayer()
     String filePath = "Data" + fileName.substr(5, strLength - 5);
     AAsset* asset = AAssetManager_open(mgr, filePath.c_str(), AASSET_MODE_UNKNOWN);
     
+    if(!asset)
+        return false;
+    
     // open asset as file descriptor
     off_t start, length;
     int fd = AAsset_openFileDescriptor(asset, &start, &length);
-    DVASSERT(0 <= fd);
     AAsset_close(asset);
     
     // configure audio source
@@ -259,16 +309,19 @@ bool Sound::InitBufferQueueAudioPlayer()
 }
 #endif //#ifdef __DAVAENGINE_ANDROID__
     
-void Sound::PrepareStaticBuffer()
+bool Sound::PrepareStaticBuffer()
 {
 	buffer = SoundBuffer::CreateStatic(fileName);
 	if(1 == buffer->GetRetainCount()) 
 	{
-		DVVERIFY(provider->Init());
+		if(!provider->Init())
+            return false;
+        
 #ifndef __DAVAENGINE_ANDROID__
 		buffer->FullFill(provider);
 #endif //#ifdef __DAVAENGINE_ANDROID__
 	}
+    return true;
 }
 
 void Sound::PrepareDynamicBuffers()
@@ -311,7 +364,7 @@ SoundInstance * Sound::Play()
     {
         result = (*playerBufferQueue)->Clear(playerBufferQueue);
         DVASSERT(SL_RESULT_SUCCESS == result);
-
+        
         buffer->FullFill(provider, playerBufferQueue);
     }
     
@@ -345,8 +398,6 @@ SoundInstance * Sound::Play()
 
 	if(TYPE_STREAMED == type)
 	{
-		provider->Init();
-		provider->Rewind();
 		PrepareDynamicBuffers();
 	}
 

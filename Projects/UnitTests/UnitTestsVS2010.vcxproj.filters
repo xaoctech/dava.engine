@@ -36,6 +36,9 @@
     <ClInclude Include="Classes\EntityTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\SoundTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp">
@@ -57,6 +60,9 @@
       <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="Classes\EntityTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SoundTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>

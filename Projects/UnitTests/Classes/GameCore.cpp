@@ -36,6 +36,7 @@
 #include "BaseScreen.h"
 #include "SampleTest.h"
 #include "EntityTest.h"
+#include "SoundTest.h"
 
 using namespace DAVA;
 
@@ -63,6 +64,7 @@ void GameCore::OnAppStarted()
 
     new SampleTest();
 	new EntityTest(); 
+    new SoundTest();
     
     errors.reserve(TestCount());
 
@@ -339,7 +341,7 @@ MongodbObject * GameCore::CreateLogObject(const String &logName)
             {
                 ErrorData *error = errors[i];
                 
-                String errorString = String(Format("command %s at file %s at line %d", 
+                String errorString = String(Format("command: %s at file: %s at line: %d", 
                                                    error->command.c_str(), error->filename.c_str(), error->line));
                 
                 reportFile->WriteLine(String(Format("Error[%06d]: ", i+1)) + errorString);

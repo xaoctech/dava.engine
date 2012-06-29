@@ -38,6 +38,8 @@
 #include "Autotesting/TouchAction.h"
 #include "Autotesting/AssertAction.h"
 
+#include "Autotesting/MongodbUpdateObject.h"
+
 #include "Base/Singleton.h"
 
 #define __DAVAENGINE_AUTOTESTING_FILE__
@@ -52,18 +54,18 @@
 
 #if defined (__DAVAENGINE_MACOS__)
 #define AUTOTESTING_PLATFORM_NAME  "MacOS"
-#elif defined (__DAVAENGINE_IPHONE_)
+#elif defined (__DAVAENGINE_IPHONE__)
 #define AUTOTESTING_PLATFORM_NAME  "iOS"
-#elif defined (__DAVAENGINE_WIN32_)
-#define AUTOTESTING_PLATFORM_NAME  "Win32"
-#elif defined (__DAVAENGINE_ANDROID_)
+#elif defined (__DAVAENGINE_WIN32__)
+#define AUTOTESTING_PLATFORM_NAME  "Windows"
+#elif defined (__DAVAENGINE_ANDROID__)
 #define AUTOTESTING_PLATFORM_NAME  "Android"
 #else
 #define AUTOTESTING_PLATFORM_NAME  "Unknown"
 #endif //PLATFORMS    
 
 #include "Database/MongodbClient.h"
-#include "Database/MongodbObject.h"
+
 
 namespace DAVA
 {
@@ -89,6 +91,8 @@ public:
     void Update(float32 timeElapsed);
     void Draw();
 
+    void OnTestsSatrted();
+    void OnTestAssert(const String & text, bool isPassed);
     void OnError(const String & errorMessage = "");
     void OnTestsFinished();
 
@@ -127,9 +131,6 @@ public:
     void AssertBool(bool expected, const Vector<String> &controlPath, const String &assertMessage = "");
     void AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage = "");    
 
-    // assert report
-    void OnTestAssert(const String & text, bool isPassed);
-
     // helpers
     void OnInput(const UIEvent &input);
 
@@ -145,7 +146,8 @@ protected:
     
     //DB
     bool ConnectToDB();
-    void SaveTestToDB(const String & text, bool isPassed);
+    void AddTestResult(const String &text, bool isPassed);
+    void SaveTestToDB();
     //
 
     bool isInit;
@@ -162,9 +164,7 @@ protected:
     String testName;
     String testFileName;
     String testFilePath;
-    
-
-    
+    Vector< std::pair<String, bool> > testResults;
     
     MongodbClient *dbClient;
     

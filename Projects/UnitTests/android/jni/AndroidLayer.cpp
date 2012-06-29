@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 #include "Platform/TemplateAndroid/AndroidSpecifics.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
@@ -27,7 +29,8 @@ extern "C"
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIApplication_OnConfigurationChanged(JNIEnv * env, jobject classthis);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIApplication_OnLowMemory(JNIEnv * env, jobject classthis);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIApplication_OnTerminate(JNIEnv * env, jobject classthis);
-
+ 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager);
+ 	
 	//FrameworkTestProject
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIActivity_nativeOnCreate(JNIEnv * env, jobject classthis, jboolean isFirstRun);
 	JNIEXPORT void JNICALL Java_com_dava_framework_JNIActivity_nativeOnStart(JNIEnv * env, jobject classthis);
@@ -364,6 +367,10 @@ void Java_com_dava_framework_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 
 		core->RenderRecreated();
 	}
+}
+void Java_com_dava_framework_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager)
+{
+	core->SetAssetManager(AAssetManager_fromJava(env, assetManager));
 }
 
 

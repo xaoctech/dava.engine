@@ -93,8 +93,9 @@ protected:
 	Sound(const String & fileName, eType type, int32 priority = 0);
 	virtual ~Sound();
 
-	void Init();
-	void PrepareStaticBuffer();
+	virtual bool Init();
+    
+	bool PrepareStaticBuffer();
 	void PrepareDynamicBuffers();
 	void UpdateDynamicBuffers();
 
