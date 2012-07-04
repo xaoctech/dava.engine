@@ -306,14 +306,22 @@ void GameCore::FlushTestResults()
     MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
     MongodbObject *newPlatformObject = new MongodbObject();
     
+    int64 globalIndex = 0;
+    if(oldPlatformObject)
+    {
+        globalIndex = oldPlatformObject->GetInt64(String("globalIndex"));
+        ++globalIndex;
+    }
+    
     if(newPlatformObject)
     {
         newPlatformObject->SetObjectName(PLATFORM_NAME);
+        newPlatformObject->AddInt64(String("globalIndex"), globalIndex);
+        
+        String testTimeString = Format("%016d", globalIndex);
+        
         
         time_t logStartTime = time(0);
-        String testTimeString = Format("%lld", logStartTime);
-        
-        
         tm* utcTime = localtime(&logStartTime);
         
         

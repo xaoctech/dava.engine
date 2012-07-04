@@ -51,11 +51,12 @@ if None != connection:
 		screenNames = platform.keys()
 		screenNames.sort()
 		for screenName in screenNames:
-			if '_id' != screenName:
+			if '_id' != screenName and 'globalIndex' != screenName:
 				report.write('<H1> Screen: ' + screenName + ' </H1>')
 
 				screen = platform[screenName]
 				testNames = screen.keys()
+				testNames.sort()
 				for testName in testNames:
 					if '_id' != testName:
 						
