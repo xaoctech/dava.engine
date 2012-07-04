@@ -54,16 +54,20 @@ if None != connection:
 
 		errorWasFound = 0
 		usedTestName = ""
+		runtime = ""
 		for testName in testNames:
 			if count - 2 == index:
 				usedTestName = testName
 				testData = platform[testName]
+				
+				runtime = testData['RunTime']
+				
 				errorNames = testData.keys()
 				errorNames.sort()
 				for errorName in errorNames:
 					if 'TestResult' == errorName and 'All test passed.' == testData[errorName]:
 						break
-					elif '_id' != errorName:
+					elif '_id' != errorName and 'RunTime' != errorName:
 						LogError(errorName + ": " + testData[errorName])
 						errorWasFound = 1
 
@@ -72,15 +76,16 @@ if None != connection:
 			index = index + 1
 			
 		if 1 == errorWasFound:
-			LogErrror('Errors at test: ' + usedTestName)
+			LogError('Errors at test: ' + usedTestName)
+			LogError('Run time: ' + runtime)
 			sys.stdout.flush()
 			exit(1)
 		else:
 			print "##teamcity[message text='All tests passed.' errorDetails='' status='NORMAL']"
+			print "##teamcity[message text='Run time: " + runtime + "' errorDetails='' status='NORMAL']"
 			
 			sys.stdout.flush()
 			exit(0)
-		
 
 	else:
 		LogError("There are no tests for platform " + platformName + " at collection " + collectionName)
