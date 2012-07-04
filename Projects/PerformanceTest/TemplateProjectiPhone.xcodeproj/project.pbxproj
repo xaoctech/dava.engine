@@ -10,6 +10,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		5C19F59A15A45F490064E889 /* TreeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F59815A45F490064E889 /* TreeTest.cpp */; };
 		5C6EF11415751B5F001E45AD /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE9895581163F13500500198 /* libFramework.a */; };
 		5C7BE313156E0F0800F9F538 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7BE311156E0F0800F9F538 /* LandscapeTest.cpp */; };
 		5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8D42421580E4D700441032 /* BaseScreen.cpp */; };
@@ -56,6 +57,8 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectiPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectiPhone_Prefix.pch; sourceTree = "<group>"; };
+		5C19F59815A45F490064E889 /* TreeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeTest.cpp; sourceTree = "<group>"; };
+		5C19F59915A45F490064E889 /* TreeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeTest.h; sourceTree = "<group>"; };
 		5C7BE311156E0F0800F9F538 /* LandscapeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeTest.cpp; sourceTree = "<group>"; };
 		5C7BE312156E0F0800F9F538 /* LandscapeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeTest.h; sourceTree = "<group>"; };
 		5C8D42421580E4D700441032 /* BaseScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseScreen.cpp; sourceTree = "<group>"; };
@@ -187,9 +190,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		5C19F59715A45F350064E889 /* TreeTest */ = {
+			isa = PBXGroup;
+			children = (
+				5C19F59815A45F490064E889 /* TreeTest.cpp */,
+				5C19F59915A45F490064E889 /* TreeTest.h */,
+			);
+			name = TreeTest;
+			sourceTree = "<group>";
+		};
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				5C19F59715A45F350064E889 /* TreeTest */,
 				FE40BC88157937580014BB7D /* CacheTest */,
 				5C7BE310156E0EFE00F9F538 /* Landscape */,
 				5CDC251C156CD48700742348 /* SpriteTest.cpp */,
@@ -348,6 +361,7 @@
 				5C7BE313156E0F0800F9F538 /* LandscapeTest.cpp in Sources */,
 				FE40BC8B1579376B0014BB7D /* CacheTest.cpp in Sources */,
 				5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */,
+				5C19F59A15A45F490064E889 /* TreeTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
