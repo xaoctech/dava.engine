@@ -20,82 +20,43 @@
     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTR ACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky 
+        * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
-#ifndef __GAMECORE_H__
-#define __GAMECORE_H__
+
+#ifndef __TREE_TEST_H__
+#define __TREE_TEST_H__
 
 #include "DAVAEngine.h"
-#include "Database/MongodbClient.h"
-
 using namespace DAVA;
 
-class TestData;
-class BaseScreen;
-class GameCore : public ApplicationCore
+#include "TestTemplate.h"
+
+class TreeTest: public TestTemplate<TreeTest>
 {
-public:	
-	GameCore();
-	virtual ~GameCore();
-
-	static GameCore * Instance() 
-	{ 
-		return (GameCore*) DAVA::Core::GetApplicationCore();
-	};
-	
-	virtual void OnAppStarted();
-	virtual void OnAppFinished();
-	
-	virtual void OnSuspend();
-	virtual void OnResume();
-	virtual void OnBackground();
-
-    virtual void BeginFrame();
-	virtual void Update(DAVA::float32 update);
-	virtual void Draw();
-
-    void RegisterScreen(BaseScreen *screen);
-
-    void LogMessage(const String &message);
+    enum eConst
+    {
+        TEST_FRAMES_COUNT = 100
+    };
     
+public:
+	TreeTest(const String &testName, const String &scenePathname);
+
+	virtual void LoadResources();
+	virtual void UnloadResources();
+    
+    virtual void Draw(const UIGeometricData &geometricData);
+    
+    virtual bool RunTest(int32 testNum);
+
 protected:
     
-    bool ConnectToDB();
-    
-    void RunAllTests();
-    void RunTestByName(const String &testName);
-
-    void ProcessTests();
-    void FinishTests();
-    
-    void FlushTestResults();
-    
-    bool CreateLogFile();
-    
-    int32 TestCount();
-    
-    MongodbObject * CreateTestDataObject(const String &testTimeString, const String &runTime, TestData *testData);
-    MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
-    
-protected:
-    
-    File * logFile;
-
-    MongodbClient *dbClient;
-    
-    BaseScreen *currentScreen;
-
-    int32 currentScreenIndex;
-    Vector<BaseScreen *> screens;
-    
-    int32 currentTestIndex;
+    int32 testCounter;
+    String testScenePathname;
 };
 
-
-
-#endif // __GAMECORE_H__
+#endif // __TREE_TEST_H__
