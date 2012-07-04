@@ -82,7 +82,9 @@ bool TreeTest::RunTest(int32 testNum)
         perfFuncs[0].testData.endTime = SystemTimer::Instance()->AbsoluteMS();
         perfFuncs[0].testData.totalTime = perfFuncs[0].testData.endTime - perfFuncs[0].testData.startTime;
         
-        perfFuncs[0].testData.maxTimeIndex = (int32)((float32)TEST_FRAMES_COUNT / ((float32)perfFuncs[0].testData.totalTime / 1000.0f));            
+//        perfFuncs[0].testData.maxTimeIndex = (int32)((float32)TEST_FRAMES_COUNT / ((float32)perfFuncs[0].testData.totalTime / 1000.0f));            
+        perfFuncs[0].testData.minTime = (uint64)((float32)TEST_FRAMES_COUNT / ((float32)perfFuncs[0].testData.totalTime / 1000.0f));            
+        perfFuncs[0].testData.maxTime = (uint64)((float32)perfFuncs[0].testData.totalTime / 1000.0f) / ((float32)TEST_FRAMES_COUNT);            
         return true;
     }
     ++testCounter;
