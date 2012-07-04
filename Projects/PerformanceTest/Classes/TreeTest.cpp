@@ -28,41 +28,74 @@
         * Created by Ivan "Dizz" Petrochenko
 =====================================================================================*/
 
-#ifndef __LANDSCAPE_TEST_H__
-#define __LANDSCAPE_TEST_H__
+#include "TreeTest.h"
 
-#include "DAVAEngine.h"
-using namespace DAVA;
-
-#include "TestTemplate.h"
-
-class LandscapeTest: public TestTemplate<LandscapeTest>
+TreeTest::TreeTest(const String &testName, const String &scenePathname)
+    :   TestTemplate<TreeTest>(testName)
 {
-    enum eConst
+    testScenePathname = scenePathname;
+    
+    testCounter = 0;
+
+    PerfFuncData data;
+    data.testData.name = testName;
+    data.testData.runCount = TEST_FRAMES_COUNT;
+    data.func = NULL;
+    data.screen = this;
+    
+    perfFuncs.push_back(data);
+}
+
+void TreeTest::LoadResources()
+{
+    Scene *scene = new Scene();
+    scene->AddNode(scene->GetRootNode(testScenePathname)); 
+
+    Camera *cam = (Camera *)scene->FindByName(String("CameraTEST"));
+    scene->AddCamera(cam); 
+    scene->SetCurrentCamera(cam);
+    
+    UI3DView *sceneView = new UI3DView(Rect(0, 0, GetSize().x, GetSize().y));
+    sceneView->SetScene(scene);
+    AddControl(sceneView);
+    SafeRelease(sceneView);
+    
+    SafeRelease(scene);
+    
+    testCounter = 0;
+}
+
+void TreeTest::UnloadResources()
+{
+    RemoveAllControls();
+    testCounter = 0;
+}
+
+bool TreeTest::RunTest(int32 testNum)
+{
+    if(0 == testCounter)
     {
-        TEST_FRAMES_COUNT = 100
-    };
-    
-public:
-	LandscapeTest(const String &testName, LandscapeNode::eTiledShaderMode mode);
+        perfFuncs[0].testData.startTime = SystemTimer::Instance()->AbsoluteMS();
+    }
+    else if(TEST_FRAMES_COUNT == testCounter)
+    {
+        perfFuncs[0].testData.endTime = SystemTimer::Instance()->AbsoluteMS();
+        perfFuncs[0].testData.totalTime = perfFuncs[0].testData.endTime - perfFuncs[0].testData.startTime;
+        
+        perfFuncs[0].testData.maxTimeIndex = (int32)((float32)TEST_FRAMES_COUNT / ((float32)perfFuncs[0].testData.totalTime / 1000.0f));            
+        return true;
+    }
+    ++testCounter;
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
-    
-    virtual void Draw(const UIGeometricData &geometricData);
-    
-    virtual bool RunTest(int32 testNum);
-
-protected:
-    
-    void DrawSprite(PerfFuncData * data);
-
-    int32 testCounter;
-    
-    LandscapeNode::eTiledShaderMode shaderMode;
-    
-    Sprite *textures[LandscapeNode::TEXTURE_COUNT];
-};
+    return false;
+}
 
 
-#endif // __LANDSCAPE_TEST_H__
+
+
+void TreeTest::Draw(const UIGeometricData &geometricData)
+{
+    RenderManager::Instance()->ClearDepthBuffer();
+
+    TestTemplate<TreeTest>::Draw(geometricData);
+}

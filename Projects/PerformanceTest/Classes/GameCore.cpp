@@ -37,6 +37,7 @@
 #include "SpriteTest.h"
 #include "CacheTest.h"
 #include "LandscapeTest.h"
+#include "TreeTest.h"
 
 
 using namespace DAVA;
@@ -74,6 +75,9 @@ void GameCore::OnAppStarted()
         new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
         new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
         new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
+        
+        new TreeTest(String("TreeTest TEST_1HI"), String("~res:/3d/Maps/test/treetest/TEST_1HI.sc2"));
+        new TreeTest(String("TreeTest TEST_2"), String("~res:/3d/Maps/test/treetest/TEST_2.sc2"));
         
 #if defined (SINGLE_MODE)
         RunTestByName(SINGLE_TEST_NAME);
@@ -308,6 +312,14 @@ void GameCore::FlushTestResults()
         
         time_t logStartTime = time(0);
         String testTimeString = Format("%lld", logStartTime);
+        
+        
+        tm* utcTime = localtime(&logStartTime);
+        
+        
+        String runTime = Format("%04d.%02d.%02d:%02d:%02d:%02d",   
+                                                utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+                                                utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
 
         for(int32 iScr = 0; iScr < screens.size(); ++iScr)
         {
@@ -330,7 +342,7 @@ void GameCore::FlushTestResults()
                         MongodbObject *testObject = CreateSubObject(td->name, oldScreenObject, false);
                         if(testObject)
                         {
-                            MongodbObject *testDataObject = CreateTestDataObject(testTimeString, td);
+                            MongodbObject *testDataObject = CreateTestDataObject(testTimeString, runTime, td);
                             if(testDataObject)
                             {
                                 testObject->AddObject(testTimeString, testDataObject);
@@ -377,13 +389,14 @@ MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObjec
 }
 
 
-MongodbObject * GameCore::CreateTestDataObject(const String &testTimeString, TestData *testData)
+MongodbObject * GameCore::CreateTestDataObject(const String &testTimeString, const String &runTime, TestData *testData)
 {
     MongodbObject *logObject = new MongodbObject();
     if(logObject)
     {
         logObject->SetObjectName(testTimeString);
         logObject->AddString(String("Owner"), TEST_OWNER);
+        logObject->AddString(String("RunTime"), runTime);
         logObject->AddInt64(String("TotalTime"), testData->totalTime);
         logObject->AddInt64(String("MinTime"), testData->minTime);
         logObject->AddInt64(String("MaxTime"), testData->maxTime);
