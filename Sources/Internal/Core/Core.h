@@ -138,6 +138,14 @@ public:
 		MODE_WINDOWED,
 	};
 	
+    enum eDeviceFamily
+    {
+        DEVICE_UNKNOWN = -1,
+        DEVICE_HANDSET = 0,
+        DEVICE_PAD, 
+        DEVICE_DESKTOP
+    };
+    
 	static int Run(int argc, char *argv[], AppHandle handle = 0);
 	static int RunCmdTool(int argc, char *argv[], AppHandle handle = 0);
 
@@ -301,6 +309,11 @@ public:
 		\brief Checks if framework needs to recalculate scale multipliers.
 	*/
 	bool NeedToRecalculateMultipliers();
+    
+	/**
+     \brief Get device familty
+     */
+    eDeviceFamily GetDeviceFamily();
 
 private:
 	int32 screenOrientation;
