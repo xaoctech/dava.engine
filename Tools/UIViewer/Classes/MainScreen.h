@@ -65,6 +65,7 @@ protected:
     void OnControlSelected(BaseObject *obj, void *data, void *callerData);
     void OnControlDeselected(BaseObject *obj, void *data, void *callerData);
     
+    void ConvertGraphics(const String &path);
     void ExecutePacker(const String &path);
     
     void SafeAddControl(UIControl *control);
@@ -76,7 +77,8 @@ protected:
     void ClearInfoValues();
     
     bool IsSelectModeHover();
-    
+
+    String resourcePackerDirectory;
     String projectPath;
     
     float32 buttonW;

@@ -12,20 +12,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
-    <ClInclude Include="Classes\ForcePreviewControl.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
+    <ClInclude Include="Classes\InfoControl.h" />
+    <ClInclude Include="Classes\MainScreen.h" />
     <ClInclude Include="Classes\PreviewControl.h" />
-    <ClInclude Include="Classes\PropertyLineEditControl.h" />
-    <ClInclude Include="Classes\TestScreen.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\ForcePreviewControl.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
+    <ClCompile Include="Classes\InfoControl.cpp" />
+    <ClCompile Include="Classes\MainScreen.cpp" />
     <ClCompile Include="Classes\PreviewControl.cpp" />
-    <ClCompile Include="Classes\PropertyLineEditControl.cpp" />
-    <ClCompile Include="Classes\TestScreen.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
