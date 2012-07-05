@@ -405,6 +405,7 @@ MongodbObject * GameCore::CreateTestDataObject(const String &testTimeString, con
         logObject->SetObjectName(testTimeString);
         logObject->AddString(String("Owner"), TEST_OWNER);
         logObject->AddString(String("RunTime"), runTime);
+        logObject->AddInt32(String("DeviceFamily"), (int32)Core::Instance()->GetDeviceFamily());
         logObject->AddInt64(String("TotalTime"), testData->totalTime);
         logObject->AddInt64(String("MinTime"), testData->minTime);
         logObject->AddInt64(String("MaxTime"), testData->maxTime);
