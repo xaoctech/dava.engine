@@ -21,15 +21,22 @@ PreviewControl::PreviewControl(const Rect &rect, bool rectInAbsoluteCoordinates)
 
 PreviewControl::~PreviewControl()
 {
-    DeleteInfoControls();
+    Unload();
 }
 
 void PreviewControl::Load(const String &yamlPath)
 {
+    Unload();
     //TODO: add info control for each control loaded from yaml
     UIYamlLoader::Load(this, yamlPath);
     
     CreateInfoControls(this);
+}
+
+void PreviewControl::Unload()
+{
+    RemoveAllControls();
+    DeleteInfoControls();
 }
 
 void PreviewControl::CreateInfoControls(UIControl* parentControl)
@@ -104,6 +111,7 @@ void PreviewControl::CreateInfoControls(UIControl* parentControl)
 void PreviewControl::DeleteInfoControls()
 {
     std::for_each(infoControls.begin(), infoControls.end(), SafeRelease<InfoControl>);    
+    infoControls.clear();
 }
 
 int32 PreviewControl::GetInfoControlsCount()

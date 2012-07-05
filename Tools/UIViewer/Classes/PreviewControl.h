@@ -22,6 +22,7 @@ public:
     virtual ~PreviewControl();
     
     virtual void Load(const String &yamlPath);
+    virtual void Unload();
     
     virtual void Update(float32 timeElapsed);
 	virtual void Draw(const UIGeometricData &geometricData);
