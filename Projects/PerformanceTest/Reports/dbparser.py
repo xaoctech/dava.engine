@@ -24,6 +24,14 @@ def LogError(logfile, message):
 	logfile.write('</font>')
 
 
+def AddColumnCell(logfile, message):
+	logfile.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
+	logfile.write(message)
+	logfile.write('</td>')
+	
+
+
+
 report = open('report.html', 'w')
 report.write('<!DOCTYPE html>')
 report.write('<html> <head>')
@@ -66,44 +74,29 @@ if None != connection:
 
 						report.write('<tr style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 						
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Run Time')
-						report.write('</td>')
+						AddColumnCell(report, 'Run Time')
+						AddColumnCell(report, 'Min Time')
+						AddColumnCell(report, 'Max Time')
+						AddColumnCell(report, 'Average Time')
 
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Min Time')
-						report.write('</td>')
+						AddColumnCell(report, 'Min delta')
+						AddColumnCell(report, 'Max delta')
+						AddColumnCell(report, 'Average delta')
 
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Max Time')
-						report.write('</td>')
-
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Average Time')
-						report.write('</td>')
-
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Min delta')
-						report.write('</td>')
-
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Max delta')
-						report.write('</td>')
-
-						report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-						report.write('Average delta')
-						report.write('</td>')
+						AddColumnCell(report, 'Device')
 
 						report.write('</tr>')
 
 						test = screen[testName]
 						testResultsNames = test.keys()
+						testResultsNames.sort()
 				
 						prevAverage = -1;
 						prevMin = -1
 						prevMax = -1
 						for testResultsName in testResultsNames:
 							if "_id" != testResultsName:
+								
 								testData = test[testResultsName]
 
 								averageValue = testData['Average']
@@ -135,21 +128,11 @@ if None != connection:
 								
 								report.write('<tr style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 								
-								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-								report.write(testData['RunTime'])
-								report.write('</td>')
-								
-								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-								report.write('%.2f'%float(minValue))
-								report.write('</td>')
+								AddColumnCell(report, testData['RunTime'])
 
-								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-								report.write('%.2f'%float(maxValue))
-								report.write('</td>')
-
-								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
-								report.write('%.2f'%float(averageValue))
-								report.write('</td>')
+								AddColumnCell(report, '%.2f'%float(minValue))
+								AddColumnCell(report, '%.2f'%float(maxValue))
+								AddColumnCell(report, '%.2f'%float(averageValue))
 
 								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 								PrintDelta(prevMin, minValue)
@@ -162,6 +145,15 @@ if None != connection:
 								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 								PrintDelta(prevAverage, averageValue)
 								report.write('</td>')
+								
+								if testData['DeviceFamily'] == 0:
+									AddColumnCell(report, 'Handset')
+								elif testData['DeviceFamily'] == 1:
+									AddColumnCell(report, 'Pad')
+								elif testData['DeviceFamily'] == 2:
+									AddColumnCell(report, 'Desktop')
+								else:
+									AddColumnCell(report, 'Unknown')
 								
 								report.write('</tr>')
 								
