@@ -59,8 +59,6 @@ protected:
 
     int32 testCounter;
     
-    uint64 startTime;
-
     LandscapeNode::eTiledShaderMode shaderMode;
     
     Sprite *textures[LandscapeNode::TEXTURE_COUNT];
