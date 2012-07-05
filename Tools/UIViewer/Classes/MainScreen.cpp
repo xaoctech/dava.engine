@@ -33,6 +33,10 @@ MainScreen::MainScreen()
 {
     projectPath = "";
 
+    resourcePackerDirectory = "./../Bin"; //TODO: set from config, depend on path to framework
+
+    Logger::Debug("MainScreen::MainScreen resourcePackerPath = %s", resourcePackerDirectory.c_str());
+
     keyNames[InfoControl::IT_NAME] = L"Name:";
     keyNames[InfoControl::IT_TYPE] = L"Type:";
     keyNames[InfoControl::IT_RECT] = L"Rect:";
@@ -106,6 +110,7 @@ void MainScreen::LoadResources()
     loadUI->SetStateText(UIControl::STATE_NORMAL, LocalizedString("Load"));
 	loadUI->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MainScreen::OnButtonPressed));
     AddControl(loadUI);
+    loadUI->SetVisible(false);
     
     saveUI = new UIButton(Rect(buttonW*3, 0, buttonW, cellH));
     saveUI->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
@@ -135,6 +140,7 @@ void MainScreen::LoadResources()
     
 	selectHoverModeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MainScreen::OnButtonPressed));
     AddControl(selectHoverModeButton);
+    selectHoverModeButton->SetVisible(false);
     
     for (int32 i = 0; i < InfoControl::INFO_TYPES_COUNT; ++i) 
     {
@@ -159,9 +165,9 @@ void MainScreen::LoadResources()
     filter.push_back(".YAML");
     fsDlg->SetExtensionFilter(filter);
     fsDlg->SetTitle(LocalizedString("Dlg.Load"));
-    fsDlg->SetCurrentDir("~res:/");
+    fsDlg->SetCurrentDir(FileSystem::Instance()->SystemPathForFrameworkPath("~res:/")); 
 
-    fsDlgProject = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
+    fsDlgProject = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf"); //default = GetCurrentWorkingDirectory 
     fsDlgProject->SetDelegate(this);
     fsDlgProject->SetOperationType(UIFileSystemDialog::OPERATION_CHOOSE_DIR);
     fsDlgProject->SetTitle(LocalizedString("Dlg.ChoosePrj"));
@@ -290,6 +296,7 @@ void MainScreen::OnFileSelected(UIFileSystemDialog *forDialog, const String &pat
     if(forDialog == fsDlgProject)
     {
         projectPath = pathToFile;
+        Logger::Debug("MainScreen::OnFileSelected projectPath = %s", projectPath.c_str());
         OnLoadProject();
     }
 }
@@ -309,6 +316,8 @@ void MainScreen::OnLoadUI()
         
         infoControl->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MainScreen::OnControlSelected));
     }
+
+    selectHoverModeButton->SetVisible(true);
 }
 
 void MainScreen::OnLoadProject()
@@ -319,21 +328,85 @@ void MainScreen::OnLoadProject()
     archive->Save("~doc:/uiviewer.archive");
     SafeRelease(archive);
     
-    ReplaceBundleName(projectPath + "/Data");
+    Logger::Debug("MainScreen::OnLoadProject %s", projectPath.c_str());
+    ReplaceBundleName(projectPath);
+    fsDlg->SetCurrentDir(FileSystem::Instance()->SystemPathForFrameworkPath("~res:/")); 
     
-    ExecutePacker(projectPath + "/DataSource");
+    ConvertGraphics(projectPath + "/DataSource");
     
     SetDisabled(false);
+
+    loadUI->SetVisible(true);
+    selectHoverModeButton->SetVisible(false);
+}
+
+void MainScreen::ConvertGraphics(const String &path)
+{
+    // try to execute convert_graphics.py script of project
+    // if no script found - run packer
+    String convertGraphicsPath = path + "/convert_graphics.py";
+
+    // remember current directory
+    String currentWorkingDirectory = FileSystem::Instance()->GetCurrentWorkingDirectory();
+
+    Logger::Debug("MainScreen::ConvertGraphics find %s", convertGraphicsPath.c_str());
+    File* convertGraphicsFile = File::Create(convertGraphicsPath, File::OPEN | File::READ);
+    if(convertGraphicsFile)
+    {
+        // found convert_graphics.py
+
+        // cd to project DataSource folder
+        Logger::Debug("MainScreen::ConvertGraphics cd %s", path.c_str());
+        FileSystem::Instance()->SetCurrentWorkingDirectory(path);
+        // execute convert_graphics.py
+        FileSystem::Instance()->Spawn("python ./convert_graphics.py");
+        // cd back
+        Logger::Debug("MainScreen::ConvertGraphics cd %s", currentWorkingDirectory.c_str());
+        FileSystem::Instance()->SetCurrentWorkingDirectory(currentWorkingDirectory);
+    }
+    else
+    {
+        // convert_graphics.py not found
+
+        // cd to resource packer folder
+        Logger::Debug("MainScreen::ConvertGraphics cd %s", resourcePackerDirectory.c_str());
+        FileSystem::Instance()->SetCurrentWorkingDirectory(resourcePackerDirectory);
+        // run packer
+        ExecutePacker(path);
+        // cd back
+        Logger::Debug("MainScreen::ConvertGraphics cd %s", currentWorkingDirectory.c_str());
+        FileSystem::Instance()->SetCurrentWorkingDirectory(currentWorkingDirectory);
+    }
+    SafeRelease(convertGraphicsFile);
+
 }
 
 void MainScreen::ExecutePacker(const String &path)
 {
     FileList fl(path);
     for(int i = 0; i < fl.GetCount(); i++)
+    {
         if(fl.IsDirectory(i) && !fl.IsNavigationDirectory(i))
-            ExecutePacker(fl.GetPathname(i));
-    
-    FileSystem::Instance()->Spawn("./ResourcePacker " + path);
+        {
+            String name = fl.GetFilename(i);
+            size_t find = name.find("Gfx");
+		    if(find != name.npos)
+		    {
+                // convert only Gfx directories
+                String gfxSrcPath = fl.GetPathname(i);
+                // ResourcePacker
+#ifdef __DAVAENGINE_WIN32__
+                String spawnCommand = Format("ResourcePacker %s", gfxSrcPath.c_str());
+#else
+                String spawnCommand = Format("./ResourcePacker %s", gfxSrcPath.c_str());
+#endif
+
+                Logger::Debug("MainScreen::ExecutePacker spawn %s", spawnCommand.c_str());
+                FileSystem::Instance()->Spawn(spawnCommand);
+            }
+        }
+    }
+
 }
 
 void MainScreen::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
