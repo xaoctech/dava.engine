@@ -150,29 +150,29 @@ void Scene::RegisterNode(SceneNode * node)
 		RegisterImposter(imposter);
 	}
 
-	MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
-	if(meshInstance)
-	{
-		Entity * entity = entityManager->CreateEntity();
-		node->entity = entity;
-		node->entity->AddComponent(VisibilityAABBoxComponent::Get());
-		node->entity->AddComponent(MeshInstanceComponent::Get());
-		node->entity->AddComponent(TransformComponent::Get());
+	//MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
+	//if(meshInstance)
+	//{
+	//	Entity * entity = entityManager->CreateEntity();
+	//	node->entity = entity;
+	//	node->entity->AddComponent(VisibilityAABBoxComponent::Get());
+	//	node->entity->AddComponent(MeshInstanceComponent::Get());
+	//	node->entity->AddComponent(TransformComponent::Get());
 
-		//TODO: move Flush and data init to some Init() function
-		entityManager->Flush();
-		node->entity->SetData("flags", (uint32)0);
-	}
+	//	//TODO: move Flush and data init to some Init() function
+	//	entityManager->Flush();
+	//	node->entity->SetData("flags", (uint32)0);
+	//}
 
-	LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
-	if(landscapeNode)
-	{
-		Entity * entity = entityManager->CreateEntity();
-		node->entity = entity;
-		node->entity->AddComponent(LandscapeGeometryComponent::Get());
-		entityManager->Flush();
-		node->entity->SetData("landscapeNode", landscapeNode);
-	}
+	//LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
+	//if(landscapeNode)
+	//{
+	//	Entity * entity = entityManager->CreateEntity();
+	//	node->entity = entity;
+	//	node->entity->AddComponent(LandscapeGeometryComponent::Get());
+	//	entityManager->Flush();
+	//	node->entity->SetData("landscapeNode", landscapeNode);
+	//}
 }
 
 void Scene::UnregisterNode(SceneNode * node)
@@ -189,10 +189,10 @@ void Scene::UnregisterNode(SceneNode * node)
 		UnregisterImposter(imposter);
 	}
 
-	if(node->entity)
-	{
-		entityManager->DestroyEntity(node->entity);
-	}
+	//if(node->entity)
+	//{
+	//	entityManager->DestroyEntity(node->entity);
+	//}
 }
 
 Scene * Scene::GetScene()
