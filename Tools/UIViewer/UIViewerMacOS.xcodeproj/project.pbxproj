@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		C79F6731159F149600405878 /* ResourcePacker in Resources */ = {isa = PBXBuildFile; fileRef = C79F6730159F149600405878 /* ResourcePacker */; };
 		C7A5BD54159DD98C007A9348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C7A5BD53159DD98C007A9348 /* libz.dylib */; };
 		C7A5BDC1159E0DED007A9348 /* InfoControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A5BDC0159E0DED007A9348 /* InfoControl.cpp */; };
 		C7A6ADF6146999EE00EF2264 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C7F49E9D14697F1000035926 /* libFramework.a */; };
@@ -43,7 +42,6 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* UIViewerMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewerMacOS_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* UIViewerMacOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIViewerMacOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C79F6730159F149600405878 /* ResourcePacker */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = ResourcePacker; path = ../Bin/ResourcePacker; sourceTree = "<group>"; };
 		C7A5BD53159DD98C007A9348 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		C7A5BDBF159DFD64007A9348 /* InfoControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InfoControl.h; path = Classes/InfoControl.h; sourceTree = "<group>"; };
 		C7A5BDC0159E0DED007A9348 /* InfoControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InfoControl.cpp; path = Classes/InfoControl.cpp; sourceTree = "<group>"; };
@@ -114,7 +112,6 @@
 		29B97314FDCFA39411CA2CEA /* TemplateProjectMacOS */ = {
 			isa = PBXGroup;
 			children = (
-				C79F6730159F149600405878 /* ResourcePacker */,
 				C7A5BD53159DD98C007A9348 /* libz.dylib */,
 				FEFCD5E712AE50860060A1A1 /* Data */,
 				FE98930B11638F3C00500198 /* Framework.xcodeproj */,
@@ -265,7 +262,6 @@
 				FEA30C361231362D00E691CC /* version.plist in Resources */,
 				FEFCD5EE12AE50860060A1A1 /* Data in Resources */,
 				FEC9202813BA2EAA006F347F /* UIViewerMacOS-Info.plist in Resources */,
-				C79F6731159F149600405878 /* ResourcePacker in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

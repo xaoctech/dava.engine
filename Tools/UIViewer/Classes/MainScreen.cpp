@@ -329,13 +329,14 @@ void MainScreen::OnLoadProject()
     SafeRelease(archive);
     
     Logger::Debug("MainScreen::OnLoadProject %s", projectPath.c_str());
-    ReplaceBundleName(projectPath);
+    ReplaceBundleName(projectPath + "/Data");
     fsDlg->SetCurrentDir(FileSystem::Instance()->SystemPathForFrameworkPath("~res:/")); 
     
     ConvertGraphics(projectPath + "/DataSource");
     
     SetDisabled(false);
 
+    preview->Unload();
     loadUI->SetVisible(true);
     selectHoverModeButton->SetVisible(false);
 }
