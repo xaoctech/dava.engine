@@ -86,7 +86,7 @@ protected:
     
     bool ConnectToDB();
     MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
-    MongodbObject * CreateLogObject(const String &logName);
+    MongodbObject * CreateLogObject(const String &logName, const String &runTime);
 
 protected:
     

@@ -22,6 +22,14 @@ extern void FrameworkWillTerminate();
 
 namespace DAVA
 {
+    
+    Core::eDeviceFamily Core::GetDeviceFamily()
+    {
+        //TODO: need to create real function
+        return DEVICE_HANDSET;
+    }
+
+    
 	CoreAndroidPlatform::CoreAndroidPlatform()
 		:	Core()
 	{
