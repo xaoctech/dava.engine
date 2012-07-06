@@ -153,6 +153,20 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 			sceneNode->SetName("Imposter");
 			break;
 
+		case ECNID_PARTICLE_EMITTER:
+		{
+			SetHeader(LocalizedString(L"createnode.particleemitter"));
+			ParticleEmitterNode * node = new ParticleEmitterNode();
+			node->SetName("ParticleEmitter");
+			ParticleEmitter3D * emitter = new ParticleEmitter3D();
+			emitter->LoadFromYaml("~res:/Particles/sparkles.yaml");
+			node->SetEmitter(emitter);
+			SafeRelease(emitter);
+
+			sceneNode = node;
+		}
+			break;
+
 		case ECNID_USERNODE:
 			SetHeader(LocalizedString(L"createnode.usernode"));
 			sceneNode = new UserNode();
