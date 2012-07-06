@@ -126,7 +126,7 @@ namespace DAVA
 		}
 		else
 		{
-			return Format("%s/Data/%s", virtualBundlePath.c_str(), relativePathname);
+			return Format("%s/%s", virtualBundlePath.c_str(), relativePathname);
 		}
 	}
 	

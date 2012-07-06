@@ -19,6 +19,9 @@
     <Filter Include="TestSuite">
       <UniqueIdentifier>{a1d2209f-7378-4554-9b63-0aa77b2ca427}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tests\Tree">
+      <UniqueIdentifier>{08b27b70-1c38-495e-83af-6753c40d94dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\FrameworkMain.h">
@@ -41,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="Classes\BaseScreen.h">
       <Filter>TestSuite</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TreeTest.h">
+      <Filter>Tests\Tree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="Classes\BaseScreen.cpp">
       <Filter>TestSuite</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TreeTest.cpp">
+      <Filter>Tests\Tree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

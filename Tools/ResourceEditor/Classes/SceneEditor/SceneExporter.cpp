@@ -67,9 +67,12 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
 {
     //Create destination folder
+    String normalizedFileName = FileSystem::Instance()->NormalizePath(fileName);
+
+    
     String workingFile;
-    FileSystem::SplitPath(fileName, workingFolder, workingFile);
-    FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder); 
+    FileSystem::SplitPath(normalizedFileName, workingFolder, workingFile);
+    FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder, true); 
     
     //Export scene data
     RemoveEditorNodes(scene);
