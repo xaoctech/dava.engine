@@ -33,8 +33,12 @@ def LogError(message):
 
 	print "##teamcity[message text='" + message + "' errorDetails='' status='ERROR']"
 
-# connection = pymongo.Connection("localhost", 27017)
-connection = pymongo.Connection("10.128.128.131", 27017)
+connection = None;
+try:
+	# connection = pymongo.Connection("localhost", 27017)
+	connection = pymongo.Connection("10.128.128.131", 27017)
+except:
+	connection = None
 
 if None != connection:
 	#set database
