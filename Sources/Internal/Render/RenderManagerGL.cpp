@@ -917,6 +917,10 @@ void RenderManager::AttachRenderData(Shader * shader)
             int32 attribIndex = shader->GetAttributeIndex(stream->formatMark);
             if (attribIndex != -1)
             {
+				if(TYPE_UNSIGNED_BYTE == stream->type)
+				{
+					normalized = GL_TRUE;
+				}
                 RENDER_VERIFY(glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer));
                 if (DEBUG)Logger::Debug("shader glVertexAttribPointer: %d", attribIndex);
 

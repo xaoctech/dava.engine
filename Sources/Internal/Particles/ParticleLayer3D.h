@@ -10,21 +10,24 @@ namespace DAVA
 {
 
 class RenderDataObject;
+class Material;
 class ParticleLayer3D : public ParticleLayer
 {
 public:
 	ParticleLayer3D();
 	virtual ~ParticleLayer3D();
 
-	void Draw(Matrix4 * transform);
+	void Draw(const Vector3 & up, const Vector3 & left);
 
 protected:
-	RenderDataObject *renderData;
+	RenderDataObject * renderData;
 	Vector<float32> verts;
 	Vector<float32> textures;
+	Vector<uint32> colors;
+
+	Material * material;
 };
 
 };
-
 
 #endif //__DAVAENGINE_PARTICLE_LAYER_3D_H__

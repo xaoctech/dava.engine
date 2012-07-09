@@ -4,15 +4,15 @@
 namespace DAVA
 {
 
-void ParticleEmitter3D::Draw(Matrix4 * transform)
-{
+	void ParticleEmitter3D::Draw(const Vector3 & up, const Vector3 & left)
+	{
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{
 		ParticleLayer3D * layer = (ParticleLayer3D*)(*it);
 		if(!layer->isDisabled)
 		{
-			layer->Draw(transform);
+			layer->Draw(up, left);
 		}
 	}
 }
