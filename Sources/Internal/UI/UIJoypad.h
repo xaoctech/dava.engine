@@ -62,6 +62,12 @@ public:
 	virtual void Input(UIEvent *currentInput); // Can be overrided for control additioanl functionality implementation
 	virtual void InputCancelled(UIEvent *currentInput); // Can be overrided for control additioanl functionality implementation
 
+	float GetDeadAreaSize() const { return deadAreaSize; }
+	void SetDeadAreaSize(float newDeadAreaSize) { deadAreaSize = newDeadAreaSize; }//!< Size of the middle joypad area where the tuches do not come.
+	DAVA::float32 GetDigitalSense() const { return digitalSense; }
+	void SetDigitalSense(DAVA::float32 newDigitalSense) { digitalSense = newDigitalSense; }//!< Sense of the diagonal joypad ways. 0.5 by default.
+
+
 protected:
 	
 	void RecalcDigitalPosition();
@@ -73,6 +79,7 @@ protected:
 private:
 	int mainTouch;
 	float deadAreaSize;// dead area size in pixels (must be positive value)
+	float32 digitalSense;
 	bool needRecalcDigital;
 	bool needRecalcAnalog;
 	Vector2 currentPos;
