@@ -290,6 +290,12 @@ private:
 
 	friend class File;
 
+    static String virtualBundlePath;
+
+    static void ReplaceBundleName(const String &newBundlePath);
+    static const char * FilepathRelativeToBundle(const char * relativePathname);
+    static const char * FilepathRelativeToBundle(const String & relativePathname);
+
 #if defined(__DAVAENGINE_ANDROID__)
 private:	
 	enum eConst

@@ -25,61 +25,33 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Utils/Utils.h"
+#ifndef __DAVAENGINE_QT_LAYER_H__
+#define __DAVAENGINE_QT_LAYER_H__
 
-#ifdef __DAVAENGINE_IPHONE__
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-#endif
+#include "DAVAEngine.h"
 
-#if defined(__DAVAENGINE_MACOS__)
-#import <Foundation/NSThread.h>
-#endif //#if defined(__DAVAENGINE_MACOS__)
-
-namespace DAVA
+namespace DAVA 
 {
-	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
-	
-	WideString GetDeviceName()
-	{
-#if defined(__DAVAENGINE_IPHONE__)
-		NSString * string = [UIDevice currentDevice].name;
-		WideString ws;
-		int len = [string length];
-		ws.resize(len);
-		for (int k = 0; k < len; ++k)
-		{
-			ws[k] = [string characterAtIndex: k];
-		}
-		return ws;
-#else
-		return L"MacOS";
-#endif
-	}
-
-	bool IsDrawThread()
-	{
-		return [NSThread isMainThread];
-	}
-	
-#endif
-	
-#if defined(__DAVAENGINE_IPHONE__)
-void DisableSleepTimer()
+class QtLayer: public Singleton<QtLayer>
 {
-	UIApplication * app = [UIApplication sharedApplication];
-	app.idleTimerDisabled = YES;
-}
+public:
 
-void EnableSleepTimer()
-{
-	UIApplication * app = [UIApplication sharedApplication];
-	app.idleTimerDisabled = NO;
-}
-#endif
+    QtLayer() {};
+    virtual ~QtLayer() {};
+    
+    virtual void WidgetCreated() = 0;
+    virtual void WidgetDestroyed() = 0;
 
-}; // end of namespace DAVA
+    virtual void OnSuspend() = 0;
+    virtual void OnResume() = 0;
+	
+    virtual void AppStarted() = 0;
+    virtual void AppFinished() = 0;
+
+};	
+};
+
+
+#endif // __DAVAENGINE_QT_LAYER_H__

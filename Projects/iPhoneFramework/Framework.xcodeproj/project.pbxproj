@@ -49,11 +49,15 @@
 		5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5C18D314D7168300DC6DC3 /* LodNode.h */; };
 		5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C18D714D716F000DC6DC3 /* EdgeAdjacency.cpp */; };
 		5C5C18DA14D716F000DC6DC3 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5C18D814D716F000DC6DC3 /* EdgeAdjacency.h */; };
+		5C5EAC1015A582F200279915 /* Bitstream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EAC0C15A582F200279915 /* Bitstream.cpp */; };
+		5C5EAC1115A582F200279915 /* Bitstream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5EAC0D15A582F200279915 /* Bitstream.h */; };
+		5C5EAC1315A582F200279915 /* XMLParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EAC0F15A582F200279915 /* XMLParser.cpp */; };
 		5C5EC7A214D156DD009AF0ED /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */; };
 		5C5EC7A314D156DD009AF0ED /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C78D5CF14DAF12100A0BB1C /* ShadowRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */; };
 		5C78D5D014DAF12100A0BB1C /* ShadowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */; };
+		5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
 		5CBFD6DC159C6D4500852F1A /* LandscapeGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */; };
@@ -578,11 +582,15 @@
 		5C5C18D314D7168300DC6DC3 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		5C5C18D714D716F000DC6DC3 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
 		5C5C18D814D716F000DC6DC3 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
+		5C5EAC0C15A582F200279915 /* Bitstream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitstream.cpp; sourceTree = "<group>"; };
+		5C5EAC0D15A582F200279915 /* Bitstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bitstream.h; sourceTree = "<group>"; };
+		5C5EAC0F15A582F200279915 /* XMLParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XMLParser.cpp; sourceTree = "<group>"; };
 		5C5EC7A014D156DD009AF0ED /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5C5EC7A114D156DD009AF0ED /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
 		5C77ABBE14C7703800E92D28 /* libpng_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_ios.a; path = ../../Libs/libs/libpng_ios.a; sourceTree = "<group>"; };
 		5C78D5CD14DAF12100A0BB1C /* ShadowRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowRect.cpp; sourceTree = "<group>"; };
 		5C78D5CE14DAF12100A0BB1C /* ShadowRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowRect.h; sourceTree = "<group>"; };
+		5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileSystemObjective.mm; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
 		5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeGeometryComponent.cpp; path = Entity/LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
@@ -1357,6 +1365,10 @@
 		FECFB36912E5904400C71562 /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
+				5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */,
+				5C5EAC0C15A582F200279915 /* Bitstream.cpp */,
+				5C5EAC0D15A582F200279915 /* Bitstream.h */,
+				5C5EAC0F15A582F200279915 /* XMLParser.cpp */,
 				FE044EFD140EE86D002A6D27 /* ResourceArchive.cpp */,
 				FE044EFE140EE86D002A6D27 /* ResourceArchive.h */,
 				FECFB36A12E5904400C71562 /* DynamicMemoryFile.cpp */,
@@ -2112,6 +2124,7 @@
 				5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */,
 				C7EB91DA159DA8E7000F0756 /* Config.h in Headers */,
 				C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */,
+				5C5EAC1115A582F200279915 /* Bitstream.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2417,6 +2430,9 @@
 				5CBFD6E1159C6D4500852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */,
 				C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */,
+				5C5EAC1015A582F200279915 /* Bitstream.cpp in Sources */,
+				5C5EAC1315A582F200279915 /* XMLParser.cpp in Sources */,
+				5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
