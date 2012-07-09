@@ -7,6 +7,7 @@
 namespace DAVA
 {
 
+class Material;
 class ParticleEmitterNode : public SceneNode
 {
 public:
