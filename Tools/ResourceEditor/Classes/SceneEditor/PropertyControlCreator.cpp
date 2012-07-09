@@ -8,6 +8,8 @@
 #include "LandscapeEditorPropertyControl.h"
 #include "MaterialPropertyControl.h"
 #include "LodNodePropertyControl.h"
+#include "EntityPropertyControl.h"
+#include "Entity/Entity.h"
 
 
 PropertyControlCreator::PropertyControlCreator()
@@ -161,3 +163,17 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForLandscapeEditor(S
     return NULL;
 }
 
+NodesPropertyControl * PropertyControlCreator::CreateControlForEntity(Entity * entity, const Rect & rect)
+{
+	if(controls[EPCID_ENTITY] && (rect != controls[EPCID_ENTITY]->GetRect()))
+	{
+		SafeRelease(controls[EPCID_ENTITY]);
+	}
+
+	if(!controls[EPCID_ENTITY])
+	{
+		controls[EPCID_ENTITY] = new EntityPropertyControl(rect, false);
+	}
+
+	return controls[EPCID_ENTITY];
+}

@@ -35,13 +35,13 @@ using namespace DAVA;
 
 void FrameworkDidLaunched()
 {
-#if defined(__DAVAENGINE_IPHONE__)
+#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 	KeyedArchive * appOptions = new KeyedArchive();
-	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT);
+	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT);
     appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
 	
-	DAVA::Core::Instance()->SetVirtualScreenSize(480, 320);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(480, 320, "Gfx");
+	DAVA::Core::Instance()->SetVirtualScreenSize(960, 480);
+	DAVA::Core::Instance()->RegisterAvailableResourceSize(960, 480, "Gfx");
 
 #else
 	KeyedArchive * appOptions = new KeyedArchive();

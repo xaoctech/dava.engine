@@ -137,6 +137,26 @@ bool Frustum::IsInside(const AABBox3 & box)const
 	}
 	return true;	
 }
+
+bool Frustum::IsInside(const AABBox3 * box)const
+{
+	for (int plane = 0; plane < planeCount; ++plane)
+	{
+		Vector3 testPoint;
+		if (planeArray[plane].n.x >= 0.0f) testPoint.x = box->min.x;
+		else testPoint.x = box->max.x;
+
+		if (planeArray[plane].n.y >= 0.0f) testPoint.y = box->min.y;
+		else testPoint.y = box->max.y;
+
+		if (planeArray[plane].n.z >= 0.0f) testPoint.z = box->min.z;
+		else testPoint.z = box->max.z;
+
+		if (planeArray[plane].DistanceToPoint(testPoint) > 0.0f)
+			return false;
+	}
+	return true;	
+}
     
 bool Frustum::IsFullyInside(const AABBox3 & box)const
 {

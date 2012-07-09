@@ -35,15 +35,15 @@
 #define DATAPASE_PORT               27017
 
 #define DATABASE_NAME               String("UnitTests")
-#define DATABASE_COLLECTION         String("UnitTests")
+#define DATABASE_COLLECTION         String("UnitTestsResult")
 
 #if defined (__DAVAENGINE_MACOS__)
     #define PLATFORM_NAME           String("MacOS")
-#elif defined (__DAVAENGINE_IPHONE_)
+#elif defined (__DAVAENGINE_IPHONE__)
     #define PLATFORM_NAME           String("iPhone")
-#elif defined (__DAVAENGINE_WIN32_)
+#elif defined (__DAVAENGINE_WIN32__)
     #define PLATFORM_NAME           String("Win32")
-#elif defined (__DAVAENGINE_ANDROID_)
+#elif defined (__DAVAENGINE_ANDROID__)
     #define PLATFORM_NAME           String("Android")
 #else
     #define PLATFORM_NAME           String("Unknown")

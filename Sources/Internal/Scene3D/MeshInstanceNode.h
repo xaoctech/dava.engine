@@ -54,11 +54,13 @@ public:
     int32 GetPolygroupIndex();
     PolygonGroup * GetPolygonGroup();
     Material * GetMaterial();
+
+	Material * material;
     
 private:
     StaticMesh * mesh;
     int32 polygroupIndex;
-    Material * material;
+    
     friend class MeshInstanceNode;
 };
 
@@ -159,14 +161,17 @@ public:
      */
     virtual void RegisterNearestLight(LightNode * node);
 
+	Vector<PolygonGroupWithMaterial*> polygroups;
+	InstanceMaterialState * materialState;
+
 protected:
     virtual void UpdateLights();
     
 //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
     
-    Vector<PolygonGroupWithMaterial*> polygroups;
+    
     Vector<LightNode*> nearestLights;
-    InstanceMaterialState * materialState;
+    
     
 	AABBox3 bbox;
     AABBox3 transformedBox;

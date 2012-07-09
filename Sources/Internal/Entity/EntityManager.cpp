@@ -198,7 +198,7 @@ Pool * EntityManager::CreatePool(const char * dataName, int32 maxSize)
     if (poolsIt != poolAllocators.end())
     {
         Pool * newPool = poolsIt->second->CreateCopy(maxSize);
-        
+
         Pool * prevPool = 0;
         Map<const char *, Pool*>::iterator find = pools.find(dataName);
         if(pools.end() != find)

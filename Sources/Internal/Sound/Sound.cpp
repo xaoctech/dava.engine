@@ -44,34 +44,71 @@
 #include "Sound/MusicIos.h"
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 
+#ifdef __DAVAENGINE_ANDROID__
+#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#endif //#ifdef __DAVAENGINE_ANDROID__
+
 namespace DAVA
 {
 
 Sound * Sound::Create(const String & fileName, eType type, int32 priority)
 {
-	Sound * sound = new Sound(fileName, type, priority);
-	sound->Init();
-	return sound;
+    if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
+        return 0;
+    
+    Sound * sound = new Sound(fileName, type, priority);
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    return sound;
 }
 
 Sound	* Sound::CreateFX(const String & fileName, eType type, int32 priority /*= 0*/)
 {
+    if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
+        return 0;
+    
 	Sound * sound = new Sound(fileName, type, priority);
-	SoundSystem::Instance()->GroupFX()->AddSound(sound);
-	sound->Init();
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    else
+    {
+        SoundSystem::Instance()->GroupFX()->AddSound(sound);
+    }
 	return sound;
 }
 
 Sound	* Sound::CreateMusic(const String & fileName, eType type, int32 priority /*= 0*/)
 {
+    if(TYPE_STATIC != type && TYPE_STREAMED != type && TYPE_MANAGED != type)
+        return 0;
+    
 #if defined(__DAVAENGINE_IPHONE__)
     Sound * sound = new MusicIos(fileName);
-    SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    else
+    {
+        SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    }
     return sound;
 #else
 	Sound * sound = new Sound(fileName, type, priority);
-	SoundSystem::Instance()->GroupMusic()->AddSound(sound);
-	sound->Init();
+    if(!sound->Init())
+    {
+        SafeRelease(sound);
+    }
+    else
+    {
+        SoundSystem::Instance()->GroupMusic()->AddSound(sound);
+    }
 	return sound;
 #endif //#if defined(__DAVAENGINE_IPHONE__)
 }
@@ -87,7 +124,13 @@ Sound::Sound(const String & _fileName, eType _type, int32 _priority)
 	looping(false),
 	group(0)
 {
-	
+#ifdef __DAVAENGINE_ANDROID__
+    playerObject = NULL;
+    playerPlay = NULL;
+    playerBufferQueue = NULL;
+    playerVolume = NULL;
+    playerSeek = NULL;
+#endif //#ifdef __DAVAENGINE_ANDROID__
 }
 
 Sound::~Sound()
@@ -96,15 +139,18 @@ Sound::~Sound()
 	{
 		group->RemoveSound(this);
 	}
-
+    
 	SafeRelease(buffer);
 	SafeRelease(streamBuffer);
 	SafeDelete(provider);
 }
 
-void Sound::Init()
+bool Sound::Init()
 {
 	int32 strLength = (int32)fileName.length();
+    if(strLength < 5)
+        return false;
+    
 	String ext = fileName.substr(strLength-4, strLength);
 	if(".wav" == ext)
 	{
@@ -117,20 +163,165 @@ void Sound::Init()
 	}
 #endif //#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 
-	if(TYPE_STATIC == type)
+#ifdef __DAVAENGINE_ANDROID__    
+    if(TYPE_STATIC == type)
+#endif //#ifdef __DAVAENGINE_ANDROID__ 
+        if(!provider)
+            return false;
+
+    if(TYPE_STATIC == type)
 	{
-		PrepareStaticBuffer();
-	}
+		if(!PrepareStaticBuffer())
+            return false;
+#ifdef __DAVAENGINE_ANDROID__
+        InitBufferQueueAudioPlayer();
+#endif //#ifdef __DAVAENGINE_ANDROID__
+        
+    }
+    else if (TYPE_STREAMED == type)
+    {
+#ifndef __DAVAENGINE_ANDROID__
+		if(!provider->Init())
+        {
+            return false;
+        }
+        provider->Rewind();
+#else
+        if(!InitAssetAudioPlayer())
+            return false;
+#endif //#ifndef __DAVAENGINE_ANDROID__        
+    }
+
+#ifdef __DAVAENGINE_ANDROID__
+    minVolumeLevel = SL_MILLIBEL_MIN;
+    (*playerVolume)->GetMaxVolumeLevel(playerVolume, &maxVolumeLevel);
+#endif //#ifdef __DAVAENGINE_ANDROID__  
+    return true;
 }
 
-void Sound::PrepareStaticBuffer()
+#ifdef __DAVAENGINE_ANDROID__
+    
+bool Sound::InitAssetAudioPlayer()
+{
+    SLresult result;
+
+    SLEngineItf engineEngine = SoundSystem::Instance()->getEngineEngine();
+    SLObjectItf outputMixObject = SoundSystem::Instance()->getOutputMixObject();
+    
+    // use asset manager to open asset by filename
+    AAssetManager* mgr = ((CoreAndroidPlatform *)Core::Instance())->GetAssetManager();
+    int32 strLength = (int32)fileName.length();
+    String filePath = "Data" + fileName.substr(5, strLength - 5);
+    AAsset* asset = AAssetManager_open(mgr, filePath.c_str(), AASSET_MODE_UNKNOWN);
+    
+    if(!asset)
+        return false;
+    
+    // open asset as file descriptor
+    off_t start, length;
+    int fd = AAsset_openFileDescriptor(asset, &start, &length);
+    AAsset_close(asset);
+    
+    // configure audio source
+    SLDataLocator_AndroidFD loc_fd = {SL_DATALOCATOR_ANDROIDFD, fd, start, length};
+    SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
+    SLDataSource audioSrc = {&loc_fd, &format_mime};
+
+    // configure audio sink
+    SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
+    SLDataSink audioSnk = {&loc_outmix, NULL};
+    //        
+    // create audio player
+    const SLInterfaceID ids[3] = {SL_IID_SEEK, SL_IID_MUTESOLO, SL_IID_VOLUME};
+    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+    result = (*engineEngine)->CreateAudioPlayer(engineEngine, &playerObject, &audioSrc, &audioSnk, 3, ids, req);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    // realize the player
+    result = (*playerObject)->Realize(playerObject, SL_BOOLEAN_FALSE);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    // get the play interface
+    result = (*playerObject)->GetInterface(playerObject, SL_IID_PLAY, &playerPlay);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    // get the seek interface
+    result = (*playerObject)->GetInterface(playerObject, SL_IID_SEEK, &playerSeek);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    // get the volume interface
+    result = (*playerObject)->GetInterface(playerObject, SL_IID_VOLUME, &playerVolume);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    return true;
+}
+
+bool Sound::InitBufferQueueAudioPlayer()
+{
+    if (playerObject != NULL)
+    {
+        (*playerObject)->Destroy(playerObject);
+        playerObject = NULL;
+        playerPlay = NULL;
+        playerBufferQueue = NULL;
+        playerVolume = NULL;
+    }
+    
+    SLresult result;    
+    SLEngineItf engineEngine = SoundSystem::Instance()->getEngineEngine();
+    SLObjectItf outputMixObject = SoundSystem::Instance()->getOutputMixObject();
+
+    // configure audio source
+    SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
+    SLDataFormat_PCM format_pcm = {SL_DATAFORMAT_PCM, 1,
+        (uint32)(provider->GetSampleRate()*1000), (uint32)provider->GetSampleSize(), (uint32)provider->GetSampleSize(),
+        SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
+    SLDataSource audioSrc = {&loc_bufq, &format_pcm};
+    
+    // configure audio sink
+    SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
+    SLDataSink audioSnk = {&loc_outmix, NULL};
+    
+    // create audio player
+    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE, SL_IID_EFFECTSEND, SL_IID_VOLUME};
+    const SLboolean req[3] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+    
+    result = (*engineEngine)->CreateAudioPlayer(engineEngine, &playerObject, &audioSrc, &audioSnk, 3, ids, req);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    // realize the player
+    result = (*playerObject)->Realize(playerObject, SL_BOOLEAN_FALSE);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    // get the play interface
+    result = (*playerObject)->GetInterface(playerObject, SL_IID_PLAY, &playerPlay);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    // get the buffer queue interface
+    result = (*playerObject)->GetInterface(playerObject, SL_IID_BUFFERQUEUE, &playerBufferQueue);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    // get the volume interface
+    result = (*playerObject)->GetInterface(playerObject, SL_IID_VOLUME, &playerVolume);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    return true;
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
+bool Sound::PrepareStaticBuffer()
 {
 	buffer = SoundBuffer::CreateStatic(fileName);
 	if(1 == buffer->GetRetainCount()) 
 	{
-		DVVERIFY(provider->Init());
+		if(!provider->Init())
+            return false;
+        
+#ifndef __DAVAENGINE_ANDROID__
 		buffer->FullFill(provider);
+#endif //#ifdef __DAVAENGINE_ANDROID__
 	}
+    return true;
 }
 
 void Sound::PrepareDynamicBuffers()
@@ -166,6 +357,34 @@ void Sound::UpdateDynamicBuffers()
 
 SoundInstance * Sound::Play()
 {
+#ifdef __DAVAENGINE_ANDROID__
+    SLresult result;
+    
+    if(TYPE_STATIC == type)
+    {
+        result = (*playerBufferQueue)->Clear(playerBufferQueue);
+        DVASSERT(SL_RESULT_SUCCESS == result);
+        
+        buffer->FullFill(provider, playerBufferQueue);
+    }
+    
+    if(TYPE_STREAMED == type)
+    {
+        result = (*playerSeek)->SetPosition(playerSeek, 0, SL_SEEKMODE_FAST);
+        DVASSERT(SL_RESULT_SUCCESS == result);
+    }
+
+    result = (*playerPlay)->SetPlayState(playerPlay, SL_PLAYSTATE_PLAYING);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    soundInstances.clear();
+    
+    SoundInstance * inst = new SoundInstance(this);
+    AddSoundInstance(inst);
+    
+    return soundInstances.front();
+#else
+    
 	if(TYPE_STREAMED == type && soundInstances.size())
 	{
 		return soundInstances.front();
@@ -179,8 +398,6 @@ SoundInstance * Sound::Play()
 
 	if(TYPE_STREAMED == type)
 	{
-		provider->Init();
-		provider->Rewind();
 		PrepareDynamicBuffers();
 	}
 
@@ -190,6 +407,7 @@ SoundInstance * Sound::Play()
 	ch->SetVolume(volume);
 	ch->Play(this, looping);
 	return inst;
+#endif //#ifdef __DAVAENGINE_ANDROID__
 }
 
 Sound::eType Sound::GetType()
@@ -200,15 +418,37 @@ Sound::eType Sound::GetType()
 void Sound::SetVolume(float32 _volume)
 {
 	volume = Clamp(_volume, 0.f, 1.f);
+
+#ifdef __DAVAENGINE_ANDROID__
+    SLresult result;
+    SLmillibel sLevel = (SLmillibel)(Clamp(10000 * log10f(volume), (float32)minVolumeLevel, (float32)maxVolumeLevel));
+    result = (*playerVolume)->SetVolumeLevel(playerVolume, sLevel);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    return;
+#else
 	List<SoundInstance*>::iterator sit;
 	List<SoundInstance*>::iterator sitEnd = soundInstances.end();
 	for(sit = soundInstances.begin(); sit != sitEnd; ++sit)
 	{
 		(*sit)->SetVolume(volume);
 	}
-	
+#endif //#ifdef __DAVAENGINE_ANDROID__
 }
 
+#ifdef __DAVAENGINE_ANDROID__
+SLuint32 Sound::GetPlayState()
+{
+    SLresult result;
+    SLuint32 state = 0;
+    
+    result = (*playerPlay)->GetPlayState(playerPlay, &state);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    return state;
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 float32 Sound::GetVolume()
 {
 	return volume;
@@ -227,10 +467,30 @@ void Sound::RemoveSoundInstance(SoundInstance * soundInstance)
 void Sound::SetLooping(bool _looping)
 {
 	looping = _looping;
+    if(TYPE_STREAMED == type)
+    {
+#ifdef __DAVAENGINE_ANDROID__
+        SLresult result;
+        
+        result = (*playerSeek)->SetLoop(playerSeek, looping, 0, SL_TIME_UNKNOWN);
+        DVASSERT(SL_RESULT_SUCCESS == result);
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    }
 }
 
 void Sound::Stop()
 {
+#ifdef __DAVAENGINE_ANDROID__
+    SLresult result;
+    
+    result = (*playerPlay)->SetPlayState(playerPlay, SL_PLAYSTATE_STOPPED);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    soundInstances.front()->state = SoundInstance::STATE_FORCED_STOPPED;
+    
+    return;
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 	List<SoundInstance*>::iterator sit;
 	List<SoundInstance*>::iterator sitEnd = soundInstances.end();
 	for(sit = soundInstances.begin(); sit != sitEnd; ++sit)
@@ -262,6 +522,14 @@ int32 Sound::Release()
 
 void Sound::Pause(bool pause)
 {
+#ifdef __DAVAENGINE_ANDROID__
+    SLresult result;
+    
+    result = (*playerPlay)->SetPlayState(playerPlay, pause ? SL_PLAYSTATE_PAUSED : SL_PLAYSTATE_PLAYING);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+
+    return;
+#endif //#ifdef __DAVAENGINE_ANDROID__
 	List<SoundInstance*>::iterator sit;
 	List<SoundInstance*>::iterator sitEnd = soundInstances.end();
 	for(sit = soundInstances.begin(); sit != sitEnd; ++sit)
@@ -269,5 +537,5 @@ void Sound::Pause(bool pause)
 		(*sit)->Pause(pause);
 	}
 }
-
+    
 };

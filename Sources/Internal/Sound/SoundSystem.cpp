@@ -42,7 +42,7 @@ namespace DAVA
 ALCcontext * context = NULL;
 ALCdevice * device = NULL;
 #endif //#ifdef __DAVASOUND_AL__
-
+    
 SoundSystem::SoundSystem(int32 _maxChannels)
 :	maxChannels(_maxChannels),
 	volume(1.f)
@@ -57,13 +57,42 @@ SoundSystem::SoundSystem(int32 _maxChannels)
 	}
 #endif //#ifdef __DAVASOUND_AL__
 
-
+#ifdef __DAVAENGINE_ANDROID__    
+    SLresult result;
+    
+    engineObject = NULL;
+    engineEngine = NULL;
+    outputMixObject = NULL;
+    
+    // create engine
+    result = slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    // realize the engine
+    result = (*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    // get the engine interface, which is needed in order to create other objects
+    result = (*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    // create output mix, with environmental reverb specified as a non-required interface
+    const SLInterfaceID ids[1] = {SL_IID_ENVIRONMENTALREVERB};
+    const SLboolean req[1] = {SL_BOOLEAN_FALSE};
+    result = (*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, ids, req);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+    
+    // realize the output mix
+    result = (*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+#else
+    
 	for(int32 i = 0; i < maxChannels; ++i)
 	{
 		SoundChannel * ch = new SoundChannel();
 		channelsPool.push_back(ch);
 	}
-
+#endif //#ifdef __DAVAENGINE_ANDROID__
 
 	groupFX = new SoundGroup();
 	groupMusic = new SoundGroup();
@@ -84,8 +113,42 @@ SoundSystem::~SoundSystem()
 	alcDestroyContext(context);
 	alcCloseDevice(device);
 #endif //#ifdef __DAVASOUND_AL__
+    
+#ifdef __DAVAENGINE_ANDROID__
+    // destroy output mix object, and invalidate all associated interfaces
+    if (outputMixObject != NULL)
+    {
+        (*outputMixObject)->Destroy(outputMixObject);
+        outputMixObject = NULL;
+    }
+    
+    // destroy engine object, and invalidate all associated interfaces
+    if (engineObject != NULL)
+    {
+        (*engineObject)->Destroy(engineObject);
+        engineObject = NULL;
+        engineEngine = NULL;
+    }
+
+#endif //#ifdef __DAVAENGINE_ANDROID__
+}
+    
+#ifdef __DAVAENGINE_ANDROID__
+SLObjectItf SoundSystem::getEngineObject()
+{
+    return engineObject;
 }
 
+SLEngineItf SoundSystem::getEngineEngine()
+{
+    return engineEngine;
+}
+    
+SLObjectItf SoundSystem::getOutputMixObject()
+{
+    return outputMixObject;
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
 SoundChannel * SoundSystem::FindChannel(int32 priority)
 {
 	Deque<SoundChannel*>::iterator it;
@@ -150,6 +213,10 @@ void SoundSystem::RemoveSoundInstance(SoundInstance * soundInstance)
 
 void SoundSystem::Suspend()
 {
+#ifdef __DAVAENGINE_ANDROID__
+    groupFX->Suspend();
+    groupMusic->Suspend();
+#else
 	Deque<SoundChannel*>::iterator it;
 	Deque<SoundChannel*>::iterator itEnd = channelsPool.end();
 	for(it = channelsPool.begin(); it != itEnd; ++it)
@@ -160,6 +227,8 @@ void SoundSystem::Suspend()
 			ch->Pause(true);
 		}
 	}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 #ifdef __DAVASOUND_AL__
 	alcSuspendContext(context);
 #endif //#ifdef __DAVASOUND_AL__
@@ -167,6 +236,11 @@ void SoundSystem::Suspend()
 
 void SoundSystem::Resume()
 {
+#ifdef __DAVAENGINE_ANDROID__
+    groupFX->Resume();
+    groupMusic->Resume();
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 #ifdef __DAVASOUND_AL__
 	alcProcessContext(context);
 	Deque<SoundChannel*>::iterator it;

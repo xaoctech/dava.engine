@@ -37,6 +37,7 @@
 #include "SpriteTest.h"
 #include "CacheTest.h"
 #include "LandscapeTest.h"
+#include "TreeTest.h"
 
 
 using namespace DAVA;
@@ -68,12 +69,15 @@ void GameCore::OnAppStarted()
 //        dbClient->DropDatabase();
         //TODO: test only
         
-        new SpriteTest();
+        new SpriteTest("Sprite");
         new CacheTest("Cache Test");
         new LandscapeTest("Landscape Textures Test", LandscapeNode::TILED_MODE_COUNT);
         new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
         new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
         new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
+        
+        new TreeTest(String("TreeTest TEST_1HI"), String("~res:/3d/Maps/test/treetest/TEST_1HI.sc2"));
+        new TreeTest(String("TreeTest TEST_2"), String("~res:/3d/Maps/test/treetest/TEST_2.sc2"));
         
 #if defined (SINGLE_MODE)
         RunTestByName(SINGLE_TEST_NAME);
@@ -84,7 +88,7 @@ void GameCore::OnAppStarted()
     }
     else 
     {
-        logFile->WriteLine(String("Can't connect to DB"));
+        LogMessage(String("Can't connect to DB"));
         Core::Instance()->Quit();
     }
 }
@@ -213,19 +217,11 @@ void GameCore::RunTestByName(const String &testName)
     currentTestIndex = 0;
     for(int32 iScr = 0; iScr < screens.size(); ++iScr)
     {
-        int32 count = screens[iScr]->GetTestCount();
-        for(int32 iTest = 0; iTest < count; ++iTest)
+        if(screens[iScr]->GetName() == testName)
         {
-            TestData *td = screens[iScr]->GetTestData(iTest);
-            if(testName == td->name)
-            {
-                currentScreen = screens[iScr];
-                currentScreenIndex = iScr;
-                
-                currentTestIndex = iTest;
-                
-                break;
-            }
+            currentScreen = screens[iScr];
+            currentScreenIndex = iScr;
+            break;
         }
     }
     
@@ -278,13 +274,12 @@ void GameCore::ProcessTests()
         
         if(ret)
         {
-#if defined (SINGLE_MODE)
-            FinishTests();
-#else //#if defined (SINGLE_MODE)
-            
             ++currentTestIndex;
             if(currentScreen->GetTestCount() == currentTestIndex)
             {
+#if defined (SINGLE_MODE)
+                FinishTests();
+#else //#if defined (SINGLE_MODE)
                 ++currentScreenIndex;
                 if(currentScreenIndex == screens.size())
                 {
@@ -296,90 +291,140 @@ void GameCore::ProcessTests()
                     currentTestIndex = 0;
                     UIScreenManager::Instance()->SetScreen(currentScreen->GetScreenId());
                 }
-            }
 #endif //#if defined (SINGLE_MODE)
+            }
         }
     }
 }
+
 
 
 void GameCore::FlushTestResults()
 {
-    time_t logStartTime = time(0);
-    String testTimeString = Format("%lld", logStartTime);
+    if(!dbClient) return;
+
+    MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
+    MongodbObject *newPlatformObject = new MongodbObject();
     
-    int32 testIndex = 0;
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
+    int64 globalIndex = 0;
+    if(oldPlatformObject)
     {
-        int32 count = screens[iScr]->GetTestCount();
-        for(int32 iTest = 0; iTest < count; ++iTest)
+        globalIndex = oldPlatformObject->GetInt64(String("globalIndex"));
+        ++globalIndex;
+    }
+    
+    if(newPlatformObject)
+    {
+        newPlatformObject->SetObjectName(PLATFORM_NAME);
+        newPlatformObject->AddInt64(String("globalIndex"), globalIndex);
+        
+        String testTimeString = Format("%016d", globalIndex);
+        
+        
+        time_t logStartTime = time(0);
+        tm* utcTime = localtime(&logStartTime);
+        
+        
+        String runTime = Format("%04d.%02d.%02d:%02d:%02d:%02d",   
+                                                utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+                                                utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
+
+        for(int32 iScr = 0; iScr < screens.size(); ++iScr)
         {
-            TestData *td = screens[iScr]->GetTestData(iTest);
+            int32 count = screens[iScr]->GetTestCount();
+            
 #if defined (SINGLE_MODE)
-            if(SINGLE_TEST_NAME == td->name)
+            if(screens[iScr]->GetName() == SINGLE_TEST_NAME)
+#endif //#if defined (SINGLE_MODE)                    
             {
-                SaveTestResult(testTimeString, td, testIndex);
-                break;
+                MongodbObject *oldScreenObject = CreateSubObject(screens[iScr]->GetName(), oldPlatformObject, true);
+                MongodbObject *newScreenObject = new MongodbObject();
+                if(newScreenObject)
+                {
+                    newScreenObject->SetObjectName(screens[iScr]->GetName());
+                    
+                    for(int32 iTest = 0; iTest < count; ++iTest)
+                    {
+                        TestData *td = screens[iScr]->GetTestData(iTest);
+                        
+                        MongodbObject *testObject = CreateSubObject(td->name, oldScreenObject, false);
+                        if(testObject)
+                        {
+                            MongodbObject *testDataObject = CreateTestDataObject(testTimeString, runTime, td);
+                            if(testDataObject)
+                            {
+                                testObject->AddObject(testTimeString, testDataObject);
+                                testObject->Finish();
+                                
+                                SafeRelease(testDataObject);
+                            }
+                            newScreenObject->AddObject(td->name, testObject);
+                            SafeRelease(testObject);
+                        }
+                    }
+                    
+                    newScreenObject->Finish();
+                    newPlatformObject->AddObject(screens[iScr]->GetName(), newScreenObject);
+                    SafeRelease(newScreenObject);
+                }
+                
+                SafeRelease(oldScreenObject);
             }
-#else //#if defined (SINGLE_MODE)
-            SaveTestResult(testTimeString, td, testIndex);
-            ++testIndex;
-#endif //#if defined (SINGLE_MODE)
+        }
+
+        newPlatformObject->Finish();
+        dbClient->SaveObject(newPlatformObject, oldPlatformObject);    
+        SafeRelease(newPlatformObject);
+    }
+    
+    SafeRelease(oldPlatformObject);
+}
+
+MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
+{
+    MongodbObject *subObject = new MongodbObject();
+    if(dbObject)
+    {
+        bool ret = dbObject->GetSubObject(subObject, objectName, needFinished);
+        if(ret)
+        {
+            return subObject;
         }
     }
+    
+    subObject->SetObjectName(objectName);
+    return subObject;
 }
 
 
-void GameCore::SaveTestResult(const String &testTimeString, TestData *testData, int32 index)
+MongodbObject * GameCore::CreateTestDataObject(const String &testTimeString, const String &runTime, TestData *testData)
 {
-    MongodbObject *dbObject = GetObjectForName(testData->name);
-    
-    MongodbObject *logObject = dbClient->CreateObject();
-    logObject->SetObjectName(testTimeString);
-    logObject->AddString(String("Platform"), PLATFORM_NAME);
-    logObject->AddString(String("Owner"), TEST_OWNER);
-    logObject->AddInt64(String("TotalTime"), testData->totalTime);
-    logObject->AddInt64(String("MinTime"), testData->minTime);
-    logObject->AddInt64(String("MaxTime"), testData->maxTime);
-    logObject->AddInt32(String("MaxTimeIndex"), testData->maxTimeIndex);
-    logObject->AddInt64(String("StartTime"), testData->startTime);
-    logObject->AddInt64(String("EndTime"), testData->endTime);
-
-    logObject->AddInt32(String("RunCount"), testData->runCount);
-    
-    if(testData->runCount)
-    {
-        logObject->AddDouble(String("Average"), (double)testData->totalTime / (double)testData->runCount);
-    }
-    else 
-    {
-        logObject->AddDouble(String("Average"), (double)0.0f);
-    }
-    logObject->Finish();
-    
-
-    dbObject->AddObject(testTimeString, logObject);
-    dbObject->Finish();
-    
-    dbClient->SaveObject(dbObject);
-    dbClient->DestroyObject(logObject);
-    dbClient->DestroyObject(dbObject);
-}
-
-
-MongodbObject * GameCore::GetObjectForName(const String &testName)
-{
-    MongodbObject *logObject = dbClient->FindObjectByKey(testName);
+    MongodbObject *logObject = new MongodbObject();
     if(logObject)
     {
-        logObject->EnableForEdit();
+        logObject->SetObjectName(testTimeString);
+        logObject->AddString(String("Owner"), TEST_OWNER);
+        logObject->AddString(String("RunTime"), runTime);
+        logObject->AddInt32(String("DeviceFamily"), (int32)Core::Instance()->GetDeviceFamily());
+        logObject->AddInt64(String("TotalTime"), testData->totalTime);
+        logObject->AddInt64(String("MinTime"), testData->minTime);
+        logObject->AddInt64(String("MaxTime"), testData->maxTime);
+        logObject->AddInt32(String("MaxTimeIndex"), testData->maxTimeIndex);
+        logObject->AddInt64(String("StartTime"), testData->startTime);
+        logObject->AddInt64(String("EndTime"), testData->endTime);
+        
+        logObject->AddInt32(String("RunCount"), testData->runCount);
+        
+        if(testData->runCount)
+        {
+            logObject->AddDouble(String("Average"), (double)testData->totalTime / (double)testData->runCount);
+        }
+        else 
+        {
+            logObject->AddDouble(String("Average"), (double)0.0f);
+        }
+        logObject->Finish();
     }
-    else
-    {
-        logObject = dbClient->CreateObject();
-        logObject->SetObjectName(testName);
-    }
-    
     return logObject;
 }
 

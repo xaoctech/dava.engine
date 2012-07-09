@@ -410,7 +410,7 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 	NSLog(@"[CoreMacOSPlatform] setFullscreen (before)");
 	//[fullScreenContext setFullScreen];
     CGLContextObj obj = (CGLContextObj)[fullScreenContext CGLContextObj];
-    CGLError errr = CGLSetFullScreenOnDisplay(obj, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay));
+    CGLSetFullScreenOnDisplay(obj, CGDisplayIDToOpenGLDisplayMask(kCGDirectMainDisplay));
 	NSLog(@"[CoreMacOSPlatform] makeCurrentContext (before)");
     [fullScreenContext makeCurrentContext];
 	
@@ -457,7 +457,7 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 	
         // Check for and process input events.
         NSEvent *event;
-        while (event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES]) 
+        while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES])) 
 		{
             switch ([event type]) 
 			{
@@ -796,33 +796,17 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 - (void)applicationDidBecomeActive:(NSNotification *)aNotification
 {
 	NSLog(@"[CoreMacOSPlatform] Application did become active");
-//    if(core)
-//    {
-//        core->OnResume();
-//    }
-//    else 
-//    {
-//        Core::Instance()->SetIsActive(true);
-//    }    
-//    DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
-//    if (activeCursor)
-//    {
-//        NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
-//        [cursor set];
-//    }
+
+    SoundSystem::Instance()->Resume();
+    Core::Instance()->SetIsActive(true);
 }
 
 - (void)applicationDidResignActive:(NSNotification *)aNotification
 {
-    if(core)
-    {
-        core->OnSuspend();
-    }
-    else 
-    {
-        Core::Instance()->SetIsActive(false);
-    }
 	NSLog(@"[CoreMacOSPlatform] Application did resign active");
+
+    SoundSystem::Instance()->Suspend();
+    Core::Instance()->SetIsActive(false);
 }
 
 - (void)applicationDidChangeScreenParameters:(NSNotification *)aNotification
@@ -900,6 +884,7 @@ void CoreMacOSPlatform::SwitchScreenToMode(eScreenMode screenMode)
 
 void CoreMacOSPlatform::Quit()
 {
+	mainWindowController->openGLView.willQuit = true;
 	[[NSApplication sharedApplication] terminate: nil];
 }
 	

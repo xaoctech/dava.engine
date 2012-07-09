@@ -40,11 +40,13 @@ using namespace DAVA;
 	NSTrackingArea *trackingArea;
 	bool isFirstDraw;
 	DAVA::Cursor * activeCursor;
+	bool willQuit;
 }
 
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 - (size_t) displayBitsPerPixel:(CGDirectDisplayID) displayId;
 #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+@property (assign) bool willQuit;
 
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;

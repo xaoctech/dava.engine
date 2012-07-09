@@ -63,6 +63,10 @@ public:
     
     bool IsModificationMode();
     void IsModificationMode(bool value);
+
+    bool IsLandscapeRelative();
+    void IsLandscapeRelative(bool value);
+
     
 protected:
     
@@ -71,6 +75,7 @@ protected:
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
     void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
 	void OnModePressed(BaseObject * object, void * userData, void * callerData);
+	void OnLandscapeRelative(BaseObject * object, void * userData, void * callerData);
 
 	void UpdateModState(void);
 	void PrepareModMatrix(const Vector2 & point);
@@ -81,11 +86,13 @@ protected:
 	UIButton *btnModeSelection;
 	UIButton *btnModeModification;
 	UIButton *btnPlaceOn;
+	UIButton *btnLandscape;
 	
 	eModState modState;
 	eModAxis modAxis;
 
 	bool isModeModification;
+	bool isLandscapeRelative;
 
     UIControl * modificationPanel;
 	ModificationPopUp * modificationPopUp;

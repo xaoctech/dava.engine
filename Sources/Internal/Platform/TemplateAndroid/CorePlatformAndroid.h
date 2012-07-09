@@ -15,7 +15,8 @@
 #if defined(__DAVAENGINE_ANDROID__)
 
 #include "AndroidSpecifics.h"
-
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 namespace DAVA
 {
@@ -65,6 +66,9 @@ public:
 
 	bool DownloadHttpFile(const String & url, const String & documentsPathname);
 
+	AAssetManager * GetAssetManager();
+	void SetAssetManager(AAssetManager * mngr);
+
 private:
 
 	void QuitAction();
@@ -89,6 +93,7 @@ private:
 	int32 touchPhase;
 
 	AndroidSystemDelegate *androidDelegate;
+	AAssetManager * assetMngr;
 };
 };
 #endif // #if defined(__DAVAENGINE_ANDROID__)

@@ -1,8 +1,7 @@
 #include "EntitiesGraph.h"
 #include "ControlsFactory.h"
 #include "EditorSettings.h"
-#include "Entity/EntityManager.h"
-#include "Entity/Entity.h"
+#include "PropertyControlCreator.h"
 
 EntitiesGraph::EntitiesGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
 :   GraphBase(newDelegate, rect),
@@ -69,28 +68,44 @@ void EntitiesGraph::SelectHierarchyNode(UIHierarchyNode * node)
 
 void EntitiesGraph::UpdatePropertyPanel()
 {
-	//if(workingEntity)
-	//{
-	//	RecreatePropertiesPanelForNode(workingEntity);
+	if(workingEntity)
+	{
+		RecreatePropertiesPanelForEntity(workingEntity);
 
-	//	if(propertyControl->GetParent() && propertyControl->GetParent() != propertyPanel)
-	//	{
-	//		propertyControl->GetParent()->RemoveControl(propertyControl);
-	//	}
+		if(propertyControl->GetParent() && propertyControl->GetParent() != propertyPanel)
+		{
+			propertyControl->GetParent()->RemoveControl(propertyControl);
+		}
 
-	//	if(!propertyControl->GetParent())
-	//	{
-	//		propertyPanel->AddControl(propertyControl);
-	//	}
-	//	RefreshProperties();
-	//}
-	//else
-	//{
-	//	if(propertyControl && propertyControl->GetParent())
-	//	{
-	//		propertyPanel->RemoveControl(propertyControl);
-	//	}
-	//}
+		if(!propertyControl->GetParent())
+		{
+			propertyPanel->AddControl(propertyControl);
+		}
+		RefreshProperties();
+	}
+	else
+	{
+		if(propertyControl && propertyControl->GetParent())
+		{
+			propertyPanel->RemoveControl(propertyControl);
+		}
+	}
+}
+
+void EntitiesGraph::RecreatePropertiesPanelForEntity(Entity * entity)
+{
+	if(propertyControl && propertyControl->GetParent())
+	{
+		propertyPanel->RemoveControl(propertyControl);
+	}
+	SafeRelease(propertyControl);
+
+	propertyControl = PropertyControlCreator::Instance()->CreateControlForEntity(entity, propertyPanelRect);
+
+	SafeRetain(propertyControl);
+	propertyControl->SetDelegate(this);
+	propertyControl->SetWorkingScene(workingScene);
+	propertyControl->ReadFrom(entity);
 }
 
 
