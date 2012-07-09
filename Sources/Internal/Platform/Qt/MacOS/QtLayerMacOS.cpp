@@ -25,61 +25,78 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Utils/Utils.h"
-
-#ifdef __DAVAENGINE_IPHONE__
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-#endif
+#include "QtLayerMacOS.h"
 
 #if defined(__DAVAENGINE_MACOS__)
-#import <Foundation/NSThread.h>
-#endif //#if defined(__DAVAENGINE_MACOS__)
 
-namespace DAVA
+extern void FrameworkDidLaunched();
+extern void FrameworkWillTerminate();
+
+namespace DAVA 
 {
-	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
-	
-	WideString GetDeviceName()
-	{
-#if defined(__DAVAENGINE_IPHONE__)
-		NSString * string = [UIDevice currentDevice].name;
-		WideString ws;
-		int len = [string length];
-		ws.resize(len);
-		for (int k = 0; k < len; ++k)
-		{
-			ws[k] = [string characterAtIndex: k];
-		}
-		return ws;
-#else
-		return L"MacOS";
-#endif
-	}
-
-	bool IsDrawThread()
-	{
-		return [NSThread isMainThread];
-	}
-	
-#endif
-	
-#if defined(__DAVAENGINE_IPHONE__)
-void DisableSleepTimer()
+    
+QtLayerMacOS::QtLayerMacOS()
 {
-	UIApplication * app = [UIApplication sharedApplication];
-	app.idleTimerDisabled = YES;
+    WidgetCreated();
+    AppStarted();
 }
 
-void EnableSleepTimer()
+QtLayerMacOS::~QtLayerMacOS()
 {
-	UIApplication * app = [UIApplication sharedApplication];
-	app.idleTimerDisabled = NO;
+    AppFinished();
+    WidgetDestroyed();
 }
-#endif
+    
+    
+void QtLayerMacOS::WidgetCreated()
+{
+	DisplayMode fullscreenMode = Core::Instance()->GetCurrentDisplayMode();
+	
+	// launch framework and setup all preferences
+    //TODO: maybe we need reorder calls 
+    FrameworkDidLaunched();
+    RenderManager::Create(Core::RENDERER_OPENGL);
+}
 
-}; // end of namespace DAVA
+void QtLayerMacOS::WidgetDestroyed()
+{
+    
+}
+    
+void QtLayerMacOS::OnSuspend()
+{
+    SoundSystem::Instance()->Suspend();
+    Core::Instance()->SetIsActive(false);
+}
+    
+void QtLayerMacOS::OnResume()
+{
+    SoundSystem::Instance()->Resume();
+    Core::Instance()->SetIsActive(true);
+}
+    
+void QtLayerMacOS::AppStarted()
+{
+    Core::Instance()->SystemAppStarted();
+}
+
+void QtLayerMacOS::AppFinished()
+{
+    Core::Instance()->SystemAppFinished();
+    FrameworkWillTerminate();
+    Core::Instance()->ReleaseSingletons();
+#ifdef ENABLE_MEMORY_MANAGER
+    if (DAVA::MemoryManager::Instance() != 0)
+    {
+        DAVA::MemoryManager::Instance()->FinalLog();
+    }
+#endif
+}
+
+
+};
+
+
+#endif // #if defined(__DAVAENGINE_MACOS__)

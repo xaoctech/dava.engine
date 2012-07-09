@@ -25,61 +25,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Revision History:
-        * Created by Vitaliy Borodovsky
+        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "Utils/Utils.h"
+#ifndef __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
+#define __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
 
-#ifdef __DAVAENGINE_IPHONE__
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-#endif
 
-#if defined(__DAVAENGINE_MACOS__)
-#import <Foundation/NSThread.h>
-#endif //#if defined(__DAVAENGINE_MACOS__)
+#include "DAVAEngine.h"
 
-namespace DAVA
+namespace DAVA 
 {
-	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
-	
-	WideString GetDeviceName()
-	{
-#if defined(__DAVAENGINE_IPHONE__)
-		NSString * string = [UIDevice currentDevice].name;
-		WideString ws;
-		int len = [string length];
-		ws.resize(len);
-		for (int k = 0; k < len; ++k)
-		{
-			ws[k] = [string characterAtIndex: k];
-		}
-		return ws;
-#else
-		return L"MacOS";
-#endif
-	}
-
-	bool IsDrawThread()
-	{
-		return [NSThread isMainThread];
-	}
-	
-#endif
-	
-#if defined(__DAVAENGINE_IPHONE__)
-void DisableSleepTimer()
+class CoreMacOSPlatform : public Core
 {
-	UIApplication * app = [UIApplication sharedApplication];
-	app.idleTimerDisabled = YES;
-}
+public:
 
-void EnableSleepTimer()
-{
-	UIApplication * app = [UIApplication sharedApplication];
-	app.idleTimerDisabled = NO;
-}
-#endif
+    CoreMacOSPlatform();
+    virtual ~CoreMacOSPlatform();
 
-}; // end of namespace DAVA
+	virtual eScreenMode GetScreenMode();
+	virtual void SwitchScreenToMode(eScreenMode screenMode); 
+	virtual void ToggleFullscreen();
+	virtual void Quit();
+	
+	virtual void GetAvailableDisplayModes(List<DisplayMode> & availableModes);
+	virtual DisplayMode GetCurrentDisplayMode();
+	virtual Vector2 GetMousePosition();
+	
+};	
+};
+
+
+#endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
