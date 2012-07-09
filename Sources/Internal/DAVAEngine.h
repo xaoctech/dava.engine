@@ -156,6 +156,8 @@
 
 #include "UI/UIScreenManager.h"
 
+#include "UI/TheoraPlayer.h"
+
 
 // Game object manager / 2D Scene
 #include "Scene2D/GameObject.h"
@@ -214,6 +216,10 @@
 #include "Network/NetworkDelegate.h"
 #include "Network/NetworkPacket.h"
 
+// Entity
+#include "Entity/Entity.h"
+#include "Entity/EntityManager.h"
+#include "Entity/Component.h"
 
 #endif // __DAVAENGINE_H__
 

@@ -26,6 +26,7 @@
     <ClCompile Include="Classes\PreviewControl.cpp" />
     <ClCompile Include="Classes\PropertyLineEditControl.cpp" />
     <ClCompile Include="Classes\TestScreen.cpp" />
+    <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A31689CE-A339-464E-8D7E-49EF2AF81AA4}</ProjectGuid>

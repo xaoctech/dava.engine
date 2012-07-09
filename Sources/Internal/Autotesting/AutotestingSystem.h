@@ -38,6 +38,8 @@
 #include "Autotesting/TouchAction.h"
 #include "Autotesting/AssertAction.h"
 
+#include "Autotesting/MongodbUpdateObject.h"
+
 #include "Base/Singleton.h"
 
 #define __DAVAENGINE_AUTOTESTING_FILE__
@@ -45,6 +47,25 @@
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
 #include "FileSystem/FileSystem.h"
 #endif
+
+#define AUTOTESTING_DB_IP    "10.128.128.131"
+#define AUTOTESTING_DB_PORT  27017
+#define AUTOTESTING_DB_NAME  "Autotesting"
+
+#if defined (__DAVAENGINE_MACOS__)
+#define AUTOTESTING_PLATFORM_NAME  "MacOS"
+#elif defined (__DAVAENGINE_IPHONE__)
+#define AUTOTESTING_PLATFORM_NAME  "iOS"
+#elif defined (__DAVAENGINE_WIN32__)
+#define AUTOTESTING_PLATFORM_NAME  "Windows"
+#elif defined (__DAVAENGINE_ANDROID__)
+#define AUTOTESTING_PLATFORM_NAME  "Android"
+#else
+#define AUTOTESTING_PLATFORM_NAME  "Unknown"
+#endif //PLATFORMS    
+
+#include "Database/MongodbClient.h"
+
 
 namespace DAVA
 {
@@ -56,8 +77,11 @@ public:
     ~AutotestingSystem();
 
     void OnAppStarted();
+    void OnAppFinished();
 
     void Init(const String & _testName);
+    
+    void SetProjectName(const String &_projectName);
 
     void AddAction(Action* action);
     void AddActionsFromYaml(const String &yamlFilePath);
@@ -67,6 +91,8 @@ public:
     void Update(float32 timeElapsed);
     void Draw();
 
+    void OnTestsSatrted();
+    void OnTestAssert(const String & text, bool isPassed);
     void OnError(const String & errorMessage = "");
     void OnTestsFinished();
 
@@ -105,9 +131,6 @@ public:
     void AssertBool(bool expected, const Vector<String> &controlPath, const String &assertMessage = "");
     void AssertBool(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage = "");    
 
-    // assert report
-    void OnTestAssert(const String & text, bool isPassed);
-
     // helpers
     void OnInput(const UIEvent &input);
 
@@ -120,6 +143,12 @@ protected:
     Vector<String> ParseControlPath(YamlNode* controlPathNode);
 
     void ExitApp();
+    
+    //DB
+    bool ConnectToDB();
+    void AddTestResult(const String &text, bool isPassed);
+    void SaveTestToDB();
+    //
 
     bool isInit;
     bool isRunning;
@@ -127,7 +156,19 @@ protected:
     Action* currentAction;
     Deque<Action*> actions;
 
+    String projectName;
+    uint32 testsId;
+    uint32 testsDate;
+    int32 testIndex;
+    
     String testName;
+    String testFileName;
+    String testFilePath;
+    Vector< std::pair<String, bool> > testResults;
+    
+    MongodbClient *dbClient;
+    
+    
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     String testReportsFolder;
     File* reportFile;

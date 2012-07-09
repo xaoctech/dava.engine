@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.util.Log;
 
@@ -15,6 +16,7 @@ public class JNIApplication extends Application
 	private native void OnConfigurationChanged(); 
 	private native void OnLowMemory(); 
 	private native void OnTerminate(); 
+	private native void SetAssetManager(AssetManager mngr);
 	
 	@Override
 	public void onCreate()
@@ -57,6 +59,8 @@ public class JNIApplication extends Application
             
             Log.w(JNIConst.LOG_TAG, String.format("[Application::onCreate] apkFilePath is %s", apkFilePath)); 
         	OnCreateApplication(dataDir.toString(), apkFilePath, JNIConst.LOG_TAG, JNIConst.PACKAGE_NAME);
+        	
+        	SetAssetManager(getAssets());
         }
         else
         {

@@ -51,6 +51,16 @@ SoundInstance::SoundInstance()
 	SoundSystem::Instance()->AddSoundInstance(this);
 }
 
+#ifdef __DAVAENGINE_ANDROID__
+SoundInstance::SoundInstance(Sound * parent)
+:	state(STATE_PLAYING),
+    animatedVolume(-1.f)
+{
+	SoundSystem::Instance()->AddSoundInstance(this);
+    parentSound = parent;
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 SoundInstance::eState SoundInstance::GetState()
 {
 	return state;
@@ -84,6 +94,20 @@ bool SoundInstance::Update()
             Release();
 			return false;
 		}
+#elif defined(__DAVAENGINE_ANDROID__)
+        if(!parentSound)
+            return false;
+
+        if(SL_PLAYSTATE_STOPPED == parentSound->GetPlayState() || state == STATE_FORCED_STOPPED)
+		{
+			soundInstanceEventDispatcher.PerformEvent(EVENT_COMPLETED);
+            
+			state = STATE_COMPLETED;
+			SoundSystem::Instance()->RemoveSoundInstance(this);
+            Release();
+            
+			return false;
+		}
 #else
 		if(SoundChannel::STATE_FREE == buddyChannel->GetState() || state == STATE_FORCED_STOPPED)
 		{
@@ -96,7 +120,7 @@ bool SoundInstance::Update()
 			Release();
 			return false;
 		}
-#endif
+#endif //#if defined(__DAVAENGINE_IPHONE__)
 		if(-1.f != animatedVolume)
 		{
 			SetVolume(animatedVolume);
@@ -117,6 +141,11 @@ void SoundInstance::SetVolume(float32 volume)
     {
 		buddyChannel->SetVolume(volume);
     }
+#elif defined(__DAVAENGINE_ANDROID__)
+    if(parentSound)
+    {
+        parentSound->SetVolume(volume);
+    }
 #else
 	if(buddyChannel)
 		buddyChannel->SetVolume(volume);
@@ -133,9 +162,11 @@ float32 SoundInstance::GetVolume()
         return buddyMusic->GetVolume();
     }
     else return buddyChannel ? buddyChannel->GetVolume() : 0.f;
+#elif defined(__DAVAENGINE_ANDROID__)
+    return parentSound ? parentSound->GetVolume() : 0.f;
 #else
 	return buddyChannel ? buddyChannel->GetVolume() : 0.f;
-#endif
+#endif //#if defined(__DAVAENGINE_IPHONE__)
 }
 
 void SoundInstance::Stop()
@@ -149,12 +180,17 @@ void SoundInstance::Stop()
 	{
 		buddyChannel->Stop();
 	}
+#elif defined(__DAVEENGINE_ANDROID__)
+    if(parentSound)
+    {
+        parentSound->Stop();
+    }
 #else
 	if(buddyChannel)
 	{
 		buddyChannel->Stop();
 	}
-#endif
+#endif //#if defined(__DAVAENGINE_IPHONE__)
 	state = STATE_FORCED_STOPPED;
 }
 
@@ -187,12 +223,17 @@ void SoundInstance::Pause(bool pause)
 	{
 		buddyChannel->Pause(pause);
 	}
+#elif defined(__DAVAENGINE_ANDROID__)
+    if(parentSound)
+    {
+        parentSound->Pause(pause);
+    }
 #else
-if(buddyChannel)
-{
-	buddyChannel->Pause(pause);
-}
-#endif
+    if(buddyChannel)
+    {
+        buddyChannel->Pause(pause);
+    }
+#endif //#if defined(__DAVAENGINE_IPHONE__)
 }
 
 };

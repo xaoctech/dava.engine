@@ -31,7 +31,10 @@
 #include "Database/MongodbObject.h"
 #include "mongodb/mongo.h"
 
+#include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
+
+#include "FileSystem/KeyedArchive.h"
 
 
 namespace DAVA 
@@ -89,12 +92,6 @@ MongodbClient::MongodbClient()
 
 MongodbClient::~MongodbClient()
 {
-    for(int32 i = 0; i < (int32)objects.size(); ++i)
-    {
-        SafeRelease(objects[i]);
-    }
-	objects.clear();
-	
 	Disconnect();
 
 	SafeRelease(clientData);
@@ -191,7 +188,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
     int32 status = MONGO_ERROR;
     if(IsConnected())
     {
-        MongodbObject * binary = CreateObject();
+        MongodbObject * binary = new MongodbObject();
         DVASSERT(binary);
         
         binary->SetObjectName(key);
@@ -209,7 +206,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
                 LogError(String("SaveBinary, update"), clientData->connection->err);
             }
             
-            DestroyObject(foundObject);
+            SafeRelease(foundObject);
         }
         else 
         {
@@ -220,7 +217,7 @@ bool MongodbClient::SaveBinary(const String &key, uint8 *data, int32 dataSize)
             }
         }
         
-        DestroyObject(binary);
+        SafeRelease(binary);
     }
     
     return (MONGO_OK == status);
@@ -236,7 +233,7 @@ int32 MongodbClient::GetBinarySize(const String &key)
     if(object)
     {
         retSize = object->GetInt32(String("DataSize"));
-        DestroyObject(object);
+        SafeRelease(object);
     }
     else 
     {
@@ -254,7 +251,7 @@ bool MongodbClient::GetBinary(const String &key, uint8 *outData, int32 dataSize)
     if(object)
     {
         found = object->GetData(String("Data"), outData, dataSize);
-        DestroyObject(object);
+        SafeRelease(object);
     }
     else 
     {
@@ -266,46 +263,44 @@ bool MongodbClient::GetBinary(const String &key, uint8 *outData, int32 dataSize)
 
 MongodbObject * MongodbClient::FindObjectByKey(const String &key)
 {
-    MongodbObject *query = CreateObject();
+    MongodbObject *query = new MongodbObject();
     DVASSERT(query);
     
     query->SetObjectName(key);
     query->Finish();
     
-    MongodbObject *foundObject = CreateObject();
+    MongodbObject *foundObject = new MongodbObject();
     DVASSERT(foundObject);
     
     int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
     if(MONGO_OK != status)
     {
-        DestroyObject(foundObject);
+        SafeRelease(foundObject);
         foundObject = NULL;
     }
         
-    DestroyObject(query);
+    SafeRelease(query);
     return foundObject;
 }
     
-MongodbObject * MongodbClient::CreateObject()
+bool MongodbClient::FindObjectByKey(const String &key, MongodbObject * foundObject)
 {
-    MongodbObject *object = new MongodbObject();
-    objects.push_back(object);
+    DVASSERT(foundObject);
     
-    return object;
-}
-
-void MongodbClient::DestroyObject(DAVA::MongodbObject *object)
-{
-    Vector<MongodbObject *>::const_iterator endIt = objects.end();
-    for(Vector<MongodbObject *>::iterator it= objects.begin(); it != endIt; ++it)
+    MongodbObject *query = new MongodbObject();
+    DVASSERT(query);
+    
+    query->SetObjectName(key);
+    query->Finish();
+    
+    int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
+    if(MONGO_OK != status)
     {
-        if(*it == object)
-        {
-            SafeRelease(object);
-            objects.erase(it);
-            break;
-        }
+        return false;
     }
+    
+    SafeRelease(query);
+    return true;
 }
     
 bool MongodbClient::SaveObject(MongodbObject *object)
@@ -322,7 +317,7 @@ bool MongodbClient::SaveObject(MongodbObject *object)
                 LogError(String("SaveObject, update"), clientData->connection->err);
             }
             
-            DestroyObject(foundObject);
+            SafeRelease(foundObject);
         }
         else 
         {
@@ -337,6 +332,33 @@ bool MongodbClient::SaveObject(MongodbObject *object)
     return (MONGO_OK == status);
 }
 
+bool MongodbClient::SaveObject(MongodbObject *newObject, MongodbObject *oldObject)
+{
+    int32 status = MONGO_ERROR;
+    if(IsConnected())
+    {
+        if(oldObject)
+        {
+            status = mongo_update(clientData->connection, namespaceName.c_str(), (bson *)oldObject->InternalObject(), (bson *)newObject->InternalObject(), 0, NULL);
+            if(MONGO_OK != status)
+            {
+                LogError(String("SaveObject, update"), clientData->connection->err);
+            }
+        }
+        else 
+        {
+            status = mongo_insert(clientData->connection, namespaceName.c_str(), (bson *)newObject->InternalObject(), NULL);
+            if(MONGO_OK != status)
+            {
+                LogError(String("SaveObject, insert"), clientData->connection->err);
+            }
+        }
+    }
+    
+    return (MONGO_OK == status);
+}
+
+    
     
 void MongodbClient::DumpDB()
 {
@@ -363,5 +385,162 @@ void MongodbClient::DumpDB()
     Logger::Debug("************************");
 }
     
+bool MongodbClient::KeyedArchiveToDBObject(KeyedArchive* archive, MongodbObject* outObject)
+{
+    DVASSERT(archive && outObject);
+    
+    if(!outObject->IsFinished())
+    {
+        //copy data from archive into db object
+        Map<String, VariantType*> archiveData = archive->GetArchieveData();
+        for(Map<String, VariantType*>::iterator it = archiveData.begin(); it != archiveData.end(); ++it)
+        {
+            MongodbClient::WriteData(outObject, it->first, it->second);
+        }
+        return true;
+    }
+    return false;
+}
+
+bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive* outArchive)
+{
+    DVASSERT(dbObject && outArchive);
+    
+    if(dbObject->IsFinished())
+    {
+        //copy data from db object into archive
+        ReadData(outArchive, (bson*)dbObject->InternalObject());
+        
+        return true;
+    }
+    return false;
+}    
+
+void MongodbClient::ReadData(KeyedArchive* archive, void* bsonObj)
+{
+    if((!archive) || (!bsonObj)) return;
+
+    bson_iterator it;
+    bson_iterator_init(&it, (bson*)bsonObj);
+    
+    while (bson_iterator_next(&it))
+    {
+        String key = String(bson_iterator_key(&it));
+        bson_type type = bson_iterator_type(&it);
+        
+        if(key == "_id") continue; // ignore _id
+
+        switch (type)
+        {
+            case BSON_STRING:
+                archive->SetString(key, String(bson_iterator_string(&it)));
+                break;
+                
+            case BSON_INT:
+                archive->SetInt32(key, bson_iterator_int(&it));
+                break;
+                
+            case BSON_LONG:
+                archive->SetInt32(key, bson_iterator_long(&it));
+                break;
+                
+            case BSON_DOUBLE:
+                archive->SetFloat(key, bson_iterator_double(&it));
+                break;
+                
+            case BSON_OBJECT:
+            {
+                bson sub;
+                
+                bson_iterator_subobject(&it, &sub);
+                
+                KeyedArchive* subArchive = new KeyedArchive();
+                ReadData(subArchive, &sub);
+                archive->SetArchive(key, subArchive);
+                SafeRelease(subArchive);
+                break;
+            }
+                
+            case BSON_OID:
+                //TODO: add 12-bytes array
+                //bson_append_oid(object, key, bson_iterator_oid(&it));
+                break;
+                
+                
+            default:
+                DVASSERT(false);
+                Logger::Error("[MongodbUpdateObject::ReadData] Not implemented type: %d", type);
+                break;
+        }
+    }
+}
+
+void MongodbClient::WriteData(MongodbObject* mongoObj, const String & key, VariantType *value)
+{
+    if(mongoObj && value)
+    {
+        if(key == "_id") return; // ignore _id
+
+        //TODO: bool, uint32 and WideString have no corresponding types in mongoDB
+        switch (value->type) 
+        {
+            case VariantType::TYPE_BOOLEAN:
+            {
+                mongoObj->AddInt32(key, value->AsBool());
+            }
+                break;
+            case VariantType::TYPE_INT32:
+            {
+                mongoObj->AddInt32(key, value->AsInt32());
+            }
+                break;    
+            case VariantType::TYPE_FLOAT:
+            {
+                mongoObj->AddDouble(key, value->AsFloat());
+            }
+                break;
+            case VariantType::TYPE_STRING:
+            {
+                mongoObj->AddString(key, value->AsString());
+            }
+                break;  
+            case VariantType::TYPE_WIDE_STRING:
+            {
+                mongoObj->AddString(key, WStringToString(value->AsWideString()));
+            }
+                break;
+            case VariantType::TYPE_BYTE_ARRAY:
+            {
+                mongoObj->AddData(key, const_cast<uint8*>(value->AsByteArray()), value->AsByteArraySize());
+            }
+                break;
+            case VariantType::TYPE_UINT32:
+            {
+                mongoObj->AddInt32(key, value->AsUInt32());
+            }
+                break;
+            case VariantType::TYPE_KEYED_ARCHIVE:
+            {
+                MongodbObject* subObject = new MongodbObject();
+                KeyedArchive* subArchive = value->AsKeyedArchive();
+
+                KeyedArchiveToDBObject(subArchive, subObject);
+
+                subObject->SetObjectName(key);
+                subObject->Finish();
+                
+                mongoObj->AddObject(key, subObject);
+                SafeRelease(subObject);
+            }
+                break;
+            default:
+            {
+                DVASSERT(false);
+                Logger::Error("[MongodbUpdateObject::WriteData] Not implemented type: %d", value->type);
+            }
+                break;
+        }
+    }
+}    
     
 }

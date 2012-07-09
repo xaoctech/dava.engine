@@ -33,7 +33,7 @@ LOCAL_SRC_FILES :=  \
 
 LOCAL_CFLAGS := -g -O2
 
-LOCAL_LDLIBS := -lz
+LOCAL_LDLIBS := -lz -lOpenSLES -landroid
 
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libInternal libbox2d

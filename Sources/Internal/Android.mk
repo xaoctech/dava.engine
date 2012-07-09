@@ -50,6 +50,14 @@ LOCAL_SRC_FILES :=  \
                     Debug/Stats.cpp \
                     Debug/Replay.cpp \
                     \
+                    Entity/Component.cpp \
+                    Entity/ComponentTypes.cpp \
+                    Entity/Entity.cpp \
+                    Entity/EntityFamily.cpp \
+                    Entity/EntityManager.cpp \
+                    Entity/PoolSystem.cpp \
+                    Entity/VisibilityAABBoxComponent.cpp \
+                    \
                     FileSystem/Bitstream.cpp \
                     FileSystem/DynamicMemoryFile.cpp \
                     FileSystem/File.cpp \
@@ -241,13 +249,16 @@ LOCAL_CFLAGS := -frtti -g -O2 -DGL_GLEXT_PROTOTYPES=1
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 # set used libs
+
+LIBS_PATH := $(LOCAL_PATH)/../../Libs/libs
+
 LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libzip_android.a
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libxml_android.a
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libpng_android.a
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libfreetype_android.a
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libyaml_android.a
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/libs/libmongodb_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libzip_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libxml_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
 
 # set exported used libs
 LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)

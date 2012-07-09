@@ -35,6 +35,10 @@
 #include "Base/BaseObject.h"
 #include "Sound/ALUtils.h"
 
+#ifdef __DAVAENGINE_ANDROID__
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
+#endif //#ifdef __DAVAENGINE_ANDROID__
 
 namespace DAVA
 {
@@ -50,6 +54,12 @@ public:
 	virtual int32 Release();
 
 	void FullFill(SoundDataProvider * provider);
+    
+#ifdef __DAVAENGINE_ANDROID__
+    void FullFill(SoundDataProvider * provider, SLAndroidSimpleBufferQueueItf playerBufferQueue);
+    int32 actualBufferSize;
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 	bool Fill(SoundDataProvider * provider, int32 size); //false if not filled
 #ifdef __DAVASOUND_AL__
 	ALuint GetALBuffer();

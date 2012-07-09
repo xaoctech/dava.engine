@@ -13,16 +13,20 @@
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
     <ClInclude Include="Classes\Config.h" />
+    <ClInclude Include="Classes\EntityTest.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\SampleTest.h" />
+    <ClInclude Include="Classes\SoundTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\BaseScreen.cpp" />
+    <ClCompile Include="Classes\EntityTest.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\SampleTest.cpp" />
+    <ClCompile Include="Classes\SoundTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>

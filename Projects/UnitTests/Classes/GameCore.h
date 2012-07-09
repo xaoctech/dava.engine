@@ -84,9 +84,15 @@ protected:
     void CreateDocumentsFolder();
     File * CreateDocumentsFile(const String &filePathname);
     
+    bool ConnectToDB();
+    MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
+    MongodbObject * CreateLogObject(const String &logName, const String &runTime);
+
 protected:
     
     File * logFile;
+
+    MongodbClient *dbClient;
 
     BaseScreen *currentScreen;
 

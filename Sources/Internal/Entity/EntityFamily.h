@@ -21,8 +21,8 @@ public:
     Pool * GetPoolByDataName(const char * dataName);
 
     uint32 GetSize() { return currentSize; };
-    template<class T> T * GetPtr(const char * name); 
-    
+    template<class T> T * GetPtr(const char * name);
+
 private:
     // Immediate functions. Do what you ask immediatelly. Should be called only from EntityManager
     void NewEntity(Entity * entity);
@@ -38,6 +38,7 @@ private:
     uint32 maxSize;
     
     friend class EntityManager;
+	friend class Entity;
 };
 
 template<class T>

@@ -187,6 +187,7 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
     hardwareState.Reset(true);
 
 #if defined(__DAVAENGINE_OPENGL__)
+#if !defined(__DAVAENGINE_IPHONE__)//Dizz: glDisableClientState functions are not supported by GL ES 2.0
     glDisableClientState(GL_VERTEX_ARRAY);
     oldVertexArrayEnabled = 0;                      
 
@@ -204,8 +205,7 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
     oldColorArrayEnabled = 0;                       
 
     RenderManager::UnlockNonMain();
-
-    
+#endif    
 #endif
     
 	frameBufferWidth = _frameBufferWidth;

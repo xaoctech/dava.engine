@@ -11,13 +11,27 @@ uniform sampler2D sampler2d;
 varying lowp vec4 varColor;
 varying mediump vec2 varTexCoord;
 
+#if defined(VERTEX_FOG)
+uniform vec3 fogColor;
+varying float varFogFactor;
+#endif
+
+
 void main()
 {
-    lowp vec4 texColor = texture2D(sampler2d, varTexCoord);
+    lowp vec3 texColor = texture2D(sampler2d, varTexCoord).rgb;
+
+
 #ifdef ALPHA_TEST_ENABLED
     if (texColor.a < 0.9)
         discard;
 #endif
-//	gl_FragColor = texColor * varColor;
-	gl_FragColor = texColor;
+
+#if defined(VERTEX_FOG)
+    gl_FragColor = vec4(mix(fogColor, texColor, varFogFactor), 1.0);
+#else
+    gl_FragColor = vec4(texColor, 1.0);
+#endif
+
+//	gl_FragColor = texColor;
 }

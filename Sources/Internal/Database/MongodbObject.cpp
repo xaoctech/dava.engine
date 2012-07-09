@@ -86,6 +86,62 @@ public:
 		return found;
 	}
 
+    void InitWith(bson *obj)
+    {
+        bson_iterator it;
+        bson_iterator_init(&it, obj);
+        
+        while (bson_iterator_next(&it))
+        {
+            const char * key = bson_iterator_key(&it);
+            bson_type type = bson_iterator_type(&it);
+            
+            switch (type)
+            {
+                case BSON_STRING:
+                    bson_append_string(object, key, bson_iterator_string(&it));
+                    break;
+                    
+                case BSON_INT:
+                    bson_append_int(object, key, bson_iterator_int(&it));
+                    break;
+                    
+                case BSON_LONG:
+                    bson_append_long(object, key, bson_iterator_long(&it));
+                    break;
+                    
+                case BSON_DOUBLE:
+                    bson_append_double(object, key, bson_iterator_double(&it));
+                    break;
+                    
+                case BSON_OBJECT:
+                {
+                    bson sub;
+                    
+                    bson_iterator_subobject(&it, &sub);
+                    bson_append_bson(object, key, &sub);
+                    break;
+                }
+                    
+                case BSON_OID:
+                    bson_append_oid(object, key, bson_iterator_oid(&it));
+                    break;
+                    
+                    
+                default:
+                    DVASSERT(false);
+                    Logger::Error("[MongodbObjectInternalData::InitWith] Not implemented type: %d", type);
+                    break;
+            }
+        }
+    }
+    
+    void InitFinished(bson *obj)
+    {
+        bson_copy(object, obj);
+        bson_finish(object);
+    }
+    
 public:
 	bson *object;
 };
@@ -139,6 +195,11 @@ void MongodbObject::AddObject(const String &fieldname, DAVA::MongodbObject *addO
 void MongodbObject::Finish()
 {
     bson_finish(objectData->object);
+}
+
+bool MongodbObject::IsFinished()
+{
+    return objectData->object->finished;
 }
     
 String MongodbObject::GetObjectName()
@@ -311,6 +372,65 @@ void MongodbObject::EnableForEdit()
     SafeDelete(objectData->object);
     objectData->object = newObject;
 }
-    
 
+void MongodbObject::CopyFinished(MongodbObject *fromObject)
+{
+    objectData->InitFinished(fromObject->objectData->object);
+}    
+    
+void MongodbObject::Copy(MongodbObject *fromObject)
+{
+    objectData->InitWith(fromObject->objectData->object);
+}
+
+bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname)
+{
+    return GetSubObject(subObject, fieldname, false);
+}
+    
+bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname, bool needFinished)
+{
+    bool found = false;
+    
+    if(0 != objectData->object->finished)
+    {
+        bson_iterator it;
+        bson_iterator_init(&it, objectData->object);
+        
+        bson_type foundType = bson_find(&it, objectData->object, fieldname.c_str());
+        if(BSON_OBJECT == foundType)
+        {
+            found = true;
+            
+            bson sub;
+            bson_iterator_subobject(&it, &sub);
+
+            if(needFinished)
+            {
+                subObject->objectData->InitFinished(&sub);
+            }
+            else 
+            {
+                
+                subObject->objectData->InitWith(&sub);
+            }
+        }
+    }
+    
+    return found;
+}
+
+void MongodbObject::Print()
+{
+    if(objectData->object->finished)
+    {
+        bson_print(objectData->object);
+    }
+    else 
+    {
+        Logger::Warning("[MongodbObject::Print] Object not finished");
+    }
+}
+    
+    
 }

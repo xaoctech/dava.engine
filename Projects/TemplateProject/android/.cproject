@@ -13,7 +13,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="WotSniper" buildProperties="" description="" id="com.android.toolchain.gcc.730881669" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="DavaTemplate" buildProperties="" description="" id="com.android.toolchain.gcc.730881669" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="com.android.toolchain.gcc.730881669.1150785255" name="/" resourcePath="">
 						<toolChain id="com.android.toolchain.gcc.1500690762" name="com.android.toolchain.gcc">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.1973250015" name="Android Platform" osList="all"/>
@@ -55,11 +55,11 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="WotSniper" buildProperties="" description="" id="com.android.toolchain.gcc.730881669.1258279052" name="NDK Debug" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="DavaTemplate" buildProperties="" description="" id="com.android.toolchain.gcc.730881669.1258279052" name="NDK Debug" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="com.android.toolchain.gcc.730881669.1258279052." name="/" resourcePath="">
 						<toolChain id="com.android.toolchain.gcc.378228501" name="com.android.toolchain.gcc">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.android.targetPlatform.455723282" name="Android Platform" osList="all"/>
-							<builder buildPath="${workspace_loc:/WotSniper}" command="" enableAutoBuild="false" enabledIncrementalBuild="true" id="com.android.builder.1371513525" keepEnvironmentInBuildfile="false" managedBuildOn="false">
+							<builder buildPath="${workspace_loc:/DavaTemplate}" command="" enableAutoBuild="false" enabledIncrementalBuild="true" id="com.android.builder.1371513525" keepEnvironmentInBuildfile="false" managedBuildOn="false">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="libs"/>
 								</outputEntries>
@@ -89,7 +89,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="WotSniper.null.1009771583" name="WotSniper"/>
+		<project id="DavaTemplate.null.1009771583" name="DavaTemplate"/>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="1">
 		<resource resourceType="PROJECT" workspacePath="/DavaViewer"/>

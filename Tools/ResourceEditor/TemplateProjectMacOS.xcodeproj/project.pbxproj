@@ -45,10 +45,12 @@
 		5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */; };
 		5C8F66FA15230EC100859901 /* LandscapeEditorColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66F815230EC100859901 /* LandscapeEditorColor.cpp */; };
 		5C8F66FD1523652900859901 /* HelpDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66FB1523652900859901 /* HelpDialog.cpp */; };
+		5C9C59CC159A015E00F71475 /* FogControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9C59CA159A015E00F71475 /* FogControl.cpp */; };
 		5CA721A914B73A64000D2851 /* NodesPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */; };
 		5CA721D614B760DA000D2851 /* CreateNodesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */; };
 		5CB7FAB514FB5A32000EE8A8 /* TextureTrianglesDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CB7FAB314FB5A32000EE8A8 /* TextureTrianglesDialog.cpp */; };
 		5CBF5FA5152F3E5200107D6B /* ImageRasterizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF5FA3152F3E5200107D6B /* ImageRasterizer.cpp */; };
+		5CBFD6D1159C6CC600852F1A /* EntityPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6CF159C6CC600852F1A /* EntityPropertyControl.cpp */; };
 		5CC1069C1529BD8C002CE5CE /* MaterialPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */; };
 		5CC6DFEE15821FE5003B6234 /* CommandLineTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC6DFEC15821FE5003B6234 /* CommandLineTool.cpp */; };
 		5CC6DFF115823012003B6234 /* SceneExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CC6DFEF15823012003B6234 /* SceneExporter.cpp */; };
@@ -410,6 +412,8 @@
 		5C8F66F915230EC100859901 /* LandscapeEditorColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorColor.h; sourceTree = "<group>"; };
 		5C8F66FB1523652900859901 /* HelpDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelpDialog.cpp; sourceTree = "<group>"; };
 		5C8F66FC1523652900859901 /* HelpDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelpDialog.h; sourceTree = "<group>"; };
+		5C9C59CA159A015E00F71475 /* FogControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FogControl.cpp; sourceTree = "<group>"; };
+		5C9C59CB159A015E00F71475 /* FogControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FogControl.h; sourceTree = "<group>"; };
 		5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NodesPropertyControl.cpp; sourceTree = "<group>"; };
 		5CA721A814B73A64000D2851 /* NodesPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodesPropertyControl.h; sourceTree = "<group>"; };
 		5CA721D414B760D8000D2851 /* CreateNodesDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateNodesDialog.cpp; sourceTree = "<group>"; };
@@ -418,6 +422,8 @@
 		5CB7FAB414FB5A32000EE8A8 /* TextureTrianglesDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureTrianglesDialog.h; sourceTree = "<group>"; };
 		5CBF5FA3152F3E5200107D6B /* ImageRasterizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageRasterizer.cpp; sourceTree = "<group>"; };
 		5CBF5FA4152F3E5200107D6B /* ImageRasterizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRasterizer.h; sourceTree = "<group>"; };
+		5CBFD6CF159C6CC600852F1A /* EntityPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityPropertyControl.cpp; sourceTree = "<group>"; };
+		5CBFD6D0159C6CC600852F1A /* EntityPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityPropertyControl.h; sourceTree = "<group>"; };
 		5CC1069A1529BD8C002CE5CE /* MaterialPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialPropertyControl.cpp; sourceTree = "<group>"; };
 		5CC1069B1529BD8C002CE5CE /* MaterialPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialPropertyControl.h; sourceTree = "<group>"; };
 		5CC6DFEC15821FE5003B6234 /* CommandLineTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommandLineTool.cpp; sourceTree = "<group>"; };
@@ -1067,6 +1073,8 @@
 		4780999714A2463900BAA259 /* MaterialEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5C9C59CA159A015E00F71475 /* FogControl.cpp */,
+				5C9C59CB159A015E00F71475 /* FogControl.h */,
 				47809C4914A3FE5700BAA259 /* MaterialEditor.h */,
 				47809C4A14A3FE5700BAA259 /* MaterialEditor.cpp */,
 			);
@@ -1913,6 +1921,8 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5CBFD6CF159C6CC600852F1A /* EntityPropertyControl.cpp */,
+				5CBFD6D0159C6CC600852F1A /* EntityPropertyControl.h */,
 				5CEFCC31158B274800CE35DA /* EntitiesGraph.cpp */,
 				5CEFCC32158B274800CE35DA /* EntitiesGraph.h */,
 				5C0DFAC0158629E2005DBD24 /* Exporter */,
@@ -2405,6 +2415,8 @@
 				5CC6DFF115823012003B6234 /* SceneExporter.cpp in Sources */,
 				5C0DFAC3158629EF005DBD24 /* ExporterScreen.cpp in Sources */,
 				5CEFCC33158B274800CE35DA /* EntitiesGraph.cpp in Sources */,
+				5C9C59CC159A015E00F71475 /* FogControl.cpp in Sources */,
+				5CBFD6D1159C6CC600852F1A /* EntityPropertyControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

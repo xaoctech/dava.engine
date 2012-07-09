@@ -13,11 +13,12 @@
 #include "DAVAEngine.h"
 #include "DraggableDialog.h"
 #include "MaterialPropertyControl.h"
+#include "FogControl.h"
 
 using namespace DAVA;
 
 class ComboBox;
-class MaterialEditor: public DraggableDialog, public UIListDelegate, public NodesPropertyDelegate
+class MaterialEditor: public DraggableDialog, public UIListDelegate, public NodesPropertyDelegate, public FogControlDelegate
 {
 public:
     
@@ -46,6 +47,9 @@ public:
 
     //NodesPropertyDelegate
     virtual void NodesPropertyChanged();
+    
+    //Fog control delegate
+    virtual void SetupFog(bool enabled, float32 dencity, const Color &newColor);
     
 protected:
     
@@ -81,6 +85,9 @@ protected:
     void UdpateButtons(bool showButtons);
     void RefreshList();
     Material *GetMaterial(int32 index);
+    
+    void OnSetupFog(BaseObject * object, void * userData, void * callerData);
+    FogControl *fogControl;
 };
 
 #endif

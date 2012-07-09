@@ -15,7 +15,16 @@ namespace DAVA
 AutotestingSystem::AutotestingSystem() : currentAction(NULL)
     , isInit(false)
     , isRunning(false)
+    , projectName("dava.framework")
+    , testsId(0)
+    , testsDate(0)
+    , testIndex(0)
+    , testName("")
+    , testFileName("")
+    , testFilePath("")
+    , dbClient(NULL)
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    , testReportsFolder("")
     , reportFile(NULL)
 #endif
 {
@@ -44,13 +53,15 @@ void AutotestingSystem::OnAppStarted()
         
         // read current test index and autotesting id from ~doc:/autotesting.archive
         KeyedArchive* autotestingArchive = new KeyedArchive();
-        int32 savedIndex = 0;
-        int32 savedId = 0;
 
         if(autotestingArchive->Load("~doc:/autotesting/autotesting.archive"))
         {
-            savedIndex = autotestingArchive->GetInt32("index");
-            savedId = autotestingArchive->GetInt32("id");
+            testIndex = autotestingArchive->GetInt32("index");
+            VariantType* vt = autotestingArchive->GetVariant("id");
+            if(vt && vt->type == VariantType::TYPE_UINT32)
+            {
+                testsId = vt->AsUInt32();
+            }
         }
 
         int32 autotestingId = 1;
@@ -62,18 +73,37 @@ void AutotestingSystem::OnAppStarted()
             char tempBuf[1024];
             file->ReadLine(tempBuf, 1024);
             sscanf(tempBuf, "%d", &autotestingId);
+            
+            if(!file->IsEof())
+            {
+                char tempBuf[1024];
+                file->ReadLine(tempBuf, 1024);
+                sscanf(tempBuf, "%d", &testsDate);
+            }
+            
+            if(!file->IsEof())
+            {
+                char projectCharName[128];
+                file->ReadLine(tempBuf, 1024);
+                sscanf(tempBuf, "%s", projectCharName);
+                SetProjectName(projectCharName);
+            }
         }
         SafeRelease(file);
         
-        String yamlFilePath = "";
-        // compare ids
-        if(savedId != autotestingId)
+        if(!ConnectToDB())
         {
-            savedIndex = 0;
-            savedId = autotestingId;
+            return;
         }
         
-        int32 indexInFileList = savedIndex;
+        // compare ids
+        if(testsId != autotestingId)
+        {
+            testIndex = 0;
+            testsId = autotestingId;
+        }
+        
+        int32 indexInFileList = testIndex;
         // skip directories
         for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
         {
@@ -82,9 +112,10 @@ void AutotestingSystem::OnAppStarted()
 
         if(indexInFileList < fileListSize)
         {
-            yamlFilePath = fileList.GetPathname(indexInFileList);
+            testFilePath = fileList.GetPathname(indexInFileList);
+            testFileName = fileList.GetFilename(indexInFileList);
 
-            YamlParser* parser = YamlParser::Create(yamlFilePath);
+            YamlParser* parser = YamlParser::Create(testFilePath);
             if(parser)
             {
                 YamlNode* rootNode = parser->GetRootNode();
@@ -105,7 +136,7 @@ void AutotestingSystem::OnAppStarted()
                 }
                 else
                 {
-                    OnError(Format("parsing %s failed - no root node", yamlFilePath.c_str()));
+                    OnError(Format("parsing %s failed - no root node", testFilePath.c_str()));
                 }
             }
             SafeRelease(parser);
@@ -115,21 +146,33 @@ void AutotestingSystem::OnAppStarted()
         if(indexInFileList == (fileListSize - 1))
         {
             // last file - reset id and index
-            savedIndex = 0;
-            savedId = 0;
+            autotestingArchive->SetUInt32("id", 0);
+            autotestingArchive->SetInt32("index", 0);
         }
         else
         {
             // save next index and autotesting id
-            savedIndex++;
+            autotestingArchive->SetUInt32("id", testsId);
+            autotestingArchive->SetInt32("index", (testIndex + 1));
         }
-        autotestingArchive->SetInt32("id", savedId);
-        autotestingArchive->SetInt32("index", savedIndex);
-
         autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
     }
 }
+    
+void AutotestingSystem::OnAppFinished()
+{
+    if(dbClient)
+    {
+        dbClient->Disconnect();
+        SafeRelease(dbClient);
+    }
+}
 
+void  AutotestingSystem::SetProjectName(const String &_projectName)
+{
+    projectName = _projectName;
+}
+    
 void AutotestingSystem::Init(const String &_testName)
 {
     if(!isInit)
@@ -145,6 +188,159 @@ void AutotestingSystem::Init(const String &_testName)
     }
 }
 
+bool AutotestingSystem::ConnectToDB()
+{
+    DVASSERT(NULL == dbClient);
+    
+    dbClient = MongodbClient::Create(AUTOTESTING_DB_IP, AUTOTESTING_DB_PORT);
+    if(dbClient)
+    {
+        dbClient->SetDatabaseName(AUTOTESTING_DB_NAME);
+        dbClient->SetCollectionName(projectName);
+    }
+    
+    return (NULL != dbClient);
+}
+    
+void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
+{
+    testResults.push_back(std::pair< String, bool >(text, isPassed));
+}
+
+void AutotestingSystem::SaveTestToDB()
+{
+    Logger::Debug("AutotestingSystem::SaveTestToDB");
+    
+    String testAndFileName = Format("%s (%s)", testName.c_str(), testFileName.c_str());
+    
+    String testsName = Format("%u",testsDate);
+    
+    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+    bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
+    if(!isFound)
+    {
+        dbUpdateObject->SetObjectName(testsName);
+    }
+    dbUpdateObject->LoadData();
+    
+    KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+    
+    KeyedArchive* platformArchive = NULL;
+    
+    String logKey = "log";
+    KeyedArchive* logArchive = NULL;
+    
+    KeyedArchive* testArchive = NULL;
+    
+    String testResultsKey = "TestResults";
+    KeyedArchive* testResultsArchive = NULL;
+    
+    bool isTestPassed = true;
+    for(int32 i = 0; i < testResults.size(); ++i)
+    {
+        if(!testResults[i].second)
+        {
+            isTestPassed = false;
+            break;
+        }
+    }
+    
+    bool isTestSuitePassed = isTestPassed;
+    
+    // find platform object
+    if(isFound)
+    {
+        //found database object
+        
+        // find platform object
+        platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
+        
+        if(platformArchive)
+        {
+            // found platform object
+            
+            // find log object
+            logArchive = SafeRetain(platformArchive->GetArchive(logKey, NULL));
+            
+            if(logArchive)
+            {
+                // found log object
+                
+                // find test object
+                testArchive = SafeRetain(logArchive->GetArchive(testName, NULL));
+                if(testArchive)
+                {
+                    // found test object
+                    
+                    isTestPassed = (testArchive->GetInt32("Success") == 1);
+                    
+                    // find test results
+                    testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
+                }
+            }
+            isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+        }
+    }
+    
+    // create archives if not found
+    if(!platformArchive)
+    {
+        platformArchive = new KeyedArchive();
+    }
+    
+    if(!logArchive) 
+    {
+        logArchive = new KeyedArchive();
+    }
+    
+    if(!testArchive) 
+    {
+        testArchive = new KeyedArchive();
+    }
+    
+    if(!testResultsArchive)
+    {
+        testResultsArchive = new KeyedArchive();
+    }
+    
+    //update test results
+    for(int32 i = 0; i < testResults.size(); ++i)
+    {
+        testResultsArchive->SetInt32(testResults[i].first, (int32)testResults[i].second);
+    }
+  
+    //update test object
+    testArchive->SetInt32("RunId", testsId);
+    testArchive->SetInt32("Success", (int32)isTestPassed);
+    testArchive->SetString("File", testFileName);
+    testArchive->SetArchive(testResultsKey, testResultsArchive);
+
+    //update log object
+    logArchive->SetArchive(testName, testArchive);
+   
+    //update platform object
+    platformArchive->SetInt32("RunId", testsId);
+    platformArchive->SetInt32("TestsCount", (testIndex + 1));
+    platformArchive->SetInt32("Success", (int32)isTestSuitePassed);
+    platformArchive->SetInt32(testAndFileName, (int32)isTestPassed);
+    platformArchive->SetArchive(logKey, logArchive);
+ 
+    //update DB object
+    dbUpdateData->SetInt32("RunId", testsId);
+    dbUpdateData->SetArchive(AUTOTESTING_PLATFORM_NAME, platformArchive);
+
+    dbUpdateObject->SaveToDB(dbClient);
+    
+    // delete created archives
+    SafeRelease(platformArchive);
+    SafeRelease(logArchive);
+    SafeRelease(testArchive);
+    SafeRelease(testResultsArchive);
+    
+    // delete created update object
+    SafeRelease(dbUpdateObject);
+}
+    
 void AutotestingSystem::AddAction(Action* action)
 {
     if(!isInit) return;
@@ -537,7 +733,13 @@ Vector<String> AutotestingSystem::ParseControlPath(YamlNode* controlPathNode)
 void AutotestingSystem::RunTests()
 {
     if(!isInit) return;
-    isRunning = true;
+    
+    if(!isRunning)
+    {
+        OnTestsSatrted();
+        
+        isRunning = true;
+    }
 }
 
 void AutotestingSystem::Update(float32 timeElapsed)
@@ -599,29 +801,57 @@ void AutotestingSystem::Draw()
     }
     RenderHelper::Instance()->DrawCircle(GetMousePosition(), 15.0f);
 }
-
-void AutotestingSystem::OnTestsFinished()
+    
+void AutotestingSystem::OnTestsSatrted()
 {
-    Logger::Debug("AutotestingSystem::OnTestsFinished");
-    //TODO: all actions finished. report?
+    Logger::Debug("AutotestingSystem::OnTestsStarted");
+    AddTestResult("started", true);
+}
+    
+void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
+{
+    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
+    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
+    
+    AddTestResult(text, isPassed);
+    
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     if(reportFile)
     {
-        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
+        reportFile->WriteLine(assertMsg);
     }
-    SafeRelease(reportFile);
 #endif
-    ExitApp();
 }
 
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
+    
+    AddTestResult(errorMessage, false);
+    SaveTestToDB();
+    
 #ifdef __DAVAENGINE_AUTOTESTING_FILE__
     String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
     if(reportFile)
     {
         reportFile->WriteLine(exitOnErrorMsg);
+    }
+    SafeRelease(reportFile);
+#endif
+    ExitApp();
+}    
+    
+void AutotestingSystem::OnTestsFinished()
+{
+    Logger::Debug("AutotestingSystem::OnTestsFinished");
+    
+    AddTestResult("finished", true);
+    SaveTestToDB();
+    
+#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+    if(reportFile)
+    {
+        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
     }
     SafeRelease(reportFile);
 #endif
@@ -826,19 +1056,6 @@ void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, co
 
     AddAction(assertBoolAction);
     SafeRelease(assertBoolAction);
-}
-
-void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
-{
-    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
-    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
-    //TODO: report into database
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    if(reportFile)
-    {
-        reportFile->WriteLine(assertMsg);
-    }
-#endif
 }
 
 void AutotestingSystem::OnInput(const UIEvent &input)

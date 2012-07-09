@@ -67,11 +67,15 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
 void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String> &errorLog)
 {
     //Create destination folder
+    String normalizedFileName = FileSystem::Instance()->NormalizePath(fileName);
+
+    
     String workingFile;
-    FileSystem::SplitPath(fileName, workingFolder, workingFile);
-    FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder); 
+    FileSystem::SplitPath(normalizedFileName, workingFolder, workingFile);
+    FileSystem::Instance()->CreateDirectory(dataFolder + workingFolder, true); 
     
     //Export scene data
+    RemoveEditorNodes(scene);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
@@ -192,6 +196,14 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
 				if (!m->textures[Material::TEXTURE_DIFFUSE]->relativePathname.empty()) 
 				{
                     m->names[Material::TEXTURE_DIFFUSE] = ExportTexture(m->names[Material::TEXTURE_DIFFUSE], errorLog);
+				}
+			}
+            
+			if (m->textures[Material::TEXTURE_DECAL])
+			{
+				if (!m->textures[Material::TEXTURE_DECAL]->relativePathname.empty()) 
+				{
+                    m->names[Material::TEXTURE_DECAL] = ExportTexture(m->names[Material::TEXTURE_DECAL], errorLog);
 				}
 			}
         }
