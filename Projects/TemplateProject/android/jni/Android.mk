@@ -12,7 +12,7 @@ LOCAL_MODULE := ViewerLib
 
 # set path for includes
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../classes
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Classes
 
 
 # set exported includes
@@ -23,9 +23,9 @@ LOCAL_SRC_FILES :=  \
                     AndroidLayer.cpp \
                     AndroidDelegate.cpp \
                     \
-                    ../../classes/FrameworkMain.cpp \
-                    ../../classes/GameCore.cpp \
-                    ../../classes/TestScreen.cpp \
+                    ../../Classes/FrameworkMain.cpp \
+                    ../../Classes/GameCore.cpp \
+                    ../../Classes/TestScreen.cpp \
 
 LOCAL_CFLAGS := -g -O2
 
