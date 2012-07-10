@@ -1062,6 +1062,15 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1831,6 +1840,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp">
       <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp">
+      <Filter>Internal\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp">
+      <Filter>Internal\Particles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
