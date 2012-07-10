@@ -523,8 +523,14 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 
 void ParticleLayer::Draw()
 {
-	if (additive)RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE);
-	else RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	if (additive)
+	{
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE);
+	}
+	else 
+	{
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	}
 
 	switch(type)
 	{

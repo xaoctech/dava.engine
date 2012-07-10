@@ -44,6 +44,7 @@ class Texture;
 class SceneFileV2;
 class LightNode;
 class PolygonGroup;
+class RenderDataObject;
     
     
 // TODO: move Material to Scene3D
@@ -82,6 +83,8 @@ public:
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE,
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR,     // single texture + diffuse light normal mapping
         MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP, // single texture + diffuse light normal mapping
+
+		MATERIAL_VERTEX_COLOR_ALPHABLENDED,
         
         // MATERIAL_TEXTURE, 
         // MATERIAL_LIGHTMAPPED_TEXTURE,   
@@ -149,6 +152,7 @@ public:
         Function should be used if you want to render something with this material.
      */
     //void BindMaterial();
+	void PrepareRenderState();
     void Draw(PolygonGroup * group, InstanceMaterialState * state);
     
     /**
