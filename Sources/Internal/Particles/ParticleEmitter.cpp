@@ -30,6 +30,7 @@
 #include "Particles/ParticleEmitter.h"
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
+#include "Particles/ParticleLayer3D.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Animation/LinearAnimation.h"
@@ -154,25 +155,37 @@ void ParticleEmitter::Draw()
 {
 	eBlendMode srcMode = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode destMode = RenderManager::Instance()->GetDestBlend();
-    
-	if(particlesFollow)
+
+	if(is3D)
 	{
-		RenderManager::Instance()->PushDrawMatrix();
-		RenderManager::Instance()->SetDrawTranslate(position);
+		Vector<ParticleLayer*>::iterator it;
+		for(it = layers.begin(); it != layers.end(); ++it)
+		{
+			if(!(*it)->isDisabled)
+				(*it)->Draw();
+		}
 	}
-    
-	Vector<ParticleLayer*>::iterator it;
-	for(it = layers.begin(); it != layers.end(); ++it)
+	else
 	{
-        if(!(*it)->isDisabled)
-            (*it)->Draw();
+		if(particlesFollow)
+		{
+			RenderManager::Instance()->PushDrawMatrix();
+			RenderManager::Instance()->SetDrawTranslate(position);
+		}
+
+		Vector<ParticleLayer*>::iterator it;
+		for(it = layers.begin(); it != layers.end(); ++it)
+		{
+			if(!(*it)->isDisabled)
+				(*it)->Draw();
+		}
+
+		if(particlesFollow)
+		{
+			RenderManager::Instance()->PopDrawMatrix();
+		}
 	}
-	
-    if(particlesFollow)
-	{
-		RenderManager::Instance()->PopDrawMatrix();
-	}
-    
+
 	RenderManager::Instance()->SetBlendMode(srcMode, destMode);
 }
 
@@ -356,20 +369,6 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	YamlParser * parser = YamlParser::Create(filename);
 	YamlNode * rootNode = parser->GetRootNode();
 
-	int cnt = rootNode->GetCount();
-	for (int k = 0; k < cnt; ++k)
-	{
-		YamlNode * node = rootNode->Get(k);
-		YamlNode * typeNode = node->Get("type");
-		if (typeNode && typeNode->AsString() == "layer")
-		{	
-			ParticleLayer * layer = new ParticleLayer();
-			layer->LoadFromYaml(node);
-			AddLayer(layer);
-			SafeRelease(layer);
-		}
-	}
-
 	YamlNode * emitterNode = rootNode->Get("emitter");
 	if (emitterNode)
 	{
@@ -453,6 +452,27 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			particlesFollow = particlesFollowNode->AsBool();
 	}
 
+	int cnt = rootNode->GetCount();
+	for (int k = 0; k < cnt; ++k)
+	{
+		YamlNode * node = rootNode->Get(k);
+		YamlNode * typeNode = node->Get("type");
+		if (typeNode && typeNode->AsString() == "layer")
+		{	
+			ParticleLayer * layer;
+			if(is3D)
+			{
+				layer = new ParticleLayer3D();
+			}
+			else
+			{
+				layer = new ParticleLayer();
+			}
+			layer->LoadFromYaml(node);
+			AddLayer(layer);
+			SafeRelease(layer);
+		}
+	}
 	
 	SafeRelease(parser);
 }
