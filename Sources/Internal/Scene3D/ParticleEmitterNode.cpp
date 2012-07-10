@@ -45,8 +45,9 @@ void ParticleEmitterNode::Draw()
 		Camera * camera = scene->GetCurrentCamera();
 		Vector3 up = camera->GetUp();
 		Vector3 left = camera->GetLeft();
+		Vector3 dir = camera->GetDirection();
 
-		emitter->Draw(up, left);
+		emitter->Draw(up, left, dir);
 
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 		RenderManager::Instance()->SetBlendMode(sblend, dblend);

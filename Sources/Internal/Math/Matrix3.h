@@ -68,6 +68,7 @@ struct Matrix3
 	
 	// Helpers
 	inline void Identity();
+	inline void	CreateRotation(const Vector3 & r, float32 angleInRadians);
 	inline void	BuildRotation(float32 Angle);
 	inline void	BuildTranslation(float32 x, float32 y);
 	inline void	BuildTranslation(const Vector2 & vec);
@@ -114,6 +115,26 @@ inline void Matrix3::Identity()
 	_00 = 1.0f; _01 = 0.0f; _02 = 0.0f;
 	_10 = 0.0f; _11 = 1.0f; _12 = 0.0f;
 	_20 = 0.0f; _21 = 0.0f; _22 = 1.0f;
+}
+
+inline void	Matrix3::CreateRotation(const Vector3 & r, float32 angleInRadians)
+{
+	float32 cosA = cosf(angleInRadians);
+	float32 sinA = sinf(angleInRadians);
+	Identity();
+	_data[0][0] = cosA + (1 - cosA) * r.x * r.x;
+	_data[0][1] = (1 - cosA) * r.x * r.y -  r.z * sinA;
+	_data[0][2] = (1 - cosA) * r.x * r.z +  r.y * sinA;
+
+
+	_data[1][0] = (1 - cosA) * r.x * r.y +  r.z * sinA;
+	_data[1][1] = cosA + (1 - cosA) * r.y * r.y;
+	_data[1][2] = (1 - cosA) * r.y * r.z -  r.x * sinA;
+
+
+	_data[2][0] = (1 - cosA) * r.x * r.z -  r.y * sinA;
+	_data[2][1] = (1 - cosA) * r.y * r.z +  r.x * sinA;
+	_data[2][2] = cosA + (1 - cosA) * r.z * r.z;
 }
 
 inline void Matrix3::BuildRotation(float32 angle)

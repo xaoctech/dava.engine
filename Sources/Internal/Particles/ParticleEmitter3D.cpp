@@ -4,7 +4,7 @@
 namespace DAVA
 {
 
-	void ParticleEmitter3D::Draw(const Vector3 & up, const Vector3 & left)
+	void ParticleEmitter3D::Draw(const Vector3 & up, const Vector3 & left, const Vector3 & direction)
 	{
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
@@ -12,7 +12,7 @@ namespace DAVA
 		ParticleLayer3D * layer = (ParticleLayer3D*)(*it);
 		if(!layer->isDisabled)
 		{
-			layer->Draw(up, left);
+			layer->Draw(up, left, direction);
 		}
 	}
 }
