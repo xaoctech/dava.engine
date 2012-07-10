@@ -24,7 +24,7 @@ ParticleLayer3D::~ParticleLayer3D()
 	SafeRelease(renderData);
 }
 
-void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
+void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & _direction)
 {
 	if(TYPE_PARTICLES == type)
 	{
@@ -39,13 +39,33 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
 			RenderManager::Instance()->SetTexture(sprite->GetTexture(current->frame));
 		}
 
+		float32 globalRight = sprite->GetWidth()/2.f - sprite->GetDefaultPivotPoint().x;
+		float32 globalLeft = sprite->GetWidth()/2.f + sprite->GetDefaultPivotPoint().x;
+		float32 globalTop = sprite->GetHeight()/2.f + sprite->GetDefaultPivotPoint().y;
+		float32 globalBottom = sprite->GetHeight()/2.f - sprite->GetDefaultPivotPoint().y;
+
 		while(current != 0)
 		{
+			Vector3 up, left;
+			if(current->angle != 0)
+			{
+				Matrix3 rotation;
+				rotation.CreateRotation(_direction, current->angle);
+				up = _up*rotation;
+				left = _left*rotation;
+			}
+			else
+			{
+				up = _up;
+				left = _left;
+			}
+
+			
 			float32 halfW = sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;
 			float32 halfH = sprite->GetHeight()*current->size.y*current->sizeOverLife/2.f;
 
-			Vector3 up = _up*halfH;
-			Vector3 left = _left*halfW;
+			up = up*halfH;
+			left = left*halfW;
 
 			Vector3 topLeft = current->position+up+left;
 			Vector3 topRight = current->position+up-left;
