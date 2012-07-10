@@ -883,6 +883,12 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 					break;
 				}
 
+				case ECNID_PARTICLE_EMITTER:
+				{
+					text = LocalizedString(L"menu.createnode.particleemitter");
+					break;
+				}
+
 				case ECNID_USERNODE:
 					{
 						text = LocalizedString(L"menu.createnode.usernode");
