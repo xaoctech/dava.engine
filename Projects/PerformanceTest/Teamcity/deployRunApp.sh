@@ -1,6 +1,6 @@
 # !/bin/bash
-echo "copy PerfomanceTest.app"
-APP=PerfomanceTest
+echo "copy PerformanceTest.app"
+APP=PerformanceTest
 DIR_APP="../DerivedData/TemplateProjectiPhone/Build/Products/Release-iphoneos"
 
 if [ ! -d $DIR_APP/$APP.app ]; then
@@ -11,7 +11,6 @@ cp -Rf $DIR_APP/$APP.app "./"
 
 echo "sign and create PerfomanceTest.ipa"
 sh floatsign.sh $APP.app 4L7VSNH4R3 $APP.ipa
-sh floatsign.sh $APP.app 4L7VSNH4R2 $DIR_APP/$APP.ipa
 
 if [ ! -f $APP.ipa ]; then
   echo "$APP.ipa wasn't created"
@@ -27,7 +26,8 @@ UDID_device=`system_profiler SPUSBDataType | sed -n -e '/iPad/,/Serial/p' -e '/i
 echo "udid is ${UDID_device}"
 
 echo "run app on device"
-instruments -w ${UDID_device} -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$APP" -e UIASCRIPT testRun.js
+#instruments -w ${UDID_device} -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$APP" -e UIASCRIPT testRun.js
+instruments -w ${UDID_device}  -t $PATH_TO_AUTO_TEMPL/Automation.tracetemplate "$APP" -e UIASCRIPT testRun.js
 
 #del temporary files
 rm -rf ./$APP.*
