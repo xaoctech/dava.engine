@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-#QT       += network opengl svg multimedia
-
 QT       -= gui
 
 TARGET = Box2D_Qt
