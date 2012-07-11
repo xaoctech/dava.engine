@@ -266,6 +266,30 @@ void EditorBodyControl::PlaceOnLandscape()
 	}
 }
 
+void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
+{
+	if(node)
+	{
+		Vector3 result;
+		LandscapeNode * ls = scene->GetLandScape(scene);
+		if (ls)
+		{
+			const Matrix4 & itemWT = node->GetWorldTransform();
+			Vector3 p = Vector3(0,0,0) * itemWT;
+			bool res = ls->PlacePoint(p, result);
+			if (res)
+			{
+				Vector3 offs = result - p;
+				Matrix4 invItem;
+				Matrix4 mod;
+				mod.CreateTranslation(offs);
+				node->SetLocalTransform(node->GetLocalTransform() * mod);
+			}						
+		}
+	}
+}
+
+
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
     if(LandscapeEditorActive())
@@ -367,7 +391,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 					
 					if (selection)
 					{
-						Logger::Debug(L"init %f %f", event->point.x, event->point.y);
 						scene->SetBulletUpdate(selection, false);
 						
 						inTouch = true;	
@@ -400,7 +423,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     {
                         currentGraph->UpdatePropertiesForCurrentNode();
                     }
-					Logger::Debug(L"mod %f %f", event->point.x, event->point.y);
 				}
 			}
 		}
@@ -409,6 +431,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 			inTouch = false;
 			if (isDrag)
 			{
+                if(modificationPanel->IsLandscapeRelative())
+                {
+                    PlaceOnLandscape();
+                }
+                
 				if (selection)
 					scene->SetBulletUpdate(selection, true);				
 			}
@@ -470,8 +497,6 @@ void EditorBodyControl::InitMoving(const Vector2 & point)
 
 //	bool result = 
     GetIntersectionVectorWithPlane(from, dir, planeNormal, rotationCenter, startDragPoint);
-	
-	Logger::Debug("startDragPoint %f %f %f", startDragPoint.x, startDragPoint.y, startDragPoint.z);
 }	
 
 void EditorBodyControl::GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point)
@@ -718,11 +743,22 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
                 Vector3 nodePos = pos + 10 * direction;
                 nodePos.z = 0;
                 
-				Matrix4 mod;
-				mod.CreateTranslation(nodePos);
-				rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+                LandscapeNode * ls = scene->GetLandScape(scene);
+                if(ls)
+                {
+                    Vector3 result;
+                    bool res = ls->PlacePoint(nodePos, result);
+                    if(res)
+                    {
+                        nodePos = result;
+                    }
+                }
+
+                Matrix4 mod;
+                mod.CreateTranslation(nodePos);
+                rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
             }
-            
+                        
             SafeRelease(rootNode); 
         }
 

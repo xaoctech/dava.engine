@@ -33,7 +33,6 @@
 
 #include "Base/BaseTypes.h"
 
-
 namespace DAVA
 {
 
@@ -49,6 +48,13 @@ public:
 
 	void	AddSound(Sound * sound);
 	void	RemoveSound(Sound * sound);
+    
+#ifdef __DAVAENGINE_ANDROID__
+    
+    void Suspend();
+    void Resume();
+    
+#endif //#ifdef __DAVAENGINE_ANDROID__
 
 private:
 	List<Sound*> sounds;

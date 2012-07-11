@@ -50,6 +50,8 @@ public:
 	inline int32 GetStreamBufferSize();
 
 	int32 GetSampleRate();
+    int32 GetSampleSize();
+    int32 GetChannelsCount();
 #ifdef __DAVASOUND_AL__
 	ALenum GetFormat();
 #endif //#ifdef __DAVASOUND_AL__

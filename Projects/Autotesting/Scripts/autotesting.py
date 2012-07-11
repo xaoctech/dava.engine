@@ -26,7 +26,7 @@ index_Project = 2;
 index_Target = 3;
 index_Configuration = 4;
 index_Certificate = 5;
-index_Device = 6;
+#index_Device = 6;
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
@@ -90,7 +90,7 @@ elif (platform.system() == "Darwin"):
         
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
-        
+    
         # ./transporter_chief.rb $2.ipa
         print "deploy "+ ipaName +" on device"
         params = ["./transporter_chief.rb", ipaName]
@@ -131,7 +131,7 @@ for testFile in testFiles:
             os.chdir(autotestingSrcFolder)
             
             #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
-            params = ["sh", "./runOnDevice.sh", sys.argv[index_Target], sys.argv[index_Device]]
+            params = ["sh", "./runOnDevice.sh", sys.argv[index_Target]]
             print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
             subprocess.call(params)
         

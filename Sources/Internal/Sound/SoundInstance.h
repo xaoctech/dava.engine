@@ -110,6 +110,10 @@ private:
 
 	SoundInstance();
 	virtual ~SoundInstance() {};
+    
+#ifdef __DAVAENGINE_ANDROID__
+    SoundInstance(Sound * parent);
+#endif //#ifdef __DAVAENGINE_ANDROID__
 
 	bool Update(); //true if alive
 
@@ -125,6 +129,10 @@ friend class SoundSystem;
     friend class MusicIos;
     MusicIos * buddyMusic;
 #endif
+    
+#ifdef __DAVAENGINE_ANDROID__
+    Sound * parentSound;
+#endif //#ifdef __DAVAENGINE_ANDROID__
 };
 
 };

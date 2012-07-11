@@ -93,6 +93,10 @@ public:
 	//! \param box bounding box
 	bool IsInside(const AABBox3 & box)const;
 
+	//! \brief Check axial aligned bounding box visibility
+	//! \param box bounding box
+	bool IsInside(const AABBox3 * box)const;
+
     //! \brief Check axial aligned bounding box visibility
 	//! \param box bounding box
 	bool IsFullyInside(const AABBox3 & box)const;

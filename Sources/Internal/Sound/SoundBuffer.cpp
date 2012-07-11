@@ -77,6 +77,10 @@ SoundBuffer::SoundBuffer()
 #ifdef __DAVASOUND_AL__
 	buffer = 0;
 #endif //#ifdef __DAVASOUND_AL__
+    
+#ifdef __DAVAENGINE_ANDROID__
+    actualBufferSize = 0;
+#endif //#ifdef __DAVAENGINE_ANDROID__
 }
 
 SoundBuffer::~SoundBuffer()
@@ -99,7 +103,20 @@ int32 SoundBuffer::Release()
 
 	return BaseObject::Release();
 }
-
+    
+#ifdef __DAVAENGINE_ANDROID__
+void SoundBuffer::FullFill(SoundDataProvider * provider, SLAndroidSimpleBufferQueueItf playerBufferQueue)
+{
+    SLresult result;
+    
+    if(!actualBufferSize)
+        actualBufferSize = provider->LoadData(&data, -1);
+    
+    result = (*playerBufferQueue)->Enqueue(playerBufferQueue, data, actualBufferSize);
+    DVASSERT(SL_RESULT_SUCCESS == result);
+}
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 void SoundBuffer::FullFill(SoundDataProvider * provider)
 {
 	int32 actualSize = provider->LoadData(&data, -1);

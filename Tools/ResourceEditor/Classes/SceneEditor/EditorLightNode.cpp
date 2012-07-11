@@ -1,6 +1,5 @@
 #include "EditorLightNode.h"
 
-
 REGISTER_CLASS(EditorLightNode);
 
 EditorLightNode::EditorLightNode()

@@ -98,6 +98,8 @@ const char8 * Material::GetTypeName(eType format)
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR";
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
             return "PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP";
+		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
+			return "VERTEX_COLOR";
         default:
             break;
     };
@@ -252,6 +254,9 @@ void Material::RebuildShader()
         case MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP:
             shaderCombileCombo = "MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS";
             break;
+		case MATERIAL_VERTEX_COLOR_ALPHABLENDED:
+			shaderCombileCombo = "MATERIAL_TEXTURE;ALPHABLEND;VERTEX_COLOR";
+			break;
         default:
             break;
     };
@@ -311,6 +316,7 @@ void Material::RebuildShader()
             uniformLightIntensity0 = shader->FindUniformLocationByName("lightIntensity0");
             uniformLightAttenuationQ = shader->FindUniformLocationByName("uniformLightAttenuationQ");
             break;
+
         default:
             break;
     };
@@ -359,6 +365,10 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	keyedArchive->SetInt32("mat.blendDst", blendDst);
 
     keyedArchive->SetInt32("mat.type", type);
+    
+    keyedArchive->SetByteArrayAsType("mat.fogcolor", fogColor);
+    keyedArchive->SetFloat("mat.fogdencity", fogDensity);
+    keyedArchive->SetBool("mat.isFogEnabled", isFogEnabled);
 }
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
@@ -415,6 +425,10 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
+    
+    fogColor = keyedArchive->GetByteArrayAsType("mat.fogcolor", fogColor);
+	isFogEnabled = keyedArchive->GetBool("mat.isFogEnabled", isFogEnabled);
+    fogDensity = keyedArchive->GetFloat("mat.fogdencity", fogDensity);
 }
 
 void Material::SetOpaque(bool _isOpaque)
@@ -484,6 +498,7 @@ float32 Material::GetShininess() const
 void Material::SetFog(bool _isFogEnabled)
 {
     isFogEnabled = _isFogEnabled;
+    RebuildShader();
 }
     
 bool Material::IsFogEnabled() const
@@ -511,39 +526,34 @@ const Color & Material::GetFogColor() const
     return fogColor;
 }
 
-void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
+void Material::PrepareRenderState()
 {
-	RenderManager::Instance()->SetRenderData(group->renderDataObject);
+	RenderManager::Instance()->SetShader(shader);
 
-    RenderManager::Instance()->SetShader(shader);
-        
-    if (textures[Material::TEXTURE_DIFFUSE])
-    {
-        RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
-    }
-        
-    if (textures[Material::TEXTURE_DECAL]) // this is normal map as well
-    {
-        RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
-    }
-        
-    if (isOpaque)
-    {
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
-    }else
-    {
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-    }
+	if (textures[Material::TEXTURE_DIFFUSE])
+	{
+		RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
+	}
 
-	eBlendMode oldSrc;
-	eBlendMode oldDst;
+	if (textures[Material::TEXTURE_DECAL]) // this is normal map as well
+	{
+		RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
+	}
+
+	if (isOpaque)
+	{
+		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
+	}else
+	{
+		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+	}
+
+
 	if(isAlphablend)
 	{
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE_BLEND);
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
 
-		oldSrc = RenderManager::Instance()->GetSrcBlend();
-		oldDst = RenderManager::Instance()->GetDestBlend();
 		RenderManager::Instance()->SetBlendMode(blendSrc, blendDst);
 	}
 
@@ -552,12 +562,12 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
 	}
 
-    // render
-    RenderManager::Instance()->FlushState();
-    
-    
-    if (textures[Material::TEXTURE_DECAL])
-    {
+	// render
+	RenderManager::Instance()->FlushState();
+
+
+	if (textures[Material::TEXTURE_DECAL])
+	{
 		if(uniformTexture0 != -1)
 		{
 			shader->SetUniformValue(uniformTexture0, 0);
@@ -566,8 +576,8 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		{
 			shader->SetUniformValue(uniformTexture1, 1);
 		}
-    }
-    
+	}
+
 	if(isSetupLightmap)
 	{
 		int32 lightmapSizePosition = shader->FindUniformLocationByName("lightmapSize");
@@ -579,12 +589,34 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 
 	if(MATERIAL_UNLIT_TEXTURE_LIGHTMAP == type)
 	{
-        if (uniformUvOffset != -1)
-            shader->SetUniformValue(uniformUvOffset, uvOffset);
+		if (uniformUvOffset != -1)
+			shader->SetUniformValue(uniformUvOffset, uvOffset);
 		if (uniformUvScale != -1)
-            shader->SetUniformValue(uniformUvScale, uvScale);
+			shader->SetUniformValue(uniformUvScale, uvScale);
 	}
-	
+
+	if (isFogEnabled)
+	{
+		if (uniformFogDensity != -1)
+			shader->SetUniformValue(uniformFogDensity, fogDensity);
+		if (uniformFogColor != -1)
+			shader->SetUniformValue(uniformFogColor, fogColor);
+	}
+}
+
+void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
+{
+	RenderManager::Instance()->SetRenderData(group->renderDataObject);
+
+	eBlendMode oldSrc;
+	eBlendMode oldDst;
+	if(isAlphablend)
+	{
+		oldSrc = RenderManager::Instance()->GetSrcBlend();
+		oldDst = RenderManager::Instance()->GetDestBlend();
+	}
+
+	PrepareRenderState();
 
     if (instanceMaterialState)
     {
@@ -627,14 +659,6 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
         }
     }
     
-    if (isFogEnabled)
-    {
-        if (uniformFogDensity != -1)
-            shader->SetUniformValue(uniformFogDensity, fogDensity);
-        if (uniformFogColor != -1)
-            shader->SetUniformValue(uniformFogColor, fogColor);
-    }
-    
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
 	{
@@ -651,6 +675,8 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		RenderManager::Instance()->SetBlendMode(oldSrc, oldDst);
 	}
 }
+
+
 
 void Material::SetSetupLightmap(bool _isSetupLightmap)
 {

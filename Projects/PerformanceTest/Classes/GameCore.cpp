@@ -37,6 +37,7 @@
 #include "SpriteTest.h"
 #include "CacheTest.h"
 #include "LandscapeTest.h"
+#include "TreeTest.h"
 
 
 using namespace DAVA;
@@ -74,6 +75,9 @@ void GameCore::OnAppStarted()
         new LandscapeTest("Landscape Mixed Mode", LandscapeNode::TILED_MODE_MIXED);
         new LandscapeTest("Landscape Tiled Mode", LandscapeNode::TILED_MODE_TILEMASK);
         new LandscapeTest("Landscape Texture Mode", LandscapeNode::TILED_MODE_TEXTURE);
+        
+        new TreeTest(String("TreeTest TEST_1HI"), String("~res:/3d/Maps/test/treetest/TEST_1HI.sc2"));
+        new TreeTest(String("TreeTest TEST_2"), String("~res:/3d/Maps/test/treetest/TEST_2.sc2"));
         
 #if defined (SINGLE_MODE)
         RunTestByName(SINGLE_TEST_NAME);
@@ -298,83 +302,110 @@ void GameCore::ProcessTests()
 void GameCore::FlushTestResults()
 {
     if(!dbClient) return;
-    
-    time_t logStartTime = time(0);
-    String testTimeString = Format("%lld", logStartTime);
-    
-    for(int32 iScr = 0; iScr < screens.size(); ++iScr)
-    {
-        int32 count = screens[iScr]->GetTestCount();
 
-#if defined (SINGLE_MODE)
-        if(screens[iScr]->GetName() == SINGLE_TEST_NAME)
-#endif //#if defined (SINGLE_MODE)                    
+    MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
+    MongodbObject *newPlatformObject = new MongodbObject();
+    
+    int64 globalIndex = 0;
+    if(oldPlatformObject)
+    {
+        globalIndex = oldPlatformObject->GetInt64(String("globalIndex"));
+        ++globalIndex;
+    }
+    
+    if(newPlatformObject)
+    {
+        newPlatformObject->SetObjectName(PLATFORM_NAME);
+        newPlatformObject->AddInt64(String("globalIndex"), globalIndex);
+        
+        String testTimeString = Format("%016d", globalIndex);
+        
+        
+        time_t logStartTime = time(0);
+        tm* utcTime = localtime(&logStartTime);
+        
+        
+        String runTime = Format("%04d.%02d.%02d:%02d:%02d:%02d",   
+                                                utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+                                                utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
+
+        for(int32 iScr = 0; iScr < screens.size(); ++iScr)
         {
-            MongodbObject *oldScreenObject = dbClient->FindObjectByKey(screens[iScr]->GetName());
-            MongodbObject *newScreenObject = dbClient->CreateObject();
-            if(newScreenObject)
+            int32 count = screens[iScr]->GetTestCount();
+            
+#if defined (SINGLE_MODE)
+            if(screens[iScr]->GetName() == SINGLE_TEST_NAME)
+#endif //#if defined (SINGLE_MODE)                    
             {
-                newScreenObject->SetObjectName(screens[iScr]->GetName());
-                
-                for(int32 iTest = 0; iTest < count; ++iTest)
+                MongodbObject *oldScreenObject = CreateSubObject(screens[iScr]->GetName(), oldPlatformObject, true);
+                MongodbObject *newScreenObject = new MongodbObject();
+                if(newScreenObject)
                 {
-                    TestData *td = screens[iScr]->GetTestData(iTest);
+                    newScreenObject->SetObjectName(screens[iScr]->GetName());
                     
-                    MongodbObject *testObject = CreateTestObject(td->name, oldScreenObject);
-                    if(testObject)
+                    for(int32 iTest = 0; iTest < count; ++iTest)
                     {
-                        MongodbObject *testDataObject = CreateTestDataObject(testTimeString, td);
-                        if(testDataObject)
+                        TestData *td = screens[iScr]->GetTestData(iTest);
+                        
+                        MongodbObject *testObject = CreateSubObject(td->name, oldScreenObject, false);
+                        if(testObject)
                         {
-                            testObject->AddObject(testTimeString, testDataObject);
-                            testObject->Finish();
-                            
-                            dbClient->DestroyObject(testDataObject);
+                            MongodbObject *testDataObject = CreateTestDataObject(testTimeString, runTime, td);
+                            if(testDataObject)
+                            {
+                                testObject->AddObject(testTimeString, testDataObject);
+                                testObject->Finish();
+                                
+                                SafeRelease(testDataObject);
+                            }
+                            newScreenObject->AddObject(td->name, testObject);
+                            SafeRelease(testObject);
                         }
-                        newScreenObject->AddObject(td->name, testObject);
-                        dbClient->DestroyObject(testObject);
                     }
+                    
+                    newScreenObject->Finish();
+                    newPlatformObject->AddObject(screens[iScr]->GetName(), newScreenObject);
+                    SafeRelease(newScreenObject);
                 }
                 
-                newScreenObject->Finish();
-                
-                dbClient->SaveObject(newScreenObject, oldScreenObject);
-                dbClient->DestroyObject(newScreenObject);
-            }
-            
-            if(oldScreenObject)
-            {
-                dbClient->DestroyObject(oldScreenObject);
+                SafeRelease(oldScreenObject);
             }
         }
+
+        newPlatformObject->Finish();
+        dbClient->SaveObject(newPlatformObject, oldPlatformObject);    
+        SafeRelease(newPlatformObject);
     }
+    
+    SafeRelease(oldPlatformObject);
 }
 
-MongodbObject * GameCore::CreateTestObject(const String &testName, MongodbObject *oldScreenOnject)
+MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
 {
-    MongodbObject *testObject = dbClient->CreateObject();
-    if(oldScreenOnject)
+    MongodbObject *subObject = new MongodbObject();
+    if(dbObject)
     {
-        bool ret = oldScreenOnject->GetSubObject(testObject, testName);
+        bool ret = dbObject->GetSubObject(subObject, objectName, needFinished);
         if(ret)
         {
-            return testObject;
+            return subObject;
         }
     }
     
-    testObject->SetObjectName(testName);
-    return testObject;
+    subObject->SetObjectName(objectName);
+    return subObject;
 }
 
 
-MongodbObject * GameCore::CreateTestDataObject(const String &testTimeString, TestData *testData)
+MongodbObject * GameCore::CreateTestDataObject(const String &testTimeString, const String &runTime, TestData *testData)
 {
-    MongodbObject *logObject = dbClient->CreateObject();
+    MongodbObject *logObject = new MongodbObject();
     if(logObject)
     {
         logObject->SetObjectName(testTimeString);
-        logObject->AddString(String("Platform"), PLATFORM_NAME);
         logObject->AddString(String("Owner"), TEST_OWNER);
+        logObject->AddString(String("RunTime"), runTime);
+        logObject->AddInt32(String("DeviceFamily"), (int32)Core::Instance()->GetDeviceFamily());
         logObject->AddInt64(String("TotalTime"), testData->totalTime);
         logObject->AddInt64(String("MinTime"), testData->minTime);
         logObject->AddInt64(String("MaxTime"), testData->maxTime);

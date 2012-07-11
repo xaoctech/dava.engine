@@ -7,6 +7,10 @@ precision highp float;
 #define mediump
 #endif
 
+//#define MATERIAL_TEXTURE
+//#define VERTEX_COLOR
+//#define ALPHABLEND
+
 // DECLARATIONS
 uniform sampler2D texture0;
 varying mediump vec2 varTexCoord0;
@@ -47,6 +51,10 @@ varying float varFogFactor;
 
 #if defined(SETUP_LIGHTMAP)
 varying lowp float varLightmapSize;
+#endif
+
+#if defined(VERTEX_COLOR)
+varying lowp vec4 varVertexColor;
 #endif
 
 void main()
@@ -135,7 +143,9 @@ void main()
     vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
 #endif
 
-#if defined(VERTEX_FOG)
+#if defined(VERTEX_COLOR)
+	gl_FragColor = vec4(textureColor0*varVertexColor);
+#elif defined(VERTEX_FOG)
     gl_FragColor = vec4(mix(fogColor, color, varFogFactor), 1.0);
 #elif defined(ALPHABLEND)
 	gl_FragColor = vec4(color, textureColor0.a);

@@ -74,16 +74,27 @@ void TestScreen::LoadResources()
 	Texture::EnableMipmapGeneration();
 	testSprite = Sprite::Create("~res:/Gfx/GameObjects/blueboxbig");
 	Texture::DisableMipmapGeneration();
+
+	sndClick = Sound::CreateFX("~res:/Sounds/click.wav", Sound::TYPE_STATIC);
+
+	music = Sound::CreateMusic("~res:/Sounds/final.ogg", Sound::TYPE_STREAMED);
+	music->SetLooping(true);
+
+	isPlaying = false;
 }
 
 void TestScreen::UnloadResources()
 {
 	SafeRelease(testSprite);
 	SafeRelease(manager);
+	SafeRelease(sndClick);
+	SafeRelease(music);
 }
 
 void TestScreen::WillAppear()
 {
+	music->Play();
+	isPlaying = true;
 }
 
 void TestScreen::WillDisappear()
@@ -94,11 +105,26 @@ void TestScreen::WillDisappear()
 void TestScreen::Input(UIEvent * event)
 {
 	if (event->phase == UIEvent::PHASE_KEYCHAR)
+	{
 		if (event->keyChar == '1')
 		{
 			Core::Instance()->ToggleFullscreen();
 		}
-
+	}
+	if (event->phase == UIEvent::PHASE_BEGAN)
+	{
+		if(isPlaying)
+		{
+			music->Stop();
+			isPlaying = false;
+		}
+		else
+		{
+			music->Play();
+			isPlaying = true;
+		}
+		sndClick->Play();
+	}
 }
 
 void TestScreen::Update(float32 timeElapsed)

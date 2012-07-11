@@ -48,15 +48,17 @@ class MongodbObject: public BaseObject
     
 protected:
     
-    MongodbObject();
-    virtual ~MongodbObject();
-    
     void * InternalObject();
     
 public:
     
+    MongodbObject();
+    virtual ~MongodbObject();
+    
+    
     void EnableForEdit();
     void Finish();
+    bool IsFinished();
 
     void SetObjectName(const String &objectname);
     String GetObjectName();
@@ -79,6 +81,7 @@ public:
     void AddObject(const String &fieldname, MongodbObject *addObject);
     
     bool GetSubObject(MongodbObject *subObject, const String &fieldname);
+    bool GetSubObject(MongodbObject *subObject, const String &fieldname, bool needFinished);
     
     void StartArray(const String &fieldname);
     void FinishArray();
@@ -88,7 +91,7 @@ public:
     
     void CopyFinished(MongodbObject *fromObject);
     
-    void Copy(MongodbObject *toObject);
+    void Copy(MongodbObject *fromObject);
     
     void Print();
     

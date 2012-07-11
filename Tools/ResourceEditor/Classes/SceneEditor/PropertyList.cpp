@@ -193,6 +193,8 @@ PropertyCellData *PropertyList::PropertyByName(const String &propertyName)
 
 void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
 {
+    if(!delegate)   return;
+    
     //ADD Combobox
     switch (changedProperty->GetValueType())
     {
@@ -641,6 +643,14 @@ void PropertyList::SetDistancePropertyValue(const String &propertyName, float32 
         p->currentCell->SetData(p);
     }
 }
+
+int32 PropertyList::GetDistancePropertyCount(const String &propertyName)
+{
+    PropertyCellData *p = PropertyByName(propertyName);
+    
+    return p->GetDistancesCount();
+}
+
 
 float32 PropertyList::GetDistancePropertyValue(const String &propertyName, int32 index)
 {
