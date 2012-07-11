@@ -104,6 +104,7 @@ void AutotestingSystem::OnAppStarted()
         }
         
         int32 indexInFileList = testIndex;
+        int32 fileCount = fileList.GetFileCount();
         // skip directories
         for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
         {
@@ -143,10 +144,10 @@ void AutotestingSystem::OnAppStarted()
         }
 
         
-        if(indexInFileList == (fileListSize - 1))
+        if(testIndex == (fileCount - 1))
         {
             // last file - reset id and index
-            autotestingArchive->SetUInt32("id", 0);
+            //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
             autotestingArchive->SetInt32("index", 0);
         }
         else
