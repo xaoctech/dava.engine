@@ -126,7 +126,7 @@ namespace DAVA
 		}
 		else
 		{
-			return Format("%s/Data/%s", virtualBundlePath.c_str(), relativePathname);
+			return Format("%s/%s", virtualBundlePath.c_str(), relativePathname);
 		}
 	}
 	
@@ -539,9 +539,9 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
     void FileSystem::SetDefaultDocumentsDirectory()
     {
 #if defined(__DAVAENGINE_WIN32__)
-        SetCurrentDocumentsDirectory(String(GetUserDocumentsPath()) + "DAVAProject\\");
+        SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject\\");
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVASOUND_ANDROID__)
-        SetCurrentDocumentsDirectory(String(GetUserDocumentsPath()) + "DAVAProject/");
+        SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
 #endif //PLATFORMS
     }
     
@@ -558,6 +558,13 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
     {
         return String("/Users/Shared/");
     }
+
+    const String FileSystem::GetHomePath()
+    {
+        NSString * dirPath = NSHomeDirectory();
+        return String([[dirPath stringByAppendingString: @"/"] cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
 	
 #if defined(__DAVAENGINE_WIN32__)

@@ -120,7 +120,6 @@ public:
                     
                     bson_iterator_subobject(&it, &sub);
                     bson_append_bson(object, key, &sub);
-                    
                     break;
                 }
                     
@@ -140,6 +139,7 @@ public:
     void InitFinished(bson *obj)
     {
         bson_copy(object, obj);
+        bson_finish(object);
     }
     
 public:
@@ -195,6 +195,11 @@ void MongodbObject::AddObject(const String &fieldname, DAVA::MongodbObject *addO
 void MongodbObject::Finish()
 {
     bson_finish(objectData->object);
+}
+
+bool MongodbObject::IsFinished()
+{
+    return objectData->object->finished;
 }
     
 String MongodbObject::GetObjectName()
@@ -373,13 +378,17 @@ void MongodbObject::CopyFinished(MongodbObject *fromObject)
     objectData->InitFinished(fromObject->objectData->object);
 }    
     
-void MongodbObject::Copy(MongodbObject *toObject)
+void MongodbObject::Copy(MongodbObject *fromObject)
 {
-    toObject->objectData->InitWith(objectData->object);
+    objectData->InitWith(fromObject->objectData->object);
 }
 
-    
 bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname)
+{
+    return GetSubObject(subObject, fieldname, false);
+}
+    
+bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldname, bool needFinished)
 {
     bool found = false;
     
@@ -396,7 +405,15 @@ bool MongodbObject::GetSubObject(MongodbObject *subObject, const String &fieldna
             bson sub;
             bson_iterator_subobject(&it, &sub);
 
-            subObject->objectData->InitWith(&sub);
+            if(needFinished)
+            {
+                subObject->objectData->InitFinished(&sub);
+            }
+            else 
+            {
+                
+                subObject->objectData->InitWith(&sub);
+            }
         }
     }
     

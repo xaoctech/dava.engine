@@ -25,11 +25,13 @@ LOCAL_SRC_FILES :=  \
                     \
                     ../../classes/FrameworkMain.cpp \
                     ../../classes/GameCore.cpp \
-                    ../../classes/ViewerScreen.cpp \
+                    ../../classes/TestScreen.cpp \
 
 LOCAL_CFLAGS := -g -O2
 
-LOCAL_LDLIBS := -lz
+LOCAL_LDLIBS := -landroid
+LOCAL_LDLIBS += -lz
+LOCAL_LDLIBS += -lOpenSLES
 
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libInternal libbox2d

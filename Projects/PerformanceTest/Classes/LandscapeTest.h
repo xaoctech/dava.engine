@@ -40,7 +40,7 @@ class LandscapeTest: public TestTemplate<LandscapeTest>
 {
     enum eConst
     {
-        TEST_FRAMES_COUNT = 10
+        TEST_FRAMES_COUNT = 100
     };
     
 public:
@@ -59,8 +59,6 @@ protected:
 
     int32 testCounter;
     
-    uint64 startTime;
-
     LandscapeNode::eTiledShaderMode shaderMode;
     
     Sprite *textures[LandscapeNode::TEXTURE_COUNT];

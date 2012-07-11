@@ -175,34 +175,34 @@ void EntityTest::DummyComponents(PerfFuncData * data)
 	visibilityBSphereSystem.Run();
 	drawSystem.Run();
 
-	int32 expectedResultsAdd[6] = {1,0,0,1,0,1};
-	for(int32 i = 0; i < 6; ++i)
-	{
-		TEST_VERIFY(testResults[i] == expectedResultsAdd[i]);
-	}
+	TEST_VERIFY(*(entity0->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity1->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity2->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity3->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity4->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity5->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
 
 	entity2->RemoveComponent(TestVisibilityAABBoxComponent::Get());
 
 	manager->Flush();
 
-	entity0->SetData("meshVisibilityFlag", (uint32)0);
-	entity1->SetData("meshVisibilityFlag", (uint32)0);
-	entity2->SetData("meshVisibilityFlag", (uint32)0);
-	entity3->SetData("meshVisibilityFlag", (uint32)0);
-	entity4->SetData("meshVisibilityFlag", (uint32)0);
-	entity5->SetData("meshVisibilityFlag", (uint32)0);
+	entity0->SetData("meshVisibilityFlag", (uint32)1);
+	entity1->SetData("meshVisibilityFlag", (uint32)1);
+	entity2->SetData("meshVisibilityFlag", (uint32)1);
+	entity3->SetData("meshVisibilityFlag", (uint32)1);
+	entity4->SetData("meshVisibilityFlag", (uint32)1);
+	entity5->SetData("meshVisibilityFlag", (uint32)1);
 
 	visibilityAABBoxSystem.Run();
 	visibilityBSphereSystem.Run();
 	drawSystem.Run();
 
-	manager->Dump();
-
-	int32 expectedResultsRemove[6] = {0,1,0,0,1,1};
-	for(int32 i = 0; i < 6; ++i)
-	{
-		TEST_VERIFY(testResults[i] == expectedResultsRemove[i]);
-	}
+	TEST_VERIFY(*(entity0->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity1->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity2->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity3->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity4->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity5->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
 
 	Entity * entity6 = EntityManager::Instance()->CreateEntity();
 	entity6->AddComponent(TestVisibilityAABBoxComponent::Get());
@@ -272,11 +272,22 @@ void EntityTest::DummyComponents(PerfFuncData * data)
 	visibilityBSphereSystem.Run();
 	drawSystem.Run();
 
-	int32 expectedResultsResize[16] = {0,1,0,0,1,1,1,1,1,1,1,0,1,1,0,1};
-	for(int32 i = 0; i < 16; ++i)
-	{
-		TEST_VERIFY(testResults[i] == expectedResultsResize[i]);
-	}
+	TEST_VERIFY(*(entity0->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity1->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity2->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity3->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity4->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity5->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity6->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity7->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity8->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity9->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity10->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity11->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity12->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity13->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity14->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity15->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
 
 	manager->DestroyEntity(entity11);
 	manager->Flush();
@@ -284,14 +295,23 @@ void EntityTest::DummyComponents(PerfFuncData * data)
 	visibilityBSphereSystem.Run();
 	drawSystem.Run();
 
-	int32 expectedResultsDelete[15] = {0,1,0,0,1,1,1,1,1,1,1,1,1,1,0};
-	for(int32 i = 0; i < 15; ++i)
-	{
-		TEST_VERIFY(testResults[i] == expectedResultsDelete[i]);
-	}
-
+	TEST_VERIFY(*(entity0->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity1->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity2->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity3->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity4->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity5->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity6->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity7->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity8->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity9->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity10->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(entity11 == 0);
+	TEST_VERIFY(*(entity12->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity13->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
+	TEST_VERIFY(*(entity14->GetData<uint32>("meshVisibilityFlag")) == (uint32)0);
+	TEST_VERIFY(*(entity15->GetData<uint32>("meshVisibilityFlag")) == (uint32)1);
 	manager->Dump();
 
 	SafeRelease(manager);
 }
-

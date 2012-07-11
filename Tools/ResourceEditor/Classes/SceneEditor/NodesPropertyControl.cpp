@@ -65,16 +65,16 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
     
 NodesPropertyControl::~NodesPropertyControl()
 {
+    ReleaseChildLodData();
+    
     SafeRelease(deletionList);
     SafeRelease(listHolder);
     SafeRelease(btnCancel);
 
-    
     SafeRelease(propControl);
     
     SafeRelease(btnMinus);
     SafeRelease(btnPlus);
-    
     
     SafeRelease(propertyList);
 }
@@ -83,10 +83,35 @@ void NodesPropertyControl::WillAppear()
 {
 }
 
+void NodesPropertyControl::WillDisappear()
+{
+    LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
+    if(lodNode)
+    {
+        lodNode->SetForceLodLayerDistance(LodNode::INVALID_DISTANCE);
+    }
+    else
+    {
+        if(propertyList->IsPropertyAvaliable(String("property.lodnode.forcedistance"))
+           && propertyList->GetBoolPropertyValue(String("property.lodnode.forcedistance")))
+        {
+            RestoreChildLodDistances();
+        }
+        
+        for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+        {
+            childLodNodes[i]->SetForceLodLayerDistance(LodNode::INVALID_DISTANCE);
+        }
+        
+        ReleaseChildLodData();
+    }
+}
+
 void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 {
     currentSceneNode = sceneNode;
     currentDataNode = NULL;
+    ReleaseChildLodData();
     
     propertyList->ReleaseProperties();
     
@@ -126,6 +151,15 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 		 propertyList->AddBoolProperty("Used in static lighting");
 		 propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
 	}
+    
+    
+    { // LodNodes at Hierarchy        
+        LodNode *lodNode = dynamic_cast<LodNode *>(currentSceneNode);
+        if(!lodNode)
+        {
+            AddChildLodSection();
+        }        
+    }
     
     
     //must be last
@@ -178,6 +212,93 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
     }
 }
 
+void NodesPropertyControl::AddChildLodSection()
+{
+    DVASSERT(0 == childLodNodes.size());
+    DVASSERT(0 == childDistances.size());
+    
+    currentSceneNode->GetChildNodes(childLodNodes);
+    
+    if(0 < childLodNodes.size())
+    {
+        propertyList->AddSection("LODs at hierarchy", GetHeaderState("LODs at hierarchy", true));
+        
+        propertyList->AddBoolProperty("property.lodnode.forcedistance");
+        propertyList->SetBoolPropertyValue("property.lodnode.forcedistance", false);
+        propertyList->AddSliderProperty("property.lodnode.distanceslider", false);
+        propertyList->SetSliderPropertyValue("property.lodnode.distanceslider", 0, 
+                                             LodNode::MAX_LOD_DISTANCE, LodNode::MIN_LOD_DISTANCE);
+        
+        
+        
+        struct LodInfo
+        {
+            float32 distance;
+            int32 count;
+            
+            LodInfo()
+            {
+                count = 0;
+                distance = 0.0f;
+            }
+            
+        }lodInfo[LodNode::MAX_LOD_LAYERS];
+        
+        for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+        {
+            float32 *distances = new float32[LodNode::MAX_LOD_LAYERS];
+            
+            int32 iLod = 0;
+            for(; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+            {
+                distances[iLod] = childLodNodes[i]->GetLodLayerDistance(iLod);
+                
+                lodInfo[iLod].distance += childLodNodes[i]->GetLodLayerDistance(iLod);
+                lodInfo[iLod].count++;
+            }
+            
+            for(; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
+            {
+                distances[iLod] = 0.0f;
+            }
+            
+            childDistances.push_back(distances);
+        }
+        
+        propertyList->AddDistanceProperty("property.lodnode.distances");
+        float32 *distances = new float32[LodNode::MAX_LOD_LAYERS];
+        int32 count = 0;
+        for(int32 iLod = 0; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
+        {
+            if(lodInfo[iLod].count)
+            {
+                distances[iLod] = lodInfo[iLod].distance / lodInfo[iLod].count;
+                count = iLod + 1;
+            }
+            else 
+            {
+                distances[iLod] = 0.0f;
+            }
+            
+        }
+        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, count);
+        SafeDeleteArray(distances);
+        
+        propertyList->AddMessageProperty("Set Distances", 
+                                         Message(this, &NodesPropertyControl::OnSetDistancesForLodNodes));
+    }
+}
+
+void NodesPropertyControl::ReleaseChildLodData()
+{
+    for(int32 i = 0; i < (int32)childDistances.size(); ++i)
+    {
+        SafeDeleteArray(childDistances[i]);
+    }
+    childDistances.clear();
+    childLodNodes.clear();
+}
+
 void NodesPropertyControl::ReadFrom(DataNode *dataNode)
 {
     currentSceneNode = NULL;
@@ -194,6 +315,69 @@ void NodesPropertyControl::ReadFrom(DataNode *dataNode)
         propertyList->SetIntPropertyValue("property.scenenode.retaincount", dataNode->GetRetainCount());
         propertyList->SetStringPropertyValue("property.scenenode.classname", dataNode->GetClassName());
         propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*dataNode).name());
+    }
+}
+
+void NodesPropertyControl::ReadFrom(Entity *entity)
+{
+}
+
+
+void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index)
+{
+    if("property.lodnode.distances" == forKey)
+    {
+        LodNode *lodNode = dynamic_cast<LodNode *>(currentSceneNode);
+        if(lodNode)
+        {
+            lodNode->SetLodLayerDistance(index, newValue);
+        }
+        else 
+        {
+            if(propertyList->GetBoolPropertyValue("property.lodnode.forcedistance"))
+            {
+                for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+                {
+                    if(index < childLodNodes[i]->GetLodLayersCount())
+                    {
+                        childLodNodes[i]->SetLodLayerDistance(index, newValue);
+                    }
+                }
+            }
+        }     
+    }
+    
+    if(nodesDelegate)
+    {
+        nodesDelegate->NodesPropertyChanged();
+    }
+}
+
+
+void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue)
+{
+    if("property.lodnode.distanceslider" == forKey)
+    {
+        if(propertyList->GetBoolPropertyValue("property.lodnode.forcedistance"))
+        {
+            LodNode *lodNode = dynamic_cast<LodNode *>(currentSceneNode);
+            if(lodNode)
+            {
+                lodNode->SetForceLodLayerDistance(newValue);
+            }
+            else
+            {
+                for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+                {
+                    childLodNodes[i]->SetForceLodLayerDistance(newValue);
+                }
+            }     
+        }
+    }
+
+    if(nodesDelegate)
+    {
+        nodesDelegate->NodesPropertyChanged();
     }
 }
 
@@ -283,6 +467,28 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
         {
             customProperties->SetBool("editor.staticlight.used", newValue);
         }
+        else if("property.lodnode.forcedistance" == forKey)
+        {
+            float32 forceDistance = (newValue)  ? propertyList->GetSliderPropertyValue("property.lodnode.distanceslider")
+                                                : LodNode::INVALID_DISTANCE;
+            
+            LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
+            if(lodNode)
+            {
+                lodNode->SetForceLodLayerDistance(forceDistance);
+            }
+            else 
+            {
+                if(newValue)    SetChildLodDistances();
+                else            RestoreChildLodDistances();
+                    
+                for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+                {
+                    childLodNodes[i]->SetForceLodLayerDistance(forceDistance);
+                }
+            }
+        }
+
         
         if(!createNodeProperties)
         {
@@ -530,5 +736,56 @@ void NodesPropertyControl::SetHeaderState(const String & headerName, bool newSta
     KeyedArchive *settings = EditorSettings::Instance()->GetSettings();
     settings->SetBool("NodesProperety." + headerName, newState);
     EditorSettings::Instance()->Save();
+}
+
+void NodesPropertyControl::OnSetDistancesForLodNodes(BaseObject * object, void * userData, void * callerData)
+{
+    SetChildLodDistances();
+    for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+    {
+        for(int32 iLod = 0; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+        {
+            childDistances[i][iLod] = childLodNodes[i]->GetLodLayerDistance(iLod);
+        }
+    }
+
+//    if(nodesDelegate)
+//    {
+//        nodesDelegate->NodesPropertyChanged();
+//    }
+}
+
+void NodesPropertyControl::SetChildLodDistances()
+{
+    int32 count = propertyList->GetDistancePropertyCount(String("property.lodnode.distances"));
+    if(count)
+    {
+        float32 *distances = new float32[count];
+        for(int32 i = 0; i < count; ++i)
+        {
+            distances[i] = propertyList->GetDistancePropertyValue(String("property.lodnode.distances"), i);
+        }
+        
+        for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+        {
+            for(int32 iLod = 0; iLod < count && iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+            {
+                childLodNodes[i]->SetLodLayerDistance(iLod, distances[iLod]);
+            }
+        }
+        
+        SafeDeleteArray(distances);
+    }
+}
+
+void NodesPropertyControl::RestoreChildLodDistances()
+{
+    for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
+    {
+        for(int32 iLod = 0; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
+        {
+            childLodNodes[i]->SetLodLayerDistance(iLod, childDistances[i][iLod]);
+        }
+    }
 }
 

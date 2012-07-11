@@ -43,9 +43,9 @@
 
 #define DATABASE_NAME               String("PerformanceTest")
 #if defined (SINGLE_MODE)
-    #define DATABASE_COLLECTION     String("Single Test")
+    #define DATABASE_COLLECTION     String("SingleTest")
 #else //#if defined (SINGLE_MODE)
-    #define DATABASE_COLLECTION     String("Multiple Tests")
+    #define DATABASE_COLLECTION     String("MultipleTests")
 #endif //#if defined (SINGLE_MODE)
 
 //Set your name for filter test results at DB

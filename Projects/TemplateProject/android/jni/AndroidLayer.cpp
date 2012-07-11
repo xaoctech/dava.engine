@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 #include "Platform/TemplateAndroid/AndroidSpecifics.h"
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
@@ -23,29 +25,30 @@
 extern "C"
 {
 	//JNIApplication
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIApplication_OnCreateApplication(JNIEnv* env, jobject classthis, jstring path, jstring apppath, jstring logTag, jstring packageName);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIApplication_OnConfigurationChanged(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIApplication_OnLowMemory(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIApplication_OnTerminate(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIApplication_OnCreateApplication(JNIEnv* env, jobject classthis, jstring path, jstring apppath, jstring logTag, jstring packageName);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIApplication_OnConfigurationChanged(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIApplication_OnLowMemory(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIApplication_OnTerminate(JNIEnv * env, jobject classthis);
+ 	JNIEXPORT void JNICALL Java_com_dava_template_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager);
 
 	//FrameworkTestProject
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIActivity_nativeOnCreate(JNIEnv * env, jobject classthis, jboolean isFirstRun);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIActivity_nativeOnStart(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIActivity_nativeOnStop(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIActivity_nativeIsFinishing(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIActivity_nativeOnDestroy(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIActivity_nativeOnAccelerometer(JNIEnv * env, jobject classthis, jfloat x, jfloat y, jfloat z);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIActivity_nativeOnCreate(JNIEnv * env, jobject classthis, jboolean isFirstRun);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIActivity_nativeOnStart(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIActivity_nativeOnStop(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIActivity_nativeIsFinishing(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIActivity_nativeOnDestroy(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIActivity_nativeOnAccelerometer(JNIEnv * env, jobject classthis, jfloat x, jfloat y, jfloat z);
 
 	//JNIGLSurfaceView
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis);
 
 	//JNIRenderer
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIRenderer_nativeResize(JNIEnv * env, jobject classthis, jint w, jint h);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIRenderer_nativeRender(JNIEnv * env, jobject classthis);
-	JNIEXPORT void JNICALL Java_com_dava_wotsniper_JNIRenderer_nativeRenderRecreated(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIRenderer_nativeResize(JNIEnv * env, jobject classthis, jint w, jint h);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIRenderer_nativeRender(JNIEnv * env, jobject classthis);
+	JNIEXPORT void JNICALL Java_com_dava_template_JNIRenderer_nativeRenderRecreated(JNIEnv * env, jobject classthis);
 };
 
 
@@ -236,7 +239,7 @@ void DeinitApplication()
 // private static native void OnLowMemory();
 // private static native void OnTerminate()
 
-void Java_com_dava_wotsniper_JNIApplication_OnCreateApplication(JNIEnv* env, jobject classthis, jstring path, jstring apppath, jstring logTag, jstring packageName)
+void Java_com_dava_template_JNIApplication_OnCreateApplication(JNIEnv* env, jobject classthis, jstring path, jstring apppath, jstring logTag, jstring packageName)
 {
 	bool retCreateLogTag = CreateStringFromJni(env, logTag, androidLogTag);
 //	LOGI("___ OnCreateApplication __ %d", classthis);
@@ -252,14 +255,14 @@ void Java_com_dava_wotsniper_JNIApplication_OnCreateApplication(JNIEnv* env, job
 	}
 }
 
-void Java_com_dava_wotsniper_JNIApplication_OnConfigurationChanged(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIApplication_OnConfigurationChanged(JNIEnv * env, jobject classthis)
 {
 	if(core)
 	{
 //		DAVA::Logger::Info("__ CONFIGURATION CHANGED ___  %p", env);
 	}
 }
-void Java_com_dava_wotsniper_JNIApplication_OnLowMemory(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIApplication_OnLowMemory(JNIEnv * env, jobject classthis)
 {
 	if(core)
 	{
@@ -269,7 +272,7 @@ void Java_com_dava_wotsniper_JNIApplication_OnLowMemory(JNIEnv * env, jobject cl
 //	DAVA::Logger::Info("-------- DEINIT APPLICATION --------");
 //	DeinitApplication();
 }
-void Java_com_dava_wotsniper_JNIApplication_OnTerminate(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIApplication_OnTerminate(JNIEnv * env, jobject classthis)
 {
 //	LOGI("___ ON TERMINATE ___");
 
@@ -279,7 +282,7 @@ void Java_com_dava_wotsniper_JNIApplication_OnTerminate(JNIEnv * env, jobject cl
 
 // CALLED FROM JNIActivity
 #include "Utils/HttpDownloader.h"
-void Java_com_dava_wotsniper_JNIActivity_nativeOnCreate(JNIEnv * env, jobject classthis, jboolean isFirstRun)
+void Java_com_dava_template_JNIActivity_nativeOnCreate(JNIEnv * env, jobject classthis, jboolean isFirstRun)
 {
 //	LOGI("___ ON CREATE ___ %p, %d;  isFirstRun = %d", env, classthis, isFirstRun);
 	if(core)
@@ -295,7 +298,7 @@ void Java_com_dava_wotsniper_JNIActivity_nativeOnCreate(JNIEnv * env, jobject cl
 	}
 }
 
-void Java_com_dava_wotsniper_JNIActivity_nativeOnStart(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIActivity_nativeOnStart(JNIEnv * env, jobject classthis)
 {
 //	LOGI("___ ON START ___ %p, %d", env, classthis);
 
@@ -305,7 +308,7 @@ void Java_com_dava_wotsniper_JNIActivity_nativeOnStart(JNIEnv * env, jobject cla
 	}
 }
 
-void Java_com_dava_wotsniper_JNIActivity_nativeOnStop(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIActivity_nativeOnStop(JNIEnv * env, jobject classthis)
 {
 //	LOGI("___ ON STOP ___ %p, %d", env, classthis);
 
@@ -315,14 +318,14 @@ void Java_com_dava_wotsniper_JNIActivity_nativeOnStop(JNIEnv * env, jobject clas
 	}
 }
 
-void Java_com_dava_wotsniper_JNIActivity_nativeIsFinishing(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIActivity_nativeIsFinishing(JNIEnv * env, jobject classthis)
 {
 //	LOGI("___ ON FINISHING ___");
 	DeinitApplication();
 }
 
 
-void Java_com_dava_wotsniper_JNIActivity_nativeOnDestroy(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIActivity_nativeOnDestroy(JNIEnv * env, jobject classthis)
 {
 //	LOGI("___ ON DESTROY ___");
 	if(core)
@@ -332,7 +335,7 @@ void Java_com_dava_wotsniper_JNIActivity_nativeOnDestroy(JNIEnv * env, jobject c
 	}
 }
 
-void Java_com_dava_wotsniper_JNIActivity_nativeOnAccelerometer(JNIEnv * env, jobject classthis, jfloat x, jfloat y, jfloat z)
+void Java_com_dava_template_JNIActivity_nativeOnAccelerometer(JNIEnv * env, jobject classthis, jfloat x, jfloat y, jfloat z)
 {
 //	LOGI("___ ON ACC ___ env = %p, %0.4f, %0.4f, %0.4f", env, x,y,z);
 	DAVA::AccelerometerAndroidImpl *accelerometer = (DAVA::AccelerometerAndroidImpl *)DAVA::Accelerometer::Instance();
@@ -344,7 +347,7 @@ void Java_com_dava_wotsniper_JNIActivity_nativeOnAccelerometer(JNIEnv * env, job
 
 
 // CALLED FROM JNIGLSurfaceView
-void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time)
+void Java_com_dava_template_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobject classthis, jint action, jint id, jfloat x, jfloat y, jlong time)
 {
 	if(core)
 	{
@@ -352,7 +355,7 @@ void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnTouch(JNIEnv * env, jobjec
 	}
 }
 
-void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode)
+void Java_com_dava_template_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobject classthis, jint keyCode)
 {
 	if(core)
 	{
@@ -360,14 +363,14 @@ void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnKeyUp(JNIEnv * env, jobjec
 	}
 }
 
-void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIGLSurfaceView_nativeOnResumeView(JNIEnv * env, jobject classthis)
 {
 	if(core)
 	{
 		core->StartForeground();
 	}
 }
-void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jobject classthis)
 {
 	if(core)
 	{
@@ -383,7 +386,7 @@ void Java_com_dava_wotsniper_JNIGLSurfaceView_nativeOnPauseView(JNIEnv * env, jo
 // CALLED FROM JNIRenderer
 // private static native void nativeResize(int w, int h);
 // private static native void nativeRender();
-void Java_com_dava_wotsniper_JNIRenderer_nativeResize(JNIEnv * env, jobject classthis, jint w, jint h)
+void Java_com_dava_template_JNIRenderer_nativeResize(JNIEnv * env, jobject classthis, jint w, jint h)
 {
 	if(core)
 	{
@@ -400,7 +403,7 @@ void Java_com_dava_wotsniper_JNIRenderer_nativeResize(JNIEnv * env, jobject clas
 	}
 }
 
-void Java_com_dava_wotsniper_JNIRenderer_nativeRender(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIRenderer_nativeRender(JNIEnv * env, jobject classthis)
 {
 	if(core)
 	{
@@ -408,7 +411,7 @@ void Java_com_dava_wotsniper_JNIRenderer_nativeRender(JNIEnv * env, jobject clas
 	}
 }
 
-void Java_com_dava_wotsniper_JNIRenderer_nativeRenderRecreated(JNIEnv * env, jobject classthis)
+void Java_com_dava_template_JNIRenderer_nativeRenderRecreated(JNIEnv * env, jobject classthis)
 {
 	if(core)
 	{
@@ -419,6 +422,10 @@ void Java_com_dava_wotsniper_JNIRenderer_nativeRenderRecreated(JNIEnv * env, job
 
 		core->RenderRecreated();
 	}
+}
+void Java_com_dava_template_JNIApplication_SetAssetManager(JNIEnv * env, jobject classthis, jobject assetManager)
+{
+	core->SetAssetManager(AAssetManager_fromJava(env, assetManager));
 }
 
 

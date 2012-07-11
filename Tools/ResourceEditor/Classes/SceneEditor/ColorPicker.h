@@ -13,15 +13,19 @@ public:
     ColorDetailControl(const Rect &rect);
     virtual ~ColorDetailControl();
     
+	virtual void DrawAfterChilds(const UIGeometricData &geometricData);
     virtual void Input(UIEvent *currentInput);
     
     const Color & GetColor();
+
 
 protected:
     virtual void ColorSelected(const Vector2 &point) = 0;
     
     Sprite *colorMap; 
     Color selectedColor;
+
+    Vector2 markerPoint;
 };
 
 
@@ -29,6 +33,8 @@ class ColorSelectorControl: public ColorDetailControl
 {
 public:    
     ColorSelectorControl(const Rect &rect);
+
+    void SetColor(const Color &color);
     
 protected:
     virtual void ColorSelected(const Vector2 &point);
@@ -36,6 +42,7 @@ protected:
     void SetInitialColors();
     
     Color sections[6];
+    
 };
 
 
@@ -70,7 +77,7 @@ protected:
 
     virtual const Rect DialogRect();
 
-    void SetColor(const Color & newColor, bool updateColorMap);
+    void SetColor(const Color & newColor, bool updateColorMap, bool updateSelector);
 
     void OnOk(BaseObject * owner, void * userData, void * callerData);
     void OnCancel(BaseObject * owner, void * userData, void * callerData);

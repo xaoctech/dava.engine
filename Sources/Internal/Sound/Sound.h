@@ -34,6 +34,11 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 
+#ifdef __DAVAENGINE_ANDROID__
+#include <SLES/OpenSLES.h>
+#include <SLES/OpenSLES_Android.h>
+#endif //#ifdef __DAVAENGINE_ANDROID__
+
 namespace DAVA
 {
 
@@ -81,12 +86,16 @@ public:
 
 	eType			GetType();
 
+#ifdef __DAVAENGINE_ANDROID__
+    SLuint32 GetPlayState();
+#endif //#ifdef __DAVAENGINE_ANDROID__
 protected:
 	Sound(const String & fileName, eType type, int32 priority = 0);
 	virtual ~Sound();
 
-	void Init();
-	void PrepareStaticBuffer();
+	virtual bool Init();
+    
+	bool PrepareStaticBuffer();
 	void PrepareDynamicBuffers();
 	void UpdateDynamicBuffers();
 
@@ -102,7 +111,22 @@ protected:
 	int32 priority;
 	float32 volume;
 	bool looping;
-
+    
+#ifdef __DAVAENGINE_ANDROID__
+    SLObjectItf playerObject;
+    SLPlayItf playerPlay;
+    SLSeekItf playerSeek;
+    SLVolumeItf playerVolume;
+    
+    SLAndroidSimpleBufferQueueItf playerBufferQueue;
+    
+    int16 minVolumeLevel;
+    int16 maxVolumeLevel;
+    
+    bool InitBufferQueueAudioPlayer();
+    bool InitAssetAudioPlayer();
+#endif //#ifdef __DAVAENGINE_ANDROID__
+    
 	SoundGroup * group;
 	void SetSoundGroup(SoundGroup * group);
 
