@@ -26,12 +26,14 @@ ParticleLayer3D::~ParticleLayer3D()
 
 void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & _direction)
 {
-	if(TYPE_PARTICLES == type)
+	//if(TYPE_PARTICLES == type)
 	{
 		verts.clear();
 		textures.clear();
 		colors.clear();
 		int32 totalCount = 0;
+
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		Particle * current = head;
 		if(current)
@@ -74,8 +76,11 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vec
 
 			float32 sine = sinf(current->angle);
 			float32 cosine = cosf(current->angle);
-			sine *= sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;//TODO: radius was here
-			cosine *= sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;
+
+			float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife)/2.f;
+			float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife)/2.f;
+			float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife)/2.f;
+			float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife)/2.f;
 
 			Vector3 dxc = dx*cosine;
 			Vector3 dxs = dx*sine;
@@ -87,10 +92,20 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vec
 			// v[2].xyz = p.position + dxc - dys
 			// v[3].xyz = p.position + dxs + dyc
 
-			Vector3 topLeft = current->position-dxc+dys;
-			Vector3 topRight = current->position-dxs-dyc;
-			Vector3 botLeft = current->position+dxs+dyc;
-			Vector3 botRight = current->position+dxc-dys;
+			//Vector3 topLeft = current->position-dxc+dys;
+			//Vector3 topRight = current->position-dxs-dyc;
+			//Vector3 botLeft = current->position+dxs+dyc;
+			//Vector3 botRight = current->position+dxc-dys;
+
+			//Vector3 topLeft = current->position+(-dxc+dys);
+			//Vector3 topRight = current->position+(-dxs-dyc);
+			//Vector3 botLeft = current->position+(dxs+dyc);
+			//Vector3 botRight = current->position+(dxc-dys);
+			
+			Vector3 topLeft = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
+			Vector3 topRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
+			Vector3 botLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
+			Vector3 botRight = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
 
 			verts.push_back(topLeft.x);//0
 			verts.push_back(topLeft.y);
@@ -143,7 +158,7 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vec
 			}
 
 			totalCount++;
-			current = current->next;
+			current = 0;//current->next;
 		}
 
 		if(totalCount > 0)
@@ -157,6 +172,8 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vec
 
 			RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 		}
+
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
