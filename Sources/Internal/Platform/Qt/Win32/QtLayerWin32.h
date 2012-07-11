@@ -27,32 +27,37 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_QT_LAYER_H__
-#define __DAVAENGINE_QT_LAYER_H__
+#ifndef __DAVAENGINE_QT_LAYER_WIN32_H__
+#define __DAVAENGINE_QT_LAYER_WIN32_H__
 
 #include "DAVAEngine.h"
+#include "Platform/Qt/Qtlayer.h"
 
 namespace DAVA 
 {
-class QtLayer: public Singleton<QtLayer>
+class QtLayerWin32: public QtLayer
 {
 public:
-
-    QtLayer() {};
-    virtual ~QtLayer() {};
     
-    virtual void WidgetCreated() = 0;
-    virtual void WidgetDestroyed() = 0;
-
-    virtual void OnSuspend() = 0;
-    virtual void OnResume() = 0;
+    QtLayerWin32();
+    virtual ~QtLayerWin32();
+    
+    virtual void WidgetCreated();
+    virtual void WidgetDestroyed();
+    
+    virtual void OnSuspend();
+    virtual void OnResume();
 	
-    virtual void AppStarted() = 0;
-    virtual void AppFinished() = 0;
+    virtual void AppStarted();
+    virtual void AppFinished();
+ 
+	virtual void Resize(int32 width, int32 height);
 
-	virtual void Resize(int32 width, int32 height) = 0;
+
+	void SetWindow(HINSTANCE hInstance, HWND hWindow, int32 width, int32 height);
 };	
+
 };
 
 
-#endif // __DAVAENGINE_QT_LAYER_H__
+#endif // __DAVAENGINE_QT_LAYER_WIN32_H__
