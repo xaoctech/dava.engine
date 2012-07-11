@@ -39,38 +39,58 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vec
 			RenderManager::Instance()->SetTexture(sprite->GetTexture(current->frame));
 		}
 
-		float32 globalRight = sprite->GetWidth()/2.f - sprite->GetDefaultPivotPoint().x;
-		float32 globalLeft = sprite->GetWidth()/2.f + sprite->GetDefaultPivotPoint().x;
-		float32 globalTop = sprite->GetHeight()/2.f + sprite->GetDefaultPivotPoint().y;
-		float32 globalBottom = sprite->GetHeight()/2.f - sprite->GetDefaultPivotPoint().y;
-
 		while(current != 0)
 		{
-			Vector3 up, left;
-			if(current->angle != 0)
-			{
-				Matrix3 rotation;
-				rotation.CreateRotation(_direction, current->angle);
-				up = _up*rotation;
-				left = _left*rotation;
-			}
-			else
-			{
-				up = _up;
-				left = _left;
-			}
+			//Vector3 up, left;
+			//if(current->angle != 0)
+			//{
+			//	Matrix3 rotation;
+			//	rotation.CreateRotation(_direction, current->angle);
+			//	up = _up*rotation;
+			//	left = _left*rotation;
+			//}
+			//else
+			//{
+			//	up = _up;
+			//	left = _left;
+			//}
 
-			
-			float32 halfW = sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;
-			float32 halfH = sprite->GetHeight()*current->size.y*current->sizeOverLife/2.f;
+			//float32 halfW = sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;
+			//float32 halfH = sprite->GetHeight()*current->size.y*current->sizeOverLife/2.f;
 
-			up = up*halfH;
-			left = left*halfW;
+			//up = up*halfH;
+			//left = left*halfW;
 
-			Vector3 topLeft = current->position+up+left;
-			Vector3 topRight = current->position+up-left;
-			Vector3 botLeft = current->position-up+left;
-			Vector3 botRight = current->position-up-left;
+			//Vector3 topLeft = current->position+up+left;
+			//Vector3 topRight = current->position+up-left;
+			//Vector3 botLeft = current->position-up+left;
+			//Vector3 botRight = current->position-up-left;
+
+			Vector3 dx(_left);
+			Vector3 dy(_up);
+
+			dx *= sqrt(2.f);
+			dy *= sqrt(2.f);
+
+			float32 sine = sinf(current->angle);
+			float32 cosine = cosf(current->angle);
+			sine *= sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;//TODO: radius was here
+			cosine *= sprite->GetWidth()*current->size.x*current->sizeOverLife/2.f;
+
+			Vector3 dxc = dx*cosine;
+			Vector3 dxs = dx*sine;
+			Vector3 dyc = dy*cosine;
+			Vector3 dys = dy*sine;
+
+			// v[0].xyz = p.position - dxc + dys
+			// v[1].xyz = p.position - dxs - dyc
+			// v[2].xyz = p.position + dxc - dys
+			// v[3].xyz = p.position + dxs + dyc
+
+			Vector3 topLeft = current->position-dxc+dys;
+			Vector3 topRight = current->position-dxs-dyc;
+			Vector3 botLeft = current->position+dxs+dyc;
+			Vector3 botRight = current->position+dxc-dys;
 
 			verts.push_back(topLeft.x);//0
 			verts.push_back(topLeft.y);
