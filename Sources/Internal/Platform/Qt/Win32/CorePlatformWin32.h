@@ -27,32 +27,72 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_QT_LAYER_H__
-#define __DAVAENGINE_QT_LAYER_H__
+#ifndef __DAVAENGINE_CORE_PLATFORM_WIN32_H__
+#define __DAVAENGINE_CORE_PLATFORM_WIN32_H__
 
 #include "DAVAEngine.h"
+#if defined(__DAVAENGINE_WIN32__)
+
+#include "WindowsSpecifics.h"
 
 namespace DAVA 
 {
-class QtLayer: public Singleton<QtLayer>
+class CoreWin32Platform : public Core
 {
 public:
+	virtual eScreenMode GetScreenMode();
+	virtual void SwitchScreenToMode(eScreenMode screenMode); 
+	virtual void GetAvailableDisplayModes(List<DisplayMode> & availableModes);
 
-    QtLayer() {};
-    virtual ~QtLayer() {};
-    
-    virtual void WidgetCreated() = 0;
-    virtual void WidgetDestroyed() = 0;
+	virtual DisplayMode GetCurrentDisplayMode();
 
-    virtual void OnSuspend() = 0;
-    virtual void OnResume() = 0;
-	
-    virtual void AppStarted() = 0;
-    virtual void AppFinished() = 0;
+	virtual void Quit();
 
-	virtual void Resize(int32 width, int32 height) = 0;
+	virtual bool CreateWin32Window(HINSTANCE hInstance); //true if window created, if false, need to quit the app
+
+	bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
+
+	bool WinEvent(MSG *message, long *result);
+
+	virtual void Run();
+
+	virtual void ToggleFullscreen();
+
+	virtual void SetIcon(int32 iconId);
+
+	void InitArgs();
+	void InitOpenGL();
+	void ReleaseOpenGL();
+
+	HWND hWindow;
+	HDC hDC;
+	HGLRC hRC;
+	HANDLE hMutex;
+#if defined(__DAVAENGINE_DIRECTX9__)
+	LPDIRECT3D9 d3d9;
+#endif 
+
+/*	int32 screenWidth;
+	int32 screenHeight;
+	int32 bpp;
+
+	bool isFullscreen;
+	bool isInFullscreenNow;	*/
+
+	DisplayMode currentMode;
+	DisplayMode fullscreenMode;
+	DisplayMode windowedMode;
+	bool isFullscreen;
+	RECT		windowPositionBeforeFullscreen;
+private:
+
+	static const uint32 WINDOWED_STYLE = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+	static const uint32 FULLSCREEN_STYLE = WS_VISIBLE | WS_POPUP;
+
+	RECT GetWindowedRectForDisplayMode(DisplayMode & dm);
+	bool willQuit;
+
 };	
 };
-
-
-#endif // __DAVAENGINE_QT_LAYER_H__
+#endif // #if defined(__DAVAENGINE_WIN32__)
+#endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__

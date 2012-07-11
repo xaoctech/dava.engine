@@ -1,0 +1,606 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{08502C53-38AF-39A5-80DC-E84F9012796D}</ProjectGuid>
+    <RootNamespace>FrameworkQt</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>debug\</IntermediateDirectory>
+    <PrimaryOutput>FrameworkQt</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <IntermediateDirectory>release\</IntermediateDirectory>
+    <PrimaryOutput>FrameworkQt</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">FrameworkQt</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">FrameworkQt</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtMultimedia;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;..\..\Sources\Internal;..\..\Sources\External;c:\Work\Framework\dava.framework\Projects\QtFramework\..\..\Sources\External\Freetype;..\..\Libs\oggvorbis\include;..\..\Libs\include;..\..\Libs\libs;..\..\Libs\freetype\include;..\..\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;debug;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>debug\</ObjectFileName>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_MULTIMEDIA_LIB;QT_OPENGL_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_MULTIMEDIA_LIB;QT_OPENGL_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ResourceOutputFileName>$(OutDir)\$(InputName).res</ResourceOutputFileName>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtMultimedia;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;..\..\Sources\Internal;..\..\Sources\External;c:\Work\Framework\dava.framework\Projects\QtFramework\..\..\Sources\External\Freetype;..\..\Libs\oggvorbis\include;..\..\Libs\include;..\..\Libs\libs;..\..\Libs\freetype\include;..\..\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;release;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>release\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_MULTIMEDIA_LIB;QT_OPENGL_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_MULTIMEDIA_LIB;QT_OPENGL_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ResourceOutputFileName>$(OutDir)\$(InputName).res</ResourceOutputFileName>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Sources\Internal\Math\AABBox2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\AABBox3.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\AccelerometerAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\AnimatedObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\Animation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\AnimationManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\ApplicationCore.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVHierarchy.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BVNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseMath.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\BaseObjectChecker.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\BezierSpline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\BezierSplineAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BillboardNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\Bitstream.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\BoneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DGameObjectManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\Box2DTileCollider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Camera.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Collision\CollisionObject2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Collision\CollisionPolygons.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Collision\Collisions.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Component.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\ComponentTypes.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\Core.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\CubeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\D3D9Helpers.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\DynamicObjectCache.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\Entity.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityFamily.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\EntityManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\EventDispatcher.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\FTFont.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\File.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\FileSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\Font.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\FontManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Frustum.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\GraphicsFont.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\HTTPDownloaderAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\InputSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\Interpolation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Input\KeyboardDevice.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\KeyframeAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LandscapeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Animation\LinearAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\Logger.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\LoggerAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Math2D.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\Message.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\NetworkConnection.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\NetworkDelegate.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Network\NetworkPacket.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\ObjectFactory.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\Particle.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Polygon2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Polygon3.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\PolygonGroup.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\PoolSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\RectPacker.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderGrayscaleEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerDX.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerFactory.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\ResourceArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Scene.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderDX.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ShaderGL.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowRect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\SharedFBO.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundChannel.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundDataProvider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundGroup.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundInstance.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundOVProvider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Sound\SoundWVProvider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SphereNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Math\Spline.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\Sprite.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\StaticIndexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\StaticMesh.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\StaticVertexBuffer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\SystemTimer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlock.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Texture.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\TextureDX9.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\TheoraPlayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\TransformComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UI3DView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIButton.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIControl.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIControlBackground.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIControlSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIEvent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIFadeTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIFileSystemDialog.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchy.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyCell.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHierarchyNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIHoleTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIJoypad.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIList.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIListCell.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UILoadingTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIMoveInTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIPopup.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreen.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScreenTransition.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIScrollBar.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UISlider.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIStaticText.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UITextField.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIYamlLoader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\UTF8Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\UberShader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlParser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\Accelerometer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\AccelerometerAndroid.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\AccelerometeriPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\AnimatedObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\Animation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\AnimationManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\ApplicationCore.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\BTNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVHierarchy.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BVNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseMath.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\BaseNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseObjectChecker.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\BaseTypes.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\BezierSplineAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BillboardNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\Bitstream.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\BoneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DDebugDraw.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DGameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DGameObjectManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\Box2DTileCollider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Camera.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Camera.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Circle.h" />
+    <ClInclude Include="..\..\Sources\Internal\Collision\CollisionObject2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Collision\CollisionPolygons.h" />
+    <ClInclude Include="..\..\Sources\Internal\Collision\Collisions.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Color.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\ColorOnlyEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Component.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentDataMapper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\ComponentTypes.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Components.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\Core.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\CoreMacOS_CarbonWindow.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\CubeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\D3D9Helpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
+    <ClInclude Include="..\..\Sources\Internal\DAVAEngine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\DVAssert.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Core\DisplayMode.h" />
+    <ClInclude Include="..\..\Sources\Internal\DoxygenDocumenation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\DumpVariable.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\DynamicMemoryFile.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\DynamicObjectCache.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Entity.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityFamily.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\EntityManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\EventDispatcher.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Exception.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\FTFont.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\File.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FileList.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\FileSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\Font.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\FontManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Frustum.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\GameObjectManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\GraphicsFont.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\GridSprite.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\HTTPDownloader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Heightmap.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\InputSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\Interpolation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Input\KeyboardDevice.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedArchiver.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\KeyedUnarchiver.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\KeyframeAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeCursor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeDebugNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometryComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\LandscapeGeometrySystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LandscapeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Light.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\LinearAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\List.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\ListAllocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\LocalizationIPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\LocalizationSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\Logger.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Math2D.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Math2DTemplateClasses.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\MathConstants.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\MathHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Matrix2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Matrix3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Matrix4.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\MemoryManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\MeshInstanceDrawSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Message.h" />
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
+    <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\MultiTextureEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\MusicIos.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
+    <ClInclude Include="..\..\Sources\Internal\Animation\NamedAnimationsList.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkConnectionIPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkDelegate.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\NetworkPacket.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\OGLHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\OOBBox.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\ObjectCreator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\ObjectFactory.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\Particle.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Plane.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Polygon2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Polygon3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\PolygonGroup.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\Pool.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\PoolSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Quaternion.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Ray.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Rect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\RectPacker.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\RefPtr.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderBase.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderDataObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderGrayscaleEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\ResourceArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\RotatingCubeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Scene.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneAnimationMixer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationKey.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimationList.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowRect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ShadowVolumeNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\SharedFBO.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Singleton.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SkeletonNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundChannel.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundDataProvider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundGroup.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundInstance.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundOVProvider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundWVProvider.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Sphere.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SphereNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Spline.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\Sprite.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\StateNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\StaticIndexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\StaticMesh.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\StaticSingleton.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\StaticVertexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Debug\Stats.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\StringFormat.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\SystemTimer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\TCPServer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\TemplateHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlock.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Texture.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorAlphaTestEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Effects\TextureMulColorEffect.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\TransformComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIButton.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIControl.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIControlBackground.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIControlSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIEvent.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIFadeTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchy.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyCell.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHierarchyNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIHoleTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIJoypad.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIList.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIListCell.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UILoadingTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIMoveInTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIPopup.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreen.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManagerAndroid.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManageriPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManageriPhoneImpl.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScreenTransition.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIScrollBar.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UISlider.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIStaticText.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UITextField.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UITextFieldiPhone.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIYamlLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\UTF8Utils.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\UberShader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\Utils.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\VariantType.h" />
+    <ClInclude Include="..\..\Sources\Internal\Math\Vector.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\VertexBuffer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Entity\VisibilityAABBoxSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Network\WFNetworkConnection.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\XMLParser.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlParser.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
