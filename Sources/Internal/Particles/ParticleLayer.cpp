@@ -611,7 +611,7 @@ void ParticleLayer::LoadFromYaml(YamlNode * node)
 			pivotPointTemp = pivotPointNode->AsPoint();
 		}
 		SetSprite(_sprite);
-		pivotPoint = Vector2(_sprite->GetWidth() / 2.0f + pivotPointTemp.x, _sprite->GetHeight() / 2.0f + pivotPointTemp.y);        
+		pivotPoint = Vector2(_sprite->GetWidth() / 2.0f + pivotPointTemp.x, _sprite->GetHeight() / 2.0f + pivotPointTemp.y);
         SafeRelease(_sprite);
 	}
 
@@ -710,7 +710,5 @@ Particle * ParticleLayer::GetHeadParticle()
 {
 	return head;
 }
-
-
 
 }
