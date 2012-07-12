@@ -31,57 +31,70 @@
 
 #if defined(__DAVAENGINE_MACOS__)
 
-extern void FrameworkDidLaunched();
+#import "AppKit/NSView.h"
+#include "OpenGLView.h"
+
+extern void FrameworkWillTerminate();
+
 
 namespace DAVA 
 {
+
+NSView *qtNSView = NULL;
+OpenGLView *openGLView = NULL;
     
-QtLayerMacOS::QtLayerMacOS()
+void QtLayerMacOS::InitializeGlWindow(void *qtView, int32 width, int32 height)
 {
-    WidgetCreated();
-    AppStarted();
+    qtNSView = (NSView *)qtView;
+    
+    openGLView = [[OpenGLView alloc]initWithFrame: NSMakeRect(0, 0, width, height)];
+    [qtNSView addSubview: openGLView];
+    
+	NSRect rect;
+	rect.origin.x = 0;
+	rect.origin.y = 0;
+	rect.size.width = width;
+	rect.size.height = height;
+    
+	[openGLView setFrame: rect];
+}
+    
+    
+void QtLayerMacOS::Resize(int32 width, int32 height)
+{
+  	NSRect rect;
+	rect.origin.x = 0;
+	rect.origin.y = 0;
+	rect.size.width = width;
+	rect.size.height = height;
+ 
+    [openGLView setFrame: rect];
+    [openGLView reshape];
+    
+    [openGLView disableTrackingArea];
+    [openGLView enableTrackingArea];
+}
+    
+void QtLayerMacOS::ProcessFrame()
+{
+    [openGLView setNeedsDisplay:YES];
 }
 
-QtLayerMacOS::~QtLayerMacOS()
+void QtLayerMacOS::AppFinished()
 {
-    AppFinished();
-    WidgetDestroyed();
-}
+    [openGLView removeFromSuperview];
+    [openGLView release];
     
-    
-void QtLayerMacOS::WidgetCreated()
-{
-//	DisplayMode fullscreenMode = Core::Instance()->GetCurrentDisplayMode();
-//	
-	// launch framework and setup all preferences
-    //TODO: maybe we need reorder calls 
-    FrameworkDidLaunched();
-    RenderManager::Create(Core::RENDERER_OPENGL);
+    Core::Instance()->SystemAppFinished();
+    FrameworkWillTerminate();
+    Core::Instance()->ReleaseSingletons();
+#ifdef ENABLE_MEMORY_MANAGER
+    if (DAVA::MemoryManager::Instance() != 0)
+    {
+        DAVA::MemoryManager::Instance()->FinalLog();
+    }
+#endif
 }
-
-void QtLayerMacOS::WidgetDestroyed()
-{
-    
-}
-    
-void QtLayerMacOS::OnSuspend()
-{
-    SoundSystem::Instance()->Suspend();
-    Core::Instance()->SetIsActive(false);
-}
-    
-void QtLayerMacOS::OnResume()
-{
-    SoundSystem::Instance()->Resume();
-    Core::Instance()->SetIsActive(true);
-}
-    
-void QtLayerMacOS::AppStarted()
-{
-    Core::Instance()->SystemAppStarted();
-}
-
-
 
 
 };

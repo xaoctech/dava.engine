@@ -51,6 +51,11 @@ public:
     virtual void AppStarted();
     virtual void AppFinished();
     
+    virtual void Resize(int32 width, int32 height);
+    
+    virtual void ProcessFrame();
+    
+    void InitializeGlWindow(void *qtView, int32 width, int32 height);
 };	
 
 };

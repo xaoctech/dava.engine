@@ -51,6 +51,8 @@ public:
     virtual void AppFinished() = 0;
 
 	virtual void Resize(int32 width, int32 height) = 0;
+    
+    virtual void ProcessFrame() = 0;
 };	
 };
 

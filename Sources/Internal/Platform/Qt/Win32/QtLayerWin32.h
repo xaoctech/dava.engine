@@ -53,6 +53,8 @@ public:
  
 	virtual void Resize(int32 width, int32 height);
 
+    virtual void ProcessFrame();
+
 
 	void SetWindow(HINSTANCE hInstance, HWND hWindow, int32 width, int32 height);
 };	
