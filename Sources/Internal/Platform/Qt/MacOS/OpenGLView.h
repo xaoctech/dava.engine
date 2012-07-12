@@ -27,64 +27,28 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "QtLayerMacOS.h"
+#import <Cocoa/Cocoa.h>
+#import <OpenGL/OpenGL.h>
+#include "DAVAEngine.h"
+//#import "TScene.h"
 
-#if defined(__DAVAENGINE_MACOS__)
+using namespace DAVA;
 
-extern void FrameworkDidLaunched();
-
-namespace DAVA 
+@interface OpenGLView : NSOpenGLView 
 {
-    
-QtLayerMacOS::QtLayerMacOS()
-{
-    WidgetCreated();
-    AppStarted();
+	bool sizeChanged;
+	NSTrackingArea *trackingArea;
+	bool isFirstDraw;
+//	DAVA::Cursor * activeCursor;
+	bool willQuit;
 }
 
-QtLayerMacOS::~QtLayerMacOS()
-{
-    AppFinished();
-    WidgetDestroyed();
-}
-    
-    
-void QtLayerMacOS::WidgetCreated()
-{
-//	DisplayMode fullscreenMode = Core::Instance()->GetCurrentDisplayMode();
-//	
-	// launch framework and setup all preferences
-    //TODO: maybe we need reorder calls 
-    FrameworkDidLaunched();
-    RenderManager::Create(Core::RENDERER_OPENGL);
-}
+#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+- (size_t) displayBitsPerPixel:(CGDirectDisplayID) displayId;
+#endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
+@property (assign) bool willQuit;
 
-void QtLayerMacOS::WidgetDestroyed()
-{
-    
-}
-    
-void QtLayerMacOS::OnSuspend()
-{
-    SoundSystem::Instance()->Suspend();
-    Core::Instance()->SetIsActive(false);
-}
-    
-void QtLayerMacOS::OnResume()
-{
-    SoundSystem::Instance()->Resume();
-    Core::Instance()->SetIsActive(true);
-}
-    
-void QtLayerMacOS::AppStarted()
-{
-    Core::Instance()->SystemAppStarted();
-}
+- (void) enableTrackingArea;
+- (void) disableTrackingArea;
 
-
-
-
-};
-
-
-#endif // #if defined(__DAVAENGINE_MACOS__)
+@end
