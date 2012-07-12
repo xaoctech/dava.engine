@@ -151,7 +151,7 @@ void AutotestingSystem::OnAppStarted()
         }
 
         
-        if(testIndex == (fileCount - 1))
+        if((fileCount - 1) <= testIndex)
         {
             // last file - reset id and index
             //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
