@@ -17,7 +17,7 @@ public:
 	ParticleLayer3D();
 	virtual ~ParticleLayer3D();
 
-	void Draw(const Vector3 & up, const Vector3 & left, const Vector3 & direction);
+	void Draw(const Vector3 & up, const Vector3 & left);
 
 protected:
 	RenderDataObject * renderData;
