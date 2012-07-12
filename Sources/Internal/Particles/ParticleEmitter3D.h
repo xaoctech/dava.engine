@@ -10,7 +10,7 @@ namespace DAVA
 class ParticleEmitter3D : public ParticleEmitter
 {
 public:
-	void Draw(const Vector3 & up, const Vector3 & left, const Vector3 & direction);
+	void Draw(const Vector3 & up, const Vector3 & left);
 
 protected:
 };
