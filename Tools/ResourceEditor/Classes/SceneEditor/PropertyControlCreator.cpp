@@ -10,6 +10,7 @@
 #include "LodNodePropertyControl.h"
 #include "EntityPropertyControl.h"
 #include "Entity/Entity.h"
+#include "ParticleEmitterPropertyControl.h"
 
 
 PropertyControlCreator::PropertyControlCreator()
@@ -72,6 +73,12 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
     {
         return CreateControlForNode(EPCID_LODNODE, rect, createNodeProperties);
     }
+
+	ParticleEmitterNode * particleEmitterNode = dynamic_cast<ParticleEmitterNode *>(sceneNode);
+	if(particleEmitterNode)
+	{
+		return CreateControlForNode(EPCID_PARTICLE_EMITTER, rect, createNodeProperties);
+	}
 
 	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
 }
@@ -139,9 +146,13 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
                 break;
             case EPCID_MATERIAL:
                 controls[controlID] = new MaterialPropertyControl(rect, createNodeProperties);
+				break;
+			case EPCID_PARTICLE_EMITTER:
+				controls[controlID] = new ParticleEmitterPropertyControl(rect, createNodeProperties);
+				break;
                 
             default:
-                break;
+                break; 
         }
     }
 

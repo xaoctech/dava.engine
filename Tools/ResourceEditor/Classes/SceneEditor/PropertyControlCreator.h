@@ -27,6 +27,7 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
         EPCID_LANDSCAPE_EDITOR_HEIGHT,
 
 		EPCID_ENTITY,
+		EPCID_PARTICLE_EMITTER,
         
         EPCID_COUNT
     };

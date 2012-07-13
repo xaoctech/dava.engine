@@ -1,32 +1,8 @@
-/*==================================================================================
-    Copyright (c) 2008, DAVA Consulting, LLC
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA Consulting, LLC nor the
-    names of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=====================================================================================*/
 #include "ParticlesEditorControl.h" 
+#include "SceneEditor/ControlsFactory.h"
 
-PartickesEditorControl::PartickesEditorControl()
+ParticlesEditorControl::ParticlesEditorControl()
+: DraggableDialog(Rect(GetScreenWidth()/8.f, GetScreenHeight()/16.f, 400.f, GetScreenHeight()-GetScreenHeight()/16.f-50.f))
 {
     emitterProps.push_back("type");
     emitterProps.push_back("emissionAngle");
@@ -76,24 +52,36 @@ PartickesEditorControl::PartickesEditorControl()
     curPropType = 0; //0 - value, 1 - Keyframed
     dblClickDelay = 500;
     activePropEdit = 0;
+
+	emitter = 0;
+
+	LoadResources();
 }
 
-void PartickesEditorControl::SafeAddControl(UIControl *control)
+
+ParticlesEditorControl::~ParticlesEditorControl()
+{
+	UnloadResources();
+}
+
+void ParticlesEditorControl::SafeAddControl(UIControl *control)
 {
     if(!control->GetParent())
         AddControl(control);
 }
 
-void PartickesEditorControl::SafeRemoveControl(UIControl *control)
+void ParticlesEditorControl::SafeRemoveControl(UIControl *control)
 {
     if(control->GetParent())
         RemoveControl(control);
 }
 
-void PartickesEditorControl::LoadResources()
+void ParticlesEditorControl::LoadResources()
 {
-    cellH = GetScreenHeight() / 25;
-    buttonW = GetScreenWidth() / 5;
+	ControlsFactory::CustomizeDialog(this);
+
+    cellH = 30.f;//GetScreenHeight() / 25;
+    buttonW = 200.f;
     float32 thumbSliderW = cellH/4;
 
     sprite = 0;
@@ -110,50 +98,6 @@ void PartickesEditorControl::LoadResources()
     f = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     f->SetSize(18);
     f->SetColor(Color(1,1,1,1));
-
-    preview = new PreviewControl();
-    preview->SetRect(Rect(buttonW*2, 0, GetScreenWidth() - buttonW*2, GetScreenHeight()));
-    AddControl(preview);
-    
-    chooseProject = new UIButton(Rect(0, 0, buttonW/2, cellH));
-    chooseProject->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    chooseProject->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    chooseProject->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    chooseProject->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    chooseProject->SetStateFont(UIControl::STATE_NORMAL, f);
-    chooseProject->SetStateText(UIControl::STATE_NORMAL, LocalizedString("Project"));
-	chooseProject->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
-    AddControl(chooseProject);
-    
-    newEmitter = new UIButton(Rect(buttonW/2, 0, buttonW/2, cellH));
-    newEmitter->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    newEmitter->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    newEmitter->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    newEmitter->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    newEmitter->SetStateFont(UIControl::STATE_NORMAL, f);
-    newEmitter->SetStateText(UIControl::STATE_NORMAL, LocalizedString("New"));
-	newEmitter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
-    AddControl(newEmitter);
-    
-	loadEmitter = new UIButton(Rect(buttonW, 0, buttonW/2, cellH));
-    loadEmitter->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    loadEmitter->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    loadEmitter->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    loadEmitter->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    loadEmitter->SetStateFont(UIControl::STATE_NORMAL, f);
-    loadEmitter->SetStateText(UIControl::STATE_NORMAL, LocalizedString("Load"));
-	loadEmitter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
-    AddControl(loadEmitter);
-    
-    saveEmitter = new UIButton(Rect(buttonW*3/2, 0, buttonW/2, cellH));
-    saveEmitter->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    saveEmitter->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
-    saveEmitter->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    saveEmitter->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
-    saveEmitter->SetStateFont(UIControl::STATE_NORMAL, f);
-    saveEmitter->SetStateText(UIControl::STATE_NORMAL, LocalizedString("Save"));
-	saveEmitter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
-    AddControl(saveEmitter);
     
     addLayer = new UIButton(Rect(0, cellH, buttonW/2, cellH));
     addLayer->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
@@ -161,8 +105,8 @@ void PartickesEditorControl::LoadResources()
     addLayer->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     addLayer->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     addLayer->SetStateFont(UIControl::STATE_NORMAL, f);
-    addLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString("AddLayer"));
-	addLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    addLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"+Layer"));
+	addLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(addLayer);
     
     cloneLayer = new UIButton(Rect(0, cellH*2, buttonW/2, cellH));
@@ -171,8 +115,8 @@ void PartickesEditorControl::LoadResources()
     cloneLayer->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     cloneLayer->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     cloneLayer->SetStateFont(UIControl::STATE_NORMAL, f);
-    cloneLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString("CopyLayer"));
-	cloneLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    cloneLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Copy"));
+	cloneLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(cloneLayer);
     
     disableLayer = new UIButton(Rect(buttonW/2, cellH*2, buttonW/2, cellH));
@@ -181,8 +125,8 @@ void PartickesEditorControl::LoadResources()
     disableLayer->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     disableLayer->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     disableLayer->SetStateFont(UIControl::STATE_NORMAL, f);
-    disableLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString("DELayer"));
-	disableLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    disableLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"on/off"));
+	disableLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(disableLayer);
     
     delLayer = new UIButton(Rect(buttonW/2, cellH, buttonW/2, cellH));
@@ -191,8 +135,8 @@ void PartickesEditorControl::LoadResources()
     delLayer->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     delLayer->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     delLayer->SetStateFont(UIControl::STATE_NORMAL, f);
-    delLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString("DelLayer"));
-	delLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    delLayer->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"-Layer"));
+	delLayer->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(delLayer);
     
     addProp = new UIButton(Rect(0, cellH*8, buttonW/2, cellH)); 
@@ -201,8 +145,8 @@ void PartickesEditorControl::LoadResources()
     addProp->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     addProp->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     addProp->SetStateFont(UIControl::STATE_NORMAL, f);
-    addProp->SetStateText(UIControl::STATE_NORMAL, LocalizedString("AddProp"));
-	addProp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    addProp->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"+Prop"));
+	addProp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(addProp);
 
     delProp = new UIButton(Rect(buttonW/2, cellH*8, buttonW/2, cellH));
@@ -211,8 +155,8 @@ void PartickesEditorControl::LoadResources()
     delProp->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     delProp->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     delProp->SetStateFont(UIControl::STATE_NORMAL, f);
-    delProp->SetStateText(UIControl::STATE_NORMAL, LocalizedString("DelProp"));
-	delProp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    delProp->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"-Prop"));
+	delProp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(delProp);
 
     valueBut = new UIButton(Rect(buttonW, cellH*8, buttonW/2, cellH));
@@ -221,8 +165,8 @@ void PartickesEditorControl::LoadResources()
     valueBut->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     valueBut->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     valueBut->SetStateFont(UIControl::STATE_NORMAL, f);
-    valueBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString("Value"));
-	valueBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    valueBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Value"));
+	valueBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(valueBut);
 
     KFBut = new UIButton(Rect(buttonW*3/2, cellH*8, buttonW/2, cellH));
@@ -231,8 +175,8 @@ void PartickesEditorControl::LoadResources()
     KFBut->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     KFBut->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     KFBut->SetStateFont(UIControl::STATE_NORMAL, f);
-    KFBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString("KF"));
-	KFBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    KFBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Timeline"));
+	KFBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(KFBut);
 
     addForce = new UIButton(Rect(buttonW, cellH*7, buttonW/2, cellH));
@@ -241,8 +185,8 @@ void PartickesEditorControl::LoadResources()
     addForce->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     addForce->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     addForce->SetStateFont(UIControl::STATE_NORMAL, f);
-    addForce->SetStateText(UIControl::STATE_NORMAL, LocalizedString("AddForce"));
-	addForce->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    addForce->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"+Force"));
+	addForce->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(addForce);
 
     delForce = new UIButton(Rect(buttonW*3/2, cellH*7, buttonW/2, cellH));
@@ -251,8 +195,8 @@ void PartickesEditorControl::LoadResources()
     delForce->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     delForce->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     delForce->SetStateFont(UIControl::STATE_NORMAL, f);
-    delForce->SetStateText(UIControl::STATE_NORMAL, LocalizedString("DelForce"));
-	delForce->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    delForce->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"-Force"));
+	delForce->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(delForce);
 
     emitterList = new UIList(Rect(0, cellH*3, buttonW, cellH*5), UIList::ORIENTATION_VERTICAL);
@@ -284,24 +228,14 @@ void PartickesEditorControl::LoadResources()
     emitterTypeList->GetBackground()->SetColor(Color(0.3f, 0.3f, 0.3f, 0.5f));
     emitterTypeList->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     
-    emitter3D = new UIButton(Rect(buttonW - cellH*2/3, cellH*3, cellH*2/3, cellH*2/3));
-    emitter3D->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-    emitter3D->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.0f));
-    emitter3D->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-    emitter3D->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.35f, 0.35f, 0.35f, 1.0f));
-    emitter3D->SetStateFont(UIControl::STATE_NORMAL, cellFont);
-    emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
-	emitter3D->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
-    AddControl(emitter3D);
-    
     OKBut = new UIButton(Rect(buttonW, cellH, buttonW/2, cellH));
     OKBut->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     OKBut->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
     OKBut->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     OKBut->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     OKBut->SetStateFont(UIControl::STATE_NORMAL, f);
-    OKBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString("OK"));
-	OKBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    OKBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"OK"));
+	OKBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(OKBut);
     
     cancelBut = new UIButton(Rect(buttonW*3/2, cellH, buttonW/2, cellH));
@@ -310,8 +244,8 @@ void PartickesEditorControl::LoadResources()
     cancelBut->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     cancelBut->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     cancelBut->SetStateFont(UIControl::STATE_NORMAL, f);
-    cancelBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString("Cancel"));
-	cancelBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+    cancelBut->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Cancel"));
+	cancelBut->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     AddControl(cancelBut);
 
     for(int i = 0; i < 4; i++)
@@ -325,7 +259,7 @@ void PartickesEditorControl::LoadResources()
         vSliders[i]->GetThumb()->GetBackground()->SetColor(Color(1.0f, 1.0f, 1.0f, 0.85f));
         vSliders[i]->SetEventsContinuos(false);
         vSliders[i]->SetValue(0);
-        vSliders[i]->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &PartickesEditorControl::SliderChanged));
+        vSliders[i]->AddEvent(UIControl::EVENT_VALUE_CHANGED, Message(this, &ParticlesEditorControl::SliderChanged));
         AddControl(vSliders[i]);
         
         tfValue[i] = new UITextField(Rect(buttonW*11/8, cellH*(9+i), buttonW/4, cellH/2));
@@ -410,7 +344,7 @@ void PartickesEditorControl::LoadResources()
     filter.push_back(".yaml");
     filter.push_back(".YAML");
     fsDlg->SetExtensionFilter(filter);
-    fsDlg->SetTitle(LocalizedString("Dlg.Load"));
+    fsDlg->SetTitle(LocalizedString(L"Load"));
     fsDlg->SetCurrentDir("~res:/");
     
     fsDlgSprite = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
@@ -419,13 +353,13 @@ void PartickesEditorControl::LoadResources()
     filter2.push_back(".txt");
     filter2.push_back(".TXT");
     fsDlgSprite->SetExtensionFilter(filter2);
-    fsDlgSprite->SetTitle(LocalizedString("Dlg.SelectSprite"));
+    fsDlgSprite->SetTitle(LocalizedString(L"SelectSprite"));
     fsDlgSprite->SetCurrentDir("~res:/");
 
     fsDlgProject = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fsDlgProject->SetDelegate(this);
     fsDlgProject->SetOperationType(UIFileSystemDialog::OPERATION_CHOOSE_DIR);
-    fsDlgProject->SetTitle(LocalizedString("Dlg.ChoosePrj"));
+    fsDlgProject->SetTitle(LocalizedString(L"Choose Project"));
 
     spritePanel = new UIControl(Rect(buttonW, cellH*8, buttonW, buttonW + cellH));
     spritePanel->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -444,7 +378,7 @@ void PartickesEditorControl::LoadResources()
     spriteSelect->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
     spriteSelect->SetStateFont(UIControl::STATE_NORMAL, f);
     spriteSelect->SetStateText(UIControl::STATE_NORMAL, L"...");
-	spriteSelect->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &PartickesEditorControl::ButtonPressed));
+	spriteSelect->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
     spritePanel->AddControl(spriteSelect);
     
     spriteInfo = new UIStaticText(Rect(cellH*2, 0, spritePanel->GetSize().x - cellH*2, cellH));
@@ -456,15 +390,6 @@ void PartickesEditorControl::LoadResources()
     tip->SetMultiline(true);
     tip->SetAlign(DAVA::ALIGN_LEFT|DAVA::ALIGN_TOP);
     AddControl(tip);
-    
-    emitter = new ParticleEmitter();
-    layers.push_back(new Layer(emitterProps, "", cellFont));
-    layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
-    AddControl(layers[0]->curLayerTime);
-    preview->SetEmitter(emitter);
-    
-    layers[0]->props[EMITTER_EMISSION_RANGE]->minValue = 0;
-    layers[0]->props[EMITTER_EMISSION_RANGE]->maxValue = 360;
     
     forcePreview = new ForcePreviewControl();
     forcePreview->SetRect(Rect(buttonW*3/2, GetScreenHeight() - cellH*4, buttonW/2, buttonW*0.625f));
@@ -485,18 +410,13 @@ void PartickesEditorControl::LoadResources()
     particleCountText->SetFont(cellFont);
     particleCountText->SetAlign(DAVA::ALIGN_LEFT);
     AddControl(particleCountText);
-    
-    if(emitter->GetIs3D())
-        emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
-    else
-        emitter3D->SetStateText(UIControl::STATE_NORMAL, L"2D");
-    
+      
     HideAndResetEditFields();
     HideForcesList();
     HideAddProps();
 }
 
-void PartickesEditorControl::SliderChanged(BaseObject *obj, void *data, void *callerData)
+void ParticlesEditorControl::SliderChanged(BaseObject *obj, void *data, void *callerData)
 {
     for(int i = 0; i < 4; i++)
     {
@@ -520,7 +440,7 @@ void PartickesEditorControl::SliderChanged(BaseObject *obj, void *data, void *ca
     }
 }
 
-void PartickesEditorControl::TextFieldShouldReturn(UITextField * textField)
+void ParticlesEditorControl::TextFieldShouldReturn(UITextField * textField)
 {
     int32 value;
     if(textField == tfValueLimits[0])
@@ -606,7 +526,7 @@ void PartickesEditorControl::TextFieldShouldReturn(UITextField * textField)
     }    
 }
 
-bool PartickesEditorControl::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
+bool ParticlesEditorControl::TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString)
 {
     int v;
     if(replacementLength == -1 || replacementString == L"-" || replacementString == L".")
@@ -623,62 +543,8 @@ bool PartickesEditorControl::TextFieldKeyPressed(UITextField * textField, int32 
     return true;
 }
 
-void PartickesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *callerData)
+void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
-    if(obj == newEmitter)
-    {
-        tip->SetText(L"");
-        selectedEmitterElement = -1;
-        selectedPropElement = -1;
-        selectedForceElement = -1;
-        forcePreview->SetValue(Vector3(0, 0, 0));
-        
-        SafeRelease(emitter);
-        emitter = new ParticleEmitter();
-        preview->SetEmitter(emitter);
-		int32 size = layers.size();
-        for(int i = 0; i < size; i++)
-        {
-            SafeRemoveControl(layers[i]->curLayerTime);
-        }
-        layers.clear();
-        layers.push_back(new Layer(emitterProps, "", cellFont));
-        layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
-        SafeAddControl(layers[0]->curLayerTime);
-        
-        layers[0]->props[EMITTER_EMISSION_RANGE]->minValue = 0;
-        layers[0]->props[EMITTER_EMISSION_RANGE]->maxValue = 360;
-        emitterList->Refresh();
-        propList->Refresh();    
-        
-        if(emitter->GetIs3D())
-            emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
-        else
-            emitter3D->SetStateText(UIControl::STATE_NORMAL, L"2D");
-        
-        HideAndResetEditFields();
-    }
-    if(obj == loadEmitter)
-    {
-        fsDlg->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
-        fsDlg->Show(this);
-    }
-    if(obj == saveEmitter)
-    {
-        fsDlg->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
-        fsDlg->Show(this);
-    }
-    if(obj == emitter3D)
-    {
-        emitter->Set3D(!emitter->GetIs3D());
-        
-        if(emitter->GetIs3D())
-            emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
-        else
-            emitter3D->SetStateText(UIControl::STATE_NORMAL, L"2D");
-        
-        HideAndResetEditFields();
-    }
     if(obj == addLayer)
     {        
         ParticleLayer *layer = new ParticleLayer();
@@ -859,14 +725,9 @@ void PartickesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
         }
         emitter->Restart();
     }
-    if(obj == chooseProject)
-    {
-        SetDisabled(true);
-        fsDlgProject->Show(this);
-    }
 }
 
-void PartickesEditorControl::AddSelectedProp()
+void ParticlesEditorControl::AddSelectedProp()
 {
     layers[selectedEmitterElement]->props.at(selectedAddPropElement)->isDefault = false;
     
@@ -883,7 +744,7 @@ void PartickesEditorControl::AddSelectedProp()
     HideForcesList();
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineValue<float32> *pv, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineValue<float32> *pv, int32 id, bool getLimits)
 {
     if(pv)
     {
@@ -931,7 +792,7 @@ bool PartickesEditorControl::GetProp(PropertyLineValue<float32> *pv, int32 id, b
     return true;
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineKeyframes<float32> *pk, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineKeyframes<float32> *pk, int32 id, bool getLimits)
 {
     if(pk)
     {
@@ -993,7 +854,7 @@ bool PartickesEditorControl::GetProp(PropertyLineKeyframes<float32> *pk, int32 i
     return true;
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineValue<Vector2> *vv, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineValue<Vector2> *vv, int32 id, bool getLimits)
 {
     if(vv)
     {
@@ -1046,7 +907,7 @@ bool PartickesEditorControl::GetProp(PropertyLineValue<Vector2> *vv, int32 id, b
     return true;
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineKeyframes<Vector2> *vk, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineKeyframes<Vector2> *vk, int32 id, bool getLimits)
 {
     if(vk)
     {
@@ -1113,7 +974,7 @@ bool PartickesEditorControl::GetProp(PropertyLineKeyframes<Vector2> *vk, int32 i
     return true;
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineValue<Vector3> *vv, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineValue<Vector3> *vv, int32 id, bool getLimits)
 {
     if(vv)
     {
@@ -1174,7 +1035,7 @@ bool PartickesEditorControl::GetProp(PropertyLineValue<Vector3> *vv, int32 id, b
     return true;
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineKeyframes<Vector3> *vk, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineKeyframes<Vector3> *vk, int32 id, bool getLimits)
 {
     if(vk)
     {
@@ -1247,7 +1108,7 @@ bool PartickesEditorControl::GetProp(PropertyLineKeyframes<Vector3> *vk, int32 i
     return true;
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineValue<Color> *cv, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineValue<Color> *cv, int32 id, bool getLimits)
 {
     if(cv)
     {
@@ -1292,7 +1153,7 @@ bool PartickesEditorControl::GetProp(PropertyLineValue<Color> *cv, int32 id, boo
     return true;  
 }
 
-bool PartickesEditorControl::GetProp(PropertyLineKeyframes<Color> *ck, int32 id, bool getLimits)
+bool ParticlesEditorControl::GetProp(PropertyLineKeyframes<Color> *ck, int32 id, bool getLimits)
 {
     if(ck)
     {
@@ -1344,7 +1205,7 @@ bool PartickesEditorControl::GetProp(PropertyLineKeyframes<Color> *ck, int32 id,
     return true;
 }
 
-void PartickesEditorControl::GetEmitterPropValue(eProps id, bool getLimits)
+void ParticlesEditorControl::GetEmitterPropValue(eProps id, bool getLimits)
 {
     SafeAddControl(valueBut);
     SafeAddControl(KFBut);
@@ -1448,7 +1309,7 @@ void PartickesEditorControl::GetEmitterPropValue(eProps id, bool getLimits)
     }
 }
 
-void PartickesEditorControl::SetEmitterPropValue(eProps id, bool def)
+void ParticlesEditorControl::SetEmitterPropValue(eProps id, bool def)
 {
     float32 value[4];
     if(def)
@@ -1550,7 +1411,7 @@ void PartickesEditorControl::SetEmitterPropValue(eProps id, bool def)
     SafeRelease(valueDim4);
 }
 
-void PartickesEditorControl::ResetEmitterPropValue(eProps id)
+void ParticlesEditorControl::ResetEmitterPropValue(eProps id)
 {
     switch (id) {
         case EMITTER_TYPE:
@@ -1592,7 +1453,7 @@ void PartickesEditorControl::ResetEmitterPropValue(eProps id)
     emitter->Restart();
 }
 
-void PartickesEditorControl::ResetLayerPropValue(lProps id)
+void ParticlesEditorControl::ResetLayerPropValue(lProps id)
 {
     switch (id) {
         case LAYER_SPRITE:
@@ -1715,7 +1576,7 @@ void PartickesEditorControl::ResetLayerPropValue(lProps id)
     emitter->Restart();
 }
 
-void PartickesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
+void ParticlesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
 {
     if(id > 0)
     {
@@ -1999,7 +1860,7 @@ void PartickesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
     }
 }
 
-void PartickesEditorControl::SetLayerPropValue(lProps id, bool def)
+void ParticlesEditorControl::SetLayerPropValue(lProps id, bool def)
 {
     float32 value[4];
     if(def)
@@ -2185,7 +2046,7 @@ void PartickesEditorControl::SetLayerPropValue(lProps id, bool def)
     SafeRelease(valueDim4);    
 }
 
-void PartickesEditorControl::GetForcesValue(int32 id, bool getLimits)
+void ParticlesEditorControl::GetForcesValue(int32 id, bool getLimits)
 {
     ShowForcesList();
     if (selectedPropElement == 11)
@@ -2244,7 +2105,7 @@ void PartickesEditorControl::GetForcesValue(int32 id, bool getLimits)
     }
 }
 
-void PartickesEditorControl::OnPointAdd(PropertyLineEditControl *forControl, float32 t, float32 value)
+void ParticlesEditorControl::OnPointAdd(PropertyLineEditControl *forControl, float32 t, float32 value)
 {
     for(int32 i = 0; i < 4; i++)
     {
@@ -2272,7 +2133,7 @@ void PartickesEditorControl::OnPointAdd(PropertyLineEditControl *forControl, flo
     }
 }
 
-void PartickesEditorControl::OnPointDelete(PropertyLineEditControl *forControl, float32 t)
+void ParticlesEditorControl::OnPointDelete(PropertyLineEditControl *forControl, float32 t)
 {
     for(int i = 0; i < 4; i++)
     {
@@ -2292,7 +2153,7 @@ void PartickesEditorControl::OnPointDelete(PropertyLineEditControl *forControl, 
     }
 }
 
-void PartickesEditorControl::OnPointMove(PropertyLineEditControl *forControl, float32 lastT, float32 newT, float32 newV)
+void ParticlesEditorControl::OnPointMove(PropertyLineEditControl *forControl, float32 lastT, float32 newT, float32 newV)
 {
     for(int i = 0; i < 4; i++)
     {
@@ -2317,7 +2178,7 @@ void PartickesEditorControl::OnPointMove(PropertyLineEditControl *forControl, fl
     }
 }
 
-void PartickesEditorControl::OnPointSelected(PropertyLineEditControl *forControl, int32 index, Vector2 value)
+void ParticlesEditorControl::OnPointSelected(PropertyLineEditControl *forControl, int32 index, Vector2 value)
 {
     if(index == -1)
     {
@@ -2352,7 +2213,7 @@ void PartickesEditorControl::OnPointSelected(PropertyLineEditControl *forControl
     }
 }
 
-void PartickesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, float32 t)
+void ParticlesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, float32 t)
 {
     curPropEditTime = t;
     if(selectedPropElement == 11)
@@ -2385,7 +2246,7 @@ void PartickesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, fl
             propEdit[i]->SetCurTime(t);
 }
 
-void PartickesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
+void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
     if(forDialog == fsDlg)
     {
@@ -2400,7 +2261,6 @@ void PartickesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const
             SafeRelease(emitter);
             emitter = new ParticleEmitter();
             emitter->LoadFromYaml(pathToFile);
-            preview->SetEmitter(emitter);
 
 			int32 size = layers.size();
             for(int i = 0; i < size; i++)
@@ -2463,11 +2323,6 @@ void PartickesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const
             HideForcesList();
             emitterList->Refresh();
             propList->Refresh();
-            
-            if(emitter->GetIs3D())
-                emitter3D->SetStateText(UIControl::STATE_NORMAL, L"3D");
-            else
-                emitter3D->SetStateText(UIControl::STATE_NORMAL, L"2D");
         }
         if(forDialog->GetOperationType() == UIFileSystemDialog::OPERATION_SAVE)
         {
@@ -2495,7 +2350,7 @@ void PartickesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const
     }
 }
 
-void PartickesEditorControl::ExecutePacker(const String &path)
+void ParticlesEditorControl::ExecutePacker(const String &path)
 {
     FileList fl(path);
     for(int i = 0; i < fl.GetCount(); i++)
@@ -2505,7 +2360,7 @@ void PartickesEditorControl::ExecutePacker(const String &path)
     FileSystem::Instance()->Spawn("./ResourcePacker " + path);
 }
 
-void PartickesEditorControl::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
+void ParticlesEditorControl::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
 {
     if(forDialog == fsDlgProject)
     {
@@ -2513,7 +2368,7 @@ void PartickesEditorControl::OnFileSytemDialogCanceled(UIFileSystemDialog *forDi
     }
 }
 
-void PartickesEditorControl::HideForcesList()
+void ParticlesEditorControl::HideForcesList()
 {
     SafeRemoveControl(forcesList);
     SafeRemoveControl(addForce);
@@ -2521,7 +2376,7 @@ void PartickesEditorControl::HideForcesList()
     SafeRemoveControl(forcePreview);
 }
 
-void PartickesEditorControl::ShowForcesList()
+void ParticlesEditorControl::ShowForcesList()
 {
     SafeAddControl(forcesList);
     SafeAddControl(addForce);
@@ -2530,7 +2385,7 @@ void PartickesEditorControl::ShowForcesList()
     SafeAddControl(forcePreview);
 }
 
-void PartickesEditorControl::HideAndResetEditFields()
+void ParticlesEditorControl::HideAndResetEditFields()
 {
     for(int i = 0; i < 4; i++)
     {
@@ -2561,7 +2416,7 @@ void PartickesEditorControl::HideAndResetEditFields()
     SafeRemoveControl(emitterTypeList);
 }
 
-void PartickesEditorControl::ShowValueEditFields(int32 dim)
+void ParticlesEditorControl::ShowValueEditFields(int32 dim)
 {
     for(int i = 0; i < dim; i++)
     {
@@ -2577,7 +2432,7 @@ void PartickesEditorControl::ShowValueEditFields(int32 dim)
     }
 }
 
-void PartickesEditorControl::ShowKeyedEditFields(int32 dim)
+void ParticlesEditorControl::ShowKeyedEditFields(int32 dim)
 {
     SafeAddControl(keysValueText);
     keysValueText->SetRect(keysValueTextPos[dim-1]);
@@ -2598,15 +2453,13 @@ void PartickesEditorControl::ShowKeyedEditFields(int32 dim)
     }
 }
 
-void PartickesEditorControl::ShowAddProps()
+void ParticlesEditorControl::ShowAddProps()
 {
     SafeAddControl(addPropList);
     SafeAddControl(OKBut);
     SafeAddControl(cancelBut);
     emitterList->SetDisabled(true);
     propList->SetDisabled(true);
-    loadEmitter->SetDisabled(true);
-    saveEmitter->SetDisabled(true);
     addLayer->SetDisabled(true);
     delLayer->SetDisabled(true);
     addProp->SetDisabled(true);
@@ -2615,15 +2468,13 @@ void PartickesEditorControl::ShowAddProps()
     disableLayer->SetDisabled(true);
 }
 
-void PartickesEditorControl::HideAddProps()
+void ParticlesEditorControl::HideAddProps()
 {
     SafeRemoveControl(addPropList);
     SafeRemoveControl(OKBut);
     SafeRemoveControl(cancelBut);
     emitterList->SetDisabled(false);
     propList->SetDisabled(false);
-    loadEmitter->SetDisabled(false);
-    saveEmitter->SetDisabled(false);
     addLayer->SetDisabled(false);
     delLayer->SetDisabled(false);
     addProp->SetDisabled(false);
@@ -2632,16 +2483,13 @@ void PartickesEditorControl::HideAddProps()
     disableLayer->SetDisabled(false);
 }
 
-void PartickesEditorControl::UnloadResources()
+void ParticlesEditorControl::UnloadResources()
 {
     
     SafeRelease(cloneLayer);
     SafeRelease(disableLayer);
     SafeRelease(emitterTypeList);
     
-    SafeRelease(loadEmitter);
-    SafeRelease(saveEmitter);
-    SafeRelease(newEmitter);
     SafeRelease(addLayer);
     SafeRelease(delLayer);
     SafeRelease(addProp);
@@ -2653,8 +2501,6 @@ void PartickesEditorControl::UnloadResources()
     SafeRelease(spriteSelect);
     SafeRelease(addForce);
     SafeRelease(delForce);
-    SafeRelease(chooseProject);
-    SafeRetain(emitter3D);
     
     for(int i = 0 ;i < 4; i++)
     {
@@ -2693,7 +2539,6 @@ void PartickesEditorControl::UnloadResources()
     
     SafeRelease(sprite);
     SafeRelease(colorView);
-    SafeRelease(preview);
     SafeRelease(forcePreview);
     
     SafeRelease(cellFont);
@@ -2702,7 +2547,7 @@ void PartickesEditorControl::UnloadResources()
     SafeRelease(emitter); 
 }
 
-int32 PartickesEditorControl::ElementsCount(UIList *forList)
+int32 ParticlesEditorControl::ElementsCount(UIList *forList)
 {
     if(forList == emitterList)
     {
@@ -2763,12 +2608,12 @@ int32 PartickesEditorControl::ElementsCount(UIList *forList)
     return 0;
 }
 
-int32 PartickesEditorControl::CellHeight(UIList *forList, int32 index)
+int32 ParticlesEditorControl::CellHeight(UIList *forList, int32 index)
 {
     return (int32)(cellH*2/3);
 }
 
-UIListCell *PartickesEditorControl::CellAtIndex(UIList *forList, int32 index)
+UIListCell *ParticlesEditorControl::CellAtIndex(UIList *forList, int32 index)
 {
     if (forList == emitterList) 
     {
@@ -2908,7 +2753,7 @@ UIListCell *PartickesEditorControl::CellAtIndex(UIList *forList, int32 index)
     return 0;
 }
 
-void PartickesEditorControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
+void ParticlesEditorControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 {
     forList->SetSelected(false);
     if(forList == emitterList)
@@ -2958,13 +2803,13 @@ void PartickesEditorControl::OnCellSelected(UIList *forList, UIListCell *selecte
             GetEmitterPropValue((eProps)selectedPropElement);
             if(selectedPropElement == 0)
                 emitterTypeList->Refresh();
-            tip->SetText(LocalizedString("emitter." + emitterProps[selectedPropElement]));
+            tip->SetText(StringToWString("emitter." + emitterProps[selectedPropElement]));
         }
         if(selectedEmitterElement > 0)
         {
             GetLayerPropValue((lProps)selectedPropElement);
             
-            tip->SetText(LocalizedString("layer." + layerProps[selectedPropElement]));
+            tip->SetText(StringToWString("layer." + layerProps[selectedPropElement]));
             
             if(selectedPropElement == 11 || selectedPropElement == 12|| selectedPropElement == 13)
             {
@@ -3014,22 +2859,22 @@ void PartickesEditorControl::OnCellSelected(UIList *forList, UIListCell *selecte
     }
 }
 
-void PartickesEditorControl::WillAppear()
+void ParticlesEditorControl::WillAppear()
 {
     
 }
 
-void PartickesEditorControl::WillDisappear()
+void ParticlesEditorControl::WillDisappear()
 {
     
 }
 
-void PartickesEditorControl::Input(UIEvent * event)
+void ParticlesEditorControl::Input(UIEvent * event)
 {
     
 }
 
-void PartickesEditorControl::Update(float32 timeElapsed)
+void ParticlesEditorControl::Update(float32 timeElapsed)
 {
     static float32 spriteTime;
     static int32 curSpriteFrame;
@@ -3054,12 +2899,12 @@ void PartickesEditorControl::Update(float32 timeElapsed)
 //    particleCountText->SetText(Format(L"Particle Count: %d", emitter->GetParticleCount()));
 }
 
-void PartickesEditorControl::Draw(const UIGeometricData &geometricData)
+void ParticlesEditorControl::Draw(const UIGeometricData &geometricData)
 {
-    
+    UIControl::Draw(geometricData);
 }
 
-void PartickesEditorControl::SaveToYaml(const String &pathToFile)
+void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 {
     File *file = File::Create(pathToFile, File::WRITE|File::CREATE);
     
@@ -3389,30 +3234,30 @@ void PartickesEditorControl::SaveToYaml(const String &pathToFile)
     SafeRelease(file);
 }
 
-void PartickesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<float32> *pv)
+void ParticlesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<float32> *pv)
 {
     file->WriteLine(Format("    %s: %f", propName.c_str(), pv->GetValue(0)));
 }
 
-void PartickesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<Vector2> *pv)
+void ParticlesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<Vector2> *pv)
 {
     Vector2 value = pv->GetValue(0);
     file->WriteLine(Format("    %s: [%f, %f]", propName.c_str(), value.x, value.y));
 }
 
-void PartickesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<Vector3> *pv)
+void ParticlesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<Vector3> *pv)
 {
     Vector3 value = pv->GetValue(0);
     file->WriteLine(Format("    %s: [%f, %f, %f]", propName.c_str(), value.x, value.y, value.z));
 }
 
-void PartickesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<Color> *pv)
+void ParticlesEditorControl::PrintPropValue(File *file, const String &propName, PropertyLineValue<Color> *pv)
 {
     Color value = pv->GetValue(0);
     file->WriteLine(Format("    %s: [%d, %d, %d, %d]", propName.c_str(), (int32)(value.r*255), (int32)(value.g*255), (int32)(value.b*255), (int32)(value.a*255)));
 }
 
-void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<float32> *pv)
+void ParticlesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<float32> *pv)
 {    
     String out = "    " + propName + ": [";    
 
@@ -3426,7 +3271,7 @@ void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName
     file->WriteLine(out);
 }
 
-void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Vector2> *pv)
+void ParticlesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Vector2> *pv)
 {
     String out = "    " + propName + ": [";    
 
@@ -3441,7 +3286,7 @@ void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName
     file->WriteLine(out);
 }
 
-void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Vector3> *pv)
+void ParticlesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Vector3> *pv)
 {
     String out = "    " + propName + ": [";    
 
@@ -3455,7 +3300,7 @@ void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName
     file->WriteLine(out);
 }
 
-void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Color> *pv)
+void ParticlesEditorControl::PrintPropKFValue(File *file, const String &propName, PropertyLineKeyframes<Color> *pv)
 {
     String out = "    " + propName + ": [";  
 
@@ -3468,3 +3313,77 @@ void PartickesEditorControl::PrintPropKFValue(File *file, const String &propName
     out += "]";
     file->WriteLine(out);   
 }
+
+void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
+{
+	emitter = _emitter;
+
+	tip->SetText(L"");
+	selectedEmitterElement = -1;
+	selectedPropElement = -1;
+	selectedForceElement = -1;
+	forcePreview->SetValue(Vector3(0, 0, 0));
+
+	int32 size = layers.size();
+	for(int i = 0; i < size; i++)
+	{
+		SafeRemoveControl(layers[i]->curLayerTime);
+	}
+	layers.clear();
+	layers.push_back(new Layer(emitterProps, "", cellFont));
+	layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
+	SafeAddControl(layers[0]->curLayerTime);
+	selectedEmitterElement = 0;
+
+	size = emitterProps.size();
+	for(int i = 0; i < size; i++)
+	{
+		GetEmitterPropValue((eProps)i, true);
+	}
+
+	size = emitter->GetLayers().size();
+	for(int i = 0; i < size; i++)
+	{
+		String spritePath = emitter->GetLayers()[i]->GetSprite()->GetName();
+		Layer * l = new Layer(layerProps, spritePath.substr(0, spritePath.size()-4), cellFont);
+		l->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, cellH*(layers.size()), buttonW, cellH));
+		layers.push_back(l);
+		SafeAddControl(l->curLayerTime);
+
+		size = layerProps.size();
+		for(int j = 0; j < size; j++)
+		{
+			selectedEmitterElement = i + 1;
+			selectedPropElement = j;
+			if(j == 11)
+			{
+				size = emitter->GetLayers()[i]->forces.size();
+				for(int k = 0; k < size; k++)
+					GetForcesValue(k, true);
+			}
+			else if(j == 12)
+			{
+				size = emitter->GetLayers()[i]->forcesVariation.size();
+				for(int k = 0; k < size; k++)
+					GetForcesValue(k, true);
+			}
+			else if(j == 13)
+			{
+				size = emitter->GetLayers()[i]->forcesOverLife.size();
+				for(int k = 0; k < size; k++)
+					GetForcesValue(k, true);
+			}
+			else
+			{
+				GetLayerPropValue((lProps)j, true);
+			}
+		}
+	}
+	selectedEmitterElement = -1;
+	selectedPropElement = -1;
+	HideAndResetEditFields();
+	HideForcesList();
+	emitterList->Refresh();
+	propList->Refresh();
+}
+

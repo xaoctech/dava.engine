@@ -2,7 +2,7 @@
 #define __DAVAENGINE_PARTCLEEMITTER_NODE_H__
 
 #include "Scene3D/SceneNode.h"
-#include "Particles/ParticleEmitter3D.h"
+#include "Particles/ParticleEmitter.h"
 
 namespace DAVA
 {
@@ -14,13 +14,17 @@ public:
 	ParticleEmitterNode();
 	virtual ~ParticleEmitterNode();
 
-	void SetEmitter(ParticleEmitter3D * emitter);
+	void LoadFromYaml(String yamlPath);
+	String GetYamlPath();
+
+	ParticleEmitter * GetEmitter();
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
 
 private:
-	ParticleEmitter3D * emitter;
+	ParticleEmitter * emitter;
+	String yamlPath;
 };
 
 };
