@@ -66,6 +66,12 @@
 		5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D9159C6D4500852F1A /* TransformComponent.cpp */; };
 		5CBFD6E4159C6D4500852F1A /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6DA159C6D4500852F1A /* TransformComponent.h */; };
 		5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6DB159C6D4500852F1A /* VisibilityAABBoxSystem.h */; };
+		5CD7156315AC3B6300D08E8E /* ParticleEmitter3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7155F15AC3B6300D08E8E /* ParticleEmitter3D.cpp */; };
+		5CD7156415AC3B6300D08E8E /* ParticleEmitter3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7156015AC3B6300D08E8E /* ParticleEmitter3D.h */; };
+		5CD7156515AC3B6300D08E8E /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7156115AC3B6300D08E8E /* ParticleLayer3D.cpp */; };
+		5CD7156615AC3B6300D08E8E /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7156215AC3B6300D08E8E /* ParticleLayer3D.h */; };
+		5CD7156A15AC3B7D00D08E8E /* ParticleEmitterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7156815AC3B7D00D08E8E /* ParticleEmitterNode.cpp */; };
+		5CD7156B15AC3B7D00D08E8E /* ParticleEmitterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7156915AC3B7D00D08E8E /* ParticleEmitterNode.h */; };
 		5CFA5D54156E3EBF00EDB730 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */; };
 		5CFA5D55156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D53156E3EBF00EDB730 /* UserNode.h */; };
 		5CFD7DF81564DC58009692EE /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFD7DF41564DC58009692EE /* ImageConvert.h */; };
@@ -595,6 +601,12 @@
 		5CBFD6D9159C6D4500852F1A /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformComponent.cpp; path = Entity/TransformComponent.cpp; sourceTree = "<group>"; };
 		5CBFD6DA159C6D4500852F1A /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransformComponent.h; path = Entity/TransformComponent.h; sourceTree = "<group>"; };
 		5CBFD6DB159C6D4500852F1A /* VisibilityAABBoxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxSystem.h; path = Entity/VisibilityAABBoxSystem.h; sourceTree = "<group>"; };
+		5CD7155F15AC3B6300D08E8E /* ParticleEmitter3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter3D.cpp; sourceTree = "<group>"; };
+		5CD7156015AC3B6300D08E8E /* ParticleEmitter3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter3D.h; sourceTree = "<group>"; };
+		5CD7156115AC3B6300D08E8E /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer3D.cpp; sourceTree = "<group>"; };
+		5CD7156215AC3B6300D08E8E /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
+		5CD7156815AC3B7D00D08E8E /* ParticleEmitterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterNode.cpp; sourceTree = "<group>"; };
+		5CD7156915AC3B7D00D08E8E /* ParticleEmitterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterNode.h; sourceTree = "<group>"; };
 		5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		5CFA5D53156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		5CFD7DF41564DC58009692EE /* ImageConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageConvert.h; sourceTree = "<group>"; };
@@ -1474,6 +1486,10 @@
 		FECFB3BB12E5904400C71562 /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				5CD7155F15AC3B6300D08E8E /* ParticleEmitter3D.cpp */,
+				5CD7156015AC3B6300D08E8E /* ParticleEmitter3D.h */,
+				5CD7156115AC3B6300D08E8E /* ParticleLayer3D.cpp */,
+				5CD7156215AC3B6300D08E8E /* ParticleLayer3D.h */,
 				FECFB3BC12E5904400C71562 /* Particle.cpp */,
 				FECFB3BD12E5904400C71562 /* Particle.h */,
 				FECFB3BE12E5904400C71562 /* ParticleEmitter.cpp */,
@@ -1636,6 +1652,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CD7156815AC3B7D00D08E8E /* ParticleEmitterNode.cpp */,
+				5CD7156915AC3B7D00D08E8E /* ParticleEmitterNode.h */,
 				5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */,
 				5CFA5D53156E3EBF00EDB730 /* UserNode.h */,
 				5CFD7E011564DC7D009692EE /* ImposterManager.cpp */,
@@ -2112,6 +2130,9 @@
 				5CBFD6E5159C6D4500852F1A /* VisibilityAABBoxSystem.h in Headers */,
 				C7EB91DA159DA8E7000F0756 /* Config.h in Headers */,
 				C7EB91DC159DA8E7000F0756 /* MongodbUpdateObject.h in Headers */,
+				5CD7156415AC3B6300D08E8E /* ParticleEmitter3D.h in Headers */,
+				5CD7156615AC3B6300D08E8E /* ParticleLayer3D.h in Headers */,
+				5CD7156B15AC3B7D00D08E8E /* ParticleEmitterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2417,6 +2438,9 @@
 				5CBFD6E1159C6D4500852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6E3159C6D4500852F1A /* TransformComponent.cpp in Sources */,
 				C7EB91DB159DA8E7000F0756 /* MongodbUpdateObject.cpp in Sources */,
+				5CD7156315AC3B6300D08E8E /* ParticleEmitter3D.cpp in Sources */,
+				5CD7156515AC3B6300D08E8E /* ParticleLayer3D.cpp in Sources */,
+				5CD7156A15AC3B7D00D08E8E /* ParticleEmitterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

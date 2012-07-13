@@ -219,13 +219,13 @@ static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] =
 enum eVertexDataType
 {
 	TYPE_FLOAT = 0,
-	//TYPE_FIXED,
+	TYPE_UNSIGNED_BYTE,
 
 	TYPE_COUNT
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
-    static const GLint VERTEX_DATA_TYPE_TO_GL[TYPE_COUNT] = {GL_FLOAT};
+    static const GLint VERTEX_DATA_TYPE_TO_GL[TYPE_COUNT] = {GL_FLOAT, GL_UNSIGNED_BYTE};
 #endif
     
 enum eIndexDataType
