@@ -391,7 +391,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 					
 					if (selection)
 					{
-						Logger::Debug(L"init %f %f", event->point.x, event->point.y);
 						scene->SetBulletUpdate(selection, false);
 						
 						inTouch = true;	
@@ -424,7 +423,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     {
                         currentGraph->UpdatePropertiesForCurrentNode();
                     }
-					Logger::Debug(L"mod %f %f", event->point.x, event->point.y);
 				}
 			}
 		}
@@ -499,8 +497,6 @@ void EditorBodyControl::InitMoving(const Vector2 & point)
 
 //	bool result = 
     GetIntersectionVectorWithPlane(from, dir, planeNormal, rotationCenter, startDragPoint);
-	
-	Logger::Debug("startDragPoint %f %f %f", startDragPoint.x, startDragPoint.y, startDragPoint.z);
 }	
 
 void EditorBodyControl::GetCursorVectors(Vector3 * from, Vector3 * dir, const Vector2 &point)

@@ -34,6 +34,7 @@
 #include "Math/Vector.h"
 #include "Math/Matrix4.h"
 #include "Math/Quaternion.h"
+#include "Math/MathConstants.h"
 
 namespace DAVA
 {	
@@ -46,6 +47,27 @@ namespace DAVA
 	
 	inline float32 RadToDeg(float32 f) { return f * RAD_TO_DEG; };
 	inline float32 DegToRad(float32 f) { return f * DEG_TO_RAD; };
+
+	inline void SinCosFast(float angleInRadians,float &sine,float &cosine) 
+	{
+		if(angleInRadians < 0.0f || angleInRadians >= PI_2) 
+		{
+			angleInRadians -= floorf(angleInRadians * (1.0f / PI_2)) * PI_2;
+		}
+		sine = PI - angleInRadians;
+		if(Abs(sine) > PI_05) 
+		{
+			sine = ((sine > 0.0f) ? PI : -PI) - sine;
+			cosine = 1.0f;
+		} 
+		else 
+		{
+			cosine = -1.0f;
+		}
+		float a2 = sine * sine;
+		sine *= ((0.00761f * a2 - 0.16605f) * a2 + 1.0f);
+		cosine *= ((0.03705f * a2 - 0.49670f) * a2 + 1.0f);
+	}
 	
 	/*
 	 Function to conver euler angles to normalized axial vectors

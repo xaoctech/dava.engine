@@ -58,6 +58,12 @@
 		5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */; };
 		5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6C0159C6C3300852F1A /* TransformComponent.h */; };
 		5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */; };
+		5CD7157D15AC453700D08E8E /* ParticleEmitter3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7157915AC453700D08E8E /* ParticleEmitter3D.cpp */; };
+		5CD7157E15AC453700D08E8E /* ParticleEmitter3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7157A15AC453700D08E8E /* ParticleEmitter3D.h */; };
+		5CD7157F15AC453700D08E8E /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7157B15AC453700D08E8E /* ParticleLayer3D.cpp */; };
+		5CD7158015AC453700D08E8E /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7157C15AC453700D08E8E /* ParticleLayer3D.h */; };
+		5CD7158415AC454A00D08E8E /* ParticleEmitterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */; };
+		5CD7158515AC454A00D08E8E /* ParticleEmitterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */; };
 		5CE063F2154A69630029DF36 /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE063F0154A69630029DF36 /* ImposterManager.cpp */; };
 		5CE063F3154A69630029DF36 /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE063F1154A69630029DF36 /* ImposterManager.h */; };
 		5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEA312A1535A325008E35F5 /* Heightmap.cpp */; };
@@ -614,6 +620,12 @@
 		5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformComponent.cpp; path = Entity/TransformComponent.cpp; sourceTree = "<group>"; };
 		5CBFD6C0159C6C3300852F1A /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransformComponent.h; path = Entity/TransformComponent.h; sourceTree = "<group>"; };
 		5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxSystem.h; path = Entity/VisibilityAABBoxSystem.h; sourceTree = "<group>"; };
+		5CD7157915AC453700D08E8E /* ParticleEmitter3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter3D.cpp; sourceTree = "<group>"; };
+		5CD7157A15AC453700D08E8E /* ParticleEmitter3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter3D.h; sourceTree = "<group>"; };
+		5CD7157B15AC453700D08E8E /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer3D.cpp; sourceTree = "<group>"; };
+		5CD7157C15AC453700D08E8E /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
+		5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterNode.cpp; sourceTree = "<group>"; };
+		5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterNode.h; sourceTree = "<group>"; };
 		5CE063F0154A69630029DF36 /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
 		5CE063F1154A69630029DF36 /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
 		5CEA312A1535A325008E35F5 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
@@ -1540,6 +1552,10 @@
 		FECFC13412E87E3000C71562 /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				5CD7157915AC453700D08E8E /* ParticleEmitter3D.cpp */,
+				5CD7157A15AC453700D08E8E /* ParticleEmitter3D.h */,
+				5CD7157B15AC453700D08E8E /* ParticleLayer3D.cpp */,
+				5CD7157C15AC453700D08E8E /* ParticleLayer3D.h */,
 				FECFC13512E87E3000C71562 /* Particle.cpp */,
 				FECFC13612E87E3000C71562 /* Particle.h */,
 				FECFC13712E87E3000C71562 /* ParticleEmitter.cpp */,
@@ -1732,6 +1748,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */,
+				5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */,
 				5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */,
 				5CFA5D4E156E3EBF00EDB730 /* UserNode.h */,
 				5CE063F0154A69630029DF36 /* ImposterManager.cpp */,
@@ -2226,6 +2244,9 @@
 				5CBFD6C9159C6C3300852F1A /* MeshInstanceDrawSystem.h in Headers */,
 				5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */,
 				5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */,
+				5CD7157E15AC453700D08E8E /* ParticleEmitter3D.h in Headers */,
+				5CD7158015AC453700D08E8E /* ParticleLayer3D.h in Headers */,
+				5CD7158515AC454A00D08E8E /* ParticleEmitterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2541,6 +2562,9 @@
 				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
 				C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */,
+				5CD7157D15AC453700D08E8E /* ParticleEmitter3D.cpp in Sources */,
+				5CD7157F15AC453700D08E8E /* ParticleLayer3D.cpp in Sources */,
+				5CD7158415AC454A00D08E8E /* ParticleEmitterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
