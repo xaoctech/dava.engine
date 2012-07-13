@@ -282,8 +282,13 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
 		{
 				NSPoint p = [curEvent locationInWindow];
+            NSWindow *window = [curEvent window];
+            CGRect r = [window contentRectForFrameRect:[window frame]];
+            CGFloat height = r.size.height;
+            
 				it->physPoint.x = p.x;
-				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+//				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+                it->physPoint.y = height - p.y;
 
 				it->timestamp = curEvent.timestamp;
 				it->tapCount = curEvent.clickCount;
@@ -299,8 +304,13 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 			isFind = true;
 			
 			NSPoint p = [curEvent locationInWindow];
+            NSWindow *window = [curEvent window];
+            CGRect r = [window contentRectForFrameRect:[window frame]];
+            CGFloat height = r.size.height;
+            
 			it->physPoint.x = p.x;
-			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+//			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+            it->physPoint.y = height - p.y;
 
 			it->timestamp = curEvent.timestamp;
 			it->tapCount = curEvent.clickCount;
@@ -315,8 +325,14 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		UIEvent newTouch;
 		newTouch.tid = button;
 		NSPoint p = [curEvent locationInWindow];
+        
+        NSWindow *window = [curEvent window];
+        CGRect r = [window contentRectForFrameRect:[window frame]];
+        CGFloat height = r.size.height;
+       
 		newTouch.physPoint.x = p.x;
-		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+//		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+        newTouch.physPoint.y = height - p.y;
 
 		newTouch.timestamp = curEvent.timestamp;
 		newTouch.tapCount = curEvent.clickCount;
