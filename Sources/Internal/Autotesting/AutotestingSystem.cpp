@@ -290,7 +290,7 @@ void AutotestingSystem::SaveTestToDB()
 				}
 
                 // find test object
-                testArchive = SafeRetain(logArchive->GetArchive(testName, NULL));
+                testArchive = SafeRetain(logArchive->GetArchive(testAndFileName, NULL));
                 if(testArchive)
                 {
                     // found test object
@@ -343,7 +343,7 @@ void AutotestingSystem::SaveTestToDB()
     testArchive->SetArchive(testResultsKey, testResultsArchive);
 
     //update log object
-    logArchive->SetArchive(testName, testArchive);
+    logArchive->SetArchive(testAndFileName, testArchive);
    
     //update platform object
     platformArchive->SetInt32("RunId", testsId);
