@@ -1597,8 +1597,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 17B3380A4D6A7D415E7F2E1E /* Build configuration list for PBXNativeTarget "FrameworkQt" */;
 			buildPhases = (
-				D7BA7D76DAB5DD13389D6332 /* Qt Qmake */,
-				A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */,
 				C29B8785722055ED95EF7B57 /* Build Sources */,
 				2A1043669E6E5A7426EA502A /* Frameworks & Libraries */,
 			);
@@ -1649,29 +1647,6 @@
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		A0A52A2ADF7A1E2A99738674 /* Qt Preprocessors */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "Qt Preprocessors";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#make -C /Users/klesch/Work/WoT/Framework/dava.framework/Projects/QtFramework -f 'FrameworkQt.xcodeproj/qt_preprocess.mak'";
-		};
-		D7BA7D76DAB5DD13389D6332 /* Qt Qmake */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "Qt Qmake";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#make -C /Users/klesch/Work/WoT/Framework/dava.framework/Projects/QtFramework -f 'FrameworkQt.xcodeproj/qt_makeqmake.mak'";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C29B8785722055ED95EF7B57 /* Build Sources */ = {
