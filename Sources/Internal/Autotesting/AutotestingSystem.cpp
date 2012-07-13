@@ -259,34 +259,47 @@ void AutotestingSystem::SaveTestToDB()
     if(isFound)
     {
         //found database object
-        
         // find platform object
         platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
         
         if(platformArchive)
         {
             // found platform object
-            
             // find log object
             logArchive = SafeRetain(platformArchive->GetArchive(logKey, NULL));
             
             if(logArchive)
             {
                 // found log object
-                
+
+				//find all test objects to set platform test results (if all tests passed for current platform)
+				if(isTestSuitePassed)
+				{
+					const Map<String, VariantType*> logArchiveData = logArchive->GetArchieveData();
+					for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
+					{
+						if((it->first != "_id") && it->second)
+						{
+							KeyedArchive* tmpTestArchive = it->second->AsKeyedArchive();
+							if(tmpTestArchive)
+							{
+								isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
+							}
+						}
+					}
+				}
+
                 // find test object
                 testArchive = SafeRetain(logArchive->GetArchive(testName, NULL));
                 if(testArchive)
                 {
                     // found test object
-                    
-                    isTestPassed = (testArchive->GetInt32("Success") == 1);
-                    
                     // find test results
                     testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
                 }
             }
-            isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+            //isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+			isTestSuitePassed &= isTestPassed;
         }
     }
     
@@ -312,9 +325,15 @@ void AutotestingSystem::SaveTestToDB()
     }
     
     //update test results
+	isTestPassed = true;
     for(int32 i = 0; i < testResults.size(); ++i)
     {
-        testResultsArchive->SetInt32(testResults[i].first, (int32)testResults[i].second);
+		bool testResultSuccess = testResults[i].second;
+        testResultsArchive->SetInt32(testResults[i].first, (int32)testResultSuccess);
+		if(!testResultSuccess)
+		{
+			isTestPassed = false;
+		}
     }
   
     //update test object
