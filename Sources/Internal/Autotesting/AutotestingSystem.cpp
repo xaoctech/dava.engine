@@ -340,6 +340,7 @@ void AutotestingSystem::SaveTestToDB()
     testArchive->SetInt32("RunId", testsId);
     testArchive->SetInt32("Success", (int32)isTestPassed);
     testArchive->SetString("File", testFileName);
+	testArchive->SetString("Name", testName);
     testArchive->SetArchive(testResultsKey, testResultsArchive);
 
     //update log object
