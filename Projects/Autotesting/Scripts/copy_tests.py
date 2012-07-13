@@ -23,7 +23,7 @@ index_Project = 0
 index_AutotestingDestPath = 1
 
 if 0 == len(arguments) or 2 != len(arguments):
-	print 'Usage: ./autotesting_init.py [ProjectName] [AutotestingDestPath]'
+	print 'Usage: ./copy_tests.py [ProjectName] [AutotestingDestPath]'
 	exit(1)
 
 def ignored_svn_files(adir,filenames):
