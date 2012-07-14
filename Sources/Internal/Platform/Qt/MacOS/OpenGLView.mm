@@ -145,6 +145,8 @@
 	UIControlSystem::Instance()->SetInputScreenAreaSize(rect.size.width, rect.size.height);
 	Core::Instance()->SetPhysicalScreenSize(rect.size.width, rect.size.height);
 	
+    isFirstDraw = true;
+    
 	sizeChanged = YES;
 	[super reshape];
 }
@@ -156,6 +158,7 @@
 
 //bool firstLaunch = true;
 	
+
 - (void)drawRect:(NSRect)theRect
 {
     if(willQuit)
@@ -177,11 +180,15 @@
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		isFirstDraw = false;
 	}	
-	
 
 	
-	DAVA::Core::Instance()->SystemProcessFrame();
 	
+	DAVA::Core::Instance()->SystemProcessFrame();
+
+	
+    DAVA::RenderManager::Instance()->SetColor(Color::White());
+    
+    
 /*	// This is an optimization.  If the view is being
 	// resized, don't do a buffer swap.  The GL content
 	// will be updated as part of the window flush anyway.
