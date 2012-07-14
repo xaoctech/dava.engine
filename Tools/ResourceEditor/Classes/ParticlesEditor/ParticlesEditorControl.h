@@ -292,6 +292,10 @@ protected:
     
     float32 cellH;
     
+	UIButton * close;
+    UIButton *loadEmitter;
+    UIButton *saveEmitter;
+    UIButton *newEmitter;
     UIButton *addLayer;
     UIButton *delLayer;
     UIButton *addProp;

@@ -98,6 +98,46 @@ void ParticlesEditorControl::LoadResources()
     f = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     f->SetSize(18);
     f->SetColor(Color(1,1,1,1));
+
+	close = new UIButton(Rect(0, 0, buttonW/2, cellH));
+	close->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+	close->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0, 0.0, 0.0, 0.5));
+	close->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
+	close->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+	close->SetStateFont(UIControl::STATE_NORMAL, f);
+	close->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Close"));
+	close->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
+	AddControl(close);
+    
+    newEmitter = new UIButton(Rect(buttonW/2, 0, buttonW/2, cellH));
+    newEmitter->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    newEmitter->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0, 0.0, 0.0, 0.5));
+    newEmitter->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
+    newEmitter->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+    newEmitter->SetStateFont(UIControl::STATE_NORMAL, f);
+    newEmitter->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"New"));
+	newEmitter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
+    //AddControl(newEmitter);
+    
+	loadEmitter = new UIButton(Rect(buttonW, 0, buttonW/2, cellH));
+    loadEmitter->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    loadEmitter->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0, 0.0, 0.0, 0.5));
+    loadEmitter->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
+    loadEmitter->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+    loadEmitter->SetStateFont(UIControl::STATE_NORMAL, f);
+    loadEmitter->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Load"));
+	loadEmitter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
+    AddControl(loadEmitter);
+    
+    saveEmitter = new UIButton(Rect(buttonW*3/2, 0, buttonW/2, cellH));
+    saveEmitter->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
+    saveEmitter->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0, 0.0, 0.0, 0.5));
+    saveEmitter->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
+    saveEmitter->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+    saveEmitter->SetStateFont(UIControl::STATE_NORMAL, f);
+    saveEmitter->SetStateText(UIControl::STATE_NORMAL, LocalizedString(L"Save"));
+	saveEmitter->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ParticlesEditorControl::ButtonPressed));
+    AddControl(saveEmitter);
     
     addLayer = new UIButton(Rect(0, cellH, buttonW/2, cellH));
     addLayer->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
@@ -545,6 +585,46 @@ bool ParticlesEditorControl::TextFieldKeyPressed(UITextField * textField, int32 
 
 void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *callerData)
 {
+	if(obj == close)
+	{
+		GetParent()->RemoveControl(this);
+	}
+    if(obj == newEmitter)
+    {
+        tip->SetText(L"");
+        selectedEmitterElement = -1;
+        selectedPropElement = -1;
+        selectedForceElement = -1;
+        forcePreview->SetValue(Vector3(0, 0, 0));
+        
+        SafeRelease(emitter);
+        emitter = new ParticleEmitter();
+        for(int i = 0; i < (int32)layers.size(); i++)
+        {
+            SafeRemoveControl(layers[i]->curLayerTime);
+        }
+        layers.clear();
+        layers.push_back(new Layer(emitterProps, "", cellFont));
+        layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
+        SafeAddControl(layers[0]->curLayerTime);
+        
+        layers[0]->props[EMITTER_EMISSION_RANGE]->minValue = 0;
+        layers[0]->props[EMITTER_EMISSION_RANGE]->maxValue = 360;
+        emitterList->Refresh();
+        propList->Refresh();    
+        
+        HideAndResetEditFields();
+    }
+    if(obj == loadEmitter)
+    {
+        fsDlg->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
+        fsDlg->Show(this);
+    }
+    if(obj == saveEmitter)
+    {
+        fsDlg->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
+        fsDlg->Show(this);
+    }
     if(obj == addLayer)
     {        
         ParticleLayer *layer = new ParticleLayer();
@@ -2460,6 +2540,8 @@ void ParticlesEditorControl::ShowAddProps()
     SafeAddControl(cancelBut);
     emitterList->SetDisabled(true);
     propList->SetDisabled(true);
+    loadEmitter->SetDisabled(true);
+    saveEmitter->SetDisabled(true);
     addLayer->SetDisabled(true);
     delLayer->SetDisabled(true);
     addProp->SetDisabled(true);
@@ -2475,6 +2557,8 @@ void ParticlesEditorControl::HideAddProps()
     SafeRemoveControl(cancelBut);
     emitterList->SetDisabled(false);
     propList->SetDisabled(false);
+    loadEmitter->SetDisabled(false);
+    saveEmitter->SetDisabled(false);
     addLayer->SetDisabled(false);
     delLayer->SetDisabled(false);
     addProp->SetDisabled(false);
@@ -2490,6 +2574,10 @@ void ParticlesEditorControl::UnloadResources()
     SafeRelease(disableLayer);
     SafeRelease(emitterTypeList);
     
+	SafeRelease(close);
+    SafeRelease(loadEmitter);
+    SafeRelease(saveEmitter);
+    SafeRelease(newEmitter);
     SafeRelease(addLayer);
     SafeRelease(delLayer);
     SafeRelease(addProp);
@@ -2537,14 +2625,14 @@ void ParticlesEditorControl::UnloadResources()
     SafeRelease(spritePanel);
     SafeRelease(spriteControl);
     
-    SafeRelease(sprite);
+    //SafeRelease(sprite);
     SafeRelease(colorView);
     SafeRelease(forcePreview);
     
     SafeRelease(cellFont);
     SafeRelease(f);
     
-    SafeRelease(emitter); 
+    //SafeRelease(emitter); 
 }
 
 int32 ParticlesEditorControl::ElementsCount(UIList *forList)
