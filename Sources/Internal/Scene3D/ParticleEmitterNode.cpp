@@ -69,4 +69,35 @@ ParticleEmitter * ParticleEmitterNode::GetEmitter()
 	return emitter;
 }
 
+SceneNode* ParticleEmitterNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		dstNode = new ParticleEmitterNode();
+	}
+
+	SceneNode::Clone(dstNode);
+	ParticleEmitterNode *nd = (ParticleEmitterNode *)dstNode;
+
+	nd->yamlPath = yamlPath;
+	nd->LoadFromYaml(yamlPath);
+
+	return dstNode;
+}
+
+void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
+{
+	SceneNode::Save(archive, sceneFile);
+
+	archive->SetString("yamlPath", yamlPath);
+}
+
+void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
+{
+	SceneNode::Load(archive, sceneFile);
+	
+	yamlPath = archive->GetString("yamlPath");
+	LoadFromYaml(yamlPath);
+}
+
 };

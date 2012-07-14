@@ -22,6 +22,10 @@ public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw();
 
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+
 private:
 	ParticleEmitter * emitter;
 	String yamlPath;
