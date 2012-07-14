@@ -33,7 +33,7 @@ namespace DAVA
 {
 FixedSizePoolAllocator::FixedSizePoolAllocator(uint32 _blockSize, uint32 _blockArraySize)
 {
-    DVASSERT(blockSize >= sizeof(uint8*));
+    DVASSERT(_blockSize >= sizeof(uint8*));
     
     blockSize = _blockSize;
     blockArraySize = _blockArraySize;
@@ -45,7 +45,7 @@ FixedSizePoolAllocator::FixedSizePoolAllocator(uint32 _blockSize, uint32 _blockA
 void FixedSizePoolAllocator::CreateNewDataBlock()
 {
     DVASSERT(blockSize >= sizeof(uint8*));
-    void * block = ::operator new(blockArraySize * blockSize + sizeof(uint8*));
+    void * block = ::malloc(blockArraySize * blockSize + sizeof(uint8*));
     Logger::Debug("Allocated new data block: %p pointer size: %d", block, sizeof(uint8*));
     // insert to list
     *(uint8**)block = (uint8*)allocatedBlockArrays;
@@ -84,7 +84,7 @@ void FixedSizePoolAllocator::DeallocateMemory()
     while(allocatedBlockArrays)
     {
         uint8 * next = *(uint8**)allocatedBlockArrays;
-        ::operator delete (allocatedBlockArrays);
+        ::free(allocatedBlockArrays);
         Logger::Debug("Deallocated data block: %p pointer size: %d", allocatedBlockArrays, sizeof(uint8*));
         allocatedBlockArrays = next;
     }

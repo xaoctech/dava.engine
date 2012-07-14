@@ -39,9 +39,33 @@ namespace DAVA
     \brief Fast pool based allocator almost without memory overhead. Can be used to allocate small objects.
     
     Example of usage: 
-    
- 
  */
+    
+//class MallocAllocator
+//{
+//public:
+//    Allocator()
+//    {
+//    }
+//    
+//    ~Allocator()
+//    {
+//    }
+//    
+//    ITEM * Alloc()
+//    {
+//        void * p = ::malloc(sizeof(ITEM));
+//        //ITEM * item = new (p) ITEM;
+//        return (ITEM*)p;
+//    }
+//    
+//    void Dealloc(ITEM * node)
+//    {
+//        //node->~ITEM();
+//        ::free(node);
+//    }
+//};
+    
 class FixedSizePoolAllocator
 {
 public:
