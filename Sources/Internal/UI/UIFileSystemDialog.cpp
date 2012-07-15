@@ -151,7 +151,7 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     files = NULL;
     
-    SetCurrentDir(FileSystem::Instance()->GetCurrentWorkingDirectory());
+    SetCurrentDir(FileSystem::Instance()->RealPath(FileSystem::Instance()->GetCurrentWorkingDirectory()));
 }
 
 void UIFileSystemDialog::ButtonPressed(BaseObject *obj, void *data, void *callerData)

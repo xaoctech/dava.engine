@@ -133,13 +133,13 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     }
     SceneNode::Update(timeElapsed);
     
-    if (needUpdateTransformBox)
-	{
-        bbox.GetTransformedBox(worldTransform, transformedBox);
-		entity->SetData("meshAABox", transformedBox);
-	}
-	entity->SetData("meshInstanceNode", this);
-	entity->SetData("transform", worldTransform);
+    //if (needUpdateTransformBox)
+	//{
+    //    bbox.GetTransformedBox(worldTransform, transformedBox);
+	//	entity->SetData("meshAABox", transformedBox);
+	//}
+	//entity->SetData("meshInstanceNode", this);
+	//entity->SetData("transform", worldTransform);
 
     //Stats::Instance()->EndTimeMeasure("Scene.Update.MeshInstanceNode.Update", this);
 }

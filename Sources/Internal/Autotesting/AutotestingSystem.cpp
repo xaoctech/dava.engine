@@ -23,10 +23,9 @@ AutotestingSystem::AutotestingSystem() : currentAction(NULL)
     , testFileName("")
     , testFilePath("")
     , dbClient(NULL)
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+	, isDB(true)
     , testReportsFolder("")
     , reportFile(NULL)
-#endif
 {
 }
 
@@ -89,12 +88,20 @@ void AutotestingSystem::OnAppStarted()
                 SetProjectName(projectCharName);
             }
         }
+		else
+		{
+			// build for local testing
+			isDB = false;
+		}
         SafeRelease(file);
         
-        if(!ConnectToDB())
-        {
-            return;
-        }
+		if(isDB)
+		{
+			if(!ConnectToDB())
+			{
+				return;
+			}
+		}
         
         // compare ids
         if(testsId != autotestingId)
@@ -104,6 +111,7 @@ void AutotestingSystem::OnAppStarted()
         }
         
         int32 indexInFileList = testIndex;
+        int32 fileCount = fileList.GetFileCount();
         // skip directories
         for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
         {
@@ -143,10 +151,10 @@ void AutotestingSystem::OnAppStarted()
         }
 
         
-        if(indexInFileList == (fileListSize - 1))
+        if((fileCount - 1) <= testIndex)
         {
             // last file - reset id and index
-            autotestingArchive->SetUInt32("id", 0);
+            //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
             autotestingArchive->SetInt32("index", 0);
         }
         else
@@ -177,11 +185,9 @@ void AutotestingSystem::Init(const String &_testName)
 {
     if(!isInit)
     {
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
         testReportsFolder = "~doc:/autotesting";
         FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
         reportFile = DAVA::File::Create(Format("%s/autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
-#endif
 
         isInit = true;
         testName = _testName;
@@ -200,107 +206,167 @@ bool AutotestingSystem::ConnectToDB()
     }
     
     return (NULL != dbClient);
-}    
-
-void AutotestingSystem::SaveTestToDB(const String & text, bool isPassed)
+}
+    
+void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
 {
-    Logger::Debug("AutotestingSystem::SaveTestToDB %s %d",text.c_str(), isPassed);
+    testResults.push_back(std::pair< String, bool >(text, isPassed));
+}
+
+void AutotestingSystem::SaveTestToDB()
+{
+	if(!isDB) return;
+
+    Logger::Debug("AutotestingSystem::SaveTestToDB");
     
     String testAndFileName = Format("%s (%s)", testName.c_str(), testFileName.c_str());
     
     String testsName = Format("%u",testsDate);
     
-    MongodbObject *oldDBObject = dbClient->FindObjectByKey(testsName);
-    MongodbObject *newDBObject = dbClient->CreateObject();
-    
-    MongodbObject *newPlatformObject = dbClient->CreateObject();
-    MongodbObject *oldPlatformObject = NULL;
-    
-    MongodbObject *newLogObject = dbClient->CreateObject();
-    MongodbObject *oldLogObject = NULL;
-    
-    MongodbObject *newTestObject = dbClient->CreateObject();
-    MongodbObject *oldTestObject = NULL;
-    
-    bool isTestPassed = isPassed;
-    bool isTestSuitePassed = isTestPassed;
-    int32 testsCount = 1;
-    
-    if(newDBObject)
+    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+    bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
+    if(!isFound)
     {
-        // find platform object
-        if(oldDBObject)
+        dbUpdateObject->SetObjectName(testsName);
+    }
+    dbUpdateObject->LoadData();
+    
+    KeyedArchive* dbUpdateData = dbUpdateObject->GetData();
+    
+    KeyedArchive* platformArchive = NULL;
+    
+    String logKey = "log";
+    KeyedArchive* logArchive = NULL;
+    
+    KeyedArchive* testArchive = NULL;
+    
+    String testResultsKey = "TestResults";
+    KeyedArchive* testResultsArchive = NULL;
+    
+    bool isTestPassed = true;
+    for(int32 i = 0; i < testResults.size(); ++i)
+    {
+        if(!testResults[i].second)
         {
-            if(oldDBObject->GetSubObject(newPlatformObject, AUTOTESTING_PLATFORM_NAME))
-            {
-                // found platform object
-                oldPlatformObject = dbClient->CreateObject();
-                oldPlatformObject->CopyFinished(newPlatformObject);
-
-                // find log object
-                if(oldPlatformObject->GetSubObject(newLogObject, "log"))
-                {
-                    // found log object
-                    oldLogObject = dbClient->CreateObject();
-                    oldLogObject->CopyFinished(newLogObject);
-                    
-                    // find test object
-                    if(oldLogObject->GetSubObject(newTestObject, testName))
-                    {
-                        // found test object
-                        oldTestObject = dbClient->CreateObject();
-                        oldTestObject->CopyFinished(newTestObject);
-                        
-                        isTestPassed = (oldTestObject->GetInt32("Success") == 1);
-                    }
-                }
-                
-                testsCount = (oldPlatformObject->GetInt32("TestsCount") + 1);
-                isTestSuitePassed = (isTestPassed && (oldPlatformObject->GetInt32("Success") == 1) );
-            }
+            isTestPassed = false;
+            break;
         }
-        
-        //update test object
-        newTestObject->SetObjectName(testName);
-        newTestObject->AddInt32("RunId", testsId);
-        newTestObject->AddInt32("Success", (int32)isTestPassed);
-        newTestObject->AddInt32(text, (int32)isPassed);
-        newTestObject->Finish();
-        
-        //update log object
-        newLogObject->SetObjectName("log");
-        newLogObject->AddObject(testName, newTestObject);
-        newLogObject->Finish();
-        
-        //update platform object
-        newPlatformObject->SetObjectName(AUTOTESTING_PLATFORM_NAME);
-        newPlatformObject->AddInt32("RunId", testsId);
-        newPlatformObject->AddInt32("TestsCount", testsCount);
-        newPlatformObject->AddInt32("Success", (int32)isTestSuitePassed);
-        newPlatformObject->AddInt32(testAndFileName, (int32)isTestPassed);
-        newPlatformObject->AddObject("log", newLogObject);
-        newPlatformObject->Finish();
-        
-        //update DB object
-        newDBObject->SetObjectName(testsName);
-        newDBObject->AddInt32("RunId", testsId);
-        newDBObject->AddObject(AUTOTESTING_PLATFORM_NAME, newPlatformObject);
-        
-        // finish DB object
-        newDBObject->Finish();
-        
-        // save DB object
-        dbClient->SaveObject(newDBObject, oldDBObject);
-        
-        // clean up
-        dbClient->DestroyObject(newDBObject);
     }
     
-    if(oldDBObject)
+    bool isTestSuitePassed = isTestPassed;
+    
+    // find platform object
+    if(isFound)
     {
-        dbClient->DestroyObject(oldDBObject);
+        //found database object
+        // find platform object
+        platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
+        
+        if(platformArchive)
+        {
+            // found platform object
+            // find log object
+            logArchive = SafeRetain(platformArchive->GetArchive(logKey, NULL));
+            
+            if(logArchive)
+            {
+                // found log object
+
+				//find all test objects to set platform test results (if all tests passed for current platform)
+				if(isTestSuitePassed)
+				{
+					const Map<String, VariantType*> logArchiveData = logArchive->GetArchieveData();
+					for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
+					{
+						if((it->first != "_id") && it->second)
+						{
+							KeyedArchive* tmpTestArchive = it->second->AsKeyedArchive();
+							if(tmpTestArchive)
+							{
+								isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
+							}
+						}
+					}
+				}
+
+                // find test object
+                testArchive = SafeRetain(logArchive->GetArchive(testAndFileName, NULL));
+                if(testArchive)
+                {
+                    // found test object
+                    // find test results
+                    testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
+                }
+            }
+            //isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+			isTestSuitePassed &= isTestPassed;
+        }
     }
     
+    // create archives if not found
+    if(!platformArchive)
+    {
+        platformArchive = new KeyedArchive();
+    }
+    
+    if(!logArchive) 
+    {
+        logArchive = new KeyedArchive();
+    }
+    
+    if(!testArchive) 
+    {
+        testArchive = new KeyedArchive();
+    }
+    
+    if(!testResultsArchive)
+    {
+        testResultsArchive = new KeyedArchive();
+    }
+    
+    //update test results
+	isTestPassed = true;
+    for(int32 i = 0; i < testResults.size(); ++i)
+    {
+		bool testResultSuccess = testResults[i].second;
+        testResultsArchive->SetInt32(testResults[i].first, (int32)testResultSuccess);
+		if(!testResultSuccess)
+		{
+			isTestPassed = false;
+		}
+    }
+  
+    //update test object
+    testArchive->SetInt32("RunId", testsId);
+    testArchive->SetInt32("Success", (int32)isTestPassed);
+    testArchive->SetString("File", testFileName);
+	testArchive->SetString("Name", testName);
+    testArchive->SetArchive(testResultsKey, testResultsArchive);
+
+    //update log object
+    logArchive->SetArchive(testAndFileName, testArchive);
+   
+    //update platform object
+    platformArchive->SetInt32("RunId", testsId);
+    platformArchive->SetInt32("TestsCount", (testIndex + 1));
+    platformArchive->SetInt32("Success", (int32)isTestSuitePassed);
+    platformArchive->SetInt32(testAndFileName, (int32)isTestPassed);
+    platformArchive->SetArchive(logKey, logArchive);
+ 
+    //update DB object
+    dbUpdateData->SetInt32("RunId", testsId);
+    dbUpdateData->SetArchive(AUTOTESTING_PLATFORM_NAME, platformArchive);
+
+    dbUpdateObject->SaveToDB(dbClient);
+    
+    // delete created archives
+    SafeRelease(platformArchive);
+    SafeRelease(logArchive);
+    SafeRelease(testArchive);
+    SafeRelease(testResultsArchive);
+    
+    // delete created update object
+    SafeRelease(dbUpdateObject);
 }
     
 void AutotestingSystem::AddAction(Action* action)
@@ -698,7 +764,7 @@ void AutotestingSystem::RunTests()
     
     if(!isRunning)
     {
-        SaveTestToDB("started", true);
+        OnTestsSatrted();
         
         isRunning = true;
     }
@@ -763,37 +829,56 @@ void AutotestingSystem::Draw()
     }
     RenderHelper::Instance()->DrawCircle(GetMousePosition(), 15.0f);
 }
-
-void AutotestingSystem::OnTestsFinished()
+    
+void AutotestingSystem::OnTestsSatrted()
 {
-    Logger::Debug("AutotestingSystem::OnTestsFinished");
+    Logger::Debug("AutotestingSystem::OnTestsStarted");
+    AddTestResult("started", true);
+}
     
-    SaveTestToDB("finished", true);
+void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
+{
+    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
+    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
     
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    if(reportFile)
-    {
-        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
-    }
-    SafeRelease(reportFile);
-#endif
-    ExitApp();
+    AddTestResult(text, isPassed);
+    
+	if(reportFile)
+	{
+		reportFile->WriteLine(assertMsg);
+	}
 }
 
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
     
-    SaveTestToDB(errorMessage, false);
+    AddTestResult(errorMessage, false);
+	SaveTestToDB();
+	
+	String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
+	if(reportFile)
+	{
+		reportFile->WriteLine(exitOnErrorMsg);
+	}
+	SafeRelease(reportFile);
+
+    ExitApp();
+}    
     
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
+void AutotestingSystem::OnTestsFinished()
+{
+    Logger::Debug("AutotestingSystem::OnTestsFinished");
+    
+    AddTestResult("finished", true);
+	SaveTestToDB();
+    
     if(reportFile)
     {
-        reportFile->WriteLine(exitOnErrorMsg);
+        reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
     }
     SafeRelease(reportFile);
-#endif
+
     ExitApp();
 }
 
@@ -995,21 +1080,6 @@ void AutotestingSystem::AssertBool(const Vector<String> &expectedControlPath, co
 
     AddAction(assertBoolAction);
     SafeRelease(assertBoolAction);
-}
-
-void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
-{
-    String assertMsg = Format("%s: %s %s", testName.c_str(), text.c_str(), (isPassed ? "PASSED" : "FAILED"));
-    Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
-    
-    SaveTestToDB(text, isPassed);
-    
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    if(reportFile)
-    {
-        reportFile->WriteLine(assertMsg);
-    }
-#endif
 }
 
 void AutotestingSystem::OnInput(const UIEvent &input)

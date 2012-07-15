@@ -207,6 +207,7 @@
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
+#include "Scene3D/ParticleEmitterNode.h"
 
 
 // Application core 

@@ -38,6 +38,7 @@
 #include "EntityTest.h"
 #include "MemoryAllocatorsTest.h"
 #include "HashMapTest.h"
+#include "SoundTest.h"
 
 using namespace DAVA;
 
@@ -67,6 +68,7 @@ void GameCore::OnAppStarted()
 	new EntityTest(); 
     new MemoryAllocatorsTest();
     new HashMapTest();
+    new SoundTest();
     
     errors.reserve(TestCount());
 
@@ -257,8 +259,13 @@ void GameCore::FlushTestResults()
     time_t logStartTime = time(0);
     String testTimeString = Format("%lld", logStartTime);
 
+    tm* utcTime = localtime(&logStartTime);
+    String runTime = Format("%04d.%02d.%02d:%02d:%02d:%02d",   
+                            utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday, 
+                            utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
+
     
-    MongodbObject *logObject = CreateLogObject(testTimeString);
+    MongodbObject *logObject = CreateLogObject(testTimeString, runTime);
     if(logObject)
     {
         MongodbObject *oldPlatformObject = dbClient->FindObjectByKey(PLATFORM_NAME);
@@ -324,7 +331,7 @@ bool GameCore::ConnectToDB()
 }
 
 
-MongodbObject * GameCore::CreateLogObject(const String &logName)
+MongodbObject * GameCore::CreateLogObject(const String &logName, const String &runTime)
 {
     MongodbObject *logObject = new MongodbObject();
     if(logObject)
@@ -336,6 +343,13 @@ MongodbObject * GameCore::CreateLogObject(const String &logName)
     File *reportFile = CreateDocumentsFile(String("Errors.txt"));
     if(reportFile)
     {
+        reportFile->WriteLine(String("Run Time: ") + runTime);
+        if(logObject)
+        {
+            logObject->AddString(String("RunTime"), runTime);
+        }
+
+        
         if(0 < errorCount)
         {
             reportFile->WriteLine(String("Failed tests:"));

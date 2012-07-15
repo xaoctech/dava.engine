@@ -54,10 +54,11 @@ public:
     
     MongodbObject();
     virtual ~MongodbObject();
-
+    
     
     void EnableForEdit();
     void Finish();
+    bool IsFinished();
 
     void SetObjectName(const String &objectname);
     String GetObjectName();

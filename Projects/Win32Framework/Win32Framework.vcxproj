@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\Action.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h" />
+    <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
@@ -249,8 +250,10 @@
     <ClInclude Include="..\..\Sources\Internal\Network\WFNetworkConnection.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\Particle.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Mutex.h" />
@@ -335,6 +338,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LightNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\LodNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\PathManip.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ProxyNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\QuadTree.h" />
@@ -450,6 +454,7 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AssertAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
@@ -523,8 +528,10 @@
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkPacket.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\Particle.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
@@ -600,6 +607,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LightNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\LodNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\MeshInstanceNode.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\PathManip.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ProxyNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\QuadTree.cpp" />

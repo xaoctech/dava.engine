@@ -28,10 +28,11 @@
 #include "PropertyLineEditControl.h"
 #include "PreviewControl.h"
 #include "ForcePreviewControl.h"
+#include "SceneEditor/DraggableDialog.h"
 
 using namespace DAVA;
 
-class PartickesEditorControl : public UIScreen, public UIListDelegate, public UIFileSystemDialogDelegate, public PropertyLineEditControlDelegate, public UITextFieldDelegate
+class ParticlesEditorControl : public DraggableDialog, public UIListDelegate, public UIFileSystemDialogDelegate, public PropertyLineEditControlDelegate, public UITextFieldDelegate
 {
 public:
     enum eProps
@@ -177,7 +178,8 @@ public:
         }
     };
     
-    PartickesEditorControl();
+    ParticlesEditorControl();
+	virtual ~ParticlesEditorControl();
     
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -188,6 +190,9 @@ public:
 	virtual void Draw(const UIGeometricData &geometricData);
 	
 	virtual void Input(UIEvent * touch);
+
+	
+	void SetEmitter(ParticleEmitter *emitter);
     
 protected:
     virtual int32 ElementsCount(UIList *forList);
@@ -253,6 +258,8 @@ protected:
     
     void SafeAddControl(UIControl *control);
     void SafeRemoveControl(UIControl *control);
+
+	ParticleEmitter *emitter;
     
     Vector<String> emitterProps;
     Vector<String>layerProps;
@@ -276,7 +283,7 @@ protected:
     
     Vector<Layer *> layers;
     
-    ParticleEmitter *emitter;
+    
     int32 selectedEmitterElement;
     int32 selectedPropElement;
     int32 selectedAddPropElement;
@@ -285,6 +292,7 @@ protected:
     
     float32 cellH;
     
+	UIButton * close;
     UIButton *loadEmitter;
     UIButton *saveEmitter;
     UIButton *newEmitter;
@@ -299,8 +307,6 @@ protected:
     UIButton *spriteSelect;
     UIButton *addForce;
     UIButton *delForce;
-    UIButton *chooseProject;
-    UIButton *emitter3D;
     
     UIButton *cloneLayer;
     UIButton *disableLayer;
@@ -337,8 +343,6 @@ protected:
     Sprite *sprite;
     
     UIControl *colorView;
-    
-    PreviewControl *preview;
     
     ForcePreviewControl *forcePreview;
 };
