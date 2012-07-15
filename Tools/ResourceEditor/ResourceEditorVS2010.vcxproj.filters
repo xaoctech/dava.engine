@@ -806,6 +806,9 @@
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp">
       <Filter>SceneEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1924,6 +1927,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\FogControl.h">
       <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

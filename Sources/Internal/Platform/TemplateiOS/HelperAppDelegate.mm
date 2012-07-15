@@ -92,6 +92,16 @@ int DAVA::Core::Run(int argc, char * argv[], AppHandle handle)
 	return retVal;		
 }
 
+DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        return DAVA::Core::DEVICE_PAD;
+    }
+
+    return DAVA::Core::DEVICE_HANDSET;
+}
+
 
 
 @implementation HelperAppDelegate

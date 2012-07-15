@@ -31,7 +31,10 @@
 #include "Database/MongodbObject.h"
 #include "mongodb/mongo.h"
 
+#include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
+
+#include "FileSystem/KeyedArchive.h"
 
 
 namespace DAVA 
@@ -279,7 +282,27 @@ MongodbObject * MongodbClient::FindObjectByKey(const String &key)
     SafeRelease(query);
     return foundObject;
 }
-        
+    
+bool MongodbClient::FindObjectByKey(const String &key, MongodbObject * foundObject)
+{
+    DVASSERT(foundObject);
+    
+    MongodbObject *query = new MongodbObject();
+    DVASSERT(query);
+    
+    query->SetObjectName(key);
+    query->Finish();
+    
+    int32 status = mongo_find_one(clientData->connection, namespaceName.c_str(), (bson *)query->InternalObject(), 0, (bson *)foundObject->InternalObject());
+    if(MONGO_OK != status)
+    {
+        return false;
+    }
+    
+    SafeRelease(query);
+    return true;
+}
+    
 bool MongodbClient::SaveObject(MongodbObject *object)
 {
     int32 status = MONGO_ERROR;
@@ -362,5 +385,162 @@ void MongodbClient::DumpDB()
     Logger::Debug("************************");
 }
     
+bool MongodbClient::KeyedArchiveToDBObject(KeyedArchive* archive, MongodbObject* outObject)
+{
+    DVASSERT(archive && outObject);
+    
+    if(!outObject->IsFinished())
+    {
+        //copy data from archive into db object
+        Map<String, VariantType*> archiveData = archive->GetArchieveData();
+        for(Map<String, VariantType*>::iterator it = archiveData.begin(); it != archiveData.end(); ++it)
+        {
+            MongodbClient::WriteData(outObject, it->first, it->second);
+        }
+        return true;
+    }
+    return false;
+}
+
+bool MongodbClient::DBObjectToKeyedArchive(MongodbObject* dbObject, KeyedArchive* outArchive)
+{
+    DVASSERT(dbObject && outArchive);
+    
+    if(dbObject->IsFinished())
+    {
+        //copy data from db object into archive
+        ReadData(outArchive, (bson*)dbObject->InternalObject());
+        
+        return true;
+    }
+    return false;
+}    
+
+void MongodbClient::ReadData(KeyedArchive* archive, void* bsonObj)
+{
+    if((!archive) || (!bsonObj)) return;
+
+    bson_iterator it;
+    bson_iterator_init(&it, (bson*)bsonObj);
+    
+    while (bson_iterator_next(&it))
+    {
+        String key = String(bson_iterator_key(&it));
+        bson_type type = bson_iterator_type(&it);
+        
+        if(key == "_id") continue; // ignore _id
+
+        switch (type)
+        {
+            case BSON_STRING:
+                archive->SetString(key, String(bson_iterator_string(&it)));
+                break;
+                
+            case BSON_INT:
+                archive->SetInt32(key, bson_iterator_int(&it));
+                break;
+                
+            case BSON_LONG:
+                archive->SetInt32(key, bson_iterator_long(&it));
+                break;
+                
+            case BSON_DOUBLE:
+                archive->SetFloat(key, bson_iterator_double(&it));
+                break;
+                
+            case BSON_OBJECT:
+            {
+                bson sub;
+                
+                bson_iterator_subobject(&it, &sub);
+                
+                KeyedArchive* subArchive = new KeyedArchive();
+                ReadData(subArchive, &sub);
+                archive->SetArchive(key, subArchive);
+                SafeRelease(subArchive);
+                break;
+            }
+                
+            case BSON_OID:
+                //TODO: add 12-bytes array
+                //bson_append_oid(object, key, bson_iterator_oid(&it));
+                break;
+                
+                
+            default:
+                DVASSERT(false);
+                Logger::Error("[MongodbUpdateObject::ReadData] Not implemented type: %d", type);
+                break;
+        }
+    }
+}
+
+void MongodbClient::WriteData(MongodbObject* mongoObj, const String & key, VariantType *value)
+{
+    if(mongoObj && value)
+    {
+        if(key == "_id") return; // ignore _id
+
+        //TODO: bool, uint32 and WideString have no corresponding types in mongoDB
+        switch (value->type) 
+        {
+            case VariantType::TYPE_BOOLEAN:
+            {
+                mongoObj->AddInt32(key, value->AsBool());
+            }
+                break;
+            case VariantType::TYPE_INT32:
+            {
+                mongoObj->AddInt32(key, value->AsInt32());
+            }
+                break;    
+            case VariantType::TYPE_FLOAT:
+            {
+                mongoObj->AddDouble(key, value->AsFloat());
+            }
+                break;
+            case VariantType::TYPE_STRING:
+            {
+                mongoObj->AddString(key, value->AsString());
+            }
+                break;  
+            case VariantType::TYPE_WIDE_STRING:
+            {
+                mongoObj->AddString(key, WStringToString(value->AsWideString()));
+            }
+                break;
+            case VariantType::TYPE_BYTE_ARRAY:
+            {
+                mongoObj->AddData(key, const_cast<uint8*>(value->AsByteArray()), value->AsByteArraySize());
+            }
+                break;
+            case VariantType::TYPE_UINT32:
+            {
+                mongoObj->AddInt32(key, value->AsUInt32());
+            }
+                break;
+            case VariantType::TYPE_KEYED_ARCHIVE:
+            {
+                MongodbObject* subObject = new MongodbObject();
+                KeyedArchive* subArchive = value->AsKeyedArchive();
+
+                KeyedArchiveToDBObject(subArchive, subObject);
+
+                subObject->SetObjectName(key);
+                subObject->Finish();
+                
+                mongoObj->AddObject(key, subObject);
+                SafeRelease(subObject);
+            }
+                break;
+            default:
+            {
+                DVASSERT(false);
+                Logger::Error("[MongodbUpdateObject::WriteData] Not implemented type: %d", value->type);
+            }
+                break;
+        }
+    }
+}    
     
 }

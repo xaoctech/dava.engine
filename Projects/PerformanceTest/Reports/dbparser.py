@@ -24,6 +24,14 @@ def LogError(logfile, message):
 	logfile.write('</font>')
 
 
+def AddColumnCell(logfile, message):
+	logfile.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
+	logfile.write(message)
+	logfile.write('</td>')
+	
+
+
+
 report = open('report.html', 'w')
 report.write('<!DOCTYPE html>')
 report.write('<html> <head>')
@@ -43,32 +51,52 @@ if None != connection:
 	collection = db[collectionName]
 	report.write('<br/> Collection: ' + collection.name)
 
+	report.write('<br/> Delta formula is: delta = (newValue - prevValue) / prevValue')
+
 	#get cursor for collection
 	platform = collection.find_one({'_id': platformName})
 	if None != platform:
 		screenNames = platform.keys()
+		screenNames.sort()
 		for screenName in screenNames:
-			if '_id' != screenName:
-				report.write('<H1> Screen ' + screenName + ' </H1>')
-				report.write('<table style="border: 1px solid gray; cellspacing: 0px; cellpadding: 0px; border-collapse: collapse;">')
+			if '_id' != screenName and 'globalIndex' != screenName:
+				report.write('<H1> Screen: ' + screenName + ' </H1>')
 
 				screen = platform[screenName]
 				testNames = screen.keys()
+				testNames.sort()
 				for testName in testNames:
 					if '_id' != testName:
-						report.write('<tr style="border: 1px solid gray; cellspacing: 0px; cellpadding: 0px;">')
-						report.write('<td style="border: 1px solid gray; cellspacing: 0px; cellpadding: 0px;">')
-						report.write(testName)
-						report.write('</td>')
+						
+						report.write('<H3> Test: ' + testName + ' </H3>')
+						
+						report.write('<table style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px; border-collapse: collapse;">')
+
+						report.write('<tr style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
+						
+						AddColumnCell(report, 'Run Time')
+						AddColumnCell(report, 'Min Time')
+						AddColumnCell(report, 'Max Time')
+						AddColumnCell(report, 'Average Time')
+
+						AddColumnCell(report, 'Min delta')
+						AddColumnCell(report, 'Max delta')
+						AddColumnCell(report, 'Average delta')
+
+						AddColumnCell(report, 'Device')
+
+						report.write('</tr>')
 
 						test = screen[testName]
 						testResultsNames = test.keys()
+						testResultsNames.sort()
 				
 						prevAverage = -1;
 						prevMin = -1
 						prevMax = -1
 						for testResultsName in testResultsNames:
 							if "_id" != testResultsName:
+								
 								testData = test[testResultsName]
 
 								averageValue = testData['Average']
@@ -98,53 +126,42 @@ if None != connection:
 									else:
 										report.write('&nbsp')
 								
-								report.write('<td style="border: 1px solid gray; cellspacing: 0px; cellpadding: 0px;">')
+								report.write('<tr style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
+								
+								AddColumnCell(report, testData['RunTime'])
 
-								#internal table for test data
-								report.write('<table style="width:100%;">')
-								report.write('<tr>')
+								AddColumnCell(report, '%.2f'%float(minValue))
+								AddColumnCell(report, '%.2f'%float(maxValue))
+								AddColumnCell(report, '%.2f'%float(averageValue))
 
-								report.write('<td style="cellpadding: 0px; width:33%">')
-								report.write('%.2f'%float(minValue))
-								report.write('</td>')
-
-								report.write('<td style="cellpadding: 0px; width:33%">')
-								report.write('%.2f'%float(maxValue))
-								report.write('</td>')
-
-								report.write('<td style="cellpadding: 0px; width:34%">')
-								report.write('%.2f'%float(averageValue))
-								report.write('</td>')
-						
-
-								report.write('</tr>')
-								report.write('<tr>')
-
-								report.write('<td>')
+								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 								PrintDelta(prevMin, minValue)
 								report.write('</td>')
 
-								report.write('<td>')
+								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 								PrintDelta(prevMax, maxValue)
 								report.write('</td>')
 
-								report.write('<td>')
+								report.write('<td style="border: 1px solid gray; cellspacing: 1px; cellpadding: 1px;">')
 								PrintDelta(prevAverage, averageValue)
 								report.write('</td>')
-
-
+								
+								if testData['DeviceFamily'] == 0:
+									AddColumnCell(report, 'Handset')
+								elif testData['DeviceFamily'] == 1:
+									AddColumnCell(report, 'Pad')
+								elif testData['DeviceFamily'] == 2:
+									AddColumnCell(report, 'Desktop')
+								else:
+									AddColumnCell(report, 'Unknown')
+								
 								report.write('</tr>')
-								report.write('</table>')
-
-								report.write('</td>')
-						
+								
 								prevMin = minValue
 								prevMax = maxValue
 								prevAverage = averageValue
 
-						report.write('</tr>')
-
-				report.write('</table>')
+						report.write('</table>')
 	else:
 		LogError(report, "There are no tests for platform " + platformName + " at collection " + collectionName)
 else:

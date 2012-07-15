@@ -18,6 +18,7 @@ class SettingsDialog;
 class TextureTrianglesDialog;
 class TextureConverterDialog;
 class HelpDialog;
+class ParticlesEditorControl;
 class SceneEditorScreenMain: 
     public UIScreen, public UIFileSystemDialogDelegate, public LibraryControlDelegate, 
     public MenuPopupDelegate, public CreateNodesDialogDelegeate,
@@ -105,6 +106,8 @@ public:
     virtual void DialogClosed(int32 retCode);
 
     void EditMaterial(Material *material);
+
+	void EditParticleEmitter(ParticleEmitterNode * emitter);
     
     void ShowTextureTriangles(PolygonGroup *polygonGroup);
 
@@ -216,6 +219,7 @@ private:
     CreateNodesDialog *nodeDialog;
     
     MaterialEditor *materialEditor;
+	ParticlesEditorControl * particlesEditor;
     void InitializeNodeDialogs();
     void ReleaseNodeDialogs();
     

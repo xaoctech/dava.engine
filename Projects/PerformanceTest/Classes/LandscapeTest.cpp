@@ -35,7 +35,6 @@ LandscapeTest::LandscapeTest(const String &testName, LandscapeNode::eTiledShader
     ,   shaderMode(mode)
 {
     testCounter = 0;
-    startTime = 0;
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
@@ -67,13 +66,13 @@ void LandscapeTest::LoadResources()
     SafeRelease(land);
     
     Scene *scene = new Scene();
-    scene->AddNode(scene->GetRootNode("~res:/3d/LandscapeTest/landscapetest.sc2")); 
+    scene->AddNode(scene->GetRootNode(String("~res:/3d/LandscapeTest/landscapetest.sc2"))); 
 
-    Camera *cam = (Camera *)scene->FindByName("TestCamera");
+    Camera *cam = (Camera *)scene->FindByName(String("TestCamera"));
     scene->AddCamera(cam); 
     scene->SetCurrentCamera(cam);
     
-    land = (LandscapeNode *)scene->FindByName("Landscape"); 
+    land = (LandscapeNode *)scene->FindByName(String("Landscape")); 
     if(land)
     {
         if(LandscapeNode::TILED_MODE_COUNT == shaderMode)
@@ -100,7 +99,6 @@ void LandscapeTest::LoadResources()
     SafeRelease(scene);
     
     testCounter = 0;
-    startTime = 0;
 }
 
 void LandscapeTest::UnloadResources()

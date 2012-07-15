@@ -194,12 +194,6 @@
 		FE9420941332605600515418 /* FileList.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9420921332605600515418 /* FileList.h */; };
 		FEA4D8C41328D03E00E261D0 /* RenderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA4D8C31328D03E00E261D0 /* RenderBase.cpp */; };
 		FEA4D9421328FD6A00E261D0 /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA4D9411328FD6A00E261D0 /* Random.h */; };
-		FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */; };
-		FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */; };
-		FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */; };
-		FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6FD15A09AD800EED3DC /* HashMap.h */; };
-		FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */; };
-		FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */; };
 		FEC3E537133CCCDF00442ADD /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */; };
 		FEC711AF149F839C00939323 /* SceneFileV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC711AD149F839C00939323 /* SceneFileV2.cpp */; };
 		FEC711B0149F839C00939323 /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC711AE149F839C00939323 /* SceneFileV2.h */; };
@@ -757,12 +751,6 @@
 		FE9420921332605600515418 /* FileList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileList.h; sourceTree = "<group>"; };
 		FEA4D8C31328D03E00E261D0 /* RenderBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBase.cpp; sourceTree = "<group>"; };
 		FEA4D9411328FD6A00E261D0 /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
-		FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
-		FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
-		FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashMap.cpp; sourceTree = "<group>"; };
-		FEA8F6FD15A09AD800EED3DC /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
-		FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateHelpers.h; sourceTree = "<group>"; };
-		FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mallocator.h; path = ../Base/Mallocator.h; sourceTree = "<group>"; };
 		FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoxygenDocumenation.h; sourceTree = "<group>"; };
 		FEC711AD149F839C00939323 /* SceneFileV2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFileV2.cpp; sourceTree = "<group>"; };
 		FEC711AE149F839C00939323 /* SceneFileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileV2.h; sourceTree = "<group>"; };
@@ -1395,7 +1383,6 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */,
 				FECFC0B712E87E3000C71562 /* BaseMath.cpp */,
 				FECFC0B812E87E3000C71562 /* BaseMath.h */,
 				FECFC0B912E87E3000C71562 /* BaseObject.h */,
@@ -1418,10 +1405,6 @@
 				FECFC0C912E87E3000C71562 /* StaticSingleton.h */,
 				FE25F78A145DB75700A72F9C /* Data.h */,
 				FE25F78C145DB88B00A72F9C /* Data.cpp */,
-				FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */,
-				FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */,
-				FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */,
-				FEA8F6FD15A09AD800EED3DC /* HashMap.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -1466,7 +1449,6 @@
 				FECFC0E012E87E3000C71562 /* DVAssert.h */,
 				FECFC0E112E87E3000C71562 /* List.h */,
 				FECFC0E212E87E3000C71562 /* ListAllocator.h */,
-				FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */,
 				FECFC0E312E87E3000C71562 /* MemoryManager.cpp */,
 				FECFC0E412E87E3000C71562 /* MemoryManager.h */,
 				FEEB6E7A131BC61C00958ACB /* Replay.cpp */,
@@ -2239,10 +2221,6 @@
 				5CBFD6C9159C6C3300852F1A /* MeshInstanceDrawSystem.h in Headers */,
 				5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */,
 				5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */,
-				FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */,
-				FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */,
-				FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */,
-				FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2557,8 +2535,6 @@
 				5CBFD6C6159C6C3300852F1A /* MeshInstanceComponent.cpp in Sources */,
 				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
-				FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */,
-				FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

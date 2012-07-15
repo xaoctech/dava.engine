@@ -79,7 +79,7 @@ protected:
     
     int32 TestCount();
     
-    MongodbObject * CreateTestDataObject(const String &testTimeString, TestData *testData);
+    MongodbObject * CreateTestDataObject(const String &testTimeString, const String &runTime, TestData *testData);
     MongodbObject * CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished);
     
 protected:

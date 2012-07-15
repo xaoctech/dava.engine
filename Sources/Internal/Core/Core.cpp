@@ -698,5 +698,13 @@ void Core::SetIsActive(bool _isActive)
 	isActive = _isActive;
 }
 
+#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)    
+Core::eDeviceFamily Core::GetDeviceFamily()
+{
+    return DEVICE_DESKTOP;
+}
+#endif //#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)    
+    
+
 
 };
