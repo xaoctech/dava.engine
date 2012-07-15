@@ -79,18 +79,33 @@ public:
 }; 
 
 
-void*	operator new(size_t _size, void* pLoc, const char *_file, int _line);
-void*	operator new(size_t _size, const char *_file, int _line);
-void*	operator new[](size_t _size, const char *_file, int _line);
-//void	operator delete[](void * ptr);
+//void*	operator new(size_t _size, void* pLoc, const char *_file, int _line);
+//void*	operator new(size_t _size, const char *_file, int _line);
+//void*	operator new[](size_t _size, const char *_file, int _line);
+////void	operator delete[](void * ptr);
 
-void * operator new(size_t _size);
-void   operator delete(void * ptr);
-void * operator new[](size_t _size);
-void   operator delete[](void * ptr);
+void * operator new(size_t _size) throw(std::bad_alloc);
+void * operator new(size_t _size, const std::nothrow_t &) throw();
 
-#define new new(__FILE__, __LINE__)
+void   operator delete(void * ptr) throw();
+void   operator delete(void * ptr, const std::nothrow_t &) throw();
+
+void * operator new[](size_t _size) throw(std::bad_alloc);
+void * operator new[](size_t _size, const std::nothrow_t &) throw();
+
+void   operator delete[](void * ptr) throw();
+void   operator delete[](void * ptr, const std::nothrow_t &) throw();
+
+//// Default placement versions of operator new.
+//inline void* operator new(std::size_t, void* __p) throw() { return __p; }
+//inline void* operator new[](std::size_t, void* __p) throw() { return __p; }
+//
+//// Default placement versions of operator delete.
+//inline void  operator delete  (void*, void*) throw() { }
+//inline void  operator delete[](void*, void*) throw() { }
+
+//#define new new (__FILE__, __LINE__)
 
 #endif // ENABLE_MEMORY_MANAGER
-#endif // __DAVAENGINE_BASEOBJECT_H__
+#endif // __DAVAENGINE_MEMORYMANAGER_H__
 
