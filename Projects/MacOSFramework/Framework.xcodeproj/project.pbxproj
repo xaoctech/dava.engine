@@ -58,6 +58,12 @@
 		5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */; };
 		5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6C0159C6C3300852F1A /* TransformComponent.h */; };
 		5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */; };
+		5CD7157D15AC453700D08E8E /* ParticleEmitter3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7157915AC453700D08E8E /* ParticleEmitter3D.cpp */; };
+		5CD7157E15AC453700D08E8E /* ParticleEmitter3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7157A15AC453700D08E8E /* ParticleEmitter3D.h */; };
+		5CD7157F15AC453700D08E8E /* ParticleLayer3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7157B15AC453700D08E8E /* ParticleLayer3D.cpp */; };
+		5CD7158015AC453700D08E8E /* ParticleLayer3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7157C15AC453700D08E8E /* ParticleLayer3D.h */; };
+		5CD7158415AC454A00D08E8E /* ParticleEmitterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */; };
+		5CD7158515AC454A00D08E8E /* ParticleEmitterNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */; };
 		5CE063F2154A69630029DF36 /* ImposterManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE063F0154A69630029DF36 /* ImposterManager.cpp */; };
 		5CE063F3154A69630029DF36 /* ImposterManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE063F1154A69630029DF36 /* ImposterManager.h */; };
 		5CEA312C1535A325008E35F5 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEA312A1535A325008E35F5 /* Heightmap.cpp */; };
@@ -89,6 +95,7 @@
 		C7DE597A157F8CA10045CA41 /* AutotestingSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */; };
 		C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5973157F8CA10045CA41 /* TouchAction.cpp */; };
 		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
+		C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
@@ -194,6 +201,12 @@
 		FE9420941332605600515418 /* FileList.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9420921332605600515418 /* FileList.h */; };
 		FEA4D8C41328D03E00E261D0 /* RenderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA4D8C31328D03E00E261D0 /* RenderBase.cpp */; };
 		FEA4D9421328FD6A00E261D0 /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA4D9411328FD6A00E261D0 /* Random.h */; };
+		FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */; };
+		FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */; };
+		FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */; };
+		FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6FD15A09AD800EED3DC /* HashMap.h */; };
+		FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */; };
+		FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */; };
 		FEC3E537133CCCDF00442ADD /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */; };
 		FEC711AF149F839C00939323 /* SceneFileV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC711AD149F839C00939323 /* SceneFileV2.cpp */; };
 		FEC711B0149F839C00939323 /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC711AE149F839C00939323 /* SceneFileV2.h */; };
@@ -613,6 +626,12 @@
 		5CBFD6BF159C6C3300852F1A /* TransformComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformComponent.cpp; path = Entity/TransformComponent.cpp; sourceTree = "<group>"; };
 		5CBFD6C0159C6C3300852F1A /* TransformComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransformComponent.h; path = Entity/TransformComponent.h; sourceTree = "<group>"; };
 		5CBFD6C2159C6C3300852F1A /* VisibilityAABBoxSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisibilityAABBoxSystem.h; path = Entity/VisibilityAABBoxSystem.h; sourceTree = "<group>"; };
+		5CD7157915AC453700D08E8E /* ParticleEmitter3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitter3D.cpp; sourceTree = "<group>"; };
+		5CD7157A15AC453700D08E8E /* ParticleEmitter3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitter3D.h; sourceTree = "<group>"; };
+		5CD7157B15AC453700D08E8E /* ParticleLayer3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayer3D.cpp; sourceTree = "<group>"; };
+		5CD7157C15AC453700D08E8E /* ParticleLayer3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayer3D.h; sourceTree = "<group>"; };
+		5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterNode.cpp; sourceTree = "<group>"; };
+		5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterNode.h; sourceTree = "<group>"; };
 		5CE063F0154A69630029DF36 /* ImposterManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImposterManager.cpp; sourceTree = "<group>"; };
 		5CE063F1154A69630029DF36 /* ImposterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImposterManager.h; sourceTree = "<group>"; };
 		5CEA312A1535A325008E35F5 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
@@ -645,6 +664,8 @@
 		C7DE5970157F8CA10045CA41 /* AutotestingSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystem.h; sourceTree = "<group>"; };
 		C7DE5973157F8CA10045CA41 /* TouchAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchAction.cpp; sourceTree = "<group>"; };
 		C7DE5974157F8CA10045CA41 /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
+		C7F60A7B159B022200A57634 /* MongodbUpdateObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
+		C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -751,6 +772,12 @@
 		FE9420921332605600515418 /* FileList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileList.h; sourceTree = "<group>"; };
 		FEA4D8C31328D03E00E261D0 /* RenderBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBase.cpp; sourceTree = "<group>"; };
 		FEA4D9411328FD6A00E261D0 /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
+		FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
+		FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
+		FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashMap.cpp; sourceTree = "<group>"; };
+		FEA8F6FD15A09AD800EED3DC /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
+		FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateHelpers.h; sourceTree = "<group>"; };
+		FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mallocator.h; path = ../Base/Mallocator.h; sourceTree = "<group>"; };
 		FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoxygenDocumenation.h; sourceTree = "<group>"; };
 		FEC711AD149F839C00939323 /* SceneFileV2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFileV2.cpp; sourceTree = "<group>"; };
 		FEC711AE149F839C00939323 /* SceneFileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileV2.h; sourceTree = "<group>"; };
@@ -1220,6 +1247,8 @@
 				C7DE5973157F8CA10045CA41 /* TouchAction.cpp */,
 				C7DE5974157F8CA10045CA41 /* TouchAction.h */,
 				C784403A158204A000F75358 /* Config.h */,
+				C7F60A7B159B022200A57634 /* MongodbUpdateObject.h */,
+				C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */,
 			);
 			path = Autotesting;
 			sourceTree = "<group>";
@@ -1383,6 +1412,7 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */,
 				FECFC0B712E87E3000C71562 /* BaseMath.cpp */,
 				FECFC0B812E87E3000C71562 /* BaseMath.h */,
 				FECFC0B912E87E3000C71562 /* BaseObject.h */,
@@ -1405,6 +1435,10 @@
 				FECFC0C912E87E3000C71562 /* StaticSingleton.h */,
 				FE25F78A145DB75700A72F9C /* Data.h */,
 				FE25F78C145DB88B00A72F9C /* Data.cpp */,
+				FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */,
+				FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */,
+				FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */,
+				FEA8F6FD15A09AD800EED3DC /* HashMap.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -1449,6 +1483,7 @@
 				FECFC0E012E87E3000C71562 /* DVAssert.h */,
 				FECFC0E112E87E3000C71562 /* List.h */,
 				FECFC0E212E87E3000C71562 /* ListAllocator.h */,
+				FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */,
 				FECFC0E312E87E3000C71562 /* MemoryManager.cpp */,
 				FECFC0E412E87E3000C71562 /* MemoryManager.h */,
 				FEEB6E7A131BC61C00958ACB /* Replay.cpp */,
@@ -1535,6 +1570,10 @@
 		FECFC13412E87E3000C71562 /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				5CD7157915AC453700D08E8E /* ParticleEmitter3D.cpp */,
+				5CD7157A15AC453700D08E8E /* ParticleEmitter3D.h */,
+				5CD7157B15AC453700D08E8E /* ParticleLayer3D.cpp */,
+				5CD7157C15AC453700D08E8E /* ParticleLayer3D.h */,
 				FECFC13512E87E3000C71562 /* Particle.cpp */,
 				FECFC13612E87E3000C71562 /* Particle.h */,
 				FECFC13712E87E3000C71562 /* ParticleEmitter.cpp */,
@@ -1727,6 +1766,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */,
+				5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */,
 				5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */,
 				5CFA5D4E156E3EBF00EDB730 /* UserNode.h */,
 				5CE063F0154A69630029DF36 /* ImposterManager.cpp */,
@@ -2221,6 +2262,13 @@
 				5CBFD6C9159C6C3300852F1A /* MeshInstanceDrawSystem.h in Headers */,
 				5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */,
 				5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */,
+				FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */,
+				FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */,
+				FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */,
+				FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */,
+				5CD7157E15AC453700D08E8E /* ParticleEmitter3D.h in Headers */,
+				5CD7158015AC453700D08E8E /* ParticleLayer3D.h in Headers */,
+				5CD7158515AC454A00D08E8E /* ParticleEmitterNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2535,6 +2583,12 @@
 				5CBFD6C6159C6C3300852F1A /* MeshInstanceComponent.cpp in Sources */,
 				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
+				FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */,
+				FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */,
+				C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */,
+				5CD7157D15AC453700D08E8E /* ParticleEmitter3D.cpp in Sources */,
+				5CD7157F15AC453700D08E8E /* ParticleLayer3D.cpp in Sources */,
+				5CD7158415AC454A00D08E8E /* ParticleEmitterNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
