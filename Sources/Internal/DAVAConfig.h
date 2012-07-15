@@ -36,7 +36,6 @@
 #define __DAVAENGINE_CONFIG_H__
 
 //#define ENABLE_MEMORY_MANAGER
-//#define CHECK_MEMORY_OVERRUNS 1 // number of 4 byte blocks used to check memory overrun
 
 //#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
 
