@@ -31,9 +31,11 @@
 #include "MemoryAllocatorsTest.h"
 
 MemoryAllocatorsTest::MemoryAllocatorsTest()
-: TestTemplate<MemoryAllocatorsTest>("SampleTest")
+: TestTemplate<MemoryAllocatorsTest>("MemoryAllocatorsTest")
 {
+    ObjectFactory::Instance()->Dump();
 	RegisterFunction(this, &MemoryAllocatorsTest::PoolAllocatorTest, "PoolAllocatorTest", NULL);
+	RegisterFunction(this, &MemoryAllocatorsTest::PoolAllocatorNewDeleteTest, "PoolAllocatorNewDeleteTest", NULL);
 }
 
 void MemoryAllocatorsTest::LoadResources()
@@ -63,17 +65,56 @@ void MemoryAllocatorsTest::PoolAllocatorTest(PerfFuncData * data)
     {
         if (k != 64)
             TEST_VERIFY(pointers[k] == pointers[k - 1] + 32);
-        if (k != 64)
-        if (pointers[k] != pointers[k - 1] + 32)
-            Logger::Debug("Allocator error");
+//        if (k != 64)
+//        if (pointers[k] != pointers[k - 1] + 32)
+//            Logger::Debug("Allocator error");
     }
     
     for (uint32 k = 0; k < 128; ++k)
     {
         pool.Delete(pointers[k]);
     }
-
 }
 
+
+class ObjectWithNDOverload
+{
+public:
+    Vector3 position;
+    Vector3 direction;
+    Quaternion orientation;
+    
+    static void * operator new(size_t size);
+    static void operator delete(void * pointer, size_t size);
+    static FixedSizePoolAllocator pool;
+};
+
+FixedSizePoolAllocator ObjectWithNDOverload::pool(sizeof(ObjectWithNDOverload), 64);
+
+void * ObjectWithNDOverload::operator new(size_t size)
+{
+    return pool.New();
+}
+void ObjectWithNDOverload::operator delete(void * pointer, size_t size)
+{
+    return pool.Delete(pointer);
+}
+class ObjectWithoutNDOverload
+{
+public:
+    Vector3 position;
+    Vector3 direction;
+    Quaternion orientation;
+
+};
+
+void MemoryAllocatorsTest::PoolAllocatorNewDeleteTest(PerfFuncData * data)
+{
+    ObjectWithNDOverload * object1 = new ObjectWithNDOverload;
+    SafeDelete(object1);
+    
+    ObjectWithNDOverload * object2 = new ObjectWithNDOverload;
+    SafeDelete(object2);
+}
 
 
