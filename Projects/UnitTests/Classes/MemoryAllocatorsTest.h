@@ -44,9 +44,8 @@ public:
 	virtual void LoadResources();
 	virtual void UnloadResources();
 
-
 	void PoolAllocatorTest(PerfFuncData * data);
-
+	void PoolAllocatorNewDeleteTest(PerfFuncData * data);
 private:
 
 };
