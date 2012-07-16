@@ -53,7 +53,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtMultimedia;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;..\..\Sources\Internal;..\..\Sources\External;c:\Work\Framework\dava.framework\Projects\QtFramework\..\..\Sources\External\Freetype;..\..\Libs\oggvorbis\include;..\..\Libs\include;..\..\Libs\libs;..\..\Libs\freetype\include;..\..\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;debug;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Sources\Internal;..\..\Sources\External;..\..\Sources\External\Freetype;..\..\Libs\oggvorbis\include;..\..\Libs\include;..\..\Libs\libs;..\..\Libs\freetype\include;..\..\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;debug;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -61,7 +61,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>debug\</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_MULTIMEDIA_LIB;QT_OPENGL_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;DAVA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -85,7 +85,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtMultimedia;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;..\..\Sources\Internal;..\..\Sources\External;c:\Work\Framework\dava.framework\Projects\QtFramework\..\..\Sources\External\Freetype;..\..\Libs\oggvorbis\include;..\..\Libs\include;..\..\Libs\libs;..\..\Libs\freetype\include;..\..\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;release;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Sources\Internal;..\..\Sources\External;..\..\Sources\External\Freetype;..\..\Libs\oggvorbis\include;..\..\Libs\include;..\..\Libs\libs;..\..\Libs\freetype\include;..\..\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -93,7 +93,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>release\</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_MULTIMEDIA_LIB;QT_OPENGL_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -120,6 +120,8 @@
     <ClCompile Include="..\..\Sources\Internal\Math\AABBox3.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\AccelerometerAndroid.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\AnimatedMesh.cpp" />
@@ -181,6 +183,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectAnimations.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene2D\GameObjectManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\2D\GraphicsFont.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\HTTPDownloaderAndroid.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Heightmap.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
@@ -337,10 +340,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\ALUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\Accelerometer.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\AccelerometerAndroid.h" />
