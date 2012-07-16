@@ -53,6 +53,9 @@ struct MemoryBlock
     Backtrace   * backtrace;        // 8
     uint32        size;             // 4
     uint32        flags;            // 4
+#if defined(_WIN32)
+	uint32		  align[3];
+#endif
     
     // TOTAL: 32 bytes.
     
@@ -116,7 +119,10 @@ struct BackTraceLessCompare
             if (bt1->array[k] < bt2->array[k])
             {
                 return true;
-            }
+            }else if (bt1->array[k] > bt2->array[k])
+			{
+				return false;
+			}
         return false;
     };
 };
@@ -147,7 +153,8 @@ public:
 		//return &instance;
 		if (instance_new == 0)
 		{
-            assert(sizeof(MemoryBlock) % 16 == 0);
+			uint32 sizeofMemoryBlock = sizeof(MemoryBlock);
+            assert(sizeofMemoryBlock % 16 == 0);
 			void * addr = malloc(sizeof(MemoryManagerImpl));
 			instance_new = new(addr) MemoryManagerImpl(); //(sizeof(MemoryManagerImpl), addr);
 		}
@@ -226,7 +233,7 @@ public:
                                
     // Statistics
 	int		peakMemoryUsage;
-	int		maximumBlockSize;
+	uint32	maximumBlockSize;
 	int		currentAllocatedMemory;
     int     managerOverheadSize;
     int     peakManagerOverheadSize;
@@ -241,7 +248,7 @@ public:
 
 }
 
-void * operator new(size_t _size) throw(std::bad_alloc)
+void * operator new(size_t _size) throw()
 {
 	return DAVA::MemoryManagerImpl::Instance()->New(_size);
 }
@@ -262,7 +269,7 @@ void   operator delete(void * _ptr, const std::nothrow_t &) throw()
 }
 
 
-void * operator new[](size_t _size) throw(std::bad_alloc)
+void * operator new[](size_t _size) throw()
 {
 	return DAVA::MemoryManagerImpl::Instance()->New(_size);
 }

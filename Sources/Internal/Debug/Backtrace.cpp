@@ -3,6 +3,9 @@
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
 #include <execinfo.h>
 #include <cxxabi.h>
+#elif defined(__DAVAENGINE_WIN32__)
+#include <DbgHelp.h>
+#pragma comment(lib, "Dbghelp.lib")
 #endif
 
 
@@ -93,9 +96,6 @@ namespace DAVA
         free(strings);
 #elif defined(__DAVAENGINE_WIN32__)
         
-        unsigned int   i;
-        void         * stack[ 100 ];
-        unsigned short frames;
         SYMBOL_INFO  * symbol;
         HANDLE         process;
         
@@ -107,10 +107,11 @@ namespace DAVA
         symbol->MaxNameLen   = 255;
         symbol->SizeOfStruct = sizeof( SYMBOL_INFO );
         
-        for( i = 0; i < frames; i++ )
+        for(uint32 i = 0; i < backtrace->size; i++ )
         {
             SymFromAddr( process, (DWORD64)( backtrace->array[i] ), 0, symbol );
-            
+            log->strings[i] = (char*)malloc(512);
+			_snprintf(log->strings[i], 512, "%i: %s - 0x%0X\n", backtrace->size - i - 1, symbol->Name, symbol->Address);
             //printf( "%i: %s - 0x%0X\n", frames - i - 1, symbol->Name, symbol->Address );
         }
         
