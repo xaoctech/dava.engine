@@ -1,5 +1,5 @@
 #include "ParticleEmitterPropertyControl.h"
-#include "SceneEditor/SceneEditorScreenMain.h"
+#include "SceneEditorScreenMain.h"
 #include "AppScreens.h"
 
 ParticleEmitterPropertyControl::ParticleEmitterPropertyControl(const Rect & rect, bool createNodeProperties)

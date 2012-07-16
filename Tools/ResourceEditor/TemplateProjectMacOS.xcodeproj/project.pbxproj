@@ -41,6 +41,7 @@
 		5C6ECBD91500B34000A27E71 /* UISliderWithText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6ECBD71500B34000A27E71 /* UISliderWithText.cpp */; };
 		5C7A35DD152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7A35DB152F08720054FCA1 /* LandscapeToolsPanelHeightmap.cpp */; };
 		5C7A35E0152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7A35DE152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp */; };
+		5C7F464415B43F870038AF3A /* ParticleEmitterPropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7F464215B43F870038AF3A /* ParticleEmitterPropertyControl.cpp */; };
 		5C81C29F14D0480700580500 /* PVRConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C81C29D14D0480700580500 /* PVRConverter.cpp */; };
 		5C8F1013151CBB2200800ED7 /* HeightmapNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */; };
 		5C8F66FA15230EC100859901 /* LandscapeEditorColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8F66F815230EC100859901 /* LandscapeEditorColor.cpp */; };
@@ -408,6 +409,8 @@
 		5C7A35DC152F08720054FCA1 /* LandscapeToolsPanelHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeToolsPanelHeightmap.h; sourceTree = "<group>"; };
 		5C7A35DE152F095E0054FCA1 /* LandscapeEditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeEditorHeightmap.cpp; sourceTree = "<group>"; };
 		5C7A35DF152F095E0054FCA1 /* LandscapeEditorHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeEditorHeightmap.h; sourceTree = "<group>"; };
+		5C7F464215B43F870038AF3A /* ParticleEmitterPropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterPropertyControl.cpp; sourceTree = "<group>"; };
+		5C7F464315B43F870038AF3A /* ParticleEmitterPropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterPropertyControl.h; sourceTree = "<group>"; };
 		5C81C29D14D0480700580500 /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PVRConverter.cpp; sourceTree = "<group>"; };
 		5C81C29E14D0480700580500 /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRConverter.h; sourceTree = "<group>"; };
 		5C8F1011151CBB2200800ED7 /* HeightmapNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightmapNode.cpp; sourceTree = "<group>"; };
@@ -1266,6 +1269,8 @@
 		5CFC480514A35DF2009A0C9F /* CreateNode */ = {
 			isa = PBXGroup;
 			children = (
+				5C7F464215B43F870038AF3A /* ParticleEmitterPropertyControl.cpp */,
+				5C7F464315B43F870038AF3A /* ParticleEmitterPropertyControl.h */,
 				5CF45A7E15487ED200A1E03C /* LodDistanceControl.cpp */,
 				5CF45A7F15487ED200A1E03C /* LodDistanceControl.h */,
 				5C25DBE81541FD60000E0568 /* LodNodePropertyControl.cpp */,
@@ -2450,6 +2455,7 @@
 				FEC95C4D15B3F95200588BBF /* ParticlesEditorControl.cpp in Sources */,
 				FEC95C4E15B3F95200588BBF /* PreviewControl.cpp in Sources */,
 				FEC95C4F15B3F95200588BBF /* PropertyLineEditControl.cpp in Sources */,
+				5C7F464415B43F870038AF3A /* ParticleEmitterPropertyControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

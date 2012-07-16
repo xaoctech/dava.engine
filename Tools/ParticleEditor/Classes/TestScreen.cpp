@@ -2463,7 +2463,7 @@ void TestScreen::OnFileSelected(UIFileSystemDialog *forDialog, const String &pat
     }
     if(forDialog == fsDlgProject)
     {
-        ReplaceBundleName(pathToFile + "/Data");
+        FileSystem::ReplaceBundleName(pathToFile + "/Data");
         
         ExecutePacker(pathToFile + "/DataSource");
         

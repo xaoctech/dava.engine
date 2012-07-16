@@ -1,0 +1,199 @@
+/*==================================================================================
+    Copyright (c) 2008, DAVA Consulting, LLC
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the DAVA Consulting, LLC nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE DAVA CONSULTING, LLC AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL DAVA CONSULTING, LLC BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    Revision History:
+        * Created by Vitaliy Borodovsky 
+=====================================================================================*/
+#include "QtLayerWin32.h"
+
+#if defined(__DAVAENGINE_WIN32__)
+
+#include "Platform/Qt/Win32/CorePlatformWin32.h"
+
+
+extern void FrameworkDidLaunched();
+extern void FrameworkWillTerminate();
+
+namespace DAVA 
+{
+    
+QtLayerWin32::QtLayerWin32()
+{
+    WidgetCreated();
+    AppStarted();
+}
+
+QtLayerWin32::~QtLayerWin32()
+{
+    AppFinished();
+    WidgetDestroyed();
+}
+    
+    
+void QtLayerWin32::WidgetCreated()
+{
+}
+
+void QtLayerWin32::WidgetDestroyed()
+{
+    
+}
+    
+void QtLayerWin32::OnSuspend()
+{
+    SoundSystem::Instance()->Suspend();
+    Core::Instance()->SetIsActive(false);
+}
+    
+void QtLayerWin32::OnResume()
+{
+    SoundSystem::Instance()->Resume();
+    Core::Instance()->SetIsActive(true);
+}
+    
+void QtLayerWin32::AppStarted()
+{
+    Core::Instance()->SystemAppStarted();
+}
+
+void QtLayerWin32::AppFinished()
+{
+    Core::Instance()->SystemAppFinished();
+    FrameworkWillTerminate();
+    Core::Instance()->ReleaseSingletons();
+#ifdef ENABLE_MEMORY_MANAGER
+    if (DAVA::MemoryManager::Instance() != 0)
+    {
+        DAVA::MemoryManager::Instance()->FinalLog();
+    }
+#endif
+
+	CoreWin32Platform *core = dynamic_cast<CoreWin32Platform *>(CoreWin32Platform::Instance());
+	if (NULL != core)
+	{
+		CloseHandle(core->hMutex);
+	}
+}
+
+
+void QtLayerWin32::SetWindow(HINSTANCE hInstance, HWND hWindow, int32 width, int32 height)
+{
+	CoreWin32Platform *core = dynamic_cast<CoreWin32Platform *>(CoreWin32Platform::Instance());
+	if (NULL != core)
+	{
+		core->SetupWindow(hInstance, hWindow);
+		RenderManager::Create(Core::RENDERER_OPENGL);		
+		RenderManager::Instance()->Create(hInstance, hWindow);
+
+		FrameworkDidLaunched();
+
+		Resize(width, height);
+// 		DisplayMode currentMode = DisplayMode(width, height, 16, 0);
+// 
+// 		KeyedArchive * options = Core::Instance()->GetOptions();
+// 		if (options)
+// 		{
+// 			currentMode.bpp = options->GetInt32("bpp");
+// 		}
+// 
+// 		RenderManager::Instance()->ChangeDisplayMode(currentMode, false);
+// 		RenderManager::Instance()->Init(currentMode.width, currentMode.height);
+// 		UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
+// 		Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
+
+		AppStarted();
+	}
+}
+
+void QtLayerWin32::Resize(int32 width, int32 height)
+{
+	DisplayMode currentMode = DisplayMode(width, height, 16, 0);
+
+	KeyedArchive * options = Core::Instance()->GetOptions();
+	if (options)
+	{
+		currentMode.bpp = options->GetInt32("bpp");
+	}
+
+	RenderManager::Instance()->ChangeDisplayMode(currentMode, false);
+	RenderManager::Instance()->Init(currentMode.width, currentMode.height);
+	UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
+	Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
+}
+    
+void QtLayerWin32::ProcessFrame()
+{
+//    if(willQuit)
+//        return;
+
+//    if (activeCursor != RenderManager::Instance()->GetCursor())
+//    {
+//        activeCursor = RenderManager::Instance()->GetCursor();
+//    }
+
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//    glClearColor(1.0f, 0.5f, 0.1f, 1.f);
+    
+    DAVA::RenderManager::Instance()->Lock();
+    
+//    if (isFirstDraw)
+//    {
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// 
+//        isFirstDraw = false;
+//    }
+    
+    DAVA::Core::Instance()->SystemProcessFrame();
+    
+    /*	// This is an optimization.  If the view is being
+     // resized, don't do a buffer swap.  The GL content
+     // will be updated as part of the window flush anyway.
+     // This makes live resize look nicer as the GL view
+     // won't get flushed ahead of the window flush.  It also
+     // makes live resize faster since we're not flushing twice.
+     // Because I want the animtion to continue while resize
+     // is happening, I use my own flag rather than calling
+     // [self inLiveReize].  For most apps this wouldn't be
+     // necessary.
+     
+     if(!sizeChanged)
+     {
+     [[self openGLContext] flushBuffer];
+     }
+     else glFlush();
+     sizeChanged = NO; */
+//    if(DAVA::Core::Instance()->IsActive())
+//    {
+//        [[self openGLContext] flushBuffer];
+//    }
+    
+    DAVA::RenderManager::Instance()->Unlock();   
+}
+
+};
+
+
+#endif // #if defined(__DAVAENGINE_MACOS__)
