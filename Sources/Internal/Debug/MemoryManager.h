@@ -84,6 +84,7 @@ public:
 //void*	operator new[](size_t _size, const char *_file, int _line);
 ////void	operator delete[](void * ptr);
 
+#if defined(__DAVAENGINE_MACOS__) && defined(__DAVAENGINE_IPHONE__)
 void * operator new(size_t _size) throw(std::bad_alloc);
 void * operator new(size_t _size, const std::nothrow_t &) throw();
 
@@ -95,6 +96,20 @@ void * operator new[](size_t _size, const std::nothrow_t &) throw();
 
 void   operator delete[](void * ptr) throw();
 void   operator delete[](void * ptr, const std::nothrow_t &) throw();
+#else defined(__DAVAENGINE_WIN32__)
+void * operator new(size_t _size) throw();
+void * operator new(size_t _size, const std::nothrow_t &) throw();
+
+void   operator delete(void * ptr) throw();
+void   operator delete(void * ptr, const std::nothrow_t &) throw();
+
+void * operator new[](size_t _size) throw();
+void * operator new[](size_t _size, const std::nothrow_t &) throw();
+
+void   operator delete[](void * ptr) throw();
+void   operator delete[](void * ptr, const std::nothrow_t &) throw();
+#endif
+
 
 //// Default placement versions of operator new.
 //inline void* operator new(std::size_t, void* __p) throw() { return __p; }
