@@ -31,7 +31,7 @@
 
 #if defined(__DAVAENGINE_WIN32__)
 
-#include "Win32/CorePlatformWin32.h"
+#include "Platform/Qt/Win32/CorePlatformWin32.h"
 
 
 extern void FrameworkDidLaunched();
