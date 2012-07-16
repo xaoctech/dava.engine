@@ -250,6 +250,10 @@
 		FEA30C361231362D00E691CC /* version.plist in Resources */ = {isa = PBXBuildFile; fileRef = FEA30C2E1231362D00E691CC /* version.plist */; };
 		FEC3CA811283557F00541220 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */; };
 		FEC3CA821283557F00541220 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA711283557F00541220 /* GameCore.cpp */; };
+		FEC95C4C15B3F95200588BBF /* ForcePreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC95C4415B3F95200588BBF /* ForcePreviewControl.cpp */; };
+		FEC95C4D15B3F95200588BBF /* ParticlesEditorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC95C4615B3F95200588BBF /* ParticlesEditorControl.cpp */; };
+		FEC95C4E15B3F95200588BBF /* PreviewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC95C4815B3F95200588BBF /* PreviewControl.cpp */; };
+		FEC95C4F15B3F95200588BBF /* PropertyLineEditControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC95C4A15B3F95200588BBF /* PropertyLineEditControl.cpp */; };
 		FED66BBF14BF6BDA00A39A03 /* EditorLightNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66BBE14BF6BDA00A39A03 /* EditorLightNode.cpp */; };
 		FED66BDD14C0416400A39A03 /* EditorSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FED66BDB14C0416400A39A03 /* EditorSettings.cpp */; };
 		FEDDC9541428E59E0004BF1A /* EditMatrixControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEDDC9511428E59E0004BF1A /* EditMatrixControl.cpp */; };
@@ -919,6 +923,14 @@
 		FEC3CA701283557F00541220 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = ../FrameworkMain.h; sourceTree = "<group>"; };
 		FEC3CA711283557F00541220 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameCore.cpp; path = Classes/GameCore.cpp; sourceTree = "<group>"; };
 		FEC3CA721283557F00541220 /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCore.h; path = Classes/GameCore.h; sourceTree = "<group>"; };
+		FEC95C4415B3F95200588BBF /* ForcePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ForcePreviewControl.cpp; sourceTree = "<group>"; };
+		FEC95C4515B3F95200588BBF /* ForcePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForcePreviewControl.h; sourceTree = "<group>"; };
+		FEC95C4615B3F95200588BBF /* ParticlesEditorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticlesEditorControl.cpp; sourceTree = "<group>"; };
+		FEC95C4715B3F95200588BBF /* ParticlesEditorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlesEditorControl.h; sourceTree = "<group>"; };
+		FEC95C4815B3F95200588BBF /* PreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PreviewControl.cpp; sourceTree = "<group>"; };
+		FEC95C4915B3F95200588BBF /* PreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreviewControl.h; sourceTree = "<group>"; };
+		FEC95C4A15B3F95200588BBF /* PropertyLineEditControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyLineEditControl.cpp; sourceTree = "<group>"; };
+		FEC95C4B15B3F95200588BBF /* PropertyLineEditControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyLineEditControl.h; sourceTree = "<group>"; };
 		FED66B3A14BF420600A39A03 /* EditorLightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightNode.cpp; sourceTree = "<group>"; };
 		FED66B3B14BF420600A39A03 /* EditorLightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightNode.h; sourceTree = "<group>"; };
 		FED66BBE14BF6BDA00A39A03 /* EditorLightNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorLightNode.cpp; sourceTree = "<group>"; };
@@ -1886,6 +1898,7 @@
 				5CECF989151476D600FFAE80 /* LightmapsPacker.h */,
 				EA9D6B58149A86080012E1FB /* BeastProxy.cpp */,
 				EA9D6B59149A86080012E1FB /* BeastProxy.h */,
+				FEC95C4315B3F95200588BBF /* ParticlesEditor */,
 				D993104E1497B1BB00BB577D /* bullet */,
 				FE94204013325A1400515418 /* AppScreens.h */,
 				FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */,
@@ -1956,6 +1969,22 @@
 				FEA30C2E1231362D00E691CC /* version.plist */,
 			);
 			path = MacOSSpecific;
+			sourceTree = "<group>";
+		};
+		FEC95C4315B3F95200588BBF /* ParticlesEditor */ = {
+			isa = PBXGroup;
+			children = (
+				FEC95C4415B3F95200588BBF /* ForcePreviewControl.cpp */,
+				FEC95C4515B3F95200588BBF /* ForcePreviewControl.h */,
+				FEC95C4615B3F95200588BBF /* ParticlesEditorControl.cpp */,
+				FEC95C4715B3F95200588BBF /* ParticlesEditorControl.h */,
+				FEC95C4815B3F95200588BBF /* PreviewControl.cpp */,
+				FEC95C4915B3F95200588BBF /* PreviewControl.h */,
+				FEC95C4A15B3F95200588BBF /* PropertyLineEditControl.cpp */,
+				FEC95C4B15B3F95200588BBF /* PropertyLineEditControl.h */,
+			);
+			name = ParticlesEditor;
+			path = Classes/ParticlesEditor;
 			sourceTree = "<group>";
 		};
 		FEDDC95F1429FFEB0004BF1A /* ColladaExport */ = {
@@ -2417,6 +2446,10 @@
 				5CEFCC33158B274800CE35DA /* EntitiesGraph.cpp in Sources */,
 				5C9C59CC159A015E00F71475 /* FogControl.cpp in Sources */,
 				5CBFD6D1159C6CC600852F1A /* EntityPropertyControl.cpp in Sources */,
+				FEC95C4C15B3F95200588BBF /* ForcePreviewControl.cpp in Sources */,
+				FEC95C4D15B3F95200588BBF /* ParticlesEditorControl.cpp in Sources */,
+				FEC95C4E15B3F95200588BBF /* PreviewControl.cpp in Sources */,
+				FEC95C4F15B3F95200588BBF /* PropertyLineEditControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
