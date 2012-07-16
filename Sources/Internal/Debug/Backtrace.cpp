@@ -41,7 +41,7 @@ namespace DAVA
     {
         log->strings = (char**)malloc(sizeof(char*) * backtrace->size); 
         log->size = backtrace->size;
-#if defined(__DAVAENGINE_MACOS__) && (__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
         char **strings = backtrace_symbols(backtrace->array, backtrace->size); 
         
         // allocate string which will be filled with the demangled function name
@@ -49,7 +49,7 @@ namespace DAVA
         
         // iterate over the returned symbol lines. skip the first, it is the
         // address of this function.
-        for (int i = 0; i < backtrace->size; i++)
+        for (uint32 i = 0; i < backtrace->size; i++)
         {
             log->strings[i] = (char*)malloc(512);
             
