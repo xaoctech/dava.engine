@@ -39,6 +39,12 @@
     <ClInclude Include="Classes\SoundTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\HashMapTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\MemoryAllocatorsTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp">
@@ -63,6 +69,12 @@
       <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SoundTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\HashMapTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\MemoryAllocatorsTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
