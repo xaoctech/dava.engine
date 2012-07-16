@@ -68,7 +68,6 @@
 		5C5D99D215B0230D0058B43A /* ResourceArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97D715B0230D0058B43A /* ResourceArchive.cpp */; };
 		5C5D99D315B0230D0058B43A /* VariantType.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97D915B0230D0058B43A /* VariantType.cpp */; };
 		5C5D99D415B0230D0058B43A /* XMLParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97DB15B0230D0058B43A /* XMLParser.cpp */; };
-		5C5D99D515B0230D0058B43A /* XMLParser.mm in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97DD15B0230D0058B43A /* XMLParser.mm */; };
 		5C5D99D615B0230D0058B43A /* YamlArchive.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97DE15B0230D0058B43A /* YamlArchive.cpp */; };
 		5C5D99D715B0230D0058B43A /* YamlParser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97E015B0230D0058B43A /* YamlParser.cpp */; };
 		5C5D99D815B0230D0058B43A /* Accelerometer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D97E315B0230D0058B43A /* Accelerometer.cpp */; };
@@ -413,7 +412,6 @@
 		5C5D97DA15B0230D0058B43A /* VariantType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VariantType.h; sourceTree = "<group>"; };
 		5C5D97DB15B0230D0058B43A /* XMLParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XMLParser.cpp; sourceTree = "<group>"; };
 		5C5D97DC15B0230D0058B43A /* XMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLParser.h; sourceTree = "<group>"; };
-		5C5D97DD15B0230D0058B43A /* XMLParser.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = XMLParser.mm; sourceTree = "<group>"; };
 		5C5D97DE15B0230D0058B43A /* YamlArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlArchive.cpp; sourceTree = "<group>"; };
 		5C5D97DF15B0230D0058B43A /* YamlArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlArchive.h; sourceTree = "<group>"; };
 		5C5D97E015B0230D0058B43A /* YamlParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlParser.cpp; sourceTree = "<group>"; };
@@ -1075,7 +1073,6 @@
 				5C5D97DA15B0230D0058B43A /* VariantType.h */,
 				5C5D97DB15B0230D0058B43A /* XMLParser.cpp */,
 				5C5D97DC15B0230D0058B43A /* XMLParser.h */,
-				5C5D97DD15B0230D0058B43A /* XMLParser.mm */,
 				5C5D97DE15B0230D0058B43A /* YamlArchive.cpp */,
 				5C5D97DF15B0230D0058B43A /* YamlArchive.h */,
 				5C5D97E015B0230D0058B43A /* YamlParser.cpp */,
@@ -1714,7 +1711,6 @@
 				5C5D99D215B0230D0058B43A /* ResourceArchive.cpp in Build Sources */,
 				5C5D99D315B0230D0058B43A /* VariantType.cpp in Build Sources */,
 				5C5D99D415B0230D0058B43A /* XMLParser.cpp in Build Sources */,
-				5C5D99D515B0230D0058B43A /* XMLParser.mm in Build Sources */,
 				5C5D99D615B0230D0058B43A /* YamlArchive.cpp in Build Sources */,
 				5C5D99D715B0230D0058B43A /* YamlParser.cpp in Build Sources */,
 				5C5D99D815B0230D0058B43A /* Accelerometer.cpp in Build Sources */,
