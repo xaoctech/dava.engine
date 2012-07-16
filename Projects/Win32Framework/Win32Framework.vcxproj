@@ -138,6 +138,8 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\TouchAction.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\Data.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h" />
+    <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbClient.h" />
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h" />
     <ClInclude Include="..\..\Sources\Internal\DAVAConfig.h" />
@@ -458,6 +460,7 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbClient.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Database\MongodbObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DAVAEngine.cpp" />
