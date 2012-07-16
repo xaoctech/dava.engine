@@ -290,7 +290,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		{
 				NSPoint p = [curEvent locationInWindow];
             NSWindow *window = [curEvent window];
-            CGRect r = [window contentRectForFrameRect:[window frame]];
+            NSRect r = [window contentRectForFrameRect:[window frame]];
             CGFloat height = r.size.height;
             
 				it->physPoint.x = p.x;
@@ -312,7 +312,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 			
 			NSPoint p = [curEvent locationInWindow];
             NSWindow *window = [curEvent window];
-            CGRect r = [window contentRectForFrameRect:[window frame]];
+            NSRect r = [window contentRectForFrameRect:[window frame]];
             CGFloat height = r.size.height;
             
 			it->physPoint.x = p.x;
@@ -334,7 +334,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		NSPoint p = [curEvent locationInWindow];
         
         NSWindow *window = [curEvent window];
-        CGRect r = [window contentRectForFrameRect:[window frame]];
+        NSRect r = [window contentRectForFrameRect:[window frame]];
         CGFloat height = r.size.height;
        
 		newTouch.physPoint.x = p.x;
