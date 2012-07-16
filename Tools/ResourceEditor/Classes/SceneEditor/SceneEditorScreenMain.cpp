@@ -6,7 +6,7 @@
 #include "ControlsFactory.h"
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
-#include "ParticlesEditor/ParticlesEditorControl.h"
+#include "../ParticlesEditor/ParticlesEditorControl.h"
 
 #include "EditorSettings.h"
 #include "SceneValidator.h"

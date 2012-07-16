@@ -57,68 +57,16 @@ namespace DAVA
 {
 
 	
-	static String virtualBundlePath = "";
+String FileSystem::virtualBundlePath = "";
 	
-	void ReplaceBundleName(const String &newBundlePath)
+    void FileSystem::ReplaceBundleName(const String &newBundlePath)
 	{
 		virtualBundlePath = newBundlePath;	
 	}
 	
 	
-#if defined(__DAVAENGINE_IPHONE__)
-	NSString * FilepathRelativeToBundleObjC(NSString * relativePathname)
-	{
-		NSString * filePath;
-		if(virtualBundlePath.empty())
-		{
-				//		NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @""];
-			NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Data"];
-			filePath = [bundlePath stringByAppendingString: relativePathname];
-		}
-		else 
-		{
-			NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.c_str()];
-			filePath = [bundlePath stringByAppendingString: relativePathname];
-		}
-		
-		return filePath;
-	}
-#elif defined(__DAVAENGINE_MACOS__)
-	NSString * FilepathRelativeToBundleObjC(NSString * relativePathname)
-	{
-        NSString * filePath;
-        if(virtualBundlePath.empty())
-        {
-            NSString * bundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString: @"/Contents/Resources/Data"];
-            filePath = [bundlePath stringByAppendingString: relativePathname];
-        }
-        else
-        {
-            NSString * bundlePath = [NSString stringWithUTF8String: virtualBundlePath.c_str()];
-            filePath = [bundlePath stringByAppendingString: relativePathname];
-        }
-		
-		return filePath;
-	}
-#endif	
-	
-	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	
-	const char * FilepathRelativeToBundle(const char * relativePathname)
-	{
-		NSString * filePath = FilepathRelativeToBundleObjC([NSString stringWithUTF8String: relativePathname]);
-		return [filePath UTF8String];
-	}
-	
-	const char * FilepathRelativeToBundle(const String & relativePathname)
-	{
-		return FilepathRelativeToBundle(relativePathname.c_str());
-	}
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	
 #if defined(__DAVAENGINE_WIN32__)
-	const char * FilepathRelativeToBundle(const char * relativePathname)
+    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
 		if(virtualBundlePath.empty())
 		{
@@ -130,7 +78,7 @@ namespace DAVA
 		}
 	}
 	
-	const char * FilepathRelativeToBundle(const String & relativePathname)
+    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
 	{
 		return FilepathRelativeToBundle(relativePathname.c_str());
 	}
@@ -139,25 +87,15 @@ namespace DAVA
 	
 #if defined(__DAVAENGINE_ANDROID__)
 
-	const char * FilepathRelativeToBundle(const char * relativePathname)
+    const char * FileSystem::FilepathRelativeToBundle(const char * relativePathname)
 	{
 		return Format("assets/Data%s", relativePathname);
 	}
 
-	const char * FilepathRelativeToBundle(const String & relativePathname)
+    const char * FileSystem::FilepathRelativeToBundle(const String & relativePathname)
 	{
 		return FilepathRelativeToBundle(relativePathname.c_str());
 	}
-
-//	const char * FilepathInDocuments(const char * documentsPath, const char * relativePathname)
-//	{
-//		return Format("%s/Documents%s", documentsPath, relativePathname);
-//	}
-//
-//	const char * FilepathInDocuments(const String & documetsPath, const String & relativePathname)
-//	{
-//		return FilepathInDocuments(documetsPath.c_str(), relativePathname.c_str());
-//	}
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 	
@@ -545,27 +483,6 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
 #endif //PLATFORMS
     }
     
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
-    const String FileSystem::GetUserDocumentsPath()
-    {
-        NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString * bundlePath = [paths objectAtIndex:0];
-        NSString * filePath = [bundlePath stringByAppendingString: @"/"];
-        return String([filePath cStringUsingEncoding: NSUTF8StringEncoding]);
-    }
-    
-    const String FileSystem::GetPublicDocumentsPath()
-    {
-        return String("/Users/Shared/");
-    }
-
-    const String FileSystem::GetHomePath()
-    {
-        NSString * dirPath = NSHomeDirectory();
-        return String([[dirPath stringByAppendingString: @"/"] cStringUsingEncoding:NSUTF8StringEncoding]);
-    }
-
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
 	
 #if defined(__DAVAENGINE_WIN32__)
     const String FileSystem::GetUserDocumentsPath()
