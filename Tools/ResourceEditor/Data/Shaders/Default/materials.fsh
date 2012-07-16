@@ -65,8 +65,13 @@ void main()
 #else
     lowp vec3 textureColor0 = texture2D(texture0, varTexCoord0).rgb;
 #endif
+
 #if defined(OPAQUE)
-    if (textureColor0.a < 0.5)discard;
+    float alpha = textureColor0.a;
+    #if defined(VERTEX_COLOR)
+        alpha *= varVertexColor.a;
+    #endif
+    if (alpha < 0.5)discard;
 #endif
     
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
