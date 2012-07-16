@@ -1917,6 +1917,7 @@
 				FEF303B61335CFC50078054F /* UIFileTreeCell.h */,
 				FEF304E01336953A0078054F /* UISpriteEditor.cpp */,
 				FEF304E11336953A0078054F /* UISpriteEditor.h */,
+				FEF304E3133695BB0078054F /* UIScrollView.cpp */,
 				FEF304E4133695BB0078054F /* UIScrollView.h */,
 				FE1AE2E01455B51F00C6F712 /* VertexOctTree.cpp */,
 				FE1AE2E11455B51F00C6F712 /* VertexOctTree.h */,
@@ -1995,7 +1996,6 @@
 		FEDDC95F1429FFEB0004BF1A /* ColladaExport */ = {
 			isa = PBXGroup;
 			children = (
-				FEF304E3133695BB0078054F /* UIScrollView.cpp */,
 				FE2246EC142F7AB300BC3B92 /* ColladaConvert.cpp */,
 				FE2246ED142F7AB300BC3B92 /* ColladaConvert.h */,
 				FEDDC98D142A3DDB0004BF1A /* ColladaAnimatedMesh.cpp */,

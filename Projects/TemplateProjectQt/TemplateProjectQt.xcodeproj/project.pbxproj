@@ -8,33 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
-		1BB7B16530F91C36EFF9AF82 /* mongodb_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 8157E7438190A1EEF4A4D363 /* mongodb_macos */; };
-		221B5189CAB6029E355E6B3B /* freetype_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 81BBDA0F1849B4A35FAB7D00 /* freetype_macos */; };
 		26C2BED6C570C95F5243C556 /* moc_mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 336D3C48DD3B44974395C633 /* moc_mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
 		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
-		2B6CBE15931E95A4DBBFC927 /* theora_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 29FF4FD1BCB9408020402F99 /* theora_macos */; };
 		32C72EBFD2898177B79E7A55 /* FrameworkMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A2117A9E4852DC64FEAD47 /* FrameworkMain.cpp */; settings = {ATTRIBUTES = (); }; };
-		399EDF8B05BDAF1B68038A46 /* ogg_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 2A689518AF9C22C7AA97C9EF /* ogg_macos */; };
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
-		4AD7B01A46BF0AAA7F1A7F26 /* vorbis_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 8159B90213E2E13CB65C75B4 /* vorbis_macos */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C654C4115B4151C000B196B /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C190CAE15AEC95C005731F8 /* libFrameworkQt.a */; };
+		5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E615B460BF00DA83EB /* libz.dylib */; };
+		5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E815B460C900DA83EB /* libbz2.dylib */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
-		7B0C3EB90445C4272963DD6E /* curl_ios_mac in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5B2DE73738F678B7C6177179 /* curl_ios_mac */; };
-		8B234B64629621A96E19009E /* yaml_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = CBE0854C74E7E8A8F67923BE /* yaml_macos */; };
-		9539C2326936A29DFA4C7288 /* vorbisfile_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = F7C12D3D2FE75302773F34BB /* vorbisfile_macos */; };
 		A1A53E936FB558523CF7F427 /* davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 28F4A364A8315EAF07B938F8 /* davaglwidget.cpp */; settings = {ATTRIBUTES = (); }; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
-		B3641613C030E91CC8BB1FDD /* png_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 548C5E52292D4DA256C12EBD /* png_macos */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		BFD3E114F55B37D3F6410D4E /* moc_davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = DC6F844281BC84CC17E72FBF /* moc_davaglwidget.cpp */; settings = {ATTRIBUTES = (); }; };
 		C5CF3A0478003781858DACCB /* TestScreen.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7AE8B4D7B376BD8841D46C1C /* TestScreen.cpp */; settings = {ATTRIBUTES = (); }; };
 		D7EC7F2503D5F198E966A244 /* GameCore.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8DD0AA86892D3BD265188A7C /* GameCore.cpp */; settings = {ATTRIBUTES = (); }; };
-		DEBFE913F7F74D6757AC5747 /* xml_macos in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6C21256244E578A9DE07EE60 /* xml_macos */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +69,8 @@
 		5C654C3C15B40C7C000B196B /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
 		5C654C3D15B40C7C000B196B /* GameCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCore.h; path = Classes/GameCore.h; sourceTree = "<group>"; };
 		5C654C3E15B40C7C000B196B /* TestScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestScreen.h; path = Classes/TestScreen.h; sourceTree = "<group>"; };
+		5CCC10E615B460BF00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5CCC10E815B460C900DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		6D3A4A84E8680AFD0352C6BB /* davaglwidget.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = davaglwidget.ui; path = Classes/davaglwidget.ui; sourceTree = "<group>"; };
@@ -104,19 +98,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */,
+				5CCC10E715B460BF00DA83EB /* libz.dylib in Frameworks & Libraries */,
 				5C654C4115B4151C000B196B /* libFrameworkQt.a in Frameworks & Libraries */,
 				77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */,
 				A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */,
-				1BB7B16530F91C36EFF9AF82 /* mongodb_macos in Frameworks & Libraries */,
-				B3641613C030E91CC8BB1FDD /* png_macos in Frameworks & Libraries */,
-				DEBFE913F7F74D6757AC5747 /* xml_macos in Frameworks & Libraries */,
-				8B234B64629621A96E19009E /* yaml_macos in Frameworks & Libraries */,
-				7B0C3EB90445C4272963DD6E /* curl_ios_mac in Frameworks & Libraries */,
-				2B6CBE15931E95A4DBBFC927 /* theora_macos in Frameworks & Libraries */,
-				221B5189CAB6029E355E6B3B /* freetype_macos in Frameworks & Libraries */,
-				9539C2326936A29DFA4C7288 /* vorbisfile_macos in Frameworks & Libraries */,
-				4AD7B01A46BF0AAA7F1A7F26 /* vorbis_macos in Frameworks & Libraries */,
-				399EDF8B05BDAF1B68038A46 /* ogg_macos in Frameworks & Libraries */,
 				B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */,
 				A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */,
 				A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */,
@@ -133,6 +119,8 @@
 		05596AB53D8D521C69802C27 /* TemplateProjectQt */ = {
 			isa = PBXGroup;
 			children = (
+				5CCC10E815B460C900DA83EB /* libbz2.dylib */,
+				5CCC10E615B460BF00DA83EB /* libz.dylib */,
 				5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */,
 				5C190CA015AEC704005731F8 /* Info.plist */,
 				5C190C9E15AEC6F9005731F8 /* Data */,
@@ -345,7 +333,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make -C /Users/klesch/Work/WoT/Framework/TemplateProjectQt -f 'TemplateProjectQt.xcodeproj/qt_makeqmake.mak'";
+			shellScript = "make -C $PROJECT_DIR -f 'TemplateProjectQt.xcodeproj/qt_makeqmake.mak'";
 		};
 		5C42E09615B42E2E00F71425 /* Qt Preprocessors */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -359,7 +347,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make -C /Users/klesch/Work/WoT/Framework/TemplateProjectQt -f 'TemplateProjectQt.xcodeproj/qt_preprocess.mak'";
+			shellScript = "make -C $PROJECT_DIR -f 'TemplateProjectQt.xcodeproj/qt_preprocess.mak'";
 		};
 /* End PBXShellScriptBuildPhase section */
 
