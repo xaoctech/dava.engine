@@ -31,6 +31,10 @@
 		47FBFFD713A790C800E5A7F6 /* UIHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */; };
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
+		5C19F49515A42D920064E889 /* KeyedArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49015A42D920064E889 /* KeyedArchiver.cpp */; };
+		5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C19F49115A42D920064E889 /* KeyedArchiver.h */; };
+		5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */; };
+		5C19F49815A42D920064E889 /* KeyedUnarchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C19F49315A42D920064E889 /* KeyedUnarchiver.h */; };
 		5C203F311579362300CB53E9 /* MongodbObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C203F2F1579362300CB53E9 /* MongodbObject.cpp */; };
 		5C203F321579362300CB53E9 /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C203F301579362300CB53E9 /* MongodbObject.h */; };
 		5C42C98414E3AFA400EB3F53 /* libxml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C42C98314E3AFA400EB3F53 /* libxml_macos.a */; };
@@ -43,6 +47,7 @@
 		5C7BE5901574BAF8004FF01C /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7BE58E1574BAF8004FF01C /* MongodbClient.h */; };
 		5C82288815360BDE004D3F2D /* LandscapeCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */; };
 		5C82288915360BDE004D3F2D /* LandscapeCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C82288715360BDE004D3F2D /* LandscapeCursor.h */; };
+		5C8E672B15A58CA400A87103 /* FileSystemObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */; };
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
 		5C9FC2C714D58812002937A2 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */; };
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
@@ -201,6 +206,12 @@
 		FE9420941332605600515418 /* FileList.h in Headers */ = {isa = PBXBuildFile; fileRef = FE9420921332605600515418 /* FileList.h */; };
 		FEA4D8C41328D03E00E261D0 /* RenderBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA4D8C31328D03E00E261D0 /* RenderBase.cpp */; };
 		FEA4D9421328FD6A00E261D0 /* Random.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA4D9411328FD6A00E261D0 /* Random.h */; };
+		FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */; };
+		FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */; };
+		FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */; };
+		FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F6FD15A09AD800EED3DC /* HashMap.h */; };
+		FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */; };
+		FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */; };
 		FEC3E537133CCCDF00442ADD /* DoxygenDocumenation.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */; };
 		FEC711AF149F839C00939323 /* SceneFileV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC711AD149F839C00939323 /* SceneFileV2.cpp */; };
 		FEC711B0149F839C00939323 /* SceneFileV2.h in Headers */ = {isa = PBXBuildFile; fileRef = FEC711AE149F839C00939323 /* SceneFileV2.h */; };
@@ -592,6 +603,10 @@
 		47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchy.cpp; sourceTree = "<group>"; };
 		47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHierarchyCell.h; sourceTree = "<group>"; };
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
+		5C19F49015A42D920064E889 /* KeyedArchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiver.cpp; sourceTree = "<group>"; };
+		5C19F49115A42D920064E889 /* KeyedArchiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedArchiver.h; sourceTree = "<group>"; };
+		5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedUnarchiver.cpp; sourceTree = "<group>"; };
+		5C19F49315A42D920064E889 /* KeyedUnarchiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedUnarchiver.h; sourceTree = "<group>"; };
 		5C203F2F1579362300CB53E9 /* MongodbObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbObject.cpp; path = Database/MongodbObject.cpp; sourceTree = "<group>"; };
 		5C203F301579362300CB53E9 /* MongodbObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbObject.h; path = Database/MongodbObject.h; sourceTree = "<group>"; };
 		5C42C98314E3AFA400EB3F53 /* libxml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_macos.a; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
@@ -605,6 +620,7 @@
 		5C7BE58E1574BAF8004FF01C /* MongodbClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbClient.h; path = Database/MongodbClient.h; sourceTree = "<group>"; };
 		5C82288615360BDE004D3F2D /* LandscapeCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeCursor.cpp; sourceTree = "<group>"; };
 		5C82288715360BDE004D3F2D /* LandscapeCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeCursor.h; sourceTree = "<group>"; };
+		5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileSystemObjective.mm; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		5C9FC2C514D58812002937A2 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
@@ -766,6 +782,12 @@
 		FE9420921332605600515418 /* FileList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileList.h; sourceTree = "<group>"; };
 		FEA4D8C31328D03E00E261D0 /* RenderBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBase.cpp; sourceTree = "<group>"; };
 		FEA4D9411328FD6A00E261D0 /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
+		FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
+		FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
+		FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashMap.cpp; sourceTree = "<group>"; };
+		FEA8F6FD15A09AD800EED3DC /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
+		FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateHelpers.h; sourceTree = "<group>"; };
+		FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mallocator.h; path = ../Base/Mallocator.h; sourceTree = "<group>"; };
 		FEC3E536133CCCDF00442ADD /* DoxygenDocumenation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoxygenDocumenation.h; sourceTree = "<group>"; };
 		FEC711AD149F839C00939323 /* SceneFileV2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneFileV2.cpp; sourceTree = "<group>"; };
 		FEC711AE149F839C00939323 /* SceneFileV2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneFileV2.h; sourceTree = "<group>"; };
@@ -1400,6 +1422,7 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */,
 				FECFC0B712E87E3000C71562 /* BaseMath.cpp */,
 				FECFC0B812E87E3000C71562 /* BaseMath.h */,
 				FECFC0B912E87E3000C71562 /* BaseObject.h */,
@@ -1422,6 +1445,10 @@
 				FECFC0C912E87E3000C71562 /* StaticSingleton.h */,
 				FE25F78A145DB75700A72F9C /* Data.h */,
 				FE25F78C145DB88B00A72F9C /* Data.cpp */,
+				FEA8F6F4159EF78700EED3DC /* FixedSizePoolAllocator.cpp */,
+				FEA8F6F5159EF78700EED3DC /* FixedSizePoolAllocator.h */,
+				FEA8F6FC15A09AD700EED3DC /* HashMap.cpp */,
+				FEA8F6FD15A09AD800EED3DC /* HashMap.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -1466,6 +1493,7 @@
 				FECFC0E012E87E3000C71562 /* DVAssert.h */,
 				FECFC0E112E87E3000C71562 /* List.h */,
 				FECFC0E212E87E3000C71562 /* ListAllocator.h */,
+				FEA8F70F15AD5D7E00EED3DC /* Mallocator.h */,
 				FECFC0E312E87E3000C71562 /* MemoryManager.cpp */,
 				FECFC0E412E87E3000C71562 /* MemoryManager.h */,
 				FEEB6E7A131BC61C00958ACB /* Replay.cpp */,
@@ -1477,6 +1505,11 @@
 		FECFC0E512E87E3000C71562 /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
+				5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */,
+				5C19F49015A42D920064E889 /* KeyedArchiver.cpp */,
+				5C19F49115A42D920064E889 /* KeyedArchiver.h */,
+				5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */,
+				5C19F49315A42D920064E889 /* KeyedUnarchiver.h */,
 				FE044F2A140EE9FC002A6D27 /* ResourceArchive.cpp */,
 				FE044F2B140EE9FC002A6D27 /* ResourceArchive.h */,
 				3239C08413E301A7002CBBF2 /* Bitstream.cpp */,
@@ -2244,9 +2277,15 @@
 				5CBFD6C9159C6C3300852F1A /* MeshInstanceDrawSystem.h in Headers */,
 				5CBFD6CB159C6C3300852F1A /* TransformComponent.h in Headers */,
 				5CBFD6CD159C6C3300852F1A /* VisibilityAABBoxSystem.h in Headers */,
+				FEA8F6F7159EF78700EED3DC /* FixedSizePoolAllocator.h in Headers */,
+				FEA8F6FF15A09AD800EED3DC /* HashMap.h in Headers */,
+				FEA8F70115A0A11A00EED3DC /* TemplateHelpers.h in Headers */,
+				FEA8F71015AD5D7E00EED3DC /* Mallocator.h in Headers */,
 				5CD7157E15AC453700D08E8E /* ParticleEmitter3D.h in Headers */,
 				5CD7158015AC453700D08E8E /* ParticleLayer3D.h in Headers */,
 				5CD7158515AC454A00D08E8E /* ParticleEmitterNode.h in Headers */,
+				5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */,
+				5C19F49815A42D920064E889 /* KeyedUnarchiver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2561,10 +2600,15 @@
 				5CBFD6C6159C6C3300852F1A /* MeshInstanceComponent.cpp in Sources */,
 				5CBFD6C8159C6C3300852F1A /* MeshInstanceDrawSystem.cpp in Sources */,
 				5CBFD6CA159C6C3300852F1A /* TransformComponent.cpp in Sources */,
+				FEA8F6F6159EF78700EED3DC /* FixedSizePoolAllocator.cpp in Sources */,
+				FEA8F6FE15A09AD800EED3DC /* HashMap.cpp in Sources */,
 				C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */,
 				5CD7157D15AC453700D08E8E /* ParticleEmitter3D.cpp in Sources */,
 				5CD7157F15AC453700D08E8E /* ParticleLayer3D.cpp in Sources */,
 				5CD7158415AC454A00D08E8E /* ParticleEmitterNode.cpp in Sources */,
+				5C19F49515A42D920064E889 /* KeyedArchiver.cpp in Sources */,
+				5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */,
+				5C8E672B15A58CA400A87103 /* FileSystemObjective.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,7 +12,7 @@ LOCAL_MODULE := UnitTestsLib
 
 # set path for includes
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../classes
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../Classes
 
 
 # set exported includes
@@ -23,13 +23,13 @@ LOCAL_SRC_FILES :=  \
                     AndroidLayer.cpp \
                     AndroidDelegate.cpp \
                     \
-                    ../../classes/FrameworkMain.cpp \
-                    ../../classes/GameCore.cpp \
-                    ../../classes/BaseScreen.cpp \
-                    ../../classes/TestTemplate.cpp \
-                    ../../classes/SampleTest.cpp \
-                    ../../classes/EntityTest.cpp \
-                    ../../classes/SoundTest.cpp \
+                    ../../Classes/FrameworkMain.cpp \
+                    ../../Classes/GameCore.cpp \
+                    ../../Classes/BaseScreen.cpp \
+                    ../../Classes/TestTemplate.cpp \
+                    ../../Classes/SampleTest.cpp \
+                    ../../Classes/EntityTest.cpp \
+                    ../../Classes/SoundTest.cpp \
 
 LOCAL_CFLAGS := -g -O2
 
@@ -42,4 +42,4 @@ LOCAL_STATIC_LIBRARIES := libInternal libbox2d
 include $(BUILD_SHARED_LIBRARY)
 
 # include modules
-$(call import-module,Internal)
+$(call import-module, Internal)

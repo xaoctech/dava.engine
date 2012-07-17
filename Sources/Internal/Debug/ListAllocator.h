@@ -49,7 +49,7 @@ public:
 	
 	ITEM * Alloc()
 	{
-		void * p = malloc(sizeof(ITEM));
+		void * p = ::malloc(sizeof(ITEM));
 		//ITEM * item = new (p) ITEM;
 		return (ITEM*)p;
 	}
@@ -57,7 +57,7 @@ public:
 	void Dealloc(ITEM * node)
 	{
 		//node->~ITEM();
-		free(node);
+		::free(node);
 	}
 
 };

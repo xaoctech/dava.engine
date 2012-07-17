@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <AppKit/NSWindow.h>
 
 @interface NSFullScreenWindow : NSWindow {
 @private

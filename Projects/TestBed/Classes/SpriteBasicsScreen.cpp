@@ -156,6 +156,7 @@ void SpriteBasicsScreen::Draw(const UIGeometricData &geometricData)
     
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+
 	zebraSprite->Reset();
 	zebraSprite->SetPosition(0.0f, 30.0f);
 	zebraSprite->Draw();
@@ -246,7 +247,7 @@ void SpriteBasicsScreen::Draw(const UIGeometricData &geometricData)
      
     
     
-    
+
     Polygon2 p;
     p.AddPoint(Vector2(10.0f, 10.0f));
     p.AddPoint(Vector2(100.0f, 10.0f));

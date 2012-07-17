@@ -281,7 +281,7 @@ void Java_com_dava_template_JNIApplication_OnTerminate(JNIEnv * env, jobject cla
 // END OF JNIApplication
 
 // CALLED FROM JNIActivity
-#include "Utils/HttpDownloader.h"
+#include "Utils/HTTPDownloader.h"
 void Java_com_dava_template_JNIActivity_nativeOnCreate(JNIEnv * env, jobject classthis, jboolean isFirstRun)
 {
 //	LOGI("___ ON CREATE ___ %p, %d;  isFirstRun = %d", env, classthis, isFirstRun);
