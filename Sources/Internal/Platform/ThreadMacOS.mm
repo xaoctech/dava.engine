@@ -33,6 +33,10 @@
 #include <pthread.h>
 #import <QuartzCore/QuartzCore.h>
 
+#if defined (__DAVAENGINE_MACOS__)
+#import <AppKit/NSOpenGL.h>
+#endif //#if defined (__DAVAENGINE_MACOS__)
+
 @interface __ThreadMacOSInit__ : NSObject
 {
 }

@@ -57,6 +57,8 @@
 #include "Utils/Random.h"
 
 #include "Base/ObjectFactory.h"
+#include "Base/FixedSizePoolAllocator.h"
+#include "Base/HashMap.h"
 
 // ptrs
 #include "Base/RefPtr.h"

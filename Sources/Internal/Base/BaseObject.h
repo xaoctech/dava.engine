@@ -138,6 +138,7 @@ public:
     
     static BaseObject * LoadFromArchive(KeyedArchive * archive);
     
+    static BaseObject * DummyGet() { return 0; };
 protected:
 	
 	BaseObject(const BaseObject & b)
@@ -235,6 +236,12 @@ return new class_name();\
 };\
 static ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name), alias);
 
+    /*
+     // tried to register every class that was marked by REGISTER_CLASS function;
+     class_name * create_class##_class_name();\
+     static size_t class_size = sizeof(create_class##_class_name());\
+
+     */
 	
 /*template<class C>
 C * SafeClone(C * object)

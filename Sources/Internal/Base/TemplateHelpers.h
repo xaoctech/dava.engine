@@ -30,12 +30,12 @@
 #ifndef __DAVAENGINE_TEMPLATEHELPERS_H__
 #define __DAVAENGINE_TEMPLATEHELPERS_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObjectChecker.h"
-#include "Debug/DVAssert.h"
-#include "DAVAConfig.h"
-#include "Base/RefPtr.h"
-#include "Render/RenderBase.h"
+//#include "Base/BaseTypes.h"
+//#include "Base/BaseObjectChecker.h"
+//#include "Debug/DVAssert.h"
+//#include "DAVAConfig.h"
+//#include "Base/RefPtr.h"
+//#include "Render/RenderBase.h"
 #include <typeinfo>
 
 namespace DAVA
@@ -55,12 +55,12 @@ class Type2Type
     
     
 template <bool flag, typename T, typename U>
-class Select
+struct Select
 {
     typedef T Result;
 };
 template <typename T, typename U>
-class Select<false, T, U>
+struct Select<false, T, U>
 {
     typedef U Result;
 };
@@ -103,48 +103,47 @@ public:
 class NullType{};
 struct EmptyType{};
     
+template<typename U>
+struct PointerTraits
+{
+    enum{result = false };
+    typedef NullType PointeeType;
+};
+template <typename U>
+struct PointerTraits<U*>
+{
+    enum{result = true };
+    typedef U PointeeType;
+};
+
+template<typename U>
+struct ReferenceTraits
+{
+    enum{result = false };
+    typedef NullType ReferenceType;
+};
+template <typename U>
+struct ReferenceTraits<U&>
+{
+    enum{result = true };
+    typedef U ReferenceType;
+};
+
+template<class U>
+struct P2MTraits
+{
+    enum{result = false };
+};
+template <class R, class V>
+struct P2MTraits<R V::*>
+{
+    enum{result = true };
+};    
+
 template <typename T>
 class TypeTraits
 {
-public:
-    template<typename U>
-    struct PointerTraits
-    {
-        enum{result = false };
-        typedef NullType PointeeType;
-    };
-    template <typename U>
-    struct PointerTraits<U*>
-    {
-        enum{result = true };
-        typedef U PointeeType;
-    };
-    
-    template<typename U>
-    struct ReferenceTraits
-    {
-        enum{result = false };
-        typedef NullType ReferenceType;
-    };
-    template <typename U>
-    struct ReferenceTraits<U&>
-    {
-        enum{result = true };
-        typedef U ReferenceType;
-    };
-    
-    template<class U>
-    struct P2MTraits
-    {
-        enum{result = false };
-    };
-    template <class R, class V>
-    struct P2MTraits<R V::*>
-    {
-        enum{result = true };
-    };
-
-    
+public:    
     enum {isPointer = PointerTraits<T>::result };    
     enum {isReference = ReferenceTraits<T>::result };   
     enum {isPointerToMemberFunction = P2MTraits<T>::result };

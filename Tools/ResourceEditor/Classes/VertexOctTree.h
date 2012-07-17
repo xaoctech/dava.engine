@@ -66,7 +66,7 @@ private:
     
     void RecursiveBuild(Node * headNode, VERTEX_TYPE * array)
     {
-        if (headNode.vertexArray.size() > 10)
+        if (headNode->vertexArray.size() > 10)
         {
             Vector3 min = headNode->box.min;
             Vector3 mid = headNode->box.GetCenter();
@@ -87,7 +87,7 @@ private:
             for (int32 k = 0; k < 8; ++k)
             {
                 AABBox3 childBox(minPoses[k], minPoses[k] + size);
-                int32 size = headNode.vertexArray.size();
+                int32 size = headNode->vertexArray.size();
                 //for (
                 
             
