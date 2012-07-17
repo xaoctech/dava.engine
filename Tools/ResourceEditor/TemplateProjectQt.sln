@@ -6,7 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TemplateProjectQt", "Templa
 		{08502C53-38AF-39A5-80DC-E84F9012796D} = {08502C53-38AF-39A5-80DC-E84F9012796D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FrameworkQt", "..\dava.framework\Projects\QtFramework\FrameworkQt.vcxproj", "{08502C53-38AF-39A5-80DC-E84F9012796D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FrameworkQt", "..\..\Projects\QtFramework\FrameworkQt.vcxproj", "{08502C53-38AF-39A5-80DC-E84F9012796D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
