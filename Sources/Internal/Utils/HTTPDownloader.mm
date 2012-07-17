@@ -32,6 +32,13 @@
 #include "Utils/Utils.h"
 #include "FileSystem/FileSystem.h"
 
+#if defined(__DAVAENGINE_MACOS__)
+#import <Foundation/NSObject.h>
+#import <Foundation/NSURLConnection.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSURLRequest.h>
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
 @interface DownloaderObj : NSObject
 {

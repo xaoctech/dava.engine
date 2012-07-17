@@ -28,7 +28,7 @@
 #include "PropertyLineEditControl.h"
 #include "PreviewControl.h"
 #include "ForcePreviewControl.h"
-#include "SceneEditor/DraggableDialog.h"
+#include "../SceneEditor/DraggableDialog.h"
 
 using namespace DAVA;
 

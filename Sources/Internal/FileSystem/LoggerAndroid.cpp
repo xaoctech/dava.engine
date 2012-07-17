@@ -1,14 +1,14 @@
 #include "FileSystem/Logger.h"
+
+#if defined(__DAVAENGINE_ANDROID__)
+
 #include <stdarg.h>
-
 #include <android/log.h>
-
 #include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
 
-#if defined(__DAVAENGINE_ANDROID__)
 
     static DAVA::String androidLogTag = "";    
     
@@ -68,6 +68,7 @@ void Logger::SetTag(const char8 *logTag)
     androidLogTag = Format("%s", logTag);
 }
     
-#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 }
+
+#endif //#if defined(__DAVAENGINE_ANDROID__)

@@ -1,5 +1,5 @@
 #include "ParticlesEditorControl.h" 
-#include "SceneEditor/ControlsFactory.h"
+#include "../SceneEditor/ControlsFactory.h"
 
 ParticlesEditorControl::ParticlesEditorControl()
 : DraggableDialog(Rect(GetScreenWidth()/8.f, GetScreenHeight()/16.f, 400.f, GetScreenHeight()-GetScreenHeight()/16.f-50.f))
@@ -2422,7 +2422,7 @@ void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const
     }
     if(forDialog == fsDlgProject)
     {
-        ReplaceBundleName(pathToFile + "/Data");
+        FileSystem::ReplaceBundleName(pathToFile + "/Data");
         
         ExecutePacker(pathToFile + "/DataSource");
         
