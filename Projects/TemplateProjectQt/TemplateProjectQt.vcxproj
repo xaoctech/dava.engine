@@ -31,6 +31,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <IntermediateDirectory>release\</IntermediateDirectory>
     <PrimaryOutput>TemplateProjectQt</PrimaryOutput>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -42,44 +43,43 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TemplateProjectQt</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TemplateProjectQt</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtGui;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;..\dava.framework\Sources\Internal;..\dava.framework\Sources\External;..\dava.framework\Sources\External\Freetype;..\dava.framework\Libs\oggvorbis\include;..\dava.framework\Sources\Libs\include;Classes;..\dava.framework\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;..\dava.framework\Projects\QtFramework\debug;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;debug;.;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtGui;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;..\dava.framework\Sources\Internal;..\dava.framework\Sources\External;..\dava.framework\Libs\include;..\dava.framework\Libs\glew\include;Classes;$(DXSDK_DIR)/include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;debug;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <ObjectFileName>debug\</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
-      <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>
+      </RuntimeTypeInfo>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glu32.lib;opengl32.lib;gdi32.lib;user32.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\qtmaind.lib;../dava.framework/Libs/libs/libmongodb_wind.lib;../dava.framework/Libs/libs/pnglib_wind.lib;../dava.framework/Libs/libs/libxml_wind.lib;../dava.framework/Libs/libs/libyaml_wind.lib;../dava.framework/Libs/libs/zlibd.lib;../dava.framework/Libs/freetype/lib/freetype246MT_D.lib;../dava.framework/Libs/oggvorbis/lib/libogg_static_d.lib;../dava.framework/Libs/oggvorbis/lib/libvorbis_static_d.lib;../dava.framework/Libs/oggvorbis/lib/libvorbisfile_static_d.lib;../dava.framework/Projects/QtFramework/debug/FrameworkQt.lib;../dava.framework/Libs/libs/libtheora_win.lib;../dava.framework/Libs/glew/lib/glew32.lib;"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/DxErr.lib";"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/d3d9.lib";shfolder.lib;Shell32.lib;"C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32\OpenAL32.lib";c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtOpenGLd4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtGuid4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtNetworkd4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtCored4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib;../dava.framework/Libs/libs/;../dava.framework/Libs/freetype/lib/;../dava.framework/Libs/oggvorbis/lib/;../dava.framework/Projects/QtFramework/debug/;../dava.framework/Libs/glew/lib/;c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/;C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>FrameworkQt.lib;glu32.lib;opengl32.lib;gdi32.lib;user32.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\qtmaind.lib;../dava.framework/Libs/glew/lib/glew32.lib;"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/DxErr.lib";"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/d3d9.lib";shfolder.lib;Shell32.lib;"C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32\OpenAL32.lib";c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtOpenGLd4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtGuid4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtNetworkd4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtCored4.lib;msvcmrt.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib;../dava.framework/Projects/QtFramework/$(Configuration);../dava.framework/Libs/glew/lib/;c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/;C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <IgnoreSpecificDefaultLibraries>libcmtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>$(OutDir)\TemplateProjectQt.exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -95,32 +95,31 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;..\..\..\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;..\..\..\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtGui;..\..\..\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;..\..\..\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;..\dava.framework\Sources\Internal;..\dava.framework\Sources\External;..\dava.framework\Sources\External\Freetype;..\dava.framework\Libs\oggvorbis\include;..\dava.framework\Sources\Libs\include;Classes;..\dava.framework\Libs\glew\include;c:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;.;release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <AdditionalIncludeDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtCore;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtGui;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;..\dava.framework\Sources\Internal;..\dava.framework\Sources\External;..\dava.framework\Libs\include;..\dava.framework\Libs\glew\include;Classes;$(DXSDK_DIR)/include;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;.;release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <ObjectFileName>release\</ObjectFileName>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
-      <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>
+      </RuntimeTypeInfo>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glu32.lib;opengl32.lib;gdi32.lib;user32.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\qtmain.lib;../dava.framework/Libs/libs/libmongodb_win.lib;../dava.framework/Libs/libs/pnglib_win.lib;../dava.framework/Libs/libs/libxml_win.lib;../dava.framework/Libs/libs/libyaml_win.lib;../dava.framework/Libs/libs/zlib.lib;../dava.framework/Libs/freetype/lib/freetype246MT.lib;../dava.framework/Libs/oggvorbis/lib/libogg_static.lib;../dava.framework/Libs/oggvorbis/lib/libvorbis_static.lib;../dava.framework/Libs/oggvorbis/lib/libvorbisfile_static.lib;../dava.framework/Projects/QtFramework/release/FrameworkQt.lib;../dava.framework/Libs/libs/libtheora_win.lib;../dava.framework/Libs/glew/lib/glew32.lib;"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/\DxErr.lib";"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/\d3d9.lib";shfolder.lib;Shell32.lib;"C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32\OpenAL32.lib";c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtOpenGL4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtGui4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtNetwork4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtCore4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib;../dava.framework/Libs/libs/;../dava.framework/Libs/freetype/lib/;../dava.framework/Libs/oggvorbis/lib/;../dava.framework/Projects/QtFramework/release/;../dava.framework/Libs/glew/lib/;c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/;C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>FrameworkQt.lib;glu32.lib;opengl32.lib;gdi32.lib;user32.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\qtmain.lib;../dava.framework/Libs/glew/lib/glew32.lib;"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/\DxErr.lib";"c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/\d3d9.lib";shfolder.lib;Shell32.lib;"C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32\OpenAL32.lib";c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtOpenGL4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtGui4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtNetwork4.lib;c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib\QtCore4.lib;msvcmrt.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>c:\QtSDK\Desktop\Qt\4.8.1\msvc2010\lib;../dava.framework/Projects/QtFramework/$(Configuration);../dava.framework/Libs/glew/lib/;c:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/;C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreImportLibrary>true</IgnoreImportLibrary>
       <LinkIncremental>false</LinkIncremental>
-      <OutputFile>$(OutDir)\TemplateProjectQt.exe</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
