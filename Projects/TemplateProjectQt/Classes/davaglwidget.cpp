@@ -3,7 +3,9 @@
 #include "davaglwidget.h"
 #include "ui_davaglwidget.h"
 
-#include "QResizeEvent"
+#include <QResizeEvent>
+#include <QTimer>
+#include <QElapsedTimer>
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -18,8 +20,6 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 	
-	isFirstDraw = true;
-
 #if defined (__DAVAENGINE_MACOS__)
 	DAVA::QtLayerMacOS *qtLayer = new DAVA::QtLayerMacOS();
     qtLayer->InitializeGlWindow((void *)this->winId(), this->size().width(), this->size().height());
@@ -35,13 +35,16 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-    counter = 0;
-    divider = 0.5f;
-    
-	startTimer(20);
     
 	DAVA::QtLayer::Instance()->Resize(size().width(), size().height());
+    
+    fpsTimer = new QTimer();
+    connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
+
+    DAVA::RenderManager::Instance()->SetFPS(60);
+    frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
+    
+    fpsTimer->start(frameTime);
 }
 
 DavaGLWidget::~DavaGLWidget()
@@ -64,27 +67,22 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
 }
 
-void DavaGLWidget::timerEvent(QTimerEvent *e)
+void DavaGLWidget::FpsTimerDone()
 {
-//    QWidget::timerEvent(e);
-    
-//    ++counter;
-//    if(400 == counter)
-//    {
-//        counter = 0;
-//        
-//        QSize sz = this->size();
-//        sz /= divider;
-//        
-//        divider = 1.f / divider;
-//        
-//        resize(sz);
-//        
-////        resize(this->size().height(), this->size().width());
-//    }
-    
+    QElapsedTimer timer;
+    timer.start();
     
 	DAVA::QtLayer::Instance()->ProcessFrame();
+    
+    int timeForNewFrame = frameTime - timer.elapsed();
+    if(timeForNewFrame < 0)
+    {
+        fpsTimer->start(0);
+    }
+    else 
+    {
+        fpsTimer->start(timeForNewFrame);
+    }
 }
 
 
