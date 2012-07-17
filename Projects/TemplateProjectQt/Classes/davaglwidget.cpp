@@ -51,6 +51,7 @@ DavaGLWidget::~DavaGLWidget()
 {
     DAVA::QtLayer::Instance()->Release();
 
+	DAVA::SafeDelete(fpsTimer);
     delete ui;
 }
 
@@ -113,3 +114,4 @@ bool DavaGLWidget::winEvent(MSG *message, long *result)
 	return false;
 }
 #endif //#if defined(Q_WS_WIN)
+

@@ -704,6 +704,8 @@ namespace DAVA
 #define WHEEL_DELTA 120
 #endif
 
+
+
 		//Event event;
 		//event.MouseEvent.RelativeX = 0;
 		//event.MouseEvent.RelativeY = 0;

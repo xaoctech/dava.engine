@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     
+	ui->davaGlWidget->setFocus();
     
     if(DAVA::Core::Instance())
     {
