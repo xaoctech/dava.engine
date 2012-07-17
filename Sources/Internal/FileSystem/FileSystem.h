@@ -274,6 +274,9 @@ public:
 	 */
     static String AbsoluteToRelativePath(const String &folderPathname, const String &absolutePathname);
     
+
+    static void ReplaceBundleName(const String &newBundlePath);
+
 private:
     
     String tempRetPath;
@@ -289,6 +292,11 @@ private:
 	List<ResourceArchiveItem> resourceArchiveList;
 
 	friend class File;
+
+    static String virtualBundlePath;
+
+    static const char * FilepathRelativeToBundle(const char * relativePathname);
+    static const char * FilepathRelativeToBundle(const String & relativePathname);
 
 #if defined(__DAVAENGINE_ANDROID__)
 private:	

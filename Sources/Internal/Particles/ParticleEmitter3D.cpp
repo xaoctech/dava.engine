@@ -4,8 +4,8 @@
 namespace DAVA
 {
 
-	void ParticleEmitter3D::Draw(const Vector3 & up, const Vector3 & left)
-	{
+void ParticleEmitter3D::Draw(const Vector3 & up, const Vector3 & left)
+{
 	Vector<ParticleLayer*>::iterator it;
 	for(it = layers.begin(); it != layers.end(); ++it)
 	{

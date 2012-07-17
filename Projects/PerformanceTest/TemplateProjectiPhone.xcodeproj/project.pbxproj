@@ -53,7 +53,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* PerfomanceTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PerfomanceTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* PerformanceTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PerformanceTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectiPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectiPhone_Prefix.pch; sourceTree = "<group>"; };
@@ -132,7 +132,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* PerfomanceTest.app */,
+				1D6058910D05DD3D006BFB54 /* PerformanceTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -275,7 +275,7 @@
 			);
 			name = PerformanceTest;
 			productName = TemplateProjectiPhone;
-			productReference = 1D6058910D05DD3D006BFB54 /* PerfomanceTest.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* PerformanceTest.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -390,7 +390,7 @@
 					"-mno-thumb",
 					"$(OTHER_CFLAGS)",
 				);
-				PRODUCT_NAME = PerfomanceTest;
+				PRODUCT_NAME = PerformanceTest;
 			};
 			name = Debug;
 		};
@@ -406,7 +406,7 @@
 					"-mno-thumb",
 					"$(OTHER_CFLAGS)",
 				);
-				PRODUCT_NAME = PerfomanceTest;
+				PRODUCT_NAME = PerformanceTest;
 			};
 			name = Release;
 		};
@@ -449,7 +449,7 @@
 					"-mno-thumb",
 					"$(OTHER_CFLAGS)",
 				);
-				PRODUCT_NAME = PerfomanceTest;
+				PRODUCT_NAME = PerformanceTest;
 			};
 			name = AdHoc;
 		};

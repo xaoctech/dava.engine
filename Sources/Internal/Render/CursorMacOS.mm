@@ -32,7 +32,11 @@
 #include "FileSystem/FileSystem.h"
 
 #if defined(__DAVAENGINE_MACOS__) 
-#include "CorePlatformMacOS.h"
+#if defined(Q_OS_MAC)
+#include "Platform/Qt/MacOS/CorePlatformMacOS.h"
+#else //#if defined(Q_OS_MAC)
+#include "Platform/TemplateMacOS/CorePlatformMacOS.h"
+#endif //#if defined(Q_OS_MAC)
 #include <Cocoa/Cocoa.h>
 
 namespace DAVA

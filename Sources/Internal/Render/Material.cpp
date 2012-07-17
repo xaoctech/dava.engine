@@ -552,7 +552,7 @@ void Material::PrepareRenderState()
 	if(isAlphablend)
 	{
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE_BLEND);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+		//Dizz: dunno what it was for //RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
 
 		RenderManager::Instance()->SetBlendMode(blendSrc, blendDst);
 	}

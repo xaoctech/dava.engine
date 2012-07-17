@@ -228,8 +228,11 @@ void UIJoypad::Input(UIEvent *currentInput)
         currentPos.y = Max(currentPos.y, -size.y/2);
         currentPos.y = Min(currentPos.y, size.y/2);
 	}
-    stick->relativePosition.x = size.x/2 + currentPos.x;
-    stick->relativePosition.y = size.y/2 + currentPos.y;
+	if (stick)
+	{
+		stick->relativePosition.x = size.x/2 + currentPos.x;
+		stick->relativePosition.y = size.y/2 + currentPos.y;
+	}
 
 	needRecalcAnalog = true;
 	needRecalcDigital = true;
@@ -244,8 +247,11 @@ void UIJoypad::InputCancelled(UIEvent *currentInput)
 		currentPos.x = 0;
 		currentPos.y = 0;
 
-        stick->relativePosition.x = size.x/2 + currentPos.x;
-        stick->relativePosition.y = size.y/2 + currentPos.y;
+		if (stick)
+		{
+			stick->relativePosition.x = size.x/2 + currentPos.x;
+			stick->relativePosition.y = size.y/2 + currentPos.y;
+		}
 
 		needRecalcAnalog = true;
 		needRecalcDigital = true;
