@@ -48,7 +48,7 @@ public:
 
 	virtual void Quit();
 
-	virtual bool CreateWin32Window(HINSTANCE hInstance); //true if window created, if false, need to quit the app
+//	virtual bool CreateWin32Window(HINSTANCE hInstance); //true if window created, if false, need to quit the app
 
 	bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
 
