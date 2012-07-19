@@ -704,7 +704,7 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	Image * image = Image::CreateFromFile(pathName);
 	if (!image)
 	{
-		Logger::Debug("[Texture::CreateFromPNG] Failed to load image from: %s", pathName.c_str());
+		Logger::Error("[Texture::CreateFromPNG] Failed to load image from: %s", pathName.c_str());
 		return 0;
 	}
 	

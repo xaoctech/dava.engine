@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'davaglwidget.h'
 **
-** Created: Mon Jul 16 14:11:24 2012
+** Created: Tue Jul 17 21:27:36 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,25 +23,33 @@ static const uint qt_meta_data_DavaGLWidget[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       0,    0, // methods
+       1,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        0,       // signalCount
 
+ // slots: signature, parameters, type, tag, flags
+      14,   13,   13,   13, 0x09,
+
        0        // eod
 };
 
 static const char qt_meta_stringdata_DavaGLWidget[] = {
-    "DavaGLWidget\0"
+    "DavaGLWidget\0\0FpsTimerDone()\0"
 };
 
 void DavaGLWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    Q_UNUSED(_o);
-    Q_UNUSED(_id);
-    Q_UNUSED(_c);
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        Q_ASSERT(staticMetaObject.cast(_o));
+        DavaGLWidget *_t = static_cast<DavaGLWidget *>(_o);
+        switch (_id) {
+        case 0: _t->FpsTimerDone(); break;
+        default: ;
+        }
+    }
     Q_UNUSED(_a);
 }
 
@@ -76,6 +84,11 @@ int DavaGLWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     _id = QWidget::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 1)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 1;
+    }
     return _id;
 }
 QT_END_MOC_NAMESPACE

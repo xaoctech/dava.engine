@@ -17,7 +17,7 @@ import sys;
 import platform;
 
 # *************** HERE YOU SHOULD SETUP YOUR OWN PATHS ***************
-framework_path = { "Darwin": "./../../..", "Windows": "./../../..", "Microsoft": "./../../.." }
+framework_path = { "Darwin": "./", "Windows": "./" }
 # *************** HERE YOU SHOULD SETUP YOUR OWN PATHS ***************
 
 currentDir = os.getcwd(); 
@@ -33,7 +33,7 @@ gfxDirs.extend(params);
 # print gfxDirs
 
 if (framework_path[platform.system()] != ""):
-    os.chdir(framework_path[platform.system()] + "/Tools/Bin/");
+    os.chdir(framework_path[platform.system()] + "");
     for dir in gfxDirs:
         params = ["./ResourcePacker", os.path.realpath(currentDir + "/" + dir)] + flags;
         os.spawnv(os.P_WAIT, "./ResourcePacker", params);
