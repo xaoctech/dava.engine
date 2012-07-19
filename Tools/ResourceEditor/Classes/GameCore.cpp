@@ -57,9 +57,9 @@ void GameCore::OnAppStarted()
 #endif //__DAVAENGINE_BEAST__
 	
     new OutputManager();
-    new SceneValidator();
 	new PVRConverter();
     new PVRUtils();
+        
     
 	resourcePackerScreen = new ResourcePackerScreen();
     sceneEditorScreenMain = new SceneEditorScreenMain();

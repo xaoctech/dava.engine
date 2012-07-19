@@ -14,6 +14,7 @@
 		47809C4B14A3FE5700BAA259 /* MaterialEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47809C4A14A3FE5700BAA259 /* MaterialEditor.cpp */; };
 		47809C7114A4037E00BAA259 /* DraggableDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47809C7014A4037E00BAA259 /* DraggableDialog.cpp */; };
 		5C006F7414A0DBA9005035C1 /* MenuPopupControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */; };
+		5C025F7C15B7E596000EF058 /* FuckingErrorDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C025F7A15B7E596000EF058 /* FuckingErrorDialog.cpp */; };
 		5C03F91F14990CCB002EE5C1 /* EditorBodyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */; };
 		5C03F92014990CCB002EE5C1 /* LibraryControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */; };
 		5C03F92114990CCB002EE5C1 /* SceneEditorScreenMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C03F91D14990CCB002EE5C1 /* SceneEditorScreenMain.cpp */; };
@@ -357,6 +358,8 @@
 		47809C7014A4037E00BAA259 /* DraggableDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DraggableDialog.cpp; sourceTree = "<group>"; };
 		5C006F7214A0DBA8005035C1 /* MenuPopupControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MenuPopupControl.cpp; sourceTree = "<group>"; };
 		5C006F7314A0DBA8005035C1 /* MenuPopupControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuPopupControl.h; sourceTree = "<group>"; };
+		5C025F7A15B7E596000EF058 /* FuckingErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FuckingErrorDialog.cpp; sourceTree = "<group>"; };
+		5C025F7B15B7E596000EF058 /* FuckingErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FuckingErrorDialog.h; sourceTree = "<group>"; };
 		5C03F91914990CCB002EE5C1 /* EditorBodyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorBodyControl.cpp; sourceTree = "<group>"; };
 		5C03F91A14990CCB002EE5C1 /* EditorBodyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorBodyControl.h; sourceTree = "<group>"; };
 		5C03F91B14990CCB002EE5C1 /* LibraryControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibraryControl.cpp; sourceTree = "<group>"; };
@@ -1940,6 +1943,8 @@
 		FE96BD8913B2347B009EB81D /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5C025F7A15B7E596000EF058 /* FuckingErrorDialog.cpp */,
+				5C025F7B15B7E596000EF058 /* FuckingErrorDialog.h */,
 				5CBFD6CF159C6CC600852F1A /* EntityPropertyControl.cpp */,
 				5CBFD6D0159C6CC600852F1A /* EntityPropertyControl.h */,
 				5CEFCC31158B274800CE35DA /* EntitiesGraph.cpp */,
@@ -2456,6 +2461,7 @@
 				FEC95C4E15B3F95200588BBF /* PreviewControl.cpp in Sources */,
 				FEC95C4F15B3F95200588BBF /* PropertyLineEditControl.cpp in Sources */,
 				5C7F464415B43F870038AF3A /* ParticleEmitterPropertyControl.cpp in Sources */,
+				5C025F7C15B7E596000EF058 /* FuckingErrorDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
