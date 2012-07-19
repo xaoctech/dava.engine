@@ -76,6 +76,8 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     
     //Export scene data
     RemoveEditorNodes(scene);
+
+    SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
