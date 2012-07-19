@@ -52,8 +52,8 @@ private:
 	void CreateNewDataBlock();
 	void DeallocateMemory();
 	int32 size;
-	List<T*> blocks;
-	List<T*> cache;
+	List<uint8*> blocks;
+	List<uint8*> cache;
 };
 	
 template <class T>
@@ -82,11 +82,11 @@ DynamicObjectCacheData<T>::DynamicObjectCacheData(int _size)
 template <class T> 
 void DynamicObjectCacheData<T>::CreateNewDataBlock()
 {
-	T * block = new T[size];
+	uint8 * block = new uint8[size * sizeof(T)];
 	blocks.push_back(block);
 	for (int k = 0; k < size; ++k)
 	{
-		cache.push_back(&block[k]);
+		cache.push_back(&block[k * sizeof(T)]);
 	}
     
 }
@@ -95,13 +95,13 @@ template <class T>
 void DynamicObjectCacheData<T>::Reset()
 {
     cache.clear();
-    typename List<T*>::iterator end = blocks.end();
-    for (typename List<T*>::iterator bit = blocks.begin(); bit != end; ++bit)
+    typename List<uint8*>::iterator end = blocks.end();
+    for (typename List<uint8*>::iterator bit = blocks.begin(); bit != end; ++bit)
     {
-        T * block = *bit;
+        uint8 * block = *bit;
         for (int k = 0; k < size; ++k)
         {
-            cache.push_back(&block[k]);
+            cache.push_back(&block[k * sizeof(T)]);
         }
     }
 }
@@ -111,7 +111,7 @@ void DynamicObjectCacheData<T>::DeallocateMemory()
 {
 	while(blocks.size() > 0)
 	{
-		T * object = blocks.front();
+		uint8 * object = blocks.front();
 		blocks.pop_front();
 
 		delete [] object;
@@ -141,7 +141,8 @@ T * DynamicObjectCacheData<T>::New()
 	
 	DVASSERT(cache.size() > 0);
 	
-	object = cache.front(); //new (cache.front()) T;
+    void * ptr = cache.front();
+	object = new (ptr) T(); //new (cache.front()) T;
 	cache.pop_front();
 	return object;
 }
@@ -149,7 +150,8 @@ T * DynamicObjectCacheData<T>::New()
 template <class T> 
 void DynamicObjectCacheData<T>::Delete(T * object)
 {
-	cache.push_back(object);
+    object->~T();
+	cache.push_back((uint8*)object);
 }	
 	
 };
