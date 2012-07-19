@@ -114,17 +114,19 @@ void ExporterScreen::DidAppear()
     if(0 < errorLog.size())
     {
         printf("Errors:\n");
-        Logger::Info("Errors:");
+        Logger::Error("Errors:");
         Set<String>::const_iterator endIt = errorLog.end();
         int32 index = 0;
         for (Set<String>::const_iterator it = errorLog.begin(); it != endIt; ++it)
         {
             printf("[%d] %s\n", index, (*it).c_str());
-            Logger::Info(Format("[%d] %s\n", index, (*it).c_str()));
+            Logger::Error(Format("[%d] %s\n", index, (*it).c_str()));
             
             ++index;
         }
     }
-    
-    Core::Instance()->Quit();
+    else 
+    {
+        Core::Instance()->Quit();
+    }
 }

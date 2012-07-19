@@ -12,7 +12,7 @@
 #include "TexturePacker/CommandLineParser.h"
 
 #include "SceneEditor/EditorSettings.h"
-
+#include "SceneEditor/SceneValidator.h"
 
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneExporter.h"
@@ -110,6 +110,9 @@ void FrameworkDidLaunched()
     new CommandLineTool();
     new SceneExporter();
     new EditorSettings();
+    new SceneValidator();
+    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetDataSourcePath());
+    
 
     printf("Running\n");
     Logger::Info("Running");
