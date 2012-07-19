@@ -423,12 +423,12 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 	blendSrc = (eBlendMode)keyedArchive->GetInt32("mat.blendSrc", blendSrc);
 	blendDst = (eBlendMode)keyedArchive->GetInt32("mat.blendDst", blendDst);
 
+	fogColor = keyedArchive->GetByteArrayAsType("mat.fogcolor", fogColor);
+	isFogEnabled = keyedArchive->GetBool("mat.isFogEnabled", isFogEnabled);
+	fogDensity = keyedArchive->GetFloat("mat.fogdencity", fogDensity);
+
     eType mtype = (eType)keyedArchive->GetInt32("mat.type", type);
     SetType(mtype);
-    
-    fogColor = keyedArchive->GetByteArrayAsType("mat.fogcolor", fogColor);
-	isFogEnabled = keyedArchive->GetBool("mat.isFogEnabled", isFogEnabled);
-    fogDensity = keyedArchive->GetFloat("mat.fogdencity", fogDensity);
 }
 
 void Material::SetOpaque(bool _isOpaque)
@@ -552,7 +552,8 @@ void Material::PrepareRenderState()
 	if(isAlphablend)
 	{
 		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE_BLEND);
-		//Dizz: dunno what it was for //RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
+		//Dizz: dunno what it was for //
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
 
 		RenderManager::Instance()->SetBlendMode(blendSrc, blendDst);
 	}
