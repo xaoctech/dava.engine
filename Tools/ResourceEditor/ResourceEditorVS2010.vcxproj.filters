@@ -809,6 +809,9 @@
     <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp">
       <Filter>SceneEditor\Properties</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1930,6 +1933,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
       <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
