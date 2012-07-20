@@ -17,6 +17,8 @@ public:
 	ParticleLayer3D();
 	virtual ~ParticleLayer3D();
 
+	virtual void LoadFromYaml(YamlNode * node);
+
 	void Draw(const Vector3 & up, const Vector3 & left);
 
 protected:
