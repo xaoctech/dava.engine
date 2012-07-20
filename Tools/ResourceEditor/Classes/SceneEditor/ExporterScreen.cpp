@@ -33,6 +33,8 @@
 #include "CommandLineTool.h"
 #include "SceneExporter.h"
 
+#include "ErrorNotifier.h"
+
 void ExporterScreen::LoadResources()
 {
     GetBackground()->SetColor(Color::White());
@@ -124,6 +126,20 @@ void ExporterScreen::DidAppear()
             
             ++index;
         }
+        
+        bool needRelease = false;
+        if(!ErrorNotifier::Instance())
+        {
+            new ErrorNotifier();
+        }
+        
+        ErrorNotifier::Instance()->ShowError(errorLog);
+        
+        if(needRelease)
+        {
+            ErrorNotifier::Instance()->Release();
+        }
+        
     }
     else 
     {

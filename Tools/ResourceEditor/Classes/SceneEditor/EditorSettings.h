@@ -23,7 +23,10 @@ public:
     KeyedArchive *GetSettings();
     void Save();
 
-//    String GetProjectPath();
+    void SetProjectPath(const String &projectPath);
+    String GetProjetcPath();
+    
+    void SetDataSourcePath(const String &datasourcePath);
     String GetDataSourcePath();
     
     static bool IsValidPath(const String &path);
