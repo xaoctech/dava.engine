@@ -142,7 +142,8 @@ void ExporterScreen::DidAppear()
         
     }
 
-    bool forceMode = CommandLineTool::Instance()->CommandIsFound(String("-force"));
+    bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
+                    ||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
     if(forceMode || 0 == errorLog.size())
     {
         Core::Instance()->Quit();
