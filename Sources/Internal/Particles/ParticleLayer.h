@@ -94,7 +94,7 @@ public:
 	/**
 		\brief This function draws layer properties and layer particles. 
 	 */
-	void Draw();
+	virtual void Draw();
 	
 	/** 
 		\brief Function to set emitter for layer. 
@@ -116,7 +116,7 @@ public:
 		\brief Function to load layer from yaml node.
 		Normally this function is called from ParticleEmitter. 	 
 	 */
-	void LoadFromYaml(YamlNode * node);
+	virtual void LoadFromYaml(YamlNode * node);
 
 	/**
 		\brief Get head(first) particle of the layer.
@@ -126,7 +126,7 @@ public:
 
     float32 GetLayerTime();
 
-private:	
+protected:	
 	void GenerateNewParticle(int32 emitIndex);
 	void GenerateSingleParticle();
 	

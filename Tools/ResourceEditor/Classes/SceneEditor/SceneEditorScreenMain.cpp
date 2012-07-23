@@ -6,6 +6,7 @@
 #include "ControlsFactory.h"
 #include "../EditorScene.h"
 #include "MaterialEditor.h"
+#include "../ParticlesEditor/ParticlesEditorControl.h"
 
 #include "EditorSettings.h"
 #include "SceneValidator.h"
@@ -67,6 +68,7 @@ void SceneEditorScreenMain::LoadResources()
     textureConverterDialog = new TextureConverterDialog(fullRect);
     
     materialEditor = new MaterialEditor();
+	particlesEditor = new ParticlesEditorControl();
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
@@ -148,6 +150,8 @@ void SceneEditorScreenMain::UnloadResources()
     SafeRelease(libraryButton);
     
     SafeRelease(fileSystemDialog);
+
+	SafeRelease(particlesEditor);
     
     ReleaseBodyList();
         
@@ -323,6 +327,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             keyedArchieve->SetString("3dDataSourcePath", projectPath + "DataSource/3d/");
             EditorSettings::Instance()->Save();
             
+            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetDataSourcePath());
             libraryControl->SetPath(EditorSettings::Instance()->GetDataSourcePath());
             break;
         }
@@ -883,6 +888,12 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 					break;
 				}
 
+				case ECNID_PARTICLE_EMITTER:
+				{
+					text = LocalizedString(L"menu.createnode.particleemitter");
+					break;
+				}
+
 				case ECNID_USERNODE:
 					{
 						text = LocalizedString(L"menu.createnode.usernode");
@@ -1362,4 +1373,14 @@ void SceneEditorScreenMain::RecreteFullTilingTexture()
     {
         bodies[i]->bodyControl->RecreteFullTilingTexture();
     }
+}
+
+void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
+{
+	//BodyItem *iBody = FindCurrentBody();
+	if (!particlesEditor->GetParent())
+	{
+		particlesEditor->SetEmitter(emitter->GetEmitter());
+		AddControl(particlesEditor);
+	}
 }

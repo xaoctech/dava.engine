@@ -329,7 +329,7 @@ void MainScreen::OnLoadProject()
     SafeRelease(archive);
     
     Logger::Debug("MainScreen::OnLoadProject %s", projectPath.c_str());
-    ReplaceBundleName(projectPath + "/Data");
+    FileSystem::ReplaceBundleName(projectPath + "/Data");
     fsDlg->SetCurrentDir(FileSystem::Instance()->SystemPathForFrameworkPath("~res:/")); 
     
     ConvertGraphics(projectPath + "/DataSource");

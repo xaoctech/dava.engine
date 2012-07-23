@@ -451,6 +451,7 @@
     <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />
+    <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h" />
     <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
     <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />
@@ -480,6 +481,7 @@
     <ClInclude Include="Classes\SceneEditor\OutputControl.h" />
     <ClInclude Include="Classes\SceneEditor\OutputManager.h" />
     <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h" />
+    <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCell.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyCellData.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
@@ -730,6 +732,7 @@
     <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
@@ -759,6 +762,7 @@
     <ClCompile Include="Classes\SceneEditor\OutputControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputManager.cpp" />
     <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />

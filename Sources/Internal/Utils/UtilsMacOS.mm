@@ -34,6 +34,10 @@
 #import <UIKit/UIKit.h>
 #endif
 
+#if defined(__DAVAENGINE_MACOS__)
+#import <Foundation/NSThread.h>
+#endif //#if defined(__DAVAENGINE_MACOS__)
+
 namespace DAVA
 {
 	

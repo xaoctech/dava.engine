@@ -57,7 +57,7 @@ void FrameworkDidLaunched()
 	
 	appOptions->SetInt32("fullscreen", 0);
 	appOptions->SetInt32("bpp", 32);
-    appOptions->SetString("title", "Particle Editor");
+    appOptions->SetString("title", "UI Viewer");
 
     DAVA::Core::Instance()->SetVirtualScreenSize(1200, 690);
 //	DAVA::Core::Instance()->SetVirtualScreenSize(920, 690);

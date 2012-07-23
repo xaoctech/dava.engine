@@ -36,6 +36,8 @@
 #include "BaseScreen.h"
 #include "SampleTest.h"
 #include "EntityTest.h"
+#include "MemoryAllocatorsTest.h"
+#include "HashMapTest.h"
 #include "SoundTest.h"
 
 using namespace DAVA;
@@ -64,6 +66,8 @@ void GameCore::OnAppStarted()
 
     new SampleTest();
 	new EntityTest(); 
+    new MemoryAllocatorsTest();
+    new HashMapTest();
     new SoundTest();
     
     errors.reserve(TestCount());

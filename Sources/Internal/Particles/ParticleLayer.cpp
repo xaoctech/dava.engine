@@ -523,8 +523,14 @@ void ParticleLayer::ProcessParticle(Particle * particle)
 
 void ParticleLayer::Draw()
 {
-	if (additive)RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE);
-	else RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	if (additive)
+	{
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE);
+	}
+	else 
+	{
+		RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
+	}
 
 	switch(type)
 	{
@@ -605,7 +611,7 @@ void ParticleLayer::LoadFromYaml(YamlNode * node)
 			pivotPointTemp = pivotPointNode->AsPoint();
 		}
 		SetSprite(_sprite);
-		pivotPoint = Vector2(_sprite->GetWidth() / 2.0f + pivotPointTemp.x, _sprite->GetHeight() / 2.0f + pivotPointTemp.y);        
+		pivotPoint = Vector2(_sprite->GetWidth() / 2.0f + pivotPointTemp.x, _sprite->GetHeight() / 2.0f + pivotPointTemp.y);
         SafeRelease(_sprite);
 	}
 
@@ -704,7 +710,5 @@ Particle * ParticleLayer::GetHeadParticle()
 {
 	return head;
 }
-
-
 
 }

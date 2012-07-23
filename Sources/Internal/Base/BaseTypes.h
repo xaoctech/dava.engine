@@ -30,6 +30,8 @@
 #ifndef __DAVAENGINE_TYPES_H__
 #define __DAVAENGINE_TYPES_H__
 
+#include "Base/TemplateHelpers.h"
+
 // debug definition
 #if defined(DAVA_DEBUG)
 #define __DAVAENGINE_DEBUG__
@@ -156,6 +158,16 @@ typedef signed int		int32;
 	typedef unsigned long long uint64;
 	typedef signed long long int64;
 #endif 
+    
+typedef Select<sizeof(void*) == 4, uint32, uint64>::Result pointer_size;
+    
+//#if (sizeof(void*) == 4)
+//typedef uint32 pointer_size
+//#elif (sizeof(void*) == 8)
+//typedef uint64 pointer_size;
+//#else
+//#error(Pointer type size is invalid);
+//#endif
 	
 #ifndef TRUE
 #define TRUE	1

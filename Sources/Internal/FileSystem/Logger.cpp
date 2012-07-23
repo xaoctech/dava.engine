@@ -146,7 +146,8 @@ void Logger::Debug(const char8 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
 	va_end(vl);
 }
 	
@@ -154,7 +155,8 @@ void Logger::Info(const char8 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_INFO, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_INFO, text, vl);
 	va_end(vl);
 }	
 	
@@ -162,7 +164,8 @@ void Logger::Warning(const char8 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
 	va_end(vl);
 }
 	
@@ -170,7 +173,8 @@ void Logger::Error(const char8 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
 	va_end(vl);
 }
 
@@ -178,7 +182,8 @@ void Logger::Debug(const char16 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_DEBUG, text, vl);
 	va_end(vl);
 }
 
@@ -186,7 +191,8 @@ void Logger::Info(const char16 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_INFO, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_INFO, text, vl);
 	va_end(vl);
 }	
 
@@ -194,7 +200,8 @@ void Logger::Warning(const char16 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_WARNING, text, vl);
 	va_end(vl);
 }
 
@@ -202,7 +209,8 @@ void Logger::Error(const char16 * text, ...)
 {
 	va_list vl;
 	va_start(vl, text);
-	Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
+    if (Logger::Instance())
+        Logger::Instance()->Logv(LEVEL_ERROR, text, vl);
 	va_end(vl);
 }
 

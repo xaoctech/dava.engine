@@ -57,6 +57,8 @@
 #include "Utils/Random.h"
 
 #include "Base/ObjectFactory.h"
+#include "Base/FixedSizePoolAllocator.h"
+#include "Base/HashMap.h"
 
 // ptrs
 #include "Base/RefPtr.h"
@@ -205,6 +207,7 @@
 #include "Scene3D/BVHierarchy.h"
 #include "Scene3D/QuadTree.h"
 #include "Scene3D/ImposterNode.h"
+#include "Scene3D/ParticleEmitterNode.h"
 
 
 // Application core 

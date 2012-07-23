@@ -23,10 +23,9 @@ AutotestingSystem::AutotestingSystem() : currentAction(NULL)
     , testFileName("")
     , testFilePath("")
     , dbClient(NULL)
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
+	, isDB(true)
     , testReportsFolder("")
     , reportFile(NULL)
-#endif
 {
 }
 
@@ -89,12 +88,20 @@ void AutotestingSystem::OnAppStarted()
                 SetProjectName(projectCharName);
             }
         }
+		else
+		{
+			// build for local testing
+			isDB = false;
+		}
         SafeRelease(file);
         
-        if(!ConnectToDB())
-        {
-            return;
-        }
+		if(isDB)
+		{
+			if(!ConnectToDB())
+			{
+				return;
+			}
+		}
         
         // compare ids
         if(testsId != autotestingId)
@@ -104,6 +111,7 @@ void AutotestingSystem::OnAppStarted()
         }
         
         int32 indexInFileList = testIndex;
+        int32 fileCount = fileList.GetFileCount();
         // skip directories
         for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
         {
@@ -143,10 +151,10 @@ void AutotestingSystem::OnAppStarted()
         }
 
         
-        if(indexInFileList == (fileListSize - 1))
+        if((fileCount - 1) <= testIndex)
         {
             // last file - reset id and index
-            autotestingArchive->SetUInt32("id", 0);
+            //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
             autotestingArchive->SetInt32("index", 0);
         }
         else
@@ -177,11 +185,9 @@ void AutotestingSystem::Init(const String &_testName)
 {
     if(!isInit)
     {
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
         testReportsFolder = "~doc:/autotesting";
         FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->SystemPathForFrameworkPath(testReportsFolder), true);
         reportFile = DAVA::File::Create(Format("%s/autotesting.report",testReportsFolder.c_str()), DAVA::File::CREATE|DAVA::File::WRITE);
-#endif
 
         isInit = true;
         testName = _testName;
@@ -209,6 +215,8 @@ void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
 
 void AutotestingSystem::SaveTestToDB()
 {
+	if(!isDB) return;
+
     Logger::Debug("AutotestingSystem::SaveTestToDB");
     
     String testAndFileName = Format("%s (%s)", testName.c_str(), testFileName.c_str());
@@ -251,34 +259,47 @@ void AutotestingSystem::SaveTestToDB()
     if(isFound)
     {
         //found database object
-        
         // find platform object
         platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
         
         if(platformArchive)
         {
             // found platform object
-            
             // find log object
             logArchive = SafeRetain(platformArchive->GetArchive(logKey, NULL));
             
             if(logArchive)
             {
                 // found log object
-                
+
+				//find all test objects to set platform test results (if all tests passed for current platform)
+				if(isTestSuitePassed)
+				{
+					const Map<String, VariantType*> logArchiveData = logArchive->GetArchieveData();
+					for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
+					{
+						if((it->first != "_id") && it->second)
+						{
+							KeyedArchive* tmpTestArchive = it->second->AsKeyedArchive();
+							if(tmpTestArchive)
+							{
+								isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
+							}
+						}
+					}
+				}
+
                 // find test object
-                testArchive = SafeRetain(logArchive->GetArchive(testName, NULL));
+                testArchive = SafeRetain(logArchive->GetArchive(testAndFileName, NULL));
                 if(testArchive)
                 {
                     // found test object
-                    
-                    isTestPassed = (testArchive->GetInt32("Success") == 1);
-                    
                     // find test results
                     testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
                 }
             }
-            isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+            //isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
+			isTestSuitePassed &= isTestPassed;
         }
     }
     
@@ -304,19 +325,26 @@ void AutotestingSystem::SaveTestToDB()
     }
     
     //update test results
+	isTestPassed = true;
     for(int32 i = 0; i < testResults.size(); ++i)
     {
-        testResultsArchive->SetInt32(testResults[i].first, (int32)testResults[i].second);
+		bool testResultSuccess = testResults[i].second;
+        testResultsArchive->SetInt32(testResults[i].first, (int32)testResultSuccess);
+		if(!testResultSuccess)
+		{
+			isTestPassed = false;
+		}
     }
   
     //update test object
     testArchive->SetInt32("RunId", testsId);
     testArchive->SetInt32("Success", (int32)isTestPassed);
     testArchive->SetString("File", testFileName);
+	testArchive->SetString("Name", testName);
     testArchive->SetArchive(testResultsKey, testResultsArchive);
 
     //update log object
-    logArchive->SetArchive(testName, testArchive);
+    logArchive->SetArchive(testAndFileName, testArchive);
    
     //update platform object
     platformArchive->SetInt32("RunId", testsId);
@@ -815,12 +843,10 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
     
     AddTestResult(text, isPassed);
     
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    if(reportFile)
-    {
-        reportFile->WriteLine(assertMsg);
-    }
-#endif
+	if(reportFile)
+	{
+		reportFile->WriteLine(assertMsg);
+	}
 }
 
 void AutotestingSystem::OnError(const String & errorMessage)
@@ -828,16 +854,15 @@ void AutotestingSystem::OnError(const String & errorMessage)
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
     
     AddTestResult(errorMessage, false);
-    SaveTestToDB();
-    
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
-    String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
-    if(reportFile)
-    {
-        reportFile->WriteLine(exitOnErrorMsg);
-    }
-    SafeRelease(reportFile);
-#endif
+	SaveTestToDB();
+	
+	String exitOnErrorMsg = Format("EXIT %s OnError %s", testName.c_str(), errorMessage.c_str());
+	if(reportFile)
+	{
+		reportFile->WriteLine(exitOnErrorMsg);
+	}
+	SafeRelease(reportFile);
+
     ExitApp();
 }    
     
@@ -846,15 +871,14 @@ void AutotestingSystem::OnTestsFinished()
     Logger::Debug("AutotestingSystem::OnTestsFinished");
     
     AddTestResult("finished", true);
-    SaveTestToDB();
+	SaveTestToDB();
     
-#ifdef __DAVAENGINE_AUTOTESTING_FILE__
     if(reportFile)
     {
         reportFile->WriteLine(Format("EXIT %s OnTestsFinished", testName.c_str()));
     }
     SafeRelease(reportFile);
-#endif
+
     ExitApp();
 }
 

@@ -56,7 +56,7 @@ namespace fm
 		stringT(const CH* c) : Parent()
 		{
 			append(c);
-			if (c == NULL || (*c) == 0) push_back((CH) 0);
+			if (c == NULL || (*c) == 0) this->push_back((CH) 0);
 		}
 
 		/** Copy constructor.
@@ -443,7 +443,8 @@ namespace fm
 			@param value The value to assign to the new entries in the list. */
 		void resize(size_t count, const CH& value)
 		{
-			Parent::resize(size + 1, value);
+			// original code: Parent::resize(size + 1, value);
+            Parent::resize(count + 1, value);
 			Parent::back() = 0; // NULL-terminate
 		}
 	};

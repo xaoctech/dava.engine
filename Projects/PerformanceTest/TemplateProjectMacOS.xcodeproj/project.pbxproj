@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */; };
-		5C19F4B215A434F40064E889 /* TreeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F4B015A434F40064E889 /* TreeTest.cpp */; };
+		5C5EAC2415A5848B00279915 /* TreeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5EAC2215A5848B00279915 /* TreeTest.cpp */; };
 		5CBC1F66157CD739009DAD1C /* CacheTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBC1F64157CD739009DAD1C /* CacheTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SpriteTest.cpp */; };
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
@@ -53,8 +53,8 @@
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
 		5C1066DD156D35AE00912A45 /* LandscapeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeTest.cpp; path = Classes/LandscapeTest.cpp; sourceTree = "<group>"; };
 		5C1066DE156D35AE00912A45 /* LandscapeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeTest.h; path = Classes/LandscapeTest.h; sourceTree = "<group>"; };
-		5C19F4B015A434F40064E889 /* TreeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TreeTest.cpp; path = Classes/TreeTest.cpp; sourceTree = "<group>"; };
-		5C19F4B115A434F40064E889 /* TreeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TreeTest.h; path = Classes/TreeTest.h; sourceTree = "<group>"; };
+		5C5EAC2215A5848B00279915 /* TreeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TreeTest.cpp; path = Classes/TreeTest.cpp; sourceTree = "<group>"; };
+		5C5EAC2315A5848B00279915 /* TreeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TreeTest.h; path = Classes/TreeTest.h; sourceTree = "<group>"; };
 		5C6EF11B15751E1B001E45AD /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		5C6EF11D15751E1B001E45AD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		5C6EF11F15751E1B001E45AD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -204,8 +204,8 @@
 		5C19F4AF15A434DA0064E889 /* TreeTest */ = {
 			isa = PBXGroup;
 			children = (
-				5C19F4B015A434F40064E889 /* TreeTest.cpp */,
-				5C19F4B115A434F40064E889 /* TreeTest.h */,
+				5C5EAC2215A5848B00279915 /* TreeTest.cpp */,
+				5C5EAC2315A5848B00279915 /* TreeTest.h */,
 			);
 			name = TreeTest;
 			sourceTree = "<group>";
@@ -392,7 +392,7 @@
 				5C1066DF156D35AE00912A45 /* LandscapeTest.cpp in Sources */,
 				5CBC1F66157CD739009DAD1C /* CacheTest.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
-				5C19F4B215A434F40064E889 /* TreeTest.cpp in Sources */,
+				5C5EAC2415A5848B00279915 /* TreeTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,7 +444,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = TemplateProjectMacOS;
@@ -459,7 +458,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = TemplateProjectMacOS;
@@ -473,7 +471,6 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_DEBUG;
-				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -498,7 +495,6 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
