@@ -8,15 +8,18 @@ emitter:
     life: 1000000000.000000
 layer0:
     type: layer
+    layerType: particles
+    blend: add
+    pivotPoint: [0.0, 0.0]
     sprite: "~res:/Gfx/Sparkles/linda_1"
-    life: 0.394041
+    life: 2.990070
     lifeVariation: 1.000000
 
     number: 61.000000
 
     size: [3.323844, 2.990070]
 
-    velocity: 6.163583
+    velocity: 20.000000
     velocityVariation: 5.000000
 
 
