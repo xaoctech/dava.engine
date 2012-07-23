@@ -153,9 +153,9 @@ protected:
 	ParticleEmitter * emitter;
 	// particle layer sprite
 	Sprite 			* sprite;
-	Vector2			pivotPoint;
 
 public:		
+	Vector2			pivotPoint;
 	/*
 	 Properties of particle layer that describe particle system logic
 	 */
