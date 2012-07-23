@@ -6,7 +6,7 @@
 #include "EditMatrixControl.h"
 #include "../EditorScene.h"
 
-#include "SceneNodeIDs.h"
+#include "../Constants.h"
 #include "NodesPropertyControl.h"
 
 #include "ModificationsPanel.h"
@@ -50,15 +50,6 @@ class EditorBodyControl:
     
 public:
 	
-    enum eViewPortIDs
-    {
-        EVPID_IPHONE = 0,
-        EVPID_RETINA,
-        EVPID_IPAD,
-        EVPID_DEFAULT,
-
-        EVPID_COUNT
-    };
     
 public:
     EditorBodyControl(const Rect & rect);
@@ -100,7 +91,7 @@ public:
     const String &GetFilePath();
     void SetFilePath(const String &newFilePath);
     
-    void SetViewPortSize(int32 viewportID);
+    void SetViewportSize(ResourceEditor::eViewportType viewportType);
     bool ControlsAreLocked();
 
 	void PushDebugCamera();
@@ -200,7 +191,7 @@ protected:
 	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);
 
 	
-    eViewPortIDs currentViewPortID;
+    ResourceEditor::eViewportType currentViewportType;
     
     SceneInfoControl *sceneInfoControl;
 

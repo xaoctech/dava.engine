@@ -482,7 +482,6 @@
 		5CE5A40314BF3171008A1B3F /* PropertyControlCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyControlCreator.cpp; sourceTree = "<group>"; };
 		5CE5A40414BF3171008A1B3F /* PropertyControlCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyControlCreator.h; sourceTree = "<group>"; };
 		5CE5A40714BF48A0008A1B3F /* EditorLightNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorLightNode.h; sourceTree = "<group>"; };
-		5CE6F5DA14AB48DA006BBEE2 /* SceneNodeIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneNodeIDs.h; sourceTree = "<group>"; };
 		5CE81F3814CEBA0A0066C7E1 /* ExtendedDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtendedDialog.cpp; sourceTree = "<group>"; };
 		5CE81F3914CEBA0A0066C7E1 /* ExtendedDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtendedDialog.h; sourceTree = "<group>"; };
 		5CE81F3B14CEE8660066C7E1 /* ColorPickerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerDelegate.h; sourceTree = "<group>"; };
@@ -1305,7 +1304,6 @@
 				5CA721D514B760D9000D2851 /* CreateNodesDialog.h */,
 				5CA721A714B73A64000D2851 /* NodesPropertyControl.cpp */,
 				5CA721A814B73A64000D2851 /* NodesPropertyControl.h */,
-				5CE6F5DA14AB48DA006BBEE2 /* SceneNodeIDs.h */,
 			);
 			name = CreateNode;
 			sourceTree = "<group>";

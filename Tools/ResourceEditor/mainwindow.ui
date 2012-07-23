@@ -100,6 +100,7 @@
     <addaction name="actionSphere"/>
     <addaction name="actionCamera"/>
     <addaction name="actionImposter"/>
+    <addaction name="actionParticleEmitter"/>
     <addaction name="actionUserNode"/>
    </widget>
    <widget class="QMenu" name="menuTools">
@@ -239,6 +240,11 @@
   <action name="actionDefault">
    <property name="text">
     <string>Default</string>
+   </property>
+  </action>
+  <action name="actionParticleEmitter">
+   <property name="text">
+    <string>Particle Emitter</string>
    </property>
   </action>
  </widget>
