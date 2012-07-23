@@ -3,7 +3,6 @@
 
 #include "NodesPropertyControl.h"
 #include "PropertyControlCreator.h"
-#include "SceneNodeIDs.h"
 #include "../EditorScene.h"
 #include "SceneEditorScreenMain.h"
 #include "../AppScreens.h"
@@ -60,7 +59,7 @@ void CreateNodesDialog::SetDelegate(CreateNodesDialogDelegeate *delegate)
     dialogDelegate = delegate;
 }
 
-void CreateNodesDialog::OnCancel(BaseObject * object, void * userData, void * callerData)
+void CreateNodesDialog::OnCancel(BaseObject *, void *, void *)
 {
     if(dialogDelegate)
     {
@@ -68,7 +67,7 @@ void CreateNodesDialog::OnCancel(BaseObject * object, void * userData, void * ca
     }
 }
 
-void CreateNodesDialog::OnOk(BaseObject * object, void * userData, void * callerData)
+void CreateNodesDialog::OnOk(BaseObject *, void *, void *)
 {    
     if(dialogDelegate)
     {
@@ -93,7 +92,7 @@ void CreateNodesDialog::SetHeader(const WideString &headerText)
     header->SetText(headerText);
 }
 
-void CreateNodesDialog::CreateNode(int32 nodeID)
+void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 {
     SafeRelease(sceneNode);
 
@@ -101,15 +100,15 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 	EditorScene * editorScene = screen->FindCurrentBody()->bodyControl->GetScene();
 	scene = editorScene;
 
-    switch (nodeID) 
+    switch (nodeType) 
     {
-        case ECNID_LANDSCAPE:
+        case ResourceEditor::NODE_LANDSCAPE:
             SetHeader(LocalizedString(L"createnode.landscape"));
             sceneNode = new LandscapeNode();
             sceneNode->SetName("Landscape");
             break;
 
-        case ECNID_LIGHT:
+        case ResourceEditor::NODE_LIGHT:
         {
             SetHeader(LocalizedString(L"createnode.light"));
             
@@ -118,7 +117,7 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
             break;
         }
 
-        case ECNID_SERVICENODE:
+        case ResourceEditor::NODE_SERVICE_NODE:
         {
             SetHeader(LocalizedString(L"createnode.servicenode"));
             sceneNode = new SceneNode();
@@ -128,32 +127,32 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
             break;
         }
 
-        case ECNID_BOX:
+        case ResourceEditor::NODE_BOX:
             SetHeader(LocalizedString(L"createnode.box"));
             sceneNode = new CubeNode();
             sceneNode->SetName("Cube");
             break;
 
-        case ECNID_SPHERE:
+        case ResourceEditor::NODE_SPHERE:
             SetHeader(LocalizedString(L"createnode.sphere"));
             sceneNode = new SphereNode();
             sceneNode->SetName("Sphere");
             break;
 
-        case ECNID_CAMERA:
+        case ResourceEditor::NODE_CAMERA:
             SetHeader(LocalizedString(L"createnode.camera"));
             sceneNode = new Camera();
             ((Camera *)sceneNode)->SetUp(Vector3(0.0f, 0.0f, 1.0f));
             sceneNode->SetName("Camera");
             break;
 
-		case ECNID_IMPOSTER:
+		case ResourceEditor::NODE_IMPOSTER:
 			SetHeader(LocalizedString(L"createnode.imposter"));
 			sceneNode = new ImposterNode();
 			sceneNode->SetName("Imposter");
 			break;
 
-		case ECNID_PARTICLE_EMITTER:
+		case ResourceEditor::NODE_PARTICLE_EMITTER:
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
 			ParticleEmitterNode * node = new ParticleEmitterNode();
@@ -163,23 +162,12 @@ void CreateNodesDialog::CreateNode(int32 nodeID)
 		}
 			break;
 
-		case ECNID_USERNODE:
+		case ResourceEditor::NODE_USER_NODE:
 			SetHeader(LocalizedString(L"createnode.usernode"));
 			sceneNode = new UserNode();
 			sceneNode->SetName("UserNode");
 			break;
 
-
-//        case ECNID_LODNODE:
-//			SetHeader(LocalizedString(L"createnode.lodnode"));
-//			sceneNode = new LodNode(scene);
-//            for(int32 iLayer = 0; iLayer < LodNode::MAX_LOD_LAYERS; ++iLayer)
-//            {
-//                ((LodNode *)sceneNode)->SetLodLayerDistance(iLayer, EditorSettings::Instance()->GetLodLayerDistance(iLayer));
-//            }
-//            
-//			sceneNode->SetName("LodNode");
-//			break;
             
         default:
             break;

@@ -1,15 +1,13 @@
-#ifndef __COMMAND_OPEN_PROJECT_H__
-#define __COMMAND_OPEN_PROJECT_H__
+#ifndef __FILE_COMMANDS_H__
+#define __FILE_COMMANDS_H__
 
 #include "Command.h"
 #include "../Constants.h"
 
 class CommandOpenProject: public Command
 {
-    
 public:	
 	CommandOpenProject();
-	virtual ~CommandOpenProject();
 
 protected:	
     
@@ -19,10 +17,8 @@ protected:
 
 class CommandOpenScene: public Command
 {
-    
 public:	
 	CommandOpenScene(const DAVA::String &scenePathname = DAVA::String(""));
-	virtual ~CommandOpenScene();
     
 protected:	
     
@@ -35,10 +31,8 @@ protected:
 
 class CommandNewScene: public Command
 {
-    
 public:	
 	CommandNewScene();
-	virtual ~CommandNewScene();
     
 protected:	
     
@@ -47,10 +41,8 @@ protected:
 
 class CommandSaveScene: public Command
 {
-    
 public:	
 	CommandSaveScene();
-	virtual ~CommandSaveScene();
     
 protected:	
     
@@ -62,7 +54,6 @@ class CommandExport: public Command
     
 public:	
 	CommandExport(ResourceEditor::eExportFormat fmt);
-	virtual ~CommandExport();
     
 protected:	
     
@@ -76,4 +67,4 @@ protected:
 
 
 
-#endif // #ifndef __COMMAND_H__
+#endif // #ifndef __FILE_COMMANDS_H__

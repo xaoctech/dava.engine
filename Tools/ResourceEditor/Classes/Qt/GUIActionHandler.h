@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include "DAVAEngine.h"
+#include "../Constants.h"
 
+class Command;
 class GUIActionHandler: public QObject
 {
     Q_OBJECT
@@ -27,14 +29,7 @@ public slots:
     void ExportAsDXT();
 
     //create node
-    void CreateLandscape();
-    void CreateLight();
-    void CreateServiceNode();
-    void CreateBox();
-    void CreateSphere();
-    void CreateCamera();
-    void CreateImposter();
-    void CreateUserNode();
+    void CreateNode(ResourceEditor::eNodeType type);
     
     //tools
     void Materials();
@@ -43,12 +38,11 @@ public slots:
     void TilemapEditor();
     
     //viewport
-    void ViewportiPhone();
-    void VeiwportRetina();
-    void ViewportiPad();
-    void ViewportDefault();
+    void SetViewport(ResourceEditor::eViewportType type);
     
+private:
     
+    void Execute(Command *command);
 };
 
 #endif // __GUI_ACTION_MANAGER_H__

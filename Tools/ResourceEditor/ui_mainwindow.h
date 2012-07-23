@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Mon Jul 23 12:01:14 2012
+** Created: Mon Jul 23 22:30:28 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -50,6 +50,7 @@ public:
     QAction *actionRetina;
     QAction *actionIPad;
     QAction *actionDefault;
+    QAction *actionParticleEmitter;
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     DavaGLWidget *davaGlWidget;
@@ -118,6 +119,8 @@ public:
         actionIPad->setObjectName(QString::fromUtf8("actionIPad"));
         actionDefault = new QAction(MainWindow);
         actionDefault->setObjectName(QString::fromUtf8("actionDefault"));
+        actionParticleEmitter = new QAction(MainWindow);
+        actionParticleEmitter->setObjectName(QString::fromUtf8("actionParticleEmitter"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         verticalLayout = new QVBoxLayout(centralWidget);
@@ -177,6 +180,7 @@ public:
         menuCreateNode->addAction(actionSphere);
         menuCreateNode->addAction(actionCamera);
         menuCreateNode->addAction(actionImposter);
+        menuCreateNode->addAction(actionParticleEmitter);
         menuCreateNode->addAction(actionUserNode);
         menuTools->addAction(actionMaterialEditor);
         menuTools->addAction(actionTextureConverter);
@@ -219,6 +223,7 @@ public:
         actionRetina->setText(QApplication::translate("MainWindow", "Retina", 0, QApplication::UnicodeUTF8));
         actionIPad->setText(QApplication::translate("MainWindow", "iPad", 0, QApplication::UnicodeUTF8));
         actionDefault->setText(QApplication::translate("MainWindow", "Default", 0, QApplication::UnicodeUTF8));
+        actionParticleEmitter->setText(QApplication::translate("MainWindow", "Particle Emitter", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
         menuResentScenes->setTitle(QApplication::translate("MainWindow", "Resent Scenes", 0, QApplication::UnicodeUTF8));
         menuExport->setTitle(QApplication::translate("MainWindow", "Export", 0, QApplication::UnicodeUTF8));
