@@ -40,8 +40,7 @@ void SceneEditorScreenMain::LoadResources()
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
     
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String path = keyedArchieve->GetString("3dDataSourcePath", "/");
+    String path = EditorSettings::Instance()->GetDataSourcePath();
     if(path.length())
     fileSystemDialog->SetCurrentDir(path);
     
@@ -295,23 +294,24 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         case DIALOG_OPERATION_MENU_SAVE:
         {
             EditorSettings::Instance()->AddLastOpenedFile(pathToFile);
+            SaveSceneToFile(pathToFile);
 
-            BodyItem *iBody = FindCurrentBody();
-            iBody->bodyControl->SetFilePath(pathToFile);
-			
-			iBody->bodyControl->PushDebugCamera();
-
-            Scene * scene = iBody->bodyControl->GetScene();
-
-            uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
-            SceneFileV2 * file = new SceneFileV2();
-            file->EnableDebugLog(false);
-            file->SaveScene(pathToFile, scene);
-            SafeRelease(file);
-            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-            Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
-
-			iBody->bodyControl->PopDebugCamera();			
+//            BodyItem *iBody = FindCurrentBody();
+//            iBody->bodyControl->SetFilePath(pathToFile);
+//			
+//			iBody->bodyControl->PushDebugCamera();
+//
+//            Scene * scene = iBody->bodyControl->GetScene();
+//
+//            uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+//            SceneFileV2 * file = new SceneFileV2();
+//            file->EnableDebugLog(false);
+//            file->SaveScene(pathToFile, scene);
+//            SafeRelease(file);
+//            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+//            Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
+//
+//			iBody->bodyControl->PopDebugCamera();			
             break;
         }
             
@@ -345,7 +345,7 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 }
 
 
-void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnOpenPressed(BaseObject *, void *, void *)
 {
     if(EditorSettings::Instance()->GetLastOpenedCount())
     {
@@ -361,7 +361,7 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject * obj, void *, void *)
 }
 
 
-void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnSavePressed(BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
 
@@ -391,7 +391,7 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject * obj, void *, void *)
     }
 }
 
-void SceneEditorScreenMain::OnExportPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnExportPressed(BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
     if(iBody->bodyControl->LandscapeEditorActive())
@@ -489,6 +489,7 @@ void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
 
 void SceneEditorScreenMain::OnNewPressed(BaseObject * obj, void *, void *)
 {
+    NewScene();
     bodies[0]->bodyControl->ReleaseScene();
     bodies[0]->bodyControl->CreateScene(true);
     bodies[0]->bodyControl->Refresh();
@@ -812,7 +813,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             
         case MENUID_EXPORTTOGAME:
         {
-            ExportToGameAction(itemID);
+            ExportAs((ResourceEditor::eExportFormat)itemID);
             break;
         }
             
@@ -946,15 +947,15 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
         {
             switch (itemID) 
             {
-                case EETGMID_PNG:
+                case ResourceEditor::FORMAT_PNG:
                     text = LocalizedString(L"menu.export.png");
                     break;
                     
-                case EETGMID_PVR:
+                case ResourceEditor::FORMAT_PVR:
                     text = LocalizedString(L"menu.export.pvr");
                     break;
 
-                case EETGMID_DXT:
+                case ResourceEditor::FORMAT_DXT:
                     text = LocalizedString(L"menu.export.dxt");
                     break;
                     
@@ -996,7 +997,7 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 
         case MENUID_EXPORTTOGAME:
         {
-            retCount = EETGMID_COUNT;
+            retCount = ResourceEditor::FORMAT_COUNT;
             break;
         }
             
@@ -1255,69 +1256,6 @@ void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, vo
     }
 }
 
-void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
-{
-    String format;
-    switch (actionID) 
-    {
-        case EETGMID_PNG:
-            format = String("png");
-            break;
-            
-        case EETGMID_PVR:
-            format = String("pvr");
-            break;
-            
-        case EETGMID_DXT:
-            DVASSERT(0);
-            return;
-            
-        default:
-			DVASSERT(0);
-            return;
-    }
-
-
-    BodyItem *iBody = FindCurrentBody();
-	iBody->bodyControl->PushDebugCamera();
-
-    String filePath = iBody->bodyControl->GetFilePath();
-
-    String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-    String::size_type pos = filePath.find(dataSourcePath);
-    if(String::npos != pos)
-    {
-        filePath = filePath.replace(pos, dataSourcePath.length(), "");
-    }
-    else 
-    {
-        DVASSERT(0);
-    }
-    
-    // Get project path
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String projectPath = keyedArchieve->GetString(String("ProjectPath"));
-
-    if(!SceneExporter::Instance()) new SceneExporter();
-
-    String inFolder = projectPath + String("DataSource/3d/");
-    SceneExporter::Instance()->SetInFolder(inFolder);
-    SceneExporter::Instance()->SetOutFolder(projectPath + String("Data/3d/"));
-
-    SceneExporter::Instance()->SetExportingFormat(format);
-  
-    //TODO: how to be with removed nodes?
-    Set<String> errorsLog;
-    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
-    
-	iBody->bodyControl->PopDebugCamera();
-    libraryControl->RefreshTree();
-    
-    if(0 < errorsLog.size())
-    {
-        ErrorNotifier::Instance()->ShowError(errorsLog);
-    }
-}
 
 //void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
 //{
@@ -1369,7 +1307,7 @@ void SceneEditorScreenMain::ExportToGameAction(int32 actionID)
 
 void SceneEditorScreenMain::RecreteFullTilingTexture()
 {
-    for(int32 i = 0; i < bodies.size(); ++i)
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
     {
         bodies[i]->bodyControl->RecreteFullTilingTexture();
     }
@@ -1384,3 +1322,119 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 		AddControl(particlesEditor);
 	}
 }
+
+void SceneEditorScreenMain::NewScene()
+{
+    bodies[0]->bodyControl->ReleaseScene();
+    bodies[0]->bodyControl->CreateScene(true);
+    bodies[0]->bodyControl->Refresh();
+}
+
+
+bool SceneEditorScreenMain::SaveIsAvailable()
+{
+    if(FindCurrentBody()->bodyControl->LandscapeEditorActive())
+    {
+        ErrorNotifier::Instance()->ShowError("Can't save level at Landscape Editor Mode.");
+        return false;
+    }
+
+    return true;
+}
+
+String SceneEditorScreenMain::CurrentScenePathname()
+{
+    String pathname = FindCurrentBody()->bodyControl->GetFilePath();
+    if (0 < pathname.length())
+    {
+        pathname = FileSystem::Instance()->ReplaceExtension(pathname, ".sc2");
+    }
+
+    return pathname;
+}
+
+
+void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SetFilePath(pathToFile);
+    
+    iBody->bodyControl->PushDebugCamera();
+    
+    Scene * scene = iBody->bodyControl->GetScene();
+    
+    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+    SceneFileV2 * file = new SceneFileV2();
+    file->EnableDebugLog(false);
+    file->SaveScene(pathToFile, scene);
+    SafeRelease(file);
+    uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
+    Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
+    
+    iBody->bodyControl->PopDebugCamera();			
+}
+
+void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
+{
+    String formatStr;
+    switch (format) 
+    {
+        case ResourceEditor::FORMAT_PNG:
+            formatStr = String("png");
+            break;
+            
+        case ResourceEditor::FORMAT_PVR:
+            formatStr = String("pvr");
+            break;
+            
+        case ResourceEditor::FORMAT_DXT:
+            DVASSERT(0);
+            return;
+            
+        default:
+			DVASSERT(0);
+            return;
+    }
+    
+    
+    BodyItem *iBody = FindCurrentBody();
+	iBody->bodyControl->PushDebugCamera();
+    
+    String filePath = iBody->bodyControl->GetFilePath();
+    
+    String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+    String::size_type pos = filePath.find(dataSourcePath);
+    if(String::npos != pos)
+    {
+        filePath = filePath.replace(pos, dataSourcePath.length(), "");
+    }
+    else 
+    {
+        DVASSERT(0);
+    }
+    
+    // Get project path
+    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
+    String projectPath = keyedArchieve->GetString(String("ProjectPath"));
+    
+    if(!SceneExporter::Instance()) new SceneExporter();
+    
+    String inFolder = projectPath + String("DataSource/3d/");
+    SceneExporter::Instance()->SetInFolder(inFolder);
+    SceneExporter::Instance()->SetOutFolder(projectPath + String("Data/3d/"));
+    
+    SceneExporter::Instance()->SetExportingFormat(formatStr);
+    
+    //TODO: how to be with removed nodes?
+    Set<String> errorsLog;
+    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    
+	iBody->bodyControl->PopDebugCamera();
+    libraryControl->RefreshTree();
+    
+    if(0 < errorsLog.size())
+    {
+        ErrorNotifier::Instance()->ShowError(errorsLog);
+    }
+}
+

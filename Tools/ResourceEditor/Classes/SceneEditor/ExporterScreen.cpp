@@ -33,6 +33,8 @@
 #include "CommandLineTool.h"
 #include "SceneExporter.h"
 
+#include "ErrorNotifier.h"
+
 void ExporterScreen::LoadResources()
 {
     GetBackground()->SetColor(Color::White());
@@ -124,8 +126,25 @@ void ExporterScreen::DidAppear()
             
             ++index;
         }
+        
+        bool needRelease = false;
+        if(!ErrorNotifier::Instance())
+        {
+            new ErrorNotifier();
+        }
+        
+        ErrorNotifier::Instance()->ShowError(errorLog);
+        
+        if(needRelease)
+        {
+            ErrorNotifier::Instance()->Release();
+        }
+        
     }
-    else 
+
+    bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
+                    ||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
+    if(forceMode || 0 == errorLog.size())
     {
         Core::Instance()->Quit();
     }

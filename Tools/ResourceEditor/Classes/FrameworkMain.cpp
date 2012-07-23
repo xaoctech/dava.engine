@@ -19,7 +19,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.9"
+#define VERSION     "0.0.11"
  
 //void EntityTest();
 
@@ -44,12 +44,14 @@ void PrintUsage()
     printf("\t-processdir - foldername from DataSource/3d/ for exporting\n"); 
     printf("\t-processfile - filename from DataSource/3d/ for exporting\n"); 
     printf("\t-format - png, pvr, dxt\n"); 
+    printf("\t-force - to don't display error dialogs");
     
     printf("\n");
     printf("Samples:");
     printf("-sceneexporter -clean /Users/User/Project/Data/3d/\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
-    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2\n");
+    printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -force\n");
+    
 }
 
 
