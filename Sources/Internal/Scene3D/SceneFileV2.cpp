@@ -489,7 +489,16 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
     
     String name = archive->GetString("##name");
     SceneNode * node = dynamic_cast<SceneNode*>(ObjectFactory::Instance()->New(name));
-    if (node)
+
+	//TODO: refactor this elegant fix
+	bool skipNode = false;
+	if(!node) //in case if editor class is loading in non-editor project
+	{
+		node = new SceneNode();
+		skipNode = true;
+	}
+
+    //if(node)
     {
         if (isDebugLogEnabled)
         {
@@ -497,11 +506,14 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
             Logger::Debug("%s %s(%s)", GetIndentString('-', level), name.c_str(), node->GetClassName().c_str());
         }
 
-        node->SetScene(scene);
-        node->Load(archive, this);
-        parent->AddNode(node);
+		if(!skipNode)
+		{
+			node->SetScene(scene);
+			node->Load(archive, this);
+			parent->AddNode(node);
+		}
+        
         int32 childrenCount = archive->GetInt32("#childrenCount", 0);
-
 
         for (int ci = 0; ci < childrenCount; ++ci)
         {

@@ -10,6 +10,8 @@
 #include "SceneNodeIDs.h"
 #include "SettingsDialog.h"
 
+#include "../Constants.h"
+
 using namespace DAVA;
 
 class EditorBodyControl;
@@ -58,15 +60,6 @@ class SceneEditorScreenMain:
         EOMID_OPENLAST_STARTINDEX,
         
         EOMID_COUNT
-    };
-
-    enum eExportToGameMenuIDS
-    {
-        EETGMID_PNG = 0,
-        EETGMID_PVR,
-        EETGMID_DXT,
-        
-        EETGMID_COUNT
     };
 
 public:
@@ -228,7 +221,6 @@ private:
     //Open menu
     void ShowOpenFileDialog();
     void ShowOpenLastDialog();
-    void OpenFileAtScene(const String &pathToFile);
     
     void OnSettingsPressed(BaseObject * obj, void *, void *);
     SettingsDialog *settingsDialog;
@@ -239,10 +231,20 @@ private:
     // general
     Font *font;
     
-    void ExportToGameAction(int32 actionID);
 	bool useConvertedTextures;
     
     HelpDialog *helpDialog;
+    
+public: //For Qt integration
+    void OpenFileAtScene(const String &pathToFile);
+    void NewScene();
+
+    bool SaveIsAvailable();
+    String CurrentScenePathname();
+    void SaveSceneToFile(const String &pathToFile);
+   
+
+    void ExportAs(ResourceEditor::eExportFormat format);
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__
