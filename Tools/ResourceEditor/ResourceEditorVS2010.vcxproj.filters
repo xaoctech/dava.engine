@@ -1937,6 +1937,9 @@
     <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
       <Filter>SceneEditor\Dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Constants.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SceneEditor">
