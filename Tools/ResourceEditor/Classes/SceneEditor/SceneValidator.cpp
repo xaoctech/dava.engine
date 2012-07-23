@@ -383,7 +383,7 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     }
     
     String::size_type resFound = normalizedPath.find(String("~res:"));
-    if(String::npos != fboFound)
+    if(String::npos != resFound) 
     {
         return true;   
     }
