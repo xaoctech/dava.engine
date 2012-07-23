@@ -419,6 +419,7 @@
     <ClInclude Include="Classes\Collada\ColladaSceneNodeAnimation.h" />
     <ClInclude Include="Classes\Collada\ColladaTexture.h" />
     <ClInclude Include="Classes\Collada\stdafx.h" />
+    <ClInclude Include="Classes\Constants.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
     <ClInclude Include="Classes\LightmapAtlasingData.h" />
