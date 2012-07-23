@@ -12,6 +12,8 @@
 		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
+		5C2763A815B82BE90030A8FD /* GUIActionHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */; };
+		5C2763A915B82BE90030A8FD /* moc_GUIActionHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C2763A715B82BE90030A8FD /* moc_GUIActionHandler.cpp */; };
 		5C7F465D15B44AD10038AF3A /* ForcePreviewControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F465515B44AD10038AF3A /* ForcePreviewControl.cpp */; };
 		5C7F465E15B44AD10038AF3A /* ParticlesEditorControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F465715B44AD10038AF3A /* ParticlesEditorControl.cpp */; };
 		5C7F465F15B44AD10038AF3A /* PreviewControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F465915B44AD10038AF3A /* PreviewControl.cpp */; };
@@ -278,10 +280,14 @@
 		5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E115B44BB70038AF3A /* UISpriteEditor.cpp */; };
 		5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
+		5C81477D15B8150400E8D252 /* FuckingErrorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
 		5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F465315B449450038AF3A /* libFrameworkQt.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
 		5CCC10B415B45FC200DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B315B45FC200DA83EB /* libbz2.dylib */; };
+		5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABB15B893E4007CA99A /* Command.cpp */; };
+		5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */; };
+		5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
@@ -352,6 +358,9 @@
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
+		5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIActionHandler.cpp; path = Classes/Qt/GUIActionHandler.cpp; sourceTree = "<group>"; };
+		5C2763A615B82BE90030A8FD /* GUIActionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIActionHandler.h; path = Classes/Qt/GUIActionHandler.h; sourceTree = "<group>"; };
+		5C2763A715B82BE90030A8FD /* moc_GUIActionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GUIActionHandler.cpp; path = Classes/Qt/moc_GUIActionHandler.cpp; sourceTree = "<group>"; };
 		5C654C3915B40C72000B196B /* mainwindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mainwindow.h; sourceTree = "<group>"; };
 		5C7F465515B44AD10038AF3A /* ForcePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ForcePreviewControl.cpp; path = Classes/ParticlesEditor/ForcePreviewControl.cpp; sourceTree = "<group>"; };
 		5C7F465615B44AD10038AF3A /* ForcePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ForcePreviewControl.h; path = Classes/ParticlesEditor/ForcePreviewControl.h; sourceTree = "<group>"; };
@@ -990,8 +999,17 @@
 		5C7F49E415B44BB70038AF3A /* VertexOctTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexOctTree.h; path = Classes/VertexOctTree.h; sourceTree = "<group>"; };
 		5C7F49F615B44EE50038AF3A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
+		5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FuckingErrorDialog.cpp; path = Classes/SceneEditor/FuckingErrorDialog.cpp; sourceTree = "<group>"; };
+		5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuckingErrorDialog.h; path = Classes/SceneEditor/FuckingErrorDialog.h; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
+		5CDD9ABB15B893E4007CA99A /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = Classes/Commands/Command.cpp; sourceTree = "<group>"; };
+		5CDD9ABC15B893E4007CA99A /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Command.h; path = Classes/Commands/Command.h; sourceTree = "<group>"; };
+		5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandsManager.cpp; path = Classes/Commands/CommandsManager.cpp; sourceTree = "<group>"; };
+		5CDD9ABE15B893E4007CA99A /* CommandsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandsManager.h; path = Classes/Commands/CommandsManager.h; sourceTree = "<group>"; };
+		5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileCommands.cpp; path = Classes/Commands/FileCommands.cpp; sourceTree = "<group>"; };
+		5CF17EC215B91E8600A9FC33 /* FileCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileCommands.h; path = Classes/Commands/FileCommands.h; sourceTree = "<group>"; };
+		5CF17EC415B9385300A9FC33 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Classes/Constants.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		6D3A4A84E8680AFD0352C6BB /* davaglwidget.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = davaglwidget.ui; path = Classes/davaglwidget.ui; sourceTree = "<group>"; };
@@ -1074,6 +1092,16 @@
 				5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5C2763A415B82BDF0030A8FD /* Qt */ = {
+			isa = PBXGroup;
+			children = (
+				5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */,
+				5C2763A615B82BE90030A8FD /* GUIActionHandler.h */,
+				5C2763A715B82BE90030A8FD /* moc_GUIActionHandler.cpp */,
+			);
+			name = Qt;
 			sourceTree = "<group>";
 		};
 		5C7F464F15B449450038AF3A /* Products */ = {
@@ -1737,6 +1765,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */,
+				5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */,
 				5C7F48CE15B44B7A0038AF3A /* BoxPropertyControl.cpp */,
 				5C7F48CF15B44B7A0038AF3A /* BoxPropertyControl.h */,
 				5C7F48D015B44B7A0038AF3A /* CameraController.cpp */,
@@ -1923,6 +1953,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5CDD9ABA15B893CF007CA99A /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */,
+				5CF17EC215B91E8600A9FC33 /* FileCommands.h */,
+				5CDD9ABB15B893E4007CA99A /* Command.cpp */,
+				5CDD9ABC15B893E4007CA99A /* Command.h */,
+				5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */,
+				5CDD9ABE15B893E4007CA99A /* CommandsManager.h */,
+			);
+			name = Commands;
+			sourceTree = "<group>";
+		};
 		6FEF39F978531E51AF85F736 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1984,6 +2027,9 @@
 		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5CF17EC415B9385300A9FC33 /* Constants.h */,
+				5CDD9ABA15B893CF007CA99A /* Commands */,
+				5C2763A415B82BDF0030A8FD /* Qt */,
 				5C7F49C415B44BB70038AF3A /* AppScreens.h */,
 				5C7F49C515B44BB70038AF3A /* BeastProxy.cpp */,
 				5C7F49C615B44BB70038AF3A /* BeastProxy.h */,
@@ -2443,6 +2489,12 @@
 				5C7F49F115B44BB70038AF3A /* UIScrollView.cpp in Build Sources */,
 				5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */,
 				5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */,
+				5C81477D15B8150400E8D252 /* FuckingErrorDialog.cpp in Build Sources */,
+				5C2763A815B82BE90030A8FD /* GUIActionHandler.cpp in Build Sources */,
+				5C2763A915B82BE90030A8FD /* moc_GUIActionHandler.cpp in Build Sources */,
+				5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */,
+				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
+				5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
