@@ -20,7 +20,14 @@ SceneExporter::~SceneExporter()
 void SceneExporter::CleanFolder(const String &folderPathname, Set<String> &errorLog)
 {
     bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
-    errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.c_str())));
+    if(!ret)
+    {
+        bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
+        if(folderExists)
+        {
+            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.c_str())));
+        }
+    }
 }
 
 void SceneExporter::SetInFolder(const String &folderPathname)
