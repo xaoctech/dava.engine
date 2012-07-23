@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
+    <width>1065</width>
     <height>660</height>
    </rect>
   </property>
@@ -32,6 +32,9 @@
     </property>
     <item>
      <widget class="DavaGLWidget" name="davaGlWidget" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -51,14 +54,191 @@
     </item>
    </layout>
   </widget>
-  <action name="action1">
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1065</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuResentScenes">
+     <property name="title">
+      <string>Resent Scenes</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionPNG"/>
+     <addaction name="actionPVR"/>
+     <addaction name="actionDXT"/>
+    </widget>
+    <addaction name="actionNewScene"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenScene"/>
+    <addaction name="actionOpenProject"/>
+    <addaction name="menuResentScenes"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveScene"/>
+    <addaction name="menuExport"/>
+   </widget>
+   <widget class="QMenu" name="menuCreateNode">
+    <property name="title">
+     <string>Create Node</string>
+    </property>
+    <addaction name="actionLandscape"/>
+    <addaction name="actionLight"/>
+    <addaction name="actionServiceNode"/>
+    <addaction name="actionBox"/>
+    <addaction name="actionSphere"/>
+    <addaction name="actionCamera"/>
+    <addaction name="actionImposter"/>
+    <addaction name="actionUserNode"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionMaterialEditor"/>
+    <addaction name="actionTextureConverter"/>
+    <addaction name="separator"/>
+    <addaction name="actionHeightMapEditor"/>
+    <addaction name="actionTileMapEditor"/>
+   </widget>
+   <widget class="QMenu" name="menuViewPort">
+    <property name="title">
+     <string>View Port</string>
+    </property>
+    <addaction name="actionIPhone"/>
+    <addaction name="actionRetina"/>
+    <addaction name="actionIPad"/>
+    <addaction name="actionDefault"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuCreateNode"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuViewPort"/>
+  </widget>
+  <action name="actionNewScene">
    <property name="text">
-    <string>1</string>
+    <string>New Scene</string>
    </property>
   </action>
-  <action name="action2">
+  <action name="actionOpenScene">
    <property name="text">
-    <string>2</string>
+    <string>Open Scene</string>
+   </property>
+  </action>
+  <action name="actionSaveScene">
+   <property name="text">
+    <string>Save Scene</string>
+   </property>
+  </action>
+  <action name="actionOpenProject">
+   <property name="text">
+    <string>Open Project</string>
+   </property>
+  </action>
+  <action name="actionPNG">
+   <property name="text">
+    <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionPVR">
+   <property name="text">
+    <string>PVR</string>
+   </property>
+  </action>
+  <action name="actionDXT">
+   <property name="text">
+    <string>DXT</string>
+   </property>
+  </action>
+  <action name="actionLandscape">
+   <property name="text">
+    <string>Landscape</string>
+   </property>
+  </action>
+  <action name="actionLight">
+   <property name="text">
+    <string>Light</string>
+   </property>
+  </action>
+  <action name="actionServiceNode">
+   <property name="text">
+    <string>Service Node</string>
+   </property>
+  </action>
+  <action name="actionBox">
+   <property name="text">
+    <string>Box</string>
+   </property>
+  </action>
+  <action name="actionSphere">
+   <property name="text">
+    <string>Sphere</string>
+   </property>
+  </action>
+  <action name="actionCamera">
+   <property name="text">
+    <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionImposter">
+   <property name="text">
+    <string>Imposter</string>
+   </property>
+  </action>
+  <action name="actionUserNode">
+   <property name="text">
+    <string>User Node</string>
+   </property>
+  </action>
+  <action name="actionMaterialEditor">
+   <property name="text">
+    <string>Material Editor</string>
+   </property>
+  </action>
+  <action name="actionHeightMapEditor">
+   <property name="text">
+    <string>Height Map Editor</string>
+   </property>
+  </action>
+  <action name="actionTileMapEditor">
+   <property name="text">
+    <string>Tile Map Editor</string>
+   </property>
+  </action>
+  <action name="actionTextureConverter">
+   <property name="text">
+    <string>Texture Converter</string>
+   </property>
+  </action>
+  <action name="actionIPhone">
+   <property name="text">
+    <string>iPhone</string>
+   </property>
+  </action>
+  <action name="actionRetina">
+   <property name="text">
+    <string>Retina</string>
+   </property>
+  </action>
+  <action name="actionIPad">
+   <property name="text">
+    <string>iPad</string>
+   </property>
+  </action>
+  <action name="actionDefault">
+   <property name="text">
+    <string>Default</string>
    </property>
   </action>
  </widget>

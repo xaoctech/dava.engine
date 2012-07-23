@@ -15,7 +15,7 @@ DebugNode::DebugNode(std::vector<float32> &data)
 {
 	verts = data;
 	
-	for (int i = 0; i < verts.size() / 3; i++)
+	for (int32 i = 0; i < (int32)verts.size() / 3; i++)
 	{
 		for (int j = 0; j < 4; j++)
 			colors.push_back(1.0f);

@@ -810,7 +810,7 @@
       <Filter>SceneEditor\Properties</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
-      <Filter>SceneEditor</Filter>
+      <Filter>SceneEditor\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1935,7 +1935,7 @@
       <Filter>SceneEditor\Properties</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
-      <Filter>SceneEditor</Filter>
+      <Filter>SceneEditor\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

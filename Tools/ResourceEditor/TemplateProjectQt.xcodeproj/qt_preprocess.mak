@@ -29,17 +29,20 @@ mocclean: compiler_moc_header_clean compiler_moc_source_clean
 
 mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 
-compilers: ./moc_mainwindow.cpp ./moc_davaglwidget.cpp ./ui_mainwindow.h ./ui_davaglwidget.h
+compilers: ./moc_mainwindow.cpp ./moc_davaglwidget.cpp ./Classes/Qt/moc_GUIActionHandler.cpp ./ui_mainwindow.h ./ui_davaglwidget.h 
 compiler_objective_c_make_all:
 compiler_objective_c_clean:
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_davaglwidget.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_davaglwidget.cpp Classes/Qt/moc_GUIActionHandler.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_davaglwidget.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_davaglwidget.cpp Classes/Qt/moc_GUIActionHandler.cpp
 moc_mainwindow.cpp: mainwindow.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ mainwindow.h -o moc_mainwindow.cpp
 
 moc_davaglwidget.cpp: Classes/davaglwidget.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/davaglwidget.h -o moc_davaglwidget.cpp
+
+Classes/Qt/moc_GUIActionHandler.cpp: Classes/Qt/GUIActionHandler.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/GUIActionHandler.h -o Classes/Qt/moc_GUIActionHandler.cpp
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
