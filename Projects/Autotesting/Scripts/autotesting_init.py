@@ -56,7 +56,17 @@ if (platform.system() == "Darwin"):
         scripts.append("/transporter_chief.rb")
         scripts.append("/testRun.js")
 
-print "copy iOS scripts from " + currentDir + " to " + autotestingSrcFolder
+autotestingReportsFolder = os.path.realpath(autotestingSrcFolder + "/Reports")      
+
+if os.path.exists(autotestingReportsFolder):   
+    print "remove previous report for " + arguments[index_OS]       
+    autotestingReportPath = os.path.realpath(autotestingReportsFolder + "/report_" + arguments[index_OS] + ".html") 
+    if os.path.exists(autotestingReportPath): 
+        os.remove(autotestingReportPath)
+else:
+    os.mkdir(autotestingReportsFolder)    
+    
+print "copy scripts from " + currentDir + " to " + autotestingSrcFolder
 for scriptName in scripts:
     scriptSrcPath = os.path.realpath(currentDir + scriptName)
     scriptDestPath = os.path.realpath(autotestingSrcFolder + scriptName)

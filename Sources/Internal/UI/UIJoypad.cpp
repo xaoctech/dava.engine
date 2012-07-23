@@ -37,6 +37,7 @@ namespace DAVA
 UIJoypad::UIJoypad(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
 ,	deadAreaSize(10.0f)
+,	digitalSense(0.5f)
 ,	needRecalcDigital(true)
 ,	needRecalcAnalog(true)
 ,	currentPos(Vector2(0,0))
@@ -58,16 +59,40 @@ const Vector2 &UIJoypad::GetDigitalPosition()
 //	{
 //		RecalcDigitalPosition();
 //	}
+	if (currentPos.x == 0.f && currentPos.y == 0.f)
+	{
+		digitalVector.x = 0.0f;
+		digitalVector.y = 0.0f;	
+		return digitalVector;
+	}
 	if(needRecalcAnalog)
 	{
 		RecalcAnalogPosition();
 	}
+
+	Vector2 v = analogVector;
+	if (fabs(v.x) > fabs(v.y))
+	{
+		float32 f = fabs(1.f / v.x);
+		v.y *= f;
+		v.x *= f;
+	}
+	else
+	{
+		float32 f = fabs(1.f / v.y);
+		v.x *= f;
+		v.y *= f;
+	}
+
+	//Logger::Info("V pos x = %f, y = %f", v.x, v.y);
 	
-	float32 xSign = analogVector.x >= 0.0f ? 1.0f : -1.0f;
-	float32 ySign = analogVector.y >= 0.0f ? 1.0f : -1.0f;
+	float32 xSign = v.x >= 0.0f ? digitalSense : -digitalSense;
+	float32 ySign = v.y >= 0.0f ? digitalSense : -digitalSense;
 	
-	digitalVector.x = 0.0f + (int32)(analogVector.x + xSign * 0.5f);
-	digitalVector.y = 0.0f + (int32)(analogVector.y + ySign * 0.5f);	
+	digitalVector.x = 0.0f + (int32)(v.x + xSign);
+	digitalVector.y = 0.0f + (int32)(v.y + ySign);	
+	
+	//Logger::Info("Digital joy pos x = %f, y = %f", digitalVector.x, digitalVector.y);
 	
 	return digitalVector;
 }
@@ -153,7 +178,7 @@ void UIJoypad::RecalcAnalogPosition()
 	needRecalcAnalog = false;
     analogVector.x = currentPos.x/(size.x/2);
     analogVector.y = currentPos.y/(size.y/2);
-//    Logger::Info("x = %f, y = %f", analogVector.x, analogVector.y);
+    Logger::Info("Analog joy pos x = %f, y = %f", analogVector.x, analogVector.y);
 }
 
 void UIJoypad::SetStickSprite(Sprite *stickSprite, int32 frame)
@@ -203,8 +228,11 @@ void UIJoypad::Input(UIEvent *currentInput)
         currentPos.y = Max(currentPos.y, -size.y/2);
         currentPos.y = Min(currentPos.y, size.y/2);
 	}
-    stick->relativePosition.x = size.x/2 + currentPos.x;
-    stick->relativePosition.y = size.y/2 + currentPos.y;
+	if (stick)
+	{
+		stick->relativePosition.x = size.x/2 + currentPos.x;
+		stick->relativePosition.y = size.y/2 + currentPos.y;
+	}
 
 	needRecalcAnalog = true;
 	needRecalcDigital = true;
@@ -219,8 +247,11 @@ void UIJoypad::InputCancelled(UIEvent *currentInput)
 		currentPos.x = 0;
 		currentPos.y = 0;
 
-        stick->relativePosition.x = size.x/2 + currentPos.x;
-        stick->relativePosition.y = size.y/2 + currentPos.y;
+		if (stick)
+		{
+			stick->relativePosition.x = size.x/2 + currentPos.x;
+			stick->relativePosition.y = size.y/2 + currentPos.y;
+		}
 
 		needRecalcAnalog = true;
 		needRecalcDigital = true;

@@ -96,6 +96,13 @@ public:
     void ValidateMaterial(Material *material, Set<String> &errorsLog);
 
     
+    /*
+     \brief Function sets 3d folder path for cheking texture pathnames
+     \param[in] pathname path to DataSource/3d folder
+	 */
+    void SetPathForChecking(const String &pathname);
+    
+    
     void EnumerateSceneTextures();
     void CollectSceneStats(const RenderManager::Stats &newStats);
     
@@ -112,6 +119,8 @@ protected:
     
     void ShowErrors();
     
+    bool ValidatePathname(const String &pathForValidation);
+    
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;
     
@@ -121,6 +130,8 @@ protected:
     int32 sceneTextureMemory;
     
     RenderManager::Stats sceneStats;
+    
+    String pathForChecking;
 };
 
 

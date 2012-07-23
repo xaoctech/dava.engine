@@ -20,6 +20,9 @@ attribute vec2 inTexCoord0;
 attribute vec2 inTexCoord1;
 #endif
 
+#if defined(VERTEX_COLOR)
+attribute vec4 inColor;
+#endif
 
 #if defined(VERTEX_LIT)
 #endif
@@ -79,6 +82,10 @@ varying float varFogFactor;
 #if defined(SETUP_LIGHTMAP)
 uniform float lightmapSize;
 varying lowp float varLightmapSize;
+#endif
+
+#if defined(VERTEX_COLOR)
+varying lowp vec4 varVertexColor;
 #endif
 
 void main()
@@ -162,6 +169,10 @@ void main()
     varFogFactor = clamp(varFogFactor, 0.0, 1.0);
 #endif
 
+#if defined(VERTEX_COLOR)
+	varVertexColor = inColor;
+#endif
+
 	varTexCoord0 = inTexCoord0;
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
 	
@@ -174,4 +185,6 @@ void main()
 		varTexCoord1 = inTexCoord1;
 	#endif
 #endif
+
+
 }

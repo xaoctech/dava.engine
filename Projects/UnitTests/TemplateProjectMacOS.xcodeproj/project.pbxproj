@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02B3D3BC159C782F0082111B /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02B3D3BB159C782F0082111B /* SoundTest.cpp */; };
+		5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44737515B5A0FD00028948 /* SoundTest.cpp */; };
 		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SampleTest.cpp */; };
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
@@ -21,6 +21,8 @@
 		FEA024E312DCEEC600935314 /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE98931811638F3C00500198 /* libFramework.a */; };
 		FEA30C331231362D00E691CC /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FEA30C291231362D00E691CC /* main.mm */; };
 		FEA30C361231362D00E691CC /* version.plist in Resources */ = {isa = PBXBuildFile; fileRef = FEA30C2E1231362D00E691CC /* version.plist */; };
+		FEA8F6EB159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F6E9159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp */; };
+		FEA8F70915A0A55600EED3DC /* HashMapTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEA8F70715A0A55600EED3DC /* HashMapTest.cpp */; };
 		FEC3CA811283557F00541220 /* FrameworkMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */; };
 		FEC3CA821283557F00541220 /* GameCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FEC3CA711283557F00541220 /* GameCore.cpp */; };
 		FEC9202813BA2EAA006F347F /* TemplateProjectMacOS-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FEC9202713BA2EAA006F347F /* TemplateProjectMacOS-Info.plist */; };
@@ -45,13 +47,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		02B3D3BA159C78200082111B /* SoundTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SoundTest.h; path = Classes/SoundTest.h; sourceTree = "<group>"; };
-		02B3D3BB159C782F0082111B /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundTest.cpp; path = Classes/SoundTest.cpp; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		5C44737515B5A0FD00028948 /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundTest.cpp; path = Classes/SoundTest.cpp; sourceTree = "<group>"; };
+		5C44737615B5A0FD00028948 /* SoundTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundTest.h; path = Classes/SoundTest.h; sourceTree = "<group>"; };
 		5C6EF11B15751E1B001E45AD /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		5C6EF11D15751E1B001E45AD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		5C6EF11F15751E1B001E45AD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -73,6 +75,10 @@
 		FE98930B11638F3C00500198 /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../MacOSFramework/Framework.xcodeproj; sourceTree = SOURCE_ROOT; };
 		FEA30C291231362D00E691CC /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		FEA30C2E1231362D00E691CC /* version.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = version.plist; sourceTree = "<group>"; };
+		FEA8F6E9159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryAllocatorsTest.cpp; path = Classes/MemoryAllocatorsTest.cpp; sourceTree = "<group>"; };
+		FEA8F6EA159DB0EF00EED3DC /* MemoryAllocatorsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryAllocatorsTest.h; path = Classes/MemoryAllocatorsTest.h; sourceTree = "<group>"; };
+		FEA8F70715A0A55600EED3DC /* HashMapTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HashMapTest.cpp; path = Classes/HashMapTest.cpp; sourceTree = "<group>"; };
+		FEA8F70815A0A55600EED3DC /* HashMapTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HashMapTest.h; path = Classes/HashMapTest.h; sourceTree = "<group>"; };
 		FEC3CA6F1283557F00541220 /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FrameworkMain.cpp; path = Classes/FrameworkMain.cpp; sourceTree = "<group>"; };
 		FEC3CA701283557F00541220 /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
 		FEC3CA711283557F00541220 /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameCore.cpp; path = Classes/GameCore.cpp; sourceTree = "<group>"; };
@@ -97,15 +103,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		02B3D3B9159C78010082111B /* SoundTest */ = {
-			isa = PBXGroup;
-			children = (
-				02B3D3BB159C782F0082111B /* SoundTest.cpp */,
-				02B3D3BA159C78200082111B /* SoundTest.h */,
-			);
-			name = SoundTest;
-			sourceTree = "<group>";
-		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -183,12 +180,23 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				02B3D3B9159C78010082111B /* SoundTest */,
+				5C44737415B5A0EB00028948 /* SoundTest */,
+				FEA8F70615A0A54700EED3DC /* HashMap */,
+				FEA8F6E8159DB0DF00EED3DC /* MemoryAllocators */,
 				5CA2461A158F46CD00465879 /* EntityTest */,
 				5CDC24FA156CC72400742348 /* SampleTest.cpp */,
 				5CDC24FB156CC72400742348 /* SampleTest.h */,
 			);
 			name = Tests;
+			sourceTree = "<group>";
+		};
+		5C44737415B5A0EB00028948 /* SoundTest */ = {
+			isa = PBXGroup;
+			children = (
+				5C44737515B5A0FD00028948 /* SoundTest.cpp */,
+				5C44737615B5A0FD00028948 /* SoundTest.h */,
+			);
+			name = SoundTest;
 			sourceTree = "<group>";
 		};
 		5CA2461A158F46CD00465879 /* EntityTest */ = {
@@ -240,6 +248,24 @@
 				FEA30C2E1231362D00E691CC /* version.plist */,
 			);
 			path = MacOSSpecific;
+			sourceTree = "<group>";
+		};
+		FEA8F6E8159DB0DF00EED3DC /* MemoryAllocators */ = {
+			isa = PBXGroup;
+			children = (
+				FEA8F6E9159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp */,
+				FEA8F6EA159DB0EF00EED3DC /* MemoryAllocatorsTest.h */,
+			);
+			name = MemoryAllocators;
+			sourceTree = "<group>";
+		};
+		FEA8F70615A0A54700EED3DC /* HashMap */ = {
+			isa = PBXGroup;
+			children = (
+				FEA8F70715A0A55600EED3DC /* HashMapTest.cpp */,
+				FEA8F70815A0A55600EED3DC /* HashMapTest.h */,
+			);
+			name = HashMap;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -352,7 +378,9 @@
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
 				5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */,
-				02B3D3BC159C782F0082111B /* SoundTest.cpp in Sources */,
+				FEA8F6EB159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp in Sources */,
+				FEA8F70915A0A55600EED3DC /* HashMapTest.cpp in Sources */,
+				5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
