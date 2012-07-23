@@ -66,6 +66,12 @@
     <Filter Include="Sources\SceneEditor\Light">
       <UniqueIdentifier>{d4f37c8c-9002-42d9-ae59-46d5152c9aa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Commands">
+      <UniqueIdentifier>{aecaa59c-a106-4de5-8161-f49909abd316}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt">
+      <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui_davaglwidget.h">
@@ -922,6 +928,27 @@
     </ClInclude>
     <ClInclude Include="Classes\LightmapAtlasingData.h">
       <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Constants.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\Command.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\CommandsManager.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\FileCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GUIActionHandler.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
+      <Filter>Sources\SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtDefines.h">
+      <Filter>Sources\Qt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2086,6 +2113,24 @@
     </ClCompile>
     <ClCompile Include="Classes\BeastProxy.cpp">
       <Filter>Sources\SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\Command.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\CommandsManager.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\FileCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GUIActionHandler.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\moc_GUIActionHandler.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
+      <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
