@@ -321,6 +321,9 @@
     <ClCompile Include="Classes\Collada\ColladaSceneNode.cpp" />
     <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
+    <ClCompile Include="Classes\Commands\Command.cpp" />
+    <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
+    <ClCompile Include="Classes\Commands\FileCommands.cpp" />
     <ClCompile Include="Classes\davaglwidget.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
@@ -331,6 +334,8 @@
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
+    <ClCompile Include="Classes\Qt\GUIActionHandler.cpp" />
+    <ClCompile Include="Classes\Qt\moc_GUIActionHandler.cpp" />
     <ClCompile Include="Classes\ResourcePackerScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp" />
@@ -355,6 +360,7 @@
     <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp" />
     <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\GraphBase.cpp" />
     <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp" />
     <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp" />
@@ -705,7 +711,11 @@
     <ClInclude Include="Classes\Collada\ColladaSceneNodeAnimation.h" />
     <ClInclude Include="Classes\Collada\ColladaTexture.h" />
     <ClInclude Include="Classes\Collada\stdafx.h" />
+    <ClInclude Include="Classes\Commands\Command.h" />
+    <ClInclude Include="Classes\Commands\CommandsManager.h" />
+    <ClInclude Include="Classes\Commands\FileCommands.h" />
     <ClInclude Include="Classes\config.h" />
+    <ClInclude Include="Classes\Constants.h" />
     <ClInclude Include="Classes\davaglwidget.h" />
     <ClInclude Include="Classes\DebugNode.h" />
     <ClInclude Include="Classes\EditorScene.h" />
@@ -717,6 +727,8 @@
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
+    <ClInclude Include="Classes\Qt\GUIActionHandler.h" />
+    <ClInclude Include="Classes\Qt\QtDefines.h" />
     <ClInclude Include="Classes\ResourcePackerScreen.h" />
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\CameraController.h" />
@@ -742,6 +754,7 @@
     <ClInclude Include="Classes\SceneEditor\ExporterScreen.h" />
     <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h" />
     <ClInclude Include="Classes\SceneEditor\FogControl.h" />
+    <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h" />
     <ClInclude Include="Classes\SceneEditor\GraphBase.h" />
     <ClInclude Include="Classes\SceneEditor\HeightmapNode.h" />
     <ClInclude Include="Classes\SceneEditor\HelpDialog.h" />

@@ -28,6 +28,8 @@ protected:
     
     inline eCommandType Type() const {return commandType; };
 	
+	DAVA::String NormalizePath(const DAVA::String &pathname);
+
 protected:
     
     eCommandType commandType;
