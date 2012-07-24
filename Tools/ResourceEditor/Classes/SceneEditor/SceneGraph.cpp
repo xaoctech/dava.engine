@@ -327,10 +327,14 @@ void SceneGraph::RemoveWorkingNode()
         {
 			workingScene->ReleaseUserData(workingNode);
 			workingScene->SetSelection(0);
+
+			SceneNode * tempNode = SafeRetain(workingNode);
             parentNode->RemoveNode(workingNode);
-            
             workingNode = NULL;
+
             UpdatePropertyPanel();
+
+			SafeRelease(tempNode);
             
             graphTree->Refresh();
             

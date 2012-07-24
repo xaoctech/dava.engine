@@ -1,9 +1,9 @@
 #ifdef GL_ES
-precision highp float;
+precision lowp float;
 #endif
 
 
 void main()
 {
-	gl_FragColor = vec4(0.0, 0.0, 0.0, 0.6);
+	gl_FragColor = vec4(0.0, 0.0, 0.0, 0.5);
 }
