@@ -28,7 +28,7 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
 {
-    currentViewPortID = EVPID_DEFAULT;
+    currentViewportType = ResourceEditor::VIEWPORT_DEFAULT;
     
     scene = NULL;
 	
@@ -778,7 +778,7 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     ReloadNode(scene, pathToFile);
     
     scene->SetSelection(0);
-    for (int i = 0; i < nodesToAdd.size(); i++) 
+    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++) 
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
         nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
@@ -1084,12 +1084,12 @@ void EditorBodyControl::ResetSelection()
 }
 
 
-void EditorBodyControl::SetViewPortSize(int32 viewportID)
+void EditorBodyControl::SetViewportSize(ResourceEditor::eViewportType viewportType)
 {
-    if(currentViewPortID == viewportID)
+    if(currentViewportType == viewportType)
         return;
     
-    currentViewPortID = (eViewPortIDs)viewportID;
+    currentViewportType = viewportType;
     
     if(currentGraph->GetGraphPanel()->GetParent())
     {
@@ -1105,17 +1105,17 @@ void EditorBodyControl::SetViewPortSize(int32 viewportID)
     }
     
     Rect newRect = viewRect;
-    switch (viewportID)
+    switch (viewportType)
     {
-        case EVPID_IPHONE:
+        case ResourceEditor::VIEWPORT_IPHONE:
             newRect = Rect(SCENE_OFFSET, SCENE_OFFSET, 480, 320);
             break;
 
-        case EVPID_RETINA:
+        case ResourceEditor::VIEWPORT_RETINA:
             newRect = Rect(SCENE_OFFSET, SCENE_OFFSET, 960, 640);
             break;
 
-        case EVPID_IPAD:
+        case ResourceEditor::VIEWPORT_IPAD:
             newRect = Rect(SCENE_OFFSET, SCENE_OFFSET, 1024, 768);
             break;
 
@@ -1129,7 +1129,7 @@ void EditorBodyControl::SetViewPortSize(int32 viewportID)
     }
     else
     {
-        currentViewPortID = EVPID_DEFAULT;
+        currentViewportType = ResourceEditor::VIEWPORT_DEFAULT;
     }
     
     scene3dView->SetRect(viewRect);
@@ -1137,7 +1137,7 @@ void EditorBodyControl::SetViewPortSize(int32 viewportID)
 
 bool EditorBodyControl::ControlsAreLocked()
 {
-    return (EVPID_DEFAULT != currentViewPortID);
+    return (ResourceEditor::VIEWPORT_DEFAULT != currentViewportType);
 }
 
 void EditorBodyControl::ToggleSceneInfo()

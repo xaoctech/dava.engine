@@ -17,11 +17,6 @@ CommandOpenProject::CommandOpenProject()
 {
 }
 
-CommandOpenProject::~CommandOpenProject()
-{
-	
-}
-
 
 void CommandOpenProject::Execute()
 {
@@ -46,11 +41,6 @@ CommandOpenScene::CommandOpenScene(const DAVA::String &scenePathname/* = DAVA::S
     :   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
     ,   selectedScenePathname(scenePathname)
 {
-}
-
-CommandOpenScene::~CommandOpenScene()
-{
-	
 }
 
 
@@ -85,10 +75,6 @@ CommandNewScene::CommandNewScene()
 {
 }
 
-CommandNewScene::~CommandNewScene()
-{
-}
-
 
 void CommandNewScene::Execute()
 {
@@ -104,11 +90,6 @@ void CommandNewScene::Execute()
 CommandSaveScene::CommandSaveScene()
 :   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
 {
-}
-
-CommandSaveScene::~CommandSaveScene()
-{
-	
 }
 
 
@@ -141,11 +122,6 @@ CommandExport::CommandExport(ResourceEditor::eExportFormat fmt)
 {
 }
 
-CommandExport::~CommandExport()
-{
-	
-}
-
 
 void CommandExport::Execute()
 {
@@ -155,8 +131,4 @@ void CommandExport::Execute()
         screen->ExportAs(format);
     }
 }
-
-
-
-
 

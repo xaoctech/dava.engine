@@ -281,6 +281,9 @@
 		5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F49E315B44BB70038AF3A /* VertexOctTree.cpp */; };
 		5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C7F49F615B44EE50038AF3A /* icon.icns */; };
 		5C81477D15B8150400E8D252 /* FuckingErrorDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */; };
+		5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */; };
+		5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */; };
+		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
 		5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F465315B449450038AF3A /* libFrameworkQt.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
@@ -927,7 +930,6 @@
 		5C7F494A15B44B7A0038AF3A /* SceneGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraph.h; path = Classes/SceneEditor/SceneGraph.h; sourceTree = "<group>"; };
 		5C7F494B15B44B7A0038AF3A /* SceneInfoControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneInfoControl.cpp; path = Classes/SceneEditor/SceneInfoControl.cpp; sourceTree = "<group>"; };
 		5C7F494C15B44B7A0038AF3A /* SceneInfoControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneInfoControl.h; path = Classes/SceneEditor/SceneInfoControl.h; sourceTree = "<group>"; };
-		5C7F494D15B44B7A0038AF3A /* SceneNodeIDs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneNodeIDs.h; path = Classes/SceneEditor/SceneNodeIDs.h; sourceTree = "<group>"; };
 		5C7F494E15B44B7A0038AF3A /* ScenePreviewControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScenePreviewControl.cpp; path = Classes/SceneEditor/ScenePreviewControl.cpp; sourceTree = "<group>"; };
 		5C7F494F15B44B7A0038AF3A /* ScenePreviewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScenePreviewControl.h; path = Classes/SceneEditor/ScenePreviewControl.h; sourceTree = "<group>"; };
 		5C7F495015B44B7A0038AF3A /* SceneValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneValidator.cpp; path = Classes/SceneEditor/SceneValidator.cpp; sourceTree = "<group>"; };
@@ -1001,6 +1003,12 @@
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
 		5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FuckingErrorDialog.cpp; path = Classes/SceneEditor/FuckingErrorDialog.cpp; sourceTree = "<group>"; };
 		5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FuckingErrorDialog.h; path = Classes/SceneEditor/FuckingErrorDialog.h; sourceTree = "<group>"; };
+		5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandCreateNode.cpp; path = Classes/Commands/CommandCreateNode.cpp; sourceTree = "<group>"; };
+		5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandCreateNode.h; path = Classes/Commands/CommandCreateNode.h; sourceTree = "<group>"; };
+		5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandViewport.cpp; path = Classes/Commands/CommandViewport.cpp; sourceTree = "<group>"; };
+		5C8AD20A15BDE73B00BC3FD8 /* CommandViewport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandViewport.h; path = Classes/Commands/CommandViewport.h; sourceTree = "<group>"; };
+		5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToolsCommands.cpp; path = Classes/Commands/ToolsCommands.cpp; sourceTree = "<group>"; };
+		5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToolsCommands.h; path = Classes/Commands/ToolsCommands.h; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		5CDD9ABB15B893E4007CA99A /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = Classes/Commands/Command.cpp; sourceTree = "<group>"; };
@@ -1894,7 +1902,6 @@
 				5C7F494A15B44B7A0038AF3A /* SceneGraph.h */,
 				5C7F494B15B44B7A0038AF3A /* SceneInfoControl.cpp */,
 				5C7F494C15B44B7A0038AF3A /* SceneInfoControl.h */,
-				5C7F494D15B44B7A0038AF3A /* SceneNodeIDs.h */,
 				5C7F494E15B44B7A0038AF3A /* ScenePreviewControl.cpp */,
 				5C7F494F15B44B7A0038AF3A /* ScenePreviewControl.h */,
 				5C7F495015B44B7A0038AF3A /* SceneValidator.cpp */,
@@ -1956,6 +1963,12 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */,
+				5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */,
+				5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */,
+				5C8AD20A15BDE73B00BC3FD8 /* CommandViewport.h */,
+				5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */,
+				5C8AD20715BDD66900BC3FD8 /* CommandCreateNode.h */,
 				5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */,
 				5CF17EC215B91E8600A9FC33 /* FileCommands.h */,
 				5CDD9ABB15B893E4007CA99A /* Command.cpp */,
@@ -2495,6 +2508,9 @@
 				5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */,
 				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
 				5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */,
+				5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */,
+				5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */,
+				5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

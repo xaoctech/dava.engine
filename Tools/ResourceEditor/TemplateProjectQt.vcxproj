@@ -322,8 +322,11 @@
     <ClCompile Include="Classes\Collada\ColladaSceneNodeAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaTexture.cpp" />
     <ClCompile Include="Classes\Commands\Command.cpp" />
+    <ClCompile Include="Classes\Commands\CommandCreateNode.cpp" />
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
+    <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
+    <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\davaglwidget.cpp" />
     <ClCompile Include="Classes\DebugNode.cpp" />
     <ClCompile Include="Classes\EditorScene.cpp" />
@@ -712,8 +715,11 @@
     <ClInclude Include="Classes\Collada\ColladaTexture.h" />
     <ClInclude Include="Classes\Collada\stdafx.h" />
     <ClInclude Include="Classes\Commands\Command.h" />
+    <ClInclude Include="Classes\Commands\CommandCreateNode.h" />
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
+    <ClInclude Include="Classes\Commands\CommandViewport.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
+    <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
     <ClInclude Include="Classes\davaglwidget.h" />
