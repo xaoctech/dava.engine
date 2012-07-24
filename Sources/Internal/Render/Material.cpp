@@ -271,7 +271,7 @@ void Material::RebuildShader()
 	}
     
     //if (isDistanceAttenuation)
-    shaderCombileCombo = shaderCombileCombo + ";DISTANCE_ATTENUATION";
+    //shaderCombileCombo = shaderCombileCombo + ";DISTANCE_ATTENUATION";
     
     if (isFogEnabled)
         shaderCombileCombo = shaderCombileCombo + ";VERTEX_FOG";
