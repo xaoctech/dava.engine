@@ -275,34 +275,14 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 {
     NSLog(@"[MainWindowController] windowDidMiniaturize");
     
-    SoundSystem::Instance()->Suspend();
-    Core::Instance()->SetIsActive(false);
-    
-//    if(core)
-//    {
-//        core->OnSuspend();
-//    }
-//    else 
-//    {
-//        Core::Instance()->SetIsActive(false);
-//    }
+    [self OnSuspend];
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
     NSLog(@"[MainWindowController] windowDidDeminiaturize");
     
-    SoundSystem::Instance()->Resume();
-    Core::Instance()->SetIsActive(true);
-    
-//    if(core)
-//    {
-//        core->OnResume();
-//    }
-//    else 
-//    {
-//        Core::Instance()->SetIsActive(true);
-//    }
+    [self OnResume];
 }
 
 // Action method wired up to fire when the user clicks the "Go FullScreen" button.  We remain in this method until the user exits FullScreen mode.
@@ -762,14 +742,8 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 {
 	NSLog(@"[CoreMacOSPlatform] Application did finish launching");	
     
-    if(core)
-    {
-        core->OnResume();
-    }
-    else 
-    {
-        Core::Instance()->SetIsActive(true);
-    }    
+    [self OnResume];
+    
     DAVA::Cursor * activeCursor = RenderManager::Instance()->GetCursor();
     if (activeCursor)
     {
@@ -797,16 +771,14 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 {
 	NSLog(@"[CoreMacOSPlatform] Application did become active");
 
-    SoundSystem::Instance()->Resume();
-    Core::Instance()->SetIsActive(true);
+    [self OnResume];
 }
 
 - (void)applicationDidResignActive:(NSNotification *)aNotification
 {
 	NSLog(@"[CoreMacOSPlatform] Application did resign active");
 
-    SoundSystem::Instance()->Suspend();
-    Core::Instance()->SetIsActive(false);
+    [self OnSuspend];
 }
 
 - (void)applicationDidChangeScreenParameters:(NSNotification *)aNotification
@@ -844,6 +816,35 @@ long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 	NSLog(@"[CoreMacOSPlatform] Application terminate");
 	return NSTerminateNow;
 }
+
+
+- (void)OnSuspend
+{
+    if(core)
+    {
+        core->OnSuspend();
+    }
+    else 
+    {
+        Core::Instance()->SetIsActive(false);
+    }
+}
+
+- (void)OnResume
+{
+    if(core)
+    {
+        core->OnResume();
+    }
+    else 
+    {
+        Core::Instance()->SetIsActive(true);
+    }
+}
+
+
+
+
 @end
 
 namespace DAVA 
