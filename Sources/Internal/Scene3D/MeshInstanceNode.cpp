@@ -660,23 +660,8 @@ void MeshInstanceNode::BakeTransforms()
 void MeshInstanceNode::UpdateLights()
 {
     Vector3 meshPosition = Vector3() * worldTransform;
-    float32 squareMinDistance = 10000000.0f;
-    LightNode * nearestLight = 0;
-    
-    Set<LightNode*> & lights = scene->GetLights();
-    const Set<LightNode*>::iterator & endIt = lights.end();
-    for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
-    {
-        LightNode * node = *it;
-        const Vector3 & lightPosition = node->GetPosition();
-        
-        float32 squareDistanceToLight = (meshPosition - lightPosition).SquareLength();
-        if (squareDistanceToLight < squareMinDistance)
-        {
-            squareMinDistance = squareDistanceToLight;
-            nearestLight = node;
-        }
-    }
+    LightNode * nearestLight = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, meshPosition);
+
     RegisterNearestLight(nearestLight);
 }
 

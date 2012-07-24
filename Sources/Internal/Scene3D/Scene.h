@@ -208,7 +208,7 @@ public:
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
     Set<LightNode*> & GetLights();
-    LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
+	LightNode * GetNearestDynamicLight(LightNode::eType type, Vector3 position);
 
 	/**
 		\brief Enables/disables imposters in scene.
