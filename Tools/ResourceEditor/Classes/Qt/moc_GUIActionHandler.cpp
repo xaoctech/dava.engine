@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'GUIActionHandler.h'
 **
-** Created: Mon Jul 23 12:27:01 2012
+** Created: Mon Jul 23 23:46:35 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_GUIActionHandler[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      24,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -39,22 +39,12 @@ static const uint qt_meta_data_GUIActionHandler[] = {
      102,   17,   17,   17, 0x0a,
      116,   17,   17,   17, 0x0a,
      130,   17,   17,   17, 0x0a,
-     144,   17,   17,   17, 0x0a,
-     162,   17,   17,   17, 0x0a,
-     176,   17,   17,   17, 0x0a,
-     196,   17,   17,   17, 0x0a,
-     208,   17,   17,   17, 0x0a,
-     223,   17,   17,   17, 0x0a,
-     238,   17,   17,   17, 0x0a,
-     255,   17,   17,   17, 0x0a,
-     272,   17,   17,   17, 0x0a,
-     284,   17,   17,   17, 0x0a,
-     302,   17,   17,   17, 0x0a,
-     320,   17,   17,   17, 0x0a,
-     336,   17,   17,   17, 0x0a,
-     353,   17,   17,   17, 0x0a,
-     370,   17,   17,   17, 0x0a,
-     385,   17,   17,   17, 0x0a,
+     149,  144,   17,   17, 0x0a,
+     187,   17,   17,   17, 0x0a,
+     199,   17,   17,   17, 0x0a,
+     217,   17,   17,   17, 0x0a,
+     235,   17,   17,   17, 0x0a,
+     251,  144,   17,   17, 0x0a,
 
        0        // eod
 };
@@ -63,14 +53,11 @@ static const char qt_meta_stringdata_GUIActionHandler[] = {
     "GUIActionHandler\0\0NewScene()\0OpenScene()\0"
     "OpenProject()\0index\0OpenResentScene(DAVA::int32)\0"
     "SaveScene()\0ExportAsPNG()\0ExportAsPVR()\0"
-    "ExportAsDXT()\0CreateLandscape()\0"
-    "CreateLight()\0CreateServiceNode()\0"
-    "CreateBox()\0CreateSphere()\0CreateCamera()\0"
-    "CreateImposter()\0CreateUserNode()\0"
+    "ExportAsDXT()\0type\0"
+    "CreateNode(ResourceEditor::eNodeType)\0"
     "Materials()\0ConvertTextures()\0"
     "HeightmapEditor()\0TilemapEditor()\0"
-    "ViewportiPhone()\0VeiwportRetina()\0"
-    "ViewportiPad()\0ViewportDefault()\0"
+    "SetViewport(ResourceEditor::eViewportType)\0"
 };
 
 void GUIActionHandler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -87,22 +74,12 @@ void GUIActionHandler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         case 5: _t->ExportAsPNG(); break;
         case 6: _t->ExportAsPVR(); break;
         case 7: _t->ExportAsDXT(); break;
-        case 8: _t->CreateLandscape(); break;
-        case 9: _t->CreateLight(); break;
-        case 10: _t->CreateServiceNode(); break;
-        case 11: _t->CreateBox(); break;
-        case 12: _t->CreateSphere(); break;
-        case 13: _t->CreateCamera(); break;
-        case 14: _t->CreateImposter(); break;
-        case 15: _t->CreateUserNode(); break;
-        case 16: _t->Materials(); break;
-        case 17: _t->ConvertTextures(); break;
-        case 18: _t->HeightmapEditor(); break;
-        case 19: _t->TilemapEditor(); break;
-        case 20: _t->ViewportiPhone(); break;
-        case 21: _t->VeiwportRetina(); break;
-        case 22: _t->ViewportiPad(); break;
-        case 23: _t->ViewportDefault(); break;
+        case 8: _t->CreateNode((*reinterpret_cast< ResourceEditor::eNodeType(*)>(_a[1]))); break;
+        case 9: _t->Materials(); break;
+        case 10: _t->ConvertTextures(); break;
+        case 11: _t->HeightmapEditor(); break;
+        case 12: _t->TilemapEditor(); break;
+        case 13: _t->SetViewport((*reinterpret_cast< ResourceEditor::eViewportType(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -140,9 +117,9 @@ int GUIActionHandler::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 24)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 24;
+        _id -= 14;
     }
     return _id;
 }

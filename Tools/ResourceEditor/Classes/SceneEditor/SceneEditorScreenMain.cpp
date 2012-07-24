@@ -461,26 +461,13 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject *, void *, void *)
 //    FileSystem::Instance()->CopyFile(fileDataSourcePath, pathTo);
 //}
 
-void SceneEditorScreenMain::OnMaterialsPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnMaterialsPressed(BaseObject *, void *, void *)
 {
-    BodyItem *iBody = FindCurrentBody();
-    if (!materialEditor->GetParent())
-    {
-        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene(), iBody->bodyControl->GetSelectedSGNode());
-
-        AddControl(materialEditor);
-    }
-    else 
-    {
-        RemoveControl(materialEditor);
-        
-        iBody->bodyControl->RefreshProperties();
-        SceneValidator::Instance()->EnumerateSceneTextures();
-    }
+    MaterialsTriggered();
 }
 
 
-void SceneEditorScreenMain::OnCreatePressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnCreatePressed(BaseObject *, void *, void *)
 {
     menuPopup->InitControl(MENUID_CREATENODE, btnCreate->GetRect());
     AddControl(menuPopup);
@@ -573,7 +560,7 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
 {
     UIButton *btn = (UIButton *)owner;
     
-    for(int32 i = 0; i < bodies.size(); ++i)
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
     {
         if(bodies[i]->bodyControl->GetParent())
         {
@@ -608,7 +595,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
     
     bool needToSwitchBody = false;
     Vector<BodyItem*>::iterator it = bodies.begin();
-    for(int32 i = 0; i < bodies.size(); ++i, ++it)
+    for(int32 i = 0; i < (int32)bodies.size(); ++i, ++it)
     {
         if(btn == bodies[i]->closeButton)
         {
@@ -631,7 +618,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
         }
     }
 
-    for(int32 i = 0; i < bodies.size(); ++i)
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
     {
         bodies[i]->headerButton->SetRect(
                             Rect(TAB_BUTTONS_OFFSET + i * (ControlsFactory::BUTTON_WIDTH), 
@@ -680,7 +667,7 @@ void SceneEditorScreenMain::OnLibraryPressed(DAVA::BaseObject *obj, void *, void
 
 SceneEditorScreenMain::BodyItem * SceneEditorScreenMain::FindCurrentBody()
 {
-    for(int32 i = 0; i < bodies.size(); ++i)
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
     {
         if(bodies[i]->bodyControl->GetParent())
         {
@@ -789,25 +776,13 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             
         case MENUID_CREATENODE:
         {
-            nodeDialog->CreateNode(itemID);
-            
-            AddControl(dialogBack);
-            AddControl(nodeDialog);
+            CreateNode((ResourceEditor::eNodeType)itemID);
             break;
         }
                         
         case MENUID_VIEWPORT:
         {
-            BodyItem *iBody = FindCurrentBody();
-            
-            if(libraryControl->GetParent())
-            {
-                RemoveControl(libraryControl);
-            }
-            
-            iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
-            
-            iBody->bodyControl->SetViewPortSize(itemID);
+            SetViewport((ResourceEditor::eViewportType)itemID);
             break;
         }
             
@@ -847,68 +822,61 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
         {
             switch (itemID) 
             {
-                case ECNID_LANDSCAPE:
+                case ResourceEditor::NODE_LANDSCAPE:
                 {
                     text = LocalizedString(L"menu.createnode.landscape");
                     break;
                 }
                     
-                case ECNID_LIGHT:
+                case ResourceEditor::NODE_LIGHT:
                 {
                     text = LocalizedString(L"menu.createnode.light");
                     break;
                 }
                     
-                case ECNID_SERVICENODE:
+                case ResourceEditor::NODE_SERVICE_NODE:
                 {
                     text = LocalizedString(L"menu.createnode.servicenode");
                     break;
                 }
                     
-                case ECNID_BOX:
+                case ResourceEditor::NODE_BOX:
                 {
                     text = LocalizedString(L"menu.createnode.box");
                     break;
                 }
                     
-                case ECNID_SPHERE:
+                case ResourceEditor::NODE_SPHERE:
                 {
                     text = LocalizedString(L"menu.createnode.sphere");
                     break;
                 }
                     
-                case ECNID_CAMERA:
+                case ResourceEditor::NODE_CAMERA:
                 {
                     text = LocalizedString(L"menu.createnode.camera");
                     break;
                 }
 
-				case ECNID_IMPOSTER:
+				case ResourceEditor::NODE_IMPOSTER:
 				{
 					text = LocalizedString(L"menu.createnode.imposter");
 					break;
 				}
 
-				case ECNID_PARTICLE_EMITTER:
+				case ResourceEditor::NODE_PARTICLE_EMITTER:
 				{
 					text = LocalizedString(L"menu.createnode.particleemitter");
 					break;
 				}
 
-				case ECNID_USERNODE:
-					{
-						text = LocalizedString(L"menu.createnode.usernode");
-						break;
-					}
+				case ResourceEditor::NODE_USER_NODE:
+                {
+                    text = LocalizedString(L"menu.createnode.usernode");
+                    break;
+                }
 
 
-//                case ECNID_LODNODE:
-//				{
-//					text = LocalizedString(L"menu.createnode.lodnode");
-//					break;
-//				}
-
-                    
                 default:
                     break;
             }
@@ -921,19 +889,19 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
         {
             switch (itemID)
             {
-                case EditorBodyControl::EVPID_IPHONE:
+                case ResourceEditor::VIEWPORT_IPHONE:
                     text = LocalizedString("menu.viewport.iphone");
                     break;
 
-                case EditorBodyControl::EVPID_RETINA:
+                case ResourceEditor::VIEWPORT_RETINA:
                     text = LocalizedString("menu.viewport.retina");
                     break;
 
-                case EditorBodyControl::EVPID_IPAD:
+                case ResourceEditor::VIEWPORT_IPAD:
                     text = LocalizedString("menu.viewport.ipad");
                     break;
 
-                case EditorBodyControl::EVPID_DEFAULT:
+                case ResourceEditor::VIEWPORT_DEFAULT:
                     text = LocalizedString("menu.viewport.default");
                     break;
 
@@ -985,13 +953,13 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         }
         case MENUID_CREATENODE:
         {
-            retCount = ECNID_COUNT;
+            retCount = ResourceEditor::NODE_COUNT;
             break;
         }
             
         case MENUID_VIEWPORT:
         {
-            retCount = EditorBodyControl::EVPID_COUNT;
+            retCount = ResourceEditor::VIEWPORT_COUNT;
             break;
         }
 
@@ -1045,26 +1013,14 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
     SafeRelease(dialogBack);
 }
 
-void SceneEditorScreenMain::OnLandscapeHeightmapPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnLandscapeHeightmapPressed(BaseObject *, void *, void *)
 {
-    BodyItem *iBody = FindCurrentBody();
-    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_HEIGHTMAP);
-    if(ret)
-    {
-        bool selected = btnLandscapeHeightmap->GetSelected();
-        btnLandscapeHeightmap->SetSelected(!selected);
-    }
+    HeightmapTriggered();
 }
 
-void SceneEditorScreenMain::OnLandscapeColorPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnLandscapeColorPressed(BaseObject *, void *, void *)
 {
-    BodyItem *iBody = FindCurrentBody();
-    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_COLOR_MAP);
-    if(ret)
-    {
-        bool selected = btnLandscapeColor->GetSelected();
-        btnLandscapeColor->SetSelected(!selected);
-    }
+    TilemapTriggered();
 }
 
 void SceneEditorScreenMain::EditMaterial(Material *material)
@@ -1141,7 +1097,7 @@ void SceneEditorScreenMain::SettingsChanged()
 //    editorScene->SetForceLodLayer(node, EditorSettings::Instance()->GetForceLodLayer());
     
 
-    for(int32 i = 0; i < bodies.size(); ++i)
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
     {
         EditorScene *scene = bodies[i]->bodyControl->GetScene();
 //        scene->SetForceLodLayer(EditorSettings::Instance()->GetForceLodLayer());
@@ -1246,64 +1202,11 @@ void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
     }
 }
 
-void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *obj, void *, void *)
+void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *, void *, void *)
 {
-    if(textureConverterDialog)
-    {
-        BodyItem *body = FindCurrentBody();
-
-        textureConverterDialog->Show(body->bodyControl->GetScene());
-    }
+    TextureConverterTriggered();
 }
 
-
-//void SceneEditorScreenMain::ExportLandscapeAndMeshLightmaps(SceneNode *node)
-//{
-//	LandscapeNode *land = dynamic_cast<LandscapeNode *>(node);
-//    if(land) 
-//    {
-//        String fullTiledTexture = land->SaveFullTiledTexture();
-//        land->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, fullTiledTexture);
-//        
-//        ExportLandscapeFile(land->GetHeightmapPathname());
-//        for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
-//        {
-//            Texture *t = land->GetTexture((LandscapeNode::eTextureLevel)i);
-//            if(t) 
-//            {
-//                ExportLandscapeFile(land->GetTextureName((LandscapeNode::eTextureLevel)i));
-////                if(useConvertedTextures)
-////                {
-////                    ExportTexture(t->names[Material::TEXTURE_DIFFUSE]);
-////                }
-////                else
-////                {
-////                    ExportTexture(m->textures[Material::TEXTURE_DIFFUSE]->relativePathname);
-////                }
-//            }
-//        }
-//    }
-//    // PNG / PVR conversion question??? Save lightmaps as beast batched the lightmaps ignoring settings
-//    // TODO: what to do? 
-//    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
-//    if (meshInstance)
-//    {
-//        for (int32 li = 0; li < meshInstance->GetLightmapCount(); ++li)
-//        {
-//            MeshInstanceNode::LightmapData * ld = meshInstance->GetLightmapDataForIndex(li);
-//            if (ld)
-//            {
-//                ExportTexture(ld->lightmapName);  
-//            }
-//        }
-//    }
-//
-//	for(int ci = 0; ci < node->GetChildrenCount(); ++ci)
-//	{
-//		SceneNode * child = node->GetChild(ci);
-//		ExportLandscapeAndMeshLightmaps(child);
-//	}
-//}
 
 void SceneEditorScreenMain::RecreteFullTilingTexture()
 {
@@ -1438,3 +1341,75 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
     }
 }
 
+
+void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
+{
+    nodeDialog->CreateNode(nodeType);
+    
+    AddControl(dialogBack);
+    AddControl(nodeDialog);
+}
+
+void SceneEditorScreenMain::SetViewport(ResourceEditor::eViewportType viewportType)
+{
+    BodyItem *iBody = FindCurrentBody();
+    
+    if(libraryControl->GetParent())
+    {
+        RemoveControl(libraryControl);
+    }
+    
+    iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
+    
+    iBody->bodyControl->SetViewportSize(viewportType);
+}
+
+void SceneEditorScreenMain::MaterialsTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    if (!materialEditor->GetParent())
+    {
+        materialEditor->SetWorkingScene(iBody->bodyControl->GetScene(), iBody->bodyControl->GetSelectedSGNode());
+        
+        AddControl(materialEditor);
+    }
+    else 
+    {
+        RemoveControl(materialEditor);
+        
+        iBody->bodyControl->RefreshProperties();
+        SceneValidator::Instance()->EnumerateSceneTextures();
+    }
+}
+
+void SceneEditorScreenMain::TextureConverterTriggered()
+{
+    if(textureConverterDialog)
+    {
+        BodyItem *body = FindCurrentBody();
+        
+        textureConverterDialog->Show(body->bodyControl->GetScene());
+    }
+}
+
+void SceneEditorScreenMain::HeightmapTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_HEIGHTMAP);
+    if(ret)
+    {
+        bool selected = btnLandscapeHeightmap->GetSelected();
+        btnLandscapeHeightmap->SetSelected(!selected);
+    }
+}
+
+void SceneEditorScreenMain::TilemapTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_COLOR_MAP);
+    if(ret)
+    {
+        bool selected = btnLandscapeColor->GetSelected();
+        btnLandscapeColor->SetSelected(!selected);
+    }
+}

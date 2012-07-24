@@ -950,6 +950,15 @@
     <ClInclude Include="Classes\Qt\QtDefines.h">
       <Filter>Sources\Qt</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands\CommandCreateNode.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\CommandViewport.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\ToolsCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -2131,6 +2140,15 @@
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\CommandCreateNode.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\CommandViewport.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
