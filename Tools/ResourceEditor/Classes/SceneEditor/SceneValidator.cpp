@@ -377,20 +377,14 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     String normalizedPath = FileSystem::NormalizePath(pathForValidation);
     
     String::size_type fboFound = normalizedPath.find(String("FBO"));
-    if(String::npos != fboFound)
+    String::size_type resFound = normalizedPath.find(String("~res:"));
+    if((String::npos != fboFound) || (String::npos != resFound))
     {
         return true;   
     }
     
-    String::size_type resFound = normalizedPath.find(String("~res:"));
-    if(String::npos != fboFound)
-    {
-        return true;   
-    }
     
     String::size_type foundPos = normalizedPath.find(pathForChecking);
-
-    
     bool pathIsCorrect = (String::npos != foundPos);
     if(!pathIsCorrect)
     {

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'davaglwidget.h'
 **
-** Created: Tue Jul 17 21:27:36 2012
+** Created: Mon Jul 23 20:52:37 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
 **
 ** WARNING! All changes made in this file will be lost!

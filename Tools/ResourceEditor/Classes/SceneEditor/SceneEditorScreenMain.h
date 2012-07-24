@@ -7,7 +7,6 @@
 
 #include "CreateNodesDialog.h"
 
-#include "SceneNodeIDs.h"
 #include "SettingsDialog.h"
 
 #include "../Constants.h"
@@ -245,6 +244,15 @@ public: //For Qt integration
    
 
     void ExportAs(ResourceEditor::eExportFormat format);
+    
+    void CreateNode(ResourceEditor::eNodeType nodeType);
+    void SetViewport(ResourceEditor::eViewportType viewportType);
+    
+    void MaterialsTriggered();
+    void TextureConverterTriggered();
+    void HeightmapTriggered();
+    void TilemapTriggered();
+    
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

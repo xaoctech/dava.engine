@@ -38,6 +38,7 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
     
 	DAVA::QtLayer::Instance()->Resize(size().width(), size().height());
     
+	willClose = false;
     fpsTimer = new QTimer();
     connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
 
@@ -75,15 +76,18 @@ void DavaGLWidget::FpsTimerDone()
     
 	DAVA::QtLayer::Instance()->ProcessFrame();
     
-    int timeForNewFrame = frameTime - timer.elapsed();
-    if(timeForNewFrame < 0)
-    {
-        fpsTimer->start(0);
-    }
-    else 
-    {
-        fpsTimer->start(timeForNewFrame);
-    }
+	if(!willClose && fpsTimer)
+	{
+		int timeForNewFrame = frameTime - timer.elapsed();
+		if(timeForNewFrame < 0)
+		{
+			fpsTimer->start(0);
+		}
+		else 
+		{
+			fpsTimer->start(timeForNewFrame);
+		}
+	}
 }
 
 
@@ -115,3 +119,9 @@ bool DavaGLWidget::winEvent(MSG *message, long *result)
 }
 #endif //#if defined(Q_WS_WIN)
 
+void DavaGLWidget::closeEvent(QCloseEvent *e)
+{
+	willClose = true;
+
+	QWidget::closeEvent(e);
+}

@@ -23,6 +23,7 @@ protected:
 	void showEvent(QShowEvent *);
 	void hideEvent(QHideEvent *);
 
+	void closeEvent(QCloseEvent *);
 
 #if defined(Q_WS_WIN)
 	virtual bool winEvent(MSG *message, long *result);
@@ -37,6 +38,7 @@ private:
 
     QTimer *fpsTimer;
     int frameTime;
+	bool willClose;
 
 private:
     Ui::DavaGLWidget *ui;

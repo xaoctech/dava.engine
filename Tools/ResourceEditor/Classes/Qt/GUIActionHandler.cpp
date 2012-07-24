@@ -1,7 +1,10 @@
 #include "GUIActionHandler.h"
 
+#include "../Commands/CommandCreateNode.h"
 #include "../Commands/CommandsManager.h"
 #include "../Commands/FileCommands.h"
+#include "../Commands/ToolsCommands.h"
+#include "../Commands/CommandViewport.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 
@@ -21,140 +24,77 @@ GUIActionHandler::~GUIActionHandler()
 
 void GUIActionHandler::NewScene()
 {
-    CommandNewScene *command = new CommandNewScene();
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandNewScene());
 }
 
 
 void GUIActionHandler::OpenScene()
 {
-    CommandOpenScene *command = new CommandOpenScene();
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandOpenScene());
 }
 
 
 void GUIActionHandler::OpenProject()
 {
-    CommandOpenProject *command = new CommandOpenProject();
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandOpenProject());
 }
 
 void GUIActionHandler::OpenResentScene(DAVA::int32 index)
 {
-    CommandOpenScene *command = new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index));
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
 }
 
 void GUIActionHandler::SaveScene()
 {
-    CommandSaveScene *command = new CommandSaveScene();
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandSaveScene());
 }
 
 void GUIActionHandler::ExportAsPNG()
 {
-    CommandExport *command = new CommandExport(ResourceEditor::FORMAT_PNG);
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
-
+    Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
 }
 void GUIActionHandler::ExportAsPVR()
 {
-    CommandExport *command = new CommandExport(ResourceEditor::FORMAT_PVR);
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
 }
 
 void GUIActionHandler::ExportAsDXT()
 {
-    CommandExport *command = new CommandExport(ResourceEditor::FORMAT_DXT);
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
+    Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
+}
+
+void GUIActionHandler::CreateNode(ResourceEditor::eNodeType type)
+{
+    Execute(new CommandCreateNode(type));
 }
 
 void GUIActionHandler::Materials()
 {
-    
+    Execute(new CommandMaterials());
 }
-
-void GUIActionHandler::CreateLandscape()
-{
-    
-}
-
-void GUIActionHandler::CreateLight()
-{
-    
-}
-
-void GUIActionHandler::CreateServiceNode()
-{
-    
-}
-
-void GUIActionHandler::CreateBox()
-{
-    
-}
-
-void GUIActionHandler::CreateSphere()
-{
-    
-}
-
-void GUIActionHandler::CreateCamera()
-{
-    
-}
-
-void GUIActionHandler::CreateImposter()
-{
-    
-}
-
-void GUIActionHandler::CreateUserNode()
-{
-    
-}
-
 
 void GUIActionHandler::HeightmapEditor()
 {
-    
+    Execute(new CommandHeightmapEditor());
 }
 
 void GUIActionHandler::TilemapEditor()
 {
-    
-}
-
-void GUIActionHandler::ViewportiPhone()
-{
-    
-}
-
-void GUIActionHandler::VeiwportRetina()
-{
-    
-}
-
-void GUIActionHandler::ViewportiPad()
-{
-    
-}
-
-void GUIActionHandler::ViewportDefault()
-{
-    
+    Execute(new CommandTilemapEditor());
 }
 
 void GUIActionHandler::ConvertTextures()
 {
-    
+    Execute(new CommandTextureConverter());
 }
 
+void GUIActionHandler::SetViewport(ResourceEditor::eViewportType type)
+{
+    Execute(new CommandViewport(type));
+}
+
+void GUIActionHandler::Execute(Command *command)
+{
+    CommandsManager::Instance()->Execute(command);
+    SafeRelease(command);
+}
