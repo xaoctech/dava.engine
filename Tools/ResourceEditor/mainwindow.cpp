@@ -29,12 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
     actionHandler = new GUIActionHandler(this);
     SetupMainMenu();
     
-    for(DAVA::int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
-    {
-        resentSceneActions[i] = new QAction(this);
-        resentSceneActions[i]->setObjectName(QString::fromUtf8(DAVA::Format("resentSceneActions[%d]", i)));
-    }
-
     SetupProjectPath();
 }
 
@@ -45,6 +39,15 @@ MainWindow::~MainWindow()
         DAVA::SafeDelete(resentSceneActions[i]);
     }
     
+    for(DAVA::int32 i = 0; i < ResourceEditor::NODE_COUNT; ++i)
+    {
+        nodeActions[i] = NULL;
+    }
+    
+    for(DAVA::int32 i = 0; i < ResourceEditor::VIEWPORT_COUNT; ++i)
+    {
+        viewportActions[i] = NULL;
+    }
     
     DAVA::SafeDelete(actionHandler);
     delete ui;
@@ -52,6 +55,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::SetupMainMenu()
 {
+    //File
     connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
     connect(ui->actionOpenScene, SIGNAL(triggered()), actionHandler, SLOT(OpenScene()));
     connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
@@ -61,28 +65,40 @@ void MainWindow::SetupMainMenu()
     connect(ui->actionPVR, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPVR()));
     connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
 
-    
-    connect(ui->actionLandscape, SIGNAL(triggered()), actionHandler, SLOT(CreateLandscape()));
-    connect(ui->actionLight, SIGNAL(triggered()), actionHandler, SLOT(CreateLight()));
-    connect(ui->actionServiceNode, SIGNAL(triggered()), actionHandler, SLOT(CreateServiceNode()));
-    connect(ui->actionBox, SIGNAL(triggered()), actionHandler, SLOT(CreateBox()));
-    connect(ui->actionSphere, SIGNAL(triggered()), actionHandler, SLOT(CreateSphere()));
-    connect(ui->actionCamera, SIGNAL(triggered()), actionHandler, SLOT(CreateCamera()));
-    connect(ui->actionImposter, SIGNAL(triggered()), actionHandler, SLOT(CreateImposter()));
-    connect(ui->actionUserNode, SIGNAL(triggered()), actionHandler, SLOT(CreateUserNode()));
+    //CreateNode
+    nodeActions[ResourceEditor::NODE_LANDSCAPE] = ui->actionLandscape;
+    nodeActions[ResourceEditor::NODE_LIGHT] = ui->actionLight;
+    nodeActions[ResourceEditor::NODE_SERVICE_NODE] = ui->actionServiceNode;
+    nodeActions[ResourceEditor::NODE_BOX] = ui->actionBox;
+    nodeActions[ResourceEditor::NODE_SPHERE] = ui->actionSphere;
+    nodeActions[ResourceEditor::NODE_CAMERA] = ui->actionCamera;
+    nodeActions[ResourceEditor::NODE_IMPOSTER] = ui->actionImposter;
+    nodeActions[ResourceEditor::NODE_PARTICLE_EMITTER] = ui->actionParticleEmitter;
+    nodeActions[ResourceEditor::NODE_USER_NODE] = ui->actionUserNode;
+    connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), this, SLOT(CreateNodeTriggered(QAction *)));
 
+    //TODO: need to updated tools menu gui same way as native editor gui for landscape editors
+    //Tools
     connect(ui->actionMaterialEditor, SIGNAL(triggered()), actionHandler, SLOT(Materials()));
     connect(ui->actionTextureConverter, SIGNAL(triggered()), actionHandler, SLOT(ConvertTextures()));
     connect(ui->actionHeightMapEditor, SIGNAL(triggered()), actionHandler, SLOT(HeightmapEditor()));
     connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
     
-    connect(ui->actionIPhone, SIGNAL(triggered()), actionHandler, SLOT(ViewportiPhone()));
-    connect(ui->actionRetina, SIGNAL(triggered()), actionHandler, SLOT(VeiwportRetina()));
-    connect(ui->actionIPad, SIGNAL(triggered()), actionHandler, SLOT(ViewportiPad()));
-    connect(ui->actionDefault, SIGNAL(triggered()), actionHandler, SLOT(ViewportDefault()));
+    //Viewport
+    viewportActions[ResourceEditor::VIEWPORT_IPHONE] = ui->actionIPhone;
+    viewportActions[ResourceEditor::VIEWPORT_RETINA] = ui->actionRetina;
+    viewportActions[ResourceEditor::VIEWPORT_IPAD] = ui->actionIPad;
+    viewportActions[ResourceEditor::VIEWPORT_DEFAULT] = ui->actionDefault;
+    connect(ui->menuViewPort, SIGNAL(triggered(QAction *)), this, SLOT(ViewportTriggered(QAction *)));
     
     connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), this, SLOT(ResentSceneTriggered(QAction *)));
+    
+    for(DAVA::int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
+    {
+        resentSceneActions[i] = new QAction(this);
+        resentSceneActions[i]->setObjectName(QString::fromUtf8(DAVA::Format("resentSceneActions[%d]", i)));
+    }
 }
 
 void MainWindow::SetupProjectPath()
@@ -135,3 +151,30 @@ void MainWindow::ResentSceneTriggered(QAction *resentScene)
         }
     }
 }
+
+void MainWindow::CreateNodeTriggered(QAction *nodeAction)
+{
+    if(!actionHandler)  return;
+    
+    for(DAVA::int32 i = 0; i < ResourceEditor::NODE_COUNT; ++i)
+    {
+        if(nodeAction == nodeActions[i])
+        {
+            actionHandler->CreateNode((ResourceEditor::eNodeType)i);
+        }
+    }
+}
+
+void MainWindow::ViewportTriggered(QAction *viewportAction)
+{
+    if(!actionHandler)  return;
+    
+    for(DAVA::int32 i = 0; i < ResourceEditor::VIEWPORT_COUNT; ++i)
+    {
+        if(viewportAction == viewportActions[i])
+        {
+            actionHandler->SetViewport((ResourceEditor::eViewportType)i);
+        }
+    }
+}
+

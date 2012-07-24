@@ -4,6 +4,7 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
 
+#include "../Qt/QtDefines.h"
 
 #include <QFileDialog>
 #include <QString>
@@ -16,11 +17,6 @@ CommandOpenProject::CommandOpenProject()
 {
 }
 
-CommandOpenProject::~CommandOpenProject()
-{
-	
-}
-
 
 void CommandOpenProject::Execute()
 {
@@ -28,14 +24,14 @@ void CommandOpenProject::Execute()
     
     if(0 < path.size())
     {
-        String projectPath = path.toStdString();
-        if('/' != projectPath[projectPath.length() - 1])
+		String projectPath = NormalizePath(QSTRING_TO_DAVASTRING(path));
+		if('/' != projectPath[projectPath.length() - 1])
         {
             projectPath += '/';
         }
         
         EditorSettings::Instance()->SetProjectPath(projectPath);
-        EditorSettings::Instance()->SetDataSourcePath(projectPath + String("/DataSource/3d/"));
+        EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
     }
 }
 
@@ -47,11 +43,6 @@ CommandOpenScene::CommandOpenScene(const DAVA::String &scenePathname/* = DAVA::S
 {
 }
 
-CommandOpenScene::~CommandOpenScene()
-{
-	
-}
-
 
 void CommandOpenScene::Execute()
 {
@@ -61,8 +52,8 @@ void CommandOpenScene::Execute()
         QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Scene File"), QString(dataSourcePath.c_str()),
                                                         QString("Scene File (*.sc2)")
                                                         );
-        
-        selectedScenePathname = filePath.toStdString();
+  
+		selectedScenePathname = NormalizePath(QSTRING_TO_DAVASTRING(filePath));
     }
     
     if(0 < selectedScenePathname.size())
@@ -84,10 +75,6 @@ CommandNewScene::CommandNewScene()
 {
 }
 
-CommandNewScene::~CommandNewScene()
-{
-}
-
 
 void CommandNewScene::Execute()
 {
@@ -105,18 +92,13 @@ CommandSaveScene::CommandSaveScene()
 {
 }
 
-CommandSaveScene::~CommandSaveScene()
-{
-	
-}
-
 
 void CommandSaveScene::Execute()
 {
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen && screen->SaveIsAvailable())
     {
-        String currentPath = FileSystem::Instance()->NormalizePath(screen->CurrentScenePathname());    
+        String currentPath = NormalizePath(screen->CurrentScenePathname());    
         String folderPathname, filename;
         FileSystem::Instance()->SplitPath(currentPath, folderPathname, filename);
         
@@ -125,8 +107,10 @@ void CommandSaveScene::Execute()
                                                         );
         if(0 < filePath.size())
         {
-            EditorSettings::Instance()->AddLastOpenedFile(filePath.toStdString());
-            screen->SaveSceneToFile(filePath.toStdString());
+			String normalizedPathname = NormalizePath(QSTRING_TO_DAVASTRING(filePath));
+
+            EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
+            screen->SaveSceneToFile(normalizedPathname);
         }
     }
 }
@@ -138,11 +122,6 @@ CommandExport::CommandExport(ResourceEditor::eExportFormat fmt)
 {
 }
 
-CommandExport::~CommandExport()
-{
-	
-}
-
 
 void CommandExport::Execute()
 {
@@ -152,8 +131,4 @@ void CommandExport::Execute()
         screen->ExportAs(format);
     }
 }
-
-
-
-
 
