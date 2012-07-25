@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created: Mon Jul 23 23:22:14 2012
+** Created: Wed Jul 25 12:54:26 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,42 +23,26 @@ static const uint qt_meta_data_MainWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       0,    0, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        0,       // signalCount
 
- // slots: signature, parameters, type, tag, flags
-      12,   11,   11,   11, 0x08,
-      43,   31,   11,   11, 0x08,
-      85,   74,   11,   11, 0x08,
-     130,  115,   11,   11, 0x08,
-
        0        // eod
 };
 
 static const char qt_meta_stringdata_MainWindow[] = {
-    "MainWindow\0\0MenuFileWillShow()\0"
-    "resentScene\0ResentSceneTriggered(QAction*)\0"
-    "nodeAction\0CreateNodeTriggered(QAction*)\0"
-    "viewportAction\0ViewportTriggered(QAction*)\0"
+    "MainWindow\0"
 };
 
 void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        Q_ASSERT(staticMetaObject.cast(_o));
-        MainWindow *_t = static_cast<MainWindow *>(_o);
-        switch (_id) {
-        case 0: _t->MenuFileWillShow(); break;
-        case 1: _t->ResentSceneTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
-        case 2: _t->CreateNodeTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
-        case 3: _t->ViewportTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
-        default: ;
-        }
-    }
+    Q_UNUSED(_o);
+    Q_UNUSED(_id);
+    Q_UNUSED(_c);
+    Q_UNUSED(_a);
 }
 
 const QMetaObjectExtraData MainWindow::staticMetaObjectExtraData = {
@@ -92,11 +76,6 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     _id = QMainWindow::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
-    }
     return _id;
 }
 QT_END_MOC_NAMESPACE
