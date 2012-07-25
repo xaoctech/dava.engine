@@ -959,6 +959,9 @@
     <ClInclude Include="Classes\Commands\ToolsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\GUIState.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -2149,6 +2152,9 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
       <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GUIState.cpp">
+      <Filter>Sources\Qt</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
