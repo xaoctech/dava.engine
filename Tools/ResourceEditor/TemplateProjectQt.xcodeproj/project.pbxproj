@@ -291,6 +291,7 @@
 		5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABB15B893E4007CA99A /* Command.cpp */; };
 		5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CDD9ABD15B893E4007CA99A /* CommandsManager.cpp */; };
 		5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */; };
+		5CFD6F6E15C06D160030029D /* GUIState.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFD6F6C15C06D160030029D /* GUIState.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
@@ -1018,6 +1019,8 @@
 		5CF17EC115B91E8600A9FC33 /* FileCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileCommands.cpp; path = Classes/Commands/FileCommands.cpp; sourceTree = "<group>"; };
 		5CF17EC215B91E8600A9FC33 /* FileCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileCommands.h; path = Classes/Commands/FileCommands.h; sourceTree = "<group>"; };
 		5CF17EC415B9385300A9FC33 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Classes/Constants.h; sourceTree = "<group>"; };
+		5CFD6F6C15C06D160030029D /* GUIState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIState.cpp; path = Classes/Qt/GUIState.cpp; sourceTree = "<group>"; };
+		5CFD6F6D15C06D160030029D /* GUIState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIState.h; path = Classes/Qt/GUIState.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		6D3A4A84E8680AFD0352C6BB /* davaglwidget.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = davaglwidget.ui; path = Classes/davaglwidget.ui; sourceTree = "<group>"; };
@@ -1105,6 +1108,8 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				5CFD6F6C15C06D160030029D /* GUIState.cpp */,
+				5CFD6F6D15C06D160030029D /* GUIState.h */,
 				5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */,
 				5C2763A615B82BE90030A8FD /* GUIActionHandler.h */,
 				5C2763A715B82BE90030A8FD /* moc_GUIActionHandler.cpp */,
@@ -2511,6 +2516,7 @@
 				5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */,
 				5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */,
 				5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */,
+				5CFD6F6E15C06D160030029D /* GUIState.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
