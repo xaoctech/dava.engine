@@ -354,7 +354,7 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		336D3C48DD3B44974395C633 /* moc_mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = moc_mainwindow.cpp; sourceTree = "<group>"; };
-		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
+		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../dava.framework/Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../dava.framework/Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -1021,14 +1021,14 @@
 		5CF17EC415B9385300A9FC33 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = Classes/Constants.h; sourceTree = "<group>"; };
 		5CFD6F6C15C06D160030029D /* GUIState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIState.cpp; path = Classes/Qt/GUIState.cpp; sourceTree = "<group>"; };
 		5CFD6F6D15C06D160030029D /* GUIState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIState.h; path = Classes/Qt/GUIState.h; sourceTree = "<group>"; };
-		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
+		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		6D3A4A84E8680AFD0352C6BB /* davaglwidget.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = davaglwidget.ui; path = Classes/davaglwidget.ui; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../dava.framework/Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../dava.framework/Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
-		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = ~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework; sourceTree = "<group>"; };
-		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework; sourceTree = "<group>"; };
+		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework; sourceTree = "<group>"; };
+		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework; sourceTree = "<group>"; };
 		AB241F823D3821A41AAC4BDE /* mainwindow.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = mainwindow.ui; sourceTree = "<group>"; };
 		AFB98B37FF0012B837A2131C /* ui_mainwindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui_mainwindow.h; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
