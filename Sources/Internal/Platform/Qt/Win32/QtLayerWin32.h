@@ -33,6 +33,8 @@
 #include "DAVAEngine.h"
 #include "Platform/Qt/Qtlayer.h"
 
+#if defined(__DAVAENGINE_WIN32__)
+
 namespace DAVA 
 {
 class QtLayerWin32: public QtLayer
@@ -61,5 +63,6 @@ public:
 
 };
 
+#endif //#if defined(__DAVAENGINE_WIN32__)
 
 #endif // __DAVAENGINE_QT_LAYER_WIN32_H__
