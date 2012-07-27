@@ -26,33 +26,59 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
-     <number>0</number>
+   <widget class="QSplitter" name="splitter">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1061</width>
+      <height>631</height>
+     </rect>
     </property>
-    <item>
-     <widget class="DavaGLWidget" name="davaGlWidget" native="true">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>200</height>
-       </size>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <layout class="QVBoxLayout" name="leftPanelLayout">
+      <item>
+       <widget class="GraphTreeView" name="graphTreeView"/>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_3">
+     <layout class="QVBoxLayout" name="centralPanelLayout">
+      <item>
+       <widget class="DavaGLWidget" name="davaGlWidget" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_2">
+     <layout class="QVBoxLayout" name="rightPanelLayout">
+      <item>
+       <widget class="QTreeView" name="fileTreeView"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -60,7 +86,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -255,6 +281,11 @@
    <extends>QWidget</extends>
    <header>davaglwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GraphTreeView</class>
+   <extends>QTreeView</extends>
+   <header>Classes/Qt/GraphTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

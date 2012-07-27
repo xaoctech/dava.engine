@@ -4,8 +4,10 @@
 #include "DAVAEngine.h"
 #include "Classes/Qt/GUIActionHandler.h"
 #include "Classes/Qt/GUIState.h"
-
 #include "Classes/SceneEditor/EditorSettings.h"
+
+#include <QResizeEvent>
+
 
 MainWindow::MainWindow(QWidget *parent) 
     :   QMainWindow(parent)
@@ -98,3 +100,8 @@ void MainWindow::SetupProjectPath()
     }
 }
 
+void MainWindow::resizeEvent(QResizeEvent *e)
+{	
+	QMainWindow::resizeEvent(e);
+	ui->splitter->resize(e->size().width(), e->size().height() - ui->menuBar->size().height());
+}
