@@ -9,7 +9,7 @@
 #include <QResizeEvent>
 
 
-MainWindow::MainWindow(QWidget *parent) 
+QtMainWindow::QtMainWindow(QWidget *parent) 
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     SetupProjectPath();
 }
 
-MainWindow::~MainWindow()
+QtMainWindow::~QtMainWindow()
 {
     DAVA::SafeDelete(actionHandler);
     
@@ -43,7 +43,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::SetupMainMenu()
+void QtMainWindow::SetupMainMenu()
 {
     //File
     connect(ui->menuFile, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuFileWillShow()));
@@ -90,7 +90,7 @@ void MainWindow::SetupMainMenu()
                                        );
 }
 
-void MainWindow::SetupProjectPath()
+void QtMainWindow::SetupProjectPath()
 {
     DAVA::String projectPath = EditorSettings::Instance()->GetProjetcPath();
     while(0 == projectPath.length())
@@ -100,7 +100,7 @@ void MainWindow::SetupProjectPath()
     }
 }
 
-void MainWindow::resizeEvent(QResizeEvent *e)
+void QtMainWindow::resizeEvent(QResizeEvent *e)
 {	
 	QMainWindow::resizeEvent(e);
 	ui->splitter->resize(e->size().width(), e->size().height() - ui->menuBar->size().height());

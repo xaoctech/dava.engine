@@ -9,9 +9,11 @@ using namespace DAVA;
 class GraphItem: public BaseObject
 {
 public:
-    GraphItem(const String &text, GraphItem *parent = 0);
+    GraphItem(GraphItem *parent = 0);
     virtual ~GraphItem();
-    
+
+	virtual void SetUserData(void *data) = 0;
+
 	GraphItem *GetParent();
 	GraphItem *Child(int32 row);
     void AppendChild(GraphItem *child);
@@ -20,13 +22,17 @@ public:
 	int32 Row() const;
     int32 ColumnCount() const;
 
-	QVariant Data(int32 column) const;
+	virtual QVariant Data(int32 column) = 0;
+
+protected:
+
+	virtual void ReleaseUserData() = 0;
+
+protected:
+	void *userData;
 
 private:
-
 	Vector<GraphItem *>children;
-
-	String itemText;
     GraphItem *parentItem;
 };
 

@@ -1,8 +1,7 @@
 #include "GraphItem.h"
 
-GraphItem::GraphItem(const String &text, GraphItem *parent)
+GraphItem::GraphItem(GraphItem *parent)
 	:	parentItem(parent)
-	,	itemText(text)
 {
 }
 
@@ -53,12 +52,13 @@ int32 GraphItem::ColumnCount() const
     return 1;
 }
 
-QVariant GraphItem::Data(int32 column) const
-{
-	DVASSERT((0 == column) && "Wrong column requested")
-
-    return QVariant(itemText.c_str());
-}
+// QVariant GraphItem::Data(int32 column) const
+// {
+// 	DVASSERT((0 == column) && "Wrong column requested")
+// 
+// 	return QVariant();
+// //    return QVariant(itemText.c_str());
+// }
 
 GraphItem *GraphItem::GetParent()
 {
