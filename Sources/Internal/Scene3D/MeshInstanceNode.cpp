@@ -159,11 +159,11 @@ void MeshInstanceNode::Draw()
 //    }    
 
 	//now clipping in entity system
-    //if (flags & NODE_CLIPPED_THIS_FRAME)
-    //{
-    //    // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
-    //    return;
-    //}
+    if (flags & NODE_CLIPPED_THIS_FRAME)
+    {
+        // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
+        return;
+    }
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;

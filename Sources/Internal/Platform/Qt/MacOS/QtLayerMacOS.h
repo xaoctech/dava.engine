@@ -33,6 +33,8 @@
 #include "DAVAEngine.h"
 #include "Platform/Qt/Qtlayer.h"
 
+#if defined(__DAVAENGINE_MACOS__)
+
 namespace DAVA 
 {
 class QtLayerMacOS : public QtLayer
@@ -60,5 +62,6 @@ public:
 
 };
 
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
 #endif // __DAVAENGINE_QT_LAYER_MAC_OS_H__

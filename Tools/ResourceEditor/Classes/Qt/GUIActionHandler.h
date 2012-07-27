@@ -4,6 +4,10 @@
 #include <QObject>
 #include "DAVAEngine.h"
 #include "../Constants.h"
+#include "Classes/SceneEditor/EditorSettings.h"
+
+#include <QAction>
+#include <QMenu>
 
 class Command;
 class GUIActionHandler: public QObject
@@ -13,10 +17,20 @@ class GUIActionHandler: public QObject
 public:
     GUIActionHandler(QObject *parent = 0);
     virtual ~GUIActionHandler();
-    
 
+    void RegisterNodeActions(DAVA::int32 count, ...);
+    void RegisterViewportActions(DAVA::int32 count, ...);
+    
+    void SetResentMenu(QMenu *menu);
+    
 public slots:
     //menu
+    void MenuFileWillShow();
+    void MenuToolsWillShow();
+
+    void CreateNodeTriggered(QAction *nodeAction);
+    void ViewportTriggered(QAction *viewportAction);
+    void ResentSceneTriggered(QAction *resentScene);
 
     //File
     void NewScene();
@@ -28,21 +42,32 @@ public slots:
     void ExportAsPVR();
     void ExportAsDXT();
 
-    //create node
-    void CreateNode(ResourceEditor::eNodeType type);
-    
     //tools
     void Materials();
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
     
+private:
+    //create node
+    void CreateNode(ResourceEditor::eNodeType type);
     //viewport
     void SetViewport(ResourceEditor::eViewportType type);
     
+    void Execute(Command *command);
+    
+    void RegisterActions(QAction **actions, DAVA::int32 count, va_list &vl);
+   
+    
+    
 private:
     
-    void Execute(Command *command);
+    QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
+    QAction *nodeActions[ResourceEditor::NODE_COUNT];
+    QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
+
+    QMenu *menuResentScenes;
+    
 };
 
 #endif // __GUI_ACTION_MANAGER_H__

@@ -27,12 +27,16 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#include "DAVAEngine.h"
+
+#if defined(__DAVAENGINE_MACOS__)
+
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/OpenGL.h>
-#include "DAVAEngine.h"
 //#import "TScene.h"
 
 using namespace DAVA;
+
 
 @interface OpenGLView : NSOpenGLView 
 {
@@ -52,3 +56,6 @@ using namespace DAVA;
 - (void) disableTrackingArea;
 
 @end
+
+#endif //#if defined(__DAVAENGINE_MACOS__)
+
