@@ -5,8 +5,7 @@
 GraphModel::GraphModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
-	rootItem = new GraphItem(String("Graph Title"));	//TODO: create virtual function for Title
-    setupModelData(rootItem);
+	rootItem = NULL;
 }
 
 GraphModel::~GraphModel()
@@ -125,20 +124,4 @@ QVariant GraphModel::headerData(int section, Qt::Orientation orientation,
 
     return QVariant();
 }
-
-void GraphModel::setupModelData(GraphItem *parent)
-{
-    GraphItem *item1 = new GraphItem(String("TopLevel"), parent);
-    parent->AppendChild(item1);
-
-    GraphItem *item12 = new GraphItem(String("Child1"), item1);
-    item1->AppendChild(item12);
-
-    GraphItem *item13 = new GraphItem(String("Child2"), item1);
-    item1->AppendChild(item13);
-
-    GraphItem *item14 = new GraphItem(String("Child3"), item1);
-    item1->AppendChild(item14);
-}
-
 
