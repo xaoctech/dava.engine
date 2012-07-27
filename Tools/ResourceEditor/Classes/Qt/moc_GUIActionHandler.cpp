@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'GUIActionHandler.h'
 **
-** Created: Mon Jul 23 23:46:35 2012
+** Created: Wed Jul 25 14:35:13 2012
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_GUIActionHandler[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   14, // methods
+      17,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,32 +32,37 @@ static const uint qt_meta_data_GUIActionHandler[] = {
 
  // slots: signature, parameters, type, tag, flags
       18,   17,   17,   17, 0x0a,
-      29,   17,   17,   17, 0x0a,
-      41,   17,   17,   17, 0x0a,
-      61,   55,   17,   17, 0x0a,
-      90,   17,   17,   17, 0x0a,
-     102,   17,   17,   17, 0x0a,
-     116,   17,   17,   17, 0x0a,
-     130,   17,   17,   17, 0x0a,
-     149,  144,   17,   17, 0x0a,
-     187,   17,   17,   17, 0x0a,
-     199,   17,   17,   17, 0x0a,
-     217,   17,   17,   17, 0x0a,
-     235,   17,   17,   17, 0x0a,
-     251,  144,   17,   17, 0x0a,
+      37,   17,   17,   17, 0x0a,
+      68,   57,   17,   17, 0x0a,
+     113,   98,   17,   17, 0x0a,
+     153,  141,   17,   17, 0x0a,
+     184,   17,   17,   17, 0x0a,
+     195,   17,   17,   17, 0x0a,
+     207,   17,   17,   17, 0x0a,
+     227,  221,   17,   17, 0x0a,
+     256,   17,   17,   17, 0x0a,
+     268,   17,   17,   17, 0x0a,
+     282,   17,   17,   17, 0x0a,
+     296,   17,   17,   17, 0x0a,
+     310,   17,   17,   17, 0x0a,
+     322,   17,   17,   17, 0x0a,
+     340,   17,   17,   17, 0x0a,
+     358,   17,   17,   17, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_GUIActionHandler[] = {
-    "GUIActionHandler\0\0NewScene()\0OpenScene()\0"
-    "OpenProject()\0index\0OpenResentScene(DAVA::int32)\0"
+    "GUIActionHandler\0\0MenuFileWillShow()\0"
+    "MenuToolsWillShow()\0nodeAction\0"
+    "CreateNodeTriggered(QAction*)\0"
+    "viewportAction\0ViewportTriggered(QAction*)\0"
+    "resentScene\0ResentSceneTriggered(QAction*)\0"
+    "NewScene()\0OpenScene()\0OpenProject()\0"
+    "index\0OpenResentScene(DAVA::int32)\0"
     "SaveScene()\0ExportAsPNG()\0ExportAsPVR()\0"
-    "ExportAsDXT()\0type\0"
-    "CreateNode(ResourceEditor::eNodeType)\0"
-    "Materials()\0ConvertTextures()\0"
+    "ExportAsDXT()\0Materials()\0ConvertTextures()\0"
     "HeightmapEditor()\0TilemapEditor()\0"
-    "SetViewport(ResourceEditor::eViewportType)\0"
 };
 
 void GUIActionHandler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -66,20 +71,23 @@ void GUIActionHandler::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
         Q_ASSERT(staticMetaObject.cast(_o));
         GUIActionHandler *_t = static_cast<GUIActionHandler *>(_o);
         switch (_id) {
-        case 0: _t->NewScene(); break;
-        case 1: _t->OpenScene(); break;
-        case 2: _t->OpenProject(); break;
-        case 3: _t->OpenResentScene((*reinterpret_cast< DAVA::int32(*)>(_a[1]))); break;
-        case 4: _t->SaveScene(); break;
-        case 5: _t->ExportAsPNG(); break;
-        case 6: _t->ExportAsPVR(); break;
-        case 7: _t->ExportAsDXT(); break;
-        case 8: _t->CreateNode((*reinterpret_cast< ResourceEditor::eNodeType(*)>(_a[1]))); break;
-        case 9: _t->Materials(); break;
-        case 10: _t->ConvertTextures(); break;
-        case 11: _t->HeightmapEditor(); break;
-        case 12: _t->TilemapEditor(); break;
-        case 13: _t->SetViewport((*reinterpret_cast< ResourceEditor::eViewportType(*)>(_a[1]))); break;
+        case 0: _t->MenuFileWillShow(); break;
+        case 1: _t->MenuToolsWillShow(); break;
+        case 2: _t->CreateNodeTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
+        case 3: _t->ViewportTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
+        case 4: _t->ResentSceneTriggered((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
+        case 5: _t->NewScene(); break;
+        case 6: _t->OpenScene(); break;
+        case 7: _t->OpenProject(); break;
+        case 8: _t->OpenResentScene((*reinterpret_cast< DAVA::int32(*)>(_a[1]))); break;
+        case 9: _t->SaveScene(); break;
+        case 10: _t->ExportAsPNG(); break;
+        case 11: _t->ExportAsPVR(); break;
+        case 12: _t->ExportAsDXT(); break;
+        case 13: _t->Materials(); break;
+        case 14: _t->ConvertTextures(); break;
+        case 15: _t->HeightmapEditor(); break;
+        case 16: _t->TilemapEditor(); break;
         default: ;
         }
     }
@@ -117,9 +125,9 @@ int GUIActionHandler::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 17)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 17;
     }
     return _id;
 }

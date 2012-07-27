@@ -199,11 +199,6 @@ private:
     UIButton *sceneInfoButton;
     void OnSceneInfoPressed(BaseObject * obj, void *, void *);
     
-
-//    void ExportLandscapeAndMeshLightmaps(SceneNode *node);//expand this methods if you need to expand export functionality
-//    void ExportTexture(const String &textureDataSourcePath);
-//    void ExportLandscapeFile(const String &fileDataSourcePath);
-    
     // menu
     MenuPopupControl *menuPopup;
 

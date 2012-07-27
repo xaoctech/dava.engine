@@ -33,6 +33,8 @@
 
 #include "DAVAEngine.h"
 
+#if defined(__DAVAENGINE_MACOS__)
+
 namespace DAVA 
 {
 class CoreMacOSPlatform : public Core
@@ -53,6 +55,8 @@ public:
 	
 };	
 };
+
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
 
 #endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__

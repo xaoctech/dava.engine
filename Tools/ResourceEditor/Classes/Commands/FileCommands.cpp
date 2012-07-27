@@ -5,6 +5,7 @@
 #include "../SceneEditor/EditorSettings.h"
 
 #include "../Qt/QtDefines.h"
+#include "../Qt/GUIState.h"
 
 #include <QFileDialog>
 #include <QString>
@@ -65,6 +66,8 @@ void CommandOpenScene::Execute()
             
             EditorSettings::Instance()->AddLastOpenedFile(selectedScenePathname);
             screen->OpenFileAtScene(selectedScenePathname);
+            
+            GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
 }
@@ -111,6 +114,8 @@ void CommandSaveScene::Execute()
 
             EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
             screen->SaveSceneToFile(normalizedPathname);
+
+            GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
 }

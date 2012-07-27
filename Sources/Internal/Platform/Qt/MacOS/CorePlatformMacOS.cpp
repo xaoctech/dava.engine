@@ -28,10 +28,10 @@
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
 #include "Base/BaseTypes.h"
+#include "Platform/Qt/MacOS/CorePlatformMacOS.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 
-#include "Platform/Qt/MacOS/CorePlatformMacOS.h"
 #include <ApplicationServices/ApplicationServices.h>
 
 extern void FrameworkDidLaunched();

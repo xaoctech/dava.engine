@@ -3,6 +3,8 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
+#include "../Qt/GUIState.h"
+
 using namespace DAVA;
 
 //Show/Hide Materials
@@ -51,6 +53,8 @@ void CommandHeightmapEditor::Execute()
     if(screen)
     {
         screen->HeightmapTriggered();
+        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
+        GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 }
 
@@ -68,6 +72,8 @@ void CommandTilemapEditor::Execute()
     if(screen)
     {
         screen->TilemapTriggered();
+        GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
+        GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 }
 

@@ -30,6 +30,8 @@
 #import "OpenGLView.h"
 #include "DAVAEngine.h"
 
+#if defined(__DAVAENGINE_MACOS__)
+
 
 @implementation OpenGLView
 @synthesize willQuit;
@@ -531,3 +533,5 @@ static int32 oldModifersFlags = 0;
 
 
 @end
+
+#endif //#if defined(__DAVAENGINE_MACOS__)

@@ -50,8 +50,30 @@ int DAVA::Core::Run(int argc, char * argv[], AppHandle handle)
 		{
 			// The device is an iPad.
 			DAVA::UIControlSystem::Instance()->SetInputScreenAreaSize(768, 1024);
-			DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
-			
+            if (DAVA::Core::IsAutodetectContentScaleFactor()) 
+			{
+				if ([::UIScreen instancesRespondToSelector: @selector(scale) ]
+					&& [::UIView instancesRespondToSelector: @selector(contentScaleFactor) ]) 
+				{
+					unsigned int scv = (unsigned int)[[::UIScreen mainScreen] scale];
+					if (scv != 2) 
+					{
+						DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
+					}
+					else 
+					{
+						DAVA::Core::Instance()->SetPhysicalScreenSize(1536, 2048);
+					}
+				}
+				else 
+				{
+					DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
+				}
+			}
+			else 
+			{
+				DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
+			}
 		}
 		else
 		{

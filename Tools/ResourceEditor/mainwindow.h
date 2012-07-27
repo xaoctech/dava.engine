@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "Classes/SceneEditor/EditorSettings.h"
-#include "Classes/Constants.h"
 
 
 namespace Ui {
@@ -19,13 +17,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     
-private slots:
-    void MenuFileWillShow();
-    void ResentSceneTriggered(QAction *resentScene);
-    void CreateNodeTriggered(QAction *nodeAction);
-    void ViewportTriggered(QAction *viewportAction);
-
-    
 private:
     void SetupMainMenu();
     void SetupProjectPath();
@@ -33,10 +24,6 @@ private:
 private:
     GUIActionHandler *actionHandler;
     
-    QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
-    QAction *nodeActions[ResourceEditor::NODE_COUNT];
-    QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
-
 private:
     Ui::MainWindow *ui;
 };
