@@ -1,7 +1,7 @@
 Как добавлять объекты, пронаследованные от QObjects
 
 1. Наследуем класс от QObject
-2. Для MacOS
+2. Для MacOS:
 	a. Show Package Content на файле проекта
 	b. Редактируем qt_preprocess.mak
 	c. Находим строки, представленные ниже и по аналогии с MainMenu добавляем свой объект
@@ -22,3 +22,45 @@ moc_davaglwidget.cpp: Classes/davaglwidget.h
 Classes/Qt/moc_MainMenu.cpp: Classes/Qt/MainMenu.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/MainMenu.h -o Classes/Qt/moc_MainMenu.cpp
 ###=================================
+
+
+3. Для Win32:
+	a. Редактируем файл ResourceEditorQtVS2010.vcxproj аналогично GUIActionHandler.cpp
+ 
+###============ Добавляем для всех конфигураций moc компиляцию =====================
+    <CustomBuild Include="Classes\Qt\GUIActionHandler.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Classes\Qt\GUIActionHandler.h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes\Qt\GUIActionHandler.h -o debug\moc_GUIActionHandler.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC Classes\Qt\GUIActionHandler.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_GUIActionHandler.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">Classes\Qt\GUIActionHandler.h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt&quot; -I&quot;debug&quot; -I&quot;.&quot; -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes\Qt\GUIActionHandler.h -o DebugQt\moc_GUIActionHandler.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">MOC Classes\Qt\GUIActionHandler.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">DebugQt\moc_GUIActionHandler.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Classes\Qt\GUIActionHandler.h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes\Qt\GUIActionHandler.h -o release\moc_GUIActionHandler.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC Classes\Qt\GUIActionHandler.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_GUIActionHandler.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">Classes\Qt\GUIActionHandler.h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include&quot; -I&quot;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt&quot; -I&quot;release&quot; -I&quot;.&quot; -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes\Qt\GUIActionHandler.h -o ReleaseQt\moc_GUIActionHandler.cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">MOC Classes\Qt\GUIActionHandler.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">ReleaseQt\moc_GUIActionHandler.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+###======= Добавляем для всех конфигураций компиляцию =====================
+    <ClCompile Include="Debug\moc_GuiActionHandler.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="DebugQt\moc_GuiActionHandler.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='DebugQt|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GuiActionHandler.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="ReleaseQt\moc_GuiActionHandler.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'!='ReleaseQt|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+###=================================
+
+
+
+
