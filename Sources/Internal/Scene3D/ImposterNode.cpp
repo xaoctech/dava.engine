@@ -150,7 +150,7 @@ bool ImposterNode::IsAngleOrRangeChangedEnough(float32 squareDistance, float32 d
 
 void ImposterNode::Draw()
 {
-	if((flags & NODE_DISABLE_IMPOSTER) && GetChildrenCount() > 0)
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::IMPOSTERS_ENABLE) && GetChildrenCount() > 0)
 	{
 		DVASSERT(GetChildrenCount() == 1);
 		GetChild(0)->Draw();

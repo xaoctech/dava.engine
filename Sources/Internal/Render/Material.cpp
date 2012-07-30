@@ -607,6 +607,11 @@ void Material::PrepareRenderState()
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
 {
+	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
+	{
+		return;
+	}
+
 	RenderManager::Instance()->SetRenderData(group->renderDataObject);
 
 	eBlendMode oldSrc;
