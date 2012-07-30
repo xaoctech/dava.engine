@@ -19,7 +19,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.14"
+#define VERSION     "0.0.15"
  
 //void EntityTest();
 
@@ -113,7 +113,7 @@ void FrameworkDidLaunched()
     new SceneExporter();
     new EditorSettings();
     new SceneValidator();
-    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetDataSourcePath());
+    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
     
 
     printf("Running\n");
