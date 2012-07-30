@@ -1476,7 +1476,18 @@ namespace DAVA
 		
 		if (pivotNode)
 		{
-			pivotPoint = pivotNode->AsPoint();
+            if (pivotNode->GetType() == YamlNode::TYPE_STRING)
+            {
+                if (pivotNode->AsString() == "center")
+                {
+                    pivotPoint.x = floor(rect.dx / 2.f);
+                    pivotPoint.y = floor(rect.dy / 2.f);
+                }
+            }
+            else
+            {
+			    pivotPoint = pivotNode->AsPoint();
+            }
 		}
 
         YamlNode * inputNode = node->Get("noInput");

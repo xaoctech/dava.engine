@@ -53,6 +53,8 @@
 		5C9FC2C814D58812002937A2 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */; };
 		5CBF58EF14CF58E600CD7F4A /* ShadowVolumeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */; };
 		5CBF58F014CF58E600CD7F4A /* ShadowVolumeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */; };
+		5CBF71CD15C6DFCB00CD1736 /* RenderOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF71CB15C6DFCA00CD1736 /* RenderOptions.cpp */; };
+		5CBF71CE15C6DFCB00CD1736 /* RenderOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF71CC15C6DFCA00CD1736 /* RenderOptions.h */; };
 		5CBFD6C3159C6C3300852F1A /* LandscapeGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6B8159C6C3300852F1A /* LandscapeGeometryComponent.cpp */; };
 		5CBFD6C4159C6C3300852F1A /* LandscapeGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6B9159C6C3300852F1A /* LandscapeGeometryComponent.h */; };
 		5CBFD6C5159C6C3300852F1A /* LandscapeGeometrySystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6BA159C6C3300852F1A /* LandscapeGeometrySystem.h */; };
@@ -626,6 +628,8 @@
 		5C9FC2C614D58812002937A2 /* EdgeAdjacency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EdgeAdjacency.h; sourceTree = "<group>"; };
 		5CBF58ED14CF58E600CD7F4A /* ShadowVolumeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShadowVolumeNode.cpp; sourceTree = "<group>"; };
 		5CBF58EE14CF58E600CD7F4A /* ShadowVolumeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowVolumeNode.h; sourceTree = "<group>"; };
+		5CBF71CB15C6DFCA00CD1736 /* RenderOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderOptions.cpp; sourceTree = "<group>"; };
+		5CBF71CC15C6DFCA00CD1736 /* RenderOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderOptions.h; sourceTree = "<group>"; };
 		5CBFD6B8159C6C3300852F1A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeGeometryComponent.cpp; path = Entity/LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
 		5CBFD6B9159C6C3300852F1A /* LandscapeGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometryComponent.h; path = Entity/LandscapeGeometryComponent.h; sourceTree = "<group>"; };
 		5CBFD6BA159C6C3300852F1A /* LandscapeGeometrySystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometrySystem.h; path = Entity/LandscapeGeometrySystem.h; sourceTree = "<group>"; };
@@ -1654,6 +1658,8 @@
 		FECFC15B12E87E3000C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				5CBF71CB15C6DFCA00CD1736 /* RenderOptions.cpp */,
+				5CBF71CC15C6DFCA00CD1736 /* RenderOptions.h */,
 				5CF6FF291563A8390070C3DB /* ImageConvert.h */,
 				5CF6FF2A1563A8390070C3DB /* SharedFBO.cpp */,
 				5CF6FF2B1563A8390070C3DB /* SharedFBO.h */,
@@ -2286,6 +2292,7 @@
 				5CD7158515AC454A00D08E8E /* ParticleEmitterNode.h in Headers */,
 				5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */,
 				5C19F49815A42D920064E889 /* KeyedUnarchiver.h in Headers */,
+				5CBF71CE15C6DFCB00CD1736 /* RenderOptions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2609,6 +2616,7 @@
 				5C19F49515A42D920064E889 /* KeyedArchiver.cpp in Sources */,
 				5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */,
 				5C8E672B15A58CA400A87103 /* FileSystemObjective.mm in Sources */,
+				5CBF71CD15C6DFCB00CD1736 /* RenderOptions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
