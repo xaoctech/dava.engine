@@ -76,6 +76,9 @@ Scene::Scene()
 	,	enableImposters(true)
 	,	entityManager(0)
 {   
+	bvHierarchy = new BVHierarchy();
+	bvHierarchy->ChangeScene(this);
+
 	entityManager = new EntityManager();
 	
 	CreateComponents();
@@ -129,6 +132,7 @@ Scene::~Scene()
     
 	SafeRelease(imposterManager);
 	SafeRelease(shadowRect);
+	SafeRelease(bvHierarchy);
 
 	entityManager->Flush();
 	SafeRelease(entityManager);
@@ -148,6 +152,11 @@ void Scene::RegisterNode(SceneNode * node)
 	if(imposter)
 	{
 		RegisterImposter(imposter);
+	}
+
+	if (bvHierarchy)
+	{
+		bvHierarchy->RegisterNode(node);
 	}
 
 	//MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
@@ -187,6 +196,11 @@ void Scene::UnregisterNode(SceneNode * node)
 	if(imposter)
 	{
 		UnregisterImposter(imposter);
+	}
+
+	if (bvHierarchy)
+	{
+		bvHierarchy->UnregisterNode(node);
 	}
 
 	//if(node->entity)
@@ -476,8 +490,8 @@ void Scene::Draw()
         currentCamera->Set();
     }
     
-	//if (bvHierarchy)
-    //    bvHierarchy->Cull();
+	if(bvHierarchy)
+        bvHierarchy->Cull();
 	//VisibilityAABBoxSystem::Run(this);
 
 	//entityManager->Dump();
