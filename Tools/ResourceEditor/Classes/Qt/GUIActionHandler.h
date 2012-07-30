@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QMenu>
 
+
 class Command;
 class GUIActionHandler: public QObject
 {
@@ -20,8 +21,10 @@ public:
 
     void RegisterNodeActions(DAVA::int32 count, ...);
     void RegisterViewportActions(DAVA::int32 count, ...);
+    void RegisterDockActions(DAVA::int32 count, ...);
     
     void SetResentMenu(QMenu *menu);
+    
     
 public slots:
     //menu
@@ -41,6 +44,9 @@ public slots:
     void ExportAsPNG();
     void ExportAsPVR();
     void ExportAsDXT();
+    
+    //View
+    void RestoreViews();
 
     //tools
     void Materials();
@@ -57,17 +63,17 @@ private:
     void Execute(Command *command);
     
     void RegisterActions(QAction **actions, DAVA::int32 count, va_list &vl);
-   
     
+    void ClearActions(int32 count, QAction **actions);
     
 private:
     
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
+    QAction *dockActions[ResourceEditor::VIEWPORT_COUNT];
 
     QMenu *menuResentScenes;
-    
 };
 
 #endif // __GUI_ACTION_MANAGER_H__
