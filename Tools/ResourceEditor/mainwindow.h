@@ -17,9 +17,6 @@ public:
    explicit QtMainWindow(QWidget *parent = 0);
    ~QtMainWindow();
     
-protected:
-	void resizeEvent(QResizeEvent *);
-
 private:
     void SetupMainMenu();
     void SetupProjectPath();
