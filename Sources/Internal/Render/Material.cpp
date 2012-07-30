@@ -607,6 +607,11 @@ void Material::PrepareRenderState()
 
 void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMaterialState)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::MATERIAL_DRAW))
+	{
+		return;
+	}
+
 	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
