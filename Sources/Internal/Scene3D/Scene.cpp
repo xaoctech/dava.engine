@@ -505,7 +505,7 @@ void Scene::Draw()
 	//LandscapeGeometrySystem::Run(this);
 	//MeshInstanceDrawSystem::Run(this);
 
-	if(shadowVolumes.size() > 0)
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW) && shadowVolumes.size() > 0)
 	{
 		if(!shadowRect)
 		{
