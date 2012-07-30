@@ -66,6 +66,8 @@
 		5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */; };
+		5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF71DE15C6E46100CD1736 /* RenderOptions.h */; };
 		5CBFD6DC159C6D4500852F1A /* LandscapeGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */; };
 		5CBFD6DD159C6D4500852F1A /* LandscapeGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */; };
 		5CBFD6DE159C6D4500852F1A /* LandscapeGeometrySystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */; };
@@ -611,6 +613,8 @@
 		5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileSystemObjective.mm; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderOptions.cpp; sourceTree = "<group>"; };
+		5CBF71DE15C6E46100CD1736 /* RenderOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderOptions.h; sourceTree = "<group>"; };
 		5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeGeometryComponent.cpp; path = Entity/LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
 		5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometryComponent.h; path = Entity/LandscapeGeometryComponent.h; sourceTree = "<group>"; };
 		5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometrySystem.h; path = Entity/LandscapeGeometrySystem.h; sourceTree = "<group>"; };
@@ -1555,6 +1559,8 @@
 		FECFB3D112E5904400C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */,
+				5CBF71DE15C6E46100CD1736 /* RenderOptions.h */,
 				5CFD7DF41564DC58009692EE /* ImageConvert.h */,
 				5CFD7DF51564DC58009692EE /* RenderBase.cpp */,
 				5CFD7DF61564DC58009692EE /* SharedFBO.cpp */,
@@ -2168,6 +2174,7 @@
 				5C44738E15B5A1C500028948 /* HashMap.h in Headers */,
 				5C44738F15B5A1C500028948 /* Mallocator.h in Headers */,
 				5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */,
+				5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2481,6 +2488,7 @@
 				5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */,
 				5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */,
 				5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */,
+				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
