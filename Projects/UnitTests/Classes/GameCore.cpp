@@ -39,6 +39,7 @@
 #include "MemoryAllocatorsTest.h"
 #include "HashMapTest.h"
 #include "SoundTest.h"
+#include "KeyedArchiveYamlTest.h"
 
 using namespace DAVA;
 
@@ -64,11 +65,12 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new SampleTest();
-	new EntityTest(); 
-    new MemoryAllocatorsTest();
-    new HashMapTest();
-    new SoundTest();
+    //new SampleTest();
+	//new EntityTest();
+    //new MemoryAllocatorsTest();
+    //new HashMapTest();
+    //new SoundTest();
+    new KeyedArchiveYamlTest();
     
     errors.reserve(TestCount());
 

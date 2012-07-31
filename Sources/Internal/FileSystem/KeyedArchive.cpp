@@ -31,6 +31,8 @@
 #include "FileSystem/File.h"
 #include "Utils/Utils.h"
 #include "FileSystem/DynamicMemoryFile.h"
+#include "YamlParser.h"
+#include "VariantType.h"
 
 namespace DAVA 
 {
@@ -136,6 +138,75 @@ bool KeyedArchive::Save(File *archive)
 	}
 	return true;
 }
+    
+bool KeyedArchive::LoadFromYamlFile(const String & pathName)
+{
+    File * archive = File::Create(pathName, File::OPEN|File::READ);
+	if (!archive)
+    {
+        return false;    
+    }
+    
+	YamlParser	*parser	= YamlParser::Create(pathName);
+    if(NULL == parser)
+    {
+        return false;
+    }
+	
+    YamlNode *rootNode = parser->GetRootNode();
+    bool retValue = LoadFromYamlNode(rootNode);
+    
+	SafeRelease(parser);
+	   
+	SafeRelease(archive);
+	return retValue;
+}
+
+bool KeyedArchive::LoadFromYamlNode(YamlNode* rootNode)
+{
+    if(NULL == rootNode)
+    {
+        return  false;
+    }
+
+    const String tmp = TYPENAME_KEYED_ARCHIVE;
+    Vector<YamlNode*> &rootVector = rootNode->Get(tmp)->AsVector();
+    
+    for (Vector<YamlNode*>::const_iterator it = rootVector.begin(); it != rootVector.end(); ++it)
+    {
+        Map<String, YamlNode*>	keyVariableNodeMap = (*it)->AsMap();
+        for (Map<String, YamlNode*>::iterator mapIter = keyVariableNodeMap.begin(); mapIter != keyVariableNodeMap.end(); ++mapIter)
+        {
+            String variableNameToArchMap = mapIter->first;
+            VariantType *value = new VariantType(mapIter->second->AsVariantType());
+                
+            if(value->type == VariantType::TYPE_NONE)
+            {
+                SafeDelete(value);
+                continue;
+            }
+
+            objectMap[variableNameToArchMap] = value;
+        }
+    }
+    
+    return true;
+}
+
+   
+bool KeyedArchive::SaveToYamlFile(const String & pathName)
+{
+    File * archive = File::Create(pathName, File::CREATE|File::WRITE);
+	if (NULL == archive)
+        return false;
+    
+	YamlNode node(YamlNode::TYPE_STRING);
+    node.InitFromKeyedArchive(this);
+    node.PrintToFile(archive);
+ 
+	SafeRelease(archive);
+	return true;
+}
 
 void KeyedArchive::SetBool(const String & key, bool value)
 {
@@ -217,7 +288,71 @@ void KeyedArchive::SetArchive(const String & key, KeyedArchive * archive)
 	objectMap[key] = variantValue;
 }
 
+void KeyedArchive::SetInt64(const String & key, int64 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetInt64(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetUInt64(const String & key, uint64 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetUInt64(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetVector2(const String & key, Vector2 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetVector2(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetVector3(const String & key, Vector3 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetVector3(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetVector4(const String & key, Vector4 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetVector4(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetMatrix2(const String & key, Matrix2 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetMatrix2(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetMatrix3(const String & key, Matrix3 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetMatrix3(value);
+	objectMap[key] = variantValue;
+}
+
+void KeyedArchive::SetMatrix4(const String & key, Matrix4 &value)
+{
+    DeleteKey(key);
+	VariantType *variantValue = new VariantType();
+	variantValue->SetMatrix4(value);
+	objectMap[key] = variantValue;
+}
 	
+    
 bool KeyedArchive::IsKeyExists(const String & key)
 {
 	Map<String, VariantType*>::iterator t = objectMap.find(key);
@@ -256,13 +391,13 @@ float32 KeyedArchive::GetFloat(const String & key, float32 defaultValue)
 	return defaultValue;
 }
 
-const String & KeyedArchive::GetString(const String & key, const String & defaultValue)
+String KeyedArchive::GetString(const String & key, const String & defaultValue)
 {
 	if (IsKeyExists(key))
 		return objectMap[key]->AsString();
 	return defaultValue;
 }
-const WideString & KeyedArchive::GetWideString(const String & key, const WideString & defaultValue)
+WideString KeyedArchive::GetWideString(const String & key, const WideString & defaultValue)
 {
 	if (IsKeyExists(key))
 		return objectMap[key]->AsWideString();
@@ -312,7 +447,63 @@ VariantType *KeyedArchive::GetVariant(const String & key)
 {
 	return objectMap[key];
 }
+    
+int64 KeyedArchive::GetInt64(const String & key, int64 defaultValue)
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsInt64();
+    return defaultValue;
+}
 
+uint64 KeyedArchive::GetUInt64(const String & key, uint64 defaultValue)
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsUInt64();
+    return defaultValue;
+}
+
+Vector2 KeyedArchive::GetVector2(const String & key, const Vector2 & defaultValue  )
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsVector2();
+    return defaultValue;
+}
+
+Vector3 KeyedArchive::GetVector3(const String & key, const Vector3 & defaultValue )
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsVector3();
+    return defaultValue;
+}
+
+Vector4 KeyedArchive::GetVector4(const String & key, const Vector4 & defaultValue )
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsVector4();
+    return defaultValue;
+}
+
+Matrix2 KeyedArchive::GetMatrix2(const String & key, const Matrix2 & defaultValue )
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsMatrix2();
+    return defaultValue;
+}
+
+Matrix3 KeyedArchive::GetMatrix3(const String & key, const Matrix3 & defaultValue )
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsMatrix3();
+    return defaultValue;
+}
+
+Matrix4 KeyedArchive::GetMatrix4(const String & key, const Matrix4 & defaultValue )
+{
+    if (IsKeyExists(key))
+        return objectMap[key]->AsMatrix4();
+    return defaultValue;
+}
+    
 void KeyedArchive::DeleteKey(const String & key)
 {
 	Map<String, VariantType*>::iterator t = objectMap.find(key);
@@ -371,12 +562,12 @@ void KeyedArchive::Dump()
 				break;	
 			case VariantType::TYPE_STRING:
 			{
-				Logger::Debug("%s : %s", it->first.c_str(), it->second->stringValue.c_str());
+				Logger::Debug("%s : %s", it->first.c_str(), it->second->stringValue->c_str());
 			}
 				break;	
 			case VariantType::TYPE_WIDE_STRING:
 			{
-				Logger::Debug("%s : %S", it->first.c_str(), it->second->wideStringValue.c_str());
+				Logger::Debug("%s : %S", it->first.c_str(), it->second->wideStringValue->c_str());
 			}
 				break;
 		}

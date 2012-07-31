@@ -237,7 +237,7 @@ bool File::IsEof()
 bool File::WriteString(const String & strtowrite)
 {
 	const char * str = strtowrite.c_str();
-	return (Write((void*)str, (uint32)(strtowrite.length() + 1)) == strtowrite.length() + 1);
+	return (Write((void*)str, (uint32)(strtowrite.length() )) == strtowrite.length() );
 }
 
 bool File::WriteLine(const String & string)
