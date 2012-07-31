@@ -14,7 +14,6 @@ subject to the following restrictions:
 */
 
 #include <string.h>
-#include <stdio.h>
 
 #include "btConvexHull.h"
 #include "btAlignedObjectArray.h"
@@ -714,9 +713,9 @@ HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           //
 
 	unsigned int ovcount;
 
- 	bool ok = CleanupVertices(desc.mVcount,desc.mVertices, desc.mVertexStride, ovcount, &vertexSource[0], desc.mNormalEpsilon, scale ); // normalize point cloud, remove duplicates!
+	bool ok = CleanupVertices(desc.mVcount,desc.mVertices, desc.mVertexStride, ovcount, &vertexSource[0], desc.mNormalEpsilon, scale ); // normalize point cloud, remove duplicates!
 
-  	if ( ok )
+	if ( ok )
 	{
 
 
@@ -871,7 +870,7 @@ bool  HullLibrary::CleanupVertices(unsigned int svcount,
 	if ( svcount == 0 ) return false;
 
 	m_vertexIndexMapping.resize(0);
- 
+
 
 #define EPSILON btScalar(0.000001) /* close enough to consider two btScalaring point numbers to be 'the same'. */
 
@@ -901,14 +900,8 @@ bool  HullLibrary::CleanupVertices(unsigned int svcount,
 
 			for (int j=0; j<3; j++)
 			{
-				if ( p[j] < bmin[j] )
-                {
-                    bmin[j] = p[j];
-                }
-				if ( p[j] > bmax[j] )
-                {
-                    bmax[j] = p[j];
-                }
+				if ( p[j] < bmin[j] ) bmin[j] = p[j];
+				if ( p[j] > bmax[j] ) bmax[j] = p[j];
 			}
 		}
 	}
@@ -916,14 +909,13 @@ bool  HullLibrary::CleanupVertices(unsigned int svcount,
 	btScalar dx = bmax[0] - bmin[0];
 	btScalar dy = bmax[1] - bmin[1];
 	btScalar dz = bmax[2] - bmin[2];
- 
+
 	btVector3 center;
 
 	center[0] = dx*btScalar(0.5) + bmin[0];
 	center[1] = dy*btScalar(0.5) + bmin[1];
 	center[2] = dz*btScalar(0.5) + bmin[2];
 
-     
 	if ( dx < EPSILON || dy < EPSILON || dz < EPSILON || svcount < 3 )
 	{
 
@@ -982,7 +974,7 @@ bool  HullLibrary::CleanupVertices(unsigned int svcount,
 			center[1]*=recip[1];
 			center[2]*=recip[2];
 
- 		}
+		}
 
 	}
 

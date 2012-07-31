@@ -42,6 +42,56 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     }
 }
 
+void SceneValidator::ValidateScales(Scene *scene, Set<String> &errorsLog)
+{
+	if(scene) 
+	{
+		ValidateScalesInternal(scene, errorsLog);
+	}
+	else 
+	{
+		errorsLog.insert(String("Scene in NULL!"));
+	}
+}
+
+void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog)
+{
+//  Basic algorithm is here
+// 	Matrix4 S, T, R; //Scale Transpose Rotation
+// 	S.CreateScale(Vector3(1.5, 0.5, 2.0));
+// 	T.CreateTranslation(Vector3(100, 50, 20));
+// 	R.CreateRotation(Vector3(0, 1, 0), 2.0);
+// 
+// 	Matrix4 t = R*S*T; //Calculate complex matrix
+// 
+//	//Calculate Scale components from complex matrix
+// 	float32 sx = sqrt(t._00 * t._00 + t._10 * t._10 + t._20 * t._20);
+// 	float32 sy = sqrt(t._01 * t._01 + t._11 * t._11 + t._21 * t._21);
+// 	float32 sz = sqrt(t._02 * t._02 + t._12 * t._12 + t._22 * t._22);
+// 	Vector3 sCalculated(sx, sy, sz);
+
+	if(!sceneNode) return;
+
+	const Matrix4 & t = sceneNode->GetLocalTransform();
+	float32 sx = sqrt(t._00 * t._00 + t._10 * t._10 + t._20 * t._20);
+	float32 sy = sqrt(t._01 * t._01 + t._11 * t._11 + t._21 * t._21);
+	float32 sz = sqrt(t._02 * t._02 + t._12 * t._12 + t._22 * t._22);
+
+	if ((!FLOAT_EQUAL(sx, 1.0f)) 
+		|| (!FLOAT_EQUAL(sy, 1.0f))
+		|| (!FLOAT_EQUAL(sz, 1.0f)))
+	{
+ 		errorsLog.insert(Format("Node %s: has scale (%.3f, %.3f, %.3f) ! Re-design level.", sceneNode->GetName().c_str(), sx, sy, sz));
+	}
+
+	int32 count = sceneNode->GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		ValidateScalesInternal(sceneNode->GetChild(i), errorsLog);
+	}
+}
+
+
 
 void SceneValidator::ValidateSceneNode(SceneNode *sceneNode)
 {

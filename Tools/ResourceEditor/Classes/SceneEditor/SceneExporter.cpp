@@ -86,6 +86,8 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
 
     SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
+	SceneValidator::Instance()->ValidateScales(scene, errorLog);
+
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
     ExportMeshLightmaps(scene, errorLog);
