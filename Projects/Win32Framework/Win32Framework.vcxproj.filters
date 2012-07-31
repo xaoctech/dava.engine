@@ -1107,6 +1107,9 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1900,6 +1903,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

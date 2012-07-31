@@ -327,7 +327,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             keyedArchieve->SetString("3dDataSourcePath", projectPath + "DataSource/3d/");
             EditorSettings::Instance()->Save();
             
-            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetDataSourcePath());
+            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
             libraryControl->SetPath(EditorSettings::Instance()->GetDataSourcePath());
             break;
         }

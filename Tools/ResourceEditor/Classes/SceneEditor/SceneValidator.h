@@ -106,9 +106,9 @@ public:
     /*
      \brief Function sets 3d folder path for cheking texture pathnames
      \param[in] pathname path to DataSource/3d folder
+     \return old path for checking
 	 */
-    void SetPathForChecking(const String &pathname);
-    
+    String SetPathForChecking(const String &pathname);
     
     void EnumerateSceneTextures();
     void CollectSceneStats(const RenderManager::Stats &newStats);

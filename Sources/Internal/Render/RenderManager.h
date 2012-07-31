@@ -41,6 +41,7 @@
 #include "Core/Core.h"
 #include "Render/Cursor.h"
 #include "Render/RenderStateBlock.h"
+#include "Render/RenderOptions.h"
 #include <stack>
 
 namespace DAVA
@@ -50,7 +51,6 @@ namespace DAVA
 class Texture;
 class Shader;
 class RenderStateBlock;
-
 /** 
 	\ingroup render
 	\brief Main class that implements rendering abstraction layer.
@@ -482,6 +482,8 @@ public:
 	 */
 	virtual Cursor * GetCursor();
 
+	RenderOptions * GetOptions();
+
 	uint32 fboViewFramebuffer;
 	
 protected:
@@ -628,6 +630,8 @@ protected:
 	void SetNewRenderEffect(RenderEffect *renderEffect);
 	
 	bool debugEnabled;
+
+	RenderOptions options;
 	
 #if defined(__DAVAENGINE_DIRECTX9__)
 	// 

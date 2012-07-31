@@ -4,10 +4,10 @@
 #include "DAVAEngine.h"
 #include "Classes/Qt/GUIActionHandler.h"
 #include "Classes/Qt/GUIState.h"
-
 #include "Classes/SceneEditor/EditorSettings.h"
 
-MainWindow::MainWindow(QWidget *parent) 
+
+QtMainWindow::QtMainWindow(QWidget *parent) 
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     SetupProjectPath();
 }
 
-MainWindow::~MainWindow()
+QtMainWindow::~QtMainWindow()
 {
     DAVA::SafeDelete(actionHandler);
     
@@ -41,7 +41,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::SetupMainMenu()
+void QtMainWindow::SetupMainMenu()
 {
     //File
     connect(ui->menuFile, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuFileWillShow()));
@@ -57,6 +57,25 @@ void MainWindow::SetupMainMenu()
     actionHandler->SetResentMenu(ui->menuResentScenes);
     connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ResentSceneTriggered(QAction *)));
 
+    //View
+    connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
+    QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
+    QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
+    QAction *actionEntities = ui->dockEntities->toggleViewAction();
+    QAction *actionProperties = ui->dockProperties->toggleViewAction();
+    QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
+    ui->menuView->insertAction(ui->actionRestoreViews, actionLibrary);
+    ui->menuView->insertAction(actionLibrary, actionProperties);
+    ui->menuView->insertAction(actionProperties, actionEntities);
+    ui->menuView->insertAction(actionEntities, actionDataGraph);
+    ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
+    ui->menuView->insertSeparator(ui->actionRestoreViews);
+    ui->menuView->insertSeparator(actionProperties);
+    actionHandler->RegisterDockActions(ResourceEditor::DOCK_COUNT,
+                                       actionSceneGraph, actionDataGraph, actionEntities,
+                                       actionProperties, actionLibrary);
+    
+    
     //CreateNode
     actionHandler->RegisterNodeActions(ResourceEditor::NODE_COUNT,
                                        ui->actionLandscape,
@@ -88,7 +107,7 @@ void MainWindow::SetupMainMenu()
                                        );
 }
 
-void MainWindow::SetupProjectPath()
+void QtMainWindow::SetupProjectPath()
 {
     DAVA::String projectPath = EditorSettings::Instance()->GetProjetcPath();
     while(0 == projectPath.length())

@@ -1081,6 +1081,10 @@ void LandscapeNode::Draw()
     Stats::Instance()->BeginTimeMeasure("Scene.LandscapeNode.Draw", this);
     //uint64 time = SystemTimer::Instance()->AbsoluteMS();
 
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
+	{
+		return;
+	}
     
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
     if (debugFlags & DEBUG_DRAW_GRID)
