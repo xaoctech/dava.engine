@@ -73,6 +73,298 @@
       <Filter>Collada</Filter>
     </ClCompile>
     <ClCompile Include="Classes\VertexOctTree.cpp" />
+    <ClCompile Include="Classes\BulletObject.cpp" />
+    <ClCompile Include="Classes\DebugNode.cpp" />
+    <ClCompile Include="Classes\SceneNodeUserData.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\BeastProxy.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\EditorScene.cpp" />
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\OutputControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\OutputManager.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
+      <Filter>SceneEditor\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp">
+      <Filter>SceneEditor\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp">
+      <Filter>ParticlesEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LightmapsPacker.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\HintManager.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneExporter.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\DataGraph.cpp">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\GraphBase.cpp">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ComboBox.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeTool.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\MeshInstancePropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\PropertyList.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\UIFilePreviewDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\FogControl.cpp">
+      <Filter>SceneEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
@@ -388,9 +680,6 @@
     <ClCompile Include="Classes\bullet\BulletDynamics\ConstraintSolver\btUniversalConstraint.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\btContinuousDynamicsWorld.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
@@ -407,90 +696,6 @@
       <Filter>Bullet</Filter>
     </ClCompile>
     <ClCompile Include="Classes\bullet\BulletDynamics\Vehicle\btWheelInfo.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphase.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\btParallelConstraintSolver.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\btThreadSupportInterface.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\GpuSoftBodySolvers\CPU\btSoftBodySolver_CPU.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\PosixThreadSupport.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SequentialThreadSupport.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuCollisionObjectWrapper.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuCollisionTaskProcess.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuContactManifoldCollisionAlgorithm.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuFakeDma.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuGatheringCollisionDispatcher.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuLibspe2Support.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\boxBoxDistance.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuCollisionShapes.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuContactResult.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuGatheringCollisionTask.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuMinkowskiPenetrationDepthSolver.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuSampleTask\SpuSampleTask.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuSampleTaskProcess.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\Win32ThreadSupport.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btDefaultSoftBodySolver.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBody.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBodyConcaveCollisionAlgorithm.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBodyHelpers.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBodyRigidBodyCollisionConfiguration.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftRigidCollisionAlgorithm.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftRigidDynamicsWorld.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftSoftCollisionAlgorithm.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
     <ClCompile Include="Classes\bullet\LinearMath\btAlignedAllocator.cpp">
@@ -510,307 +715,6 @@
     </ClCompile>
     <ClCompile Include="Classes\bullet\LinearMath\btSerializer.cpp">
       <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\MiniCL\MiniCL.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\MiniCL\MiniCLTask\MiniCLTask.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\bullet\MiniCL\MiniCLTaskScheduler.cpp">
-      <Filter>Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\BulletObject.cpp" />
-    <ClCompile Include="Classes\DebugNode.cpp" />
-    <ClCompile Include="Classes\SceneNodeUserData.cpp" />
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\BeastProxy.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\EditorScene.cpp" />
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputManager.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
-      <Filter>SceneEditor\Light</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp">
-      <Filter>SceneEditor\Light</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditorSettings.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.cpp">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp">
-      <Filter>ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp">
-      <Filter>ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp">
-      <Filter>ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp">
-      <Filter>ParticlesEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\LightmapsPacker.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ErrorNotifier.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\HeightmapNode.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\HintManager.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CommandLineTool.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ExporterScreen.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneExporter.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapePropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\DataGraph.cpp">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EntitiesGraph.cpp">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\GraphBase.cpp">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ColorPicker.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ComboBox.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ControlsFactory.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CreateNodesDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\DraggableDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditMatrixControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EditorBodyControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ErrorDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ExtendedDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\HelpDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorBase.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorColor.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeEditorHeightmap.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeTool.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanel.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelColor.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MeshInstancePropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LodNodePropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyCellData.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PropertyList.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ScenePreviewControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\TextureTrianglesDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UIFilePreviewDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\EntityPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\FogControl.cpp">
-      <Filter>SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
-      <Filter>SceneEditor\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -889,6 +793,313 @@
       <Filter>Collada</Filter>
     </ClInclude>
     <ClInclude Include="Classes\VertexOctTree.h" />
+    <ClInclude Include="Classes\BulletObject.h" />
+    <ClInclude Include="Classes\DebugNode.h" />
+    <ClInclude Include="Classes\SceneNodeUserData.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\BeastProxy.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\EditorScene.h" />
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CameraController.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\MaterialEditor.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\OutputControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\OutputManager.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
+      <Filter>SceneEditor\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h">
+      <Filter>SceneEditor\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorSettings.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneValidator.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h">
+      <Filter>ParticlesEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LightmapsPacker.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LightmapAtlasingData.h">
+      <Filter>SceneEditor\Beast</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PVRUtils.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\HeightmapNode.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\HintManager.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\UNDOManager.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CommandLineTool.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ExporterScreen.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneExporter.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\DataGraph.h">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\GraphBase.h">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ColorPicker.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ComboBox.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ControlsFactory.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\DraggableDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ErrorDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\HelpDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeTool.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h">
+      <Filter>SceneEditor\Landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PropertyList.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PropertyCell.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PropertyCellData.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneGraph.h">
+      <Filter>SceneEditor\Graphs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SettingsDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\UIFilePreviewDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\UIZoomControl.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\UISliderWithText.h">
+      <Filter>SceneEditor\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\FogControl.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
+      <Filter>SceneEditor\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Constants.h">
+      <Filter>SceneEditor</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.h">
       <Filter>Bullet</Filter>
     </ClInclude>
@@ -1312,9 +1523,6 @@
     <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btActionInterface.h">
       <Filter>Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btContinuousDynamicsWorld.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h">
       <Filter>Bullet</Filter>
     </ClInclude>
@@ -1336,162 +1544,6 @@
     <ClInclude Include="Classes\bullet\BulletDynamics\Vehicle\btWheelInfo.h">
       <Filter>Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphase.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphaseSharedCode.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphaseSharedDefs.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphaseSharedTypes.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpuDefines.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpuUtilsSharedCode.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpuUtilsSharedDefs.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btParallelConstraintSolver.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btThreadSupportInterface.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\GpuSoftBodySolvers\CPU\btSoftBodySolverData.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\GpuSoftBodySolvers\CPU\btSoftBodySolver_CPU.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\HeapManager.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\PlatformDefinitions.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\PosixThreadSupport.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\PpuAddressSpace.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SequentialThreadSupport.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuCollisionObjectWrapper.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuCollisionTaskProcess.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuContactManifoldCollisionAlgorithm.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuDoubleBuffer.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuFakeDma.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuGatheringCollisionDispatcher.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuLibspe2Support.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\Box.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\boxBoxDistance.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuCollisionShapes.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuContactResult.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuConvexPenetrationDepthSolver.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuGatheringCollisionTask.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuLocalSupport.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuMinkowskiPenetrationDepthSolver.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuPreferredPenetrationDirections.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuSampleTask\SpuSampleTask.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuSampleTaskProcess.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuSync.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\TrbDynBody.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\TrbStateVec.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\vectormath2bullet.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\Win32ThreadSupport.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btDefaultSoftBodySolver.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBody.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyConcaveCollisionAlgorithm.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyData.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyHelpers.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyInternals.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyRigidBodyCollisionConfiguration.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodySolvers.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodySolverVertexBuffer.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftRigidCollisionAlgorithm.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftRigidDynamicsWorld.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftSoftCollisionAlgorithm.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSparseSDF.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\bullet\LinearMath\btAabbUtil2.h">
       <Filter>Bullet</Filter>
     </ClInclude>
@@ -1511,6 +1563,9 @@
       <Filter>Bullet</Filter>
     </ClInclude>
     <ClInclude Include="Classes\bullet\LinearMath\btGeometryUtil.h">
+      <Filter>Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\bullet\LinearMath\btGrahamScan2dConvexHull.h">
       <Filter>Bullet</Filter>
     </ClInclude>
     <ClInclude Include="Classes\bullet\LinearMath\btHashMap.h">
@@ -1564,24 +1619,6 @@
     <ClInclude Include="Classes\bullet\LinearMath\btVector3.h">
       <Filter>Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\bullet\MiniCL\cl.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\MiniCL\cl_gl.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\MiniCL\cl_MiniCL_Defs.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\MiniCL\cl_platform.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\MiniCL\MiniCLTask\MiniCLTask.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\bullet\MiniCL\MiniCLTaskScheduler.h">
-      <Filter>Bullet</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\bullet\vectormath\scalar\boolInVec.h">
       <Filter>Bullet</Filter>
     </ClInclude>
@@ -1632,313 +1669,6 @@
     </ClInclude>
     <ClInclude Include="Classes\bullet\Bullet-C-Api.h">
       <Filter>Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\BulletObject.h" />
-    <ClInclude Include="Classes\DebugNode.h" />
-    <ClInclude Include="Classes\SceneNodeUserData.h" />
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMaterial.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMesh.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastNameGenerator.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastProxyImpl.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastResource.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTexture.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastTypes.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\BeastProxy.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastMeshInstance.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\EditorScene.h" />
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraController.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MaterialEditor.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputManager.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneNodeIDs.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
-      <Filter>SceneEditor\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorLightNode.h">
-      <Filter>SceneEditor\Light</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorSettings.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneValidator.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h">
-      <Filter>ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h">
-      <Filter>ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h">
-      <Filter>ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h">
-      <Filter>ParticlesEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\LightmapsPacker.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ErrorNotifier.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\LightmapAtlasingData.h">
-      <Filter>SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PVRUtils.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\HeightmapNode.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\HintManager.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UNDOManager.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CommandLineTool.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ExporterScreen.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneExporter.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapePropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\DataGraph.h">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EntitiesGraph.h">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\GraphBase.h">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ColorPicker.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ColorPickerDelegate.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ComboBox.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ControlsFactory.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CreateNodesDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\DraggableDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditMatrixControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EditorBodyControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ErrorDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ExtendedDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\HelpDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorBase.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorColor.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeEditorHeightmap.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeTool.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanel.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelColor.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LandscapeToolsPanelHeightmap.h">
-      <Filter>SceneEditor\Landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LodNodePropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyList.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyCell.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyCellData.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneGraph.h">
-      <Filter>SceneEditor\Graphs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ScenePreviewControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SettingsDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\TextureTrianglesDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UIFilePreviewDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UIZoomControl.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UISliderWithText.h">
-      <Filter>SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\EntityPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\FogControl.h">
-      <Filter>SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
-      <Filter>SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
-      <Filter>SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Constants.h">
-      <Filter>SceneEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
