@@ -2575,7 +2575,7 @@
 					"-lMagickWand",
 				);
 				PREBINDING = NO;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 			};
 			name = Debug;
 		};
@@ -2613,7 +2613,7 @@
 					"-lMagickWand",
 				);
 				PREBINDING = NO;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 			};
 			name = Release;
 		};

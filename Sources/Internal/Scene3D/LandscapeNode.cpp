@@ -376,7 +376,7 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result, Vector3 
 	{
 		normal->x = A;
 		normal->y = B;
-		normal->x = C;
+		normal->z = C;
 		normal->Normalize();
 	}
 	return true;
