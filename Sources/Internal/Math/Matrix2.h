@@ -32,6 +32,7 @@
 
 #include <math.h>
 #include "Base/BaseTypes.h"
+#include "MathDefines.h"
 
 namespace DAVA
 {
@@ -47,6 +48,7 @@ struct Matrix2
 	union
 	{
 		float32 data[4];
+        float32 _data[2][2];
 		struct {
 			float32 _00, _01;
             float32 _10, _11;
@@ -72,6 +74,10 @@ struct Matrix2
 
 	inline Matrix2& operator += (const Matrix2 & arg);
 	inline Matrix2 operator +	(const Matrix2 & arg) const;
+    
+    //! Comparison operators
+	inline bool operator == (const Matrix2 & _m) const;
+	inline bool operator != (const Matrix2 & _m) const;
 };
 
 
@@ -147,7 +153,19 @@ inline Matrix2& Matrix2::operator -= (const Matrix2 & m)
 	return (*this = *this - m);
 }
 
-
+    //! Comparison operators
+inline bool Matrix2::operator == (const Matrix2 & _m) const
+{
+    for (uint8 k = 0; k < COUNT_OF(data); ++k)
+        if (!FLOAT_EQUAL(data[k], _m.data[k]))
+            return false;
+    return true;
+}
+    
+inline bool Matrix2::operator != (const Matrix2 & _m) const
+{
+    return ! Matrix2::operator==(_m);
+}
 
 
 };	// end of namespace DAVA

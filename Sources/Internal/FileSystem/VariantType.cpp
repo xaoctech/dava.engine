@@ -30,19 +30,45 @@
 #include "FileSystem/VariantType.h"
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/DynamicMemoryFile.h"
-
+#include "Math/MathConstants.h"
+#include "Math/Math2D.h"
+#include "Math/Vector.h"
+#include "Math/Matrix2.h"
+#include "Math/Matrix3.h"
+#include "Math/Matrix4.h"
+#include "Utils.h"
 
 namespace DAVA 
 {
+    const VariantType::PairTypeName VariantType::variantNamesMap[] =
+{
+    VariantType::PairTypeName(VariantType::TYPE_NONE,          TYPENAME_UNKNOWN),
+    VariantType::PairTypeName(VariantType::TYPE_BOOLEAN,       TYPENAME_BOOLEAN),
+    VariantType::PairTypeName(VariantType::TYPE_INT32,         TYPENAME_INT32),
+    VariantType::PairTypeName(VariantType::TYPE_FLOAT,         TYPENAME_FLOAT),
+    VariantType::PairTypeName(VariantType::TYPE_STRING,        TYPENAME_STRING),
+    VariantType::PairTypeName(VariantType::TYPE_WIDE_STRING,   TYPENAME_WIDESTRING),
+    VariantType::PairTypeName(VariantType::TYPE_BYTE_ARRAY,    TYPENAME_BYTE_ARRAY),
+    VariantType::PairTypeName(VariantType::TYPE_UINT32,        TYPENAME_UINT32),
+    VariantType::PairTypeName(VariantType::TYPE_KEYED_ARCHIVE, TYPENAME_KEYED_ARCHIVE),
+    VariantType::PairTypeName(VariantType::TYPE_INT64,         TYPENAME_INT64),
+    VariantType::PairTypeName(VariantType::TYPE_UINT64,        TYPENAME_UINT64),
+    VariantType::PairTypeName(VariantType::TYPE_VECTOR2,       TYPENAME_VECTOR2),
+    VariantType::PairTypeName(VariantType::TYPE_VECTOR3,       TYPENAME_VECTOR3),
+    VariantType::PairTypeName(VariantType::TYPE_VECTOR4,       TYPENAME_VECTOR4),
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX2,       TYPENAME_MATRIX2),
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX3,       TYPENAME_MATRIX3),
+    VariantType::PairTypeName(VariantType::TYPE_MATRIX4,       TYPENAME_MATRIX4)
+};
 
 VariantType::VariantType()
 :	type(TYPE_NONE)
 ,	int32Value(0)
-,   pointerValue(NULL)
+//,   pointerValue(NULL)
 {
 }
 
-VariantType::VariantType(const VariantType &var)
+VariantType::VariantType(const VariantType &var) : pointerValue(NULL)
 {
     type = var.type;
 	switch(type)
@@ -81,12 +107,52 @@ VariantType::VariantType(const VariantType &var)
 		{
             pointerValue = (void*)new Vector<uint8>(*((Vector<uint8>*)var.pointerValue));
 		}
-            break;	
-		case TYPE_KEYED_ARCHIVE:
+            break;
+        case TYPE_KEYED_ARCHIVE:
 		{
             pointerValue = new KeyedArchive(*((KeyedArchive*)var.pointerValue));
 		}
-            break;	
+            break;
+		case TYPE_INT64:
+		{
+            int64Value = new int64(var.AsInt64());
+		}
+            break;
+        case TYPE_UINT64:
+		{
+            uint64Value = new uint64(var.AsUInt64());
+		}
+            break;
+        case TYPE_VECTOR2:
+		{
+            vector2Value = new Vector2(var.AsVector2());
+		}
+            break;
+        case TYPE_VECTOR3:
+		{
+            vector3Value = new Vector3(var.AsVector3());
+		}
+            break;
+        case TYPE_VECTOR4:
+		{
+            vector4Value = new Vector4(var.AsVector4());
+		}
+            break;
+        case TYPE_MATRIX2:
+		{
+            matrix2Value = new Matrix2(var.AsMatrix2());
+		}
+            break;
+        case TYPE_MATRIX3:
+		{
+            matrix3Value = new Matrix3(var.AsMatrix3());
+		}
+            break;
+        case TYPE_MATRIX4:
+		{
+            matrix4Value = new Matrix4(var.AsMatrix4());
+		}
+            break;
 		default:
 		{
                 //DVASSERT(0 && "Something went wrong with VariantType");
@@ -131,13 +197,13 @@ void VariantType::SetString(const String & value)
 {
     ReleasePointer();
 	type = TYPE_STRING;
-	stringValue = value;
+	stringValue = new String(value);
 }
 void VariantType::SetWideString(const WideString & value)
 {
     ReleasePointer();
 	type = TYPE_WIDE_STRING;
-	wideStringValue = value;
+	wideStringValue = new WideString(value);
 }
 
 void VariantType::SetByteArray(const uint8 *array, int32 arraySizeInBytes)
@@ -156,7 +222,60 @@ void VariantType::SetKeyedArchive(KeyedArchive *archive)
     pointerValue = new KeyedArchive(*archive);
 }
     
-	
+void VariantType::SetInt64(const int64 & value)
+{
+    ReleasePointer();
+    type = TYPE_INT64;
+    int64Value = new int64(value);
+}
+
+void VariantType::SetUInt64(const uint64 & value)
+{
+    ReleasePointer();
+    type = TYPE_UINT64;
+    uint64Value = new uint64(value);
+}
+
+void VariantType::SetVector2(const Vector2 & value)
+{
+    ReleasePointer();
+    type = TYPE_VECTOR2;
+    vector2Value = new Vector2(value);
+}
+
+void VariantType::SetVector3(const Vector3 & value)
+{
+    ReleasePointer();
+    type = TYPE_VECTOR3;
+    vector3Value = new Vector3(value);
+}
+
+void VariantType::SetVector4(const Vector4 & value)
+{
+    ReleasePointer();
+    type = TYPE_VECTOR4;
+    vector4Value = new Vector4(value);
+}
+
+void VariantType::SetMatrix2(const Matrix2 & value)
+{
+    ReleasePointer();
+    type = TYPE_MATRIX2;
+    matrix2Value = new Matrix2(value);
+}
+void VariantType::SetMatrix3(const Matrix3 & value)
+{
+    ReleasePointer();
+    type = TYPE_MATRIX3;
+    matrix3Value = new Matrix3(value);
+}
+void VariantType::SetMatrix4(const Matrix4 & value)
+{
+    ReleasePointer();
+    type = TYPE_MATRIX4;
+    matrix4Value = new Matrix4(value);
+}
+    
 bool VariantType::AsBool() const
 {
 	DVASSERT(type == TYPE_BOOLEAN);
@@ -184,13 +303,13 @@ float32  VariantType::AsFloat() const
 const String &  VariantType::AsString() const
 {
 	DVASSERT(type == TYPE_STRING);
-	return stringValue;
+	return *stringValue;
 }
 
 const WideString & VariantType::AsWideString() const
 {
 	DVASSERT(type == TYPE_WIDE_STRING);
-	return wideStringValue;
+	return *wideStringValue;
 }
 	
 const uint8 *VariantType::AsByteArray() const
@@ -210,7 +329,55 @@ KeyedArchive *VariantType::AsKeyedArchive() const
     DVASSERT(type == TYPE_KEYED_ARCHIVE);
     return (KeyedArchive*)pointerValue;
 }
-	
+    
+int64 VariantType::AsInt64() const
+{
+    DVASSERT(type == TYPE_INT64);
+    return *int64Value;
+}
+
+uint64 VariantType::AsUInt64() const
+{
+    DVASSERT(type == TYPE_UINT64);
+    return *uint64Value;
+}
+    
+const Vector2 & VariantType::AsVector2() const
+{
+    DVASSERT(type == TYPE_VECTOR2);
+    return *vector2Value;
+}
+
+const Vector3 & VariantType::AsVector3() const
+{
+    DVASSERT(type == TYPE_VECTOR3);
+    return *vector3Value;
+}
+
+const Vector4 & VariantType::AsVector4() const
+{
+    DVASSERT(type == TYPE_VECTOR4);
+    return *vector4Value;
+}
+
+const Matrix2 & VariantType::AsMatrix2() const
+{
+    DVASSERT(type == TYPE_MATRIX2);
+    return *matrix2Value;
+}
+    
+const Matrix3 & VariantType::AsMatrix3() const
+{
+    DVASSERT(type == TYPE_MATRIX3);
+    return *matrix3Value;
+}
+    
+const Matrix4 & VariantType::AsMatrix4() const
+{
+    DVASSERT(type == TYPE_MATRIX4);
+    return *matrix4Value;
+}
+    
 bool VariantType::Write(File * fp) const
 {
 	DVASSERT(type != TYPE_NONE)
@@ -236,7 +403,7 @@ bool VariantType::Write(File * fp) const
         written = fp->Write(&uint32Value, 4);
         if (written != 4)return false;
     }
-    break;	
+        break;	
 	case TYPE_FLOAT:
 		{
 			written = fp->Write(&floatValue, 4);
@@ -245,21 +412,21 @@ bool VariantType::Write(File * fp) const
 		break;	
 	case TYPE_STRING:
 		{
-			int32 len = (int32)stringValue.length();
+			int32 len = (int32)stringValue->length();
 			written = fp->Write(&len, 4);
 			if (written != 4)return false;
 			
-			written = fp->Write(stringValue.c_str(), len);
+			written = fp->Write(stringValue->c_str(), len);
 			if (written != len)return false;
 		}
 		break;	
 	case TYPE_WIDE_STRING:
 		{
-			int32 len = (int32)wideStringValue.length();
+			int32 len = (int32)wideStringValue->length();
 			written = fp->Write(&len, 4);
 			if (written != 4)return false;
 			
-			written = fp->Write(wideStringValue.c_str(), len * sizeof(wchar_t));
+			written = fp->Write(wideStringValue->c_str(), len * sizeof(wchar_t));
 			if (written != len * (int)sizeof(wchar_t))return false;
 		}
 		break;
@@ -285,7 +452,56 @@ bool VariantType::Write(File * fp) const
             SafeRelease(pF);
 			if (written != len)return false;
 		}
-        break;	
+        break;
+    case TYPE_INT64:
+		{
+            written = fp->Write(int64Value, sizeof(int64));
+            if (written != sizeof(int64))return false;
+		}
+            break;
+    case TYPE_UINT64:
+		{
+            written = fp->Write(uint64Value, sizeof(uint64));
+            if (written != sizeof(uint64))return false;
+		}
+            break;
+    case TYPE_VECTOR2:
+		{
+            written = fp->Write(vector2Value, sizeof(Vector2));
+            if (written != sizeof(Vector2))return false;
+		}
+            break;
+    case TYPE_VECTOR3:
+		{
+            written = fp->Write(vector3Value, sizeof(Vector3));
+            if (written != sizeof(Vector3))return false;
+		}
+            break;
+    case TYPE_VECTOR4:
+		{
+            written = fp->Write(vector4Value, sizeof(Vector4));
+            if (written != sizeof(Vector4))return false;
+		}
+            break;
+    case TYPE_MATRIX2:
+		{
+            written = fp->Write(matrix2Value, sizeof(Matrix2));
+            if (written != sizeof(Matrix2))return false;
+		}
+            break;
+    case TYPE_MATRIX3:
+		{
+            written = fp->Write(matrix3Value, sizeof(Matrix3));
+            if (written != sizeof(Matrix3))return false;
+		}
+            break;
+    case TYPE_MATRIX4:
+		{
+            written = fp->Write(matrix4Value, sizeof(Matrix4));
+            if (written != sizeof(Matrix4))return false;
+		}
+            break;
+            
 	}
 	return true;
 }
@@ -330,7 +546,7 @@ bool VariantType::Read(File * fp)
 			char *buf = new char[len + 1];
 			read = fp->Read(buf, len);
 			buf[len] = 0;
-			stringValue = buf;
+			stringValue = new String(buf);
 			delete [] buf;
 			if (read != len)return false;
 			
@@ -342,13 +558,14 @@ bool VariantType::Read(File * fp)
 			read = fp->Read(&len, 4);
 			if (read != 4)return false;
 			
-			wideStringValue.resize(len);
+            wideStringValue = new WideString();
+			wideStringValue->resize(len);
 			for (int k = 0; k < len; ++k)
 			{
 				wchar_t c;
 				read = fp->Read(&c, sizeof(wchar_t));
 				if (read != sizeof(wchar_t))return false;
-				wideStringValue[k] = c;
+				(*wideStringValue)[k] = c;
 			}
 		}
         break;
@@ -379,10 +596,66 @@ bool VariantType::Read(File * fp)
             pointerValue = new KeyedArchive();
             ((KeyedArchive*)pointerValue)->Load(pF);
             SafeRelease(pF);
-            SafeDelete(pData);
-            
+            SafeDeleteArray(pData);
 		}
-        break;	
+        break;
+        case TYPE_INT64:
+		{
+            int64Value = new int64;
+            read = fp->Read(int64Value, sizeof(int64));
+            if (read != sizeof(int64))return false;
+		}
+            break;
+        case TYPE_UINT64:
+		{
+            uint64Value = new uint64;
+            read = fp->Read(uint64Value, sizeof(uint64));
+            if (read != sizeof(uint64))return false;
+		}
+            break;
+        case TYPE_VECTOR2:
+		{
+            vector2Value = new Vector2;
+            read = fp->Read(vector2Value, sizeof(Vector2));
+            if (read != sizeof(Vector2))return false;
+		}
+            break;
+        case TYPE_VECTOR3:
+		{
+            vector3Value = new Vector3;
+            read = fp->Read(vector3Value, sizeof(Vector3));
+            if (read != sizeof(Vector3))return false;
+		}
+            break;
+        case TYPE_VECTOR4:
+		{
+            vector4Value = new Vector4;
+            read = fp->Read(vector4Value, sizeof(Vector4));
+            if (read != sizeof(Vector4))return false;
+		}
+            break;
+        case TYPE_MATRIX2:
+		{
+            matrix2Value = new Matrix2;
+            read = fp->Read(matrix2Value, sizeof(Matrix2));
+            if (read != sizeof(Matrix2))return false;
+		}
+            break;
+        case TYPE_MATRIX3:
+		{
+            matrix3Value = new Matrix3;
+            read = fp->Read(matrix3Value, sizeof(Matrix3));
+            if (read != sizeof(Matrix3))return false;
+		}
+            break;
+        case TYPE_MATRIX4:
+		{
+            matrix4Value = new Matrix4;
+            read = fp->Read(matrix4Value, sizeof(Matrix4));
+            if (read != sizeof(Matrix4))return false;
+		}
+            break;
+
 		default:
 		{
 			//DVASSERT(0 && "Something went wrong with VariantType");
@@ -408,7 +681,62 @@ void VariantType::ReleasePointer()
                 ((KeyedArchive *)pointerValue)->Release();
             }
                 break;
+            case TYPE_INT64:
+            {
+                delete int64Value;
+            }
+                break;
+            case TYPE_UINT64:
+            {
+                delete uint64Value;
+            }
+                break;
+            case TYPE_VECTOR2:
+            {
+                delete vector2Value;
+            }
+                break;
+            case TYPE_VECTOR3:
+            {
+                delete vector3Value;
+            }
+                break;
+            case TYPE_VECTOR4:
+            {
+                delete vector4Value;
+            }
+                break;
+            case TYPE_MATRIX2:
+            {
+                delete matrix2Value;
+            }
+                break;
+            case TYPE_MATRIX3:
+            {
+                delete matrix3Value;
+            }
+                break;
+            case TYPE_MATRIX4:
+            {
+                delete matrix4Value;
+            }
+                break;
+
+            case TYPE_STRING:
+            {
+                delete stringValue;
+            }
+                break;
+
+            case TYPE_WIDE_STRING:
+            {
+                delete wideStringValue;
+            }
+                break;
         }
+        
+        // It is enough to set only pointerValue to NULL - all other pointers are in union, so
+        // actually points to the same address and thus will be set to NULL too.
         pointerValue = NULL;
     }
 }
@@ -495,6 +823,43 @@ bool VariantType::operator==(const VariantType& other) const
                     }
                 }
                 break;
+            case TYPE_INT64:
+                isEqual = (AsInt64() == other.AsInt64());
+                break;
+            case TYPE_UINT64:
+                isEqual = (AsUInt64()== other.AsUInt64());
+                break;
+            case TYPE_VECTOR2:
+            {
+                isEqual = ( AsVector2() == other.AsVector2());
+            }
+                break;
+            case TYPE_VECTOR3:
+            {
+                isEqual = ( AsVector3() == other.AsVector3());
+            }
+                break;
+            case TYPE_VECTOR4:
+            {
+                isEqual = ( AsVector4() == other.AsVector4());
+            }
+                break;
+            case TYPE_MATRIX2:
+            {
+                isEqual = ( AsMatrix2() == other.AsMatrix2());
+            }
+                break;
+            case TYPE_MATRIX3:
+            {
+                isEqual = ( AsMatrix3() == other.AsMatrix3());
+            }
+                break;
+            case TYPE_MATRIX4:
+            {
+                isEqual = ( AsMatrix4() == other.AsMatrix4());
+            }
+                break;
+                
         }
     }
     return isEqual;
