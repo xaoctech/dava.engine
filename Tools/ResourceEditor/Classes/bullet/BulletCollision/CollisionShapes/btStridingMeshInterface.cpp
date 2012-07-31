@@ -15,7 +15,6 @@ subject to the following restrictions:
 
 #include "btStridingMeshInterface.h"
 #include "LinearMath/btSerializer.h"
-#include <stdio.h>
 
 btStridingMeshInterface::~btStridingMeshInterface()
 {
@@ -254,8 +253,10 @@ const char*	btStridingMeshInterface::serialize(void* dataBuffer, btSerializer* s
 			memPtr->m_indices16 = 0;
 			memPtr->m_indices32 = 0;
 			memPtr->m_3indices16 = 0;
+			memPtr->m_3indices8 = 0;
 			memPtr->m_vertices3f = 0;
 			memPtr->m_vertices3d = 0;
+
 
 			switch (gfxindextype)
 			{

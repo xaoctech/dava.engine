@@ -19,8 +19,6 @@ subject to the following restrictions:
 #include "LinearMath/btQuaternion.h"
 #include "BulletCollision/CollisionShapes/btStridingMeshInterface.h"
 
-#include <stdio.h>
-
 
 btConvexTriangleMeshShape ::btConvexTriangleMeshShape (btStridingMeshInterface* meshInterface, bool calcAabb)
 : btPolyhedralConvexAabbCachingShape(), m_stridingMesh(meshInterface)
@@ -53,7 +51,6 @@ public:
 
 	virtual void internalProcessTriangleIndex(btVector3* triangle,int partId,int  triangleIndex)
 	{
-
 		(void)triangleIndex;
 		(void)partId;
 
