@@ -17,15 +17,9 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
 {
     new CommandsManager();
     
-    for(int32 i = 0; i < ResourceEditor::NODE_COUNT; ++i)
-    {
-        nodeActions[i] = NULL;
-    }
-    
-    for(int32 i = 0; i < ResourceEditor::VIEWPORT_COUNT; ++i)
-    {
-        viewportActions[i] = NULL;
-    }
+    ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
+    ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
+    ClearActions(ResourceEditor::DOCK_COUNT, dockActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -41,20 +35,21 @@ GUIActionHandler::~GUIActionHandler()
         SafeDelete(resentSceneActions[i]);
     }
 
-    
-    for(int32 i = 0; i < ResourceEditor::NODE_COUNT; ++i)
-    {
-        nodeActions[i] = NULL;
-    }
-    
-    for(int32 i = 0; i < ResourceEditor::VIEWPORT_COUNT; ++i)
-    {
-        viewportActions[i] = NULL;
-    }
-
+    ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
+    ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
+    ClearActions(ResourceEditor::DOCK_COUNT, dockActions);
     
     CommandsManager::Instance()->Release();
 }
+
+void GUIActionHandler::ClearActions(int32 count, QAction **actions)
+{
+    for(int32 i = 0; i < count; ++i)
+    {
+        actions[i] = NULL;
+    }
+}
+
 
 
 void GUIActionHandler::NewScene()
@@ -247,11 +242,36 @@ void GUIActionHandler::RegisterViewportActions(int32 count, ...)
     va_end(vl);
 }
 
+void GUIActionHandler::RegisterDockActions(int32 count, ...)
+{
+    DVASSERT((ResourceEditor::DOCK_COUNT == count) && "Wrong count of actions");
+    
+    va_list vl;
+    va_start(vl, count);
+    
+    RegisterActions(dockActions, count, vl);
+    
+    va_end(vl);
+}
+
+
 void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
 {
     for(int32 i = 0; i < count; ++i)
     {
         actions[i] = va_arg(vl, QAction *);
+    }
+}
+
+
+void GUIActionHandler::RestoreViews()
+{
+    for(int32 i = 0; i < ResourceEditor::DOCK_COUNT; ++i)
+    {
+        if(dockActions[i] && !dockActions[i]->isChecked())
+        {
+            dockActions[i]->trigger();
+        }
     }
 }
 

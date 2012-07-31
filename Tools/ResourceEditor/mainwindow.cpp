@@ -6,8 +6,6 @@
 #include "Classes/Qt/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 
-#include <QResizeEvent>
-
 
 QtMainWindow::QtMainWindow(QWidget *parent) 
     :   QMainWindow(parent)
@@ -59,6 +57,25 @@ void QtMainWindow::SetupMainMenu()
     actionHandler->SetResentMenu(ui->menuResentScenes);
     connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ResentSceneTriggered(QAction *)));
 
+    //View
+    connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
+    QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
+    QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
+    QAction *actionEntities = ui->dockEntities->toggleViewAction();
+    QAction *actionProperties = ui->dockProperties->toggleViewAction();
+    QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
+    ui->menuView->insertAction(ui->actionRestoreViews, actionLibrary);
+    ui->menuView->insertAction(actionLibrary, actionProperties);
+    ui->menuView->insertAction(actionProperties, actionEntities);
+    ui->menuView->insertAction(actionEntities, actionDataGraph);
+    ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
+    ui->menuView->insertSeparator(ui->actionRestoreViews);
+    ui->menuView->insertSeparator(actionProperties);
+    actionHandler->RegisterDockActions(ResourceEditor::DOCK_COUNT,
+                                       actionSceneGraph, actionDataGraph, actionEntities,
+                                       actionProperties, actionLibrary);
+    
+    
     //CreateNode
     actionHandler->RegisterNodeActions(ResourceEditor::NODE_COUNT,
                                        ui->actionLandscape,
@@ -100,8 +117,3 @@ void QtMainWindow::SetupProjectPath()
     }
 }
 
-void QtMainWindow::resizeEvent(QResizeEvent *e)
-{	
-	QMainWindow::resizeEvent(e);
-	ui->splitter->resize(e->size().width(), e->size().height() - ui->menuBar->size().height());
-}
