@@ -239,6 +239,7 @@
 		5C5D9A9915B0230D0058B43A /* Utils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D998E15B0230D0058B43A /* Utils.cpp */; };
 		5C5D9A9A15B0230D0058B43A /* UtilsMacOS.mm in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D999015B0230D0058B43A /* UtilsMacOS.mm */; };
 		5C5D9AA115B0272B0058B43A /* libBox2D_MacOS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB117415AE0749008F64BB /* libBox2D_MacOS.a */; };
+		5CBF71B415C6DF5E00CD1736 /* RenderOptions.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */; };
 		5CFB114E15AE05F2008F64BB /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB114D15AE05F2008F64BB /* Cocoa.framework */; };
 		5CFB115015AE05F8008F64BB /* ApplicationServices.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB114F15AE05F8008F64BB /* ApplicationServices.framework */; };
 		5CFB115215AE05FE008F64BB /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB115115AE05FE008F64BB /* OpenAL.framework */; };
@@ -769,6 +770,8 @@
 		5C5D998E15B0230D0058B43A /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
 		5C5D998F15B0230D0058B43A /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		5C5D999015B0230D0058B43A /* UtilsMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMacOS.mm; sourceTree = "<group>"; };
+		5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderOptions.cpp; sourceTree = "<group>"; };
+		5CBF71B315C6DF5E00CD1736 /* RenderOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderOptions.h; sourceTree = "<group>"; };
 		5CFB113C15AE0100008F64BB /* libFrameworkQt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkQt.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CFB114D15AE05F2008F64BB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		5CFB114F15AE05F8008F64BB /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -1227,6 +1230,8 @@
 		5C5D987215B0230D0058B43A /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				5CBF71B215C6DF5E00CD1736 /* RenderOptions.cpp */,
+				5CBF71B315C6DF5E00CD1736 /* RenderOptions.h */,
 				5C5D987315B0230D0058B43A /* 2D */,
 				5C5D988115B0230D0058B43A /* 3D */,
 				5C5D988A15B0230D0058B43A /* Cursor.h */,
@@ -1881,6 +1886,7 @@
 				5C5D9A9815B0230D0058B43A /* UTF8Utils.cpp in Build Sources */,
 				5C5D9A9915B0230D0058B43A /* Utils.cpp in Build Sources */,
 				5C5D9A9A15B0230D0058B43A /* UtilsMacOS.mm in Build Sources */,
+				5CBF71B415C6DF5E00CD1736 /* RenderOptions.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

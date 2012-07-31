@@ -158,6 +158,8 @@ void LibraryControl::OnConvertPressed(DAVA::BaseObject *object, void *userData, 
     SceneNode *rootNode = scene->GetRootNode(path);
     scene->AddNode(rootNode);
 
+    scene->BakeTransforms();
+
     // Export to *.sc2    
     path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
     SceneFileV2 * file = new SceneFileV2();

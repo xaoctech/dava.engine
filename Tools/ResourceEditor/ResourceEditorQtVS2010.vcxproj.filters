@@ -19,14 +19,6 @@
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{4f2db588-397c-479c-9871-d530187be966}</UniqueIdentifier>
     </Filter>
@@ -72,14 +64,11 @@
     <Filter Include="Sources\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\Graph">
+      <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ui_davaglwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ui_mainwindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp">
       <Filter>Sources\bullet</Filter>
     </ClCompile>
@@ -961,6 +950,15 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\GUIState.h">
       <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GraphItem.h">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GraphModel.h">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GraphTreeView.h">
+      <Filter>Sources\Qt\Graph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1913,12 +1911,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="moc_davaglwidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="moc_mainwindow.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClCompile>
@@ -2138,9 +2130,6 @@
     <ClCompile Include="Classes\Qt\GUIActionHandler.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\moc_GUIActionHandler.cpp">
-      <Filter>Sources\Qt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
@@ -2155,6 +2144,15 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\GUIState.cpp">
       <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GraphItem.cpp">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GraphModel.cpp">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GraphTreeView.cpp">
+      <Filter>Sources\Qt\Graph</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

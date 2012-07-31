@@ -411,9 +411,11 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
     }
 }
 
-void SceneValidator::SetPathForChecking(const String &pathname)
+String SceneValidator::SetPathForChecking(const String &pathname)
 {
+    String oldPath = pathForChecking;
     pathForChecking = pathname;
+    return pathForChecking;
 }
 
 

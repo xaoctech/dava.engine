@@ -392,6 +392,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateBlock.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
@@ -675,6 +676,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerFactory.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderResource.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderStateBlock.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Shader.cpp" />

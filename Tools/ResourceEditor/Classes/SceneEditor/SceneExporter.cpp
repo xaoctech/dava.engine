@@ -84,7 +84,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     //Export scene data
     RemoveEditorNodes(scene);
 
-    SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
+    String oldPath = SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
 	SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
@@ -98,6 +98,8 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     outFile->EnableDebugLog(false);
     outFile->SaveScene(dataFolder + fileName, scene);
     SafeRelease(outFile);
+    
+    SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
 
 

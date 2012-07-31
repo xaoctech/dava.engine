@@ -9,13 +9,13 @@ class MainWindow;
 }
 
 class GUIActionHandler;
-class MainWindow : public QMainWindow
+class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+   explicit QtMainWindow(QWidget *parent = 0);
+   ~QtMainWindow();
     
 private:
     void SetupMainMenu();
