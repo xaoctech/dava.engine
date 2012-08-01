@@ -26,6 +26,10 @@ public:
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
 protected:
+    
+    GraphItem * ParentItem(const QModelIndex &parent = QModelIndex()) const;
+    
+protected:
 
     GraphItem *rootItem;
 };

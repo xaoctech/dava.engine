@@ -29,6 +29,7 @@ void SceneDataManager::ActivateScene(DAVA::Scene *scene)
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
+    currentScene->RebuildSceneGraph();
     sceneGraphView->setModel(currentScene->GetSceneGraph());
 }
 

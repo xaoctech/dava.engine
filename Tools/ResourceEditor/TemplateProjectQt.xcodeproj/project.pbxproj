@@ -2290,7 +2290,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = DAVA_DEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DAVA_DEBUG,
+					DAVA_QT,
+				);
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2399,6 +2402,7 @@
 				FRAMEWORK_SEARCH_PATHS = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = DAVA_QT;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",

@@ -30,7 +30,14 @@ void SceneData::SetScene(DAVA::Scene *newScene)
     
     scene = SafeRetain(newScene);
     sceneGraphModel = new SceneGraphModel(NULL);
-    sceneGraphModel->SetScene(scene);
+    RebuildSceneGraph();
+}
+
+void SceneData::RebuildSceneGraph()
+{
+    Scene *sceneForRebuild = SafeRetain(scene);
+    sceneGraphModel->SetScene(sceneForRebuild);
+    SafeRelease(sceneForRebuild);
 }
 
 
