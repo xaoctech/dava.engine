@@ -23,23 +23,29 @@ void SceneGraphModel::SetScene(DAVA::Scene *newScene)
 	rootItem = new SceneGraphItem();
 	rootItem->SetUserData(scene);
     
-    int32 count = scene->GetChildrenCount();
-    for(int32 i = 0; i < count; ++i)
+    if(!scene->GetSolid())
     {
-        AddNodeToTree(rootItem, scene->GetChild(i));
+        int32 count = scene->GetChildrenCount();
+        for(int32 i = 0; i < count; ++i)
+        {
+            AddNodeToTree(rootItem, scene->GetChild(i));
+        }
     }
 }
 
 void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 {
-    SceneGraphItem *graphItem = new SceneGraphItem();
+    SceneGraphItem *graphItem = new SceneGraphItem(parent);
 	graphItem->SetUserData(node);
     parent->AppendChild(graphItem);
     
-    int32 count = node->GetChildrenCount();
-    for(int32 i = 0; i < count; ++i)
+    if(!node->GetSolid())
     {
-        AddNodeToTree(graphItem, node->GetChild(i));
+        int32 count = node->GetChildrenCount();
+        for(int32 i = 0; i < count; ++i)
+        {
+            AddNodeToTree(graphItem, node->GetChild(i));
+        }
     }
 }
 

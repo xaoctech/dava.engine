@@ -11,6 +11,8 @@ public:
     virtual ~SceneData();
 
     SceneGraphModel *GetSceneGraph();
+    void RebuildSceneGraph();
+    
     
     void SetScene(DAVA::Scene *newScene);
     DAVA::Scene * GetScene();

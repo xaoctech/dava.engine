@@ -478,7 +478,7 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     AddControl(c->headerButton);    
     bodies.push_back(c);
     
-#if defined(QT_VERSION)     //TODO: use this code under Qt only
+#if defined(DAVA_QT)     //TODO: use this code under Qt only
     if(SceneDataManager::Instance())
     {
         SceneDataManager::Instance()->RegisterNewScene(c->bodyControl->GetScene());
@@ -525,7 +525,7 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
     }
     
     
-#if defined(QT_VERSION)     //TODO: use this code under Qt only
+#if defined(DAVA_QT)     //TODO: use this code under Qt only
     if(SceneDataManager::Instance())
     {
         SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
@@ -557,7 +557,7 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
             SafeRelease(bodies[i]->closeButton);
             SafeRelease(bodies[i]->bodyControl);
             
-#if defined(QT_VERSION)     //TODO: use this code under Qt only
+#if defined(DAVA_QT)     //TODO: use this code under Qt only
             if(SceneDataManager::Instance())
             {
                 SceneDataManager::Instance()->ReleaseScene(bodies[i]->bodyControl->GetScene());
