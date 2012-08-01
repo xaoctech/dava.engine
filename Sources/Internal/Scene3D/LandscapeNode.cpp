@@ -115,7 +115,7 @@ void LandscapeNode::InitShaders()
     
     tileMaskShader = new Shader();
     tileMaskShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask.shader");
-    if(isFogEnabled)
+	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         tileMaskShader->SetDefineList("VERTEX_FOG");   
     }
@@ -135,7 +135,7 @@ void LandscapeNode::InitShaders()
     uniformTextureTiling[TEXTURE_TILE2] = tileMaskShader->FindUniformLocationByName("texture2Tiling");
     uniformTextureTiling[TEXTURE_TILE3] = tileMaskShader->FindUniformLocationByName("texture3Tiling");
     
-    if(isFogEnabled)
+	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         uniformFogColor = tileMaskShader->FindUniformLocationByName("fogColor");
         uniformFogDensity = tileMaskShader->FindUniformLocationByName("fogDensity");   
@@ -143,14 +143,14 @@ void LandscapeNode::InitShaders()
     
     fullTiledShader = new Shader();
     fullTiledShader->LoadFromYaml("~res:/Shaders/Landscape/fulltiled_texture.shader");
-    if(isFogEnabled)
+	if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         fullTiledShader->SetDefineList("VERTEX_FOG");   
     }
     
     fullTiledShader->Recompile();
     
-    if(isFogEnabled)
+    if(isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
     {
         uniformFogColorFT = fullTiledShader->FindUniformLocationByName("fogColor");
         uniformFogDensityFT = fullTiledShader->FindUniformLocationByName("fogDensity");   
@@ -376,7 +376,7 @@ bool LandscapeNode::PlacePoint(const Vector3 & point, Vector3 & result, Vector3 
 	{
 		normal->x = A;
 		normal->y = B;
-		normal->x = C;
+		normal->z = C;
 		normal->Normalize();
 	}
 	return true;
@@ -1088,6 +1088,17 @@ void LandscapeNode::Draw()
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::LANDSCAPE_DRAW))
 	{
 		return;
+	}
+
+	//Dizz: uniformFogDensity != -1 is a check if fog is inabled in shader
+	if(isFogEnabled && (uniformFogDensity != -1) && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+	{
+		InitShaders();
+	}
+
+	if(isFogEnabled && (uniformFogDensity == -1) && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+	{
+		InitShaders();
 	}
     
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))

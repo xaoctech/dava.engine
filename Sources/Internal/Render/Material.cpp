@@ -273,7 +273,7 @@ void Material::RebuildShader()
     //if (isDistanceAttenuation)
     //shaderCombileCombo = shaderCombileCombo + ";DISTANCE_ATTENUATION";
     
-    if (isFogEnabled)
+    if (isFogEnabled && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
         shaderCombileCombo = shaderCombileCombo + ";VERTEX_FOG";
 
     // Get shader if combo unavailable compile it
@@ -615,6 +615,17 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
+	}
+
+	//Dizz: uniformFogDensity != -1 is a check if fog is inabled in shader
+	if(isFogEnabled && (uniformFogDensity != -1) && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+	{
+		RebuildShader();
+	}
+
+	if(isFogEnabled && (uniformFogDensity == -1) && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
+	{
+		RebuildShader();
 	}
 
 	RenderManager::Instance()->SetRenderData(group->renderDataObject);

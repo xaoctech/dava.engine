@@ -36,10 +36,11 @@ ImposterManager::ImposterManager(Scene * _scene)
 :	scene(_scene)
 {
 	SharedFBO::Setup setup;
-	setup.size = Vector2(2048, 1024);
+	setup.size = Vector2(2048, 2048);
 	setup.pixelFormat = FORMAT_RGBA4444;
 	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-	setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(128.f, 128.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(256.f, 256.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(32/*64*/, Vector2(128.f, 128.f)));
 	setup.blocks.push_back(std::pair<int32, Vector2>(256, Vector2(64.f, 64.f)));
 
 	sharedFBO = new SharedFBO(&setup);
