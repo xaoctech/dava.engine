@@ -17,14 +17,17 @@ public:
     
 protected:
 
-	void resizeEvent(QResizeEvent *);
-    void paintEvent(QPaintEvent *);
+	virtual void resizeEvent(QResizeEvent *);
+    virtual void paintEvent(QPaintEvent *);
 
-	void showEvent(QShowEvent *);
-	void hideEvent(QHideEvent *);
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
 
-	void closeEvent(QCloseEvent *);
+	virtual void closeEvent(QCloseEvent *);
 
+    virtual void moveEvent(QMoveEvent *);
+
+    
 #if defined(Q_WS_WIN)
 	virtual bool winEvent(MSG *message, long *result);
 #endif //#if defined(Q_WS_WIN)

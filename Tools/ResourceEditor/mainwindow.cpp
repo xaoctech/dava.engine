@@ -5,14 +5,14 @@
 #include "Classes/Qt/GUIActionHandler.h"
 #include "Classes/Qt/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
-
+#include "Classes/Qt/SceneDataManager.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent) 
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-	ui->davaGlWidget->setFocus();
+	ui->centralWidget->setFocus();
     
     if(DAVA::Core::Instance())
     {
@@ -23,13 +23,17 @@ QtMainWindow::QtMainWindow(QWidget *parent)
             this->setWindowTitle(titleStr);
         }
     }
-
-    new GUIState();
     
+    //TODO: move code to gamecore at full qt version
+    new SceneDataManager();
+    
+    new GUIState();
+    SetupProjectPath();
+
     actionHandler = new GUIActionHandler(this);
     SetupMainMenu();
     
-    SetupProjectPath();
+    SetupDockWidgets();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -37,6 +41,9 @@ QtMainWindow::~QtMainWindow()
     DAVA::SafeDelete(actionHandler);
     
     GUIState::Instance()->Release();
+    
+    //TODO: move code to gamecore at full qt version
+    SceneDataManager::Instance()->Release();
     
     delete ui;
 }
@@ -115,5 +122,10 @@ void QtMainWindow::SetupProjectPath()
         actionHandler->OpenProject();
         projectPath = EditorSettings::Instance()->GetProjetcPath();
     }
+}
+
+void QtMainWindow::SetupDockWidgets()
+{
+    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
 }
 
