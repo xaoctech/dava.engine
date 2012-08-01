@@ -294,9 +294,9 @@ bool FileSystem::DeleteDirectory(const String & path, bool isRecursive)
 			{
 				if(isRecursive)
 				{
-					Logger::Debug("- try to delete directory: %s / %s", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str());
+//					Logger::Debug("- try to delete directory: %s / %s", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str());
 					bool success = DeleteDirectory(fileList->GetPathname(i), isRecursive);
-					Logger::Debug("- delete directory: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
+//					Logger::Debug("- delete directory: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
 					if (!success)return false;
 				}
 			}
@@ -304,7 +304,7 @@ bool FileSystem::DeleteDirectory(const String & path, bool isRecursive)
 		else 
 		{
 			bool success = DeleteFile(fileList->GetPathname(i));
-			Logger::Debug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
+//			Logger::Debug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));
 			if(!success)return false;
 		}
 	}
