@@ -83,6 +83,7 @@ protected:
     bool createNodeProperties;
     
     UIButton *btnPlus;
+	UIButton *btnPlusCollision;
     UIButton *btnMinus;
 
     void OnSetDistancesForLodNodes(BaseObject * object, void * userData, void * callerData);
@@ -90,6 +91,7 @@ protected:
     
     void OnPlus(BaseObject * object, void * userData, void * callerData);
     void OnMinus(BaseObject * object, void * userData, void * callerData);
+	void OnPlusCollision(BaseObject * object, void * userData, void * callerData);
     
     CreatePropertyControl *propControl;
     SceneNode *currentSceneNode;
