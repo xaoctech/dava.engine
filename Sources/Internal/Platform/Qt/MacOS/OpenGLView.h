@@ -45,6 +45,8 @@ using namespace DAVA;
 	bool isFirstDraw;
 //	DAVA::Cursor * activeCursor;
 	bool willQuit;
+    
+    Vector2 windowOffset;
 }
 
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
@@ -54,6 +56,7 @@ using namespace DAVA;
 
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;
+- (void) setWindowOffset: (const Vector2 &) offset;
 
 @end
 

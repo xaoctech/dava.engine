@@ -94,6 +94,8 @@
 	
     willQuit = false;
     
+    windowOffset = Vector2(0.0f, 0.0f);
+    
 	return self;	
 }
 
@@ -152,6 +154,13 @@
 	sizeChanged = YES;
 	[super reshape];
 }
+
+
+- (void) setWindowOffset: (const Vector2 &) offset
+{
+    windowOffset = offset;
+}
+
 
 - (void)userFireTimer: (id)timer
 {
@@ -251,8 +260,28 @@
 	return YES;
 }
 
+
+
 static Vector<DAVA::UIEvent> activeTouches;
-void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outTouches)
+
+void NSEventToUIEvent(NSEvent *nsEvent, DAVA::UIEvent &uiEvent, const Vector2 &windowOffset)
+{
+    NSPoint p = [nsEvent locationInWindow];
+    NSWindow *window = [nsEvent window];
+    NSRect r = [window contentRectForFrameRect:[window frame]];
+    CGFloat height = r.size.height;
+    
+    Vector2 pointOnScreen;
+    pointOnScreen.x = p.x;
+    pointOnScreen.y = height - p.y;
+    
+    uiEvent.physPoint = (pointOnScreen - windowOffset);
+    
+    uiEvent.timestamp = nsEvent.timestamp;
+    uiEvent.tapCount = nsEvent.clickCount;
+}
+
+void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outTouches, const Vector2 &windowOffset)
 {
 	int button = 0;
 	if(curEvent.type == NSLeftMouseDown || curEvent.type == NSLeftMouseUp || curEvent.type == NSLeftMouseDragged || curEvent.type == NSMouseMoved)
@@ -290,18 +319,21 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
 		{
-				NSPoint p = [curEvent locationInWindow];
-            NSWindow *window = [curEvent window];
-            NSRect r = [window contentRectForFrameRect:[window frame]];
-            CGFloat height = r.size.height;
+//				NSPoint p = [curEvent locationInWindow];
+//            NSWindow *window = [curEvent window];
+//            NSRect r = [window contentRectForFrameRect:[window frame]];
+//            CGFloat height = r.size.height;
+//            
+//				it->physPoint.x = p.x;
+////				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+//                it->physPoint.y = height - p.y;
             
-				it->physPoint.x = p.x;
-//				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-                it->physPoint.y = height - p.y;
-
-				it->timestamp = curEvent.timestamp;
-				it->tapCount = curEvent.clickCount;
-				it->phase = phase;
+//            it->physPoint = CalculatePointOnScreen(curEvent, windowOffset);
+//            
+//            it->timestamp = curEvent.timestamp;
+//            it->tapCount = curEvent.clickCount;
+            NSEventToUIEvent(curEvent, *it, windowOffset);
+            it->phase = phase;
 		}
 	}
 	
@@ -312,17 +344,18 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		{
 			isFind = true;
 			
-			NSPoint p = [curEvent locationInWindow];
-            NSWindow *window = [curEvent window];
-            NSRect r = [window contentRectForFrameRect:[window frame]];
-            CGFloat height = r.size.height;
-            
-			it->physPoint.x = p.x;
-//			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-            it->physPoint.y = height - p.y;
-
-			it->timestamp = curEvent.timestamp;
-			it->tapCount = curEvent.clickCount;
+//			NSPoint p = [curEvent locationInWindow];
+//            NSWindow *window = [curEvent window];
+//            NSRect r = [window contentRectForFrameRect:[window frame]];
+//            CGFloat height = r.size.height;
+//            
+//			it->physPoint.x = p.x;
+////			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+//            it->physPoint.y = height - p.y;
+//
+//			it->timestamp = curEvent.timestamp;
+//			it->tapCount = curEvent.clickCount;
+            NSEventToUIEvent(curEvent, *it, windowOffset);
 			it->phase = phase;
 
 			break;
@@ -333,18 +366,18 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		UIEvent newTouch;
 		newTouch.tid = button;
-		NSPoint p = [curEvent locationInWindow];
-        
-        NSWindow *window = [curEvent window];
-        NSRect r = [window contentRectForFrameRect:[window frame]];
-        CGFloat height = r.size.height;
-       
-		newTouch.physPoint.x = p.x;
-//		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-        newTouch.physPoint.y = height - p.y;
-
-		newTouch.timestamp = curEvent.timestamp;
-		newTouch.tapCount = curEvent.clickCount;
+//		NSPoint p = [curEvent locationInWindow];
+//        NSWindow *window = [curEvent window];
+//        NSRect r = [window contentRectForFrameRect:[window frame]];
+//        CGFloat height = r.size.height;
+//       
+//		newTouch.physPoint.x = p.x;
+////		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
+//        newTouch.physPoint.y = height - p.y;
+//
+//		newTouch.timestamp = curEvent.timestamp;
+//		newTouch.tapCount = curEvent.clickCount;
+        NSEventToUIEvent(curEvent, newTouch, windowOffset);
 		newTouch.phase = phase;
 		activeTouches.push_back(newTouch);
 	}
@@ -373,7 +406,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 {
 	Vector<DAVA::UIEvent> touches;
 	Vector<DAVA::UIEvent> emptyTouches;
-	MoveTouchsToVector(touch, touchPhase, &touches);
+	MoveTouchsToVector(touch, touchPhase, &touches, windowOffset);
 //	NSLog(@"----- Touches --------");
 //	for(int i = 0; i < touches.size(); i++)
 //	{
