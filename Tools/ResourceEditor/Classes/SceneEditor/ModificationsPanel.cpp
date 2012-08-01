@@ -63,7 +63,12 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModePressed));
 	AddControl(btnModeModification);
 
+	btnModeCollision = ControlsFactory::CreateButton(Rect(220, 5, BUTTON_W, BUTTON_W), L"C");
+	btnModeCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnCollisionPressed));
+	AddControl(btnModeCollision);
+
     isLandscapeRelative = false;
+	isModeCollision = false;
     
 	UpdateModState();
 	OnModePressed(btnModeSelection, 0, 0);
@@ -74,6 +79,11 @@ ModificationsPanel::~ModificationsPanel()
     SafeRelease(workingScene);
     
     SafeRelease(btnLandscape);
+	SafeRelease(btnPopUp);
+	SafeRelease(btnModeSelection);
+	SafeRelease(btnModeModification);
+	SafeRelease(btnModeCollision);
+
 	for (int32 i = 0; i < 3; ++i)
 	{
 		SafeRelease(btnMod[i]);
@@ -106,6 +116,21 @@ void ModificationsPanel::OnModePressed(BaseObject * object, void * userData, voi
 	}
 }
 
+void ModificationsPanel::OnCollisionPressed(BaseObject * object, void * userData, void * callerData)
+{
+	isModeCollision = !isModeCollision;
+	if (isModeCollision)
+	{
+		btnModeCollision->SetState(UIControl::STATE_SELECTED);
+	}
+	else
+	{
+		btnModeCollision->SetState(UIControl::STATE_NORMAL);
+	}
+	ChangeCollisionModeShow(workingScene);
+}
+
+
 void ModificationsPanel::OnLandscapeRelative(BaseObject * object, void * userData, void * callerData)
 {
     isLandscapeRelative = !isLandscapeRelative;
@@ -116,6 +141,42 @@ void ModificationsPanel::OnLandscapeRelative(BaseObject * object, void * userDat
 	else
 	{
 		btnLandscape->SetState(UIControl::STATE_NORMAL);
+	}
+}
+
+void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
+{
+	if (!node)
+		return;
+
+	if (isModeCollision)
+	{
+		KeyedArchive * customProperties = node->GetCustomProperties();
+		if(customProperties && customProperties->IsKeyExists("CollisionFlag") && customProperties->GetBool("CollisionFlag", false))
+		{
+			node->SetDebugFlags(node->GetDebugFlags() | (SceneNode::DEBUG_DRAW_RED_AABBOX));
+			return;
+		}
+	}
+	else
+	{
+		node->SetDebugFlags(node->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_RED_AABBOX));
+	}
+
+	int size = node->GetChildrenCount();
+	for (int i = 0; i < size; i++)
+		ChangeCollisionModeShow(node->GetChild(i));
+ }
+
+void ModificationsPanel::OnReloadScene()
+{
+	bool val = isModeCollision;
+	isModeCollision = false;
+	ChangeCollisionModeShow(workingScene);
+	if (val)
+	{
+		isModeCollision = true;
+		ChangeCollisionModeShow(workingScene);
 	}
 }
 

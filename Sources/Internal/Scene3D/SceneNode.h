@@ -162,6 +162,12 @@ public:
         Function can be used to bake transforms to minimize amount of matrix multiplications.
      */
     virtual void BakeTransforms();
+
+
+    /*
+        \brief Go down by hierarchy and propogate bool custom property to all childs.
+     */
+	void PropagateBoolProperty(String name, bool value);
     
 	enum
     {
@@ -215,6 +221,7 @@ public:
         DEBUG_DRAW_NORMALS = 16,
         DEBUG_DRAW_GRID = 32,
 		DEBUG_DRAW_USERNODE = 64,
+		DEBUG_DRAW_RED_AABBOX = 128,
         DEBUG_DRAW_ALL = 0xFFFFFFFF,
 	};
 	/**
