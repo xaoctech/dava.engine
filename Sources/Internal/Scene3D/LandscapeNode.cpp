@@ -821,7 +821,11 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;
-    Frustum::eFrustumResult frustumRes = frustum->Classify(currentNode->data.bbox);
+    Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE; 
+    
+    if (currentNode->data.size >= 2)
+    frustumRes = frustum->Classify(currentNode->data.bbox);
+    
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
     /*

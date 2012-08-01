@@ -1098,16 +1098,29 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	
 		// Setup our FBO
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	RENDER_VERIFY(glGenFramebuffersOES(1, &tx->fboID));
+	RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
 	BindFBO(tx->fboID);
+    
+    if(DEPTH_RENDERBUFFER == _depthFormat)
+    {
+        glGenRenderbuffers(1, &tx->rboID);
+        glBindRenderbuffer(GL_RENDERBUFFER, tx->rboID);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16_OES, dx, dy);
+        //glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
 		
 	// And attach it to the FBO so we can render to it
-	RENDER_VERIFY(glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, tx->id, 0));
+	RENDER_VERIFY(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tx->id, 0));
+    
+    if(DEPTH_RENDERBUFFER == _depthFormat)
+    {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tx->rboID);
+    }
 		
-	GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
-	if(status != GL_FRAMEBUFFER_COMPLETE_OES)
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if(status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		Logger::Error("glCheckFramebufferStatusOES: %d", status);
+		Logger::Error("glCheckFramebufferStatus: %d", status);
 	}
 
 #else //PLATFORMS
