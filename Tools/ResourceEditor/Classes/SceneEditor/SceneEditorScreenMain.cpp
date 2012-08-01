@@ -24,6 +24,8 @@
 
 #include "SceneExporter.h"
 
+#include "../Qt/SceneDataManager.h"
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
@@ -285,9 +287,6 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         {
             EditorSettings::Instance()->AddLastOpenedFile(pathToFile);
             OpenFileAtScene(pathToFile);
-//        //опен всегда загружает только уровень, но не отдельные части сцены
-//            bodies[0]->bodyControl->OpenScene(pathToFile, true);
-//            bodies[0]->bodyControl->SetFilePath(pathToFile);
             break;
         }
             
@@ -295,23 +294,6 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
         {
             EditorSettings::Instance()->AddLastOpenedFile(pathToFile);
             SaveSceneToFile(pathToFile);
-
-//            BodyItem *iBody = FindCurrentBody();
-//            iBody->bodyControl->SetFilePath(pathToFile);
-//			
-//			iBody->bodyControl->PushDebugCamera();
-//
-//            Scene * scene = iBody->bodyControl->GetScene();
-//
-//            uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
-//            SceneFileV2 * file = new SceneFileV2();
-//            file->EnableDebugLog(false);
-//            file->SaveScene(pathToFile, scene);
-//            SafeRelease(file);
-//            uint64 endTime = SystemTimer::Instance()->AbsoluteMS();
-//            Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
-//
-//			iBody->bodyControl->PopDebugCamera();			
             break;
         }
             
@@ -405,61 +387,6 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject *, void *, void *)
     }
 }
 
-//void SceneEditorScreenMain::ExportTexture(const String &textureDataSourcePath)
-//{
-//    Logger::Debug("[ExportTexture] %s", textureDataSourcePath.c_str());
-//    
-//    String fileOnly;
-//    String pathOnly;
-//    String pathTo = textureDataSourcePath;
-//    pathTo.replace(textureDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
-//    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-//
-//	//default pathTo  -gith
-//	if(useConvertedTextures)
-//	{
-//		// texture.pvr.png -> texture.pvr
-//        if(String::npos != pathTo.find(".pvr.png"))
-//        {
-//            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
-//        }
-//        else if(String::npos != pathTo.find(".png"))
-//        {
-//            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
-//        }
-//	}
-//
-//    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-//	FileSystem::Instance()->DeleteFile(pathTo);
-//    FileSystem::Instance()->CopyFile(textureDataSourcePath, pathTo);
-//}
-//
-//void SceneEditorScreenMain::ExportLandscapeFile(const String &fileDataSourcePath)
-//{
-//    String fileOnly;
-//    String pathOnly;
-//    String pathTo = fileDataSourcePath;
-//    pathTo.replace(fileDataSourcePath.find("DataSource"), strlen("DataSource"), "Data");
-//    FileSystem::SplitPath(pathTo, pathOnly, fileOnly);
-//    
-//	//default pathTo  -gith
-//	if(useConvertedTextures)
-//	{
-//		// texture.pvr.png -> texture.pvr
-//        if(String::npos != pathTo.find(".pvr.png"))
-//        {
-//            pathTo.replace(pathTo.find(".pvr.png"), strlen(".pvr.png"), ".pvr");
-//        }
-//        else if(String::npos != pathTo.find(".png"))
-//        {
-//            pathTo.replace(pathTo.find(".png"), strlen(".png"), ".pvr");
-//        }
-//	}
-//    
-//    FileSystem::Instance()->CreateDirectory(pathOnly, true);
-//	FileSystem::Instance()->DeleteFile(pathTo);
-//    FileSystem::Instance()->CopyFile(fileDataSourcePath, pathTo);
-//}
 
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject *, void *, void *)
 {
@@ -551,6 +478,15 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
     AddControl(c->headerButton);    
     bodies.push_back(c);
     
+#if defined(QT_VERSION)     //TODO: use this code under Qt only
+    if(SceneDataManager::Instance())
+    {
+        SceneDataManager::Instance()->RegisterNewScene(c->bodyControl->GetScene());
+        SceneDataManager::Instance()->ActivateScene(c->bodyControl->GetScene());
+    }
+#endif //#if defined(QT_VERSION)
+
+    
     //set as current
     c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
 }
@@ -587,6 +523,15 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
     {
         BringChildFront(libraryControl);
     }
+    
+    
+#if defined(QT_VERSION)     //TODO: use this code under Qt only
+    if(SceneDataManager::Instance())
+    {
+        SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
+    }
+#endif //#if defined(QT_VERSION)
+    
 }
 void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, void * callerData)
 {
@@ -610,7 +555,17 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
             
             SafeRelease(bodies[i]->headerButton);
             SafeRelease(bodies[i]->closeButton);
-            SafeRelease(bodies[i]->bodyControl);            
+            SafeRelease(bodies[i]->bodyControl);
+            
+#if defined(QT_VERSION)     //TODO: use this code under Qt only
+            if(SceneDataManager::Instance())
+            {
+                SceneDataManager::Instance()->ReleaseScene(bodies[i]->bodyControl->GetScene());
+            }
+#endif //#if defined(QT_VERSION)
+
+
+            
             SafeDelete(*it);
 
             bodies.erase(it);
@@ -718,9 +673,6 @@ void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *
     BodyItem *iBody = FindCurrentBody();
 
     iBody->bodyControl->ToggleSceneGraph();
-    
-//    bool areShown = iBody->bodyControl->SceneGraphAreShown();
-//    iBody->bodyControl->ShowSceneGraph(!areShown);
 }
 
 void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
@@ -728,9 +680,6 @@ void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
     BodyItem *iBody = FindCurrentBody();
 
     iBody->bodyControl->ToggleDataGraph();
-
-//    bool areShown = iBody->bodyControl->DataGraphAreShown();
-//    iBody->bodyControl->ShowDataGraph(!areShown);
 }
 
 void SceneEditorScreenMain::OnEntitiesPressed(BaseObject * obj, void *, void *)
@@ -994,8 +943,6 @@ void SceneEditorScreenMain::InitializeNodeDialogs()
     dialogBack = ControlsFactory::CreatePanelControl(rect);
     ControlsFactory::CustomizeDialogFreeSpace(dialogBack);
     
-//    String path = keyedArchieve->GetString("ProjectPath", "/");
-//    
     Rect r;
     r.dx = rect.dx / 2;
     r.dy = rect.dy / 2;

@@ -3,9 +3,9 @@
 
 
 GraphModel::GraphModel(QObject *parent)
-    : QAbstractItemModel(parent)
+    :   QAbstractItemModel(parent)
+    ,   rootItem(NULL)
 {
-	rootItem = NULL;
 }
 
 GraphModel::~GraphModel()
@@ -54,7 +54,12 @@ QModelIndex GraphModel::parent(const QModelIndex &index) const
 		return QModelIndex();
 	}
 
-    return createIndex(parentItem->Row(), 0, parentItem);
+    if(parentItem)
+    {
+        return createIndex(parentItem->Row(), 0, parentItem);
+    }
+
+    return QModelIndex();
 }
 
 int GraphModel::rowCount(const QModelIndex &parent) const
@@ -73,8 +78,13 @@ int GraphModel::rowCount(const QModelIndex &parent) const
 	{
 		parentItem = static_cast<GraphItem*>(parent.internalPointer());
 	}
+    
+    if(parentItem)
+    {
+        return parentItem->ChildrenCount();
+    }
 
-    return parentItem->ChildrenCount();
+    return 0;
 }
 
 int GraphModel::columnCount(const QModelIndex &parent) const
@@ -117,7 +127,7 @@ Qt::ItemFlags GraphModel::flags(const QModelIndex &index) const
 QVariant GraphModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole && rootItem)
 	{
 		return rootItem->Data(section);
 	}

@@ -27,10 +27,6 @@ public:
 
 protected:
 
-    virtual void SetupModelData() = 0;
-
-protected:
-
     GraphItem *rootItem;
 };
 
