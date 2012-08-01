@@ -787,6 +787,7 @@ void EditorBodyControl::ReloadRootScene(const String &pathToFile)
     }
     nodesToAdd.clear();
 
+	modificationPanel->OnReloadScene();
     Refresh();
 }
 

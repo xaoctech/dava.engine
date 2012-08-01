@@ -38,6 +38,19 @@ enum eViewportType
     VIEWPORT_COUNT
 };
   
+  
+enum eDockWidgets
+{
+    DOCK_SCENE_GRAPH = 0,
+    DOCK_DATA_GRAPH,
+    DOCK_ENTITY_GRAPH,
+    DOCK_PROPERTIES,
+    DOCK_LIBRARY,
+    
+    DOCK_COUNT
+    
+};
+    
     
 };
 

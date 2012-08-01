@@ -282,6 +282,23 @@ void SceneNode::BakeTransforms()
         }
     }
 }
+
+void SceneNode::PropagateBoolProperty(String name, bool value)
+{
+	KeyedArchive *currentProperties = GetCustomProperties();
+	currentProperties->SetBool(name, value);
+
+	uint32 size = (uint32)children.size();
+	if (size > 0) // propagate value to children
+	{
+		for (uint32 c = 0; c < size; ++c)
+		{
+			children[c]->PropagateBoolProperty(name, value);
+		}
+	}
+}
+
+
 	
 void SceneNode::ExtractCurrentNodeKeyForAnimation(SceneNodeAnimationKey & key)
 {
@@ -434,7 +451,20 @@ void SceneNode::Draw()
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
-    //Stats::Instance()->EndTimeMeasure("Scene.Draw.SceneNode.Draw", this);
+
+	if (debugFlags & DEBUG_DRAW_RED_AABBOX)
+	{
+		AABBox3 box = GetWTMaximumBoundingBox();
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
+		RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+		RenderHelper::Instance()->DrawBox(box);
+		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+
+	
+	//Stats::Instance()->EndTimeMeasure("Scene.Draw.SceneNode.Draw", this);
 }
 
     
