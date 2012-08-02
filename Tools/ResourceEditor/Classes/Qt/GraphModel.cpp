@@ -3,14 +3,24 @@
 
 
 GraphModel::GraphModel(QObject *parent)
-    : QAbstractItemModel(parent)
+    :   QAbstractItemModel(parent)
+    ,   rootItem(NULL)
 {
-	rootItem = NULL;
 }
 
 GraphModel::~GraphModel()
 {
 	SafeRelease(rootItem);
+}
+
+GraphItem * GraphModel::ParentItem(const QModelIndex &parent) const
+{
+	if (parent.isValid())
+	{
+		return static_cast<GraphItem*>(parent.internalPointer());
+	}
+
+    return rootItem;
 }
 
 QModelIndex GraphModel::index(int row, int column, const QModelIndex &parent) const
@@ -20,16 +30,7 @@ QModelIndex GraphModel::index(int row, int column, const QModelIndex &parent) co
 		return QModelIndex();
 	}
 
-    GraphItem *parentItem = NULL;
-	if (!parent.isValid())
-	{
-		parentItem = rootItem;
-	}
-    else
-	{
-		parentItem = static_cast<GraphItem*>(parent.internalPointer());
-	}
-
+    GraphItem *parentItem = ParentItem(parent);
     GraphItem *childItem = parentItem->Child(row);
     if (childItem)
 	{
@@ -49,32 +50,28 @@ QModelIndex GraphModel::parent(const QModelIndex &index) const
     GraphItem *childItem = static_cast<GraphItem*>(index.internalPointer());
     GraphItem *parentItem = childItem->GetParent();
 
-    if (parentItem == rootItem)
-	{
-		return QModelIndex();
-	}
+    if(parentItem && (parentItem != rootItem))
+    {
+        return createIndex(parentItem->Row(), 0, parentItem);
+    }
 
-    return createIndex(parentItem->Row(), 0, parentItem);
+    return QModelIndex();
 }
 
 int GraphModel::rowCount(const QModelIndex &parent) const
 {
-    GraphItem *parentItem;
     if (parent.column() > 0)
 	{
 		return 0;
 	}
 
-    if (!parent.isValid())
-	{
-		parentItem = rootItem;
-	}
-    else
-	{
-		parentItem = static_cast<GraphItem*>(parent.internalPointer());
-	}
+    GraphItem *parentItem = ParentItem(parent);
+    if(parentItem)
+    {
+        return parentItem->ChildrenCount();
+    }
 
-    return parentItem->ChildrenCount();
+    return 0;
 }
 
 int GraphModel::columnCount(const QModelIndex &parent) const
@@ -94,13 +91,13 @@ QVariant GraphModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-    if (role != Qt::DisplayRole)
+    if (Qt::DisplayRole == role)
 	{
-		return QVariant();
+        GraphItem *item = static_cast<GraphItem*>(index.internalPointer());
+        return item->Data(index.column());
 	}
 
-    GraphItem *item = static_cast<GraphItem*>(index.internalPointer());
-    return item->Data(index.column());
+    return QVariant();
 }
 
 Qt::ItemFlags GraphModel::flags(const QModelIndex &index) const
@@ -117,7 +114,7 @@ Qt::ItemFlags GraphModel::flags(const QModelIndex &index) const
 QVariant GraphModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole && rootItem)
 	{
 		return rootItem->Data(section);
 	}

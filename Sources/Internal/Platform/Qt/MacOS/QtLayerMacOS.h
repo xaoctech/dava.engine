@@ -54,7 +54,8 @@ public:
     virtual void AppFinished();
     
     virtual void Resize(int32 width, int32 height);
-    
+    virtual void Move(int32 x, int32 y);
+
     virtual void ProcessFrame();
     
     void InitializeGlWindow(void *qtView, int32 width, int32 height);

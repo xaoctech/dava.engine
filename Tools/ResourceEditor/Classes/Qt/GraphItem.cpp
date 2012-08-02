@@ -8,7 +8,7 @@ GraphItem::GraphItem(GraphItem *parent)
 GraphItem::~GraphItem()
 {
 	int32 count = (int32)children.size();
-	for(int32 i = 0; count; ++i)
+	for(int32 i = 0; i < count; ++i)
 	{
 		SafeRelease(children[i]);
 	}
@@ -51,14 +51,6 @@ int32 GraphItem::ColumnCount() const
 {
     return 1;
 }
-
-// QVariant GraphItem::Data(int32 column) const
-// {
-// 	DVASSERT((0 == column) && "Wrong column requested")
-// 
-// 	return QVariant();
-// //    return QVariant(itemText.c_str());
-// }
 
 GraphItem *GraphItem::GetParent()
 {

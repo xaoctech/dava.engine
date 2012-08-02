@@ -589,7 +589,10 @@ void EditorBodyControl::PrepareModMatrix(const Vector2 & point)
 	else if (modificationPanel->GetModState() == ModificationsPanel::MOD_SCALE)
 	{
 //		modification.CreateScale(Vector3(1,1,1) + vect[modAxis] * dist/100);
-		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * (winx/100.0f));
+		float kf = winx / 100.0f;
+		if (kf < -1.0)
+			kf = - kf - 2.0;
+		modification.CreateScale(Vector3(1,1,1) + Vector3(1,1,1) * kf);
 		modification = (translate1 * modification) * translate2;
 	}
 	currTransform = startTransform * modification;
