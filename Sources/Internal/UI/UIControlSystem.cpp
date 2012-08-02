@@ -405,13 +405,17 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 				if((*it).tid == (*wit).tid)
 				{
 					isFind = TRUE;
+                    break;
 				}
 			}
 			if(!isFind)
 			{
 				totalInputs.push_back((*wit));
-				totalInputs.back().activeState = UIEvent::ACTIVITY_STATE_CHANGED;
-				RecalculatePointToVirtual(totalInputs.back().physPoint, totalInputs.back().point);
+                
+                Vector<UIEvent>::reference curr(totalInputs.back());
+				curr.activeState = UIEvent::ACTIVITY_STATE_CHANGED;
+                //curr.phase = UIEvent::PHASE_BEGAN;
+				RecalculatePointToVirtual(curr.physPoint, curr.point);
 			}
 		}
 		for (Vector<UIEvent>::const_iterator wit = allInputs.begin(); wit != allInputs.end(); wit++) 
@@ -422,13 +426,16 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 				if((*it).tid == (*wit).tid)
 				{
 					isFind = TRUE;
+                    break;
 				}
 			}
 			if(!isFind)
 			{
 				totalInputs.push_back((*wit));
-				totalInputs.back().activeState = UIEvent::ACTIVITY_STATE_CHANGED;
-				RecalculatePointToVirtual(totalInputs.back().physPoint, totalInputs.back().point);
+                
+                Vector<UIEvent>::reference curr(totalInputs.back());
+				curr.activeState = UIEvent::ACTIVITY_STATE_CHANGED;
+				RecalculatePointToVirtual(curr.physPoint, curr.point);
 			}
 		}
 		
