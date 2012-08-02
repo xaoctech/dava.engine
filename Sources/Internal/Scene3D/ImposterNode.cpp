@@ -188,7 +188,8 @@ void ImposterNode::UpdateImposter()
 	bbox.GetCorners(bboxVertices);
 	Vector3 bboxCenter = bbox.GetCenter();
 
-	imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
+	//imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
+	imposterCamera->Setup(camera->GetFOV(), camera->GetAspect(), camera->GetZNear(), camera->GetZFar());
 	imposterCamera->SetTarget(bbox.GetCenter());
 	imposterCamera->SetPosition(cameraPos);
 	imposterCamera->SetUp(camera->GetUp());
@@ -254,6 +255,7 @@ void ImposterNode::UpdateImposter()
 
 	//draw
 	RecreateFbo(screenSize);
+	//Logger::Info("%f, %f", screenSize.x, screenSize.y);
 	if(!block)
 	{
 		return;
