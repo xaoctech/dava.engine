@@ -280,10 +280,13 @@ void ImposterNode::UpdateImposter()
 	RenderManager::Instance()->State()->SetScissorRect(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
 	RenderManager::Instance()->FlushState();
 	//TODO: use one "clear" function instead of two
-	//if(block->size.x == 256.f)
+	//if(block->size.x == 512.f)
+	//{
+	//	RenderManager::Instance()->ClearWithColor(0.f, .8f, 0.f, 1.f);
+	//}
+	//else if(block->size.x == 256.f)
 	//{
 	//	RenderManager::Instance()->ClearWithColor(0.f, .3f, 0.f, 1.f);
-
 	//}
 	//else if(block->size.x == 128.f)
 	//{
