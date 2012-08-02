@@ -602,10 +602,8 @@ namespace DAVA
 		{
 			for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
 			{
-				Vector2 p((float32)GET_X_LPARAM(lParam), (float32)GET_Y_LPARAM(lParam));
-
-				it->physPoint.x = p.x;
-				it->physPoint.y = p.y;
+                it->physPoint.x = (float32)GET_X_LPARAM(lParam);
+                it->physPoint.y = (float32)GET_Y_LPARAM(lParam);
 				it->phase = phase;
 			}
 		}
@@ -617,14 +615,11 @@ namespace DAVA
 			{
 				isFind = true;
 
-				Vector2 p((float32)GET_X_LPARAM(lParam), (float32)GET_Y_LPARAM(lParam));
-
-				it->physPoint.x = p.x;
-				it->physPoint.y = p.y;
+				it->physPoint.x = (float32)GET_X_LPARAM(lParam);
+				it->physPoint.y = (float32)GET_Y_LPARAM(lParam);
 				it->phase = phase;
 				//				it->timestamp = curEvent.timestamp;
 				//				it->tapCount = curEvent.clickCount;
-				it->phase = phase;
 
 				break;
 			}
@@ -634,9 +629,8 @@ namespace DAVA
 		{
 			UIEvent newTouch;
 			newTouch.tid = button;
-			Vector2 p((float32)GET_X_LPARAM(lParam), (float32)GET_Y_LPARAM(lParam));
-			newTouch.physPoint.x = p.x;
-			newTouch.physPoint.y = p.y;
+			newTouch.physPoint.x = (float32)GET_X_LPARAM(lParam);
+			newTouch.physPoint.y = (float32)GET_Y_LPARAM(lParam);
 			//			newTouch.timestamp = curEvent.timestamp;
 			//			newTouch.tapCount = curEvent.clickCount;
 			newTouch.phase = phase;
@@ -765,7 +759,6 @@ namespace DAVA
 
 		case WM_MOUSEMOVE:
 			{
-			
 				//Logger::Debug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 				Vector<DAVA::UIEvent> touches;
@@ -774,8 +767,6 @@ namespace DAVA
 				int32 touchPhase = MoveTouchsToVector(message, wParam, lParam, &touches);
 
 				UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
-
-				touches.clear();
 			}
 // 			if (mouseShow)
 // 			{
@@ -853,8 +844,5 @@ namespace DAVA
 
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-
-
-	
 }
 #endif // #if defined(__DAVAENGINE_WIN32__)
