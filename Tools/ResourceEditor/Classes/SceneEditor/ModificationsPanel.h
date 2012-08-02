@@ -67,6 +67,8 @@ public:
     bool IsLandscapeRelative();
     void IsLandscapeRelative(bool value);
 
+	void OnReloadScene();
+
     
 protected:
     
@@ -75,16 +77,20 @@ protected:
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
     void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
 	void OnModePressed(BaseObject * object, void * userData, void * callerData);
+	void OnCollisionPressed(BaseObject * object, void * userData, void * callerData);
+	
 	void OnLandscapeRelative(BaseObject * object, void * userData, void * callerData);
 
 	void UpdateModState(void);
 	void PrepareModMatrix(const Vector2 & point);
+	void ChangeCollisionModeShow(SceneNode * node);
 
 	UIButton *btnMod[3];
 	UIButton *btnAxis[3];
 	UIButton *btnPopUp;
 	UIButton *btnModeSelection;
 	UIButton *btnModeModification;
+	UIButton *btnModeCollision;
 	UIButton *btnPlaceOn;
 	UIButton *btnLandscape;
 	
@@ -93,6 +99,7 @@ protected:
 
 	bool isModeModification;
 	bool isLandscapeRelative;
+	bool isModeCollision;
 
     UIControl * modificationPanel;
 	ModificationPopUp * modificationPopUp;

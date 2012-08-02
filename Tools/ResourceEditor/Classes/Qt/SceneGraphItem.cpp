@@ -17,7 +17,7 @@ QVariant SceneGraphItem::Data(int32 column)
 	if(userData)
 	{
 		SceneNode *node = (SceneNode *)userData;
-		return QVariant(node->GetName().c_str());
+		return QVariant(QString(node->GetName().c_str()));
 	}
 
 	return QVariant();
