@@ -62,7 +62,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;DAVA_DEBUG;QT_DLL;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -105,7 +105,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_OPENGL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;_CRT_SECURE_NO_DEPRECATE;__DAVAENGINE_BEAST__;__DAVAENGINE_RESOURCEEDITOR__;DAVA_QT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -261,50 +261,18 @@
     <ClCompile Include="Classes\bullet\BulletDynamics\ConstraintSolver\btSolve2LinearConstraint.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\ConstraintSolver\btTypedConstraint.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\ConstraintSolver\btUniversalConstraint.cpp" />
-    <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\btContinuousDynamicsWorld.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\btRigidBody.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\btSimpleDynamicsWorld.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\Dynamics\Bullet-C-API.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\Vehicle\btRaycastVehicle.cpp" />
     <ClCompile Include="Classes\bullet\BulletDynamics\Vehicle\btWheelInfo.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphase.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\btParallelConstraintSolver.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\btThreadSupportInterface.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\GpuSoftBodySolvers\CPU\btSoftBodySolver_CPU.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\PosixThreadSupport.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SequentialThreadSupport.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuCollisionObjectWrapper.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuCollisionTaskProcess.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuContactManifoldCollisionAlgorithm.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuFakeDma.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuGatheringCollisionDispatcher.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuLibspe2Support.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\boxBoxDistance.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuCollisionShapes.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuContactResult.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuGatheringCollisionTask.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuMinkowskiPenetrationDepthSolver.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuSampleTaskProcess.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\SpuSampleTask\SpuSampleTask.cpp" />
-    <ClCompile Include="Classes\bullet\BulletMultiThreaded\Win32ThreadSupport.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btDefaultSoftBodySolver.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBody.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBodyConcaveCollisionAlgorithm.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBodyHelpers.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftBodyRigidBodyCollisionConfiguration.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftRigidCollisionAlgorithm.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftRigidDynamicsWorld.cpp" />
-    <ClCompile Include="Classes\bullet\BulletSoftBody\btSoftSoftCollisionAlgorithm.cpp" />
     <ClCompile Include="Classes\bullet\LinearMath\btAlignedAllocator.cpp" />
     <ClCompile Include="Classes\bullet\LinearMath\btConvexHull.cpp" />
     <ClCompile Include="Classes\bullet\LinearMath\btConvexHullComputer.cpp" />
     <ClCompile Include="Classes\bullet\LinearMath\btGeometryUtil.cpp" />
     <ClCompile Include="Classes\bullet\LinearMath\btQuickprof.cpp" />
     <ClCompile Include="Classes\bullet\LinearMath\btSerializer.cpp" />
-    <ClCompile Include="Classes\bullet\MiniCL\MiniCL.cpp" />
-    <ClCompile Include="Classes\bullet\MiniCL\MiniCLTaskScheduler.cpp" />
-    <ClCompile Include="Classes\bullet\MiniCL\MiniCLTask\MiniCLTask.cpp" />
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp" />
     <ClCompile Include="Classes\Collada\ColladaAnimation.cpp" />
     <ClCompile Include="Classes\Collada\ColladaCamera.cpp" />
@@ -363,6 +331,8 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
     </ClCompile>
     <ClCompile Include="Classes\Qt\GUIState.cpp" />
+    <ClCompile Include="Classes\Qt\SceneData.cpp" />
+    <ClCompile Include="Classes\Qt\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\ResourcePackerScreen.cpp" />
@@ -628,7 +598,6 @@
     <ClInclude Include="Classes\bullet\BulletDynamics\ConstraintSolver\btTypedConstraint.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\ConstraintSolver\btUniversalConstraint.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btActionInterface.h" />
-    <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btContinuousDynamicsWorld.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btDiscreteDynamicsWorld.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btDynamicsWorld.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\Dynamics\btRigidBody.h" />
@@ -636,58 +605,6 @@
     <ClInclude Include="Classes\bullet\BulletDynamics\Vehicle\btRaycastVehicle.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\Vehicle\btVehicleRaycaster.h" />
     <ClInclude Include="Classes\bullet\BulletDynamics\Vehicle\btWheelInfo.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphase.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphaseSharedCode.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphaseSharedDefs.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpu3DGridBroadphaseSharedTypes.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpuDefines.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpuUtilsSharedCode.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btGpuUtilsSharedDefs.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btParallelConstraintSolver.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\btThreadSupportInterface.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\GpuSoftBodySolvers\CPU\btSoftBodySolverData.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\GpuSoftBodySolvers\CPU\btSoftBodySolver_CPU.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\HeapManager.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\PlatformDefinitions.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\PosixThreadSupport.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\PpuAddressSpace.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SequentialThreadSupport.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuCollisionObjectWrapper.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuCollisionTaskProcess.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuContactManifoldCollisionAlgorithm.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuDoubleBuffer.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuFakeDma.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuGatheringCollisionDispatcher.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuLibspe2Support.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\Box.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\boxBoxDistance.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuCollisionShapes.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuContactResult.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuConvexPenetrationDepthSolver.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuGatheringCollisionTask.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuLocalSupport.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuMinkowskiPenetrationDepthSolver.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuNarrowPhaseCollisionTask\SpuPreferredPenetrationDirections.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuSampleTaskProcess.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuSampleTask\SpuSampleTask.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\SpuSync.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\TrbDynBody.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\TrbStateVec.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\vectormath2bullet.h" />
-    <ClInclude Include="Classes\bullet\BulletMultiThreaded\Win32ThreadSupport.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btDefaultSoftBodySolver.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBody.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyConcaveCollisionAlgorithm.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyData.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyHelpers.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyInternals.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodyRigidBodyCollisionConfiguration.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodySolvers.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftBodySolverVertexBuffer.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftRigidCollisionAlgorithm.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftRigidDynamicsWorld.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSoftSoftCollisionAlgorithm.h" />
-    <ClInclude Include="Classes\bullet\BulletSoftBody\btSparseSDF.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btAabbUtil2.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btAlignedAllocator.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btAlignedObjectArray.h" />
@@ -695,6 +612,7 @@
     <ClInclude Include="Classes\bullet\LinearMath\btConvexHullComputer.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btDefaultMotionState.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btGeometryUtil.h" />
+    <ClInclude Include="Classes\bullet\LinearMath\btGrahamScan2dConvexHull.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btHashMap.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btIDebugDraw.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btList.h" />
@@ -712,12 +630,6 @@
     <ClInclude Include="Classes\bullet\LinearMath\btTransform.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btTransformUtil.h" />
     <ClInclude Include="Classes\bullet\LinearMath\btVector3.h" />
-    <ClInclude Include="Classes\bullet\MiniCL\cl.h" />
-    <ClInclude Include="Classes\bullet\MiniCL\cl_gl.h" />
-    <ClInclude Include="Classes\bullet\MiniCL\cl_MiniCL_Defs.h" />
-    <ClInclude Include="Classes\bullet\MiniCL\cl_platform.h" />
-    <ClInclude Include="Classes\bullet\MiniCL\MiniCLTaskScheduler.h" />
-    <ClInclude Include="Classes\bullet\MiniCL\MiniCLTask\MiniCLTask.h" />
     <ClInclude Include="Classes\bullet\vectormath\scalar\boolInVec.h" />
     <ClInclude Include="Classes\bullet\vectormath\scalar\floatInVec.h" />
     <ClInclude Include="Classes\bullet\vectormath\scalar\mat_aos.h" />
@@ -774,6 +686,8 @@
     <ClInclude Include="Classes\Qt\GUIActionHandler.h" />
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\QtDefines.h" />
+    <ClInclude Include="Classes\Qt\SceneData.h" />
+    <ClInclude Include="Classes\Qt\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\ResourcePackerScreen.h" />
