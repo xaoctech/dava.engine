@@ -25,14 +25,11 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
+  <widget class="DavaGLWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="margin">
      <number>0</number>
     </property>
-    <item>
-     <widget class="DavaGLWidget" name="davaGlWidget" native="true"/>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -41,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

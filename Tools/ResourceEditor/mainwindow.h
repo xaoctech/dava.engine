@@ -20,6 +20,7 @@ public:
 private:
     void SetupMainMenu();
     void SetupProjectPath();
+    void SetupDockWidgets();
     
 private:
     GUIActionHandler *actionHandler;

@@ -48,7 +48,6 @@ enum eDockWidgets
     DOCK_LIBRARY,
     
     DOCK_COUNT
-    
 };
     
     
