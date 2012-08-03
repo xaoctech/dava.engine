@@ -103,6 +103,7 @@ private:
 	float32 priority;
 
 	bool IsAngleOrRangeChangedEnough(float32 squareDistance, float32 dotProduct);
+	void GetOOBBoxScreenCoords(SceneNode * node, const Matrix4 & mvp, AABBox3 & screenBounds);
 
 	friend class ImposterNodeComparer;
 };

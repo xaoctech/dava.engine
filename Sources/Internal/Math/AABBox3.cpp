@@ -121,7 +121,7 @@ void AABBox3::GetTransformedBox(const Matrix4 & transform, AABBox3 & result) con
     
 }
 
-void AABBox3::GetCorners(Vector3 * cornersArray)
+void AABBox3::GetCorners(Vector3 * cornersArray) const
 {
     cornersArray[0] = min;
     cornersArray[1] = max;
