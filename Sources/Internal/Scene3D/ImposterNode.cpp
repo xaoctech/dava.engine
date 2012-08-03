@@ -30,6 +30,7 @@
 #include "Utils/Utils.h"
 #include "Render/Image.h"
 #include "Platform/SystemTimer.h"
+#include "Scene3D/MeshInstanceNode.h"
 
 namespace DAVA
 {
@@ -174,6 +175,41 @@ void ImposterNode::GeneralDraw()
 	}
 }
 
+void ImposterNode::GetOOBBoxScreenCoords(SceneNode * node, const Matrix4 & mvp, AABBox3 & screenBounds)
+{
+	const Rect & viewport = RenderManager::Instance()->GetViewport();
+	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(node);
+	if (mesh)
+	{
+		Vector3 corners[8];
+		Vector3 screenVertices[8];
+
+		mesh->GetBoundingBox().GetCorners(corners);
+		const Matrix4 & worldTransform = mesh->GetWorldTransform();
+
+		for (int32 k = 0; k < 8; ++k)
+		{
+			Vector4 pv(corners[k]);
+			pv = pv * worldTransform;
+			pv = pv * mvp;
+			pv.x = (viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x;
+			pv.y = (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y;
+			pv.z = (pv.z/pv.w + 1.f) * 0.5f;
+
+			screenVertices[k] = Vector3(pv.x, pv.y, pv.z);
+			screenBounds.AddPoint(screenVertices[k]);
+
+		}
+	}
+
+	int32 count = node->GetChildrenCount();
+	for (int32 i = 0; i < count; ++i)
+	{
+		GetOOBBoxScreenCoords(node->GetChild(i), mvp, screenBounds);
+	}
+}
+
+
 void ImposterNode::UpdateImposter()
 {
 	Camera * camera = scene->GetCurrentCamera();
@@ -183,9 +219,8 @@ void ImposterNode::UpdateImposter()
 
 	SceneNode * child = GetChild(0);
 	AABBox3 bbox = child->GetWTMaximumBoundingBox();
-	Vector3 bboxVertices[8];
-	Vector3 screenVertices[8];
-	bbox.GetCorners(bboxVertices);
+	//Vector3 bboxVertices[8];
+	//bbox.GetCorners(bboxVertices);
 	Vector3 bboxCenter = bbox.GetCenter();
 
 	//imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
@@ -195,13 +230,14 @@ void ImposterNode::UpdateImposter()
 	imposterCamera->SetUp(camera->GetUp());
 	imposterCamera->SetLeft(camera->GetLeft());
 
-
 	Rect viewport = RenderManager::Instance()->GetViewport();
 	
-
-	Matrix4 mvp = imposterCamera->GetUniformProjModelMatrix();
+	const Matrix4 & mvp = imposterCamera->GetUniformProjModelMatrix();
 
 	AABBox3 screenBounds;
+	GetOOBBoxScreenCoords(child, mvp, screenBounds);
+
+	/*
 	for(int32 i = 0; i < 8; ++i)
 	{
 		//project
@@ -213,7 +249,8 @@ void ImposterNode::UpdateImposter()
 
 		screenVertices[i] = Vector3(pv.x, pv.y, pv.z);
 		screenBounds.AddPoint(screenVertices[i]);
-	}
+	}*/
+
 
 	Vector4 pv(bboxCenter);
 	pv = pv*mvp;
