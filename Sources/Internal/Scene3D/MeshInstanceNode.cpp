@@ -335,9 +335,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 
 AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
 {
-    AABBox3 retBBox = bbox;
-	
-    bbox.GetTransformedBox(GetWorldTransform(), retBBox);
+	AABBox3 retBBox = transformedBox;
     
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
