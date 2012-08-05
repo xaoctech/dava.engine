@@ -1404,3 +1404,11 @@ void SceneEditorScreenMain::TilemapTriggered()
         btnLandscapeColor->SetSelected(!selected);
     }
 }
+
+#if defined (DAVA_QT)
+void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->SelectNodeQt(node);
+}
+#endif //#if defined (DAVA_QT)

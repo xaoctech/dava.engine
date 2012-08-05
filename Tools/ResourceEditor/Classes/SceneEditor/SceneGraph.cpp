@@ -28,6 +28,7 @@ void SceneGraph::SelectNode(BaseObject *node)
 {
     workingNode = dynamic_cast<SceneNode *>(node);
     
+#if !defined(DAVA_QT)
     if(workingNode)
     {
         List<void *> nodesForSearch;
@@ -67,6 +68,8 @@ void SceneGraph::SelectNode(BaseObject *node)
         RefreshGraph();
     }
     
+#endif //#if !defined(DAVA_QT)
+
     UpdatePropertyPanel();
 }
 
@@ -201,11 +204,6 @@ void SceneGraph::SelectHierarchyNode(UIHierarchyNode * node)
 
 void SceneGraph::UpdatePropertyPanel()
 {
-#if defined (DAVA_QT)
-    return;
-#endif //#if defined (DAVA_QT)
-    
-    
     if(workingNode && (NULL != graphTree->GetParent()))
     {
 		RecreatePropertiesPanelForNode(workingNode);

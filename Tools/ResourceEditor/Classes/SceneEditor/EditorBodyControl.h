@@ -125,6 +125,8 @@ public:
 #if defined (DAVA_QT)        
     void SetScene(EditorScene *newScene);
     void SetCameraController(CameraController *newCameraController);
+    
+    void SelectNodeQt(SceneNode *node);
 #endif //#if defined (DAVA_QT)        
     
 protected:
