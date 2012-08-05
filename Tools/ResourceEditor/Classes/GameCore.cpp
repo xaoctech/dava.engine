@@ -27,7 +27,9 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
 
+#if defined (DAVA_QT)
 #include "Qt/SceneDataManager.h"
+#endif //#if defined (DAVA_QT)
 
 
 using namespace DAVA;
@@ -62,8 +64,9 @@ void GameCore::OnAppStarted()
     new OutputManager();
 	new PVRConverter();
     new PVRUtils();
-//TODO: this code will be used at full qt version
-//    new SceneDataManager();
+#if defined (DAVA_QT)
+    new SceneDataManager();
+#endif //#if defined (DAVA_QT)
         
     
 	resourcePackerScreen = new ResourcePackerScreen();
@@ -88,8 +91,10 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnAppFinished()
 {
-//TODO: this code will be used at full qt version
-//    SceneDataManager::Instance()->Release();
+#if defined (DAVA_QT)
+    SceneDataManager::Instance()->Release();
+#endif //#if defined (DAVA_QT)
+
     PVRUtils::Instance()->Release();
 	PVRConverter::Instance()->Release();
     OutputManager::Instance()->Release();

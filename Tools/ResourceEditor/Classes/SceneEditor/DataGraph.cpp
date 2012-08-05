@@ -130,7 +130,7 @@ void DataGraph::RefreshGraph()
     {
         dataNodes.clear();
         
-        if(workingScene->GetSelection())
+        if(workingScene && workingScene->GetSelection())
         {
             workingScene->GetSelection()->GetDataNodes(dataNodes);
         }
@@ -140,7 +140,6 @@ void DataGraph::RefreshGraph()
 }
 
 
-#pragma mark --UIHierarchyDelegate
 bool DataGraph::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
 {
     if (forNode) 

@@ -12,6 +12,9 @@
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C2763A815B82BE90030A8FD /* GUIActionHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */; };
+		5C49A03D15CBBCB0005C40BF /* moc_GraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */; };
+		5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */; };
+		5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */; };
 		5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFC15C9463C0015537A /* btAxisSweep3.cpp */; };
 		5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFF15C9463C0015537A /* btBroadphaseProxy.cpp */; };
 		5C574E3B15C9463C0015537A /* btCollisionAlgorithm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574D0115C9463C0015537A /* btCollisionAlgorithm.cpp */; };
@@ -269,6 +272,7 @@
 		5CF412BD15C7E0B6004725FD /* SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF412BB15C7E0B6004725FD /* SceneData.cpp */; };
 		5CF412C015C7E2B4004725FD /* SceneDataManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CF412BE15C7E2B4004725FD /* SceneDataManager.cpp */; };
 		5CFD6F6E15C06D160030029D /* GUIState.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFD6F6C15C06D160030029D /* GUIState.cpp */; };
+		5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
@@ -339,6 +343,9 @@
 		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
 		5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIActionHandler.cpp; path = Classes/Qt/GUIActionHandler.cpp; sourceTree = "<group>"; };
 		5C2763A615B82BE90030A8FD /* GUIActionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIActionHandler.h; path = Classes/Qt/GUIActionHandler.h; sourceTree = "<group>"; };
+		5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GraphModel.cpp; path = QtBuildTool/moc_GraphModel.cpp; sourceTree = "<group>"; };
+		5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneData.cpp; path = QtBuildTool/moc_SceneData.cpp; sourceTree = "<group>"; };
+		5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneGraphModel.cpp; path = QtBuildTool/moc_SceneGraphModel.cpp; sourceTree = "<group>"; };
 		5C574CF715C9462D0015537A /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = Classes/bullet/btBulletCollisionCommon.h; sourceTree = "<group>"; };
 		5C574CF815C9462D0015537A /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = Classes/bullet/btBulletDynamicsCommon.h; sourceTree = "<group>"; };
 		5C574CF915C9462D0015537A /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "Classes/bullet/Bullet-C-Api.h"; sourceTree = "<group>"; };
@@ -924,6 +931,8 @@
 		5CF412BF15C7E2B4004725FD /* SceneDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneDataManager.h; path = Classes/Qt/SceneDataManager.h; sourceTree = "<group>"; };
 		5CFD6F6C15C06D160030029D /* GUIState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIState.cpp; path = Classes/Qt/GUIState.cpp; sourceTree = "<group>"; };
 		5CFD6F6D15C06D160030029D /* GUIState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIState.h; path = Classes/Qt/GUIState.h; sourceTree = "<group>"; };
+		5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphCommands.cpp; path = Classes/Commands/SceneGraphCommands.cpp; sourceTree = "<group>"; };
+		5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphCommands.h; path = Classes/Commands/SceneGraphCommands.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		6D3A4A84E8680AFD0352C6BB /* davaglwidget.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = davaglwidget.ui; path = Classes/davaglwidget.ui; sourceTree = "<group>"; };
@@ -989,6 +998,9 @@
 		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */,
+				5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */,
+				5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */,
 				5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */,
 				5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */,
 				5C5DCB7815C33020007F6AC4 /* moc_GUIActionHandler.cpp */,
@@ -1735,6 +1747,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */,
+				5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */,
 				5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */,
 				5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */,
 				5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */,
@@ -2266,6 +2280,10 @@
 				5C574EAB15C9463C0015537A /* btGeometryUtil.cpp in Build Sources */,
 				5C574EAC15C9463C0015537A /* btQuickprof.cpp in Build Sources */,
 				5C574EAD15C9463C0015537A /* btSerializer.cpp in Build Sources */,
+				5CFEEBC015CAB60B00ABF023 /* SceneGraphCommands.cpp in Build Sources */,
+				5C49A03D15CBBCB0005C40BF /* moc_GraphModel.cpp in Build Sources */,
+				5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */,
+				5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

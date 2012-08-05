@@ -22,6 +22,10 @@ private:
     void SetupProjectPath();
     void SetupDockWidgets();
     
+private slots:
+
+    void MenuFileWillShow();
+    
 private:
     GUIActionHandler *actionHandler;
     

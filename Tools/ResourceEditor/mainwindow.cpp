@@ -24,9 +24,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
         }
     }
     
-    //TODO: move code to gamecore at full qt version
-    new SceneDataManager();
-    
     new GUIState();
     SetupProjectPath();
 
@@ -42,16 +39,13 @@ QtMainWindow::~QtMainWindow()
     
     GUIState::Instance()->Release();
     
-    //TODO: move code to gamecore at full qt version
-    SceneDataManager::Instance()->Release();
-    
     delete ui;
 }
 
 void QtMainWindow::SetupMainMenu()
 {
     //File
-    connect(ui->menuFile, SIGNAL(aboutToShow()), actionHandler, SLOT(MenuFileWillShow()));
+    connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
     connect(ui->actionOpenScene, SIGNAL(triggered()), actionHandler, SLOT(OpenScene()));
     connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
@@ -61,7 +55,6 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
 
     //Resent files
-    actionHandler->SetResentMenu(ui->menuResentScenes);
     connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ResentSceneTriggered(QAction *)));
 
     //View
@@ -127,5 +120,19 @@ void QtMainWindow::SetupProjectPath()
 void QtMainWindow::SetupDockWidgets()
 {
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
+    
+    connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
+    connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));
+    connect(ui->btnLockAtObject, SIGNAL(clicked()), actionHandler, SLOT(LockAtObject()));
+    connect(ui->btnRemoveObject, SIGNAL(clicked()), actionHandler, SLOT(RemoveObject()));
+    connect(ui->btnDebugFlags, SIGNAL(clicked()), actionHandler, SLOT(DebugFlags()));
+    connect(ui->btnBakeMatrices, SIGNAL(clicked()), actionHandler, SLOT(BakeMatrixes()));
+    connect(ui->btnBuildQuadTree, SIGNAL(clicked()), actionHandler, SLOT(BuildQuadTree()));
+}
+
+void QtMainWindow::MenuFileWillShow()
+{
+    actionHandler->SetResentMenu(ui->menuResentScenes);
+    actionHandler->MenuFileWillShow();
 }
 

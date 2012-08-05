@@ -379,21 +379,25 @@ void ModificationsPanel::IsLandscapeRelative(bool value)
 
 void ModificationsPanel::Update(float32 timeElapsed)
 {
-	SceneNode * selection = workingScene->GetProxy();
-	modificationPopUp->SetSelection(selection);
-	if (isModeModification && selection && modificationPanel->GetParent() == 0)
-	{
-		AddControl(modificationPanel);
-	}
-	else if ((selection == 0 && modificationPanel->GetParent() != 0) || !isModeModification)
-	{
-		RemoveControl(modificationPanel);
-		modificationPopUp->SetSelection(0);
-		if (modificationPopUp->GetParent())
+    if(workingScene)
+    {
+        SceneNode * selection = workingScene->GetProxy();
+        modificationPopUp->SetSelection(selection);
+        if (isModeModification && selection && modificationPanel->GetParent() == 0)
         {
-			modificationPopUp->GetParent()->RemoveControl(modificationPopUp);
+            AddControl(modificationPanel);
         }
-	}
+        else if ((selection == 0 && modificationPanel->GetParent() != 0) || !isModeModification)
+        {
+            RemoveControl(modificationPanel);
+            modificationPopUp->SetSelection(0);
+            if (modificationPopUp->GetParent())
+            {
+                modificationPopUp->GetParent()->RemoveControl(modificationPopUp);
+            }
+        }
+    }
+    
 	
     UIControl::Update(timeElapsed);
 }

@@ -11,10 +11,13 @@ class GraphItem: public BaseObject
 public:
     GraphItem(GraphItem *parent = 0);
     virtual ~GraphItem();
+    
+	GraphItem *GetParent();
+    void SetParent(GraphItem * parent);
 
 	virtual void SetUserData(void *data) = 0;
+    void * GetUserData();
 
-	GraphItem *GetParent();
 	GraphItem *Child(int32 row);
     void AppendChild(GraphItem *child);
 	int32 ChildrenCount() const;
