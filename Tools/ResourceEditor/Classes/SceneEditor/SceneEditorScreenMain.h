@@ -116,6 +116,10 @@ public:
 	};
     
     void RecreteFullTilingTexture();
+    
+#if defined (DAVA_QT)
+    void SelectNodeQt(SceneNode *node);
+#endif //#if defined (DAVA_QT)
 
 private:
     

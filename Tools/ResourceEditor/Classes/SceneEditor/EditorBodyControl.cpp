@@ -1391,4 +1391,9 @@ void EditorBodyControl::SetCameraController(CameraController *newCameraControlle
     SafeRelease(cameraController);
     cameraController = SafeRetain(newCameraController);
 }
+
+void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
+{
+    sceneGraph->SelectNode(node);
+}
 #endif //#if defined (DAVA_QT)

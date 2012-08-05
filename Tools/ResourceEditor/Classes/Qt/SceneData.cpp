@@ -5,6 +5,8 @@
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneValidator.h"
 
+#include "../SceneEditor/SceneEditorScreenMain.h"
+
 #include <QTreeView>
 
 using namespace DAVA;
@@ -85,6 +87,15 @@ void SceneData::SceneNodeSelected(SceneNode *node)
     if(scene)   scene->SetSelection(node);
     
     cameraController->SetSelection(node);
+
+    //TODO: remove code at full-qt version
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->SelectNodeQt(node);
+    }
+    //EndOfTODO
+    
     
     Camera * cam = dynamic_cast<Camera*>(node);
     if (cam)
