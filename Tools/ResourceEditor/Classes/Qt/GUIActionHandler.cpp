@@ -5,10 +5,12 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
+#include "../Commands/SceneGraphCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "GUIState.h"
+#include "SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -26,6 +28,8 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
         resentSceneActions[i] = new QAction(this);
         resentSceneActions[i]->setObjectName(QString::fromUtf8(Format("resentSceneActions[%d]", i)));
     }
+    
+    menuResentScenes = NULL;
 }
 
 GUIActionHandler::~GUIActionHandler()
@@ -162,6 +166,7 @@ void GUIActionHandler::MenuFileWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
     
+    //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
     
     int32 sceneCount = EditorSettings::Instance()->GetLastOpenedCount();
@@ -194,12 +199,14 @@ void GUIActionHandler::MenuFileWillShow()
 void GUIActionHandler::MenuToolsWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedToolsMenu()) return;
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-//        screen->;
-    }
+
+    //TODO: need code here
+
+//    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+//    if(screen)
+//    {
+////        screen->;
+//    }
     
     GUIState::Instance()->SetNeedUpdatedToolsMenu(false);
 }
@@ -273,6 +280,41 @@ void GUIActionHandler::RestoreViews()
             dockActions[i]->trigger();
         }
     }
+}
+
+void GUIActionHandler::RemoveRootNodes()
+{
+    Execute(new CommandRemoveRootNodes());
+}
+
+void GUIActionHandler::RefreshSceneGraph()
+{
+    Execute(new CommandRefreshSceneGraph());
+}
+
+void GUIActionHandler::LockAtObject()
+{
+    Execute(new CommandLockAtObject());
+}
+
+void GUIActionHandler::RemoveObject()
+{
+    Execute(new CommandRemoveSceneNode());
+}
+
+void GUIActionHandler::DebugFlags()
+{
+    Execute(new CommandDebugFlags());
+}
+
+void GUIActionHandler::BakeMatrixes()
+{
+    Execute(new CommandBakeMatrices());
+}
+
+void GUIActionHandler::BuildQuadTree()
+{
+    Execute(new CommandBuildQuadTree());
 }
 
 

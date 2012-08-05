@@ -1,15 +1,22 @@
 #include "GraphModel.h"
 #include "GraphItem.h"
 
+#include <QTreeView>
+
 
 GraphModel::GraphModel(QObject *parent)
     :   QAbstractItemModel(parent)
     ,   rootItem(NULL)
+    ,   attachedTreeView(NULL)
 {
+    itemSelectionModel = new QItemSelectionModel(this);
+    
+    connect(itemSelectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(SelectionChanged(const QItemSelection &, const QItemSelection &)));
 }
 
 GraphModel::~GraphModel()
 {
+    SafeDelete(itemSelectionModel);
 	SafeRelease(rootItem);
 }
 
@@ -122,3 +129,55 @@ QVariant GraphModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
+QItemSelectionModel *GraphModel::GetSelectionModel()
+{
+    return itemSelectionModel;
+}
+
+void GraphModel::SelectionChanged(const QItemSelection &, const QItemSelection &)
+{
+}
+
+GraphItem * GraphModel::ItemForData(void * data)
+{
+    if(rootItem)
+    {
+        return ItemForData(rootItem, data);
+    }
+    
+    return NULL;
+}
+
+GraphItem * GraphModel::ItemForData(GraphItem *item, void * data)
+{
+    if(item->GetUserData() == data)
+    {
+        return item;
+    }
+    
+    for(int32 i = 0; i < item->ChildrenCount(); ++i)
+    {
+        GraphItem *foundItem = ItemForData(item->Child(i), data);
+        if(foundItem)
+        {
+            return foundItem;
+        }
+    }
+    
+    return NULL;
+}
+
+void GraphModel::Deactivate()
+{
+    attachedTreeView = NULL;
+}
+
+void GraphModel::Activate(QTreeView *view)
+{
+    DVASSERT((NULL == attachedTreeView) && "View must be deactivated")
+    
+    attachedTreeView = view;
+    
+    attachedTreeView->setModel(this);
+    attachedTreeView->setSelectionModel(itemSelectionModel);
+}

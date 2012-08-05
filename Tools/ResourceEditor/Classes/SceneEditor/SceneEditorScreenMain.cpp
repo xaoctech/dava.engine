@@ -24,7 +24,10 @@
 
 #include "SceneExporter.h"
 
+#if defined (DAVA_QT)
+#include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
+#endif //#if defined (DAVA_QT)
 
 void SceneEditorScreenMain::LoadResources()
 {
@@ -356,7 +359,12 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject *, void *, void *)
         fileSystemDialog->SetExtensionFilter(".sc2");
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
         
+#if defined (DAVA_QT)
+        SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+        String path = sceneData->GetScenePathname();
+#else //#if defined (DAVA_QT)
         String path = iBody->bodyControl->GetFilePath();
+#endif //#if defined (DAVA_QT)        
         if (path.length() > 0)
         {
             path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
@@ -404,9 +412,6 @@ void SceneEditorScreenMain::OnCreatePressed(BaseObject *, void *, void *)
 void SceneEditorScreenMain::OnNewPressed(BaseObject * obj, void *, void *)
 {
     NewScene();
-    bodies[0]->bodyControl->ReleaseScene();
-    bodies[0]->bodyControl->CreateScene(true);
-    bodies[0]->bodyControl->Refresh();
 }
 
 
@@ -446,6 +451,11 @@ void SceneEditorScreenMain::ReleaseBodyList()
 
 void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
 {
+#if defined (DAVA_QT)
+    EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
+    SceneDataManager::Instance()->ActivateScene(scene);
+#endif //#if defined (DAVA_QT)
+    
     BodyItem *c = new BodyItem();
     
     int32 count = bodies.size();
@@ -473,19 +483,17 @@ void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable
 
     Rect fullRect = GetRect();
     c->bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET + 1, fullRect.dx, fullRect.dy - BODY_Y_OFFSET - 1));
+    
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    c->bodyControl->SetScene(sceneData->GetScene());
+    c->bodyControl->SetCameraController(sceneData->GetCameraController());
+#endif //#if defined (DAVA_QT)
+    
     c->bodyControl->SetTag(count);    
     
     AddControl(c->headerButton);    
     bodies.push_back(c);
-    
-#if defined(DAVA_QT)     //TODO: use this code under Qt only
-    if(SceneDataManager::Instance())
-    {
-        SceneDataManager::Instance()->RegisterNewScene(c->bodyControl->GetScene());
-        SceneDataManager::Instance()->ActivateScene(c->bodyControl->GetScene());
-    }
-#endif //#if defined(QT_VERSION)
-
     
     //set as current
     c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
@@ -525,13 +533,9 @@ void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, vo
     }
     
     
-#if defined(DAVA_QT)     //TODO: use this code under Qt only
-    if(SceneDataManager::Instance())
-    {
-        SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
-    }
-#endif //#if defined(QT_VERSION)
-    
+#if defined (DAVA_QT)
+    SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
+#endif //#if defined (DAVA_QT)
 }
 void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, void * callerData)
 {
@@ -553,18 +557,13 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, voi
             }
             RemoveControl(bodies[i]->headerButton);
             
+#if defined (DAVA_QT)
+            SceneDataManager::Instance()->ReleaseScene(bodies[i]->bodyControl->GetScene());
+#endif //#if defined (DAVA_QT)
+
             SafeRelease(bodies[i]->headerButton);
             SafeRelease(bodies[i]->closeButton);
             SafeRelease(bodies[i]->bodyControl);
-            
-#if defined(DAVA_QT)     //TODO: use this code under Qt only
-            if(SceneDataManager::Instance())
-            {
-                SceneDataManager::Instance()->ReleaseScene(bodies[i]->bodyControl->GetScene());
-            }
-#endif //#if defined(QT_VERSION)
-
-
             
             SafeDelete(*it);
 
@@ -633,7 +632,7 @@ SceneEditorScreenMain::BodyItem * SceneEditorScreenMain::FindCurrentBody()
     return NULL;
 }
 
-void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *obj, void *, void *)
+void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
     bool areShown = iBody->bodyControl->PropertiesAreShown();
@@ -652,8 +651,13 @@ void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *obj, void *, v
 void SceneEditorScreenMain::OnEditSCE(const String &pathName, const String &name)
 {
     AddBodyItem(StringToWString(name), true);
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    sceneData->EditScene(pathName);
+#else //#if defined (DAVA_QT)
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->OpenScene(pathName, true);
+#endif //#if defined (DAVA_QT)
 }
 
 void SceneEditorScreenMain::OnReloadSCE(const String &pathName)
@@ -664,11 +668,16 @@ void SceneEditorScreenMain::OnReloadSCE(const String &pathName)
 
 void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 {
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    sceneData->OpenScene(pathName);
+#else //#if defined (DAVA_QT)
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->OpenScene(pathName, false);
+#endif //#if defined (DAVA_QT)
 }
 
-void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
 
@@ -981,7 +990,7 @@ void SceneEditorScreenMain::EditMaterial(Material *material)
     }
 }
 
-void SceneEditorScreenMain::OnSettingsPressed(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::OnSettingsPressed(BaseObject *, void *, void *)
 {
     if(!settingsDialog->GetParent())
     {
@@ -989,7 +998,7 @@ void SceneEditorScreenMain::OnSettingsPressed(BaseObject * obj, void *, void *)
     }
 }
 
-void SceneEditorScreenMain::AutoSaveLevel(BaseObject * obj, void *, void *)
+void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
 {
     time_t now = time(0);
     tm* utcTime = localtime(&now);
@@ -1024,13 +1033,13 @@ void SceneEditorScreenMain::SetupAnimation()
     anim->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SceneEditorScreenMain::AutoSaveLevel));
 }
 
-void SceneEditorScreenMain::OnViewPortSize(DAVA::BaseObject *obj, void *, void *)
+void SceneEditorScreenMain::OnViewPortSize(DAVA::BaseObject *, void *, void *)
 {
     menuPopup->InitControl(MENUID_VIEWPORT, btnViewPortSize->GetRect());
     AddControl(menuPopup);
 }
 
-void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *obj, void *, void *)
+void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->ToggleSceneInfo();
@@ -1117,8 +1126,14 @@ void SceneEditorScreenMain::ShowOpenFileDialog()
         fileSystemDialog->SetExtensionFilter(".sc2");
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
         
+        
+#if defined (DAVA_QT)
+        SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+        String path = sceneData->GetScenePathname();
+#else //#if defined (DAVA_QT)
         BodyItem *iBody = FindCurrentBody();
         String path = iBody->bodyControl->GetFilePath();
+#endif //#if defined (DAVA_QT)        
         if (path.length() > 0) 
         {
             path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
@@ -1137,8 +1152,14 @@ void SceneEditorScreenMain::ShowOpenFileDialog()
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
     //опен всегда загружает только уровень, но не отдельные части сцены
+#if defined (DAVA_QT)
+    SceneData *levelScene = SceneDataManager::Instance()->GetLevelScene();
+    levelScene->EditScene(pathToFile);
+    levelScene->SetScenePathname(pathToFile);
+#else //#if defined (DAVA_QT)
     bodies[0]->bodyControl->OpenScene(pathToFile, true);
     bodies[0]->bodyControl->SetFilePath(pathToFile);
+#endif //#if defined (DAVA_QT)
 }
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
@@ -1175,9 +1196,17 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 
 void SceneEditorScreenMain::NewScene()
 {
+#if defined (DAVA_QT)
+    SceneData *levelScene = SceneDataManager::Instance()->GetLevelScene();
+    levelScene->CreateScene(true);
+    
+    bodies[0]->bodyControl->SetScene(levelScene->GetScene());
+    bodies[0]->bodyControl->Refresh();
+#else //#if defined (DAVA_QT)
     bodies[0]->bodyControl->ReleaseScene();
     bodies[0]->bodyControl->CreateScene(true);
     bodies[0]->bodyControl->Refresh();
+#endif //#if defined (DAVA_QT)    
 }
 
 
@@ -1194,7 +1223,12 @@ bool SceneEditorScreenMain::SaveIsAvailable()
 
 String SceneEditorScreenMain::CurrentScenePathname()
 {
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    String pathname = sceneData->GetScenePathname();
+#else //#if defined (DAVA_QT)    
     String pathname = FindCurrentBody()->bodyControl->GetFilePath();
+#endif //#if defined (DAVA_QT)
     if (0 < pathname.length())
     {
         pathname = FileSystem::Instance()->ReplaceExtension(pathname, ".sc2");
@@ -1206,9 +1240,15 @@ String SceneEditorScreenMain::CurrentScenePathname()
 
 void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
 {
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    sceneData->SetScenePathname(pathToFile);
+
+    BodyItem *iBody = FindCurrentBody();
+#else //#if defined (DAVA_QT)
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SetFilePath(pathToFile);
-    
+#endif //#if defined (DAVA_QT)    
     iBody->bodyControl->PushDebugCamera();
     
     Scene * scene = iBody->bodyControl->GetScene();
@@ -1250,8 +1290,12 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
     BodyItem *iBody = FindCurrentBody();
 	iBody->bodyControl->PushDebugCamera();
     
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    String filePath = sceneData->GetScenePathname();
+#else //#if defined (DAVA_QT)
     String filePath = iBody->bodyControl->GetFilePath();
-    
+#endif //#if defined (DAVA_QT)    
     String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
     String::size_type pos = filePath.find(dataSourcePath);
     if(String::npos != pos)

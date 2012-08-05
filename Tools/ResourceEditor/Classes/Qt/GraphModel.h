@@ -7,12 +7,15 @@
 #include <QVariant>
 #include <QString>
 #include <QStringList>
+#include <QItemSelectionModel>
 
 
 class GraphItem;
-
+class QTreeView;
 class GraphModel : public QAbstractItemModel
 {
+    Q_OBJECT
+    
 public:
     GraphModel(QObject *parent = 0);
     virtual ~GraphModel();
@@ -25,13 +28,32 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+    virtual void Rebuild() = 0;
+    
+    QItemSelectionModel *GetSelectionModel();
+    
+    void Activate(QTreeView *view);
+    void Deactivate();
+    
+protected slots:
+    
+    virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
+    
 protected:
     
     GraphItem * ParentItem(const QModelIndex &parent = QModelIndex()) const;
     
+    GraphItem * ItemForData(void * usedData);
+    GraphItem * ItemForData(GraphItem * item, void * usedData);
+    
 protected:
 
     GraphItem *rootItem;
+    
+    QItemSelectionModel *itemSelectionModel;
+    
+    QTreeView *attachedTreeView;
 };
 
 #endif // __GRAPH_MODEL_H__

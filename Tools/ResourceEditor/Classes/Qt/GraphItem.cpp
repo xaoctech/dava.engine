@@ -1,8 +1,8 @@
 #include "GraphItem.h"
 
 GraphItem::GraphItem(GraphItem *parent)
-	:	parentItem(parent)
 {
+    SetParent(parent);
 }
 
 GraphItem::~GraphItem()
@@ -17,6 +17,9 @@ GraphItem::~GraphItem()
 
 void GraphItem::AppendChild(GraphItem *item)
 {
+    DVASSERT(item && "item can't be NULL.");
+    
+    item->SetParent(this);
 	children.push_back(item);
 }
 
@@ -56,3 +59,16 @@ GraphItem *GraphItem::GetParent()
 {
     return parentItem;
 }
+
+void GraphItem::SetParent(GraphItem *parent)
+{
+    parentItem = parent;
+}
+
+void * GraphItem::GetUserData()
+{
+    return userData;
+}
+
+
+
