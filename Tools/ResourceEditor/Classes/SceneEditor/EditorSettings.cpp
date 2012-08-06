@@ -29,10 +29,28 @@ void EditorSettings::Save()
     settings->Save("~doc:/ResourceEditorOptions.archive");
 }
 
+void EditorSettings::SetDataSourcePath(const String &datasourcePath)
+{
+    settings->SetString("3dDataSourcePath", datasourcePath);
+}
+
+
 String EditorSettings::GetDataSourcePath()
 {
     return settings->GetString("3dDataSourcePath", "/");
 }
+
+void EditorSettings::SetProjectPath(const String &projectPath)
+{
+    settings->SetString(String("ProjectPath"), projectPath);
+}
+
+String EditorSettings::GetProjetcPath()
+{
+    return settings->GetString(String("ProjectPath"), String(""));
+}
+
+
 
 bool EditorSettings::IsValidPath(const String &path)
 {

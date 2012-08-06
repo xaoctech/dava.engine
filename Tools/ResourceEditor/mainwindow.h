@@ -3,21 +3,28 @@
 
 #include <QMainWindow>
 
+
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class GUIActionHandler;
+class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+   explicit QtMainWindow(QWidget *parent = 0);
+   ~QtMainWindow();
     
-protected:
+private:
+    void SetupMainMenu();
+    void SetupProjectPath();
+    void SetupDockWidgets();
     
-
+private:
+    GUIActionHandler *actionHandler;
+    
 private:
     Ui::MainWindow *ui;
 };

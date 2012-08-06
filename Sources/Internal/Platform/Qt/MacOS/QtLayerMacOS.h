@@ -33,6 +33,8 @@
 #include "DAVAEngine.h"
 #include "Platform/Qt/Qtlayer.h"
 
+#if defined(__DAVAENGINE_MACOS__)
+
 namespace DAVA 
 {
 class QtLayerMacOS : public QtLayer
@@ -52,7 +54,8 @@ public:
     virtual void AppFinished();
     
     virtual void Resize(int32 width, int32 height);
-    
+    virtual void Move(int32 x, int32 y);
+
     virtual void ProcessFrame();
     
     void InitializeGlWindow(void *qtView, int32 width, int32 height);
@@ -60,5 +63,6 @@ public:
 
 };
 
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
 #endif // __DAVAENGINE_QT_LAYER_MAC_OS_H__

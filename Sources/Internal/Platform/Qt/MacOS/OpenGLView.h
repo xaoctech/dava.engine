@@ -27,12 +27,16 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
+#include "DAVAEngine.h"
+
+#if defined(__DAVAENGINE_MACOS__)
+
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/OpenGL.h>
-#include "DAVAEngine.h"
 //#import "TScene.h"
 
 using namespace DAVA;
+
 
 @interface OpenGLView : NSOpenGLView 
 {
@@ -41,6 +45,8 @@ using namespace DAVA;
 	bool isFirstDraw;
 //	DAVA::Cursor * activeCursor;
 	bool willQuit;
+    
+    Vector2 windowOffset;
 }
 
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
@@ -50,5 +56,9 @@ using namespace DAVA;
 
 - (void) enableTrackingArea;
 - (void) disableTrackingArea;
+- (void) setWindowOffset: (const Vector2 &) offset;
 
 @end
+
+#endif //#if defined(__DAVAENGINE_MACOS__)
+

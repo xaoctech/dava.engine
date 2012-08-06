@@ -3,7 +3,10 @@
 #include "davaglwidget.h"
 #include "ui_davaglwidget.h"
 
-#include "QResizeEvent"
+#include <QResizeEvent>
+#include <QTimer>
+#include <QElapsedTimer>
+#include <QMoveEvent>
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -18,8 +21,6 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 	
-	isFirstDraw = true;
-
 #if defined (__DAVAENGINE_MACOS__)
 	DAVA::QtLayerMacOS *qtLayer = new DAVA::QtLayerMacOS();
     qtLayer->InitializeGlWindow((void *)this->winId(), this->size().width(), this->size().height());
@@ -35,19 +36,24 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-    counter = 0;
-    divider = 0.5f;
-    
-	startTimer(20);
     
 	DAVA::QtLayer::Instance()->Resize(size().width(), size().height());
+    
+	willClose = false;
+    fpsTimer = new QTimer();
+    connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
+
+    DAVA::RenderManager::Instance()->SetFPS(60);
+    frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
+    
+    fpsTimer->start(frameTime);
 }
 
 DavaGLWidget::~DavaGLWidget()
 {
     DAVA::QtLayer::Instance()->Release();
 
+	DAVA::SafeDelete(fpsTimer);
     delete ui;
 }
 
@@ -62,29 +68,40 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
     QWidget::resizeEvent(e);
         
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
+    
+    QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
+	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
 }
 
-void DavaGLWidget::timerEvent(QTimerEvent *e)
+void DavaGLWidget::moveEvent(QMoveEvent *e)
 {
-//    QWidget::timerEvent(e);
-    
-//    ++counter;
-//    if(400 == counter)
-//    {
-//        counter = 0;
-//        
-//        QSize sz = this->size();
-//        sz /= divider;
-//        
-//        divider = 1.f / divider;
-//        
-//        resize(sz);
-//        
-////        resize(this->size().height(), this->size().width());
-//    }
-    
+    QWidget::moveEvent(e);
+
+    QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
+	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
+}
+
+
+
+void DavaGLWidget::FpsTimerDone()
+{
+    QElapsedTimer timer;
+    timer.start();
     
 	DAVA::QtLayer::Instance()->ProcessFrame();
+    
+	if(!willClose && fpsTimer)
+	{
+		int timeForNewFrame = frameTime - timer.elapsed();
+		if(timeForNewFrame < 0)
+		{
+			fpsTimer->start(0);
+		}
+		else 
+		{
+			fpsTimer->start(timeForNewFrame);
+		}
+	}
 }
 
 
@@ -115,3 +132,10 @@ bool DavaGLWidget::winEvent(MSG *message, long *result)
 	return false;
 }
 #endif //#if defined(Q_WS_WIN)
+
+void DavaGLWidget::closeEvent(QCloseEvent *e)
+{
+	willClose = true;
+
+	QWidget::closeEvent(e);
+}

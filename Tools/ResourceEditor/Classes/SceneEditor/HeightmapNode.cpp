@@ -30,8 +30,8 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     maxHeight = landSize.z;
     heightScale = maxHeight / 65535.f;
     float32 minHeight = 0.0f;
-
-    heightmapTexture = Texture::CreateFromFile("/Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/lm_l2.png");//heit_l2.png");
+    
+    heightmapTexture = NULL;
     debugVertices.resize(heightmap->Size() * heightmap->Size());
 	debugIndices.resize(heightmap->Size() * heightmap->Size() * 6);
 
@@ -141,7 +141,7 @@ HeightmapNode::~HeightmapNode()
     
     SafeDelete(colShape);
     
-    SafeRelease(heightmapTexture);
+//    SafeRelease(heightmapTexture);
     
     SafeRelease(renderDataObject);
 }
@@ -208,12 +208,15 @@ void HeightmapNode::Draw()
    
     SceneNode::Draw();
 
-    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-    RenderManager::Instance()->SetTexture(heightmapTexture, 0);
+    if(heightmapTexture)
+    {
+        RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+        RenderManager::Instance()->SetTexture(heightmapTexture, 0);
 
-    RenderManager::Instance()->SetRenderData(renderDataObject);
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
+        RenderManager::Instance()->SetRenderData(renderDataObject);
+        RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
+    }
     
     if(cursor)
 	{

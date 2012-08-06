@@ -20,7 +20,14 @@ SceneExporter::~SceneExporter()
 void SceneExporter::CleanFolder(const String &folderPathname, Set<String> &errorLog)
 {
     bool ret = FileSystem::Instance()->DeleteDirectory(folderPathname);
-    errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.c_str())));
+    if(!ret)
+    {
+        bool folderExists = FileSystem::Instance()->IsDirectory(folderPathname);
+        if(folderExists)
+        {
+            errorLog.insert(String(Format("[CleanFolder] ret = %d, folder = %s", ret, folderPathname.c_str())));
+        }
+    }
 }
 
 void SceneExporter::SetInFolder(const String &folderPathname)
@@ -76,7 +83,11 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     
     //Export scene data
     RemoveEditorNodes(scene);
+
+    String oldPath = SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
+	SceneValidator::Instance()->ValidateScales(scene, errorLog);
+
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
     ExportMeshLightmaps(scene, errorLog);
@@ -87,6 +98,8 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
     outFile->EnableDebugLog(false);
     outFile->SaveScene(dataFolder + fileName, scene);
     SafeRelease(outFile);
+    
+    SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
 
 

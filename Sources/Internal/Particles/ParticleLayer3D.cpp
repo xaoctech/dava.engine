@@ -132,4 +132,20 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
 	}
 }
 
+void ParticleLayer3D::LoadFromYaml(YamlNode * node)
+{
+	ParticleLayer::LoadFromYaml(node);
+
+	if(additive)
+	{
+		material->blendSrc = BLEND_SRC_ALPHA;
+		material->blendDst = BLEND_ONE;
+	}
+	else
+	{
+		material->blendSrc = BLEND_SRC_ALPHA;
+		material->blendDst = BLEND_ONE_MINUS_SRC_ALPHA;
+	}
+}
+
 };

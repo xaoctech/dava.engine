@@ -71,7 +71,8 @@ SharedFBO::SharedFBO(Setup * setup)
 		bool res = packer.AddRect(Size2i((int32)blocks[i]->size.dx, (int32)blocks[i]->size.dy), blocks[i]);
 		if(!res)
 		{
-			Logger::Error("SharedFBO failed to pack a rect");
+			Logger::Error("SharedFBO failed to pack a rect %.0f %.0f, %d left unpacked", blocks[i]->size.dx, blocks[i]->size.dy, blocksSize-i);
+			break;
 		}
 	}
 
@@ -97,20 +98,23 @@ SharedFBO::Block * SharedFBO::AcquireBlock(const Vector2 & size)
 {
 	int32 index = FindIndexForSize(size);
 
-	while(index > 0)
+	if(index > 0)
 	{
-		if(queues[index].size() < queues[index].size())
+		if(frees[index] < frees[index-1])
 		{
 			index--;
-		}
-		else
-		{
-			break;
 		}
 	}
 
 	Block * block = 0;
 	int32 maxIndex = frees.size()-1;
+
+	//debug
+	//Logger::Debug("Free blocks:"); 
+	//for(int32 i = 0; i <= maxIndex; ++i)
+	//{
+	//	Logger::Debug("(%.1f_%.1f) %d", sizes[i].x, sizes[i].y, frees[i]);
+	//}
 
 	//first try to find block of closest size
 	block = GetBlock(index);
@@ -167,20 +171,15 @@ void SharedFBO::ReleaseBlock(SharedFBO::Block * block)
 int32 SharedFBO::FindIndexForSize(const Vector2 & size)
 {
 	int32 sizesSize = sizes.size();
-	int32 closestIndex = -1;
+	int32 closestIndex = 1;
     
-#if !defined (__DAVAENGINE_ANDROID__)    
-	float32 smallestDelta = std::numeric_limits<float32>::max();
-	for(int32 i = 0; i < sizesSize; ++i)
+	for(int32 i = sizesSize-1; i >= 0; --i)
 	{
-		float32 squareDelta = Vector2(size.x-sizes[i].x, size.y - sizes[i].y).SquareLength();
-		if(squareDelta < smallestDelta)
+		if((sizes[i].x >= size.x) && (sizes[i].y >= size.y))
 		{
-			smallestDelta = squareDelta;
-			closestIndex = i;
+			return i;
 		}
 	}
-#endif //#if !defined (__DAVAENGINE_ANDROID__)    
 
 	return closestIndex;
 }

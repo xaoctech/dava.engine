@@ -36,10 +36,12 @@ ImposterManager::ImposterManager(Scene * _scene)
 :	scene(_scene)
 {
 	SharedFBO::Setup setup;
-	setup.size = Vector2(2048, 1024);
+	setup.size = Vector2(2048, 2048);
 	setup.pixelFormat = FORMAT_RGBA4444;
 	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-	setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(128.f, 128.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(2, Vector2(512.f, 512.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(256.f, 256.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
 	setup.blocks.push_back(std::pair<int32, Vector2>(256, Vector2(64.f, 64.f)));
 
 	sharedFBO = new SharedFBO(&setup);
@@ -57,6 +59,11 @@ bool ImposterManager::IsEmpty()
 
 void ImposterManager::Update(float32 frameTime)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::IMPOSTERS_ENABLE))
+	{
+		return;
+	}
+
 	List<ImposterNode*>::iterator end = imposters.end();
 	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
 	{
@@ -67,6 +74,11 @@ void ImposterManager::Update(float32 frameTime)
 
 void ImposterManager::Draw()
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::IMPOSTERS_ENABLE))
+	{
+		return;
+	}
+
 	ProcessQueue();
 
 	List<ImposterNode*>::iterator end = imposters.end();

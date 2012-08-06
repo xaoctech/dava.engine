@@ -99,7 +99,10 @@ void main()
     attenuation = lightIntensity0 / (attenuation * attenuation); // use inverse distance for distance attenuation
     lightDir = normalize(lightDir);
     
-    varDiffuseColor = max(0.0, dot(normal, lightDir)) * attenuation;
+    varDiffuseColor = max(0.0, dot(normal, lightDir));
+#if defined(DISTANCE_ATTENUATION)
+    varDiffuseColor *= attenuation;
+#endif
 
     // Blinn-phong reflection
     vec3 E = normalize(-eyeCoordsPosition);
@@ -114,7 +117,11 @@ void main()
         float nDotHV = max(0.0, dot(E, R));
     */
     
-    varSpecularColor = pow(nDotHV, materialSpecularShininess) * attenuation;
+    varSpecularColor = pow(nDotHV, materialSpecularShininess);
+#if defined(DISTANCE_ATTENUATION)
+    varSpecularColor *= attenuation;
+#endif
+
 #endif
 
 #if defined(PIXEL_LIT)

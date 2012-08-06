@@ -45,6 +45,12 @@
 		5C0105D8157799E000E0B939 /* MongodbClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0105D6157799E000E0B939 /* MongodbClient.h */; };
 		5C203F1F1579362300CB53E9 /* MongodbObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C203F1D1579362300CB53E9 /* MongodbObject.cpp */; };
 		5C203F201579362300CB53E9 /* MongodbObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C203F1E1579362300CB53E9 /* MongodbObject.h */; };
+		5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44738515B5A1C500028948 /* FixedSizePoolAllocator.cpp */; };
+		5C44738C15B5A1C500028948 /* FixedSizePoolAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738615B5A1C500028948 /* FixedSizePoolAllocator.h */; };
+		5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44738715B5A1C500028948 /* HashMap.cpp */; };
+		5C44738E15B5A1C500028948 /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738815B5A1C500028948 /* HashMap.h */; };
+		5C44738F15B5A1C500028948 /* Mallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738915B5A1C500028948 /* Mallocator.h */; };
+		5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C44738A15B5A1C500028948 /* TemplateHelpers.h */; };
 		5C5C18D414D7168300DC6DC3 /* LodNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C18D214D7168300DC6DC3 /* LodNode.cpp */; };
 		5C5C18D514D7168300DC6DC3 /* LodNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5C18D314D7168300DC6DC3 /* LodNode.h */; };
 		5C5C18D914D716F000DC6DC3 /* EdgeAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5C18D714D716F000DC6DC3 /* EdgeAdjacency.cpp */; };
@@ -60,6 +66,8 @@
 		5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
+		5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */; };
+		5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBF71DE15C6E46100CD1736 /* RenderOptions.h */; };
 		5CBFD6DC159C6D4500852F1A /* LandscapeGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */; };
 		5CBFD6DD159C6D4500852F1A /* LandscapeGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */; };
 		5CBFD6DE159C6D4500852F1A /* LandscapeGeometrySystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */; };
@@ -584,6 +592,12 @@
 		5C0105D6157799E000E0B939 /* MongodbClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbClient.h; path = Database/MongodbClient.h; sourceTree = "<group>"; };
 		5C203F1D1579362300CB53E9 /* MongodbObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MongodbObject.cpp; path = Database/MongodbObject.cpp; sourceTree = "<group>"; };
 		5C203F1E1579362300CB53E9 /* MongodbObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MongodbObject.h; path = Database/MongodbObject.h; sourceTree = "<group>"; };
+		5C44738515B5A1C500028948 /* FixedSizePoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixedSizePoolAllocator.cpp; sourceTree = "<group>"; };
+		5C44738615B5A1C500028948 /* FixedSizePoolAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedSizePoolAllocator.h; sourceTree = "<group>"; };
+		5C44738715B5A1C500028948 /* HashMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashMap.cpp; sourceTree = "<group>"; };
+		5C44738815B5A1C500028948 /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
+		5C44738915B5A1C500028948 /* Mallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mallocator.h; sourceTree = "<group>"; };
+		5C44738A15B5A1C500028948 /* TemplateHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateHelpers.h; sourceTree = "<group>"; };
 		5C5C18D214D7168300DC6DC3 /* LodNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LodNode.cpp; sourceTree = "<group>"; };
 		5C5C18D314D7168300DC6DC3 /* LodNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LodNode.h; sourceTree = "<group>"; };
 		5C5C18D714D716F000DC6DC3 /* EdgeAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EdgeAdjacency.cpp; sourceTree = "<group>"; };
@@ -599,6 +613,8 @@
 		5C8E673A15A58D0400A87103 /* FileSystemObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileSystemObjective.mm; sourceTree = "<group>"; };
 		5C97964514E3E75000FFFA14 /* libxml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml_ios.a; path = ../../Libs/libs/libxml_ios.a; sourceTree = "<group>"; };
 		5C97964614E3E75000FFFA14 /* libyaml_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_ios.a; path = ../../Libs/libs/libyaml_ios.a; sourceTree = "<group>"; };
+		5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderOptions.cpp; sourceTree = "<group>"; };
+		5CBF71DE15C6E46100CD1736 /* RenderOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderOptions.h; sourceTree = "<group>"; };
 		5CBFD6D2159C6D4500852F1A /* LandscapeGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeGeometryComponent.cpp; path = Entity/LandscapeGeometryComponent.cpp; sourceTree = "<group>"; };
 		5CBFD6D3159C6D4500852F1A /* LandscapeGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometryComponent.h; path = Entity/LandscapeGeometryComponent.h; sourceTree = "<group>"; };
 		5CBFD6D4159C6D4500852F1A /* LandscapeGeometrySystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeGeometrySystem.h; path = Entity/LandscapeGeometrySystem.h; sourceTree = "<group>"; };
@@ -1300,6 +1316,12 @@
 		FECFB33E12E5904400C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				5C44738515B5A1C500028948 /* FixedSizePoolAllocator.cpp */,
+				5C44738615B5A1C500028948 /* FixedSizePoolAllocator.h */,
+				5C44738715B5A1C500028948 /* HashMap.cpp */,
+				5C44738815B5A1C500028948 /* HashMap.h */,
+				5C44738915B5A1C500028948 /* Mallocator.h */,
+				5C44738A15B5A1C500028948 /* TemplateHelpers.h */,
 				FECFB33F12E5904400C71562 /* BaseMath.cpp */,
 				FECFB34012E5904400C71562 /* BaseMath.h */,
 				FECFB34112E5904400C71562 /* BaseObject.h */,
@@ -1537,6 +1559,8 @@
 		FECFB3D112E5904400C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				5CBF71DD15C6E46100CD1736 /* RenderOptions.cpp */,
+				5CBF71DE15C6E46100CD1736 /* RenderOptions.h */,
 				5CFD7DF41564DC58009692EE /* ImageConvert.h */,
 				5CFD7DF51564DC58009692EE /* RenderBase.cpp */,
 				5CFD7DF61564DC58009692EE /* SharedFBO.cpp */,
@@ -2146,6 +2170,11 @@
 				5CD7156615AC3B6300D08E8E /* ParticleLayer3D.h in Headers */,
 				5CD7156B15AC3B7D00D08E8E /* ParticleEmitterNode.h in Headers */,
 				5C5EAC1115A582F200279915 /* Bitstream.h in Headers */,
+				5C44738C15B5A1C500028948 /* FixedSizePoolAllocator.h in Headers */,
+				5C44738E15B5A1C500028948 /* HashMap.h in Headers */,
+				5C44738F15B5A1C500028948 /* Mallocator.h in Headers */,
+				5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */,
+				5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2457,6 +2486,9 @@
 				5C5EAC1015A582F200279915 /* Bitstream.cpp in Sources */,
 				5C5EAC1315A582F200279915 /* XMLParser.cpp in Sources */,
 				5C8E673B15A58D0400A87103 /* FileSystemObjective.mm in Sources */,
+				5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */,
+				5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */,
+				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2481,7 +2513,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2509,7 +2540,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2542,7 +2572,6 @@
 					DAVA_DEBUG,
 				);
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -2583,7 +2612,6 @@
 					FT2_BUILD_LIBRARY,
 				);
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -2624,7 +2652,6 @@
 					FT2_BUILD_LIBRARY,
 				);
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -2661,7 +2688,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2692,7 +2718,6 @@
 					FT2_BUILD_LIBRARY,
 				);
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -2729,7 +2754,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Framework_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

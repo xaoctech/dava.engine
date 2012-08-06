@@ -112,6 +112,15 @@
     <Filter Include="Internal\Entity\Components">
       <UniqueIdentifier>{a5ec0fc5-fc27-47e4-90f3-6665b4a190a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Platform\Qt">
+      <UniqueIdentifier>{9ccf6d8e-2ffb-4645-862d-59b75598b00e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Platform\Qt\Win32">
+      <UniqueIdentifier>{802c9b10-286b-4081-add3-d26ed34ac6d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Platform\Qt\MacOS">
+      <UniqueIdentifier>{e3b4ea60-bf1d-4f78-80b9-27951dfc40de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1077,6 +1086,30 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Mallocator.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
+      <Filter>Internal\Platform\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.h">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.h">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.h">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1859,5 +1892,28 @@
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </None>
+    <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOSObjective.mm">
+      <Filter>Internal\Platform\Qt\MacOS</Filter>
+    </None>
   </ItemGroup>
 </Project>
