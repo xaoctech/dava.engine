@@ -71,7 +71,8 @@ SharedFBO::SharedFBO(Setup * setup)
 		bool res = packer.AddRect(Size2i((int32)blocks[i]->size.dx, (int32)blocks[i]->size.dy), blocks[i]);
 		if(!res)
 		{
-			Logger::Error("SharedFBO failed to pack a rect");
+			Logger::Error("SharedFBO failed to pack a rect %.0f %.0f, %d left unpacked", blocks[i]->size.dx, blocks[i]->size.dy, blocksSize-i);
+			break;
 		}
 	}
 
