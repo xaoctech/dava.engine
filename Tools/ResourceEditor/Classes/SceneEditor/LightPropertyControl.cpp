@@ -43,8 +43,8 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
     
 	propertyList->AddSection("property.lightnode.staticlight", GetHeaderState("property.lightnode.staticlight", true));
 
-	propertyList->AddBoolProperty("Enable");
-	propertyList->SetBoolPropertyValue("Enable", light->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
+	propertyList->AddBoolProperty("property.staticlight.enable");
+	propertyList->SetBoolPropertyValue("property.staticlight.enable", light->GetCustomProperties()->GetBool("editor.staticlight.enable", true));
 
 	propertyList->AddBoolProperty("Cast shadows");
 	propertyList->SetBoolPropertyValue("Cast shadows", light->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
@@ -71,6 +71,11 @@ void LightPropertyControl::ReadFrom(SceneNode * sceneNode)
 		propertyList->AddFloatProperty("Shadow radius");
 		propertyList->SetFloatPropertyValue("Shadow radius", light->GetCustomProperties()->GetFloat("editor.staticlight.shadowradius", 0.f));
 	}
+
+	propertyList->AddSection("property.lightnode.dynamiclight", GetHeaderState("property.lightnode.dynamiclight", true));
+	
+	propertyList->AddBoolProperty("property.dynamiclight.enable");
+	propertyList->SetBoolPropertyValue("property.dynamiclight.enable", light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true));
 }
 
 void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
@@ -92,11 +97,16 @@ void LightPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
 
 void LightPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
-    if("Enable" == forKey)
+    if("property.staticlight.enable" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
         light->GetCustomProperties()->SetBool("editor.staticlight.enable", newValue);
     }
+	else if("property.dynamiclight.enable" == forKey)
+	{
+		LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);
+		light->GetCustomProperties()->SetBool("editor.dynamiclight.enable", newValue);
+	}
     else if("Cast shadows" == forKey)
     {
         LightNode *light = dynamic_cast<LightNode *>(currentSceneNode);

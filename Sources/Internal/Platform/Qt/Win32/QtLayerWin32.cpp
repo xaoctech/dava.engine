@@ -144,6 +144,12 @@ void QtLayerWin32::Resize(int32 width, int32 height)
 	Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
 }
     
+void QtLayerWin32::Move(int32 x, int32 y)
+{
+    
+}
+
+    
 void QtLayerWin32::ProcessFrame()
 {
 //    if(willQuit)

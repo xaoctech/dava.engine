@@ -11,6 +11,8 @@ SceneValidator::SceneValidator()
     sceneTextureMemory = 0;
 
     infoControl = NULL;
+    
+    pathForChecking = String("");
 }
 
 SceneValidator::~SceneValidator()
@@ -39,6 +41,56 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
         errorsLog.insert(String("Scene in NULL!"));
     }
 }
+
+void SceneValidator::ValidateScales(Scene *scene, Set<String> &errorsLog)
+{
+	if(scene) 
+	{
+		ValidateScalesInternal(scene, errorsLog);
+	}
+	else 
+	{
+		errorsLog.insert(String("Scene in NULL!"));
+	}
+}
+
+void SceneValidator::ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog)
+{
+//  Basic algorithm is here
+// 	Matrix4 S, T, R; //Scale Transpose Rotation
+// 	S.CreateScale(Vector3(1.5, 0.5, 2.0));
+// 	T.CreateTranslation(Vector3(100, 50, 20));
+// 	R.CreateRotation(Vector3(0, 1, 0), 2.0);
+// 
+// 	Matrix4 t = R*S*T; //Calculate complex matrix
+// 
+//	//Calculate Scale components from complex matrix
+// 	float32 sx = sqrt(t._00 * t._00 + t._10 * t._10 + t._20 * t._20);
+// 	float32 sy = sqrt(t._01 * t._01 + t._11 * t._11 + t._21 * t._21);
+// 	float32 sz = sqrt(t._02 * t._02 + t._12 * t._12 + t._22 * t._22);
+// 	Vector3 sCalculated(sx, sy, sz);
+
+	if(!sceneNode) return;
+
+	const Matrix4 & t = sceneNode->GetLocalTransform();
+	float32 sx = sqrt(t._00 * t._00 + t._10 * t._10 + t._20 * t._20);
+	float32 sy = sqrt(t._01 * t._01 + t._11 * t._11 + t._21 * t._21);
+	float32 sz = sqrt(t._02 * t._02 + t._12 * t._12 + t._22 * t._22);
+
+	if ((!FLOAT_EQUAL(sx, 1.0f)) 
+		|| (!FLOAT_EQUAL(sy, 1.0f))
+		|| (!FLOAT_EQUAL(sz, 1.0f)))
+	{
+ 		errorsLog.insert(Format("Node %s: has scale (%.3f, %.3f, %.3f) ! Re-design level.", sceneNode->GetName().c_str(), sx, sy, sz));
+	}
+
+	int32 count = sceneNode->GetChildrenCount();
+	for(int32 i = 0; i < count; ++i)
+	{
+		ValidateScalesInternal(sceneNode->GetChild(i), errorsLog);
+	}
+}
+
 
 
 void SceneValidator::ValidateSceneNode(SceneNode *sceneNode)
@@ -140,6 +192,12 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
 {
     if(!texture) return;
 
+    bool pathIsCorrect = ValidatePathname(texture->GetPathname());
+    if(!pathIsCorrect)
+    {
+        String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
+        errorsLog.insert("Wrong path of: " + path);
+    }
     if(IsntPower2(texture->GetWidth()) || IsntPower2(texture->GetHeight()))
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
@@ -163,6 +221,13 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
         ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), errorsLog);
+    }
+    
+    bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname());
+    if(!pathIsCorrect)
+    {
+        String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), landscape->GetHeightmapPathname());
+        errorsLog.insert("Wrong path of Heightmap: " + path);
     }
 }
 
@@ -344,4 +409,44 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
             }
         }
     }
+}
+
+String SceneValidator::SetPathForChecking(const String &pathname)
+{
+    String oldPath = pathForChecking;
+    pathForChecking = pathname;
+    return pathForChecking;
+}
+
+
+#include "FuckingErrorDialog.h"
+bool SceneValidator::ValidatePathname(const String &pathForValidation)
+{
+    DVASSERT(0 < pathForChecking.length()); 
+    //Need to set path to DataSource/3d for path correction  
+    //Use SetPathForChecking();
+    
+    String normalizedPath = FileSystem::NormalizePath(pathForValidation);
+    
+    String::size_type fboFound = normalizedPath.find(String("FBO"));
+    String::size_type resFound = normalizedPath.find(String("~res:"));
+    if((String::npos != fboFound) || (String::npos != resFound))
+    {
+        return true;   
+    }
+    
+    
+    String::size_type foundPos = normalizedPath.find(pathForChecking);
+    bool pathIsCorrect = (String::npos != foundPos);
+    if(!pathIsCorrect)
+    {
+        UIScreen *screen = UIScreenManager::Instance()->GetScreen();
+        
+        FuckingErrorDialog *dlg = new FuckingErrorDialog(screen->GetRect(), String("Wrong path: ") + pathForValidation);
+        screen->AddControl(dlg);
+        SafeRelease(dlg);
+    }
+    
+    return pathIsCorrect;
+    
 }

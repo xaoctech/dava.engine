@@ -3,6 +3,8 @@
 
 #include "DAVAEngine.h"
 #include "DraggableDialog.h"
+#include "../Constants.h"
+
 
 using namespace DAVA;
 
@@ -33,7 +35,7 @@ public:
     void SetDelegate(CreateNodesDialogDelegeate *delegate);
     void SetScene(Scene *_scene);
 
-    void CreateNode(int32 nodeID);
+    void CreateNode(ResourceEditor::eNodeType nodeType);
     SceneNode *GetSceneNode();
 
 protected:

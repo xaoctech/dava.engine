@@ -2941,7 +2941,7 @@ void ParticlesEditorControl::OnCellSelected(UIList *forList, UIListCell *selecte
         selectedEmitterTypeElement = selectedCell->GetIndex();
         selectedCell->SetSelected(true);
         
-        tip->SetText(LocalizedString("emitterType." + emitterTypes[selectedEmitterTypeElement]));
+        tip->SetText(LocalizedString(L"emitterType." + StringToWString(emitterTypes[selectedEmitterTypeElement])));
         
         SetEmitterPropValue(EMITTER_TYPE);
     }
@@ -3078,7 +3078,14 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 	int32 size = emitter->GetLayers().size();
     for(int i = 0; i < size; i++)
     {
-        file->WriteLine(Format("layer%d:\n    type: layer", i));
+        file->WriteLine(Format("layer%d:", i));
+		file->WriteLine("    type: layer");
+
+		file->WriteLine(Format("    layerType: %s", emitter->GetLayers()[i]->type == ParticleLayer::TYPE_SINGLE_PARTICLE ? "single" : "particles"));
+		file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
+
+		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();
+		file->WriteLine(Format("    pivotPoint: [%.1f, %.1f]", emitter->GetLayers()[i]->pivotPoint.x-(sprite->GetWidth()/2.0f), emitter->GetLayers()[i]->pivotPoint.y-(sprite->GetHeight()/2.0f)));
         
         int32 propIndex = 0;
         
@@ -3429,8 +3436,8 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 		GetEmitterPropValue((eProps)i, true);
 	}
 
-	size = emitter->GetLayers().size();
-	for(int i = 0; i < size; i++)
+	int32 layersSize = emitter->GetLayers().size();
+	for(int i = 0; i < layersSize; i++)
 	{
 		String spritePath = emitter->GetLayers()[i]->GetSprite()->GetName();
 		Layer * l = new Layer(layerProps, spritePath.substr(0, spritePath.size()-4), cellFont);
@@ -3438,8 +3445,8 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 		layers.push_back(l);
 		SafeAddControl(l->curLayerTime);
 
-		size = layerProps.size();
-		for(int j = 0; j < size; j++)
+		int32 layerPropsSize = layerProps.size();
+		for(int j = 0; j < layerPropsSize; j++)
 		{
 			selectedEmitterElement = i + 1;
 			selectedPropElement = j;

@@ -19,8 +19,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
 
-    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
-    String path = keyedArchieve->GetString("3dDataSourcePath", "/");
+    String path = EditorSettings::Instance()->GetDataSourcePath();
     if(path.length())
     {
         fileSystemDialog->SetCurrentDir(path);   

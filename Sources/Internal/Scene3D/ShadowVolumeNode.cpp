@@ -69,10 +69,12 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	RenderManager::Instance()->SetRenderData(shadowPolygonGroup->renderDataObject);
 	RenderManager::Instance()->FlushState();
 
+	Vector3 position = Vector3() * worldTransform;
+	LightNode * light = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, position);
 	int32 uniformLightPosition0 = shader->FindUniformLocationByName("lightPosition0");
-	if (uniformLightPosition0 != -1)
+	if (light && uniformLightPosition0 != -1)
 	{
-		Vector3 lightPosition0(100.f, 100.f, 100.0f);
+		Vector3 lightPosition0 = light->GetPosition();
 		const Matrix4 & matrix = scene->GetCurrentCamera()->GetMatrix();
 		lightPosition0 = lightPosition0 * matrix;
 
@@ -90,8 +92,6 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 }
-
-
 
 int32 ShadowVolumeNode::FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count)
 {

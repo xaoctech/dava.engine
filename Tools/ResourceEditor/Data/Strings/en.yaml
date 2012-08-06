@@ -146,9 +146,12 @@ property.lightnode.light: "Light"
 property.lightnode.type: "Type:"
 property.lightnode.color: "Color:"
 property.lightnode.staticlight: "Static light"
+property.lightnode.dynamiclight: "Dynamic light"
 property.lightnode.ambient.color: "Ambient color:"
 property.lightnode.diffuse.color: "Diffuse color:"
 property.lightnode.specular.color: "Specular color:"
+property.staticlight.enable: "Enable"
+property.dynamiclight.enable: "Enable"
 
 
 #CubeNode Section

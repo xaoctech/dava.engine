@@ -829,6 +829,11 @@ void RenderManager::SetDepthFunc(eCmpFunc func)
 	currentState.SetDepthFunc(func);
 }
 
+RenderOptions * RenderManager::GetOptions()
+{
+	return &options;
+}
+
 
 
 	

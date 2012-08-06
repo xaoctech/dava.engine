@@ -123,155 +123,155 @@ namespace DAVA
 		LocalFree(szArglist);
 	}
 
-	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+//	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-	bool CoreWin32Platform::CreateWin32Window(HINSTANCE hInstance)
-	{	
-		//single instance check
-		TCHAR fileName[MAX_PATH];
-		GetModuleFileName(NULL, fileName, MAX_PATH);
-		fileName[MAX_PATH-1] = 0; //string can be not null-terminated on winXP
-		for(int32 i = 0; i < MAX_PATH; ++i)
-		{
-			if(fileName[i] == L'\\') //symbol \ is not allowed in CreateMutex mutex name
-			{
-				fileName[i] = ' ';
-			}
-		}
-		hMutex = CreateMutex(NULL, FALSE, fileName);
-		if(ERROR_ALREADY_EXISTS == GetLastError())
-		{
-			return false;
-		}
-
-		windowedMode = DisplayMode(800, 600, 16, 0);
-		fullscreenMode = DisplayMode(800, 600, 16, 0);
-		currentMode = windowedMode;
-		isFullscreen = false;
-
-		// create the window, only if we do not use the null device
-		LPCWSTR className = L"DavaFrameworkWindowsDevice";
-
-		// Register Class
-
-		WNDCLASSEX wcex;
-		wcex.cbSize = sizeof(WNDCLASSEX); 
-		wcex.style			= CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc	= (WNDPROC)WndProc;
-		wcex.cbClsExtra		= 0;
-		wcex.cbWndExtra		= 0;
-		wcex.hInstance		= hInstance;
-		wcex.hIcon			= 0;
-		wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-		wcex.lpszMenuName	= 0;
-		wcex.lpszClassName	= className;
-		wcex.hIconSm		= 0;
-
-		RegisterClassEx(&wcex);
-
-		// calculate client size
-
-		RECT clientSize;
-		clientSize.top = 0;
-		clientSize.left = 0;
-		clientSize.right = currentMode.width;
-		clientSize.bottom = currentMode.height;
-
-		ULONG style = WINDOWED_STYLE;
-
-		// Create the rendering window
-		if (isFullscreen)
-		{
-			style  = WS_VISIBLE | WS_POPUP;
-		} // End if Fullscreen
-
-
-		AdjustWindowRect(&clientSize, style, FALSE);
-
-		int32 realWidth = clientSize.right - clientSize.left;
-		int32 realHeight = clientSize.bottom - clientSize.top;
-
-		int32 windowLeft = -10000;//(GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		int32 windowTop = -10000;//(GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
-
-		if (isFullscreen)
-		{
-			windowLeft = 0;
-			windowTop = 0;
-		}
-
-		// create window
-		hWindow = CreateWindow( className, L"", style, windowLeft, windowTop, 
-			realWidth, realHeight,	NULL, NULL, hInstance, NULL);
-
-		ShowWindow(hWindow, SW_SHOW);
-		UpdateWindow(hWindow);
-
-		// fix ugly ATI driver bugs. Thanks to ariaci (Taken from Irrlight).
-		MoveWindow(hWindow, windowLeft, windowTop, realWidth, realHeight, TRUE);
-	
-#if defined(__DAVAENGINE_DIRECTX9__)
-		RenderManager::Create(Core::RENDERER_DIRECTX9);
-#elif defined(__DAVAENGINE_OPENGL__)
-		RenderManager::Create(Core::RENDERER_OPENGL);
-#endif
-		RenderManager::Instance()->Create(hInstance, hWindow);
-
-		FrameworkDidLaunched();
-		KeyedArchive * options = Core::GetOptions();
-
-		//fullscreenMode = GetCurrentDisplayMode();
-		fullscreenMode = GetCurrentDisplayMode();//FindBestMode(fullscreenMode);
-		if (options)
-		{
-			windowedMode.width = options->GetInt32("width");
-			windowedMode.height = options->GetInt32("height");
-			windowedMode.bpp = options->GetInt32("bpp");
-			
-			// get values from config in case if they are available
-			fullscreenMode.width = options->GetInt32("fullscreen.width", fullscreenMode.width);
-			fullscreenMode.height = options->GetInt32("fullscreen.height", fullscreenMode.height);
-			fullscreenMode.bpp = windowedMode.bpp;
-
-			fullscreenMode = FindBestMode(fullscreenMode);
-
-			isFullscreen = (0 != options->GetInt32("fullscreen"));	
-			String title = options->GetString("title", "[set application title using core options property 'title']");
-			WideString titleW = StringToWString(title);
-			SetWindowText(hWindow, titleW.c_str());
-		}
-
-		Logger::Info("[PlatformWin32] best display fullscreen mode matched: %d x %d x %d refreshRate: %d", fullscreenMode.width, fullscreenMode.height, fullscreenMode.bpp, fullscreenMode.refreshRate);
-
-		currentMode = windowedMode;
-		if (isFullscreen)
-		{
-			currentMode = fullscreenMode;
-		}
-
-		clientSize.top = 0;
-		clientSize.left = 0;
-		clientSize.right = currentMode.width;
-		clientSize.bottom = currentMode.height;
-
-		AdjustWindowRect(&clientSize, style, FALSE);
-
-		realWidth = clientSize.right - clientSize.left;
-		realHeight = clientSize.bottom - clientSize.top;
-
-		windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
-		MoveWindow(hWindow, windowLeft, windowTop, realWidth, realHeight, TRUE);
-	
-
-		RenderManager::Instance()->ChangeDisplayMode(currentMode, isFullscreen);
-		RenderManager::Instance()->Init(currentMode.width, currentMode.height);
-		UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
-		Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
-
-		return true;
-	}
+// 	bool CoreWin32Platform::CreateWin32Window(HINSTANCE hInstance)
+// 	{	
+// 		//single instance check
+// 		TCHAR fileName[MAX_PATH];
+// 		GetModuleFileName(NULL, fileName, MAX_PATH);
+// 		fileName[MAX_PATH-1] = 0; //string can be not null-terminated on winXP
+// 		for(int32 i = 0; i < MAX_PATH; ++i)
+// 		{
+// 			if(fileName[i] == L'\\') //symbol \ is not allowed in CreateMutex mutex name
+// 			{
+// 				fileName[i] = ' ';
+// 			}
+// 		}
+// 		hMutex = CreateMutex(NULL, FALSE, fileName);
+// 		if(ERROR_ALREADY_EXISTS == GetLastError())
+// 		{
+// 			return false;
+// 		}
+// 
+// 		windowedMode = DisplayMode(800, 600, 16, 0);
+// 		fullscreenMode = DisplayMode(800, 600, 16, 0);
+// 		currentMode = windowedMode;
+// 		isFullscreen = false;
+// 
+// 		// create the window, only if we do not use the null device
+// 		LPCWSTR className = L"DavaFrameworkWindowsDevice";
+// 
+// 		// Register Class
+// 
+// 		WNDCLASSEX wcex;
+// 		wcex.cbSize = sizeof(WNDCLASSEX); 
+// 		wcex.style			= CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
+// 		wcex.lpfnWndProc	= (WNDPROC)WndProc;
+// 		wcex.cbClsExtra		= 0;
+// 		wcex.cbWndExtra		= 0;
+// 		wcex.hInstance		= hInstance;
+// 		wcex.hIcon			= 0;
+// 		wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+// 		wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+// 		wcex.lpszMenuName	= 0;
+// 		wcex.lpszClassName	= className;
+// 		wcex.hIconSm		= 0;
+// 
+// 		RegisterClassEx(&wcex);
+// 
+// 		// calculate client size
+// 
+// 		RECT clientSize;
+// 		clientSize.top = 0;
+// 		clientSize.left = 0;
+// 		clientSize.right = currentMode.width;
+// 		clientSize.bottom = currentMode.height;
+// 
+// 		ULONG style = WINDOWED_STYLE;
+// 
+// 		// Create the rendering window
+// 		if (isFullscreen)
+// 		{
+// 			style  = WS_VISIBLE | WS_POPUP;
+// 		} // End if Fullscreen
+// 
+// 
+// 		AdjustWindowRect(&clientSize, style, FALSE);
+// 
+// 		int32 realWidth = clientSize.right - clientSize.left;
+// 		int32 realHeight = clientSize.bottom - clientSize.top;
+// 
+// 		int32 windowLeft = -10000;//(GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+// 		int32 windowTop = -10000;//(GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+// 
+// 		if (isFullscreen)
+// 		{
+// 			windowLeft = 0;
+// 			windowTop = 0;
+// 		}
+// 
+// 		// create window
+// 		hWindow = CreateWindow( className, L"", style, windowLeft, windowTop, 
+// 			realWidth, realHeight,	NULL, NULL, hInstance, NULL);
+// 
+// 		ShowWindow(hWindow, SW_SHOW);
+// 		UpdateWindow(hWindow);
+// 
+// 		// fix ugly ATI driver bugs. Thanks to ariaci (Taken from Irrlight).
+// 		MoveWindow(hWindow, windowLeft, windowTop, realWidth, realHeight, TRUE);
+// 	
+// #if defined(__DAVAENGINE_DIRECTX9__)
+// 		RenderManager::Create(Core::RENDERER_DIRECTX9);
+// #elif defined(__DAVAENGINE_OPENGL__)
+// 		RenderManager::Create(Core::RENDERER_OPENGL);
+// #endif
+// 		RenderManager::Instance()->Create(hInstance, hWindow);
+// 
+// 		FrameworkDidLaunched();
+// 		KeyedArchive * options = Core::GetOptions();
+// 
+// 		//fullscreenMode = GetCurrentDisplayMode();
+// 		fullscreenMode = GetCurrentDisplayMode();//FindBestMode(fullscreenMode);
+// 		if (options)
+// 		{
+// 			windowedMode.width = options->GetInt32("width");
+// 			windowedMode.height = options->GetInt32("height");
+// 			windowedMode.bpp = options->GetInt32("bpp");
+// 			
+// 			// get values from config in case if they are available
+// 			fullscreenMode.width = options->GetInt32("fullscreen.width", fullscreenMode.width);
+// 			fullscreenMode.height = options->GetInt32("fullscreen.height", fullscreenMode.height);
+// 			fullscreenMode.bpp = windowedMode.bpp;
+// 
+// 			fullscreenMode = FindBestMode(fullscreenMode);
+// 
+// 			isFullscreen = (0 != options->GetInt32("fullscreen"));	
+// 			String title = options->GetString("title", "[set application title using core options property 'title']");
+// 			WideString titleW = StringToWString(title);
+// 			SetWindowText(hWindow, titleW.c_str());
+// 		}
+// 
+// 		Logger::Info("[PlatformWin32] best display fullscreen mode matched: %d x %d x %d refreshRate: %d", fullscreenMode.width, fullscreenMode.height, fullscreenMode.bpp, fullscreenMode.refreshRate);
+// 
+// 		currentMode = windowedMode;
+// 		if (isFullscreen)
+// 		{
+// 			currentMode = fullscreenMode;
+// 		}
+// 
+// 		clientSize.top = 0;
+// 		clientSize.left = 0;
+// 		clientSize.right = currentMode.width;
+// 		clientSize.bottom = currentMode.height;
+// 
+// 		AdjustWindowRect(&clientSize, style, FALSE);
+// 
+// 		realWidth = clientSize.right - clientSize.left;
+// 		realHeight = clientSize.bottom - clientSize.top;
+// 
+// 		windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+// 		windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+// 		MoveWindow(hWindow, windowLeft, windowTop, realWidth, realHeight, TRUE);
+// 	
+// 
+// 		RenderManager::Instance()->ChangeDisplayMode(currentMode, isFullscreen);
+// 		RenderManager::Instance()->Init(currentMode.width, currentMode.height);
+// 		UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
+// 		Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
+// 
+// 		return true;
+// 	}
 
 
 	bool CoreWin32Platform::SetupWindow(HINSTANCE hInstance, HWND hWindow)
@@ -695,194 +695,6 @@ namespace DAVA
 	//static bool mouseShow = false;
 	static bool mouseCursorShown = true;
 
-	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-	{
-#ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL 0x020A
-#endif
-#ifndef WHEEL_DELTA                     
-#define WHEEL_DELTA 120
-#endif
-
-		//Event event;
-		//event.MouseEvent.RelativeX = 0;
-		//event.MouseEvent.RelativeY = 0;
-
-		switch (message) 
-		{
-		case WM_ERASEBKGND:
-				return 0;
-
-		case WM_KEYUP:
-			{
-				InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)wParam);
-			};
-			break;
-
-		case WM_KEYDOWN:
-			{
-				BYTE allKeys[256];
-				GetKeyboardState(allKeys);
-	
-				if ((allKeys[VK_MENU] & 0x80)
-					&& (allKeys[VK_TAB] & 0x80))
-				{
-					ShowWindow(hWnd, SW_MINIMIZE);
-				}
-
-				Vector<DAVA::UIEvent> touches;
-				Vector<DAVA::UIEvent> emptyTouches;
-
-				for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-				{
-					touches.push_back(*it);
-				}
-
-				DAVA::UIEvent ev;
-				ev.keyChar = 0;
-				ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
-				ev.tapCount = 1;
-				ev.tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey((int32)wParam);
-
-				touches.push_back(ev);
-
-				UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-				touches.pop_back();
-				UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-
-				InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed((int32)wParam);
-			};
-			break;
-
-		case WM_CHAR:
-			{
-				if(wParam > 27) //TODO: remove this elegant check
-				{
-					Vector<DAVA::UIEvent> touches;
-					Vector<DAVA::UIEvent> emptyTouches;
-
-					for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-					{
-						touches.push_back(*it);
-					}
-
-					DAVA::UIEvent ev;
-					ev.keyChar = (char16)wParam;
-					ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
-					ev.tapCount = 1;
-					ev.tid = 0;
-
-					touches.push_back(ev);
-
-					UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-					touches.pop_back();
-					UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-				}
-			}
-			break;
-
-
-		case WM_LBUTTONDOWN:
-		case WM_RBUTTONDOWN:
-		case WM_MBUTTONDOWN:
-//		case WM_XBUTTONDOWN:
-
-		case WM_LBUTTONUP:
-		case WM_RBUTTONUP:
-		case WM_MBUTTONUP:
-//		case WM_XBUTTONUP:
-
-		case WM_MOUSEMOVE:
-			{
-			
-				//Logger::Debug("ms: %d %d", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-
-				Vector<DAVA::UIEvent> touches;
-				Vector<DAVA::UIEvent> emptyTouches;
-
-				int32 touchPhase = MoveTouchsToVector(message, wParam, lParam, &touches);
-
-				UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
-
-				touches.clear();
-			}
-// 			if (mouseShow)
-// 			{
-// 				ShowCursor(false);
-// 				mouseShow = false;
-// 			}
-			if (RenderManager::Instance()->GetCursor() != 0 && mouseCursorShown)
-			{
-				ShowCursor(false);
-				mouseCursorShown = false;
-			}
-			if (RenderManager::Instance()->GetCursor() == 0 && !mouseCursorShown)			
-			{
-				ShowCursor(false);
-				mouseCursorShown = false;
-			}
-			break;
-
-		case WM_NCMOUSEMOVE:
-			if (!mouseCursorShown)
-			{	
-				ShowCursor(true);
-				mouseCursorShown = true;
-			}
-			break;
-
-		case WM_NCMOUSELEAVE:
-			//ShowCursor(false);
-			break;
-
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			return 0;
-
-		case WM_ACTIVATE:
-			{
-				ApplicationCore * core = Core::Instance()->GetApplicationCore();
-                WORD loWord = LOWORD(wParam);
-                WORD hiWord = HIWORD(wParam);
-                if(!loWord || hiWord)
-                {
-                    Logger::Debug("[PlatformWin32] deactivate application");
-                    RenderResource::SaveAllResourcesToSystemMem();
-					
-                    if(core)
-					{
-						core->OnSuspend();
-					}
-					else 
-					{
-						Core::Instance()->SetIsActive(false);
-					}
-                }
-                else
-                {
-                    Logger::Debug("[PlatformWin32] activate application");
-					if(core)
-					{
-						core->OnResume();
-					}
-					else 
-					{
-						Core::Instance()->SetIsActive(true);
-					}
-                }
-			};
-			break;
-		case WM_SYSCOMMAND:
-			// prevent screensaver or monitor powersave mode from starting
-			if (wParam == SC_SCREENSAVE ||
-				wParam == SC_MONITORPOWER)
-				return 0;
-			break;
-		}
-
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-
 
 	bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	{
@@ -894,19 +706,15 @@ namespace DAVA
 #define WHEEL_DELTA 120
 #endif
 
-
-		//Event event;
-		//event.MouseEvent.RelativeX = 0;
-		//event.MouseEvent.RelativeY = 0;
+//		Logger::Debug("Event: %d(%0x)", message->message, message->message);
 
 		switch (message->message) 
 		{
 		case WM_KEYUP:
 			{
 				InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed((int32)message->wParam);
-// 				*result = 0;
-// 				return true;
-				break;
+				*result = 0;
+				return true;
 			};
 
 		case WM_KEYDOWN:
@@ -936,9 +744,8 @@ namespace DAVA
 
 				InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed((int32)message->wParam);
 
-// 				*result = 0;
-// 				return true;
-				break;
+				*result = 0;
+				return true;
 			};
 
 		case WM_CHAR:
@@ -965,8 +772,8 @@ namespace DAVA
 					touches.pop_back();
 					UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
 				}
-// 				*result = 0;
-// 				return true;
+				*result = 0;
+				return true;
 			}
 			break;
 

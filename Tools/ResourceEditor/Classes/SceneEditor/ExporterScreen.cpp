@@ -33,6 +33,8 @@
 #include "CommandLineTool.h"
 #include "SceneExporter.h"
 
+#include "ErrorNotifier.h"
+
 void ExporterScreen::LoadResources()
 {
     GetBackground()->SetColor(Color::White());
@@ -114,17 +116,36 @@ void ExporterScreen::DidAppear()
     if(0 < errorLog.size())
     {
         printf("Errors:\n");
-        Logger::Info("Errors:");
+        Logger::Error("Errors:");
         Set<String>::const_iterator endIt = errorLog.end();
         int32 index = 0;
         for (Set<String>::const_iterator it = errorLog.begin(); it != endIt; ++it)
         {
             printf("[%d] %s\n", index, (*it).c_str());
-            Logger::Info(Format("[%d] %s\n", index, (*it).c_str()));
+            Logger::Error(Format("[%d] %s\n", index, (*it).c_str()));
             
             ++index;
         }
+        
+        bool needRelease = false;
+        if(!ErrorNotifier::Instance())
+        {
+            new ErrorNotifier();
+        }
+        
+        ErrorNotifier::Instance()->ShowError(errorLog);
+        
+        if(needRelease)
+        {
+            ErrorNotifier::Instance()->Release();
+        }
+        
     }
-    
-    Core::Instance()->Quit();
+
+    bool forceMode =    CommandLineTool::Instance()->CommandIsFound(String("-force"))
+                    ||  CommandLineTool::Instance()->CommandIsFound(String("-forceclose"));
+    if(forceMode || 0 == errorLog.size())
+    {
+        Core::Instance()->Quit();
+    }
 }

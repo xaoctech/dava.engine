@@ -57,4 +57,9 @@
 - (void)windowWillMiniaturize:(NSNotification *)notification;
 - (void)windowDidDeminiaturize:(NSNotification *)notification;
 
+
+- (void)OnSuspend;
+- (void)OnResume;
+
+
 @end

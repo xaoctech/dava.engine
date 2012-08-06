@@ -44,6 +44,8 @@ PropertyLineEditControl::PropertyLineEditControl()
 	
 	activeValueIndex = -1;
     selectedValueIndex = -1;
+
+	curTime = 0;
     
     text = new UIStaticText(Rect(0, 0, 10, 15));
     Font *font = FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
@@ -81,7 +83,7 @@ void PropertyLineEditControl::SetMaxX(float32 value)
 
 const Rect & PropertyLineEditControl::GetWorkZone()
 {
-	workZone = GetRect();
+	workZone = GetRect(true);
 	workZone.x += 10;
 	workZone.y += 10;
 	workZone.dx -= 20;
@@ -387,7 +389,7 @@ void PropertyLineEditControl::SetText(WideString string)
 
 void PropertyLineEditControl::Draw(const UIGeometricData &geometricData)
 {
-	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 0.3f);
+	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, .3f);
 	RenderHelper::Instance()->FillRect(geometricData.GetUnrotatedRect());
     
     const Rect & cRect = GetWorkZone();
@@ -395,7 +397,7 @@ void PropertyLineEditControl::Draw(const UIGeometricData &geometricData)
     RenderManager::Instance()->SetColor(0.8f, 0.6f, 0.6f, 1.0f);
     RenderHelper::Instance()->DrawLine(CalcRealPosition(PropertyRect(curTime, maxY)), CalcRealPosition(PropertyRect(curTime, minY)));
     
-	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 0.9f);
+	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	RenderHelper::Instance()->DrawRect(cRect);
     
     RenderHelper::Instance()->DrawLine(Vector2(cRect.x - 3, cRect.y + cRect.dy/2), Vector2(cRect.x + 3, cRect.y + cRect.dy/2));

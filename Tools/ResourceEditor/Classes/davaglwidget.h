@@ -17,24 +17,31 @@ public:
     
 protected:
 
-	void timerEvent(QTimerEvent *);
-	void resizeEvent(QResizeEvent *);
-    void paintEvent(QPaintEvent *);
+	virtual void resizeEvent(QResizeEvent *);
+    virtual void paintEvent(QPaintEvent *);
 
-	void showEvent(QShowEvent *);
-	void hideEvent(QHideEvent *);
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
 
+	virtual void closeEvent(QCloseEvent *);
 
+    virtual void moveEvent(QMoveEvent *);
+
+    
 #if defined(Q_WS_WIN)
 	virtual bool winEvent(MSG *message, long *result);
 #endif //#if defined(Q_WS_WIN)
 
+    
+protected slots:
+    
+    void FpsTimerDone();
+    
 private:
 
-    bool isFirstDraw;
-
-    int counter;
-    float divider;
+    QTimer *fpsTimer;
+    int frameTime;
+	bool willClose;
 
 private:
     Ui::DavaGLWidget *ui;

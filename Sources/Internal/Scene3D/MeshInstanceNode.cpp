@@ -133,11 +133,11 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     }
     SceneNode::Update(timeElapsed);
     
-    //if (needUpdateTransformBox)
-	//{
-    //    bbox.GetTransformedBox(worldTransform, transformedBox);
-	//	entity->SetData("meshAABox", transformedBox);
-	//}
+    if (needUpdateTransformBox)
+	{
+        bbox.GetTransformedBox(worldTransform, transformedBox);
+		//entity->SetData("meshAABox", transformedBox);
+	}
 	//entity->SetData("meshInstanceNode", this);
 	//entity->SetData("transform", worldTransform);
 
@@ -159,11 +159,11 @@ void MeshInstanceNode::Draw()
 //    }    
 
 	//now clipping in entity system
-    //if (flags & NODE_CLIPPED_THIS_FRAME)
-    //{
-    //    // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
-    //    return;
-    //}
+    if (flags & NODE_CLIPPED_THIS_FRAME)
+    {
+        // !scene->GetClipCamera()->GetFrustum()->IsInside(transformedBox)
+        return;
+    }
 		
 	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
 	Matrix4 meshFinalMatrix = worldTransform * prevMatrix;
@@ -335,9 +335,7 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
 
 AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
 {
-    AABBox3 retBBox = bbox;
-	
-    bbox.GetTransformedBox(GetWorldTransform(), retBBox);
+	AABBox3 retBBox = transformedBox;
     
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
@@ -660,23 +658,8 @@ void MeshInstanceNode::BakeTransforms()
 void MeshInstanceNode::UpdateLights()
 {
     Vector3 meshPosition = Vector3() * worldTransform;
-    float32 squareMinDistance = 10000000.0f;
-    LightNode * nearestLight = 0;
-    
-    Set<LightNode*> & lights = scene->GetLights();
-    const Set<LightNode*>::iterator & endIt = lights.end();
-    for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
-    {
-        LightNode * node = *it;
-        const Vector3 & lightPosition = node->GetPosition();
-        
-        float32 squareDistanceToLight = (meshPosition - lightPosition).SquareLength();
-        if (squareDistanceToLight < squareMinDistance)
-        {
-            squareMinDistance = squareDistanceToLight;
-            nearestLight = node;
-        }
-    }
+    LightNode * nearestLight = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, meshPosition);
+
     RegisterNearestLight(nearestLight);
 }
 

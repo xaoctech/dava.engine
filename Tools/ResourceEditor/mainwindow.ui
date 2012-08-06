@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
+    <width>1065</width>
     <height>660</height>
    </rect>
   </property>
@@ -25,40 +25,301 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+  <widget class="DavaGLWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="margin">
      <number>0</number>
     </property>
-    <item>
-     <widget class="DavaGLWidget" name="davaGlWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>200</height>
-       </size>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
-  <action name="action1">
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1065</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuResentScenes">
+     <property name="title">
+      <string>Resent Scenes</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionPNG"/>
+     <addaction name="actionPVR"/>
+     <addaction name="actionDXT"/>
+    </widget>
+    <addaction name="actionNewScene"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenScene"/>
+    <addaction name="actionOpenProject"/>
+    <addaction name="menuResentScenes"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveScene"/>
+    <addaction name="menuExport"/>
+   </widget>
+   <widget class="QMenu" name="menuCreateNode">
+    <property name="title">
+     <string>Create Node</string>
+    </property>
+    <addaction name="actionLandscape"/>
+    <addaction name="actionLight"/>
+    <addaction name="actionServiceNode"/>
+    <addaction name="actionBox"/>
+    <addaction name="actionSphere"/>
+    <addaction name="actionCamera"/>
+    <addaction name="actionImposter"/>
+    <addaction name="actionParticleEmitter"/>
+    <addaction name="actionUserNode"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionMaterialEditor"/>
+    <addaction name="actionTextureConverter"/>
+    <addaction name="separator"/>
+    <addaction name="actionHeightMapEditor"/>
+    <addaction name="actionTileMapEditor"/>
+   </widget>
+   <widget class="QMenu" name="menuViewPort">
+    <property name="title">
+     <string>View Port</string>
+    </property>
+    <addaction name="actionIPhone"/>
+    <addaction name="actionRetina"/>
+    <addaction name="actionIPad"/>
+    <addaction name="actionDefault"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionRestoreViews"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuCreateNode"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuViewPort"/>
+  </widget>
+  <widget class="QDockWidget" name="dockSceneGraph">
+   <property name="windowTitle">
+    <string>Scene Graph</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="sceneGraphBody">
+    <property name="minimumSize">
+     <size>
+      <width>150</width>
+      <height>0</height>
+     </size>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="sceneGraphTree"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockDataGraph">
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>42</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Data Graph</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dataGraphBody"/>
+  </widget>
+  <widget class="QDockWidget" name="dockLibrary">
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>42</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Library</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="libraryBody"/>
+  </widget>
+  <widget class="QDockWidget" name="dockProperties">
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>42</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="propertiesBody"/>
+  </widget>
+  <widget class="QDockWidget" name="dockEntities">
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>42</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Entity Graph</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="entityBody"/>
+  </widget>
+  <action name="actionNewScene">
    <property name="text">
-    <string>1</string>
+    <string>New Scene</string>
    </property>
   </action>
-  <action name="action2">
+  <action name="actionOpenScene">
    <property name="text">
-    <string>2</string>
+    <string>Open Scene</string>
+   </property>
+  </action>
+  <action name="actionSaveScene">
+   <property name="text">
+    <string>Save Scene</string>
+   </property>
+  </action>
+  <action name="actionOpenProject">
+   <property name="text">
+    <string>Open Project</string>
+   </property>
+  </action>
+  <action name="actionPNG">
+   <property name="text">
+    <string>PNG</string>
+   </property>
+  </action>
+  <action name="actionPVR">
+   <property name="text">
+    <string>PVR</string>
+   </property>
+  </action>
+  <action name="actionDXT">
+   <property name="text">
+    <string>DXT</string>
+   </property>
+  </action>
+  <action name="actionLandscape">
+   <property name="text">
+    <string>Landscape</string>
+   </property>
+  </action>
+  <action name="actionLight">
+   <property name="text">
+    <string>Light</string>
+   </property>
+  </action>
+  <action name="actionServiceNode">
+   <property name="text">
+    <string>Service Node</string>
+   </property>
+  </action>
+  <action name="actionBox">
+   <property name="text">
+    <string>Box</string>
+   </property>
+  </action>
+  <action name="actionSphere">
+   <property name="text">
+    <string>Sphere</string>
+   </property>
+  </action>
+  <action name="actionCamera">
+   <property name="text">
+    <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionImposter">
+   <property name="text">
+    <string>Imposter</string>
+   </property>
+  </action>
+  <action name="actionUserNode">
+   <property name="text">
+    <string>User Node</string>
+   </property>
+  </action>
+  <action name="actionMaterialEditor">
+   <property name="text">
+    <string>Material Editor</string>
+   </property>
+  </action>
+  <action name="actionHeightMapEditor">
+   <property name="text">
+    <string>Height Map Editor</string>
+   </property>
+  </action>
+  <action name="actionTileMapEditor">
+   <property name="text">
+    <string>Tile Map Editor</string>
+   </property>
+  </action>
+  <action name="actionTextureConverter">
+   <property name="text">
+    <string>Texture Converter</string>
+   </property>
+  </action>
+  <action name="actionIPhone">
+   <property name="text">
+    <string>iPhone</string>
+   </property>
+  </action>
+  <action name="actionRetina">
+   <property name="text">
+    <string>Retina</string>
+   </property>
+  </action>
+  <action name="actionIPad">
+   <property name="text">
+    <string>iPad</string>
+   </property>
+  </action>
+  <action name="actionDefault">
+   <property name="text">
+    <string>Default</string>
+   </property>
+  </action>
+  <action name="actionParticleEmitter">
+   <property name="text">
+    <string>Particle Emitter</string>
+   </property>
+  </action>
+  <action name="actionRestoreViews">
+   <property name="text">
+    <string>Restore Views</string>
    </property>
   </action>
  </widget>

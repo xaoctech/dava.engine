@@ -60,6 +60,7 @@ class MeshInstanceNode;
 class ImposterManager;
 class ImposterNode;
 class EntityManager;
+class BVHierarchy;
 /** 
     \ingroup scene3d
     \brief This class is a code of our 3D Engine scene graph. 
@@ -208,7 +209,7 @@ public:
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
     Set<LightNode*> & GetLights();
-    LightNode * GetNearestLight(LightNode::eType type, Vector3 position);
+	LightNode * GetNearestDynamicLight(LightNode::eType type, Vector3 position);
 
 	/**
 		\brief Enables/disables imposters in scene.
@@ -253,6 +254,7 @@ protected:
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<LightNode*> lights;
 	ShadowRect * shadowRect;
+	BVHierarchy * bvHierarchy;
 
 	ImposterManager * imposterManager;
 	bool enableImposters;

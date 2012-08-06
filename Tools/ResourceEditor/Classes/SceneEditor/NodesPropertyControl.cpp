@@ -44,6 +44,15 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
                                                  L"-");
         btnMinus->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnMinus));
         AddControl(btnMinus);
+
+
+		btnPlusCollision = ControlsFactory::CreateButton(
+			Rect(ControlsFactory::BUTTON_HEIGHT << 1, propertyRect.dy, 
+			ControlsFactory::BUTTON_HEIGHT << 1, ControlsFactory::BUTTON_HEIGHT), 
+			L"+C");
+		btnPlusCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnPlusCollision));
+		AddControl(btnPlusCollision);
+		
         
         propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*4, 
                                                      rect.dx, ControlsFactory::BUTTON_HEIGHT*3), this);
@@ -75,7 +84,8 @@ NodesPropertyControl::~NodesPropertyControl()
     
     SafeRelease(btnMinus);
     SafeRelease(btnPlus);
-    
+    SafeRelease(btnPlusCollision);
+
     SafeRelease(propertyList);
 }
 
@@ -457,6 +467,7 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
         nodesDelegate->NodesPropertyChanged();
     }
 }
+
 void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
 {
     if(currentSceneNode)
@@ -488,7 +499,10 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
                 }
             }
         }
-
+		else if("CollisionFlag" == forKey)
+		{
+			currentSceneNode->PropagateBoolProperty("CollisionFlag", newValue);
+		}
         
         if(!createNodeProperties)
         {
@@ -567,6 +581,15 @@ void NodesPropertyControl::OnPlus(BaseObject * object, void * userData, void * c
 
     AddControl(propControl);
 }
+
+void NodesPropertyControl::OnPlusCollision(BaseObject * object, void * userData, void * callerData)
+{
+	KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
+	currentProperties->SetBool("CollisionFlag", false);
+	UpdateFieldsForCurrentNode();
+	currentSceneNode->PropagateBoolProperty("CollisionFlag", false);
+}
+
 void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * callerData)
 {
     if(propControl->GetParent() || listHolder->GetParent())

@@ -30,6 +30,7 @@
 #include "Utils/Utils.h"
 #include "Render/Image.h"
 #include "Platform/SystemTimer.h"
+#include "Scene3D/MeshInstanceNode.h"
 
 namespace DAVA
 {
@@ -150,7 +151,7 @@ bool ImposterNode::IsAngleOrRangeChangedEnough(float32 squareDistance, float32 d
 
 void ImposterNode::Draw()
 {
-	if((flags & NODE_DISABLE_IMPOSTER) && GetChildrenCount() > 0)
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::IMPOSTERS_ENABLE) && GetChildrenCount() > 0)
 	{
 		DVASSERT(GetChildrenCount() == 1);
 		GetChild(0)->Draw();
@@ -174,6 +175,41 @@ void ImposterNode::GeneralDraw()
 	}
 }
 
+void ImposterNode::GetOOBBoxScreenCoords(SceneNode * node, const Matrix4 & mvp, AABBox3 & screenBounds)
+{
+	const Rect & viewport = RenderManager::Instance()->GetViewport();
+	MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(node);
+	if (mesh)
+	{
+		Vector3 corners[8];
+		Vector3 screenVertices[8];
+
+		mesh->GetBoundingBox().GetCorners(corners);
+		const Matrix4 & worldTransform = mesh->GetWorldTransform();
+
+		for (int32 k = 0; k < 8; ++k)
+		{
+			Vector4 pv(corners[k]);
+			pv = pv * worldTransform;
+			pv = pv * mvp;
+			pv.x = (viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x;
+			pv.y = (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y;
+			pv.z = (pv.z/pv.w + 1.f) * 0.5f;
+
+			screenVertices[k] = Vector3(pv.x, pv.y, pv.z);
+			screenBounds.AddPoint(screenVertices[k]);
+
+		}
+	}
+
+	int32 count = node->GetChildrenCount();
+	for (int32 i = 0; i < count; ++i)
+	{
+		GetOOBBoxScreenCoords(node->GetChild(i), mvp, screenBounds);
+	}
+}
+
+
 void ImposterNode::UpdateImposter()
 {
 	Camera * camera = scene->GetCurrentCamera();
@@ -183,24 +219,25 @@ void ImposterNode::UpdateImposter()
 
 	SceneNode * child = GetChild(0);
 	AABBox3 bbox = child->GetWTMaximumBoundingBox();
-	Vector3 bboxVertices[8];
-	Vector3 screenVertices[8];
-	bbox.GetCorners(bboxVertices);
+	//Vector3 bboxVertices[8];
+	//bbox.GetCorners(bboxVertices);
 	Vector3 bboxCenter = bbox.GetCenter();
 
-	imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
+	//imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
+	imposterCamera->Setup(camera->GetFOV(), camera->GetAspect(), camera->GetZNear(), camera->GetZFar());
 	imposterCamera->SetTarget(bbox.GetCenter());
 	imposterCamera->SetPosition(cameraPos);
 	imposterCamera->SetUp(camera->GetUp());
 	imposterCamera->SetLeft(camera->GetLeft());
 
-
 	Rect viewport = RenderManager::Instance()->GetViewport();
 	
-
-	Matrix4 mvp = imposterCamera->GetUniformProjModelMatrix();
+	const Matrix4 & mvp = imposterCamera->GetUniformProjModelMatrix();
 
 	AABBox3 screenBounds;
+	GetOOBBoxScreenCoords(child, mvp, screenBounds);
+
+	/*
 	for(int32 i = 0; i < 8; ++i)
 	{
 		//project
@@ -212,7 +249,8 @@ void ImposterNode::UpdateImposter()
 
 		screenVertices[i] = Vector3(pv.x, pv.y, pv.z);
 		screenBounds.AddPoint(screenVertices[i]);
-	}
+	}*/
+
 
 	Vector4 pv(bboxCenter);
 	pv = pv*mvp;
@@ -254,6 +292,7 @@ void ImposterNode::UpdateImposter()
 
 	//draw
 	RecreateFbo(screenSize);
+	//Logger::Info("%f, %f", screenSize.x, screenSize.y);
 	if(!block)
 	{
 		return;
@@ -280,7 +319,23 @@ void ImposterNode::UpdateImposter()
 	RenderManager::Instance()->State()->SetScissorRect(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
 	RenderManager::Instance()->FlushState();
 	//TODO: use one "clear" function instead of two
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+	//if(block->size.x == 512.f)
+	//{
+	//	RenderManager::Instance()->ClearWithColor(0.f, .8f, 0.f, 1.f);
+	//}
+	//else if(block->size.x == 256.f)
+	//{
+	//	RenderManager::Instance()->ClearWithColor(0.f, .3f, 0.f, 1.f);
+	//}
+	//else if(block->size.x == 128.f)
+	//{
+	//	RenderManager::Instance()->ClearWithColor(.3f, .3f, 0.f, 1.f);
+	//}
+	//else
+	//{
+	//	RenderManager::Instance()->ClearWithColor(.3f, 0.f, 0.f, 1.f);
+	//}
+	RenderManager::Instance()->ClearWithColor(.0f, .0f, 0.f, .0f);
 	RenderManager::Instance()->ClearDepthBuffer();
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_SCISSOR_TEST);
 

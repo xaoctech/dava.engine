@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	DVASSERT(false && "Wrong platform")
 #endif
 
-    MainWindow w;
+    QtMainWindow w;
     w.show();
 
     return a.exec();
