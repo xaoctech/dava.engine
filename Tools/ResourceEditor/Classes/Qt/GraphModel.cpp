@@ -2,6 +2,9 @@
 #include "GraphItem.h"
 
 #include <QTreeView>
+#include <QMimeData>
+
+#include "QtUtils.h"
 
 
 GraphModel::GraphModel(QObject *parent)
@@ -134,9 +137,6 @@ QItemSelectionModel *GraphModel::GetSelectionModel()
     return itemSelectionModel;
 }
 
-void GraphModel::SelectionChanged(const QItemSelection &, const QItemSelection &)
-{
-}
 
 GraphItem * GraphModel::ItemForData(void * data)
 {
@@ -181,3 +181,100 @@ void GraphModel::Activate(QTreeView *view)
     attachedTreeView->setModel(this);
     attachedTreeView->setSelectionModel(itemSelectionModel);
 }
+
+void * GraphModel::ItemData(const QModelIndex &index) const
+{
+    if (index.isValid())
+	{
+        GraphItem *item = static_cast<GraphItem*>(index.internalPointer());
+        return item->GetUserData();
+	}
+    
+    return NULL;
+}
+
+
+
+QStringList GraphModel::mimeTypes() const
+{
+    QStringList types;
+    types << "application/tree.userdata";
+    return types;
+}
+
+QMimeData *GraphModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData();
+    QByteArray encodedData;
+    
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    
+    foreach (const QModelIndex &index, indexes)
+    {
+        if (index.isValid())
+        {
+            GraphItem *item = static_cast<GraphItem *>(index.internalPointer());
+//            QVariant uData = QVariant::fromValue(item);
+            QVariant uData = PointerHolder::ToQVariant(item);
+            stream << uData;
+        }
+    }
+    
+    mimeData->setData("application/tree.userdata", encodedData);
+    return mimeData;
+}
+
+bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+                          int row, int column, const QModelIndex &parent)
+{
+    if (action == Qt::IgnoreAction)
+        return true;
+    
+    if (!data->hasFormat("application/tree.userdata") || (column > 0))
+        return false;
+    
+    int32 beginRow = 0;
+    if (row != -1)
+    {
+        beginRow = row;
+    }
+    else if(parent.isValid())
+    {
+        beginRow = rowCount(parent);
+    }
+    
+    
+    QByteArray encodedData = data->data("application/tree.userdata");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    while (!stream.atEnd())
+    {
+        QVariant uData;
+        stream >> uData;
+
+        GraphItem *movedItem = PointerHolder::ToGraphItem(uData);
+        MoveItemToParent(movedItem, parent);
+
+        
+        
+//        bool inserted = insertRows(beginRow, 1, parent);
+//        if(inserted)
+//        {
+//            QModelIndex idx = index(beginRow, 0, parent);
+//            bool dataSet = setData(idx, uData);
+//            if(!dataSet)
+//            {
+//                return false;
+//            }
+//            
+//            ++beginRow;
+//        }
+//        else
+//        {
+//            return false;
+//        }
+    }
+    
+    reset();
+    return true;
+}
+

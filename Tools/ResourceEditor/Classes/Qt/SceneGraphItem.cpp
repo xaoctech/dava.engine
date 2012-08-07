@@ -20,11 +20,13 @@ QVariant SceneGraphItem::Data(int32 column)
 		return QVariant(QString(node->GetName().c_str()));
 	}
 
-	return QVariant();
+	return QVariant(QString("! NULL Node"));
 }
 
 void SceneGraphItem::SetUserData(void *data)
 {
+    ReleaseUserData();
+    
 	SceneNode *node = (SceneNode *)data;
 	userData = SafeRetain(node);
 }

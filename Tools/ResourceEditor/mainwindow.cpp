@@ -7,12 +7,17 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/SceneDataManager.h"
 
+#include "Classes/Qt/QtUtils.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent) 
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
+ 
+    qRegisterMetaTypeStreamOperators<PointerHolder>("PointerHolder");
+    qRegisterMetaTypeStreamOperators<QList<PointerHolder> >("QList<PointerHolder>");
     
     if(DAVA::Core::Instance())
     {
@@ -120,6 +125,12 @@ void QtMainWindow::SetupProjectPath()
 void QtMainWindow::SetupDockWidgets()
 {
     SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
+    ui->sceneGraphTree->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->sceneGraphTree->setDragEnabled(true);
+    ui->sceneGraphTree->setAcceptDrops(true);
+    ui->sceneGraphTree->setDropIndicatorShown(true);
+    
+    
     
     connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
     connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));

@@ -4,7 +4,7 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
 
-#include "../Qt/QtDefines.h"
+#include "../Qt/QtUtils.h"
 #include "../Qt/GUIState.h"
 
 #include <QFileDialog>

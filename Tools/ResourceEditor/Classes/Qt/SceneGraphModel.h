@@ -22,6 +22,16 @@ public:
     void SelectNode(DAVA::SceneNode *node);
     DAVA::SceneNode * GetSelectedNode();
 
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+
+    virtual Qt::DropActions supportedDropActions() const;
+    virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    
+    virtual void MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex);
+
+    
 Q_SIGNALS:
     
     void SceneNodeSelected(DAVA::SceneNode *node);
