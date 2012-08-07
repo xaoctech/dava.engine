@@ -118,15 +118,23 @@ void QtMainWindow::SetupMainMenu()
                                        );
 }
 
+void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename)
+{
+	QIcon icon;
+	icon.addFile(iconFilename, QSize(), QIcon::Normal, QIcon::Off);
+	decoratedAction->setIcon(icon);
+}
+
+
 void QtMainWindow::SetupToolBar()
 {
-    ui->mainToolBar->addAction(ui->actionNewScene);
-    
-    QIcon icon1;
-    icon1.addFile(QString::fromUtf8(":/Data/QtIcons/savescene.png"), QSize(), QIcon::Normal, QIcon::Off);
-    ui->actionSaveScene->setIcon(icon1);
+// 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
+// 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
+// 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
+// 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
 
     
+	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
     ui->mainToolBar->addAction(ui->actionOpenProject);
     ui->mainToolBar->addAction(ui->actionSaveScene);

@@ -44,7 +44,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -303,7 +303,7 @@
   <action name="actionOpenScene">
    <property name="icon">
     <iconset>
-     <normaloff>QtIcons/openscene.png</normaloff>QtIcons/openscene.png</iconset>
+     <normaloff>Data/QtIcons/openscene.png</normaloff>Data/QtIcons/openscene.png</iconset>
    </property>
    <property name="text">
     <string>Open Scene</string>
@@ -312,7 +312,7 @@
   <action name="actionSaveScene">
    <property name="icon">
     <iconset>
-     <normaloff>QtIcons/savescene.png</normaloff>QtIcons/savescene.png</iconset>
+     <normaloff>Data/QtIcons/savescene.png</normaloff>Data/QtIcons/savescene.png</iconset>
    </property>
    <property name="text">
     <string>Save Scene</string>
@@ -321,7 +321,7 @@
   <action name="actionOpenProject">
    <property name="icon">
     <iconset>
-     <normaloff>QtIcons/openproject.png</normaloff>QtIcons/openproject.png</iconset>
+     <normaloff>Data/QtIcons/openproject.png</normaloff>Data/QtIcons/openproject.png</iconset>
    </property>
    <property name="text">
     <string>Open Project</string>
