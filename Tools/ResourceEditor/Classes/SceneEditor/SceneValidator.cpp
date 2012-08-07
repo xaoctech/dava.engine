@@ -35,6 +35,21 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
         ValidateLodNodes(scene, errorsLog);
+        
+        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+        {
+            SceneNode * node = *it;
+            if (node->GetParent())
+            {
+                node->GetParent()->RemoveNode(node);
+            }
+        }
+        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+        {
+            SceneNode * node = *it;
+            SafeRelease(node);
+        }
+        emptyNodesForDeletion.clear();
     }
     else 
     {
@@ -101,20 +116,6 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode)
     
     ShowErrors();
     
-    for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
-    {
-        SceneNode * node = *it;
-        if (node->GetParent())
-        {
-            node->GetParent()->RemoveNode(node);
-        }
-    }
-	for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
-	{
-		SceneNode * node = *it;
-		SafeRelease(node);
-	}
-    emptyNodesForDeletion.clear();
 }
 
 void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog)
