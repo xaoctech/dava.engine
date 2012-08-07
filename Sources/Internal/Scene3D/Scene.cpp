@@ -699,20 +699,14 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
 	for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
 	{
 		LightNode * node = *it;
-		//TODO: use simple flag for "dynamic" option in non-editor projects
-		bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-		if(isDynamic)
+		const Vector3 & lightPosition = node->GetPosition();
+
+		float32 squareDistanceToLight = (position - lightPosition).SquareLength();
+		if (squareDistanceToLight < squareMinDistance)
 		{
-			const Vector3 & lightPosition = node->GetPosition();
-
-			float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-			if (squareDistanceToLight < squareMinDistance)
-			{
-				squareMinDistance = squareDistanceToLight;
-				nearestLight = node;
-			}
+			squareMinDistance = squareDistanceToLight;
+			nearestLight = node;
 		}
-
 	}
 
 	return nearestLight;
