@@ -129,8 +129,16 @@ public:
     void SelectNodeQt(SceneNode *node);
 #endif //#if defined (DAVA_QT)        
     
+    void BakeScene();
+    
 protected:
 
+    void BakeNode(SceneNode *node);
+    void FindIdentityNodes(SceneNode *node);
+    void RemoveIdentityNodes(SceneNode *node);
+
+    
+    
     void ToggleGraph(GraphBase *graph);
 
 #if !defined (DAVA_QT)        
