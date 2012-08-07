@@ -127,3 +127,9 @@ void SceneInfoControl::RedrawCells()
         ControlsFactory::CusomizeTransparentControl(cell, 0.1f);
     }
 }
+
+void SceneInfoControl::SetNodesCount(int32 nodesCount)
+{
+    SetIntInfoValue("Nodes At Scene", nodesCount);
+    RedrawCells();
+}
