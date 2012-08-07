@@ -9,6 +9,8 @@
 
 #include "Classes/Qt/QtUtils.h"
 
+#include <QToolBar>
+
 QtMainWindow::QtMainWindow(QWidget *parent) 
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
@@ -34,6 +36,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
     actionHandler = new GUIActionHandler(this);
     SetupMainMenu();
+    SetupToolBar();
     
     SetupDockWidgets();
 }
@@ -69,16 +72,19 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionEntities = ui->dockEntities->toggleViewAction();
     QAction *actionProperties = ui->dockProperties->toggleViewAction();
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
-    ui->menuView->insertAction(ui->actionRestoreViews, actionLibrary);
+    QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
+    ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
+    ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
     ui->menuView->insertAction(actionProperties, actionEntities);
     ui->menuView->insertAction(actionEntities, actionDataGraph);
     ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
     ui->menuView->insertSeparator(ui->actionRestoreViews);
+    ui->menuView->insertSeparator(actionToolBar);
     ui->menuView->insertSeparator(actionProperties);
-    actionHandler->RegisterDockActions(ResourceEditor::DOCK_COUNT,
+    actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary);
+                                       actionProperties, actionLibrary, actionToolBar);
     
     
     //CreateNode
@@ -110,6 +116,23 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionIPad,
                                            ui->actionDefault
                                        );
+}
+
+void QtMainWindow::SetupToolBar()
+{
+    ui->mainToolBar->addAction(ui->actionNewScene);
+    
+    QIcon icon1;
+    icon1.addFile(QString::fromUtf8(":/Data/QtIcons/savescene.png"), QSize(), QIcon::Normal, QIcon::Off);
+    ui->actionSaveScene->setIcon(icon1);
+
+    
+    ui->mainToolBar->addAction(ui->actionOpenScene);
+    ui->mainToolBar->addAction(ui->actionOpenProject);
+    ui->mainToolBar->addAction(ui->actionSaveScene);
+    ui->mainToolBar->addSeparator();
+    
+    ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 
 void QtMainWindow::SetupProjectPath()

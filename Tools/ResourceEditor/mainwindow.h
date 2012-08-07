@@ -19,6 +19,7 @@ public:
     
 private:
     void SetupMainMenu();
+    void SetupToolBar();
     void SetupProjectPath();
     void SetupDockWidgets();
     

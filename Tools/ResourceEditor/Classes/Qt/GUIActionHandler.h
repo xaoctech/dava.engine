@@ -82,7 +82,7 @@ private:
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
-    QAction *dockActions[ResourceEditor::VIEWPORT_COUNT];
+    QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
 };

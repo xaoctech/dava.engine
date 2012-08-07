@@ -263,6 +263,8 @@
 		5C8AD20815BDD66900BC3FD8 /* CommandCreateNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20615BDD66900BC3FD8 /* CommandCreateNode.cpp */; };
 		5C8AD20B15BDE73B00BC3FD8 /* CommandViewport.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20915BDE73B00BC3FD8 /* CommandViewport.cpp */; };
 		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
+		5C8B038E15D10CA300571D9F /* qrc_QtIcons.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */; };
+		5C8B039015D1113E00571D9F /* QtIcons.qrc in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C8B038F15D1113E00571D9F /* QtIcons.qrc */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
 		5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F465315B449450038AF3A /* libFrameworkQt.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
@@ -918,6 +920,8 @@
 		5C8AD20A15BDE73B00BC3FD8 /* CommandViewport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandViewport.h; path = Classes/Commands/CommandViewport.h; sourceTree = "<group>"; };
 		5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToolsCommands.cpp; path = Classes/Commands/ToolsCommands.cpp; sourceTree = "<group>"; };
 		5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToolsCommands.h; path = Classes/Commands/ToolsCommands.h; sourceTree = "<group>"; };
+		5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = qrc_QtIcons.cpp; path = QtBuildTool/qrc_QtIcons.cpp; sourceTree = "<group>"; };
+		5C8B038F15D1113E00571D9F /* QtIcons.qrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = QtIcons.qrc; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		5CDD9ABB15B893E4007CA99A /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = Classes/Commands/Command.cpp; sourceTree = "<group>"; };
@@ -989,6 +993,7 @@
 				FB61758D0F0FDA4BA867C3D5 /* Sources */,
 				46E892BBB6BB6952967E0561 /* Temporary Sources */,
 				7CABE3C80E79AD2B307756D2 /* Sources [qmake] */,
+				5C8B038C15D10A1700571D9F /* Sources [RCC] */,
 				EEC299C65D5017EB9DD513B0 /* Sources [UIC] */,
 				ED1E82605DD74B483AF3C982 /* External Frameworks and Libraries */,
 				C90923F6A2E654060C34742C /* Source [bundle data] */,
@@ -1000,6 +1005,7 @@
 		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */,
 				5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */,
 				5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */,
 				5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */,
@@ -1747,6 +1753,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5C8B038C15D10A1700571D9F /* Sources [RCC] */ = {
+			isa = PBXGroup;
+			children = (
+				5C8B038F15D1113E00571D9F /* QtIcons.qrc */,
+			);
+			name = "Sources [RCC]";
+			sourceTree = "<group>";
+		};
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
@@ -1986,6 +2000,7 @@
 			files = (
 				5C7F49F715B44EE50038AF3A /* icon.icns in Bundle Resources */,
 				5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */,
+				5C8B039015D1113E00571D9F /* QtIcons.qrc in Bundle Resources */,
 			);
 			name = "Bundle Resources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2288,6 +2303,7 @@
 				5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */,
 				5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */,
 				5C49A09915CFBCD8005C40BF /* QtUtils.cpp in Build Sources */,
+				5C8B038E15D10CA300571D9F /* qrc_QtIcons.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

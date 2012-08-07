@@ -21,7 +21,7 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
     
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
-    ClearActions(ResourceEditor::DOCK_COUNT, dockActions);
+    ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -41,7 +41,7 @@ GUIActionHandler::~GUIActionHandler()
 
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
-    ClearActions(ResourceEditor::DOCK_COUNT, dockActions);
+    ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
     
     CommandsManager::Instance()->Release();
 }
@@ -251,12 +251,12 @@ void GUIActionHandler::RegisterViewportActions(int32 count, ...)
 
 void GUIActionHandler::RegisterDockActions(int32 count, ...)
 {
-    DVASSERT((ResourceEditor::DOCK_COUNT == count) && "Wrong count of actions");
+    DVASSERT((ResourceEditor::HIDABLEWIDGET_COUNT == count) && "Wrong count of actions");
     
     va_list vl;
     va_start(vl, count);
     
-    RegisterActions(dockActions, count, vl);
+    RegisterActions(hidablewidgetActions, count, vl);
     
     va_end(vl);
 }
@@ -273,11 +273,11 @@ void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &
 
 void GUIActionHandler::RestoreViews()
 {
-    for(int32 i = 0; i < ResourceEditor::DOCK_COUNT; ++i)
+    for(int32 i = 0; i < ResourceEditor::HIDABLEWIDGET_COUNT; ++i)
     {
-        if(dockActions[i] && !dockActions[i]->isChecked())
+        if(hidablewidgetActions[i] && !hidablewidgetActions[i]->isChecked())
         {
-            dockActions[i]->trigger();
+            hidablewidgetActions[i]->trigger();
         }
     }
 }
