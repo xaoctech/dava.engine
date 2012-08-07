@@ -86,7 +86,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
 
     String oldPath = SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
-	SceneValidator::Instance()->ValidateScales(scene, errorLog);
+	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
@@ -107,45 +107,32 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
 void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
 {
     //Remove scene nodes
-    
-    Set<SceneNode *> scenenodesForDeletion;
     Vector<SceneNode *> scenenodes;
     rootNode->GetChildNodes(scenenodes);
-    
-    //Find "editor." nodes
-    Vector<SceneNode *>::const_iterator endIt = scenenodes.end();
-    for (Vector<SceneNode *>::const_iterator it = scenenodes.begin(); it != endIt; ++it)
-    {
-        SceneNode * node = *it;
-        String::size_type pos = node->GetName().find(String("editor."));
-        if(String::npos != pos)
-        {
-            Set<SceneNode *>::const_iterator setIt = scenenodesForDeletion.find(node);
-            if(setIt == scenenodesForDeletion.end())
-            {
-                scenenodesForDeletion.insert(SafeRetain(node));
-            }
-        }
-    }
         
     //remove nodes from hierarhy
-    Set<SceneNode *>::const_iterator endItDeletion = scenenodesForDeletion.end();
-    for (Set<SceneNode *>::const_iterator it = scenenodesForDeletion.begin(); it != endItDeletion; ++it)
+    Vector<SceneNode *>::reverse_iterator endItDeletion = scenenodes.rend();
+    for (Vector<SceneNode *>::reverse_iterator it = scenenodes.rbegin(); it != endItDeletion; ++it)
     {
         SceneNode * node = *it;
-        if (node->GetParent())
+		String::size_type pos = node->GetName().find(String("editor."));
+        if(String::npos != pos)
         {
             node->GetParent()->RemoveNode(node);
         }
+		else
+		{
+			LightNode * light = dynamic_cast<LightNode*>(node);
+			if(light)
+			{
+				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+				if(!isDynamic)
+				{
+					node->GetParent()->RemoveNode(node);
+				}
+			}
+		}
     }
-    
-    //release nodes
-	for (Set<SceneNode *>::const_iterator it = scenenodesForDeletion.begin(); it != endItDeletion; ++it)
-	{
-		SceneNode * node = *it;
-		SafeRelease(node);
-	}
-    scenenodesForDeletion.clear();
 }
 
 

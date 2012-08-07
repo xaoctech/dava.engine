@@ -128,8 +128,10 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     }
     else
     {
-        //if (GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
-        UpdateLights();
+        if(GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
+		{
+			UpdateLights();
+		}
     }
     SceneNode::Update(timeElapsed);
     
