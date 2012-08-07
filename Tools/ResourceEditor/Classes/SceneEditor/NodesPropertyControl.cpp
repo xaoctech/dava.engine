@@ -66,6 +66,10 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
         btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnCancel));
         listHolder->AddControl(btnCancel);
     }
+    else
+    {
+        btnPlusCollision = NULL;
+    }
     
     propertyList = new PropertyList(propertyRect, this);
     AddControl(propertyList);
