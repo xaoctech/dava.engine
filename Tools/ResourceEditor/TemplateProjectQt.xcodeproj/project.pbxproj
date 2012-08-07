@@ -2034,7 +2034,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#make -C /Users/klesch/Work/WoT/Framework/TemplateProjectQt -f 'TemplateProjectQt.xcodeproj/qt_preprocess.mak'\nmake -C $PROJECT_DIR -f 'TemplateProjectQt.xcodeproj/qt_preprocess.mak'";
+			shellScript = "make -C $PROJECT_DIR -f 'TemplateProjectQt.xcodeproj/qt_preprocess.mak'";
 		};
 /* End PBXShellScriptBuildPhase section */
 

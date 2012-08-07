@@ -168,14 +168,17 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         }
     }
     
-    Set<DataNode*> dataNodeSet;
-    sceneNode->GetDataNodes(dataNodeSet);
-    if (dataNodeSet.size() == 0)
+    if(typeid(SceneNode) == typeid(*sceneNode))
     {
-        SceneNode * parent = sceneNode->GetParent();
-        if (parent)
+        Set<DataNode*> dataNodeSet;
+        sceneNode->GetDataNodes(dataNodeSet);
+        if (dataNodeSet.size() == 0)
         {
-            emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+            SceneNode * parent = sceneNode->GetParent();
+            if (parent)
+            {
+                emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+            }
         }
     }
 }
@@ -450,4 +453,32 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     
     return pathIsCorrect;
     
+}
+
+void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
+{
+    int32 nodesCount = 0;
+    if(scene)
+    {
+        for(int32 i = 0; i < scene->GetChildrenCount(); ++i)
+        {
+            nodesCount += EnumerateSceneNodes(scene->GetChild(i));
+        }
+    }
+    
+    if(infoControl)
+        infoControl->SetNodesCount(nodesCount);
+}
+
+int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
+{
+    //TODO: lode node can have several nodes at layer
+    
+    int32 nodesCount = 1;
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        nodesCount += EnumerateSceneNodes(node->GetChild(i));
+    }
+    
+    return nodesCount;
 }

@@ -793,6 +793,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     SelectNodeAtTree(scene->GetSelection());
     
     SceneValidator::Instance()->ValidateScene(scene);
+    
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
 #endif //#if !defined (DAVA_QT)
@@ -1065,6 +1066,7 @@ void EditorBodyControl::AddNode(SceneNode *node)
     scene->AddNode(node);
     Refresh();
 #endif // #if defined (DAVA_QT)
+
 }
 
 SceneNode * EditorBodyControl::GetSelectedSGNode()

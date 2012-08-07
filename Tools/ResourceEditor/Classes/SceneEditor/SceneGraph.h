@@ -17,6 +17,7 @@ public:
     virtual void RemoveWorkingNode();
     virtual void UpdatePropertyPanel();
 
+    virtual void RefreshGraph();
 
     
 protected:

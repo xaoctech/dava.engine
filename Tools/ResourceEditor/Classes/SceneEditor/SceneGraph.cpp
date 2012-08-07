@@ -507,4 +507,9 @@ void SceneGraph::DragAndDrop(void *who, void *target, int32 mode)
     SafeRelease(targetNode);
 }
 
-
+void SceneGraph::RefreshGraph()
+{
+    GraphBase::RefreshGraph();
+    
+    SceneValidator::Instance()->EnumerateNodes(workingScene);
+}
