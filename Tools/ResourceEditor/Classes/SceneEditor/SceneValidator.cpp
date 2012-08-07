@@ -234,7 +234,7 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 
 bool SceneValidator::IsntPower2(int32 num)
 {
-    return (num & (num - 1));
+    return ((num & (num - 1)) > 0);
 }
 
 void SceneValidator::ShowErrors()
