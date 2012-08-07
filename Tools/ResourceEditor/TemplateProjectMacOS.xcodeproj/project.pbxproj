@@ -1543,13 +1543,6 @@
 			path = sse;
 			sourceTree = "<group>";
 		};
-		5C5750A515C995E30015537A /* Qt */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Qt;
-			sourceTree = "<group>";
-		};
 		5CD1A26F14D0ACC6005E76B5 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -1630,7 +1623,6 @@
 		FE445A961153C27800F5EFD6 /* User classes */ = {
 			isa = PBXGroup;
 			children = (
-				5C5750A515C995E30015537A /* Qt */,
 				5C2F106B15BD67A100E3C8F9 /* Constants.h */,
 				5CECF988151476D600FFAE80 /* LightmapsPacker.cpp */,
 				5CECF989151476D600FFAE80 /* LightmapsPacker.h */,
