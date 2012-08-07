@@ -141,7 +141,20 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeView" name="sceneGraphTree"/>
+      <widget class="QTreeView" name="sceneGraphTree">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::MoveAction</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnRemoveRootNodes">

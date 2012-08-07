@@ -5,6 +5,8 @@
 #include "SceneDataManager.h"
 #include "../EditorScene.h"
 
+#include "QtUtils.h"
+
 #include <QTreeView>
 
 using namespace DAVA;
@@ -137,3 +139,143 @@ DAVA::SceneNode * SceneGraphModel::GetSelectedNode()
 {
     return selectedNode;
 }
+
+Qt::ItemFlags SceneGraphModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+	{
+		return 0;
+	}
+    
+    Qt::ItemFlags flags = GraphModel::flags(index);
+    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    return flags;
+}
+
+Qt::DropActions SceneGraphModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;    
+}
+
+bool SceneGraphModel::removeRows(int row, int count, const QModelIndex &parent/* = QModelIndex()*/)
+{
+    DVASSERT((0 < count) && "Wrong count of removed rows");
+    
+    Logger::Warning("[SceneGraphModel::removeRows] why?");
+    
+
+//    GraphItem *parentItem = rootItem;
+//    if(parent.isValid())
+//    {
+//        parentItem = static_cast<GraphItem *>(parent.internalPointer());
+//    }
+//    
+//
+//    int32 firstRow = row;
+//    int32 lastRow = row + count - 1;
+//    beginRemoveRows(parent, firstRow, lastRow);
+//    
+//    SceneNode *parentNode = static_cast<SceneNode *>(parentItem->GetUserData());
+//    if(parentNode)
+//    {
+//        int32 lastNodeRow = Min(lastRow, parentNode->GetChildrenCount() - 1);
+//        for(int32 i = firstRow; i <= lastNodeRow; ++i)
+//        {
+//            SceneNode *removedNode = parentNode->GetChild(i);
+//            parentNode->RemoveNode(removedNode);
+//            Logger::Debug("[%d] Remove %s from %s", i, removedNode->GetName().c_str(), parentNode->GetName().c_str());
+//        }
+//        
+//        int32 lastItemRow = Min(lastRow, parentItem->ChildrenCount() - 1);
+//        for(int32 i = firstRow; i <= lastItemRow; ++i)
+//        {
+//            parentItem->RemoveChild(i);
+//        }
+//    }
+//    
+//    endRemoveRows();
+    
+    return true;
+}
+
+bool SceneGraphModel::insertRows(int row, int count, const QModelIndex &parent/* = QModelIndex()*/)
+{
+    DVASSERT((0 < count) && "Wrong count of inserted rows");
+
+    GraphItem *parentItem = rootItem;
+    if(parent.isValid())
+    {
+        parentItem = static_cast<GraphItem *>(parent.internalPointer());
+    }
+
+
+    int32 firstRow = row;
+    int32 lastRow = row + count - 1;
+    beginInsertRows(parent, firstRow, lastRow);
+
+    for(int32 i = firstRow; i <= lastRow; ++i)
+    {
+        SceneGraphItem *graphItem = new SceneGraphItem();
+        graphItem->SetUserData(NULL);
+        parentItem->AppendChild(graphItem);
+    }
+    
+    
+    endInsertRows();
+    return true;
+}
+
+
+bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, int role/* = Qt::EditRole*/)
+{
+    GraphItem *item = static_cast<GraphItem*>(index.internalPointer());
+    
+    //TODO: change on real value
+    GraphItem *newItem = PointerHolder::ToGraphItem(value);
+    SceneNode *newNode = (SceneNode *)newItem->GetUserData();
+    SafeRetain(newNode);
+    
+    if(newNode && newNode->GetParent())
+    {
+        newNode->GetParent()->RemoveNode(newNode);
+    }
+    
+    GraphItem *parentItem = item->GetParent();
+    SceneNode *parentNode = static_cast<SceneNode *>(parentItem->GetUserData());
+    if(parentNode)
+    {
+        parentNode->AddNode(newNode);
+    }
+    
+    item->SetUserData(newNode);
+    SafeRelease(newNode);
+    
+    return true;
+}
+
+void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
+{
+    GraphItem *newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
+
+    GraphItem *oldParentItem = movedItem->GetParent();
+    
+    oldParentItem->RemoveChild(movedItem);
+    newParentItem->AppendChild(movedItem);
+    
+    SceneNode *movedNode = static_cast<SceneNode *>(movedItem->GetUserData());
+    SceneNode *newParentNode = static_cast<SceneNode *>(newParentItem->GetUserData());
+    SceneNode *oldParentNode = static_cast<SceneNode *>(oldParentItem->GetUserData());
+
+    DVASSERT((NULL != movedNode) && "movedNode is NULL");
+    DVASSERT((NULL != newParentNode) && "newParentNode is NULL");
+    DVASSERT((NULL != oldParentNode) && "oldParentNode is NULL");
+    
+    SafeRetain(movedNode);
+    oldParentNode->RemoveNode(movedNode);
+    newParentNode->AddNode(movedNode);
+    SafeRelease(movedNode);
+}
+
+
+
+
