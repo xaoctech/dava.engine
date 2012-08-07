@@ -575,7 +575,7 @@ void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void 
     }
     else if (obj == historyForwardButton)
     {
-        if(historyPosition < foldersHistory.size() - 1)
+        if(historyPosition < (int32)foldersHistory.size() - 1)
         {
             SetCurrentDir(foldersHistory[historyPosition + 1]);
         }
