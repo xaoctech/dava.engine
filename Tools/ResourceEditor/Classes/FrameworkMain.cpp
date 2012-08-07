@@ -115,11 +115,6 @@ void FrameworkDidLaunched()
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
     
-
-    printf("Running\n");
-    Logger::Info("Running");
-
-    
 	if (Core::Instance()->IsConsoleMode())
 	{
         if(     CommandLineTool::Instance()->CommandsCount() < 2 
