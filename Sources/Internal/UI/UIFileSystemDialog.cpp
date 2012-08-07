@@ -275,11 +275,11 @@ void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
     
     // enable/disable navigation buttons
     historyBackwardButton->SetDisabled(0 == historyPosition, false);
-    historyForwardButton->SetDisabled(historyPosition == foldersHistory.size() - 1, false);
+    historyForwardButton->SetDisabled(historyPosition == (int32)foldersHistory.size() - 1, false);
 
-    Logger::Info("Setting path: %s", currentDir.c_str());
-    Logger::Info("Setting file: %s", selectedFile.c_str());
-    if (GetParent()) 
+//    Logger::Info("Setting path: %s", currentDir.c_str());
+//    Logger::Info("Setting file: %s", selectedFile.c_str());
+    if (GetParent())
     {
         RefreshList();
     }
@@ -589,7 +589,7 @@ void UIFileSystemDialog::CreateHistoryForPath(const String &pathToFile)
 
     foldersHistory.clear();
     foldersHistory.push_back("");
-    for(int32 iFolder = 0; iFolder < folders.size(); ++iFolder)
+    for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
         foldersHistory.push_back(foldersHistory[iFolder] + "/" + folders[iFolder]);
     }
