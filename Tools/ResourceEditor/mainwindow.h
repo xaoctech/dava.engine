@@ -19,7 +19,10 @@ public:
     
 private:
     void SetupMainMenu();
-    void SetupToolBar();
+    
+	void SetupToolBar();
+	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
+
     void SetupProjectPath();
     void SetupDockWidgets();
     
