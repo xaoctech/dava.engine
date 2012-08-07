@@ -128,6 +128,12 @@ void SceneEditorScreenMain::LoadResources()
     SetupAnimation();
     
     helpDialog = new HelpDialog();
+    
+    
+    UIButton *b = ControlsFactory::CreateButton( Vector2(sceneInfoButton->GetRect().x - ControlsFactory::BUTTON_WIDTH - 10, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"Bake Scene"));
+    b->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBakeScene));
+    AddControl(b);
+    SafeRelease(b);
 }
 
 void SceneEditorScreenMain::UnloadResources()
@@ -1412,3 +1418,10 @@ void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
     iBody->bodyControl->SelectNodeQt(node);
 }
 #endif //#if defined (DAVA_QT)
+
+void SceneEditorScreenMain::OnBakeScene(BaseObject *, void *, void *)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->BakeScene();
+}
+

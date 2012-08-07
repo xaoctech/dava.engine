@@ -161,7 +161,7 @@ private:
     
 
     //Body list
-
+    void OnBakeScene(BaseObject *, void *, void *);
     
     
     Vector<BodyItem *> bodies;

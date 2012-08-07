@@ -1399,3 +1399,78 @@ void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
     sceneGraph->SelectNode(node);
 }
 #endif //#if defined (DAVA_QT)
+
+
+void EditorBodyControl::BakeNode(SceneNode *node)
+{
+    if(node->GetSolid())
+    {
+        node->BakeTransforms();
+        return;
+    }
+    
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        BakeNode(node->GetChild(i));
+    }
+}
+
+void EditorBodyControl::RemoveIdentityNodes(DAVA::SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *removedChild = node->GetChild(i);
+        
+        if(
+                (removedChild->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+           &&   (typeid(SceneNode) == typeid(*removedChild))
+           &&   (typeid(LodNode) != typeid(*node))
+           &&   (removedChild->GetChildrenCount() == 1))
+        {
+            SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            removedChild->RemoveNode(child);
+            node->AddNode(child);
+            SafeRelease(child);
+            
+            node->RemoveNode(removedChild);
+            
+            i = -1;
+        }
+        else
+        {
+            RemoveIdentityNodes(removedChild);
+        }
+    }
+}
+
+void EditorBodyControl::FindIdentityNodes(SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *child = node->GetChild(i);
+        
+        if(child->GetSolid())
+        {
+            RemoveIdentityNodes(child);
+        }
+        else
+        {
+            FindIdentityNodes(child);
+        }
+    }
+}
+
+
+void EditorBodyControl::BakeScene()
+{
+    if(scene)
+    {
+        ResetSelection();
+     
+        BakeNode(scene);
+        FindIdentityNodes(scene);
+        
+        Refresh();
+    }
+}
+
