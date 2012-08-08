@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/DataNode.h"
+#include "Render/RenderStateBlock.h"
 
 namespace DAVA
 {
@@ -196,6 +197,8 @@ public:
     void SetTexture(eTextureLevel level, const String & textureName);
 	inline const Texture * GetTexture(eTextureLevel level);
 	inline const String & GetTextureName(eTextureLevel level);
+
+	RenderStateBlock * GetRenderStateBlock();
     
 private:
     void RebuildShader();
@@ -234,6 +237,8 @@ private:
 	int32 uniformUvScale;
     int32 uniformFogDensity;
     int32 uniformFogColor;
+
+	RenderStateBlock renderStateBlock;
     
     
     /*

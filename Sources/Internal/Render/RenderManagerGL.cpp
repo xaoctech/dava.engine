@@ -475,6 +475,14 @@ void RenderManager::FlushState()
     currentState.Flush(&hardwareState);
 }
 
+void RenderManager::FlushState(RenderStateBlock * stateBlock)
+{
+	PrepareRealMatrix();
+	AttachRenderData(stateBlock->shader);
+
+	stateBlock->Flush(&hardwareState);
+}
+
 void RenderManager::SetTexCoordPointer(int size, eVertexDataType _typeIndex, int stride, const void *pointer)
 {
 	GLint type = VERTEX_DATA_TYPE_TO_GL[_typeIndex];
