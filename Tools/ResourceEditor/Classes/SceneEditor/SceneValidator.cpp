@@ -290,6 +290,11 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
     for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
     {
         ValidateTexture(material->textures[iTex], errorsLog);
+        
+        if(material->names[iTex].find(".pvr.png") != String::npos)
+        {
+            errorsLog.insert(material->GetName() + ": wrong texture name " + material->names[iTex]);
+        }
     }
 }
 
