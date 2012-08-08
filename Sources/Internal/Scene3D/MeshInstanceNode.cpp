@@ -222,6 +222,7 @@ void MeshInstanceNode::Draw()
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		uint32 oldState = RenderManager::Instance()->GetState();
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		
 		if (debugFlags & DEBUG_DRAW_LOCAL_AXIS)
@@ -302,7 +303,7 @@ void MeshInstanceNode::Draw()
 		
 //      RenderManager::Instance()->EnableDepthTest(true);
 //		RenderManager::Instance()->EnableTexturing(true);
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+        RenderManager::Instance()->SetState(oldState);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	//glPopMatrix();
