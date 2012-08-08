@@ -49,7 +49,7 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 
 void SceneGraphModel::Rebuild()
 {
-    selectedNode = NULL;
+//    selectedNode = NULL;
     
     SafeRelease(rootItem);
 	rootItem = new SceneGraphItem();
@@ -66,7 +66,22 @@ void SceneGraphModel::Rebuild()
     
 //    emit dataChanged(QModelIndex(), QModelIndex());
     this->reset();
+
+    
+    if(selectedNode)
+    {
+        GraphItem *selectedItem = ItemForData(selectedNode);
+        if(selectedItem)
+        {
+            SelectItem(selectedItem);
+        }
+        else
+        {
+            SelectNode(NULL);
+        }
+    }
 }
+
 
 void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
@@ -118,19 +133,23 @@ void SceneGraphModel::SelectNode(DAVA::SceneNode *node, bool selectAtGraph)
         if(selectedNode)
         {
             GraphItem *selectedItem = ItemForData(selectedNode);
-            
-            QModelIndex idx = createIndex(selectedItem->Row(), 0, selectedItem);
-            itemSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect);
-            
-            if(attachedTreeView)
-            {
-                attachedTreeView->scrollTo(idx);
-            }
+            SelectItem(selectedItem);
         }
         else
         {
             itemSelectionModel->clearSelection();
         }
+    }
+}
+
+void SceneGraphModel::SelectItem(GraphItem *item)
+{
+    QModelIndex idx = createIndex(item->Row(), 0, item);
+    itemSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect);
+    
+    if(attachedTreeView)
+    {
+        attachedTreeView->scrollTo(idx);
     }
 }
 

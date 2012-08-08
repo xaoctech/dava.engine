@@ -46,7 +46,6 @@ void SceneData::RebuildSceneGraph()
     sceneGraphModel->Rebuild();
 }
 
-
 EditorScene * SceneData::GetScene()
 {
     return scene;
