@@ -1465,8 +1465,10 @@ void EditorBodyControl::BakeScene()
 {
     if(scene)
     {
+#if !defined(DAVA_QT)
         ResetSelection();
-     
+#endif //#if !defined(DAVA_QT)
+
         BakeNode(scene);
         FindIdentityNodes(scene);
         
