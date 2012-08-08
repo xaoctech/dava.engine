@@ -9,7 +9,6 @@ QDataStream& operator<<(QDataStream& ostream, const PointerHolder& ph)
     uint64 pointer = (uint64)item;
     ostream << pointer;
     
-    Logger::Debug("Out: %ld", pointer);
     return ostream;
 }
 
@@ -17,8 +16,6 @@ QDataStream& operator>>(QDataStream& istream, PointerHolder& ph)
 {
     uint64 pointer = 0;
     istream >> pointer;
-
-    Logger::Debug("In: %ld", pointer);
 
     GraphItem *item = (GraphItem *)pointer;
     

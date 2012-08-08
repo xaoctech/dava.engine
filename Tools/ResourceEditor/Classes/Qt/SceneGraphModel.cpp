@@ -163,7 +163,7 @@ Qt::ItemFlags SceneGraphModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
 	{
-		return 0;
+		return Qt::ItemIsDropEnabled;
 	}
     
     Qt::ItemFlags flags = GraphModel::flags(index);
@@ -274,7 +274,12 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
 
 void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
 {
-    GraphItem *newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
+    GraphItem *newParentItem = rootItem;
+    if(newParentIndex.isValid())
+    {
+        newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
+    }
+    
 
     GraphItem *oldParentItem = movedItem->GetParent();
     
