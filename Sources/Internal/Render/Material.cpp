@@ -756,7 +756,7 @@ bool Material::GetAlphablend()
 
 RenderStateBlock * Material::GetRenderStateBlock()
 {
-	return renderStateBlock;
+	return &renderStateBlock;
 }
 
 
