@@ -36,7 +36,7 @@ protected:
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     void ExportMeshLightmaps(Scene *scene, Set<String> &errorLog);
     bool ExportFileDirectly(const String &filePathname, Set<String> &errorLog);
-    String ExportTexture(const String &texturePathname, Set<String> &errorLog);
+    String ExportTexture(Texture *tex, const String &texturePathname, Set<String> &errorLog);
     
 protected:
     
