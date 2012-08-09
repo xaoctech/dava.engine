@@ -86,7 +86,7 @@ void ImposterManager::Draw()
 		return;
 	}
 
-	//ProcessQueue();
+	ProcessQueue();
 
 	List<ImposterNode*>::iterator end = imposters.end();
 	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
