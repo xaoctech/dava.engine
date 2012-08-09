@@ -568,6 +568,7 @@ void Material::PrepareRenderState()
 
 	// render
 	RenderManager::Instance()->FlushState(&renderStateBlock);
+	RenderManager::Instance()->AttachRenderData();
 
 
 	if (textures[Material::TEXTURE_DECAL])
