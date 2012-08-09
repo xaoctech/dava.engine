@@ -7,6 +7,9 @@
 #include "../Qt/QtUtils.h"
 #include "../Qt/GUIState.h"
 
+#include "../Qt/SceneData.h"
+#include "../Qt/SceneDataManager.h"
+
 #include <QFileDialog>
 #include <QString>
 
@@ -33,7 +36,10 @@ void CommandOpenProject::Execute()
         
         EditorSettings::Instance()->SetProjectPath(projectPath);
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
-    }
+
+		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+		activeScene->ReloadLibrary();
+	}
 }
 
 

@@ -34,7 +34,6 @@ SceneData::SceneData()
 
     
     libraryModel = new QFileSystemModel(this);
-    libraryModel->setRootPath(QString(EditorSettings::Instance()->GetDataSourcePath().c_str()));
     QStringList nameFilters;
     nameFilters << QString("*.sc2");
     nameFilters << QString("*.dae");
@@ -292,13 +291,15 @@ String SceneData::GetScenePathname() const
     return sceneFilePathname;
 }
 
-void SceneData::Activate(QTreeView *graphview, QTreeView *libraryView)
+void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
 {
+	libraryView = _libraryView;
+		
     sceneGraphModel->Activate(graphview);
     libraryView->setModel(libraryModel);
     libraryView->setSelectionModel(librarySelectionModel);
-    libraryView->setRootIndex(libraryModel->index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
-    int32 count = libraryModel->columnCount();
+	ReloadLibrary();
+	int32 count = libraryModel->columnCount();
     for(int32 i = 1; i < count; ++i)
     { //TODO: Maybe we will use context menu to enable/disable columns
         libraryView->setColumnHidden(i, true);
@@ -407,3 +408,8 @@ void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
     }
 }
 
+void SceneData::ReloadLibrary()
+{
+	libraryModel->setRootPath(QString(EditorSettings::Instance()->GetDataSourcePath().c_str()));
+	libraryView->setRootIndex(libraryModel->index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
+}
