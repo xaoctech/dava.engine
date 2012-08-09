@@ -6,18 +6,17 @@ QDataStream& operator<<(QDataStream& ostream, const PointerHolder& ph)
 {
     const GraphItem *item = ph.GetPointer();
 
-    uint64 pointer = (uint64)item;
-    ostream << pointer;
+    uint sizeOfPointer = sizeof(item);
+    ostream.writeRawData((const char *)&item, sizeOfPointer);
     
     return ostream;
 }
 
 QDataStream& operator>>(QDataStream& istream, PointerHolder& ph)
 {
-    uint64 pointer = 0;
-    istream >> pointer;
-
-    GraphItem *item = (GraphItem *)pointer;
+    GraphItem *item = NULL;
+    uint sizeOfPointer = sizeof(item);
+    istream.readRawData((char *)&item, sizeOfPointer);
     
     ph.SetPointer(item);
     return istream;

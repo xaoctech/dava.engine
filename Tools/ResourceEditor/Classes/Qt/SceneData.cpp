@@ -7,12 +7,23 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
+#include "QtUtils.h"
+#include "GUIActionHandler.h"
+
+#include "FileSelectionModel.h"
+
 #include <QTreeView>
+#include <QFileSystemModel>
+#include <QDir>
+#include <QFileInfo>
+#include <QMenu>
+#include <QAction>
 
 using namespace DAVA;
 
 SceneData::SceneData()
-    :   scene(NULL)
+    :   QObject(NULL)
+    ,   scene(NULL)
     ,   sceneGraphModel(NULL)
 {
     sceneFilePathname = String("");
@@ -21,12 +32,25 @@ SceneData::SceneData()
     
     connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
 
+    
+    libraryModel = new QFileSystemModel(this);
+    libraryModel->setRootPath(QString(EditorSettings::Instance()->GetDataSourcePath().c_str()));
+    QStringList nameFilters;
+    nameFilters << QString("*.sc2");
+    nameFilters << QString("*.dae");
+    libraryModel->setNameFilters(nameFilters);
+    libraryModel->setNameFilterDisables(true);
+    librarySelectionModel = new FileSelectionModel(libraryModel);
+    
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
 }
 
 SceneData::~SceneData()
 {
-    ReleaseScene();
+    SafeRelease(scene);
+    
+    SafeDelete(librarySelectionModel);
+    SafeDelete(libraryModel);
     SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
 }
@@ -180,7 +204,7 @@ void SceneData::CreateScene(bool createEditorCameras)
     SetScene(createdScene);
 }
 
-void SceneData::OpenScene(const String &scenePathname)
+void SceneData::AddScene(const String &scenePathname)
 {
     String extension = FileSystem::Instance()->GetExtension(scenePathname);
     DVASSERT((".sc2" == extension) && "Wrong file extension.");
@@ -268,12 +292,118 @@ String SceneData::GetScenePathname() const
     return sceneFilePathname;
 }
 
-void SceneData::Activate(QTreeView *view)
+void SceneData::Activate(QTreeView *graphview, QTreeView *libraryView)
 {
-    sceneGraphModel->Activate(view);
+    sceneGraphModel->Activate(graphview);
+    libraryView->setModel(libraryModel);
+    libraryView->setSelectionModel(librarySelectionModel);
+    libraryView->setRootIndex(libraryModel->index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
+    int32 count = libraryModel->columnCount();
+    for(int32 i = 1; i < count; ++i)
+    { //TODO: Maybe we will use context menu to enable/disable columns
+        libraryView->setColumnHidden(i, true);
+    }
 }
 
 void SceneData::Deactivate()
 {
     sceneGraphModel->Deactivate();
 }
+
+void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
+{
+    if(!index.isValid())
+    {
+        return;
+    }
+    
+    QFileInfo fileInfo = libraryModel->fileInfo(index);
+    if(fileInfo.isFile())
+    {
+        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(fileInfo.fileName()));
+        if(0 == CompareStrings(String(".sc2"), extension))
+        {
+            QVariant filePathname(fileInfo.filePath());
+            
+            QMenu menu;
+            QAction *add = menu.addAction(QString("Add"));
+            QAction *edit = menu.addAction(QString("Edit"));
+            QAction *reload = menu.addAction(QString("Reload"));
+            
+            add->setData(filePathname);
+            edit->setData(filePathname);
+            reload->setData(filePathname);
+            
+            connect(&menu, SIGNAL(triggered(QAction *)), GUIActionHandler::Instance(), SLOT(LibraryMenuTriggered(QAction *)));
+            
+            menu.exec(point);
+        }
+        else if(0 == CompareStrings(String(".dae"), extension))
+        {
+            QVariant filePathname(fileInfo.filePath());
+
+            QMenu menu;
+            QAction *convert = menu.addAction(QString("Convert"));
+            convert->setData(filePathname);
+
+            connect(&menu, SIGNAL(triggered(QAction *)) , GUIActionHandler::Instance(), SLOT(LibraryMenuTriggered(QAction *)));
+            
+            menu.exec(point);
+        }
+    }
+}
+
+void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
+{
+    scene->ReleaseRootNode(scenePathname);
+    
+    ReloadNode(scene, scenePathname);
+    
+    scene->SetSelection(0);
+    for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
+    {
+        scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
+        nodesToAdd[i].parent->RemoveNode(nodesToAdd[i].nodeToRemove);
+        nodesToAdd[i].parent->AddNode(nodesToAdd[i].nodeToAdd);
+        SafeRelease(nodesToAdd[i].nodeToAdd);
+    }
+    nodesToAdd.clear();
+    
+    
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->OnReloadRootNodesQt();
+    }
+    
+    RebuildSceneGraph();
+}
+
+void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
+{//если в рут ноды сложить такие же рут ноды то на релоаде все накроет пиздой
+    KeyedArchive *customProperties = node->GetCustomProperties();
+    if (customProperties->GetString("editor.referenceToOwner", "") == nodePathname)
+    {
+        SceneNode *newNode = scene->GetRootNode(nodePathname)->Clone();
+        newNode->SetLocalTransform(node->GetLocalTransform());
+        newNode->GetCustomProperties()->SetString("editor.referenceToOwner", nodePathname);
+        newNode->SetSolid(true);
+        
+        SceneNode *parent = node->GetParent();
+        AddedNode addN;
+        addN.nodeToAdd = newNode;
+        addN.nodeToRemove = node;
+        addN.parent = parent;
+        
+        nodesToAdd.push_back(addN);
+        return;
+    }
+    
+    int32 csz = node->GetChildrenCount();
+    for (int ci = 0; ci < csz; ++ci)
+    {
+        SceneNode * child = node->GetChild(ci);
+        ReloadNode(child, nodePathname);
+    }
+}
+
