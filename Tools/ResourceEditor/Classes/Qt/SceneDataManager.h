@@ -23,6 +23,7 @@ public:
     DAVA::int32 ScenesCount();
 
     void SetSceneGraphView(QTreeView *view);
+    void SetLibraryView(QTreeView *view);
     
 protected:
 
@@ -34,6 +35,8 @@ protected:
     DAVA::List<SceneData *>scenes;
     
     QTreeView *sceneGraphView;
+    QTreeView *libraryView;
+    
 };
 
 #endif // __SCENE_DATA_MANAGER_H__

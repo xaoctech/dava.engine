@@ -2,15 +2,16 @@
 #define __GUI_ACTION_MANAGER_H__
 
 #include <QObject>
+#include <QPoint>
+
 #include "DAVAEngine.h"
 #include "../Constants.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 
-#include <QAction>
-#include <QMenu>
-#include <QItemSelection>
-
 class Command;
+class QMenu;
+class QAction;
+class QTreeView;
 class GUIActionHandler: public QObject
 {
     Q_OBJECT
@@ -28,6 +29,10 @@ public:
     //MENU FILE
     void MenuFileWillShow();
 
+    void SetLibraryView(QTreeView *view);
+    
+    static GUIActionHandler *Instance();
+    
     
 public slots:
     //menu
@@ -65,6 +70,12 @@ public slots:
     void BakeMatrixes();
     void BuildQuadTree();
     
+    
+    //library
+    void LibraryContextMenuRequested(const QPoint &point);
+    void LibraryMenuTriggered(QAction *fileAction);
+    void FileSelected(const QString &filePathname, bool isFile);
+    
 private:
     //create node
     void CreateNode(ResourceEditor::eNodeType type);
@@ -85,6 +96,11 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
+    
+    QTreeView *libraryView;
+    
+    
+    static GUIActionHandler *activeActionHandler;
 };
 
 #endif // __GUI_ACTION_MANAGER_H__

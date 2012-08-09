@@ -27,6 +27,8 @@
 #if defined (DAVA_QT)
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
+#include "../Qt/ScenePreviewDialog.h"
+
 #endif //#if defined (DAVA_QT)
 
 void SceneEditorScreenMain::LoadResources()
@@ -134,10 +136,18 @@ void SceneEditorScreenMain::LoadResources()
     b->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnBakeScene));
     AddControl(b);
     SafeRelease(b);
+    
+#if defined (DAVA_QT)
+    scenePreviewDialog = new ScenePreviewDialog();
+#endif //#if defined (DAVA_QT)
 }
 
 void SceneEditorScreenMain::UnloadResources()
 {
+#if defined (DAVA_QT)
+    SafeRelease(scenePreviewDialog);
+#endif //#if defined (DAVA_QT)
+
     SafeRelease(helpDialog);
     
     SafeRelease(textureConverterDialog);
@@ -676,7 +686,7 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 {
 #if defined (DAVA_QT)
     SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
-    sceneData->OpenScene(pathName);
+    sceneData->AddScene(pathName);
 #else //#if defined (DAVA_QT)
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->OpenScene(pathName, false);
@@ -1417,6 +1427,26 @@ void SceneEditorScreenMain::SelectNodeQt(DAVA::SceneNode *node)
     BodyItem *iBody = FindCurrentBody();
     iBody->bodyControl->SelectNodeQt(node);
 }
+
+void SceneEditorScreenMain::OnReloadRootNodesQt()
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->OnReloadRootNodesQt();
+}
+
+void SceneEditorScreenMain::ShowScenePreview(const String scenePathname)
+{
+    scenePreviewDialog->Show(scenePathname);
+}
+
+void SceneEditorScreenMain::HideScenePreview()
+{
+    scenePreviewDialog->Close();
+}
+
+
+
+
 #endif //#if defined (DAVA_QT)
 
 void SceneEditorScreenMain::OnBakeScene(BaseObject *, void *, void *)

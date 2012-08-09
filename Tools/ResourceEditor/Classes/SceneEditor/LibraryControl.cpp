@@ -18,6 +18,7 @@ LibraryControl::LibraryControl(const Rect & rect)
     ControlsFactory::CustomizePanelControl(this);
     
     int32 panelHeight = ControlsFactory::PREVIEW_PANEL_HEIGHT;
+#if !defined(DAVA_QT)
     fileTreeControl = new UIFileTree(Rect(0, ControlsFactory::BUTTON_HEIGHT, 
                                           rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT - panelHeight));
     ControlsFactory::CusomizeListControl(fileTreeControl);
@@ -28,7 +29,8 @@ LibraryControl::LibraryControl(const Rect & rect)
     fileTreeControl->DisableRootFolderExpanding(true);
 	fileTreeControl->SetPath(folderPath, ".dae;.sc2");
     AddControl(fileTreeControl);
-
+#endif //#if !defined(DAVA_QT)
+    
     //button
     refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT), 
                                                   LocalizedString(L"library.refresh"));
@@ -82,8 +84,9 @@ LibraryControl::~LibraryControl()
     
     SafeRelease(refreshButton);
     
+#if !defined(DAVA_QT)
     SafeRelease(fileTreeControl);
-    
+#endif //#if !defined(DAVA_QT)
 }
 
 
@@ -115,8 +118,11 @@ void LibraryControl::WillDisappear()
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path;
+    
+#if !defined(DAVA_QT)
     fileTreeControl->SetPath(folderPath, ".dae;.sc2");
-
+#endif //#if !defined(DAVA_QT)
+    
     if(GetParent())
     {
         RefreshTree();
@@ -352,7 +358,9 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 
 void LibraryControl::RefreshTree()
 {
+#if !defined(DAVA_QT)
     fileTreeControl->Refresh();
+#endif //#if !defined(DAVA_QT)
 }
 
 void LibraryControl::SetDelegate(LibraryControlDelegate *delegate)
