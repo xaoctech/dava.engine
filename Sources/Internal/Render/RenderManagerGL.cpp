@@ -470,16 +470,14 @@ void RenderManager::EnableColorArray(bool isEnabled)
 void RenderManager::FlushState()
 {
 	PrepareRealMatrix();
-    AttachRenderData(currentState.shader);
-
+    
     currentState.Flush(&hardwareState);
 }
 
 void RenderManager::FlushState(RenderStateBlock * stateBlock)
 {
 	PrepareRealMatrix();
-	AttachRenderData(stateBlock->shader);
-
+	
 	stateBlock->Flush(&hardwareState);
 }
 
@@ -777,11 +775,12 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
 }
     
     
-void RenderManager::AttachRenderData(Shader * shader)
+void RenderManager::AttachRenderData()
 {
     if (!currentRenderData)return;
 
     const int DEBUG = 0;
+	Shader * shader = hardwareState.shader;
     
     RenderManager::Instance()->LockNonMain();
     if (!shader)

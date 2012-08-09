@@ -72,7 +72,7 @@ void ImposterNode::UpdateState()
 		}
 
 		DVASSERT(GetChildrenCount() == 1);
-		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBox();
+		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBoxSlow();
 		Vector3 bboxCenter = bbox.GetCenter();
 		float32 distanceSquare = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
 		distanceSquare *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
@@ -218,7 +218,7 @@ void ImposterNode::UpdateImposter()
 	Vector3 cameraPos = camera->GetPosition();
 
 	SceneNode * child = GetChild(0);
-	AABBox3 bbox = child->GetWTMaximumBoundingBox();
+	AABBox3 bbox = child->GetWTMaximumBoundingBoxSlow();
 	Vector3 bboxCenter = bbox.GetCenter();
 
 	imposterCamera->Setup(camera->GetFOV(), camera->GetAspect(), camera->GetZNear(), camera->GetZFar());
@@ -407,6 +407,7 @@ void ImposterNode::DrawImposter()
 	RenderManager::Instance()->SetRenderData(renderData);
 
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 
 	//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);

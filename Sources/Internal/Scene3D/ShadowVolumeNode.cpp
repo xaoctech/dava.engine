@@ -68,6 +68,7 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(shadowPolygonGroup->renderDataObject);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 
 	Vector3 position = Vector3() * worldTransform;
 	LightNode * light = scene->GetNearestDynamicLight(LightNode::TYPE_COUNT, position);

@@ -297,7 +297,7 @@ public:
     
     
     void SetRenderData(RenderDataObject * object);
-    virtual void AttachRenderData(Shader * shader);
+	virtual void AttachRenderData();
 	
 	/** 
 	 \brief 
