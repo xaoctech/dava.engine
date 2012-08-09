@@ -94,6 +94,7 @@ void RenderResource::InvalidateAllResources()
 
 void RenderResource::SaveAllResourcesToSystemMem()
 {
+#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)  ||  defined(__DAVAENGINE_DIRECTX9__)
 	List<RenderResource*>::iterator it = resourceList.begin();
     List<RenderResource*>::const_iterator itEnd = resourceList.end();
 	for(; it != itEnd; ++it)
@@ -103,6 +104,7 @@ void RenderResource::SaveAllResourcesToSystemMem()
 // 		if (t)
 // 			Logger::Debug("%s", t->relativePathname.c_str());
 	}
+#endif
 }
     
 void RenderResource::LostAllShaders()
