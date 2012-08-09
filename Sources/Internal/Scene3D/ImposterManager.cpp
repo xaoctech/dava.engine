@@ -36,13 +36,20 @@ ImposterManager::ImposterManager(Scene * _scene)
 :	scene(_scene)
 {
 	SharedFBO::Setup setup;
-	setup.size = Vector2(2048, 2048);
+	setup.size = Vector2(2048, 1024);
 	setup.pixelFormat = FORMAT_RGBA4444;
 	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-	setup.blocks.push_back(std::pair<int32, Vector2>(2, Vector2(512.f, 512.f)));
-	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(256.f, 256.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(16, Vector2(256.f, 256.f)));
 	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
-	setup.blocks.push_back(std::pair<int32, Vector2>(256, Vector2(64.f, 64.f)));
+	setup.blocks.push_back(std::pair<int32, Vector2>(112, Vector2(64.f, 64.f)));
+  setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(32.f, 32.f)));
+    	//setup.size = Vector2(512, 512);
+    	//setup.pixelFormat = FORMAT_RGBA4444;
+        //setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
+    	//setup.blocks.push_back(std::pair<int32, Vector2>(16, Vector2(256.f, 256.f)));
+    	//setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
+    	//setup.blocks.push_back(std::pair<int32, Vector2>(112, Vector2(64.f, 64.f)));
+        //setup.blocks.push_back(std::pair<int32, Vector2>(256, Vector2(8.f, 8.f)));
 
 	sharedFBO = new SharedFBO(&setup);
 }
@@ -79,7 +86,7 @@ void ImposterManager::Draw()
 		return;
 	}
 
-	ProcessQueue();
+	//ProcessQueue();
 
 	List<ImposterNode*>::iterator end = imposters.end();
 	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
