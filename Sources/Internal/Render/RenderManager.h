@@ -341,6 +341,8 @@ public:
 	 \brief Restore current screen
 	 */
 	virtual void ClipPop();
+    
+    virtual void Clear(const Color & color, float32 depth, int32 stencil);
 	
 	/** 
         \brief Clear rendering surface with required color 
