@@ -833,8 +833,5 @@ RenderOptions * RenderManager::GetOptions()
 {
 	return &options;
 }
-
-
-
 	
 };
