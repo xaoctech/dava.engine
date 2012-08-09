@@ -7,6 +7,11 @@
 
 #include "SceneValidator.h"
 
+#if defined (DAVA_QT)
+#include "../Qt/SceneData.h"
+#include "../Qt/SceneDataManager.h"
+#endif //#if defined (DAVA_QT)
+
 
 SceneGraph::SceneGraph(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   GraphBase(newDelegate, rect)
@@ -23,6 +28,7 @@ void SceneGraph::SelectNode(BaseObject *node)
 {
     workingNode = dynamic_cast<SceneNode *>(node);
     
+#if !defined(DAVA_QT)
     if(workingNode)
     {
         List<void *> nodesForSearch;
@@ -62,6 +68,8 @@ void SceneGraph::SelectNode(BaseObject *node)
         RefreshGraph();
     }
     
+#endif //#if !defined(DAVA_QT)
+
     UpdatePropertyPanel();
 }
 
@@ -107,7 +115,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     UIButton * buildQuadTree = ControlsFactory::CreateButton(Rect(0, y, leftSideWidth, ControlsFactory::BUTTON_HEIGHT), 
                                                             LocalizedString(L"scenegraph.buildquadtree"));
     
-    
+#if !defined (DAVA_QT)
     removeRootNodes->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRemoveRootNodesButtonPressed));
     refreshSceneGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnRefreshGraph));
     lookAtButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnLookAtButtonPressed));
@@ -115,6 +123,7 @@ void SceneGraph::CreateGraphPanel(const Rect &rect)
     enableDebugFlagsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnEnableDebugFlagsPressed));
     bakeMatrices->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBakeMatricesPressed));
     buildQuadTree->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneGraph::OnBuildQuadTreePressed));
+#endif //#if !defined (DAVA_QT)
     
     graphPanel->AddControl(removeRootNodes);
     graphPanel->AddControl(refreshSceneGraphButton);
@@ -245,18 +254,24 @@ void SceneGraph::RecreatePropertiesPanelForNode(SceneNode * node)
 }
 
 
-void SceneGraph::OnRemoveNodeButtonPressed(BaseObject * obj, void *, void *)
+void SceneGraph::OnRemoveNodeButtonPressed(BaseObject *, void *, void *)
 {
+#if defined(DAVA_QT)
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RemoveSceneNode(workingNode);
+#else //#if defined(DAVA_QT)
     RemoveWorkingNode();
+#endif //#if defined(DAVA_QT)
+    
 }
 
-void SceneGraph::OnRemoveRootNodesButtonPressed(BaseObject * obj, void *, void *)
+void SceneGraph::OnRemoveRootNodesButtonPressed(BaseObject *, void *, void *)
 {
     RemoveRootNodes();
 }
 
 
-void SceneGraph::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
+void SceneGraph::OnLookAtButtonPressed(BaseObject *, void *, void *)
 {
     MeshInstanceNode * mesh = dynamic_cast<MeshInstanceNode*>(workingNode);
     if (mesh)
@@ -269,7 +284,7 @@ void SceneGraph::OnLookAtButtonPressed(BaseObject * obj, void *, void *)
     }
 }
 
-void SceneGraph::OnBakeMatricesPressed(BaseObject * obj, void *, void *)
+void SceneGraph::OnBakeMatricesPressed(BaseObject *, void *, void *)
 {
     if (workingNode)
     {
@@ -282,7 +297,7 @@ void SceneGraph::OnBakeMatricesPressed(BaseObject * obj, void *, void *)
 //    }
 }
 
-void SceneGraph::OnBuildQuadTreePressed(BaseObject * obj, void *, void *)
+void SceneGraph::OnBuildQuadTreePressed(BaseObject *, void *, void *)
 {
     if (workingNode)
     {
@@ -297,7 +312,7 @@ void SceneGraph::OnBuildQuadTreePressed(BaseObject * obj, void *, void *)
     }
 }
 
-void SceneGraph::OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *)
+void SceneGraph::OnEnableDebugFlagsPressed(BaseObject *, void *, void *)
 {
     if (workingNode)
     {
@@ -313,7 +328,7 @@ void SceneGraph::OnEnableDebugFlagsPressed(BaseObject * obj, void *, void *)
 }
 
 
-void SceneGraph::OnRefreshGraph(BaseObject * obj, void *, void *)
+void SceneGraph::OnRefreshGraph(BaseObject *, void *, void *)
 {
     RefreshGraph();
 }
@@ -431,7 +446,9 @@ int32 SceneGraph::ChildrenCount(UIHierarchy *forHierarchy, void *forParent)
         
     }
     
-    return workingScene->GetChildrenCount();
+    if(workingScene)    return workingScene->GetChildrenCount();
+
+    return 0;
 }
 
 void * SceneGraph::ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index)
@@ -490,4 +507,9 @@ void SceneGraph::DragAndDrop(void *who, void *target, int32 mode)
     SafeRelease(targetNode);
 }
 
-
+void SceneGraph::RefreshGraph()
+{
+    GraphBase::RefreshGraph();
+    
+    SceneValidator::Instance()->EnumerateNodes(workingScene);
+}

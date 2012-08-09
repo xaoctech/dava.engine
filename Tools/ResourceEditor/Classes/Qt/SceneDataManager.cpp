@@ -3,6 +3,8 @@
 #include "SceneData.h"
 #include "SceneGraphModel.h"
 
+#include "../EditorScene.h"
+
 #include <QTreeView>
 
 using namespace DAVA;
@@ -18,22 +20,28 @@ SceneDataManager::~SceneDataManager()
     List<SceneData *>::iterator endIt = scenes.end();
     for(List<SceneData *>::iterator it = scenes.begin(); it != endIt; ++it)
     {
-        SafeRelease(*it);
+        SafeDelete(*it);
     }
     scenes.clear();
 }
 
-void SceneDataManager::ActivateScene(DAVA::Scene *scene)
+void SceneDataManager::ActivateScene(EditorScene *scene)
 {
+    if(currentScene)
+    {
+        currentScene->Deactivate();
+    }
+    
+    
     currentScene = FindDataForScene(scene);
     DVASSERT(currentScene && "There is no current scene. Something wrong.");
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    sceneGraphView->setModel(currentScene->GetSceneGraph());
+    currentScene->Activate(sceneGraphView);
 }
 
-SceneData * SceneDataManager::FindDataForScene(DAVA::Scene *scene)
+SceneData * SceneDataManager::FindDataForScene(EditorScene *scene)
 {
     SceneData *foundData = NULL;
     
@@ -56,15 +64,27 @@ SceneData * SceneDataManager::GetActiveScene()
     return currentScene;
 }
 
-void SceneDataManager::RegisterNewScene(DAVA::Scene *scene)
+SceneData *SceneDataManager::GetLevelScene()
 {
-    SceneData *data = new SceneData();
-    data->SetScene(scene);
-
-    scenes.push_back(data);
+    if(0 < scenes.size())
+    {
+        return scenes.front();
+    }
+    
+    return NULL;
 }
 
-void SceneDataManager::ReleaseScene(DAVA::Scene *scene)
+EditorScene * SceneDataManager::RegisterNewScene()
+{
+    SceneData *data = new SceneData();
+    data->CreateScene(true);
+
+    scenes.push_back(data);
+    
+    return data->GetScene();
+}
+
+void SceneDataManager::ReleaseScene(EditorScene *scene)
 {
     List<SceneData *>::iterator endIt = scenes.end();
     for(List<SceneData *>::iterator it = scenes.begin(); it != endIt; ++it)
@@ -78,7 +98,7 @@ void SceneDataManager::ReleaseScene(DAVA::Scene *scene)
                 currentScene = *scenes.begin(); // maybe we need to activate next or prev tab?
             }
                 
-            SafeRelease(sceneData);
+            SafeDelete(sceneData);
 
             scenes.erase(it);
             break;

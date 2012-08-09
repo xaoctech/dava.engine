@@ -42,8 +42,6 @@ void CommandsManager::ClearQueueTail()
 }
 
 
-
-
 void CommandsManager::Execute(Command *command)
 {
     command->Execute();
@@ -54,14 +52,21 @@ void CommandsManager::Execute(Command *command)
             break;
             
         case Command::COMMAND_UNDO_REDO:
-            //TODO: VK: if need only UNDO_QUEUE_SIZE commands at queue you may add code here
-            ClearQueueTail();
-            commandsQueue.push_back(SafeRetain(command));
-            ++currentCommandIndex;
+            
+            if(Command::STATE_VALID == command->State())
+            {
+                //TODO: VK: if need only UNDO_QUEUE_SIZE commands at queue you may add code here
+                ClearQueueTail();
+                commandsQueue.push_back(SafeRetain(command));
+                ++currentCommandIndex;
+            }
             break;
 
         case Command::COMMAND_CLEAR_UNDO_QUEUE:
-            ClearQueue();
+            if(Command::STATE_VALID == command->State())
+            {
+                ClearQueue();
+            }
             break;
 
         default:
@@ -74,6 +79,7 @@ void CommandsManager::Undo()
 {
     if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size()))
     {
+        //TODO: need check state?
         commandsQueue[currentCommandIndex]->Cancel();
         --currentCommandIndex;
     }
@@ -83,6 +89,7 @@ void CommandsManager::Redo()
 {
     if((0 <= currentCommandIndex) && (currentCommandIndex < (int32)commandsQueue.size() - 1))
     {
+        //TODO: need check state?
         ++currentCommandIndex;
         commandsQueue[currentCommandIndex]->Execute();
     }

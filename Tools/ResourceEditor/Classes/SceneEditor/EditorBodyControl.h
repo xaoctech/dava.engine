@@ -60,7 +60,9 @@ public:
     virtual void Input(UIEvent * touch);
 	virtual void Draw(const UIGeometricData &geometricData);
 
+#if !defined (DAVA_QT)
     void OpenScene(const String &pathToFile, bool editScene);
+#endif //#if !defined (DAVA_QT)
     void ReloadRootScene(const String &pathToFile);
     void ReloadNode(SceneNode *node, const String &pathToFile);
     
@@ -83,13 +85,16 @@ public:
     SceneNode *GetSelectedSGNode(); //Scene Graph node
     
     void RefreshProperties();
-    
+
+#if !defined (DAVA_QT)        
     void CreateScene(bool withCameras);
     void ReleaseScene();
-    void Refresh();
-    
+
     const String &GetFilePath();
     void SetFilePath(const String &newFilePath);
+#endif //#if !defined (DAVA_QT)
+    void Refresh();
+    
     
     void SetViewportSize(ResourceEditor::eViewportType viewportType);
     bool ControlsAreLocked();
@@ -116,11 +121,29 @@ public:
     virtual bool LandscapeEditorActive();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
+    
+#if defined (DAVA_QT)        
+    void SetScene(EditorScene *newScene);
+    void SetCameraController(CameraController *newCameraController);
+    
+    void SelectNodeQt(SceneNode *node);
+#endif //#if defined (DAVA_QT)        
+    
+    void BakeScene();
+    
 protected:
 
+    void BakeNode(SceneNode *node);
+    void FindIdentityNodes(SceneNode *node);
+    void RemoveIdentityNodes(SceneNode *node);
+
+    
+    
     void ToggleGraph(GraphBase *graph);
 
+#if !defined (DAVA_QT)        
     void ResetSelection();
+#endif //#if !defined (DAVA_QT)        
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();
@@ -137,7 +160,7 @@ protected:
     EditorScene * scene;
 	Camera * activeCamera;
     UI3DView * scene3dView;
-    WASDCameraController * cameraController;
+    CameraController * cameraController;
 
     // touch
     float32 currentTankAngle;

@@ -8,7 +8,7 @@
 
 #include <QAction>
 #include <QMenu>
-
+#include <QItemSelection>
 
 class Command;
 class GUIActionHandler: public QObject
@@ -24,11 +24,13 @@ public:
     void RegisterDockActions(DAVA::int32 count, ...);
     
     void SetResentMenu(QMenu *menu);
-    
+
+    //MENU FILE
+    void MenuFileWillShow();
+
     
 public slots:
     //menu
-    void MenuFileWillShow();
     void MenuToolsWillShow();
 
     void CreateNodeTriggered(QAction *nodeAction);
@@ -54,6 +56,15 @@ public slots:
     void HeightmapEditor();
     void TilemapEditor();
     
+    //scene graph
+    void RemoveRootNodes();
+    void RefreshSceneGraph();
+    void LockAtObject();
+    void RemoveObject();
+    void DebugFlags();
+    void BakeMatrixes();
+    void BuildQuadTree();
+    
 private:
     //create node
     void CreateNode(ResourceEditor::eNodeType type);
@@ -71,7 +82,7 @@ private:
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
-    QAction *dockActions[ResourceEditor::VIEWPORT_COUNT];
+    QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
 };

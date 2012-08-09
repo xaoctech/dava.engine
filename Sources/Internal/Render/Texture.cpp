@@ -234,11 +234,12 @@ void Texture::ReleaseTextureData()
 		RENDER_VERIFY(glDeleteFramebuffersEXT(1, &fboID));
 #endif //PLATFORMS
         
+    }
+    
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		SafeDeleteArray(savedData);
 		savedDataSize = 0;
 #endif// #if defined(__DAVAENGINE_ANDROID__)
-    }
     
 	if(rboID != (uint32)-1)
 	{

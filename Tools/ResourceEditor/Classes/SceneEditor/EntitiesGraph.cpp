@@ -31,7 +31,10 @@ void EntitiesGraph::CreateGraphPanel(const Rect &rect)
 
 int32 EntitiesGraph::ChildrenCount(UIHierarchy *forHierarchy, void *forParent)
 {
-	return workingScene->entityManager->GetAllEntities().size();
+    if(workingScene)
+        return workingScene->entityManager->GetAllEntities().size();
+    
+    return 0;
 }
 
 void * EntitiesGraph::ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index)

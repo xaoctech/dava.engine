@@ -447,7 +447,6 @@ void SceneNode::Draw()
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 		RenderHelper::Instance()->DrawCornerBox(box);
-			RenderHelper::Instance()->DrawBox(box);
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);

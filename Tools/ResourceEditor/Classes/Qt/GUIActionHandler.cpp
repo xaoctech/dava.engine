@@ -5,10 +5,12 @@
 #include "../Commands/FileCommands.h"
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
+#include "../Commands/SceneGraphCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "GUIState.h"
+#include "SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -19,13 +21,15 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
     
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
-    ClearActions(ResourceEditor::DOCK_COUNT, dockActions);
+    ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
 
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
         resentSceneActions[i] = new QAction(this);
         resentSceneActions[i]->setObjectName(QString::fromUtf8(Format("resentSceneActions[%d]", i)));
     }
+    
+    menuResentScenes = NULL;
 }
 
 GUIActionHandler::~GUIActionHandler()
@@ -37,7 +41,7 @@ GUIActionHandler::~GUIActionHandler()
 
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
     ClearActions(ResourceEditor::VIEWPORT_COUNT, viewportActions);
-    ClearActions(ResourceEditor::DOCK_COUNT, dockActions);
+    ClearActions(ResourceEditor::HIDABLEWIDGET_COUNT, hidablewidgetActions);
     
     CommandsManager::Instance()->Release();
 }
@@ -162,6 +166,7 @@ void GUIActionHandler::MenuFileWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
     
+    //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
     
     int32 sceneCount = EditorSettings::Instance()->GetLastOpenedCount();
@@ -194,12 +199,14 @@ void GUIActionHandler::MenuFileWillShow()
 void GUIActionHandler::MenuToolsWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedToolsMenu()) return;
-    
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-//        screen->;
-    }
+
+    //TODO: need code here
+
+//    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+//    if(screen)
+//    {
+////        screen->;
+//    }
     
     GUIState::Instance()->SetNeedUpdatedToolsMenu(false);
 }
@@ -244,12 +251,12 @@ void GUIActionHandler::RegisterViewportActions(int32 count, ...)
 
 void GUIActionHandler::RegisterDockActions(int32 count, ...)
 {
-    DVASSERT((ResourceEditor::DOCK_COUNT == count) && "Wrong count of actions");
+    DVASSERT((ResourceEditor::HIDABLEWIDGET_COUNT == count) && "Wrong count of actions");
     
     va_list vl;
     va_start(vl, count);
     
-    RegisterActions(dockActions, count, vl);
+    RegisterActions(hidablewidgetActions, count, vl);
     
     va_end(vl);
 }
@@ -266,13 +273,48 @@ void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &
 
 void GUIActionHandler::RestoreViews()
 {
-    for(int32 i = 0; i < ResourceEditor::DOCK_COUNT; ++i)
+    for(int32 i = 0; i < ResourceEditor::HIDABLEWIDGET_COUNT; ++i)
     {
-        if(dockActions[i] && !dockActions[i]->isChecked())
+        if(hidablewidgetActions[i] && !hidablewidgetActions[i]->isChecked())
         {
-            dockActions[i]->trigger();
+            hidablewidgetActions[i]->trigger();
         }
     }
+}
+
+void GUIActionHandler::RemoveRootNodes()
+{
+    Execute(new CommandRemoveRootNodes());
+}
+
+void GUIActionHandler::RefreshSceneGraph()
+{
+    Execute(new CommandRefreshSceneGraph());
+}
+
+void GUIActionHandler::LockAtObject()
+{
+    Execute(new CommandLockAtObject());
+}
+
+void GUIActionHandler::RemoveObject()
+{
+    Execute(new CommandRemoveSceneNode());
+}
+
+void GUIActionHandler::DebugFlags()
+{
+    Execute(new CommandDebugFlags());
+}
+
+void GUIActionHandler::BakeMatrixes()
+{
+    Execute(new CommandBakeMatrices());
+}
+
+void GUIActionHandler::BuildQuadTree()
+{
+    Execute(new CommandBuildQuadTree());
 }
 
 
