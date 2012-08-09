@@ -1398,6 +1398,11 @@ void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
 {
     sceneGraph->SelectNode(node);
 }
+
+void EditorBodyControl::OnReloadRootNodesQt()
+{
+    modificationPanel->OnReloadScene();
+}
 #endif //#if defined (DAVA_QT)
 
 

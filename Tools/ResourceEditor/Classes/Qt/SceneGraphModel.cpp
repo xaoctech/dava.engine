@@ -49,7 +49,7 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 
 void SceneGraphModel::Rebuild()
 {
-    selectedNode = NULL;
+//    selectedNode = NULL;
     
     SafeRelease(rootItem);
 	rootItem = new SceneGraphItem();
@@ -66,7 +66,22 @@ void SceneGraphModel::Rebuild()
     
 //    emit dataChanged(QModelIndex(), QModelIndex());
     this->reset();
+
+    
+    if(selectedNode)
+    {
+        GraphItem *selectedItem = ItemForData(selectedNode);
+        if(selectedItem)
+        {
+            SelectItem(selectedItem);
+        }
+        else
+        {
+            SelectNode(NULL);
+        }
+    }
 }
+
 
 void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
@@ -97,7 +112,6 @@ void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QIt
     {
         SelectNode(NULL, false);
     }
-    
 }
 
 void SceneGraphModel::SelectNode(DAVA::SceneNode *node)
@@ -118,19 +132,32 @@ void SceneGraphModel::SelectNode(DAVA::SceneNode *node, bool selectAtGraph)
         if(selectedNode)
         {
             GraphItem *selectedItem = ItemForData(selectedNode);
-            
-            QModelIndex idx = createIndex(selectedItem->Row(), 0, selectedItem);
-            itemSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect);
-            
-            if(attachedTreeView)
+//            SelectItem(selectedItem);
+            if(selectedItem)
             {
-                attachedTreeView->scrollTo(idx);
+                SelectItem(selectedItem);
             }
+            else
+            {
+                SelectNode(NULL);
+            }
+
         }
         else
         {
             itemSelectionModel->clearSelection();
         }
+    }
+}
+
+void SceneGraphModel::SelectItem(GraphItem *item)
+{
+    QModelIndex idx = createIndex(item->Row(), 0, item);
+    itemSelectionModel->select(idx, QItemSelectionModel::ClearAndSelect);
+    
+    if(attachedTreeView)
+    {
+        attachedTreeView->scrollTo(idx);
     }
 }
 
@@ -144,7 +171,7 @@ Qt::ItemFlags SceneGraphModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
 	{
-		return 0;
+		return Qt::ItemIsDropEnabled;
 	}
     
     Qt::ItemFlags flags = GraphModel::flags(index);
@@ -255,7 +282,12 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
 
 void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex)
 {
-    GraphItem *newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
+    GraphItem *newParentItem = rootItem;
+    if(newParentIndex.isValid())
+    {
+        newParentItem = static_cast<GraphItem*>(newParentIndex.internalPointer());
+    }
+    
 
     GraphItem *oldParentItem = movedItem->GetParent();
     
