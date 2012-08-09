@@ -16,6 +16,11 @@ MeshInstancePropertyControl::~MeshInstancePropertyControl()
 
 void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
 {
+#if defined (DAVA_QT)
+    return;
+#endif //#if defined (DAVA_QT)
+    
+    
 	NodesPropertyControl::ReadFrom(sceneNode);
 
     MeshInstanceNode *mesh = dynamic_cast<MeshInstanceNode *> (sceneNode);

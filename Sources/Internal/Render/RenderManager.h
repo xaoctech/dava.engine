@@ -229,6 +229,8 @@ public:
 	 */
 	void FlushState();
 
+	void FlushState(RenderStateBlock * stateBlock);
+
 	/** 
 	 \brief 
 	 \param[in] sfactor

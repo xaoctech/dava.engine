@@ -70,6 +70,12 @@
     <Filter Include="Sources\Qt\Scene Data">
       <UniqueIdentifier>{2b0ff764-5b5d-43e7-a8cf-76ae700bff20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="QtBuildTool">
+      <UniqueIdentifier>{830edf1a-2cbf-4b69-866a-427e1fdfbbd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{a18c56f3-ac1d-43b8-beb8-0a5ea83a03e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -213,9 +219,6 @@
     <ClCompile Include="Classes\BulletObject.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\davaglwidget.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\DebugNode.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -250,12 +253,6 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Classes\VertexOctTree.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="mainwindow.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
@@ -491,9 +488,6 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtDefines.h">
-      <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandCreateNode.h">
       <Filter>Sources\Commands</Filter>
@@ -891,6 +885,30 @@
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp">
       <Filter>Sources\Qt\Graph</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\QtUtils.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_GraphModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_SceneData.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_SceneGraphModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\davaglwidget.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -899,10 +917,30 @@
     <CustomBuild Include="mainwindow.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="QtBuildTool\mainwindow.build" />
-    <CustomBuild Include="QtBuildTool\davaglwidget.build" />
-    <CustomBuild Include="QtBuildTool\GraphTreeView.build" />
-    <CustomBuild Include="QtBuildTool\GUIActionHandler.build" />
+    <CustomBuild Include="QtBuildTool\davaglwidget.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\mainwindow.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\GraphTreeView.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\GUIActionHandler.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\GraphModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\SceneData.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\SceneGraphModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtIcons.qrc">
+      <Filter>Resources</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1058,9 +1096,6 @@
     <ClInclude Include="Classes\config.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\davaglwidget.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\DebugNode.h">
       <Filter>Sources</Filter>
     </ClInclude>
@@ -1095,9 +1130,6 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\VertexOctTree.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="mainwindow.h">
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.h">
@@ -1682,6 +1714,24 @@
     <ClInclude Include="Classes\Qt\SceneGraphItem.h">
       <Filter>Sources\Qt\Graph</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\QtUtils.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\SceneGraphCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\davaglwidget.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="mainwindow.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_davaglwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -1930,5 +1980,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+    <None Include="Data\QtIcons\newscene.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\openproject.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\openscene.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\savescene.png">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+    <file>Data/QtIcons/newscene.png</file>
+    <file>Data/QtIcons/openproject.png</file>
+    <file>Data/QtIcons/openscene.png</file>
+    <file>Data/QtIcons/savescene.png</file>
+</qresource>
+</RCC>

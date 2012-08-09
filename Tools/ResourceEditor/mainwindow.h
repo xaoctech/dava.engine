@@ -19,8 +19,16 @@ public:
     
 private:
     void SetupMainMenu();
+    
+	void SetupToolBar();
+	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
+
     void SetupProjectPath();
     void SetupDockWidgets();
+    
+private slots:
+
+    void MenuFileWillShow();
     
 private:
     GUIActionHandler *actionHandler;

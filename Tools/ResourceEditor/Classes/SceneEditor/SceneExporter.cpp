@@ -86,7 +86,7 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
 
     String oldPath = SceneValidator::Instance()->SetPathForChecking(dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, errorLog);
-	SceneValidator::Instance()->ValidateScales(scene, errorLog);
+	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     ExportMaterials(scene, errorLog);
     ExportLandscape(scene, errorLog);
@@ -107,45 +107,32 @@ void SceneExporter::ExportScene(Scene *scene, const String &fileName, Set<String
 void SceneExporter::RemoveEditorNodes(DAVA::SceneNode *rootNode)
 {
     //Remove scene nodes
-    
-    Set<SceneNode *> scenenodesForDeletion;
     Vector<SceneNode *> scenenodes;
     rootNode->GetChildNodes(scenenodes);
-    
-    //Find "editor." nodes
-    Vector<SceneNode *>::const_iterator endIt = scenenodes.end();
-    for (Vector<SceneNode *>::const_iterator it = scenenodes.begin(); it != endIt; ++it)
-    {
-        SceneNode * node = *it;
-        String::size_type pos = node->GetName().find(String("editor."));
-        if(String::npos != pos)
-        {
-            Set<SceneNode *>::const_iterator setIt = scenenodesForDeletion.find(node);
-            if(setIt == scenenodesForDeletion.end())
-            {
-                scenenodesForDeletion.insert(SafeRetain(node));
-            }
-        }
-    }
         
     //remove nodes from hierarhy
-    Set<SceneNode *>::const_iterator endItDeletion = scenenodesForDeletion.end();
-    for (Set<SceneNode *>::const_iterator it = scenenodesForDeletion.begin(); it != endItDeletion; ++it)
+    Vector<SceneNode *>::reverse_iterator endItDeletion = scenenodes.rend();
+    for (Vector<SceneNode *>::reverse_iterator it = scenenodes.rbegin(); it != endItDeletion; ++it)
     {
         SceneNode * node = *it;
-        if (node->GetParent())
+		String::size_type pos = node->GetName().find(String("editor."));
+        if(String::npos != pos)
         {
             node->GetParent()->RemoveNode(node);
         }
+		else
+		{
+			LightNode * light = dynamic_cast<LightNode*>(node);
+			if(light)
+			{
+				bool isDynamic = light->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+				if(!isDynamic)
+				{
+					node->GetParent()->RemoveNode(node);
+				}
+			}
+		}
     }
-    
-    //release nodes
-	for (Set<SceneNode *>::const_iterator it = scenenodesForDeletion.begin(); it != endItDeletion; ++it)
-	{
-		SceneNode * node = *it;
-		SafeRelease(node);
-	}
-    scenenodesForDeletion.clear();
 }
 
 
@@ -208,7 +195,7 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
 			{
 				if (!m->textures[Material::TEXTURE_DIFFUSE]->relativePathname.empty()) 
 				{
-                    m->names[Material::TEXTURE_DIFFUSE] = ExportTexture(m->names[Material::TEXTURE_DIFFUSE], errorLog);
+                    m->names[Material::TEXTURE_DIFFUSE] = ExportTexture(m->textures[Material::TEXTURE_DIFFUSE], m->names[Material::TEXTURE_DIFFUSE], errorLog);
 				}
 			}
             
@@ -216,7 +203,24 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
 			{
 				if (!m->textures[Material::TEXTURE_DECAL]->relativePathname.empty()) 
 				{
-                    m->names[Material::TEXTURE_DECAL] = ExportTexture(m->names[Material::TEXTURE_DECAL], errorLog);
+                    if(m->names[Material::TEXTURE_DECAL].empty())
+                    {   //TODO: if lightmap texture is decal and name is empty -> we need to process .pvr file, not .pvr.png
+                        String relativePathname = m->textures[Material::TEXTURE_DECAL]->relativePathname;
+                        Logger::Info("[EMPTY NAME] %s", relativePathname.c_str());
+
+                        String::size_type lightmapPos = relativePathname.find("_lightmaps/texture.pvr.png");
+                        if(String::npos != lightmapPos)
+                        {
+                            relativePathname = relativePathname.replace(lightmapPos, strlen("_lightmaps/texture.pvr.png"), "_lightmaps/texture.pvr");
+                        }
+                        
+                        m->names[Material::TEXTURE_DECAL] = ExportTexture(m->textures[Material::TEXTURE_DECAL], relativePathname, errorLog);
+                    }
+                    else
+                    {
+                        m->names[Material::TEXTURE_DECAL] = ExportTexture(m->textures[Material::TEXTURE_DECAL], m->names[Material::TEXTURE_DECAL], errorLog);
+                    }
+                    
 				}
 			}
         }
@@ -249,7 +253,7 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
             if(t) 
             {
                 landscape->SetTextureName((LandscapeNode::eTextureLevel)i, 
-                                            ExportTexture(landscape->GetTextureName((LandscapeNode::eTextureLevel)i), errorLog));
+                                            ExportTexture(t, landscape->GetTextureName((LandscapeNode::eTextureLevel)i), errorLog));
             }
             else 
             {
@@ -274,7 +278,7 @@ void SceneExporter::ExportMeshLightmaps(Scene *scene, Set<String> &errorLog)
             MeshInstanceNode::LightmapData * ld = meshInstances[iMesh]->GetLightmapDataForIndex(li);
             if (ld)
             {
-                ld->lightmapName = ExportTexture(ld->lightmapName, errorLog);
+                ld->lightmapName = ExportTexture(ld->lightmap, ld->lightmapName, errorLog);
             }
         }
     }
@@ -312,83 +316,108 @@ bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &
 }
 
 
-String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
+String SceneExporter::ExportTexture(Texture *tex, const String &texturePathname, Set<String> &errorLog)
 {
-    Logger::Debug("[ExportTexture] %s", texturePathname.c_str());
-    
-    //TODO: return at format will be enabled
-    String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
-    bool ret = ExportFileDirectly(exportedPathname, errorLog);
-    if(!ret)
-    {
-        //TODO: blen textures
-        RenderManager::Instance()->LockNonMain();
+    //TODO: temporary fix
+    ExportFileDirectly(texturePathname, errorLog);
+    return texturePathname;
+    //ENDOFTODO
 
-        Texture *tex = Texture::CreateFromFile(texturePathname);
-        if(tex)
-        {
-            Sprite *fbo = Sprite::CreateAsRenderTarget((float32)tex->width, (float32)tex->height, FORMAT_RGBA8888);
-            Sprite *texSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
-            if(fbo && texSprite)
-            {
-                
-                RenderManager::Instance()->SetRenderTarget(fbo);
-                texSprite->SetPosition(0.f, 0.f);
-                texSprite->Draw();
-                
-                RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 1.0f, 0.5f));
-                RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, (float32)tex->width, (float32)tex->height));
-
-                RenderManager::Instance()->RestoreRenderTarget();
-                
-                //Save new texture
-                String workingPathname = RemoveFolderFromPath(texturePathname, dataSourceFolder);
-                
-                String folder, file;
-                FileSystem::SplitPath(workingPathname, folder, file);
-                
-                String newFolderPath = dataFolder + folder;
-                if(!FileSystem::Instance()->IsDirectory(newFolderPath))
-                {
-                    FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);
-                    if(FileSystem::DIRECTORY_CANT_CREATE == retCreate)
-                    {
-                        errorLog.insert(String(Format("Can't create folder %s",newFolderPath.c_str())));
-                    }
-                }
-                exportedPathname = dataFolder + workingPathname;
-                FileSystem::Instance()->DeleteFile(exportedPathname);
-                
-                Image *image = fbo->GetTexture()->CreateImageFromMemory();
-                if(image)
-                {
-                    image->Save(exportedPathname);
-                }
-                else 
-                {
-                    errorLog.insert(String(Format("Can't create image from fbo for file %s", texturePathname.c_str())));
-                }
-                
-                SafeRelease(image);
-            }
-            else 
-            {
-                errorLog.insert(String(Format("Can't create FBO for file %s", texturePathname.c_str())));
-            }
-            
-            SafeRelease(texSprite);
-            SafeRelease(fbo);
-            SafeRelease(tex);
-        }
-        else 
-        {
-            errorLog.insert(String(Format("Can't create texture for file %s", texturePathname.c_str())));
-        }
-        RenderManager::Instance()->UnlockNonMain();
-        
-    }
     
-    return exportedPathname;
+//    DVASSERT((NULL != tex) && "Texture can't be NULL");
+//    //TODO: Think about re-writting of textures.
+//    
+//    String::size_type foundWrongExtension = texturePathname.find(".pvr.png");
+//
+//    //export texture as is
+//    const String textureExtension = FileSystem::Instance()->GetExtension(texturePathname);
+//    if(     ((textureExtension == format) && (String::npos == foundWrongExtension))
+//       ||   (tex->GetWidth() != tex->GetHeight()))
+//    {
+//        ExportFileDirectly(texturePathname, errorLog);
+//        return texturePathname;
+//    }
+//
+//
+//    // log filename error
+//    if(String::npos != foundWrongExtension)
+//    {
+//        errorLog.insert(String(Format("[.PVR.PNG] %s", texturePathname.c_str())));
+//    }
+//
+//    
+//    //Export with Red Color
+////    String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
+//    String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
+//    {
+//        //TODO: blend textures
+//        RenderManager::Instance()->LockNonMain();
+//
+//        Texture *tex = Texture::CreateFromFile(texturePathname);
+//        if(tex)
+//        {
+//            Sprite *fbo = Sprite::CreateAsRenderTarget((float32)tex->width, (float32)tex->height, FORMAT_RGBA8888);
+//            Sprite *texSprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
+//            if(fbo && texSprite)
+//            {
+//                
+//                RenderManager::Instance()->SetRenderTarget(fbo);
+//                texSprite->SetPosition(0.f, 0.f);
+//                texSprite->Draw();
+//                
+//                RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 1.0f, 0.5f));
+//                RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, (float32)tex->width, (float32)tex->height));
+//
+//                RenderManager::Instance()->RestoreRenderTarget();
+//                
+//                //Save new texture
+//                String workingPathname = RemoveFolderFromPath(exportedPathname, dataSourceFolder);
+//                
+//                String folder, file;
+//                FileSystem::SplitPath(workingPathname, folder, file);
+//                
+//                String newFolderPath = dataFolder + folder;
+//                if(!FileSystem::Instance()->IsDirectory(newFolderPath))
+//                {
+//                    FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);
+//                    if(FileSystem::DIRECTORY_CANT_CREATE == retCreate)
+//                    {
+//                        errorLog.insert(String(Format("Can't create folder %s",newFolderPath.c_str())));
+//                    }
+//                }
+//                exportedPathname = dataFolder + workingPathname;
+//                FileSystem::Instance()->DeleteFile(exportedPathname);
+//                
+//                Image *image = fbo->GetTexture()->CreateImageFromMemory();
+//                if(image)
+//                {
+//                    image->Save(exportedPathname);
+//                }
+//                else 
+//                {
+//                    errorLog.insert(String(Format("Can't create image from fbo for file %s", texturePathname.c_str())));
+//                }
+//                
+//                SafeRelease(image);
+//            }
+//            else 
+//            {
+//                errorLog.insert(String(Format("Can't create FBO for file %s", texturePathname.c_str())));
+//            }
+//            
+//            SafeRelease(texSprite);
+//            SafeRelease(fbo);
+//            SafeRelease(tex);
+//        }
+//        else 
+//        {
+//            errorLog.insert(String(Format("Can't create texture for file %s", texturePathname.c_str())));
+//        }
+//        RenderManager::Instance()->UnlockNonMain();
+//        
+//    }
+//    
+//    return exportedPathname;
 }
 
 

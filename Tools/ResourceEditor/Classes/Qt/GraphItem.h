@@ -11,12 +11,18 @@ class GraphItem: public BaseObject
 public:
     GraphItem(GraphItem *parent = 0);
     virtual ~GraphItem();
+    
+	GraphItem *GetParent();
+    void SetParent(GraphItem * parent);
 
 	virtual void SetUserData(void *data) = 0;
+    void * GetUserData();
 
-	GraphItem *GetParent();
-	GraphItem *Child(int32 row);
     void AppendChild(GraphItem *child);
+    void InsertChild(GraphItem *child, int32 pos);
+    void RemoveChild(int32 row);
+    void RemoveChild(GraphItem *child);
+	GraphItem *Child(int32 row);
 	int32 ChildrenCount() const;
 
 	int32 Row() const;
@@ -26,7 +32,7 @@ public:
 
 protected:
 
-	virtual void ReleaseUserData() = 0;
+	virtual void ReleaseUserData()= 0;
 
 protected:
 	void *userData;
@@ -35,5 +41,6 @@ private:
 	Vector<GraphItem *>children;
     GraphItem *parentItem;
 };
+
 
 #endif // __GRAPH_ITEM_H__

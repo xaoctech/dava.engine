@@ -116,6 +116,10 @@ public:
 	};
     
     void RecreteFullTilingTexture();
+    
+#if defined (DAVA_QT)
+    void SelectNodeQt(SceneNode *node);
+#endif //#if defined (DAVA_QT)
 
 private:
     
@@ -157,7 +161,7 @@ private:
     
 
     //Body list
-
+    void OnBakeScene(BaseObject *, void *, void *);
     
     
     Vector<BodyItem *> bodies;

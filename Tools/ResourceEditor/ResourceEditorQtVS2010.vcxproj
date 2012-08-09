@@ -294,6 +294,7 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
+    <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp" />
     <ClCompile Include="Classes\davaglwidget.cpp">
       <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o $(Configuration)\moc_davaglwidget.cpp</Command>
@@ -331,6 +332,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
     </ClCompile>
     <ClCompile Include="Classes\Qt\GUIState.cpp" />
+    <ClCompile Include="Classes\Qt\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\SceneData.cpp" />
     <ClCompile Include="Classes\Qt\SceneDataManager.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
@@ -434,9 +436,12 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
     </ClCompile>
     <ClCompile Include="QtBuildTool\moc_davaglwidget.cpp" />
+    <ClCompile Include="QtBuildTool\moc_GraphModel.cpp" />
     <ClCompile Include="QtBuildTool\moc_GraphTreeView.cpp" />
     <ClCompile Include="QtBuildTool\moc_GuiActionHandler.cpp" />
     <ClCompile Include="QtBuildTool\moc_mainwindow.cpp" />
+    <ClCompile Include="QtBuildTool\moc_SceneData.cpp" />
+    <ClCompile Include="QtBuildTool\moc_SceneGraphModel.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />
@@ -666,6 +671,7 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
     <ClInclude Include="Classes\Commands\CommandViewport.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
+    <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
     <ClInclude Include="Classes\Commands\ToolsCommands.h" />
     <ClInclude Include="Classes\config.h" />
     <ClInclude Include="Classes\Constants.h" />
@@ -685,7 +691,7 @@
     <ClInclude Include="Classes\Qt\GraphTreeView.h" />
     <ClInclude Include="Classes\Qt\GUIActionHandler.h" />
     <ClInclude Include="Classes\Qt\GUIState.h" />
-    <ClInclude Include="Classes\Qt\QtDefines.h" />
+    <ClInclude Include="Classes\Qt\QtUtils.h" />
     <ClInclude Include="Classes\Qt\SceneData.h" />
     <ClInclude Include="Classes\Qt\SceneDataManager.h" />
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
@@ -782,6 +788,8 @@
     <ClInclude Include="Classes\UISpriteEditor.h" />
     <ClInclude Include="Classes\VertexOctTree.h" />
     <ClInclude Include="mainwindow.h" />
+    <ClInclude Include="ui_davaglwidget.h" />
+    <ClInclude Include="ui_mainwindow.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -861,6 +869,48 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GUIActionHandler.h -o QtBuildTool\moc_GuiActionHandler.cpp</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GUIActionHandler.h -o QtBuildTool\moc_GuiActionHandler.cpp</Command>
     </CustomBuild>
+    <CustomBuild Include="QtBuildTool\GraphModel.build">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphModel.h -o QtBuildTool\moc_GraphModel.cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphModel.h -o QtBuildTool\moc_GraphModel.cpp</Command>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\SceneData.build">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneData.h -o QtBuildTool\moc_SceneData.cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneData.h -o QtBuildTool\moc_SceneData.cpp</Command>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\SceneGraphModel.build">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneGraphModel.h -o QtBuildTool\moc_SceneGraphModel.cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/SceneGraphModel.h -o QtBuildTool\moc_SceneGraphModel.cpp</Command>
+    </CustomBuild>
+    <CustomBuild Include="QtIcons.qrc">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe -name QtIcons QtIcons.qrc -o QtBuildTool\qrc_QtIcons.cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe -name QtIcons QtIcons.qrc -o QtBuildTool\qrc_QtIcons.cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">QtBuildTool\qrc_(Filename).cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe;Data\QtIcons\newscene.png;Data\QtIcons\openproject.png;Data\QtIcons\openscene.png;Data\QtIcons\savescene.png;QtIcons.qrc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">QtBuildTool\qrc_(Filename).cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\rcc.exe;Data\QtIcons\newscene.png;Data\QtIcons\openproject.png;Data\QtIcons\openscene.png;Data\QtIcons\savescene.png;QtIcons.qrc;%(AdditionalInputs)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">RCC QtIcons.qrc</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">RCC QtIcons.qrc</Message>
+    </CustomBuild>
+    <None Include="Data\QtIcons\newscene.png" />
+    <None Include="Data\QtIcons\openproject.png" />
+    <None Include="Data\QtIcons\openscene.png" />
+    <None Include="Data\QtIcons\savescene.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

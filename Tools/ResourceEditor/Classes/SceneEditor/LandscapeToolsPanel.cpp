@@ -5,9 +5,9 @@
 
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
-    ,   selectedBrushTool(NULL)
-    ,   selectedTool(NULL)
     ,   delegate(newDelegate)
+    ,   selectedTool(NULL)
+    ,   selectedBrushTool(NULL)
 {
     ControlsFactory::CustomizeDialogFreeSpace(this);
     

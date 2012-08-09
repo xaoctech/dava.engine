@@ -24,6 +24,11 @@
 #include "DataGraph.h"
 #include "EntitiesGraph.h"
 
+#if defined (DAVA_QT)        
+#include "../Qt/SceneDataManager.h"
+#include "../Qt/SceneData.h"
+#endif //#if defined (DAVA_QT)
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
@@ -61,8 +66,13 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
 
     sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
     AddControl(sceneInfoControl);
-    
+
+#if defined (DAVA_QT)
+    scene = NULL;
+    cameraController = NULL;
+#else //#if defined (DAVA_QT)
     CreateScene(true);
+#endif //#if defined (DAVA_QT)
 
     if(showOutput)
     {
@@ -111,12 +121,17 @@ EditorBodyControl::~EditorBodyControl()
     
     ReleaseLandscapeEditor();
     
+#if defined (DAVA_QT)
+    SafeRelease(scene);
+    SafeRelease(cameraController);
+#else //#if defined (DAVA_QT)
     ReleaseScene();
+#endif //#if defined (DAVA_QT)
   
     SafeRelease(scene3dView);
 }
 
-
+#if !defined (DAVA_QT)
 void EditorBodyControl::CreateScene(bool withCameras)
 {
     scene = new EditorScene();
@@ -161,6 +176,7 @@ void EditorBodyControl::CreateScene(bool withCameras)
     dataGraph->SetScene(scene);
 	entitiesGraph->SetScene(scene);
 }
+#endif //#if !defined (DAVA_QT)
 
 void RemoveDeepCamera(SceneNode * curr)
 {
@@ -218,6 +234,7 @@ void EditorBodyControl::PopDebugCamera()
 	debugCam = 0;
 }
 
+#if !defined (DAVA_QT)
 void EditorBodyControl::ReleaseScene()
 {
     //TODO: need to release root nodes?
@@ -226,7 +243,7 @@ void EditorBodyControl::ReleaseScene()
     SafeRelease(scene);
     SafeRelease(cameraController);
 }
-
+#endif //#if !defined (DAVA_QT)
 
 void EditorBodyControl::CreateModificationPanel(void)
 {
@@ -319,7 +336,12 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
                     if(c == this || c == scene3dView)
                     {
+#if defined (DAVA_QT)
+                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+                        activeScene->SelectNode(NULL);
+#else //#if defined (DAVA_QT)                        
                         ResetSelection();
+#endif //#if defined (DAVA_QT)
                     }
                     
                     break;
@@ -681,7 +703,7 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	}
 }
 
-
+#if !defined (DAVA_QT)
 void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
 {
     if (FileSystem::Instance()->GetExtension(pathToFile) == ".sce")
@@ -771,8 +793,10 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
     SelectNodeAtTree(scene->GetSelection());
     
     SceneValidator::Instance()->ValidateScene(scene);
+    
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
+#endif //#if !defined (DAVA_QT)
 
 void EditorBodyControl::ReloadRootScene(const String &pathToFile)
 {
@@ -823,7 +847,7 @@ void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
 }
 
 
-
+#if !defined (DAVA_QT)
 const String &EditorBodyControl::GetFilePath()
 {
     return mainFilePath;
@@ -833,6 +857,7 @@ void EditorBodyControl::SetFilePath(const String &newFilePath)
 {
     mainFilePath = newFilePath;
 }
+#endif //#if !defined (DAVA_QT)
 
 void EditorBodyControl::WillAppear()
 {
@@ -1034,8 +1059,14 @@ EditorScene * EditorBodyControl::GetScene()
 
 void EditorBodyControl::AddNode(SceneNode *node)
 {
+#if defined (DAVA_QT)
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->AddSceneNode(node);
+#else //#if defined (DAVA_QT)
     scene->AddNode(node);
     Refresh();
+#endif // #if defined (DAVA_QT)
+
 }
 
 SceneNode * EditorBodyControl::GetSelectedSGNode()
@@ -1045,7 +1076,12 @@ SceneNode * EditorBodyControl::GetSelectedSGNode()
 
 void EditorBodyControl::RemoveSelectedSGNode()
 {
+#if defined (DAVA_QT)
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RemoveSceneNode(GetSelectedSGNode());
+#else //#if defined (DAVA_QT)
     sceneGraph->RemoveWorkingNode();
+#endif // #if defined (DAVA_QT)
 }
 
 
@@ -1074,19 +1110,26 @@ void EditorBodyControl::Refresh()
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
+#if defined(DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    sceneData->SelectNode(node);
+#else //#if defined(DAVA_QT)
     if(sceneGraph)
         sceneGraph->SelectNode(node);
     
     if(dataGraph)
         dataGraph->RefreshGraph();
+#endif //#if defined(DAVA_QT)
+    
 }
 
+#if !defined (DAVA_QT)
 void EditorBodyControl::ResetSelection()
 {
     scene->SetSelection(0);
     SelectNodeAtTree(0);
 }
-
+#endif //#if defined (DAVA_QT)
 
 void EditorBodyControl::SetViewportSize(ResourceEditor::eViewportType viewportType)
 {
@@ -1161,7 +1204,12 @@ void EditorBodyControl::PackLightmaps()
 {
 	LightmapsPacker packer;
 	packer.SetInputDir("lightmaps_temp/");
+#if defined (DAVA_QT)	
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	packer.SetOutputDir(sceneData->GetScenePathname() + "_lightmaps/");
+#else //#if defined (DAVA_QT)
 	packer.SetOutputDir(GetFilePath()+"_lightmaps/");
+#endif //#if defined (DAVA_QT)	
 	packer.Pack();
 	packer.Compress();
 	packer.ParseSpriteDescriptors();
@@ -1316,13 +1364,11 @@ void EditorBodyControl::LandscapeEditorFinished()
 }
 
 
-#pragma marlk --ModificationsPanelDelegate
 void EditorBodyControl::OnPlaceOnLandscape()
 {
     PlaceOnLandscape();
 }
 
-#pragma marlk --GraphBaseDelegate
 bool EditorBodyControl::LandscapeEditorActive()
 {
     return (currentLandscapeEditor && currentLandscapeEditor->IsActive());
@@ -1332,3 +1378,101 @@ NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)
 {
     return currentLandscapeEditor->GetPropertyControl(rect);
 }
+
+#if defined (DAVA_QT)
+void EditorBodyControl::SetScene(EditorScene *newScene)
+{
+    SafeRelease(scene);
+    scene = SafeRetain(newScene);
+    
+    scene3dView->SetScene(scene);
+}
+
+void EditorBodyControl::SetCameraController(CameraController *newCameraController)
+{
+    SafeRelease(cameraController);
+    cameraController = SafeRetain(newCameraController);
+}
+
+void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
+{
+    sceneGraph->SelectNode(node);
+}
+#endif //#if defined (DAVA_QT)
+
+
+void EditorBodyControl::BakeNode(SceneNode *node)
+{
+    if(node->GetSolid())
+    {
+        node->BakeTransforms();
+        return;
+    }
+    
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        BakeNode(node->GetChild(i));
+    }
+}
+
+void EditorBodyControl::RemoveIdentityNodes(DAVA::SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *removedChild = node->GetChild(i);
+        
+        if(
+                (removedChild->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+           &&   (typeid(SceneNode) == typeid(*removedChild))
+           &&   (typeid(LodNode) != typeid(*node))
+           &&   (removedChild->GetChildrenCount() == 1))
+        {
+            SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            removedChild->RemoveNode(child);
+            node->AddNode(child);
+            SafeRelease(child);
+            
+            node->RemoveNode(removedChild);
+            
+            i = -1;
+        }
+        else
+        {
+            RemoveIdentityNodes(removedChild);
+        }
+    }
+}
+
+void EditorBodyControl::FindIdentityNodes(SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *child = node->GetChild(i);
+        
+        if(child->GetSolid())
+        {
+            RemoveIdentityNodes(child);
+        }
+        else
+        {
+            FindIdentityNodes(child);
+        }
+    }
+}
+
+
+void EditorBodyControl::BakeScene()
+{
+    if(scene)
+    {
+#if !defined(DAVA_QT)
+        ResetSelection();
+#endif //#if !defined(DAVA_QT)
+
+        BakeNode(scene);
+        FindIdentityNodes(scene);
+        
+        Refresh();
+    }
+}
+

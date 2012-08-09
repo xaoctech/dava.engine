@@ -35,6 +35,21 @@ void SceneValidator::ValidateScene(Scene *scene, Set<String> &errorsLog)
     {
         ValidateSceneNode(scene, errorsLog);
         ValidateLodNodes(scene, errorsLog);
+        
+        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+        {
+            SceneNode * node = *it;
+            if (node->GetParent())
+            {
+                node->GetParent()->RemoveNode(node);
+            }
+        }
+        for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
+        {
+            SceneNode * node = *it;
+            SafeRelease(node);
+        }
+        emptyNodesForDeletion.clear();
     }
     else 
     {
@@ -101,20 +116,6 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode)
     
     ShowErrors();
     
-    for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
-    {
-        SceneNode * node = *it;
-        if (node->GetParent())
-        {
-            node->GetParent()->RemoveNode(node);
-        }
-    }
-	for (Set<SceneNode*>::iterator it = emptyNodesForDeletion.begin(); it != emptyNodesForDeletion.end(); ++it)
-	{
-		SceneNode * node = *it;
-		SafeRelease(node);
-	}
-    emptyNodesForDeletion.clear();
 }
 
 void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errorsLog)
@@ -167,14 +168,17 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         }
     }
     
-    Set<DataNode*> dataNodeSet;
-    sceneNode->GetDataNodes(dataNodeSet);
-    if (dataNodeSet.size() == 0)
+    if(typeid(SceneNode) == typeid(*sceneNode))
     {
-        SceneNode * parent = sceneNode->GetParent();
-        if (parent)
+        Set<DataNode*> dataNodeSet;
+        sceneNode->GetDataNodes(dataNodeSet);
+        if (dataNodeSet.size() == 0)
         {
-            emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+            SceneNode * parent = sceneNode->GetParent();
+            if (parent)
+            {
+                emptyNodesForDeletion.insert(SafeRetain(sceneNode));
+            }
         }
     }
 }
@@ -233,7 +237,7 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 
 bool SceneValidator::IsntPower2(int32 num)
 {
-    return (num & (num - 1));
+    return ((num & (num - 1)) > 0);
 }
 
 void SceneValidator::ShowErrors()
@@ -286,6 +290,11 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
     for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
     {
         ValidateTexture(material->textures[iTex], errorsLog);
+        
+        if(material->names[iTex].find(".pvr.png") != String::npos)
+        {
+            errorsLog.insert(material->GetName() + ": wrong texture name " + material->names[iTex]);
+        }
     }
 }
 
@@ -449,4 +458,32 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     
     return pathIsCorrect;
     
+}
+
+void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
+{
+    int32 nodesCount = 0;
+    if(scene)
+    {
+        for(int32 i = 0; i < scene->GetChildrenCount(); ++i)
+        {
+            nodesCount += EnumerateSceneNodes(scene->GetChild(i));
+        }
+    }
+    
+    if(infoControl)
+        infoControl->SetNodesCount(nodesCount);
+}
+
+int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
+{
+    //TODO: lode node can have several nodes at layer
+    
+    int32 nodesCount = 1;
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        nodesCount += EnumerateSceneNodes(node->GetChild(i));
+    }
+    
+    return nodesCount;
 }
