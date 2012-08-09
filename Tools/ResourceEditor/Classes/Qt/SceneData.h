@@ -52,6 +52,8 @@ public:
     void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
     
     void ReloadRootNode(const DAVA::String &scenePathname);
+
+	void ReloadLibrary();
     
 protected:
     
@@ -88,6 +90,8 @@ protected:
         DAVA::SceneNode *parent;
     };
     DAVA::Vector<AddedNode> nodesToAdd;
+
+	QTreeView *libraryView;
 };
 
 #endif // __SCENE_DATA_H__
