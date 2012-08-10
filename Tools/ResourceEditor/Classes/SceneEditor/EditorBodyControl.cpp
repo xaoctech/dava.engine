@@ -1475,6 +1475,7 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     scene = SafeRetain(newScene);
     
     scene3dView->SetScene(scene);
+	sceneGraph->SetScene(scene);
 }
 
 void EditorBodyControl::SetCameraController(CameraController *newCameraController)

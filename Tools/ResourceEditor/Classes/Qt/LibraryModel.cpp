@@ -20,7 +20,7 @@ LibraryModel::LibraryModel(QObject *parent)
     nameFilters << QString("*.sc2");
     nameFilters << QString("*.dae");
     setNameFilters(nameFilters);
-    setNameFilterDisables(true);
+    setNameFilterDisables(false);
 }
 
 LibraryModel::~LibraryModel()
@@ -54,11 +54,14 @@ void LibraryModel::Activate(QTreeView *view)
 
 void LibraryModel::Reload()
 {
-    setRootPath(QString(EditorSettings::Instance()->GetDataSourcePath().c_str()));
-    
+	QString datasourcePathname(EditorSettings::Instance()->GetDataSourcePath().c_str());
+	QDir datasosurceFolder(datasourcePathname);
+	QString rootPath = datasosurceFolder.canonicalPath(); 
+
+	setRootPath(rootPath);
     if(attachedTreeView)
     {
-        attachedTreeView->setRootIndex(index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
+        attachedTreeView->setRootIndex(index(rootPath));
     }
 }
 
