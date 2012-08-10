@@ -3,6 +3,11 @@
 
 #include "EditorSettings.h"
 
+#if defined(DAVA_QT)
+#include "../Qt/SceneData.h"
+#include "../Qt/SceneDataManager.h"
+#endif //#if defined(DAVA_QT)
+
 GraphBase::GraphBase(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   delegate(newDelegate)
     ,   workingScene(NULL)
@@ -63,7 +68,9 @@ UIControl * GraphBase::GetPropertyPanel()
 
 void GraphBase::RefreshProperties()
 {
+#if !defined (DAVA_QT)
     NodesPropertyChanged();
+#endif //#if !defined (DAVA_QT)
 }
 
 
@@ -159,7 +166,12 @@ void GraphBase::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selec
 #pragma mark --NodesPropertyDelegate
 void GraphBase::NodesPropertyChanged()
 {
+#if defined (DAVA_QT)
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RebuildSceneGraph();
+#else //#if defined (DAVA_QT)
     RefreshGraph();
+#endif //#if defined (DAVA_QT)
 }
 
 

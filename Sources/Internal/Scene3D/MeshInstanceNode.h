@@ -95,7 +95,7 @@ public:
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
     
     //Returns maximum Bounding Box as WorlTransformedBox
-    virtual AABBox3 GetWTMaximumBoundingBox();
+    virtual AABBox3 GetWTMaximumBoundingBoxSlow();
 
 	
     /**

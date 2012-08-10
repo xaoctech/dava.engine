@@ -627,6 +627,7 @@ void LandscapeNode::FlushQueue()
     
     RenderManager::Instance()->SetRenderData(landscapeRDOArray[queueRdoQuad]);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, queueRenderCount, EIF_16, indices); 
 
     ClearQueue();
@@ -821,7 +822,11 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
 {
     //Frustum * frustum = scene->GetClipCamera()->GetFrustum();
     // if (!frustum->IsInside(currentNode->data.bbox))return;
-    Frustum::eFrustumResult frustumRes = frustum->Classify(currentNode->data.bbox);
+    Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE; 
+    
+    if (currentNode->data.size >= 2)
+    frustumRes = frustum->Classify(currentNode->data.bbox);
+    
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
     /*
@@ -1298,7 +1303,7 @@ AABBox3 LandscapeNode::GetWTMaximumBoundingBox()
     const Vector<SceneNode*>::iterator & itEnd = children.end();
     for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
-        AABBox3 lbox = (*it)->GetWTMaximumBoundingBox();
+        AABBox3 lbox = (*it)->GetWTMaximumBoundingBoxSlow();
         if(  (AABBOX_INFINITY != lbox.min.x && AABBOX_INFINITY != lbox.min.y && AABBOX_INFINITY != lbox.min.z)
            &&(-AABBOX_INFINITY != lbox.max.x && -AABBOX_INFINITY != lbox.max.y && -AABBOX_INFINITY != lbox.max.z))
         {
@@ -1513,6 +1518,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     BindMaterial(0);
     RenderManager::Instance()->SetRenderData(ftRenderData);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     UnbindMaterial();
 

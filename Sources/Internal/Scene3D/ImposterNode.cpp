@@ -72,7 +72,7 @@ void ImposterNode::UpdateState()
 		}
 
 		DVASSERT(GetChildrenCount() == 1);
-		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBox();
+		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBoxSlow();
 		Vector3 bboxCenter = bbox.GetCenter();
 		float32 distanceSquare = (scene->GetCurrentCamera()->GetPosition() - bboxCenter).SquareLength();
 		distanceSquare *= scene->GetCurrentCamera()->GetZoomFactor() * scene->GetCurrentCamera()->GetZoomFactor();
@@ -218,12 +218,9 @@ void ImposterNode::UpdateImposter()
 	Vector3 cameraPos = camera->GetPosition();
 
 	SceneNode * child = GetChild(0);
-	AABBox3 bbox = child->GetWTMaximumBoundingBox();
-	//Vector3 bboxVertices[8];
-	//bbox.GetCorners(bboxVertices);
+	AABBox3 bbox = child->GetWTMaximumBoundingBoxSlow();
 	Vector3 bboxCenter = bbox.GetCenter();
 
-	//imposterCamera->Setup(90.f, 1.33f, 1.f, 1000.f);
 	imposterCamera->Setup(camera->GetFOV(), camera->GetAspect(), camera->GetZNear(), camera->GetZFar());
 	imposterCamera->SetTarget(bbox.GetCenter());
 	imposterCamera->SetPosition(cameraPos);
@@ -236,21 +233,6 @@ void ImposterNode::UpdateImposter()
 
 	AABBox3 screenBounds;
 	GetOOBBoxScreenCoords(child, mvp, screenBounds);
-
-	/*
-	for(int32 i = 0; i < 8; ++i)
-	{
-		//project
-		Vector4 pv(bboxVertices[i]);
-		pv = pv*mvp;
-		pv.x = (viewport.dx * 0.5f) * (1.f + pv.x/pv.w)+viewport.x;
-		pv.y = (viewport.dy * 0.5f) * (1.f + pv.y/pv.w)+viewport.y;
-		pv.z = (pv.z/pv.w + 1.f) * 0.5f;
-
-		screenVertices[i] = Vector3(pv.x, pv.y, pv.z);
-		screenBounds.AddPoint(screenVertices[i]);
-	}*/
-
 
 	Vector4 pv(bboxCenter);
 	pv = pv*mvp;
@@ -335,6 +317,7 @@ void ImposterNode::UpdateImposter()
 	//{
 	//	RenderManager::Instance()->ClearWithColor(.3f, 0.f, 0.f, 1.f);
 	//}
+    
 	RenderManager::Instance()->ClearWithColor(.0f, .0f, 0.f, .0f);
 	RenderManager::Instance()->ClearDepthBuffer();
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_SCISSOR_TEST);
@@ -414,10 +397,7 @@ void ImposterNode::DrawImposter()
 
 	RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, 1.f);
 
-	//RenderManager::Instance()->SetState(/*RenderStateBlock::STATE_BLEND |*/ RenderStateBlock::STATE_TEXTURE0/* | RenderStateBlock::STATE_CULL*/);
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
-	//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
-	//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
 	eBlendMode src = RenderManager::Instance()->GetSrcBlend();
 	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
@@ -427,6 +407,7 @@ void ImposterNode::DrawImposter()
 	RenderManager::Instance()->SetRenderData(renderData);
 
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 
 	//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);

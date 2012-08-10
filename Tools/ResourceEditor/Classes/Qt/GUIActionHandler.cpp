@@ -6,17 +6,31 @@
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
+#include "../Commands/LibraryCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "GUIState.h"
 #include "SceneDataManager.h"
+#include "SceneData.h"
+#include "QtUtils.h"
+
+#include <QPoint>
+#include <QTreeView>
+#include <QMenu>
+#include <QAction>
+#include <QCursor>
 
 using namespace DAVA;
+
+GUIActionHandler* GUIActionHandler::activeActionHandler = NULL;
 
 GUIActionHandler::GUIActionHandler(QObject *parent)
     :   QObject(parent)
 {
+    activeActionHandler = this;
+    
+    
     new CommandsManager();
     
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
@@ -30,6 +44,8 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
     }
     
     menuResentScenes = NULL;
+    
+    libraryView = NULL;
 }
 
 GUIActionHandler::~GUIActionHandler()
@@ -46,6 +62,11 @@ GUIActionHandler::~GUIActionHandler()
     CommandsManager::Instance()->Release();
 }
 
+GUIActionHandler * GUIActionHandler::Instance()
+{
+    return activeActionHandler;
+}
+
 void GUIActionHandler::ClearActions(int32 count, QAction **actions)
 {
     for(int32 i = 0; i < count; ++i)
@@ -54,6 +75,11 @@ void GUIActionHandler::ClearActions(int32 count, QAction **actions)
     }
 }
 
+void GUIActionHandler::Execute(Command *command)
+{
+    CommandsManager::Instance()->Execute(command);
+    SafeRelease(command);
+}
 
 
 void GUIActionHandler::NewScene()
@@ -127,11 +153,6 @@ void GUIActionHandler::SetViewport(ResourceEditor::eViewportType type)
     Execute(new CommandViewport(type));
 }
 
-void GUIActionHandler::Execute(Command *command)
-{
-    CommandsManager::Instance()->Execute(command);
-    SafeRelease(command);
-}
 
 void GUIActionHandler::CreateNodeTriggered(QAction *nodeAction)
 {
@@ -315,6 +336,64 @@ void GUIActionHandler::BakeMatrixes()
 void GUIActionHandler::BuildQuadTree()
 {
     Execute(new CommandBuildQuadTree());
+}
+
+void GUIActionHandler::SetLibraryView(QTreeView *view)
+{
+    libraryView = view;
+}
+
+void GUIActionHandler::LibraryContextMenuRequested(const QPoint &point)
+{
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    
+    QModelIndex itemIndex = libraryView->indexAt(point);
+    activeScene->ShowLibraryMenu(itemIndex, QCursor::pos());
+}
+
+void GUIActionHandler::LibraryMenuTriggered(QAction *fileAction)
+{
+    String filePathname = QSTRING_TO_DAVASTRING(fileAction->data().toString());
+    
+    QString actionName = fileAction->text();
+    if(QString("Add") == actionName)
+    {
+        Execute(new CommandAddScene(filePathname));
+    }
+    else if(QString("Edit") == actionName)
+    {
+        Execute(new CommandEditScene(filePathname));
+    }
+    else if(QString("Reload") == actionName)
+    {
+        Execute(new CommandReloadScene(filePathname));
+    }
+    else if(QString("Convert") == actionName)
+    {
+        Execute(new CommandConvertScene(filePathname));
+    }
+    else
+    {
+        DVASSERT(0 && "Wrong action");
+    }
+}
+
+void GUIActionHandler::FileSelected(const QString &filePathname, bool isFile)
+{
+    //TODO: need best way to display scene preview
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
+        if(0 == CompareStrings(extension, String(".sc2")) && isFile)
+        {
+            screen->ShowScenePreview(QSTRING_TO_DAVASTRING(filePathname));
+        }
+        else
+        {
+            screen->HideScenePreview();
+        }
+    }
 }
 
 
