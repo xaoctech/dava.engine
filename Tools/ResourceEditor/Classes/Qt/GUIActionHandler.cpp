@@ -413,4 +413,10 @@ void GUIActionHandler::BakeScene()
     Execute(new CommandBakeScene());
 }
 
+void GUIActionHandler::Beast()
+{
+    Execute(new CommandBeast());
+}
+
+
 

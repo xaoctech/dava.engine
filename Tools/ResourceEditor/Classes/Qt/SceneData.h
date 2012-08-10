@@ -12,7 +12,7 @@ class QFileSystemModel;
 class QTreeView;
 class EditorScene;
 class SceneGraphModel;
-class FileSelectionModel;
+class LibraryModel;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -86,8 +86,7 @@ protected:
     //ENTITY
     //PROPERTY
     //LIBRARY
-    QFileSystemModel *libraryModel;
-    FileSelectionModel *librarySelectionModel;
+    LibraryModel *libraryModel;
     
     //reload root nodes
     struct AddedNode

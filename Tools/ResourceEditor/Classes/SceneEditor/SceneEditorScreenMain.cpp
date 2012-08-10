@@ -1539,3 +1539,11 @@ void SceneEditorScreenMain::SetViewport(ResourceEditor::eViewportType viewportTy
 
     iBody->bodyControl->SetViewportSize(viewportType);
 }
+
+void SceneEditorScreenMain::ProcessBeast()
+{
+#ifdef __DAVAENGINE_BEAST__
+	bodies[0]->bodyControl->BeastProcessScene();
+#endif //#ifdef __DAVAENGINE_BEAST__
+}
+
