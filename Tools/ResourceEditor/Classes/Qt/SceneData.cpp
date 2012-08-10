@@ -7,10 +7,15 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
+#include "../Commands/SceneGraphCommands.h"
+#include "../Commands/LibraryCommands.h"
+#include "../Commands/CommandsManager.h"
+
+
 #include "QtUtils.h"
-#include "GUIActionHandler.h"
 
 #include "LibraryModel.h"
+#include "FileSelectionModel.h"
 
 #include <QTreeView>
 #include <QFileSystemModel>
@@ -30,11 +35,14 @@ SceneData::SceneData()
     sceneGraphModel = new SceneGraphModel();
     sceneGraphModel->SetScene(NULL);
     
-    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
 
     libraryModel = new LibraryModel(this);
     
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
+    
+    
+    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
+    connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
 }
 
 SceneData::~SceneData()
@@ -289,10 +297,15 @@ void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
 		
     sceneGraphModel->Activate(graphview);
     libraryModel->Activate(libraryView);
+    
+    
+    connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
 }
 
 void SceneData::Deactivate()
 {
+    disconnect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
+    
     sceneGraphModel->Deactivate();
     libraryModel->Deactivate();
 }
@@ -321,7 +334,7 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
             edit->setData(filePathname);
             reload->setData(filePathname);
             
-            connect(&menu, SIGNAL(triggered(QAction *)), GUIActionHandler::Instance(), SLOT(LibraryMenuTriggered(QAction *)));
+            connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
             
             menu.exec(point);
         }
@@ -333,7 +346,7 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
             QAction *convert = menu.addAction(QString("Convert"));
             convert->setData(filePathname);
 
-            connect(&menu, SIGNAL(triggered(QAction *)) , GUIActionHandler::Instance(), SLOT(LibraryMenuTriggered(QAction *)));
+            connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
             
             menu.exec(point);
         }
@@ -474,4 +487,68 @@ void SceneData::BakeScene()
     }
 }
 
+
+void SceneData::LibraryContextMenuRequested(const QPoint &point)
+{
+    QModelIndex itemIndex = libraryView->indexAt(point);
+    ShowLibraryMenu(itemIndex, QCursor::pos());
+}
+
+void SceneData::LibraryMenuTriggered(QAction *fileAction)
+{
+    String filePathname = QSTRING_TO_DAVASTRING(fileAction->data().toString());
+    
+    QString actionName = fileAction->text();
+    if(QString("Add") == actionName)
+    {
+        Execute(new CommandAddScene(filePathname));
+    }
+    else if(QString("Edit") == actionName)
+    {
+        Execute(new CommandEditScene(filePathname));
+    }
+    else if(QString("Reload") == actionName)
+    {
+        Execute(new CommandReloadScene(filePathname));
+    }
+    else if(QString("Convert") == actionName)
+    {
+        Execute(new CommandConvertScene(filePathname));
+    }
+    else
+    {
+        DVASSERT(0 && "Wrong action");
+    }
+    
+    
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
+}
+
+void SceneData::FileSelected(const QString &filePathname, bool isFile)
+{
+    //TODO: need best way to display scene preview
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
+        if(0 == CompareStrings(extension, String(".sc2")) && isFile)
+        {
+            screen->ShowScenePreview(QSTRING_TO_DAVASTRING(filePathname));
+        }
+        else
+        {
+            screen->HideScenePreview();
+        }
+    }
+}
+
+void SceneData::Execute(Command *command)
+{
+    CommandsManager::Instance()->Execute(command);
+    SafeRelease(command);
+}
 
