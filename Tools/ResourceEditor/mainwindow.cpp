@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Qt/GUIActionHandler.h"
+#include "Classes/Qt/QtMainWindowHandler.h"
 #include "Classes/Qt/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/SceneDataManager.h"
@@ -34,7 +34,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     new GUIState();
     SetupProjectPath();
 
-    actionHandler = new GUIActionHandler(this);
+    actionHandler = new QtMainWindowHandler(this);
     SetupMainMenu();
     SetupToolBar();
     
@@ -175,9 +175,7 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
-    actionHandler->SetLibraryView(ui->libraryView);
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    connect(ui->libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), actionHandler, SLOT(LibraryContextMenuRequested(const QPoint &)));
     
     connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
     connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));

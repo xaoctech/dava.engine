@@ -32,7 +32,7 @@ mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 
 SOURCE_FILES = QtBuildTool/moc_mainwindow.cpp \
 			QtBuildTool/moc_davaglwidget.cpp \
-			QtBuildTool/moc_GUIActionHandler.cpp \
+			QtBuildTool/moc_QtMainWindowHandler.cpp \
 			QtBuildTool/moc_GraphTreeView.cpp \
 			QtBuildTool/moc_GraphModel.cpp \
 			QtBuildTool/moc_SceneData.cpp \
@@ -63,8 +63,8 @@ QtBuildTool/moc_mainwindow.cpp: mainwindow.h
 QtBuildTool/moc_davaglwidget.cpp: Classes/davaglwidget.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/davaglwidget.h -o QtBuildTool/moc_davaglwidget.cpp
 
-QtBuildTool/moc_GUIActionHandler.cpp: Classes/Qt/GUIActionHandler.h
-	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/GUIActionHandler.h -o QtBuildTool/moc_GUIActionHandler.cpp
+QtBuildTool/moc_QtMainWindowHandler.cpp: Classes/Qt/QtMainWindowHandler.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/QtMainWindowHandler.h -o QtBuildTool/moc_QtMainWindowHandler.cpp
 
 #QtBuildTool/moc_GraphModel.cpp: Classes/Qt/GraphModel.h
 #	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/GraphModel.h -o QtBuildTool/moc_GraphModel.cpp

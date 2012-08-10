@@ -19,6 +19,8 @@ public:
     
     void Reload();
     
+    FileSelectionModel *GetSelectionModel();
+    
 protected:
 
     FileSelectionModel *fileSelectionModel;

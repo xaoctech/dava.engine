@@ -1,4 +1,4 @@
-#include "GUIActionHandler.h"
+#include "QtMainWindowHandler.h"
 
 #include "../Commands/CommandCreateNode.h"
 #include "../Commands/CommandsManager.h"
@@ -6,7 +6,6 @@
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
-#include "../Commands/LibraryCommands.h"
 #include "../Commands/ViewCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
@@ -17,21 +16,15 @@
 #include "QtUtils.h"
 
 #include <QPoint>
-#include <QTreeView>
 #include <QMenu>
 #include <QAction>
 #include <QCursor>
 
 using namespace DAVA;
 
-GUIActionHandler* GUIActionHandler::activeActionHandler = NULL;
-
-GUIActionHandler::GUIActionHandler(QObject *parent)
+QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
 {
-    activeActionHandler = this;
-    
-    
     new CommandsManager();
     
     ClearActions(ResourceEditor::NODE_COUNT, nodeActions);
@@ -45,11 +38,9 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
     }
     
     menuResentScenes = NULL;
-    
-    libraryView = NULL;
 }
 
-GUIActionHandler::~GUIActionHandler()
+QtMainWindowHandler::~QtMainWindowHandler()
 {
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -63,12 +54,7 @@ GUIActionHandler::~GUIActionHandler()
     CommandsManager::Instance()->Release();
 }
 
-GUIActionHandler * GUIActionHandler::Instance()
-{
-    return activeActionHandler;
-}
-
-void GUIActionHandler::ClearActions(int32 count, QAction **actions)
+void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
 {
     for(int32 i = 0; i < count; ++i)
     {
@@ -76,86 +62,86 @@ void GUIActionHandler::ClearActions(int32 count, QAction **actions)
     }
 }
 
-void GUIActionHandler::Execute(Command *command)
+void QtMainWindowHandler::Execute(Command *command)
 {
     CommandsManager::Instance()->Execute(command);
     SafeRelease(command);
 }
 
 
-void GUIActionHandler::NewScene()
+void QtMainWindowHandler::NewScene()
 {
     Execute(new CommandNewScene());
 }
 
 
-void GUIActionHandler::OpenScene()
+void QtMainWindowHandler::OpenScene()
 {
     Execute(new CommandOpenScene());
 }
 
 
-void GUIActionHandler::OpenProject()
+void QtMainWindowHandler::OpenProject()
 {
     Execute(new CommandOpenProject());
 }
 
-void GUIActionHandler::OpenResentScene(int32 index)
+void QtMainWindowHandler::OpenResentScene(int32 index)
 {
     Execute(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
 }
 
-void GUIActionHandler::SaveScene()
+void QtMainWindowHandler::SaveScene()
 {
     Execute(new CommandSaveScene());
 }
 
-void GUIActionHandler::ExportAsPNG()
+void QtMainWindowHandler::ExportAsPNG()
 {
     Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
 }
-void GUIActionHandler::ExportAsPVR()
+void QtMainWindowHandler::ExportAsPVR()
 {
     Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
 }
 
-void GUIActionHandler::ExportAsDXT()
+void QtMainWindowHandler::ExportAsDXT()
 {
     Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
 }
 
-void GUIActionHandler::CreateNode(ResourceEditor::eNodeType type)
+void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
 {
     Execute(new CommandCreateNode(type));
 }
 
-void GUIActionHandler::Materials()
+void QtMainWindowHandler::Materials()
 {
     Execute(new CommandMaterials());
 }
 
-void GUIActionHandler::HeightmapEditor()
+void QtMainWindowHandler::HeightmapEditor()
 {
     Execute(new CommandHeightmapEditor());
 }
 
-void GUIActionHandler::TilemapEditor()
+void QtMainWindowHandler::TilemapEditor()
 {
     Execute(new CommandTilemapEditor());
 }
 
-void GUIActionHandler::ConvertTextures()
+void QtMainWindowHandler::ConvertTextures()
 {
     Execute(new CommandTextureConverter());
 }
 
-void GUIActionHandler::SetViewport(ResourceEditor::eViewportType type)
+void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
 {
     Execute(new CommandViewport(type));
 }
 
 
-void GUIActionHandler::CreateNodeTriggered(QAction *nodeAction)
+void QtMainWindowHandler::CreateNodeTriggered(QAction *nodeAction)
 {
     for(int32 i = 0; i < ResourceEditor::NODE_COUNT; ++i)
     {
@@ -167,7 +153,7 @@ void GUIActionHandler::CreateNodeTriggered(QAction *nodeAction)
     }
 }
 
-void GUIActionHandler::ViewportTriggered(QAction *viewportAction)
+void QtMainWindowHandler::ViewportTriggered(QAction *viewportAction)
 {
     for(int32 i = 0; i < ResourceEditor::VIEWPORT_COUNT; ++i)
     {
@@ -179,12 +165,12 @@ void GUIActionHandler::ViewportTriggered(QAction *viewportAction)
     }
 }
 
-void GUIActionHandler::SetResentMenu(QMenu *menu)
+void QtMainWindowHandler::SetResentMenu(QMenu *menu)
 {
     menuResentScenes = menu;
 }
 
-void GUIActionHandler::MenuFileWillShow()
+void QtMainWindowHandler::MenuFileWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
     
@@ -218,7 +204,7 @@ void GUIActionHandler::MenuFileWillShow()
     GUIState::Instance()->SetNeedUpdatedFileMenu(false);
 }
 
-void GUIActionHandler::MenuToolsWillShow()
+void QtMainWindowHandler::MenuToolsWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedToolsMenu()) return;
 
@@ -234,7 +220,7 @@ void GUIActionHandler::MenuToolsWillShow()
 }
 
 
-void GUIActionHandler::ResentSceneTriggered(QAction *resentScene)
+void QtMainWindowHandler::ResentSceneTriggered(QAction *resentScene)
 {
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -246,7 +232,7 @@ void GUIActionHandler::ResentSceneTriggered(QAction *resentScene)
 }
 
 
-void GUIActionHandler::RegisterNodeActions(int32 count, ...)
+void QtMainWindowHandler::RegisterNodeActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::NODE_COUNT == count) && "Wrong count of actions");
 
@@ -259,7 +245,7 @@ void GUIActionHandler::RegisterNodeActions(int32 count, ...)
 }
 
 
-void GUIActionHandler::RegisterViewportActions(int32 count, ...)
+void QtMainWindowHandler::RegisterViewportActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::VIEWPORT_COUNT == count) && "Wrong count of actions");
     
@@ -271,7 +257,7 @@ void GUIActionHandler::RegisterViewportActions(int32 count, ...)
     va_end(vl);
 }
 
-void GUIActionHandler::RegisterDockActions(int32 count, ...)
+void QtMainWindowHandler::RegisterDockActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::HIDABLEWIDGET_COUNT == count) && "Wrong count of actions");
     
@@ -284,7 +270,7 @@ void GUIActionHandler::RegisterDockActions(int32 count, ...)
 }
 
 
-void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
+void QtMainWindowHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
 {
     for(int32 i = 0; i < count; ++i)
     {
@@ -293,7 +279,7 @@ void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &
 }
 
 
-void GUIActionHandler::RestoreViews()
+void QtMainWindowHandler::RestoreViews()
 {
     for(int32 i = 0; i < ResourceEditor::HIDABLEWIDGET_COUNT; ++i)
     {
@@ -304,116 +290,58 @@ void GUIActionHandler::RestoreViews()
     }
 }
 
-void GUIActionHandler::RemoveRootNodes()
+void QtMainWindowHandler::RemoveRootNodes()
 {
     Execute(new CommandRemoveRootNodes());
 }
 
-void GUIActionHandler::RefreshSceneGraph()
+void QtMainWindowHandler::RefreshSceneGraph()
 {
     Execute(new CommandRefreshSceneGraph());
 }
 
-void GUIActionHandler::LockAtObject()
+void QtMainWindowHandler::LockAtObject()
 {
     Execute(new CommandLockAtObject());
 }
 
-void GUIActionHandler::RemoveObject()
+void QtMainWindowHandler::RemoveObject()
 {
     Execute(new CommandRemoveSceneNode());
 }
 
-void GUIActionHandler::DebugFlags()
+void QtMainWindowHandler::DebugFlags()
 {
     Execute(new CommandDebugFlags());
 }
 
-void GUIActionHandler::BakeMatrixes()
+void QtMainWindowHandler::BakeMatrixes()
 {
     Execute(new CommandBakeMatrices());
 }
 
-void GUIActionHandler::BuildQuadTree()
+void QtMainWindowHandler::BuildQuadTree()
 {
     Execute(new CommandBuildQuadTree());
 }
 
-void GUIActionHandler::SetLibraryView(QTreeView *view)
-{
-    libraryView = view;
-}
 
-void GUIActionHandler::LibraryContextMenuRequested(const QPoint &point)
-{
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-    
-    QModelIndex itemIndex = libraryView->indexAt(point);
-    activeScene->ShowLibraryMenu(itemIndex, QCursor::pos());
-}
-
-void GUIActionHandler::LibraryMenuTriggered(QAction *fileAction)
-{
-    String filePathname = QSTRING_TO_DAVASTRING(fileAction->data().toString());
-    
-    QString actionName = fileAction->text();
-    if(QString("Add") == actionName)
-    {
-        Execute(new CommandAddScene(filePathname));
-    }
-    else if(QString("Edit") == actionName)
-    {
-        Execute(new CommandEditScene(filePathname));
-    }
-    else if(QString("Reload") == actionName)
-    {
-        Execute(new CommandReloadScene(filePathname));
-    }
-    else if(QString("Convert") == actionName)
-    {
-        Execute(new CommandConvertScene(filePathname));
-    }
-    else
-    {
-        DVASSERT(0 && "Wrong action");
-    }
-}
-
-void GUIActionHandler::FileSelected(const QString &filePathname, bool isFile)
-{
-    //TODO: need best way to display scene preview
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
-    {
-        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
-        if(0 == CompareStrings(extension, String(".sc2")) && isFile)
-        {
-            screen->ShowScenePreview(QSTRING_TO_DAVASTRING(filePathname));
-        }
-        else
-        {
-            screen->HideScenePreview();
-        }
-    }
-}
-
-
-void GUIActionHandler::ToggleSceneInfo()
+void QtMainWindowHandler::ToggleSceneInfo()
 {
     Execute(new CommandSceneInfo());
 }
 
-void GUIActionHandler::ShowSettings()
+void QtMainWindowHandler::ShowSettings()
 {
     Execute(new CommandSettings());
 }
 
-void GUIActionHandler::BakeScene()
+void QtMainWindowHandler::BakeScene()
 {
     Execute(new CommandBakeScene());
 }
 
-void GUIActionHandler::Beast()
+void QtMainWindowHandler::Beast()
 {
     Execute(new CommandBeast());
 }

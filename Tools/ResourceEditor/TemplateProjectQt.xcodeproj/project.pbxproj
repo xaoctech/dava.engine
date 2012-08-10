@@ -13,8 +13,9 @@
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
 		5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FABE15D530270048024E /* LibraryModel.cpp */; };
 		5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC115D535230048024E /* moc_LibraryModel.cpp */; };
+		5C03FAC515D5399D0048024E /* QtMainWindowHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC315D5399C0048024E /* QtMainWindowHandler.cpp */; };
+		5C03FAC715D53E8B0048024E /* moc_QtMainWindowHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC615D53E8B0048024E /* moc_QtMainWindowHandler.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
-		5C2763A815B82BE90030A8FD /* GUIActionHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */; };
 		5C49A03D15CBBCB0005C40BF /* moc_GraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */; };
 		5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */; };
 		5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */; };
@@ -142,7 +143,6 @@
 		5C5DCB7315C32BAD007F6AC4 /* SceneGraphItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6C15C32BAD007F6AC4 /* SceneGraphItem.cpp */; };
 		5C5DCB7415C32BAD007F6AC4 /* SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6E15C32BAD007F6AC4 /* SceneGraphModel.cpp */; };
 		5C5DCB7A15C33020007F6AC4 /* moc_davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */; };
-		5C5DCB7C15C33020007F6AC4 /* moc_GUIActionHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB7815C33020007F6AC4 /* moc_GUIActionHandler.cpp */; };
 		5C5DCB7D15C33020007F6AC4 /* moc_mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB7915C33020007F6AC4 /* moc_mainwindow.cpp */; };
 		5C5DCB8115C33350007F6AC4 /* moc_GraphTreeView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */; };
 		5C6549C815D3CE2900C3AC3F /* LibraryCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C6549C615D3CE2900C3AC3F /* LibraryCommands.cpp */; };
@@ -352,12 +352,13 @@
 		5C03FABE15D530270048024E /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryModel.cpp; path = Classes/Qt/LibraryModel.cpp; sourceTree = "<group>"; };
 		5C03FABF15D530270048024E /* LibraryModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryModel.h; path = Classes/Qt/LibraryModel.h; sourceTree = "<group>"; };
 		5C03FAC115D535230048024E /* moc_LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_LibraryModel.cpp; path = QtBuildTool/moc_LibraryModel.cpp; sourceTree = "<group>"; };
+		5C03FAC315D5399C0048024E /* QtMainWindowHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtMainWindowHandler.cpp; path = Classes/Qt/QtMainWindowHandler.cpp; sourceTree = "<group>"; };
+		5C03FAC415D5399D0048024E /* QtMainWindowHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtMainWindowHandler.h; path = Classes/Qt/QtMainWindowHandler.h; sourceTree = "<group>"; };
+		5C03FAC615D53E8B0048024E /* moc_QtMainWindowHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_QtMainWindowHandler.cpp; path = QtBuildTool/moc_QtMainWindowHandler.cpp; sourceTree = "<group>"; };
 		5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
-		5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIActionHandler.cpp; path = Classes/Qt/GUIActionHandler.cpp; sourceTree = "<group>"; };
-		5C2763A615B82BE90030A8FD /* GUIActionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIActionHandler.h; path = Classes/Qt/GUIActionHandler.h; sourceTree = "<group>"; };
 		5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GraphModel.cpp; path = QtBuildTool/moc_GraphModel.cpp; sourceTree = "<group>"; };
 		5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneData.cpp; path = QtBuildTool/moc_SceneData.cpp; sourceTree = "<group>"; };
 		5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneGraphModel.cpp; path = QtBuildTool/moc_SceneGraphModel.cpp; sourceTree = "<group>"; };
@@ -681,7 +682,6 @@
 		5C5DCB6F15C32BAD007F6AC4 /* SceneGraphModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphModel.h; path = Classes/Qt/SceneGraphModel.h; sourceTree = "<group>"; };
 		5C5DCB7515C32BB9007F6AC4 /* QtUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtUtils.h; path = Classes/Qt/QtUtils.h; sourceTree = "<group>"; };
 		5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_davaglwidget.cpp; path = QtBuildTool/moc_davaglwidget.cpp; sourceTree = "<group>"; };
-		5C5DCB7815C33020007F6AC4 /* moc_GUIActionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GUIActionHandler.cpp; path = QtBuildTool/moc_GUIActionHandler.cpp; sourceTree = "<group>"; };
 		5C5DCB7915C33020007F6AC4 /* moc_mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_mainwindow.cpp; path = QtBuildTool/moc_mainwindow.cpp; sourceTree = "<group>"; };
 		5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GraphTreeView.cpp; path = QtBuildTool/moc_GraphTreeView.cpp; sourceTree = "<group>"; };
 		5C6549C615D3CE2900C3AC3F /* LibraryCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryCommands.cpp; path = Classes/Commands/LibraryCommands.cpp; sourceTree = "<group>"; };
@@ -1024,6 +1024,7 @@
 		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5C03FAC615D53E8B0048024E /* moc_QtMainWindowHandler.cpp */,
 				5C03FAC115D535230048024E /* moc_LibraryModel.cpp */,
 				5C6549D115D3EE0100C3AC3F /* moc_FileSelectionModel.cpp */,
 				5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */,
@@ -1032,7 +1033,6 @@
 				5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */,
 				5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */,
 				5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */,
-				5C5DCB7815C33020007F6AC4 /* moc_GUIActionHandler.cpp */,
 				5C5DCB7915C33020007F6AC4 /* moc_mainwindow.cpp */,
 			);
 			name = "Temporary Sources";
@@ -1052,10 +1052,10 @@
 				5C6549C915D3E47600C3AC3F /* ScenePreview */,
 				5CF412BA15C7E0A0004725FD /* Scene Data */,
 				5C5DCB6515C32B34007F6AC4 /* Graph */,
+				5C03FAC315D5399C0048024E /* QtMainWindowHandler.cpp */,
+				5C03FAC415D5399D0048024E /* QtMainWindowHandler.h */,
 				5CFD6F6C15C06D160030029D /* GUIState.cpp */,
 				5CFD6F6D15C06D160030029D /* GUIState.h */,
-				5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */,
-				5C2763A615B82BE90030A8FD /* GUIActionHandler.h */,
 				5C49A09815CFBCD7005C40BF /* QtUtils.cpp */,
 				5C5DCB7515C32BB9007F6AC4 /* QtUtils.h */,
 				5C654C3915B40C72000B196B /* mainwindow.h */,
@@ -2201,7 +2201,6 @@
 				5C7F49F215B44BB70038AF3A /* UISpriteEditor.cpp in Build Sources */,
 				5C7F49F315B44BB70038AF3A /* VertexOctTree.cpp in Build Sources */,
 				5C81477D15B8150400E8D252 /* FuckingErrorDialog.cpp in Build Sources */,
-				5C2763A815B82BE90030A8FD /* GUIActionHandler.cpp in Build Sources */,
 				5CDD9ABF15B893E4007CA99A /* Command.cpp in Build Sources */,
 				5CDD9AC015B893E4007CA99A /* CommandsManager.cpp in Build Sources */,
 				5CF17EC315B91E8600A9FC33 /* FileCommands.cpp in Build Sources */,
@@ -2215,7 +2214,6 @@
 				5C5DCB7315C32BAD007F6AC4 /* SceneGraphItem.cpp in Build Sources */,
 				5C5DCB7415C32BAD007F6AC4 /* SceneGraphModel.cpp in Build Sources */,
 				5C5DCB7A15C33020007F6AC4 /* moc_davaglwidget.cpp in Build Sources */,
-				5C5DCB7C15C33020007F6AC4 /* moc_GUIActionHandler.cpp in Build Sources */,
 				5C5DCB7D15C33020007F6AC4 /* moc_mainwindow.cpp in Build Sources */,
 				5C5DCB8115C33350007F6AC4 /* moc_GraphTreeView.cpp in Build Sources */,
 				5CF412BD15C7E0B6004725FD /* SceneData.cpp in Build Sources */,
@@ -2350,6 +2348,8 @@
 				5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */,
 				5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */,
 				5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */,
+				5C03FAC515D5399D0048024E /* QtMainWindowHandler.cpp in Build Sources */,
+				5C03FAC715D53E8B0048024E /* moc_QtMainWindowHandler.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

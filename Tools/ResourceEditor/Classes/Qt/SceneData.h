@@ -13,6 +13,8 @@ class QTreeView;
 class EditorScene;
 class SceneGraphModel;
 class LibraryModel;
+class Command;
+class QAction;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -67,10 +69,17 @@ protected:
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 
     void ReleaseScene();
+    void Execute(Command *command);
 
 protected slots:
     
     void SceneNodeSelected(DAVA::SceneNode *node);
+    
+    //library
+    void LibraryContextMenuRequested(const QPoint &point);
+    void LibraryMenuTriggered(QAction *fileAction);
+    void FileSelected(const QString &filePathname, bool isFile);
+
     
 protected:
 

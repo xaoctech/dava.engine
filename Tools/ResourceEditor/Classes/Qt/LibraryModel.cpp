@@ -61,3 +61,9 @@ void LibraryModel::Reload()
         attachedTreeView->setRootIndex(index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
     }
 }
+
+FileSelectionModel * LibraryModel::GetSelectionModel()
+{
+    return fileSelectionModel;
+}
+
