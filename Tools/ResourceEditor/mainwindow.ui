@@ -96,6 +96,10 @@
     <addaction name="separator"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
+    <addaction name="separator"/>
+    <addaction name="actionBakeScene"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowSettings"/>
    </widget>
    <widget class="QMenu" name="menuViewPort">
     <property name="title">
@@ -112,6 +116,8 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
+    <addaction name="separator"/>
+    <addaction name="actionSceneInfo"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -446,6 +452,21 @@
   <action name="actionRestoreViews">
    <property name="text">
     <string>Restore Views</string>
+   </property>
+  </action>
+  <action name="actionSceneInfo">
+   <property name="text">
+    <string>Scene Info</string>
+   </property>
+  </action>
+  <action name="actionBakeScene">
+   <property name="text">
+    <string>Bake Scene</string>
+   </property>
+  </action>
+  <action name="actionShowSettings">
+   <property name="text">
+    <string>Show Settings</string>
    </property>
   </action>
  </widget>

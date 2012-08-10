@@ -55,7 +55,14 @@ public:
 
 	void ReloadLibrary();
     
+    void BakeScene();
+    
 protected:
+    
+    void BakeNode(DAVA::SceneNode *node);
+    void FindIdentityNodes(DAVA::SceneNode *node);
+    void RemoveIdentityNodes(DAVA::SceneNode *node);
+
     
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 

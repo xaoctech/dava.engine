@@ -36,20 +36,54 @@ void SceneEditorScreenMain::LoadResources()
     new ErrorNotifier();
     new HintManager();
     new UNDOManager();
-    
     new PropertyControlCreator();
     
     ControlsFactory::CustomizeScreenBack(this);
 
     font = ControlsFactory::GetFontLight();
+
+    helpDialog = new HelpDialog();
+
+    InitializeNodeDialogs();
+
+    Rect fullRect = GetRect();
+    settingsDialog = new SettingsDialog(fullRect, this);
+    textureTrianglesDialog = new TextureTrianglesDialog();
+    textureConverterDialog = new TextureConverterDialog(fullRect);
+    materialEditor = new MaterialEditor();
+	particlesEditor = new ParticlesEditorControl();
+
     
+    InitControls();
+    
+    InitializeBodyList();
+    SetupAnimation();
+}
+
+
+
+#if defined (DAVA_QT)
+void SceneEditorScreenMain::InitControls()
+{
+    // add line after menu
+    Rect fullRect = GetRect();
+    AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
+    
+    scenePreviewDialog = new ScenePreviewDialog();
+}
+#else //#if defined (DAVA_QT)
+void SceneEditorScreenMain::InitControls()
+{
     //init file system dialog
     fileSystemDialog = new UIFileSystemDialog("~res:/Fonts/MyriadPro-Regular.otf");
     fileSystemDialog->SetDelegate(this);
-    
+
     String path = EditorSettings::Instance()->GetDataSourcePath();
     if(path.length())
-    fileSystemDialog->SetCurrentDir(path);
+    {
+        fileSystemDialog->SetCurrentDir(path);
+    }
+
     
     // add line after menu
     Rect fullRect = GetRect();
@@ -57,58 +91,48 @@ void SceneEditorScreenMain::LoadResources()
     CreateTopMenu();
     
     //
-    settingsDialog = new SettingsDialog(fullRect, this);
     UIButton *settingsButton = ControlsFactory::CreateImageButton(Rect(fullRect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT), "~res:/Gfx/UI/settingsicon");
-
+    
     settingsButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSettingsPressed));
     AddControl(settingsButton);
     SafeRelease(settingsButton);
-        
+    
     menuPopup = new MenuPopupControl(GetRect(), ControlsFactory::BUTTON_HEIGHT + LINE_HEIGHT);
     menuPopup->SetDelegate(this);
-    
-    InitializeNodeDialogs();    
-    
-    textureTrianglesDialog = new TextureTrianglesDialog();
-    
-    textureConverterDialog = new TextureConverterDialog(fullRect);
-    
-    materialEditor = new MaterialEditor();
-	particlesEditor = new ParticlesEditorControl();
     
     //add line before body
     AddLineControl(Rect(0, BODY_Y_OFFSET, fullRect.dx, LINE_HEIGHT));
     
     //Library
     libraryButton = ControlsFactory::CreateButton(
-                                                  Rect(fullRect.dx - ControlsFactory::BUTTON_WIDTH, 
-                                                       BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT, 
-                                                       ControlsFactory::BUTTON_WIDTH, 
-                                                       ControlsFactory::BUTTON_HEIGHT), 
-                        LocalizedString(L"panel.library"));
+                                                  Rect(fullRect.dx - ControlsFactory::BUTTON_WIDTH,
+                                                       BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT,
+                                                       ControlsFactory::BUTTON_WIDTH,
+                                                       ControlsFactory::BUTTON_HEIGHT),
+                                                  LocalizedString(L"panel.library"));
     libraryButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnLibraryPressed));
     AddControl(libraryButton);
     
     int32 libraryWidth = EditorSettings::Instance()->GetRightPanelWidth();
     libraryControl = new LibraryControl(
-                            Rect(fullRect.dx - libraryWidth, BODY_Y_OFFSET + 1, libraryWidth, fullRect.dy - BODY_Y_OFFSET - 1)); 
+                                        Rect(fullRect.dx - libraryWidth, BODY_Y_OFFSET + 1, libraryWidth, fullRect.dy - BODY_Y_OFFSET - 1));
     libraryControl->SetDelegate(this);
     libraryControl->SetPath(path);
-
+    
     //properties
     propertiesButton = ControlsFactory::CreateButton(
-                            Vector2(libraryButton->GetRect().x - ControlsFactory::BUTTON_WIDTH, 
-                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
-                        LocalizedString(L"panel.properties"));
+                                                     Vector2(libraryButton->GetRect().x - ControlsFactory::BUTTON_WIDTH,
+                                                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT),
+                                                     LocalizedString(L"panel.properties"));
     propertiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnPropertiesPressed));
     AddControl(propertiesButton);
     
     
     //scene ingo
     sceneInfoButton = ControlsFactory::CreateButton(
-                            Vector2(propertiesButton->GetRect().x - ControlsFactory::BUTTON_WIDTH, 
-                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
-                            LocalizedString(L"panel.sceneinfo"));
+                                                    Vector2(propertiesButton->GetRect().x - ControlsFactory::BUTTON_WIDTH,
+                                                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT),
+                                                    LocalizedString(L"panel.sceneinfo"));
     sceneInfoButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSceneInfoPressed));
     AddControl(sceneInfoButton);
     
@@ -120,16 +144,10 @@ void SceneEditorScreenMain::LoadResources()
     dataGraphButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::BUTTON_WIDTH, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.data"));
     dataGraphButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnDataGraphPressed));
     AddControl(dataGraphButton);
-
+    
 	entitiesButton = ControlsFactory::CreateButton(Vector2(ControlsFactory::BUTTON_WIDTH*2, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"panel.graph.entities"));
 	entitiesButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnEntitiesPressed));
 	AddControl(entitiesButton);
-    
-    InitializeBodyList();
-    
-    SetupAnimation();
-    
-    helpDialog = new HelpDialog();
     
     
     UIButton *b = ControlsFactory::CreateButton( Vector2(sceneInfoButton->GetRect().x - ControlsFactory::BUTTON_WIDTH - 10, BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), LocalizedString(L"Bake Scene"));
@@ -141,42 +159,40 @@ void SceneEditorScreenMain::LoadResources()
     scenePreviewDialog = new ScenePreviewDialog();
 #endif //#if defined (DAVA_QT)
 }
+#endif //#if defined (DAVA_QT)
+
+
 
 void SceneEditorScreenMain::UnloadResources()
 {
 #if defined (DAVA_QT)
     SafeRelease(scenePreviewDialog);
-#endif //#if defined (DAVA_QT)
-
-    SafeRelease(helpDialog);
-    
-    SafeRelease(textureConverterDialog);
-    SafeRelease(textureTrianglesDialog);
+#else //#if defined (DAVA_QT)
     SafeRelease(sceneInfoButton);
-    
-    SafeRelease(settingsDialog);
-    
     SafeRelease(sceneGraphButton);
     SafeRelease(dataGraphButton);
 	SafeRelease(entitiesButton);
+    SafeRelease(menuPopup);
+    SafeRelease(propertiesButton);
+    SafeRelease(libraryControl);
+    SafeRelease(libraryButton);
+
+    SafeRelease(fileSystemDialog);
+
+    ReleaseTopMenu();
+#endif //#if defined (DAVA_QT)
+
+    SafeRelease(helpDialog);
+    SafeRelease(textureConverterDialog);
+    SafeRelease(textureTrianglesDialog);
+    SafeRelease(settingsDialog);
     
     ReleaseNodeDialogs();
     
-    SafeRelease(menuPopup);
     
-    SafeRelease(propertiesButton);
-    
-    SafeRelease(libraryControl);
-    SafeRelease(libraryButton);
-    
-    SafeRelease(fileSystemDialog);
-
 	SafeRelease(particlesEditor);
-    
     ReleaseBodyList();
         
-    ReleaseTopMenu();
-    
     HintManager::Instance()->Release();
     PropertyControlCreator::Instance()->Release();
     ErrorNotifier::Instance()->Release();
@@ -203,6 +219,15 @@ void SceneEditorScreenMain::Draw(const UIGeometricData &geometricData)
     UIScreen::Draw(geometricData);
 }
 
+void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
+{
+    UIControl *lineControl = ControlsFactory::CreateLine(r);
+    AddControl(lineControl);
+    SafeRelease(lineControl);
+}
+
+
+#if !defined (DAVA_QT)
 void SceneEditorScreenMain::CreateTopMenu()
 {
     int32 x = 0;
@@ -291,16 +316,10 @@ void SceneEditorScreenMain::ReleaseTopMenu()
     SafeRelease(btnTextureConverter);
 }
 
-void SceneEditorScreenMain::AddLineControl(DAVA::Rect r)
-{
-    UIControl *lineControl = ControlsFactory::CreateLine(r);
-    AddControl(lineControl);
-    SafeRelease(lineControl);
-}
 
 void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
-    switch (fileSystemDialogOpMode) 
+    switch (fileSystemDialogOpMode)
     {
         case DIALOG_OPERATION_MENU_OPEN:
         {
@@ -332,11 +351,11 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             libraryControl->SetPath(EditorSettings::Instance()->GetDataSourcePath());
             break;
         }
-
+            
         default:
             break;
     }
-
+    
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
 }
 
@@ -344,7 +363,6 @@ void SceneEditorScreenMain::OnFileSytemDialogCanceled(UIFileSystemDialog *forDia
 {
     fileSystemDialogOpMode = DIALOG_OPERATION_NONE;
 }
-
 
 void SceneEditorScreenMain::OnOpenPressed(BaseObject *, void *, void *)
 {
@@ -361,7 +379,6 @@ void SceneEditorScreenMain::OnOpenPressed(BaseObject *, void *, void *)
     }
 }
 
-
 void SceneEditorScreenMain::OnSavePressed(BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
@@ -375,12 +392,7 @@ void SceneEditorScreenMain::OnSavePressed(BaseObject *, void *, void *)
         fileSystemDialog->SetExtensionFilter(".sc2");
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
         
-#if defined (DAVA_QT)
-        SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
-        String path = sceneData->GetScenePathname();
-#else //#if defined (DAVA_QT)
         String path = iBody->bodyControl->GetFilePath();
-#endif //#if defined (DAVA_QT)        
         if (path.length() > 0)
         {
             path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
@@ -412,6 +424,8 @@ void SceneEditorScreenMain::OnExportPressed(BaseObject *, void *, void *)
 }
 
 
+
+
 void SceneEditorScreenMain::OnMaterialsPressed(BaseObject *, void *, void *)
 {
     MaterialsTriggered();
@@ -441,181 +455,6 @@ void SceneEditorScreenMain::OnOpenProjectPressed(BaseObject * obj, void *, void 
     }
 }
 
-
-void SceneEditorScreenMain::InitializeBodyList()
-{
-    AddBodyItem(LocalizedString(L"panel.level"), false);
-}
-
-void SceneEditorScreenMain::ReleaseBodyList()
-{
-    for(Vector<BodyItem*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
-    {
-        BodyItem *iBody = *it;
-
-        RemoveControl(iBody->headerButton);
-        RemoveControl(iBody->bodyControl);
-        
-        SafeRelease(iBody->headerButton);
-        SafeRelease(iBody->closeButton);
-        SafeRelease(iBody->bodyControl);
-
-        SafeDelete(iBody);
-    }
-    bodies.clear();
-}
-
-void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
-{
-#if defined (DAVA_QT)
-    EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
-    SceneDataManager::Instance()->ActivateScene(scene);
-#endif //#if defined (DAVA_QT)
-    
-    BodyItem *c = new BodyItem();
-    
-    int32 count = bodies.size();
-    c->headerButton = ControlsFactory::CreateButton(
-                        Vector2(TAB_BUTTONS_OFFSET + count * (ControlsFactory::BUTTON_WIDTH + 1), 
-                             BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT), 
-                        text);
-
-    c->headerButton->SetTag(count);
-    c->headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
-    if(isCloseable)
-    {
-        c->closeButton = ControlsFactory::CreateCloseWindowButton(
-                                        Rect(ControlsFactory::BUTTON_WIDTH - ControlsFactory::BUTTON_HEIGHT, 0, 
-                                        ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT));
-        c->closeButton->SetTag(count);
-        c->closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCloseBody));
-        c->headerButton->AddControl(c->closeButton);
-    }
-    else 
-    {
-        c->closeButton = NULL;
-    }
-
-
-    Rect fullRect = GetRect();
-    c->bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET + 1, fullRect.dx, fullRect.dy - BODY_Y_OFFSET - 1));
-    
-#if defined (DAVA_QT)
-    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
-    c->bodyControl->SetScene(sceneData->GetScene());
-    c->bodyControl->SetCameraController(sceneData->GetCameraController());
-#endif //#if defined (DAVA_QT)
-    
-    c->bodyControl->SetTag(count);    
-    
-    AddControl(c->headerButton);    
-    bodies.push_back(c);
-    
-    //set as current
-    c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
-}
-
-
-void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void * userData, void * callerData)
-{
-    UIButton *btn = (UIButton *)owner;
-    
-    for(int32 i = 0; i < (int32)bodies.size(); ++i)
-    {
-        if(bodies[i]->bodyControl->GetParent())
-        {
-            if(btn == bodies[i]->headerButton)
-            {
-                // click on selected body - nothing to do
-                return;
-            }
-            
-            if(libraryControl->GetParent())
-            {
-                RemoveControl(libraryControl);
-                bodies[i]->bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
-            }
-            
-            RemoveControl(bodies[i]->bodyControl);
-            bodies[i]->headerButton->SetSelected(false, false);
-        }
-    }
-    AddControl(bodies[btn->GetTag()]->bodyControl);
-    bodies[btn->GetTag()]->headerButton->SetSelected(true, false);    
-    
-    if(libraryControl->GetParent())
-    {
-        BringChildFront(libraryControl);
-    }
-    
-    
-#if defined (DAVA_QT)
-    SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
-#endif //#if defined (DAVA_QT)
-}
-void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void * userData, void * callerData)
-{
-    UIButton *btn = (UIButton *)owner;
-    int32 tag = btn->GetTag();
-    
-    bool needToSwitchBody = false;
-    Vector<BodyItem*>::iterator it = bodies.begin();
-    for(int32 i = 0; i < (int32)bodies.size(); ++i, ++it)
-    {
-        if(btn == bodies[i]->closeButton)
-        {
-            if(bodies[i]->bodyControl->GetParent())
-            {
-                RemoveControl(libraryControl);
-                
-                RemoveControl(bodies[i]->bodyControl);
-                needToSwitchBody = true;
-            }
-            RemoveControl(bodies[i]->headerButton);
-            
-#if defined (DAVA_QT)
-            SceneDataManager::Instance()->ReleaseScene(bodies[i]->bodyControl->GetScene());
-#endif //#if defined (DAVA_QT)
-
-            SafeRelease(bodies[i]->headerButton);
-            SafeRelease(bodies[i]->closeButton);
-            SafeRelease(bodies[i]->bodyControl);
-            
-            SafeDelete(*it);
-
-            bodies.erase(it);
-            break;
-        }
-    }
-
-    for(int32 i = 0; i < (int32)bodies.size(); ++i)
-    {
-        bodies[i]->headerButton->SetRect(
-                            Rect(TAB_BUTTONS_OFFSET + i * (ControlsFactory::BUTTON_WIDTH), 
-                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT, 
-                            ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
-        
-        bodies[i]->headerButton->SetTag(i);
-        if(bodies[i]->closeButton)
-        {
-            bodies[i]->closeButton->SetTag(i);
-        }
-        bodies[i]->bodyControl->SetTag(i);
-    }
-    
-    if(bodies.size())
-    {
-        if(tag)
-        {
-            --tag;
-        }
-
-        //set as current
-        bodies[tag]->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
-    }
-}
-
-
 void SceneEditorScreenMain::OnLibraryPressed(DAVA::BaseObject *obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
@@ -633,19 +472,6 @@ void SceneEditorScreenMain::OnLibraryPressed(DAVA::BaseObject *obj, void *, void
         iBody->bodyControl->ShowProperties(false);
         iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
     }
-}
-
-SceneEditorScreenMain::BodyItem * SceneEditorScreenMain::FindCurrentBody()
-{
-    for(int32 i = 0; i < (int32)bodies.size(); ++i)
-    {
-        if(bodies[i]->bodyControl->GetParent())
-        {
-            return bodies[i];
-        }
-    }
-    
-    return NULL;
 }
 
 void SceneEditorScreenMain::OnPropertiesPressed(DAVA::BaseObject *, void *, void *)
@@ -696,23 +522,24 @@ void SceneEditorScreenMain::OnAddSCE(const String &pathName)
 void SceneEditorScreenMain::OnSceneGraphPressed(BaseObject *, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
-
+    
     iBody->bodyControl->ToggleSceneGraph();
 }
 
 void SceneEditorScreenMain::OnDataGraphPressed(BaseObject * obj, void *, void *)
 {
     BodyItem *iBody = FindCurrentBody();
-
+    
     iBody->bodyControl->ToggleDataGraph();
 }
 
 void SceneEditorScreenMain::OnEntitiesPressed(BaseObject * obj, void *, void *)
 {
 	BodyItem *iBody = FindCurrentBody();
-
+    
 	iBody->bodyControl->ToggleEntities();
 }
+
 
 
 void SceneEditorScreenMain::OnBeastPressed(BaseObject * obj, void *, void *)
@@ -729,7 +556,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
 {
     RemoveControl(menuPopup);
     
-    switch (menuID) 
+    switch (menuID)
     {
         case MENUID_OPEN:
         {
@@ -743,7 +570,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
                 String path = EditorSettings::Instance()->GetLastOpenedFile(lastIndex);
                 OpenFileAtScene(path);
             }
-
+            
             break;
         }
             
@@ -753,7 +580,7 @@ void SceneEditorScreenMain::MenuSelected(int32 menuID, int32 itemID)
             CreateNode((ResourceEditor::eNodeType)itemID);
             break;
         }
-                        
+            
         case MENUID_VIEWPORT:
         {
             SetViewport((ResourceEditor::eViewportType)itemID);
@@ -775,7 +602,7 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 {
     WideString text = L"";
     
-    switch (menuID) 
+    switch (menuID)
     {
         case MENUID_OPEN:
         {
@@ -794,7 +621,7 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             
         case MENUID_CREATENODE:
         {
-            switch (itemID) 
+            switch (itemID)
             {
                 case ResourceEditor::NODE_LANDSCAPE:
                 {
@@ -831,26 +658,26 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                     text = LocalizedString(L"menu.createnode.camera");
                     break;
                 }
-
+                    
 				case ResourceEditor::NODE_IMPOSTER:
 				{
 					text = LocalizedString(L"menu.createnode.imposter");
 					break;
 				}
-
+                    
 				case ResourceEditor::NODE_PARTICLE_EMITTER:
 				{
 					text = LocalizedString(L"menu.createnode.particleemitter");
 					break;
 				}
-
+                    
 				case ResourceEditor::NODE_USER_NODE:
                 {
                     text = LocalizedString(L"menu.createnode.usernode");
                     break;
                 }
-
-
+                    
+                    
                 default:
                     break;
             }
@@ -866,19 +693,19 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                 case ResourceEditor::VIEWPORT_IPHONE:
                     text = LocalizedString("menu.viewport.iphone");
                     break;
-
+                    
                 case ResourceEditor::VIEWPORT_RETINA:
                     text = LocalizedString("menu.viewport.retina");
                     break;
-
+                    
                 case ResourceEditor::VIEWPORT_IPAD:
                     text = LocalizedString("menu.viewport.ipad");
                     break;
-
+                    
                 case ResourceEditor::VIEWPORT_DEFAULT:
                     text = LocalizedString("menu.viewport.default");
                     break;
-
+                    
                 default:
                     break;
             }
@@ -887,7 +714,7 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
             
         case MENUID_EXPORTTOGAME:
         {
-            switch (itemID) 
+            switch (itemID)
             {
                 case ResourceEditor::FORMAT_PNG:
                     text = LocalizedString(L"menu.export.png");
@@ -896,7 +723,7 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
                 case ResourceEditor::FORMAT_PVR:
                     text = LocalizedString(L"menu.export.pvr");
                     break;
-
+                    
                 case ResourceEditor::FORMAT_DXT:
                     text = LocalizedString(L"menu.export.dxt");
                     break;
@@ -910,15 +737,15 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
         default:
             break;
     }
-
+    
     return text;
 }
 
 int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
 {
     int32 retCount = 0;
-
-    switch (menuID) 
+    
+    switch (menuID)
     {
         case MENUID_OPEN:
         {
@@ -936,7 +763,7 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
             retCount = ResourceEditor::VIEWPORT_COUNT;
             break;
         }
-
+            
         case MENUID_EXPORTTOGAME:
         {
             retCount = ResourceEditor::FORMAT_COUNT;
@@ -946,9 +773,304 @@ int32 SceneEditorScreenMain::MenuItemsCount(int32 menuID)
         default:
             break;
     }
-
+    
     return retCount;
 }
+
+
+
+
+void SceneEditorScreenMain::OnLandscapeHeightmapPressed(BaseObject *, void *, void *)
+{
+    HeightmapTriggered();
+}
+
+void SceneEditorScreenMain::OnLandscapeColorPressed(BaseObject *, void *, void *)
+{
+    TilemapTriggered();
+}
+
+
+void SceneEditorScreenMain::OnSettingsPressed(BaseObject *, void *, void *)
+{
+    ShowSettings();
+}
+
+
+void SceneEditorScreenMain::OnViewPortSize(DAVA::BaseObject *, void *, void *)
+{
+    menuPopup->InitControl(MENUID_VIEWPORT, btnViewPortSize->GetRect());
+    AddControl(menuPopup);
+}
+
+void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *, void *, void *)
+{
+    ToggleSceneInfo();
+}
+
+void SceneEditorScreenMain::ShowOpenFileDialog()
+{
+    if(!fileSystemDialog->GetParent())
+    {
+        fileSystemDialog->SetExtensionFilter(".sc2");
+        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
+        
+        
+#if defined (DAVA_QT)
+        SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+        String path = sceneData->GetScenePathname();
+#else //#if defined (DAVA_QT)
+        BodyItem *iBody = FindCurrentBody();
+        String path = iBody->bodyControl->GetFilePath();
+#endif //#if defined (DAVA_QT)
+        if (path.length() > 0)
+        {
+            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
+            fileSystemDialog->SetCurrentDir(path);
+        }
+        else
+        {
+            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
+        }
+        
+        fileSystemDialog->Show(this);
+        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
+    }
+}
+
+void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *, void *, void *)
+{
+    TextureConverterTriggered();
+}
+
+
+void SceneEditorScreenMain::OnBakeScene(BaseObject *, void *, void *)
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->BakeScene();
+}
+
+
+#endif //#if !defined (DAVA_QT)
+
+void SceneEditorScreenMain::InitializeBodyList()
+{
+    AddBodyItem(LocalizedString(L"panel.level"), false);
+}
+
+void SceneEditorScreenMain::ReleaseBodyList()
+{
+    for(Vector<BodyItem*>::iterator it = bodies.begin(); it != bodies.end(); ++it)
+    {
+        BodyItem *iBody = *it;
+
+        RemoveControl(iBody->headerButton);
+        RemoveControl(iBody->bodyControl);
+        
+        SafeRelease(iBody->headerButton);
+        SafeRelease(iBody->closeButton);
+        SafeRelease(iBody->bodyControl);
+
+        SafeDelete(iBody);
+    }
+    bodies.clear();
+}
+
+void SceneEditorScreenMain::AddBodyItem(const WideString &text, bool isCloseable)
+{
+#if defined (DAVA_QT)
+    
+    HideScenePreview();
+    
+    EditorScene *scene = SceneDataManager::Instance()->RegisterNewScene();
+    SceneDataManager::Instance()->ActivateScene(scene);
+#endif //#if defined (DAVA_QT)
+    
+    BodyItem *c = new BodyItem();
+    
+    int32 count = bodies.size();
+    
+//    Rect fullRect = GetRect();
+//    AddLineControl(Rect(0, ControlsFactory::BUTTON_HEIGHT, fullRect.dx, LINE_HEIGHT));
+
+#if defined (DAVA_QT)
+    c->headerButton = ControlsFactory::CreateButton(
+                                                    Vector2(0 + count * (ControlsFactory::BUTTON_WIDTH + 1), 0),
+                                                    text);
+    Rect fullRect = GetRect();
+    c->bodyControl = new EditorBodyControl(Rect(0, ControlsFactory::BUTTON_HEIGHT + 1, fullRect.dx, fullRect.dy - ControlsFactory::BUTTON_HEIGHT - 1));
+    
+#else //#if defined (DAVA_QT)
+    c->headerButton = ControlsFactory::CreateButton(
+                                                    Vector2(TAB_BUTTONS_OFFSET + count * (ControlsFactory::BUTTON_WIDTH + 1),
+                                                            BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT),
+                                                    text);
+    Rect fullRect = GetRect();
+    c->bodyControl = new EditorBodyControl(Rect(0, BODY_Y_OFFSET + 1, fullRect.dx, fullRect.dy - BODY_Y_OFFSET - 1));
+    
+#endif// #if defined (DAVA_QT)
+
+
+
+    
+    c->headerButton->SetTag(count);
+    c->headerButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnSelectBody));
+    if(isCloseable)
+    {
+        c->closeButton = ControlsFactory::CreateCloseWindowButton(
+                                                                  Rect(ControlsFactory::BUTTON_WIDTH - ControlsFactory::BUTTON_HEIGHT, 0,
+                                                                       ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT));
+        c->closeButton->SetTag(count);
+        c->closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SceneEditorScreenMain::OnCloseBody));
+        c->headerButton->AddControl(c->closeButton);
+    }
+    else 
+    {
+        c->closeButton = NULL;
+    }
+
+    
+    
+    
+#if defined (DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    c->bodyControl->SetScene(sceneData->GetScene());
+    c->bodyControl->SetCameraController(sceneData->GetCameraController());
+#endif //#if defined (DAVA_QT)
+    
+    c->bodyControl->SetTag(count);    
+    
+    AddControl(c->headerButton);    
+    bodies.push_back(c);
+    
+    //set as current
+    c->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+}
+
+
+void SceneEditorScreenMain::OnSelectBody(BaseObject * owner, void *, void *)
+{
+    UIButton *btn = (UIButton *)owner;
+    
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
+    {
+        if(bodies[i]->bodyControl->GetParent())
+        {
+            if(btn == bodies[i]->headerButton)
+            {
+                // click on selected body - nothing to do
+                return;
+            }
+            
+#if !defined (DAVA_QT)
+            if(libraryControl && libraryControl->GetParent())
+            {
+                RemoveControl(libraryControl);
+                bodies[i]->bodyControl->UpdateLibraryState(false, libraryControl->GetRect().dx);
+            }
+            
+#endif//#if !defined (DAVA_QT)
+            RemoveControl(bodies[i]->bodyControl);
+            bodies[i]->headerButton->SetSelected(false, false);
+            
+        }
+    }
+    AddControl(bodies[btn->GetTag()]->bodyControl);
+    bodies[btn->GetTag()]->headerButton->SetSelected(true, false);    
+    
+#if !defined (DAVA_QT)
+    if(libraryControl && libraryControl->GetParent())
+    {
+        BringChildFront(libraryControl);
+    }
+#endif //#if !defined (DAVA_QT)
+    
+#if defined (DAVA_QT)
+    SceneDataManager::Instance()->ActivateScene(bodies[btn->GetTag()]->bodyControl->GetScene());
+#endif //#if defined (DAVA_QT)
+}
+void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
+{
+    UIButton *btn = (UIButton *)owner;
+    int32 tag = btn->GetTag();
+    
+    bool needToSwitchBody = false;
+    Vector<BodyItem*>::iterator it = bodies.begin();
+    for(int32 i = 0; i < (int32)bodies.size(); ++i, ++it)
+    {
+        if(btn == bodies[i]->closeButton)
+        {
+            if(bodies[i]->bodyControl->GetParent())
+            {
+#if !defined (DAVA_QT)
+                RemoveControl(libraryControl);
+#endif //#if !defined (DAVA_QT)
+
+                RemoveControl(bodies[i]->bodyControl);
+                needToSwitchBody = true;
+            }
+            RemoveControl(bodies[i]->headerButton);
+            
+#if defined (DAVA_QT)
+            SceneDataManager::Instance()->ReleaseScene(bodies[i]->bodyControl->GetScene());
+#endif //#if defined (DAVA_QT)
+
+            SafeRelease(bodies[i]->headerButton);
+            SafeRelease(bodies[i]->closeButton);
+            SafeRelease(bodies[i]->bodyControl);
+            
+            SafeDelete(*it);
+
+            bodies.erase(it);
+            break;
+        }
+    }
+
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
+    {
+#if defined (DAVA_QT)
+        bodies[i]->headerButton->SetRect(Rect(i * (ControlsFactory::BUTTON_WIDTH + 1), 0,
+                                                ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
+#else //#if defined (DAVA_QT)
+        bodies[i]->headerButton->SetRect(
+                                         Rect(TAB_BUTTONS_OFFSET + i * (ControlsFactory::BUTTON_WIDTH),
+                                              BODY_Y_OFFSET - ControlsFactory::BUTTON_HEIGHT,
+                                              ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
+#endif //
+        
+        bodies[i]->headerButton->SetTag(i);
+        if(bodies[i]->closeButton)
+        {
+            bodies[i]->closeButton->SetTag(i);
+        }
+        bodies[i]->bodyControl->SetTag(i);
+    }
+    
+    if(bodies.size())
+    {
+        if(tag)
+        {
+            --tag;
+        }
+
+        //set as current
+        bodies[tag]->headerButton->PerformEvent(UIControl::EVENT_TOUCH_UP_INSIDE);
+    }
+}
+
+SceneEditorScreenMain::BodyItem * SceneEditorScreenMain::FindCurrentBody()
+{
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
+    {
+        if(bodies[i]->bodyControl->GetParent())
+        {
+            return bodies[i];
+        }
+    }
+    
+    return NULL;
+}
+
 
 void SceneEditorScreenMain::DialogClosed(int32 retCode)
 {
@@ -985,16 +1107,6 @@ void SceneEditorScreenMain::ReleaseNodeDialogs()
     SafeRelease(dialogBack);
 }
 
-void SceneEditorScreenMain::OnLandscapeHeightmapPressed(BaseObject *, void *, void *)
-{
-    HeightmapTriggered();
-}
-
-void SceneEditorScreenMain::OnLandscapeColorPressed(BaseObject *, void *, void *)
-{
-    TilemapTriggered();
-}
-
 void SceneEditorScreenMain::EditMaterial(Material *material)
 {
     BodyItem *iBody = FindCurrentBody();
@@ -1006,13 +1118,6 @@ void SceneEditorScreenMain::EditMaterial(Material *material)
     }
 }
 
-void SceneEditorScreenMain::OnSettingsPressed(BaseObject *, void *, void *)
-{
-    if(!settingsDialog->GetParent())
-    {
-        AddControl(settingsDialog);
-    }
-}
 
 void SceneEditorScreenMain::AutoSaveLevel(BaseObject *, void *, void *)
 {
@@ -1049,17 +1154,7 @@ void SceneEditorScreenMain::SetupAnimation()
     anim->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &SceneEditorScreenMain::AutoSaveLevel));
 }
 
-void SceneEditorScreenMain::OnViewPortSize(DAVA::BaseObject *, void *, void *)
-{
-    menuPopup->InitControl(MENUID_VIEWPORT, btnViewPortSize->GetRect());
-    AddControl(menuPopup);
-}
 
-void SceneEditorScreenMain::OnSceneInfoPressed(DAVA::BaseObject *, void *, void *)
-{
-    BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->ToggleSceneInfo();
-}
 
 void SceneEditorScreenMain::SettingsChanged()
 {
@@ -1135,35 +1230,8 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
     }
 }
 
-void SceneEditorScreenMain::ShowOpenFileDialog()
-{
-    if(!fileSystemDialog->GetParent())
-    {
-        fileSystemDialog->SetExtensionFilter(".sc2");
-        fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
-        
-        
-#if defined (DAVA_QT)
-        SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
-        String path = sceneData->GetScenePathname();
-#else //#if defined (DAVA_QT)
-        BodyItem *iBody = FindCurrentBody();
-        String path = iBody->bodyControl->GetFilePath();
-#endif //#if defined (DAVA_QT)        
-        if (path.length() > 0) 
-        {
-            path = FileSystem::Instance()->ReplaceExtension(path, ".sc2");
-            fileSystemDialog->SetCurrentDir(path);
-        }
-        else 
-        {
-            fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
-        }
 
-        fileSystemDialog->Show(this);
-        fileSystemDialogOpMode = DIALOG_OPERATION_MENU_OPEN;
-    }
-}
+
 
 void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 {
@@ -1185,12 +1253,6 @@ void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
         textureTrianglesDialog->Show(polygonGroup);
     }
 }
-
-void SceneEditorScreenMain::OnTextureConverter(DAVA::BaseObject *, void *, void *)
-{
-    TextureConverterTriggered();
-}
-
 
 void SceneEditorScreenMain::RecreteFullTilingTexture()
 {
@@ -1340,7 +1402,10 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
     SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
     
 	iBody->bodyControl->PopDebugCamera();
+    
+#if !defined(DAVA_QT)
     libraryControl->RefreshTree();
+#endif //#if !defined(DAVA_QT)
     
     if(0 < errorsLog.size())
     {
@@ -1357,19 +1422,6 @@ void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
     AddControl(nodeDialog);
 }
 
-void SceneEditorScreenMain::SetViewport(ResourceEditor::eViewportType viewportType)
-{
-    BodyItem *iBody = FindCurrentBody();
-    
-    if(libraryControl->GetParent())
-    {
-        RemoveControl(libraryControl);
-    }
-    
-    iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
-    
-    iBody->bodyControl->SetViewportSize(viewportType);
-}
 
 void SceneEditorScreenMain::MaterialsTriggered()
 {
@@ -1403,22 +1455,27 @@ void SceneEditorScreenMain::HeightmapTriggered()
 {
     BodyItem *iBody = FindCurrentBody();
     bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_HEIGHTMAP);
+    
+#if !defined (DAVA_QT)
     if(ret)
     {
         bool selected = btnLandscapeHeightmap->GetSelected();
         btnLandscapeHeightmap->SetSelected(!selected);
     }
+#endif //#if !defined (DAVA_QT)
 }
 
 void SceneEditorScreenMain::TilemapTriggered()
 {
     BodyItem *iBody = FindCurrentBody();
     bool ret = iBody->bodyControl->ToggleLandscapeEditor(ELEMID_COLOR_MAP);
+#if !defined (DAVA_QT)
     if(ret)
     {
         bool selected = btnLandscapeColor->GetSelected();
         btnLandscapeColor->SetSelected(!selected);
     }
+#endif //#if !defined (DAVA_QT)
 }
 
 #if defined (DAVA_QT)
@@ -1436,22 +1493,49 @@ void SceneEditorScreenMain::OnReloadRootNodesQt()
 
 void SceneEditorScreenMain::ShowScenePreview(const String scenePathname)
 {
-    scenePreviewDialog->Show(scenePathname);
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Show(scenePathname);
+    }
 }
 
 void SceneEditorScreenMain::HideScenePreview()
 {
-    scenePreviewDialog->Close();
+    if(scenePreviewDialog)
+    {
+        scenePreviewDialog->Close();
+    }
 }
-
-
-
 
 #endif //#if defined (DAVA_QT)
 
-void SceneEditorScreenMain::OnBakeScene(BaseObject *, void *, void *)
+
+void SceneEditorScreenMain::ToggleSceneInfo()
 {
     BodyItem *iBody = FindCurrentBody();
-    iBody->bodyControl->BakeScene();
+    iBody->bodyControl->ToggleSceneInfo();
 }
 
+void SceneEditorScreenMain::ShowSettings()
+{
+    if(!settingsDialog->GetParent())
+    {
+        AddControl(settingsDialog);
+    }
+}
+
+void SceneEditorScreenMain::SetViewport(ResourceEditor::eViewportType viewportType)
+{
+    BodyItem *iBody = FindCurrentBody();
+
+#if !defined(DAVA_QT)
+    if(libraryControl->GetParent())
+    {
+        RemoveControl(libraryControl);
+    }
+    
+    iBody->bodyControl->UpdateLibraryState(libraryControl->GetParent(), libraryControl->GetRect().dx);
+#endif //#if !defined(DAVA_QT)
+
+    iBody->bodyControl->SetViewportSize(viewportType);
+}
