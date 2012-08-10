@@ -849,6 +849,17 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 	}
 }
 
+void AutotestingSystem::OnMessage(const String & logMessage)
+{
+	Logger::Debug("AutotestingSystem::OnMessage %s",logMessage.c_str());
+    
+	String logMsg = Format("%s OnMessage %s", testName.c_str(), logMessage.c_str());
+	if(reportFile)
+	{
+		reportFile->WriteLine(logMsg);
+	}
+}
+
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
@@ -904,6 +915,7 @@ void AutotestingSystem::Click(const Vector<String> &controlPath, int32 id)
 void AutotestingSystem::TouchDown(const Vector2 &point, int32 id)
 {
     TouchDownAction* touchDownAction = new TouchDownAction(point, id);
+	touchDownAction->SetName("TouchDownAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
@@ -911,6 +923,7 @@ void AutotestingSystem::TouchDown(const Vector2 &point, int32 id)
 void AutotestingSystem::TouchDown(const String &controlName, int32 id)
 {
     TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlName, id);
+	touchDownAction->SetName("TouchDownControlAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
@@ -918,6 +931,7 @@ void AutotestingSystem::TouchDown(const String &controlName, int32 id)
 void AutotestingSystem::TouchDown(const Vector<String> &controlPath, int32 id)
 {
     TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlPath, id);
+	touchDownAction->SetName("TouchDownControlAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
@@ -925,6 +939,7 @@ void AutotestingSystem::TouchDown(const Vector<String> &controlPath, int32 id)
 void AutotestingSystem::TouchUp(int32 id)
 {
     TouchUpAction* touchUpAction = new TouchUpAction(id);
+	touchUpAction->SetName("TouchUpAction");
     AddAction(touchUpAction);
     SafeRelease(touchUpAction);
 }
@@ -932,6 +947,7 @@ void AutotestingSystem::TouchUp(int32 id)
 void AutotestingSystem::TouchMove(const Vector2 &point, float32 time, int32 id)
 {
     TouchMoveAction* touchMoveAction = new TouchMoveAction(point, time, id);
+	touchMoveAction->SetName("TouchMoveAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
 }
@@ -939,6 +955,7 @@ void AutotestingSystem::TouchMove(const Vector2 &point, float32 time, int32 id)
 void AutotestingSystem::TouchMove(const String &controlName, float32 time, int32 id)
 {
     TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlName, time, id);
+	touchMoveAction->SetName("TouchMoveControlAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
 }
@@ -946,6 +963,7 @@ void AutotestingSystem::TouchMove(const String &controlName, float32 time, int32
 void AutotestingSystem::TouchMove(const Vector<String> &controlPath, float32 time, int32 id)
 {
     TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlPath, time, id);
+	touchMoveAction->SetName("TouchMoveControlAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
 }
@@ -953,6 +971,7 @@ void AutotestingSystem::TouchMove(const Vector<String> &controlPath, float32 tim
 void AutotestingSystem::KeyPress(char16 keyChar)
 {
     KeyPressAction* keyPressAction = new KeyPressAction(keyChar);
+	keyPressAction->SetName("KeyPressAction");
     AddAction(keyPressAction);
     SafeRelease(keyPressAction);
 }
@@ -968,6 +987,7 @@ void AutotestingSystem::KeyboardInput(const WideString &text)
 void AutotestingSystem::SetText(const String &controlName, const WideString &text)
 {
     SetTextAction* setTextAction = new SetTextAction(controlName, text);
+	setTextAction->SetName("SetTextAction");
     AddAction(setTextAction);
     SafeRelease(setTextAction);
 }
@@ -975,6 +995,7 @@ void AutotestingSystem::SetText(const String &controlName, const WideString &tex
 void AutotestingSystem::SetText(const Vector<String> &controlPath, const WideString &text)
 {
     SetTextAction* setTextAction = new SetTextAction(controlPath, text);
+	setTextAction->SetName("SetTextAction");
     AddAction(setTextAction);
     SafeRelease(setTextAction);
 }
@@ -982,6 +1003,7 @@ void AutotestingSystem::SetText(const Vector<String> &controlPath, const WideStr
 void AutotestingSystem::Wait(float32 time)
 {
     WaitAction* waitAction = new WaitAction(time);
+	waitAction->SetName("WaitAction");
     AddAction(waitAction);
     SafeRelease(waitAction);
 }
@@ -989,6 +1011,7 @@ void AutotestingSystem::Wait(float32 time)
 void AutotestingSystem::WaitForUI(const String &controlName, float32 timeout)
 {
     WaitForUIAction* waitForUIAction = new WaitForUIAction(controlName, timeout);
+	waitForUIAction->SetName("WaitForUIAction");
     AddAction(waitForUIAction);
     SafeRelease(waitForUIAction);
 }
@@ -996,6 +1019,7 @@ void AutotestingSystem::WaitForUI(const String &controlName, float32 timeout)
 void AutotestingSystem::WaitForUI(const Vector<String> &controlPath, float32 timeout)
 {
     WaitForUIAction* waitForUIAction = new WaitForUIAction(controlPath, timeout);
+	waitForUIAction->SetName("WaitForUIAction");
     AddAction(waitForUIAction);
     SafeRelease(waitForUIAction);
 }
@@ -1003,6 +1027,7 @@ void AutotestingSystem::WaitForUI(const Vector<String> &controlPath, float32 tim
 void AutotestingSystem::Scroll(const String &controlName, int32 id, float32 timeout)
 {
     ScrollControlAction* scrollControlAction = new ScrollControlAction(controlName, id, timeout);
+	scrollControlAction->SetName("ScrollControlAction");
     AddAction(scrollControlAction);
     SafeRelease(scrollControlAction);
 }
