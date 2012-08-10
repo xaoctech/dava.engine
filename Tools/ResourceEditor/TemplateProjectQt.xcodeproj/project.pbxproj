@@ -11,6 +11,8 @@
 		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
+		5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FABE15D530270048024E /* LibraryModel.cpp */; };
+		5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC115D535230048024E /* moc_LibraryModel.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C2763A815B82BE90030A8FD /* GUIActionHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C2763A515B82BE90030A8FD /* GUIActionHandler.cpp */; };
 		5C49A03D15CBBCB0005C40BF /* moc_GraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */; };
@@ -347,6 +349,9 @@
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../dava.framework/Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ViewCommands.cpp; path = Classes/Commands/ViewCommands.cpp; sourceTree = "<group>"; };
 		5C03FA9115D4F6AD0048024E /* ViewCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewCommands.h; path = Classes/Commands/ViewCommands.h; sourceTree = "<group>"; };
+		5C03FABE15D530270048024E /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryModel.cpp; path = Classes/Qt/LibraryModel.cpp; sourceTree = "<group>"; };
+		5C03FABF15D530270048024E /* LibraryModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryModel.h; path = Classes/Qt/LibraryModel.h; sourceTree = "<group>"; };
+		5C03FAC115D535230048024E /* moc_LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_LibraryModel.cpp; path = QtBuildTool/moc_LibraryModel.cpp; sourceTree = "<group>"; };
 		5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1019,6 +1024,7 @@
 		46E892BBB6BB6952967E0561 /* Temporary Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5C03FAC115D535230048024E /* moc_LibraryModel.cpp */,
 				5C6549D115D3EE0100C3AC3F /* moc_FileSelectionModel.cpp */,
 				5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */,
 				5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */,
@@ -1043,7 +1049,6 @@
 		5C2763A415B82BDF0030A8FD /* Qt */ = {
 			isa = PBXGroup;
 			children = (
-				5C6549CD15D3EA0900C3AC3F /* FileSelectionModel */,
 				5C6549C915D3E47600C3AC3F /* ScenePreview */,
 				5CF412BA15C7E0A0004725FD /* Scene Data */,
 				5C5DCB6515C32B34007F6AC4 /* Graph */,
@@ -1489,6 +1494,10 @@
 		5C5DCB6515C32B34007F6AC4 /* Graph */ = {
 			isa = PBXGroup;
 			children = (
+				5C03FABE15D530270048024E /* LibraryModel.cpp */,
+				5C03FABF15D530270048024E /* LibraryModel.h */,
+				5C6549CE15D3EA3500C3AC3F /* FileSelectionModel.cpp */,
+				5C6549CF15D3EA3500C3AC3F /* FileSelectionModel.h */,
 				5C5DCB6615C32BAD007F6AC4 /* GraphItem.cpp */,
 				5C5DCB6715C32BAD007F6AC4 /* GraphItem.h */,
 				5C5DCB6C15C32BAD007F6AC4 /* SceneGraphItem.cpp */,
@@ -1510,15 +1519,6 @@
 				5C6549CB15D3E48C00C3AC3F /* ScenePreviewDialog.h */,
 			);
 			name = ScenePreview;
-			sourceTree = "<group>";
-		};
-		5C6549CD15D3EA0900C3AC3F /* FileSelectionModel */ = {
-			isa = PBXGroup;
-			children = (
-				5C6549CE15D3EA3500C3AC3F /* FileSelectionModel.cpp */,
-				5C6549CF15D3EA3500C3AC3F /* FileSelectionModel.h */,
-			);
-			name = FileSelectionModel;
 			sourceTree = "<group>";
 		};
 		5C7F464F15B449450038AF3A /* Products */ = {
@@ -2348,6 +2348,8 @@
 				5C6549D015D3EA3500C3AC3F /* FileSelectionModel.cpp in Build Sources */,
 				5C6549D215D3EE0100C3AC3F /* moc_FileSelectionModel.cpp in Build Sources */,
 				5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */,
+				5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */,
+				5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

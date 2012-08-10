@@ -63,6 +63,7 @@ public slots:
     void TilemapEditor();
     void ShowSettings();
     void BakeScene();
+    void Beast();
     
     //scene graph
     void RemoveRootNodes();

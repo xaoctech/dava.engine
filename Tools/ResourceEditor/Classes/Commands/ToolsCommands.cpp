@@ -115,4 +115,21 @@ void CommandBakeScene::Cancel()
 }
 
 
+//Beast
+CommandBeast::CommandBeast()
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+}
+
+
+void CommandBeast::Execute()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->ProcessBeast();
+    }
+}
+
+
 

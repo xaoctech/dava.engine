@@ -68,6 +68,15 @@ protected:
 
 };
 
+class CommandBeast: public Command
+{
+public:
+	CommandBeast();
+    
+protected:
+    
+    virtual void Execute();
+};
 
 
 #endif // #ifndef __TOOLS_COMMANDS_H__

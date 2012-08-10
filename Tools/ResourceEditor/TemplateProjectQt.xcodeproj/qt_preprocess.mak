@@ -38,6 +38,7 @@ SOURCE_FILES = QtBuildTool/moc_mainwindow.cpp \
 			QtBuildTool/moc_SceneData.cpp \
 			QtBuildTool/moc_SceneGraphModel.cpp \
 			QtBuildTool/moc_FileSelectionModel.cpp \
+			QtBuildTool/moc_LibraryModel.cpp
 
 HEADER_FILES = ui_mainwindow.h \
 				ui_davaglwidget.h \
@@ -77,6 +78,8 @@ QtBuildTool/moc_SceneData.cpp: Classes/Qt/SceneData.h
 QtBuildTool/moc_FileSelectionModel.cpp: Classes/Qt/FileSelectionModel.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/FileSelectionModel.h -o QtBuildTool/moc_FileSelectionModel.cpp
 
+QtBuildTool/moc_LibraryModel.cpp: Classes/Qt/LibraryModel.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/LibraryModel.h -o QtBuildTool/moc_LibraryModel.cpp
 
 #compiler_rcc_make_all: QtBuildTool/qrc_QtIcons.cpp
 compiler_rcc_make_all: $(RESUORCE_FILES)

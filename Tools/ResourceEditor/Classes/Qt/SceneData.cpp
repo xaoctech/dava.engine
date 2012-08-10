@@ -10,7 +10,7 @@
 #include "QtUtils.h"
 #include "GUIActionHandler.h"
 
-#include "FileSelectionModel.h"
+#include "LibraryModel.h"
 
 #include <QTreeView>
 #include <QFileSystemModel>
@@ -32,14 +32,7 @@ SceneData::SceneData()
     
     connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
 
-    
-    libraryModel = new QFileSystemModel(this);
-    QStringList nameFilters;
-    nameFilters << QString("*.sc2");
-    nameFilters << QString("*.dae");
-    libraryModel->setNameFilters(nameFilters);
-    libraryModel->setNameFilterDisables(true);
-    librarySelectionModel = new FileSelectionModel(libraryModel);
+    libraryModel = new LibraryModel(this);
     
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
 }
@@ -48,7 +41,6 @@ SceneData::~SceneData()
 {
     SafeRelease(scene);
     
-    SafeDelete(librarySelectionModel);
     SafeDelete(libraryModel);
     SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
@@ -296,19 +288,13 @@ void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
 	libraryView = _libraryView;
 		
     sceneGraphModel->Activate(graphview);
-    libraryView->setModel(libraryModel);
-    libraryView->setSelectionModel(librarySelectionModel);
-	ReloadLibrary();
-	int32 count = libraryModel->columnCount();
-    for(int32 i = 1; i < count; ++i)
-    { //TODO: Maybe we will use context menu to enable/disable columns
-        libraryView->setColumnHidden(i, true);
-    }
+    libraryModel->Activate(libraryView);
 }
 
 void SceneData::Deactivate()
 {
     sceneGraphModel->Deactivate();
+    libraryModel->Deactivate();
 }
 
 void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
@@ -410,8 +396,7 @@ void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
 
 void SceneData::ReloadLibrary()
 {
-	libraryModel->setRootPath(QString(EditorSettings::Instance()->GetDataSourcePath().c_str()));
-	libraryView->setRootIndex(libraryModel->index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
+    libraryModel->Reload();
 }
 
 

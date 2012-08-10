@@ -98,6 +98,7 @@
     <addaction name="actionTileMapEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBakeScene"/>
+    <addaction name="actionBeast"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
@@ -467,6 +468,11 @@
   <action name="actionShowSettings">
    <property name="text">
     <string>Show Settings</string>
+   </property>
+  </action>
+  <action name="actionBeast">
+   <property name="text">
+    <string>Beast</string>
    </property>
   </action>
  </widget>

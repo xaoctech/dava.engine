@@ -285,6 +285,7 @@ public: //For Qt integration
     void ToggleSceneInfo();
     void ShowSettings();
     
+    void ProcessBeast();
     
 #if defined (DAVA_QT)
     ScenePreviewDialog *scenePreviewDialog;
