@@ -327,7 +327,7 @@ void WASDCameraController::Input(UIEvent * event)
 		if (altBut3)
 		{
 			const Vector3 & pos = camera->GetPosition();
-			AABBox3 box = selection->GetWTMaximumBoundingBox();
+			AABBox3 box = selection->GetWTMaximumBoundingBoxSlow();
 			center = box.GetCenter();
 			radius = (center - pos).Length();
 		}
@@ -360,7 +360,7 @@ void WASDCameraController::LockAtSelection()
     if (!selection || dynamic_cast<Camera*>(selection))
         return;
 
-    AABBox3 box = selection->GetWTMaximumBoundingBox();
+    AABBox3 box = selection->GetWTMaximumBoundingBoxSlow();
     float32 boxSize = ((box.max - box.min).Length());
     
     const Vector3 & pos = camera->GetPosition();

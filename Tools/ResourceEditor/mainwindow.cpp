@@ -85,6 +85,11 @@ void QtMainWindow::SetupMainMenu()
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
                                        actionProperties, actionLibrary, actionToolBar);
+
+
+    ui->dockDataGraph->hide();
+    ui->dockEntities->hide();
+    ui->dockProperties->hide();
     
     
     //CreateNode
@@ -116,6 +121,8 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionIPad,
                                            ui->actionDefault
                                        );
+    
+    
 }
 
 void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename)
@@ -160,8 +167,10 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
-    
-    
+
+    actionHandler->SetLibraryView(ui->libraryView);
+    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
+    connect(ui->libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), actionHandler, SLOT(LibraryContextMenuRequested(const QPoint &)));
     
     connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
     connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));

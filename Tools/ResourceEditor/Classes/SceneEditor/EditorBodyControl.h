@@ -21,6 +21,7 @@
 
 using namespace DAVA;
 
+
 class SceneGraph;
 class DataGraph;
 class EntitiesGraph;
@@ -127,6 +128,7 @@ public:
     void SetCameraController(CameraController *newCameraController);
     
     void SelectNodeQt(SceneNode *node);
+    void OnReloadRootNodesQt();
 #endif //#if defined (DAVA_QT)        
     
     void BakeScene();

@@ -42,7 +42,7 @@ VariantType::VariantType()
 {
 }
 
-VariantType::VariantType(const VariantType &var)
+VariantType::VariantType(const VariantType &var) : pointerValue(NULL)
 {
     type = var.type;
 	switch(type)
@@ -379,8 +379,7 @@ bool VariantType::Read(File * fp)
             pointerValue = new KeyedArchive();
             ((KeyedArchive*)pointerValue)->Load(pF);
             SafeRelease(pF);
-            SafeDelete(pData);
-            
+            SafeDeleteArray(pData);
 		}
         break;	
 		default:

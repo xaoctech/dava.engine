@@ -85,7 +85,7 @@ void ShadowRect::Draw()
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(rdo);
 	RenderManager::Instance()->FlushState();
-
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 }
 

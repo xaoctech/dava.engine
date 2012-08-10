@@ -76,6 +76,12 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{a18c56f3-ac1d-43b8-beb8-0a5ea83a03e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Qt\ScenePreviewDialog">
+      <UniqueIdentifier>{0513be28-848d-4ada-b8ce-5cbef00089d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\FileSelection">
+      <UniqueIdentifier>{ef9a41e3-3182-4872-aef2-a86c98249910}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -909,6 +915,18 @@
     <ClCompile Include="mainwindow.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp">
+      <Filter>Sources\Qt\ScenePreviewDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
+      <Filter>Sources\Qt\FileSelection</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_FileSelectionModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -940,6 +958,9 @@
     </CustomBuild>
     <CustomBuild Include="QtIcons.qrc">
       <Filter>Resources</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\FileSelectionModel.build">
+      <Filter>QtBuildTool</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -1731,6 +1752,15 @@
     </ClInclude>
     <ClInclude Include="ui_mainwindow.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\ScenePreviewDialog.h">
+      <Filter>Sources\Qt\ScenePreviewDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\FileSelectionModel.h">
+      <Filter>Sources\Qt\FileSelection</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\LibraryCommands.h">
+      <Filter>Sources\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

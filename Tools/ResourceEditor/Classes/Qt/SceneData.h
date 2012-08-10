@@ -5,10 +5,14 @@
 #include "../SceneEditor/CameraController.h"
 
 #include <QObject>
+#include <QModelIndex>
+#include <QPoint>
 
+class QFileSystemModel;
+class QTreeView;
 class EditorScene;
 class SceneGraphModel;
-class QTreeView;
+class FileSelectionModel;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -36,24 +40,30 @@ public:
     
     void CreateScene(bool createEditorCameras);
     
-    void OpenScene(const DAVA::String &scenePathname);
+    void AddScene(const DAVA::String &scenePathname);
     void EditScene(const DAVA::String &scenePathname);
     
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
 
-    void Activate(QTreeView *view);
+    void Activate(QTreeView *graphview, QTreeView *libraryView);
     void Deactivate();
 
+    void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
+    
+    void ReloadRootNode(const DAVA::String &scenePathname);
+
+	void ReloadLibrary();
     
 protected:
     
+    void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
+
     void ReleaseScene();
 
 protected slots:
     
     void SceneNodeSelected(DAVA::SceneNode *node);
-    
     
 protected:
 
@@ -69,6 +79,19 @@ protected:
     //ENTITY
     //PROPERTY
     //LIBRARY
+    QFileSystemModel *libraryModel;
+    FileSelectionModel *librarySelectionModel;
+    
+    //reload root nodes
+    struct AddedNode
+    {
+        DAVA::SceneNode *nodeToAdd;
+        DAVA::SceneNode *nodeToRemove;
+        DAVA::SceneNode *parent;
+    };
+    DAVA::Vector<AddedNode> nodesToAdd;
+
+	QTreeView *libraryView;
 };
 
 #endif // __SCENE_DATA_H__

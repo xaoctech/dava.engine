@@ -11,7 +11,13 @@
 
 #include "../Constants.h"
 
+
+
 using namespace DAVA;
+
+#if defined(DAVA_QT)
+class ScenePreviewDialog;
+#endif //#if defined(DAVA_QT)
 
 class EditorBodyControl;
 class MaterialEditor;
@@ -119,7 +125,15 @@ public:
     
 #if defined (DAVA_QT)
     void SelectNodeQt(SceneNode *node);
+    void OnReloadRootNodesQt();
+    
+    void ShowScenePreview(const String scenePathname);
+    void HideScenePreview();
+    
 #endif //#if defined (DAVA_QT)
+    
+    void AddBodyItem(const WideString &text, bool isCloseable);
+
 
 private:
     
@@ -168,7 +182,6 @@ private:
     
     void InitializeBodyList();
     void ReleaseBodyList();
-    void AddBodyItem(const WideString &text, bool isCloseable);
     
     void OnSelectBody(BaseObject * owner, void * userData, void * callerData);
     void OnCloseBody(BaseObject * owner, void * userData, void * callerData);
@@ -251,6 +264,11 @@ public: //For Qt integration
     void TextureConverterTriggered();
     void HeightmapTriggered();
     void TilemapTriggered();
+    
+#if defined (DAVA_QT)
+    ScenePreviewDialog *scenePreviewDialog;
+#endif //#if defined (DAVA_QT)
+
     
 };
 

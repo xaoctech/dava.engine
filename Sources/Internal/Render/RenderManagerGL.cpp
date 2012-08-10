@@ -470,16 +470,14 @@ void RenderManager::EnableColorArray(bool isEnabled)
 void RenderManager::FlushState()
 {
 	PrepareRealMatrix();
-    AttachRenderData(currentState.shader);
-
+    
     currentState.Flush(&hardwareState);
 }
 
 void RenderManager::FlushState(RenderStateBlock * stateBlock)
 {
 	PrepareRealMatrix();
-	AttachRenderData(stateBlock->shader);
-
+	
 	stateBlock->Flush(&hardwareState);
 }
 
@@ -628,6 +626,20 @@ void RenderManager::ClearStencilBuffer(int32 stencil)
 	RENDER_VERIFY(glClearStencil(stencil));
 	RENDER_VERIFY(glClear(GL_STENCIL_BUFFER_BIT));
 }
+    
+void RenderManager::Clear(const Color & color, float32 depth, int32 stencil)
+{
+    RENDER_VERIFY(glClearColor(color.r, color.g, color.b, color.a));
+#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glClearDepthf(depth));
+#else //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glClearDepth(depth));
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glClearStencil(stencil));
+
+    
+    RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+}
 
 void RenderManager::SetHWClip(const Rect &rect)
 {
@@ -763,11 +775,12 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
 }
     
     
-void RenderManager::AttachRenderData(Shader * shader)
+void RenderManager::AttachRenderData()
 {
     if (!currentRenderData)return;
 
     const int DEBUG = 0;
+	Shader * shader = hardwareState.shader;
     
     RenderManager::Instance()->LockNonMain();
     if (!shader)

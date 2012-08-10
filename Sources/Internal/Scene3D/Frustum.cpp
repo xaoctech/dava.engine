@@ -266,7 +266,7 @@ bool Frustum::IsInside(const Vector3 & point, const float32 radius) const
 	for (int plane = 0; plane < planeCount; ++plane)
 	{
 		if (planeArray[plane].DistanceToPoint(point) > radius)
-			return true;
+			return false;
 	}
 	return true;    
 }

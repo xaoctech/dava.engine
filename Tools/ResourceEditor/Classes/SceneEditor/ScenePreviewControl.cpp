@@ -290,7 +290,7 @@ void ScenePreviewControl::SetupCamera()
     Camera *camera = editorScene->GetCamera(0);
     if (camera)
     {
-        AABBox3 sceneBox = rootNode->GetWTMaximumBoundingBox();
+        AABBox3 sceneBox = rootNode->GetWTMaximumBoundingBoxSlow();
         Vector3 target = sceneBox.GetCenter();
         camera->SetTarget(target);
         Vector3 dir = (sceneBox.max - sceneBox.min); 

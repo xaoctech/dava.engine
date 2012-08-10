@@ -54,6 +54,7 @@ void LandscapeCursor::Prepare()
 	RenderManager::Instance()->SetTexture(cursorTexture, 0);
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	shader->SetUniformValue(uniformTexture, 0);
 	shader->SetUniformValue(uniformScale, bigSize/scale);
 

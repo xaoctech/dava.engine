@@ -284,7 +284,7 @@ void RenderStateBlock::Flush(RenderStateBlock * hardwareState) const
 			hardwareState->stencilState.ref = stencilState.ref;
 		}
 		//if (changeSet & STATE_CHANGED_STENCIL_MASK)
-		
+		if(hardwareState->stencilState.mask != stencilState.mask)
 		{
 			SetStencilMaskInHW();
 			hardwareState->stencilState.mask = stencilState.mask;
@@ -296,6 +296,22 @@ void RenderStateBlock::Flush(RenderStateBlock * hardwareState) const
 			SetStencilFuncInHW();
 			hardwareState->stencilState.func[0] = stencilState.func[0];
 			hardwareState->stencilState.func[1] = stencilState.func[1];
+		}
+
+		if (hardwareState->stencilState.pass[0] != stencilState.pass[0] ||
+			hardwareState->stencilState.pass[1] != stencilState.pass[1] ||
+			hardwareState->stencilState.fail[0] != stencilState.fail[0] ||
+			hardwareState->stencilState.fail[1] != stencilState.fail[1] ||
+			hardwareState->stencilState.zFail[0] != stencilState.zFail[0] ||
+			hardwareState->stencilState.zFail[1] != stencilState.zFail[1])
+		{
+			SetStencilOpInHW();
+			hardwareState->stencilState.pass[0] = stencilState.pass[0];
+			hardwareState->stencilState.pass[1] = stencilState.pass[1];
+			hardwareState->stencilState.fail[0] = stencilState.fail[0];
+			hardwareState->stencilState.fail[1] = stencilState.fail[1];
+			hardwareState->stencilState.zFail[0] = stencilState.zFail[0];
+			hardwareState->stencilState.zFail[1] = stencilState.zFail[1];
 		}
 
 		if (hardwareState->stencilState.pass[0] != stencilState.pass[0] || 
@@ -318,21 +334,6 @@ void RenderStateBlock::Flush(RenderStateBlock * hardwareState) const
 			hardwareState->stencilState.zFail[1] != stencilState.zFail[1])
 		{
 			SetStencilZFailInHW();
-			hardwareState->stencilState.zFail[0] = stencilState.zFail[0];
-			hardwareState->stencilState.zFail[1] = stencilState.zFail[1];
-		}
-		if (hardwareState->stencilState.pass[0] != stencilState.pass[0] ||
-			hardwareState->stencilState.pass[1] != stencilState.pass[1] ||
-			hardwareState->stencilState.fail[0] != stencilState.fail[0] ||
-			hardwareState->stencilState.fail[1] != stencilState.fail[1] ||
-			hardwareState->stencilState.zFail[0] != stencilState.zFail[0] ||
-			hardwareState->stencilState.zFail[1] != stencilState.zFail[1])
-		{
-			SetStencilOpInHW();
-			hardwareState->stencilState.pass[0] = stencilState.pass[0];
-			hardwareState->stencilState.pass[1] = stencilState.pass[1];
-			hardwareState->stencilState.fail[0] = stencilState.fail[0];
-			hardwareState->stencilState.fail[1] = stencilState.fail[1];
 			hardwareState->stencilState.zFail[0] = stencilState.zFail[0];
 			hardwareState->stencilState.zFail[1] = stencilState.zFail[1];
 		}

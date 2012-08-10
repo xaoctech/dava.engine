@@ -59,6 +59,7 @@ void TextureMulColorEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32
 
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
 
@@ -68,6 +69,7 @@ void TextureMulColorEffectGL::DrawElements(ePrimitiveType type, int32 count, eIn
 
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 
@@ -88,6 +90,7 @@ void TextureMulColorEffectGL20::DrawArrays(ePrimitiveType mode, int32 first, int
 {
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
     
@@ -95,6 +98,7 @@ void TextureMulColorEffectGL20::DrawElements(ePrimitiveType type, int32 count, e
 {
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 #endif 
@@ -106,6 +110,7 @@ void TextureMulColorEffectDX9::DrawArrays(ePrimitiveType mode, int32 first, int3
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
 
@@ -114,6 +119,7 @@ void TextureMulColorEffectDX9::DrawElements(ePrimitiveType type, int32 count, eI
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 
