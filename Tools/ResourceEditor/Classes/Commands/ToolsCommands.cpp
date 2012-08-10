@@ -4,6 +4,9 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
 #include "../Qt/GUIState.h"
+#include "../Qt/SceneData.h"
+#include "../Qt/SceneDataManager.h"
+
 
 using namespace DAVA;
 
@@ -76,4 +79,40 @@ void CommandTilemapEditor::Execute()
         GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 }
+
+//Show settings
+CommandSettings::CommandSettings()
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+}
+
+
+void CommandSettings::Execute()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->ShowSettings();
+    }
+}
+
+//Bake active scene
+CommandBakeScene::CommandBakeScene()
+:   Command(Command::COMMAND_UNDO_REDO)
+{
+}
+
+
+void CommandBakeScene::Execute()
+{
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->BakeScene();
+}
+
+void CommandBakeScene::Cancel()
+{
+    //TODO: write code
+}
+
+
 

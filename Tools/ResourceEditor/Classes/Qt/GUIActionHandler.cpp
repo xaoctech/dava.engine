@@ -7,6 +7,7 @@
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/LibraryCommands.h"
+#include "../Commands/ViewCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -394,6 +395,22 @@ void GUIActionHandler::FileSelected(const QString &filePathname, bool isFile)
             screen->HideScenePreview();
         }
     }
+}
+
+
+void GUIActionHandler::ToggleSceneInfo()
+{
+    Execute(new CommandSceneInfo());
+}
+
+void GUIActionHandler::ShowSettings()
+{
+    Execute(new CommandSettings());
+}
+
+void GUIActionHandler::BakeScene()
+{
+    Execute(new CommandBakeScene());
 }
 
 

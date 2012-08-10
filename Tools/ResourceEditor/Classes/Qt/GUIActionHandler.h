@@ -54,12 +54,15 @@ public slots:
     
     //View
     void RestoreViews();
+    void ToggleSceneInfo();
 
     //tools
     void Materials();
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void ShowSettings();
+    void BakeScene();
     
     //scene graph
     void RemoveRootNodes();

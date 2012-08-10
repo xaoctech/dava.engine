@@ -156,6 +156,9 @@ void FrameworkDidLaunched()
     
 //    int32 width = 1024;
 //    int32 height = 690;
+        
+    
+    
     int32 width = EditorSettings::Instance()->GetScreenWidth();
     int32 height = EditorSettings::Instance()->GetScreenHeight();
 
