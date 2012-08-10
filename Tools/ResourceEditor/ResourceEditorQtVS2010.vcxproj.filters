@@ -79,9 +79,6 @@
     <Filter Include="Sources\Qt\ScenePreviewDialog">
       <UniqueIdentifier>{0513be28-848d-4ada-b8ce-5cbef00089d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\FileSelection">
-      <UniqueIdentifier>{ef9a41e3-3182-4872-aef2-a86c98249910}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -489,9 +486,6 @@
     <ClInclude Include="Classes\Commands\FileCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\GUIActionHandler.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClInclude>
@@ -520,9 +514,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="QtBuildTool\moc_GraphTreeView.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QtBuildTool\moc_GuiActionHandler.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="QtBuildTool\moc_mainwindow.cpp">
@@ -918,14 +909,29 @@
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp">
       <Filter>Sources\Qt\ScenePreviewDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
-      <Filter>Sources\Qt\FileSelection</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
     <ClCompile Include="QtBuildTool\moc_FileSelectionModel.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\LibraryModel.cpp">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_LibraryModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_QtMainWindowHandler.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ViewCommands.cpp">
+      <Filter>Sources\Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -944,9 +950,6 @@
     <CustomBuild Include="QtBuildTool\GraphTreeView.build">
       <Filter>QtBuildTool</Filter>
     </CustomBuild>
-    <CustomBuild Include="QtBuildTool\GUIActionHandler.build">
-      <Filter>QtBuildTool</Filter>
-    </CustomBuild>
     <CustomBuild Include="QtBuildTool\GraphModel.build">
       <Filter>QtBuildTool</Filter>
     </CustomBuild>
@@ -960,6 +963,12 @@
       <Filter>Resources</Filter>
     </CustomBuild>
     <CustomBuild Include="QtBuildTool\FileSelectionModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\LibraryModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\QtMainWindowHandler.build">
       <Filter>QtBuildTool</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -1756,10 +1765,19 @@
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h">
       <Filter>Sources\Qt\ScenePreviewDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\FileSelectionModel.h">
-      <Filter>Sources\Qt\FileSelection</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\LibraryCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\FileSelectionModel.h">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtMainWindowHandler.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\LibraryModel.h">
+      <Filter>Sources\Qt\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\ViewCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1979,9 +1997,6 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands\FileCommands.cpp">
       <Filter>Sources\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\GUIActionHandler.cpp">
-      <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
