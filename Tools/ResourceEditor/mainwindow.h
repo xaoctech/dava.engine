@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 
-
 namespace Ui {
 class MainWindow;
 }
@@ -25,7 +24,7 @@ private:
 
     void SetupProjectPath();
     void SetupDockWidgets();
-    
+        
 private slots:
 
     void MenuFileWillShow();
@@ -36,5 +35,6 @@ private:
 private:
     Ui::MainWindow *ui;
 };
+
 
 #endif // MAINWINDOW_H
