@@ -4,7 +4,8 @@
 #include <QTreeView>
 #include <QMimeData>
 
-#include "QtUtils.h"
+//#include "QtUtils.h"
+#include "PointerHolder.h"
 
 
 GraphModel::GraphModel(QObject *parent)
@@ -215,7 +216,7 @@ QMimeData *GraphModel::mimeData(const QModelIndexList &indexes) const
         {
             GraphItem *item = static_cast<GraphItem *>(index.internalPointer());
 //            QVariant uData = QVariant::fromValue(item);
-            QVariant uData = PointerHolder::ToQVariant(item);
+            QVariant uData = PointerHolder<GraphItem *>::ToQVariant(item);
             stream << uData;
         }
     }
@@ -251,7 +252,7 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
         QVariant uData;
         stream >> uData;
 
-        GraphItem *movedItem = PointerHolder::ToGraphItem(uData);
+        GraphItem *movedItem = PointerHolder<GraphItem *>::ToPointer(uData);
         MoveItemToParent(movedItem, parent);
 
         

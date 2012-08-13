@@ -489,6 +489,13 @@ public:
 	RenderOptions * GetOptions();
 
 	uint32 fboViewFramebuffer;
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    void HWglBindBuffer(GLenum target, GLuint  	buffer);
+    GLuint bufferBindingId[2];    
+#endif
+    
+
 	
 protected:
     //
@@ -583,11 +590,6 @@ protected:
     float32 alphaTestCmpValue;                      // default value: 0.0f
     bool cullingEnabled, oldCullingEnabled;
     eCull cullFace, oldCullFace;*/
-    
-    
-    
-    
-    
     
     uint32 pointerArraysCurrentState;
     uint32 pointerArraysRendererState;

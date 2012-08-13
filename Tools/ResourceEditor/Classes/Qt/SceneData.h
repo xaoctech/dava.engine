@@ -21,6 +21,7 @@ class SceneData: public QObject
     
     Q_OBJECT
     
+    
 public:
     SceneData();
     virtual ~SceneData();
@@ -51,8 +52,6 @@ public:
     void Activate(QTreeView *graphview, QTreeView *libraryView);
     void Deactivate();
 
-    void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
-    
     void ReloadRootNode(const DAVA::String &scenePathname);
 
 	void ReloadLibrary();
@@ -60,6 +59,7 @@ public:
     void BakeScene();
     
 protected:
+    
     
     void BakeNode(DAVA::SceneNode *node);
     void FindIdentityNodes(DAVA::SceneNode *node);
@@ -70,6 +70,11 @@ protected:
 
     void ReleaseScene();
     void Execute(Command *command);
+    
+    void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
+    void ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point);
+
+    void ProcessContextMenuAction(QAction *action);
 
 protected slots:
     
@@ -77,12 +82,18 @@ protected slots:
     
     //library
     void LibraryContextMenuRequested(const QPoint &point);
-    void LibraryMenuTriggered(QAction *fileAction);
+    void LibraryMenuTriggered(QAction *action);
     void FileSelected(const QString &filePathname, bool isFile);
 
+    //Scene Graph
+    void SceneGraphContextMenuRequested(const QPoint &point);
+    void SceneGraphMenuTriggered(QAction *action);
     
 protected:
 
+    
+    
+    
     EditorScene *scene;
 
     DAVA::WASDCameraController *cameraController;
@@ -106,6 +117,7 @@ protected:
     };
     DAVA::Vector<AddedNode> nodesToAdd;
 
+	QTreeView *sceneGraphView;
 	QTreeView *libraryView;
 };
 
