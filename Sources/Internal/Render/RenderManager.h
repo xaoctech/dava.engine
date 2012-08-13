@@ -495,6 +495,9 @@ public:
     GLuint bufferBindingId[2];    
 #endif
     
+    
+    void InitScreenShots();
+    void RequestGLScreenShot() { needGLScreenShot = true; };
 
 	
 protected:
@@ -678,6 +681,13 @@ protected:
 #endif // #if defined(__DAVAENGINE_DIRECTX9__)
 	
 	Cursor * cursor;
+    
+    
+    bool needGLScreenShot;
+    int32 screenShotIndex;
+    void MakeGLScreenShot();
+    Sprite* screenShotSprite;
+    Sprite* testSprite;
 };
 
 

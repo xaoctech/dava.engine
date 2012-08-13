@@ -36,6 +36,10 @@
 #include "Render/OGLHelpers.h"
 #include "Render/Shader.h"
 
+#include "Render/Image.h"
+#include "FileSystem/FileSystem.h"
+#include "Utils/StringFormat.h"
+
 #ifdef __DAVAENGINE_OPENGL__
 
 namespace DAVA
@@ -190,9 +194,35 @@ void RenderManager::EndFrame()
 #endif //#if defined(__DAVAENGINE_WIN32__)
 	
 	RENDER_VERIFY("");	// verify at the end of the frame
+    
+    if(needGLScreenShot)
+    {
+        needGLScreenShot = false;
+        MakeGLScreenShot();
+    }
 }
     
+void RenderManager::MakeGLScreenShot()
+{
+    Logger::Debug("RenderManager::MakeGLScreenShot");
     
+    if(testSprite && screenShotSprite)
+    {
+        //LockNonMain();
+        //SetRenderTarget(screenShotSprite);
+        //ClearWithColor(1.0f, 0.0f, 0.0f, 1.0f);
+        //testSprite->Draw();
+        //RestoreRenderTarget();
+        //UnlockNonMain();
+        
+        Image *img = screenShotSprite->GetTexture()->CreateImageFromMemory();
+        if(img)
+        {
+            img->Save(FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:screenshot%d.png", ++screenShotIndex)));
+            SafeRelease(img);
+        }
+    }
+}
     
 void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates)
 {    
