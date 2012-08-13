@@ -825,7 +825,7 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE; 
     
     if (currentNode->data.size >= 2)
-    frustumRes = frustum->Classify(currentNode->data.bbox);
+        frustumRes = frustum->Classify(currentNode->data.bbox);
     
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
