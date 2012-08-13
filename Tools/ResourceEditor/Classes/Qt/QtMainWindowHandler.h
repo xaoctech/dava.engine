@@ -1,5 +1,5 @@
-#ifndef __GUI_ACTION_MANAGER_H__
-#define __GUI_ACTION_MANAGER_H__
+#ifndef __QT_MAIN_WINDOW_HANDLER_H__
+#define __QT_MAIN_WINDOW_HANDLER_H__
 
 #include <QObject>
 #include <QPoint>
@@ -12,13 +12,13 @@ class Command;
 class QMenu;
 class QAction;
 class QTreeView;
-class GUIActionHandler: public QObject
+class QtMainWindowHandler: public QObject
 {
     Q_OBJECT
     
 public:
-    GUIActionHandler(QObject *parent = 0);
-    virtual ~GUIActionHandler();
+    QtMainWindowHandler(QObject *parent = 0);
+    virtual ~QtMainWindowHandler();
 
     void RegisterNodeActions(DAVA::int32 count, ...);
     void RegisterViewportActions(DAVA::int32 count, ...);
@@ -28,11 +28,6 @@ public:
 
     //MENU FILE
     void MenuFileWillShow();
-
-    void SetLibraryView(QTreeView *view);
-    
-    static GUIActionHandler *Instance();
-    
     
 public slots:
     //menu
@@ -54,27 +49,19 @@ public slots:
     
     //View
     void RestoreViews();
+    void ToggleSceneInfo();
 
     //tools
     void Materials();
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void ShowSettings();
+    void BakeScene();
+    void Beast();
     
     //scene graph
-    void RemoveRootNodes();
     void RefreshSceneGraph();
-    void LockAtObject();
-    void RemoveObject();
-    void DebugFlags();
-    void BakeMatrixes();
-    void BuildQuadTree();
-    
-    
-    //library
-    void LibraryContextMenuRequested(const QPoint &point);
-    void LibraryMenuTriggered(QAction *fileAction);
-    void FileSelected(const QString &filePathname, bool isFile);
     
 private:
     //create node
@@ -96,11 +83,6 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
-    
-    QTreeView *libraryView;
-    
-    
-    static GUIActionHandler *activeActionHandler;
 };
 
-#endif // __GUI_ACTION_MANAGER_H__
+#endif // __QT_MAIN_WINDOW_HANDLER_H__

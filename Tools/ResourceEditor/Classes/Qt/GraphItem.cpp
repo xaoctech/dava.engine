@@ -1,8 +1,12 @@
 #include "GraphItem.h"
 
+#include "PointerHolder.h"
+
 GraphItem::GraphItem(GraphItem *parent)
     :   userData(NULL)
 {
+    RegisterPointerType<GraphItem *>(String("GraphItem *"));
+    
     SetParent(parent);
 }
 

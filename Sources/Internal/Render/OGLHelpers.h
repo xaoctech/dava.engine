@@ -72,6 +72,26 @@ namespace DAVA
 #define RENDER_VERIFY(command) command;  
 #endif //#if defined(__DAVAENGINE_WIN32__)
     
+
+    
+// REDEFINED OPENGL FUNCTIONS
+    
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+#define glBindBuffer glBindBufferARB
+#define glGenBuffers glGenBuffersARB
+#define glDeleteBuffers glDeleteBuffersARB
+#define glBufferData glBufferDataARB
+
+#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+#define GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
+#define GL_STATIC_DRAW GL_STATIC_DRAW_ARB
+#define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
+    
+#endif
+    
+    
+    
 };
 #endif // #if defined(__DAVAENGINE_OPENGL__)
 #endif // __DAVAENGINE_OGLHELPERS_H__

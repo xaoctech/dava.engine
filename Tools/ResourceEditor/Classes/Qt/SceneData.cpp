@@ -7,9 +7,14 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
-#include "QtUtils.h"
-#include "GUIActionHandler.h"
+#include "../Commands/SceneGraphCommands.h"
+#include "../Commands/LibraryCommands.h"
+#include "../Commands/CommandsManager.h"
 
+#include "QtUtils.h"
+#include "PointerHolder.h"
+
+#include "LibraryModel.h"
 #include "FileSelectionModel.h"
 
 #include <QTreeView>
@@ -26,29 +31,28 @@ SceneData::SceneData()
     ,   scene(NULL)
     ,   sceneGraphModel(NULL)
 {
+    libraryView = NULL;
+    sceneGraphView = NULL;
+    
+    
     sceneFilePathname = String("");
     sceneGraphModel = new SceneGraphModel();
     sceneGraphModel->SetScene(NULL);
     
-    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
 
-    
-    libraryModel = new QFileSystemModel(this);
-    QStringList nameFilters;
-    nameFilters << QString("*.sc2");
-    nameFilters << QString("*.dae");
-    libraryModel->setNameFilters(nameFilters);
-    libraryModel->setNameFilterDisables(true);
-    librarySelectionModel = new FileSelectionModel(libraryModel);
+    libraryModel = new LibraryModel(this);
     
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
+    
+    
+    connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
+    connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
 }
 
 SceneData::~SceneData()
 {
     SafeRelease(scene);
     
-    SafeDelete(librarySelectionModel);
     SafeDelete(libraryModel);
     SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
@@ -293,22 +297,23 @@ String SceneData::GetScenePathname() const
 
 void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
 {
+    sceneGraphView = graphview;
 	libraryView = _libraryView;
 		
-    sceneGraphModel->Activate(graphview);
-    libraryView->setModel(libraryModel);
-    libraryView->setSelectionModel(librarySelectionModel);
-	ReloadLibrary();
-	int32 count = libraryModel->columnCount();
-    for(int32 i = 1; i < count; ++i)
-    { //TODO: Maybe we will use context menu to enable/disable columns
-        libraryView->setColumnHidden(i, true);
-    }
+    sceneGraphModel->Activate(sceneGraphView);
+    libraryModel->Activate(libraryView);
+    
+    connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
+    connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
 }
 
 void SceneData::Deactivate()
 {
+    disconnect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
+    disconnect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
+    
     sceneGraphModel->Deactivate();
+    libraryModel->Deactivate();
 }
 
 void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
@@ -321,36 +326,28 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
     QFileInfo fileInfo = libraryModel->fileInfo(index);
     if(fileInfo.isFile())
     {
+        String filePathname = QSTRING_TO_DAVASTRING(fileInfo.filePath());
+        QMenu menu;
+
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(fileInfo.fileName()));
         if(0 == CompareStrings(String(".sc2"), extension))
         {
-            QVariant filePathname(fileInfo.filePath());
+            QAction *addAction = menu.addAction(QString("Add"));
+            QAction *editAction = menu.addAction(QString("Edit"));
+            QAction *reloadAction = menu.addAction(QString("Reload"));
             
-            QMenu menu;
-            QAction *add = menu.addAction(QString("Add"));
-            QAction *edit = menu.addAction(QString("Edit"));
-            QAction *reload = menu.addAction(QString("Reload"));
-            
-            add->setData(filePathname);
-            edit->setData(filePathname);
-            reload->setData(filePathname);
-            
-            connect(&menu, SIGNAL(triggered(QAction *)), GUIActionHandler::Instance(), SLOT(LibraryMenuTriggered(QAction *)));
-            
-            menu.exec(point);
+            addAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddScene(filePathname)));
+            editAction->setData(PointerHolder<Command *>::ToQVariant(new CommandEditScene(filePathname)));
+            reloadAction->setData(PointerHolder<Command *>::ToQVariant(new CommandReloadScene(filePathname)));
         }
         else if(0 == CompareStrings(String(".dae"), extension))
         {
-            QVariant filePathname(fileInfo.filePath());
-
-            QMenu menu;
             QAction *convert = menu.addAction(QString("Convert"));
-            convert->setData(filePathname);
-
-            connect(&menu, SIGNAL(triggered(QAction *)) , GUIActionHandler::Instance(), SLOT(LibraryMenuTriggered(QAction *)));
-            
-            menu.exec(point);
+            convert->setData(PointerHolder<Command *>::ToQVariant(new CommandConvertScene(filePathname)));
         }
+
+        connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
+        menu.exec(point);
     }
 }
 
@@ -410,6 +407,171 @@ void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
 
 void SceneData::ReloadLibrary()
 {
-	libraryModel->setRootPath(QString(EditorSettings::Instance()->GetDataSourcePath().c_str()));
-	libraryView->setRootIndex(libraryModel->index(QString(EditorSettings::Instance()->GetDataSourcePath().c_str())));
+    libraryModel->Reload();
+}
+
+
+
+void SceneData::BakeNode(DAVA::SceneNode *node)
+{
+    if(node->GetSolid())
+    {
+        node->BakeTransforms();
+        return;
+    }
+    
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        BakeNode(node->GetChild(i));
+    }
+}
+
+void SceneData::RemoveIdentityNodes(DAVA::SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *removedChild = node->GetChild(i);
+        
+        if(
+           (removedChild->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+           &&   (typeid(SceneNode) == typeid(*removedChild))
+           &&   (typeid(LodNode) != typeid(*node))
+           &&   (removedChild->GetChildrenCount() == 1))
+        {
+            SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            removedChild->RemoveNode(child);
+            node->AddNode(child);
+            SafeRelease(child);
+            
+            node->RemoveNode(removedChild);
+            
+            i = -1;
+        }
+        else
+        {
+            RemoveIdentityNodes(removedChild);
+        }
+    }
+}
+
+void SceneData::FindIdentityNodes(DAVA::SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *child = node->GetChild(i);
+        
+        if(child->GetSolid())
+        {
+            RemoveIdentityNodes(child);
+        }
+        else
+        {
+            FindIdentityNodes(child);
+        }
+    }
+}
+
+
+void SceneData::BakeScene()
+{
+    if(scene)
+    {
+        SelectNode(NULL);
+        
+        BakeNode(scene);
+        FindIdentityNodes(scene);
+        
+        RebuildSceneGraph();
+    }
+}
+
+
+void SceneData::LibraryContextMenuRequested(const QPoint &point)
+{
+    QModelIndex itemIndex = libraryView->indexAt(point);
+    ShowLibraryMenu(itemIndex, QCursor::pos());
+}
+
+void SceneData::ProcessContextMenuAction(QAction *action)
+{
+    Command *command = PointerHolder<Command *>::ToPointer(action->data());
+    Execute(command);
+}
+
+
+void SceneData::LibraryMenuTriggered(QAction *action)
+{
+    ProcessContextMenuAction(action);
+    
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->HideScenePreview();
+    }
+}
+
+void SceneData::FileSelected(const QString &filePathname, bool isFile)
+{
+    //TODO: need best way to display scene preview
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
+        if(0 == CompareStrings(extension, String(".sc2")) && isFile)
+        {
+            screen->ShowScenePreview(QSTRING_TO_DAVASTRING(filePathname));
+        }
+        else
+        {
+            screen->HideScenePreview();
+        }
+    }
+}
+
+void SceneData::Execute(Command *command)
+{
+    CommandsManager::Instance()->Execute(command);
+    SafeRelease(command);
+}
+
+
+void SceneData::SceneGraphMenuTriggered(QAction *action)
+{
+    ProcessContextMenuAction(action);
+}
+
+void SceneData::SceneGraphContextMenuRequested(const QPoint &point)
+{
+    QModelIndex itemIndex = sceneGraphView->indexAt(point);
+    ShowSceneGraphMenu(itemIndex, QCursor::pos());
+}
+
+void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point)
+{
+    if(!index.isValid())
+    {
+        return;
+    }
+    
+    QMenu menu;
+    
+    QAction *actionRemoveRootNodes = menu.addAction(QString("Remove Root Nodes"));
+//    QAction *actionRefresh = menu.addAction(QString("Refresh"));
+    QAction *actionLookAtObject = menu.addAction(QString("Look at Object"));
+    QAction *actionRemoveObject = menu.addAction(QString("Remove Object"));
+    QAction *actionDebugFlags = menu.addAction(QString("Debug Flags"));
+    QAction *actionBakeMatrixes = menu.addAction(QString("Bake Matrixes"));
+    QAction *actionBuildQuadTree = menu.addAction(QString("Build Quad Tree"));
+
+    actionRemoveRootNodes->setData(PointerHolder<Command *>::ToQVariant(new CommandRemoveRootNodes()));
+//    actionRefresh->setData(PointerHolder<Command *>::ToQVariant(new CommandRefreshSceneGraph()));
+    actionLookAtObject->setData(PointerHolder<Command *>::ToQVariant(new CommandLockAtObject()));
+    actionRemoveObject->setData(PointerHolder<Command *>::ToQVariant(new CommandRemoveSceneNode()));
+    actionDebugFlags->setData(PointerHolder<Command *>::ToQVariant(new CommandDebugFlags()));
+    actionBakeMatrixes->setData(PointerHolder<Command *>::ToQVariant(new CommandBakeMatrixes()));
+    actionBuildQuadTree->setData(PointerHolder<Command *>::ToQVariant(new CommandBuildQuadTree()));
+    
+    
+    connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
+    menu.exec(point);
 }
