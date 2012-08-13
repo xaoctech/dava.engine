@@ -12,7 +12,9 @@ class QFileSystemModel;
 class QTreeView;
 class EditorScene;
 class SceneGraphModel;
-class FileSelectionModel;
+class LibraryModel;
+class Command;
+class QAction;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -55,15 +57,29 @@ public:
 
 	void ReloadLibrary();
     
+    void BakeScene();
+    
 protected:
+    
+    void BakeNode(DAVA::SceneNode *node);
+    void FindIdentityNodes(DAVA::SceneNode *node);
+    void RemoveIdentityNodes(DAVA::SceneNode *node);
+
     
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 
     void ReleaseScene();
+    void Execute(Command *command);
 
 protected slots:
     
     void SceneNodeSelected(DAVA::SceneNode *node);
+    
+    //library
+    void LibraryContextMenuRequested(const QPoint &point);
+    void LibraryMenuTriggered(QAction *fileAction);
+    void FileSelected(const QString &filePathname, bool isFile);
+
     
 protected:
 
@@ -79,8 +95,7 @@ protected:
     //ENTITY
     //PROPERTY
     //LIBRARY
-    QFileSystemModel *libraryModel;
-    FileSelectionModel *librarySelectionModel;
+    LibraryModel *libraryModel;
     
     //reload root nodes
     struct AddedNode
