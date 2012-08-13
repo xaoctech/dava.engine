@@ -49,18 +49,19 @@ namespace DAVA
     The answer is simple: I assume that culling code can differ for OGL, DX matrices. Let's see when we'll add DirectX am I right.  
 */
 class Frustum : public BaseObject
-{
-	enum eFrustumPlane 
-	{
-		EFP_LEFT = 0,
-		EFP_RIGHT,
-		EFP_BOTTOM,
-		EFP_TOP,
-		EFP_NEAR,
-		EFP_FAR,
-	};
+{	
 
 public:
+
+    enum eFrustumPlane 
+    {
+        EFP_LEFT = 0,
+        EFP_RIGHT,
+        EFP_BOTTOM,
+        EFP_TOP,
+        EFP_NEAR,
+        EFP_FAR,
+    };
 
 	enum eFrustumResult
 	{
@@ -124,11 +125,17 @@ public:
 
 
 	//! \brief function return real plane count in this frustum
-	inline int32 GetPlaneCount();
+	inline int32 GetPlaneCount()
+    {
+        return planeCount;
+    }
 	
 	//! \brief function return plane with index 
 	//! \param i index of plane we want to get
-	inline Plane & GetPlane(int32 i);
+	inline Plane & GetPlane(int32 i)
+    {
+        return planeArray[i];
+    }
 
 
 	// 
