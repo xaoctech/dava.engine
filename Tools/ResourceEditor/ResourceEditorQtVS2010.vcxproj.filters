@@ -933,6 +933,9 @@
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\PointerHolder.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1785,6 +1788,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\PointerHolder.h">
+      <Filter>Sources\Qt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

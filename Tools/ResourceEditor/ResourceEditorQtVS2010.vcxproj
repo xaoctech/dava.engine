@@ -328,6 +328,7 @@
     </ClCompile>
     <ClCompile Include="Classes\Qt\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\LibraryModel.cpp" />
+    <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp" />
     <ClCompile Include="Classes\Qt\QtUtils.cpp" />
     <ClCompile Include="Classes\Qt\SceneData.cpp" />
@@ -694,6 +695,7 @@
     <ClInclude Include="Classes\Qt\GraphTreeView.h" />
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\LibraryModel.h" />
+    <ClInclude Include="Classes\Qt\PointerHolder.h" />
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h" />
     <ClInclude Include="Classes\Qt\QtUtils.h" />
     <ClInclude Include="Classes\Qt\SceneData.h" />

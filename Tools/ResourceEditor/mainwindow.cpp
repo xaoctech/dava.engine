@@ -21,7 +21,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
  
     RegisterBasePointerTypes();
     
-    
     if(DAVA::Core::Instance())
     {
         DAVA::KeyedArchive *options = DAVA::Core::Instance()->GetOptions();
