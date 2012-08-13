@@ -42,7 +42,7 @@
 namespace DAVA
 {
 
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || (defined(__DAVAENGINE_IPHONE__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
 { \
 	if(!Thread::IsMainThread() && RenderManager::Instance()->GetNonMainLockCount() == 0)\
