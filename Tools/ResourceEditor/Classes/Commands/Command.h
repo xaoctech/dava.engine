@@ -48,7 +48,7 @@ protected:
     eCommandState commandState;
 };
 
-#include "PointerHolder.h"
+#include "../Qt/PointerHolder.h"
 DECLARE_POINTER_TYPE(Command *);
 
 
