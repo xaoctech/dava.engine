@@ -51,6 +51,8 @@ RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 RenderManager::RenderManager(Core::eRenderer _renderer)
     : currentState(_renderer)
     , hardwareState(_renderer)
+    , needGLScreenShot(false)
+    , screenShotIndex(0)
 {
 	Logger::Debug("[RenderManager] created");
     renderer = _renderer;
@@ -141,6 +143,9 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
+    
+    testSprite = NULL;
+    screenShotSprite = NULL;
 }
 	
 RenderManager::~RenderManager()
@@ -225,6 +230,13 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 #endif 
     // TODO: Rethink of initialization concepts because they changed
     pointerArraysRendererState = pointerArraysCurrentState = 0;
+}
+    
+void RenderManager::InitScreenShots()
+{
+    testSprite = Sprite::Create("~res:/Gfx/Sparkles/explode");
+    screenShotSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888, true);
+    Logger::Debug("screenShotSprite texture w=%d h=%d", screenShotSprite->GetTexture()->width, screenShotSprite->GetTexture()->height);
 }
 
 void RenderManager::Reset()
