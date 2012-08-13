@@ -406,8 +406,8 @@ void ImposterNode::DrawImposter()
 
 	RenderManager::Instance()->SetRenderData(renderData);
 
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
+	//RenderManager::Instance()->FlushState();
+	//RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 
 	//RenderManager::Instance()->AppendState(RenderStateBlock::STATE_DEPTH_WRITE);

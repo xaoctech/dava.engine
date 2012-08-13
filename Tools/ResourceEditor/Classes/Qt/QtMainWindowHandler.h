@@ -61,13 +61,7 @@ public slots:
     void Beast();
     
     //scene graph
-    void RemoveRootNodes();
     void RefreshSceneGraph();
-    void LockAtObject();
-    void RemoveObject();
-    void DebugFlags();
-    void BakeMatrixes();
-    void BuildQuadTree();
     
 private:
     //create node

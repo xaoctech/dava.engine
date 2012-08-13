@@ -30,7 +30,8 @@
 
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
-
+#include "Platform/Thread.h"
+#include "Render/RenderManager.h"
 #include "FileSystem/YamlParser.h"
 
 namespace DAVA

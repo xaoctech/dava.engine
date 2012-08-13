@@ -8,6 +8,7 @@ Command::Command(eCommandType _type)
     ,   commandType(_type)
     ,   commandState(STATE_VALID)
 {
+    RegisterPointerType<Command *>(String("Command *"));
 }
 
 Command::~Command()

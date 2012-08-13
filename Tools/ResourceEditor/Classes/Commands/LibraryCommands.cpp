@@ -26,6 +26,7 @@ bool LibraryCommand::IsExtensionCorrect(const DAVA::String &extenstionToChecking
 }
 
 
+
 //Add scene to current tab
 CommandAddScene::CommandAddScene(const DAVA::String &pathname)
     :   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
