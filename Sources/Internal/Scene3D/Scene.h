@@ -255,9 +255,6 @@ protected:
     Set<LightNode*> lights;
 	ShadowRect * shadowRect;
 	BVHierarchy * bvHierarchy;
-    Vector<SceneNode*> drawQueue; 
-    
-    void DrawQueue();
 
 	ImposterManager * imposterManager;
 	bool enableImposters;

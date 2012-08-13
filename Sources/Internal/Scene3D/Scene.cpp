@@ -159,14 +159,6 @@ void Scene::RegisterNode(SceneNode * node)
 		bvHierarchy->RegisterNode(node);
 	}
 
-    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
-    LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
-
-    if(meshInstance || landscapeNode)
-    {
-        drawQueue.push_back(node);
-    }
-    
 	//MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
 	//if(meshInstance)
 	//{
@@ -210,21 +202,6 @@ void Scene::UnregisterNode(SceneNode * node)
 	{
 		bvHierarchy->UnregisterNode(node);
 	}
-    
-    MeshInstanceNode * meshInstance = dynamic_cast<MeshInstanceNode*>(node);
-    LandscapeNode * landscapeNode = dynamic_cast<LandscapeNode*>(node);
-    if(meshInstance || landscapeNode)
-    {
-        //uint32 
-        for (Vector<SceneNode*>::iterator t = drawQueue.begin(); t != drawQueue.end(); ++t)
-        {
-            if (*t == node)
-            {
-                drawQueue.erase(t);
-                break;
-            }
-        }
-    }
 
 	//if(node->entity)
 	//{
@@ -489,19 +466,6 @@ void Scene::Update(float timeElapsed)
     Stats::Instance()->EndTimeMeasure("Scene.Update", this);
 }		
 
-    
-void Scene::DrawQueue()
-{
-    uint32 size = (uint32)drawQueue.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        SceneNode * meshInstance = drawQueue[k];
-        meshInstance->Draw();
-    }
-    
-}
-
-    
 void Scene::Draw()
 {
     Stats::Instance()->BeginTimeMeasure("Scene.Draw", this);
@@ -541,10 +505,10 @@ void Scene::Draw()
 	if(bvHierarchy)
         bvHierarchy->Cull();
 	//VisibilityAABBoxSystem::Run(this);
+
 	//entityManager->Dump();
 
-    //SceneNode::Draw();
-    DrawQueue();
+    SceneNode::Draw();
     
     if(imposterManager)
 	{
