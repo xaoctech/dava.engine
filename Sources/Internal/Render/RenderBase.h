@@ -362,6 +362,7 @@ inline int32 GetTexCoordCount(int32 vertexFormat)
 	return ret;
 }
     
+    
 inline int32 GetVertexSize(int32 flags)
 {
     int32 size = 0;
