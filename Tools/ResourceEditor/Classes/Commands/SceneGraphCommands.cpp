@@ -173,14 +173,14 @@ void CommandDebugFlags::Execute()
 }
 
 
-CommandBakeMatrices::CommandBakeMatrices()
+CommandBakeMatrixes::CommandBakeMatrixes()
     :   Command(Command::COMMAND_UNDO_REDO)
     ,   activeScene(NULL)
 {
 }
 
 
-void CommandBakeMatrices::Execute()
+void CommandBakeMatrixes::Execute()
 {
     activeScene = SceneDataManager::Instance()->GetActiveScene();
 
@@ -196,7 +196,7 @@ void CommandBakeMatrices::Execute()
     }
 }
 
-void CommandBakeMatrices::Cancel()
+void CommandBakeMatrixes::Cancel()
 {
     //TODO: restore saved state if active scene is same as saved
 }
