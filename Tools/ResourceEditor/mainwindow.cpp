@@ -7,19 +7,20 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/SceneDataManager.h"
 
-#include "Classes/Qt/QtUtils.h"
+#include "Classes/Qt/PointerHolder.h"
 
 #include <QToolBar>
 
-QtMainWindow::QtMainWindow(QWidget *parent) 
+
+QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
-    qRegisterMetaTypeStreamOperators<PointerHolder>("PointerHolder");
-    qRegisterMetaTypeStreamOperators<QList<PointerHolder> >("QList<PointerHolder>");
+    RegisterBasePointerTypes();
+    
     
     if(DAVA::Core::Instance())
     {
@@ -177,13 +178,7 @@ void QtMainWindow::SetupDockWidgets()
 
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
     
-    connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
     connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));
-    connect(ui->btnLockAtObject, SIGNAL(clicked()), actionHandler, SLOT(LockAtObject()));
-    connect(ui->btnRemoveObject, SIGNAL(clicked()), actionHandler, SLOT(RemoveObject()));
-    connect(ui->btnDebugFlags, SIGNAL(clicked()), actionHandler, SLOT(DebugFlags()));
-    connect(ui->btnBakeMatrices, SIGNAL(clicked()), actionHandler, SLOT(BakeMatrixes()));
-    connect(ui->btnBuildQuadTree, SIGNAL(clicked()), actionHandler, SLOT(BuildQuadTree()));
 }
 
 void QtMainWindow::MenuFileWillShow()

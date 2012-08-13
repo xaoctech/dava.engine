@@ -8,7 +8,7 @@ class LibraryCommand: public Command
 {
 public:
     LibraryCommand(const DAVA::String &pathname, eCommandType _type);
-
+    
 protected:
     
     bool IsExtensionCorrect(const DAVA::String &extenstionToChecking);
@@ -17,6 +17,7 @@ protected:
     
     DAVA::String filePathname;
 };
+
 
 class CommandAddScene: public LibraryCommand
 {

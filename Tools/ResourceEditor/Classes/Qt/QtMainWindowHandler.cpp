@@ -290,41 +290,10 @@ void QtMainWindowHandler::RestoreViews()
     }
 }
 
-void QtMainWindowHandler::RemoveRootNodes()
-{
-    Execute(new CommandRemoveRootNodes());
-}
-
 void QtMainWindowHandler::RefreshSceneGraph()
 {
     Execute(new CommandRefreshSceneGraph());
 }
-
-void QtMainWindowHandler::LockAtObject()
-{
-    Execute(new CommandLockAtObject());
-}
-
-void QtMainWindowHandler::RemoveObject()
-{
-    Execute(new CommandRemoveSceneNode());
-}
-
-void QtMainWindowHandler::DebugFlags()
-{
-    Execute(new CommandDebugFlags());
-}
-
-void QtMainWindowHandler::BakeMatrixes()
-{
-    Execute(new CommandBakeMatrices());
-}
-
-void QtMainWindowHandler::BuildQuadTree()
-{
-    Execute(new CommandBuildQuadTree());
-}
-
 
 void QtMainWindowHandler::ToggleSceneInfo()
 {
