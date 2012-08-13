@@ -12,12 +12,15 @@ class QFileSystemModel;
 class QTreeView;
 class EditorScene;
 class SceneGraphModel;
-class FileSelectionModel;
+class LibraryModel;
+class Command;
+class QAction;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
     
     Q_OBJECT
+    
     
 public:
     SceneData();
@@ -49,24 +52,48 @@ public:
     void Activate(QTreeView *graphview, QTreeView *libraryView);
     void Deactivate();
 
-    void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
-    
     void ReloadRootNode(const DAVA::String &scenePathname);
 
 	void ReloadLibrary();
     
+    void BakeScene();
+    
 protected:
+    
+    
+    void BakeNode(DAVA::SceneNode *node);
+    void FindIdentityNodes(DAVA::SceneNode *node);
+    void RemoveIdentityNodes(DAVA::SceneNode *node);
+
     
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 
     void ReleaseScene();
+    void Execute(Command *command);
+    
+    void ShowLibraryMenu(const QModelIndex &index, const QPoint &point);
+    void ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point);
+
+    void ProcessContextMenuAction(QAction *action);
 
 protected slots:
     
     void SceneNodeSelected(DAVA::SceneNode *node);
     
+    //library
+    void LibraryContextMenuRequested(const QPoint &point);
+    void LibraryMenuTriggered(QAction *action);
+    void FileSelected(const QString &filePathname, bool isFile);
+
+    //Scene Graph
+    void SceneGraphContextMenuRequested(const QPoint &point);
+    void SceneGraphMenuTriggered(QAction *action);
+    
 protected:
 
+    
+    
+    
     EditorScene *scene;
 
     DAVA::WASDCameraController *cameraController;
@@ -79,8 +106,7 @@ protected:
     //ENTITY
     //PROPERTY
     //LIBRARY
-    QFileSystemModel *libraryModel;
-    FileSelectionModel *librarySelectionModel;
+    LibraryModel *libraryModel;
     
     //reload root nodes
     struct AddedNode
@@ -91,6 +117,7 @@ protected:
     };
     DAVA::Vector<AddedNode> nodesToAdd;
 
+	QTreeView *sceneGraphView;
 	QTreeView *libraryView;
 };
 

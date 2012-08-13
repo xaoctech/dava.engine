@@ -17,9 +17,11 @@ public:
     virtual ~ScenePreviewDialog();
     
     void Show(const String &scenePathname);
+    virtual void Close();
     
 protected:
 
+    
     void OnClose(BaseObject *, void *, void *);
     virtual const Rect DialogRect();
 

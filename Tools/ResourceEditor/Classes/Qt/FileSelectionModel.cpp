@@ -1,16 +1,17 @@
 #include "FileSelectionModel.h"
-#include "GUIActionHandler.h"
 
 #include <QFileSystemModel>
 #include <QFileInfo>
 
+#include "DAVAEngine.h"
+
+using namespace DAVA;
 
 FileSelectionModel::FileSelectionModel(QFileSystemModel *model)
 	:	QItemSelectionModel(model)
     ,   fileSystemModel(model)
 {
     connect(this, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(SelectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect(this, SIGNAL(FileSelected(const QString &, bool)), GUIActionHandler::Instance(), SLOT(FileSelected(const QString &, bool)));
 }
 
 FileSelectionModel::~FileSelectionModel()

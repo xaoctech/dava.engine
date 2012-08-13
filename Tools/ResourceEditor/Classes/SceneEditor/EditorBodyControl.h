@@ -16,19 +16,19 @@
 #include "GraphBase.h"
 
 
-//#define FORCE_LOD_UPDATE
-
 
 using namespace DAVA;
 
 
 class SceneGraph;
+#if !defined (DAVA_QT)
 class DataGraph;
 class EntitiesGraph;
+class OutputPanelControl;
+#endif //#if !defined (DAVA_QT)
 
 class SceneInfoControl;
 class BeastManager;
-class OutputPanelControl;
 class LandscapeEditorColor;
 class LandscapeEditorHeightmap;
 class LandscapeToolsSelection;
@@ -63,19 +63,28 @@ public:
 
 #if !defined (DAVA_QT)
     void OpenScene(const String &pathToFile, bool editScene);
-#endif //#if !defined (DAVA_QT)
-    void ReloadRootScene(const String &pathToFile);
-    void ReloadNode(SceneNode *node, const String &pathToFile);
-    
+
     void ShowProperties(bool show);
     bool PropertiesAreShown();
 
     void ToggleSceneGraph();
     void ToggleDataGraph();
 	void ToggleEntities();
-    
     void UpdateLibraryState(bool isShown, int32 width);
+    
+    void CreateScene(bool withCameras);
+    void ReleaseScene();
+    
+    const String &GetFilePath();
+    void SetFilePath(const String &newFilePath);
+    
+    void BakeScene();
 
+#endif //#if !defined (DAVA_QT)
+
+    void ReloadRootScene(const String &pathToFile);
+    void ReloadNode(SceneNode *node, const String &pathToFile);
+    
 	void BeastProcessScene();
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	    
@@ -87,13 +96,6 @@ public:
     
     void RefreshProperties();
 
-#if !defined (DAVA_QT)        
-    void CreateScene(bool withCameras);
-    void ReleaseScene();
-
-    const String &GetFilePath();
-    void SetFilePath(const String &newFilePath);
-#endif //#if !defined (DAVA_QT)
     void Refresh();
     
     
@@ -131,21 +133,21 @@ public:
     void OnReloadRootNodesQt();
 #endif //#if defined (DAVA_QT)        
     
-    void BakeScene();
     
 protected:
 
+    void InitControls();
+    
+
+#if !defined (DAVA_QT)        
+    void ToggleGraph(GraphBase *graph);
+
+    void ResetSelection();
+    
     void BakeNode(SceneNode *node);
     void FindIdentityNodes(SceneNode *node);
     void RemoveIdentityNodes(SceneNode *node);
-
-    
-    
-    void ToggleGraph(GraphBase *graph);
-
-#if !defined (DAVA_QT)        
-    void ResetSelection();
-#endif //#if !defined (DAVA_QT)        
+#endif //#if !defined (DAVA_QT)
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();
@@ -182,15 +184,21 @@ protected:
 	
 	float32 axisSign[3];
 	
+#if !defined (DAVA_QT)
     //OutputPanelControl
     OutputPanelControl *outputPanel;
+    DataGraph *dataGraph;
+	EntitiesGraph *entitiesGraph;
+    
+    void ChangeControlWidthRight(UIControl *c, float32 width);
+    void ChangeControlWidthLeft(UIControl *c, float32 width);
+
+#endif //#if !defined (DAVA_QT)
 	
 	float32 moveKf;
     
     String mainFilePath;
     
-    void ChangeControlWidthRight(UIControl *c, float32 width);
-    void ChangeControlWidthLeft(UIControl *c, float32 width);
     
     void SelectNodeAtTree(SceneNode *node);
 
@@ -234,15 +242,8 @@ protected:
     
     //graps
     SceneGraph *sceneGraph;
-    DataGraph *dataGraph;
-	EntitiesGraph *entitiesGraph;
     GraphBase *currentGraph;
     ePropertyShowState propertyShowState;
-    
-#ifdef FORCE_LOD_UPDATE
-    void OnForceLod(BaseObject * object, void * userData, void * callerData);
-#endif //#ifdef FORCE_LOD_UPDATE
-    
 };
 
 
