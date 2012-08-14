@@ -318,14 +318,6 @@
     <ClCompile Include="Classes\Qt\FileSelectionModel.cpp" />
     <ClCompile Include="Classes\Qt\GraphItem.cpp" />
     <ClCompile Include="Classes\Qt\GraphModel.cpp" />
-    <ClCompile Include="Classes\Qt\GraphTreeView.cpp">
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphTreeView.h -o $(Configuration)\moc_GraphTreeView.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphTreeView.h -o $(Configuration)\moc_GraphTreeView.cpp</Command>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\GUIState.cpp" />
     <ClCompile Include="Classes\Qt\LibraryModel.cpp" />
     <ClCompile Include="Classes\Qt\PointerHolder.cpp" />
@@ -437,7 +429,6 @@
     <ClCompile Include="QtBuildTool\moc_davaglwidget.cpp" />
     <ClCompile Include="QtBuildTool\moc_FileSelectionModel.cpp" />
     <ClCompile Include="QtBuildTool\moc_GraphModel.cpp" />
-    <ClCompile Include="QtBuildTool\moc_GraphTreeView.cpp" />
     <ClCompile Include="QtBuildTool\moc_LibraryModel.cpp" />
     <ClCompile Include="QtBuildTool\moc_mainwindow.cpp" />
     <ClCompile Include="QtBuildTool\moc_QtMainWindowHandler.cpp" />
@@ -692,7 +683,6 @@
     <ClInclude Include="Classes\Qt\FileSelectionModel.h" />
     <ClInclude Include="Classes\Qt\GraphItem.h" />
     <ClInclude Include="Classes\Qt\GraphModel.h" />
-    <ClInclude Include="Classes\Qt\GraphTreeView.h" />
     <ClInclude Include="Classes\Qt\GUIState.h" />
     <ClInclude Include="Classes\Qt\LibraryModel.h" />
     <ClInclude Include="Classes\Qt\PointerHolder.h" />
@@ -857,15 +847,6 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o QtBuildTool\moc_davaglwidget.cpp</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/davaglwidget.h -o QtBuildTool\moc_davaglwidget.cpp</Command>
-    </CustomBuild>
-    <CustomBuild Include="QtBuildTool\GraphTreeView.build">
-      <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Configuration)\moc_$(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(Filename).h;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphTreeView.h -o QtBuildTool\moc_GraphTreeView.cpp</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" -I";$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" -I"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt"; -I"$(Configuration)" -I"." -I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default -D_MSC_VER=1600 -DWIN32 Classes/Qt/GraphTreeView.h -o QtBuildTool\moc_GraphTreeView.cpp</Command>
     </CustomBuild>
     <CustomBuild Include="QtBuildTool\GraphModel.build">
       <FileType>Document</FileType>
