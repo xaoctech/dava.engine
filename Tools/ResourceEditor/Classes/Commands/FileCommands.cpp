@@ -38,7 +38,10 @@ void CommandOpenProject::Execute()
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
 
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-		activeScene->ReloadLibrary();
+        if(activeScene)
+        {
+            activeScene->ReloadLibrary();
+        }
 	}
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
