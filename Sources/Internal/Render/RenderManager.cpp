@@ -842,4 +842,10 @@ RenderOptions * RenderManager::GetOptions()
 	return &options;
 }
 	
+uint32 RenderManager::GetFBOViewFramebuffer() const
+{
+    return fboViewFramebuffer;
+}
+
+    
 };

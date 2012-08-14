@@ -488,7 +488,7 @@ public:
 
 	RenderOptions * GetOptions();
 
-	uint32 fboViewFramebuffer;
+    uint32 GetFBOViewFramebuffer() const;
     
 #if defined(__DAVAENGINE_OPENGL__)
     void HWglBindBuffer(GLenum target, GLuint  	buffer);
@@ -555,6 +555,7 @@ protected:
 
 	// fbo data
 	uint32 fboViewRenderbuffer;
+	uint32 fboViewFramebuffer;
 
 	// state information
 //	Color oldColor;                 // UNIFORM - can be used or not used by RenderEffect
