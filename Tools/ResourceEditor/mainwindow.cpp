@@ -34,7 +34,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     new GUIState();
     SetupProjectPath();
 
-    actionHandler = new QtMainWindowHandler(this);
+	new QtMainWindowHandler(this);
+    actionHandler = QtMainWindowHandler::Instance();//new QtMainWindowHandler(this);
+	actionHandler->SetDefaultFocusWidget(ui->centralWidget);
+
     SetupMainMenu();
     SetupToolBar();
     
@@ -43,7 +46,9 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
-    DAVA::SafeDelete(actionHandler);
+	actionHandler = NULL;
+	QtMainWindowHandler::Instance()->Release();
+//    DAVA::SafeDelete(actionHandler);
     
     GUIState::Instance()->Release();
     

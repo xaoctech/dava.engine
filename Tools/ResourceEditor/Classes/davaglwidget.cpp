@@ -125,21 +125,10 @@ void DavaGLWidget::hideEvent(QHideEvent *e)
 #if defined(Q_WS_WIN)
 bool DavaGLWidget::winEvent(MSG *message, long *result)
 {
-	if(		(WM_LBUTTONDOWN == message->message)
-		||	(WM_LBUTTONDBLCLK == message->message)
-		||	(WM_RBUTTONDOWN == message->message)
-		||	(WM_RBUTTONDBLCLK == message->message)
-		||	(WM_MBUTTONDOWN == message->message)
-		||	(WM_MBUTTONDBLCLK == message->message))
-	{
-		this->setEnabled(false);
-		this->setEnabled(true);
-	}
-
 	DAVA::CoreWin32Platform *core = dynamic_cast<DAVA::CoreWin32Platform *>(DAVA::CoreWin32Platform::Instance());
 	if (NULL != core)
 	{
-//		return 
+		return 
 			core->WinEvent(message, result);
 	}
 

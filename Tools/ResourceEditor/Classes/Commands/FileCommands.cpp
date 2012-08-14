@@ -6,7 +6,7 @@
 
 #include "../Qt/QtUtils.h"
 #include "../Qt/GUIState.h"
-
+#include "../Qt/QtMainWindowHandler.h"
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
 
@@ -40,6 +40,8 @@ void CommandOpenProject::Execute()
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
 		activeScene->ReloadLibrary();
 	}
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 
@@ -76,6 +78,8 @@ void CommandOpenScene::Execute()
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //New
@@ -124,6 +128,8 @@ void CommandSaveScene::Execute()
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //Export
