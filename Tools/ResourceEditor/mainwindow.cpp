@@ -35,8 +35,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupProjectPath();
 
 	new QtMainWindowHandler(this);
-    actionHandler = QtMainWindowHandler::Instance();//new QtMainWindowHandler(this);
-	actionHandler->SetDefaultFocusWidget(ui->centralWidget);
+    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
 
     SetupMainMenu();
     SetupToolBar();
@@ -46,9 +45,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
-	actionHandler = NULL;
 	QtMainWindowHandler::Instance()->Release();
-//    DAVA::SafeDelete(actionHandler);
     
     GUIState::Instance()->Release();
     
@@ -57,6 +54,7 @@ QtMainWindow::~QtMainWindow()
 
 void QtMainWindow::SetupMainMenu()
 {
+    QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
     //File
     connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
@@ -167,7 +165,7 @@ void QtMainWindow::SetupProjectPath()
     DAVA::String projectPath = EditorSettings::Instance()->GetProjetcPath();
     while(0 == projectPath.length())
     {
-        actionHandler->OpenProject();
+        QtMainWindowHandler::Instance()->OpenProject();
         projectPath = EditorSettings::Instance()->GetProjetcPath();
     }
 }
@@ -182,12 +180,12 @@ void QtMainWindow::SetupDockWidgets()
 
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
     
-    connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));
+    connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 }
 
 void QtMainWindow::MenuFileWillShow()
 {
-    actionHandler->SetResentMenu(ui->menuResentScenes);
-    actionHandler->MenuFileWillShow();
+    QtMainWindowHandler::Instance()->SetResentMenu(ui->menuResentScenes);
+    QtMainWindowHandler::Instance()->MenuFileWillShow();
 }
 
