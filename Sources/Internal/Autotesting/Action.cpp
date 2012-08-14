@@ -15,10 +15,16 @@ namespace DAVA
 
 Action::Action() : BaseObject()
     , isExecuted(false)
+	, name("")
 {
 }
 Action::~Action()
 {
+}
+
+void Action::SetName(const String &actionName)
+{
+	name = actionName;
 }
 
 void Action::Update(float32 timeElapsed)
@@ -31,8 +37,20 @@ void Action::Update(float32 timeElapsed)
 
 void Action::Execute()
 {
-    //Logger::Debug("Action::Execute");
     isExecuted = TestCondition();
+
+	//TODO: use ifdef for this debug feature?
+	if(isExecuted)
+	{
+		String logMsg = Dump();
+		logMsg = Format("EXECUTED %s", logMsg.c_str());
+		AutotestingSystem::Instance()->OnMessage(logMsg);
+	}
+}
+
+String Action::Dump()
+{
+	return name;
 }
 
 bool Action::TestCondition()
@@ -262,6 +280,12 @@ void KeyPressAction::KeyPress(char16 keyChar)
     ProcessInput(keyPress);
 }
 
+String KeyPressAction::Dump()
+{
+	String baseStr = Action::Dump();
+	return Format("%s key=%c", baseStr.c_str(), keyChar);
+}
+
 //----------------------------------------------------------------------
 
 WaitAction::WaitAction(float32 _waitTime) : Action()
@@ -289,6 +313,12 @@ void WaitAction::Update(float32 timeElapsed)
 bool WaitAction::TestCondition()
 {
     return (waitTime <= 0.0f);
+}
+
+String WaitAction::Dump()
+{
+	String baseStr = Action::Dump();
+	return Format("%s time=%.2f", baseStr.c_str(), waitTime);
 }
 
 //----------------------------------------------------------------------
@@ -322,6 +352,13 @@ bool WaitForUIAction::TestCondition()
     return (FindControl(controlPath) != NULL);
 }
 
+String WaitForUIAction::Dump()
+{
+	String baseStr = WaitAction::Dump();
+	String controlPathStr = PathToString(controlPath);
+	return Format("%s controlPath=%s", baseStr.c_str(), controlPathStr.c_str());
+}
+
 //----------------------------------------------------------------------
 
 SetTextAction::SetTextAction(const String& _controlName, const WideString &_text)
@@ -346,6 +383,13 @@ void SetTextAction::Execute()
 {
     Action::SetText(controlPath, text);
     Action::Execute();
+}
+
+String SetTextAction::Dump()
+{
+	String baseStr = Action::Dump();
+	String controlPathStr = PathToString(controlPath);
+	return Format("%s controlPath=%s text=%s", baseStr.c_str(), controlPathStr.c_str(), text.c_str());
 }
 
 //----------------------------------------------------------------------

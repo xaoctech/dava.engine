@@ -42,5 +42,8 @@ private:
     GraphItem *parentItem;
 };
 
+#include "PointerHolder.h"
+DECLARE_POINTER_TYPE(GraphItem *);
+
 
 #endif // __GRAPH_ITEM_H__

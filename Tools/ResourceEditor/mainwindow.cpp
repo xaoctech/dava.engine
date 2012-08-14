@@ -2,24 +2,24 @@
 #include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Qt/GUIActionHandler.h"
+#include "Classes/Qt/QtMainWindowHandler.h"
 #include "Classes/Qt/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/SceneDataManager.h"
 
-#include "Classes/Qt/QtUtils.h"
+#include "Classes/Qt/PointerHolder.h"
 
 #include <QToolBar>
 
-QtMainWindow::QtMainWindow(QWidget *parent) 
+
+QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
-    qRegisterMetaTypeStreamOperators<PointerHolder>("PointerHolder");
-    qRegisterMetaTypeStreamOperators<QList<PointerHolder> >("QList<PointerHolder>");
+    RegisterBasePointerTypes();
     
     if(DAVA::Core::Instance())
     {
@@ -34,7 +34,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     new GUIState();
     SetupProjectPath();
 
-    actionHandler = new GUIActionHandler(this);
+    actionHandler = new QtMainWindowHandler(this);
     SetupMainMenu();
     SetupToolBar();
     
@@ -66,6 +66,7 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ResentSceneTriggered(QAction *)));
 
     //View
+    connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
     connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
     QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
@@ -112,6 +113,12 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionTextureConverter, SIGNAL(triggered()), actionHandler, SLOT(ConvertTextures()));
     connect(ui->actionHeightMapEditor, SIGNAL(triggered()), actionHandler, SLOT(HeightmapEditor()));
     connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
+    
+    connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+    connect(ui->actionBakeScene, SIGNAL(triggered()), actionHandler, SLOT(BakeScene()));
+    connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
+
+    
     
     //Viewport
     connect(ui->menuViewPort, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ViewportTriggered(QAction *)));
@@ -168,17 +175,9 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
-    actionHandler->SetLibraryView(ui->libraryView);
     SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
-    connect(ui->libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), actionHandler, SLOT(LibraryContextMenuRequested(const QPoint &)));
     
-    connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
     connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));
-    connect(ui->btnLockAtObject, SIGNAL(clicked()), actionHandler, SLOT(LockAtObject()));
-    connect(ui->btnRemoveObject, SIGNAL(clicked()), actionHandler, SLOT(RemoveObject()));
-    connect(ui->btnDebugFlags, SIGNAL(clicked()), actionHandler, SLOT(DebugFlags()));
-    connect(ui->btnBakeMatrices, SIGNAL(clicked()), actionHandler, SLOT(BakeMatrixes()));
-    connect(ui->btnBuildQuadTree, SIGNAL(clicked()), actionHandler, SLOT(BuildQuadTree()));
 }
 
 void QtMainWindow::MenuFileWillShow()

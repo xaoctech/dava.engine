@@ -102,12 +102,17 @@ void ScenePreviewDialog::Show(const String &scenePathname)
 
 void ScenePreviewDialog::OnClose(BaseObject *, void *, void *)
 {
-    preview->ReleaseScene();
-    preview->RecreateScene();
-    
     Close();
 }
 
+
+void ScenePreviewDialog::Close()
+{
+    preview->ReleaseScene();
+    preview->RecreateScene();
+
+    ExtendedDialog::Close();
+}
 
 const Rect ScenePreviewDialog::DialogRect()
 {
