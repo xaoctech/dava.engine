@@ -140,12 +140,10 @@
 		5C574EAD15C9463C0015537A /* btSerializer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574E2215C9463C0015537A /* btSerializer.cpp */; };
 		5C5DCB7015C32BAD007F6AC4 /* GraphItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6615C32BAD007F6AC4 /* GraphItem.cpp */; };
 		5C5DCB7115C32BAD007F6AC4 /* GraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6815C32BAD007F6AC4 /* GraphModel.cpp */; };
-		5C5DCB7215C32BAD007F6AC4 /* GraphTreeView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6A15C32BAD007F6AC4 /* GraphTreeView.cpp */; };
 		5C5DCB7315C32BAD007F6AC4 /* SceneGraphItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6C15C32BAD007F6AC4 /* SceneGraphItem.cpp */; };
 		5C5DCB7415C32BAD007F6AC4 /* SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB6E15C32BAD007F6AC4 /* SceneGraphModel.cpp */; };
 		5C5DCB7A15C33020007F6AC4 /* moc_davaglwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */; };
 		5C5DCB7D15C33020007F6AC4 /* moc_mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB7915C33020007F6AC4 /* moc_mainwindow.cpp */; };
-		5C5DCB8115C33350007F6AC4 /* moc_GraphTreeView.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */; };
 		5C6549C815D3CE2900C3AC3F /* LibraryCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C6549C615D3CE2900C3AC3F /* LibraryCommands.cpp */; };
 		5C6549CC15D3E48C00C3AC3F /* ScenePreviewDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C6549CA15D3E48C00C3AC3F /* ScenePreviewDialog.cpp */; };
 		5C6549D015D3EA3500C3AC3F /* FileSelectionModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C6549CE15D3EA3500C3AC3F /* FileSelectionModel.cpp */; };
@@ -677,8 +675,6 @@
 		5C5DCB6715C32BAD007F6AC4 /* GraphItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphItem.h; path = Classes/Qt/GraphItem.h; sourceTree = "<group>"; };
 		5C5DCB6815C32BAD007F6AC4 /* GraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphModel.cpp; path = Classes/Qt/GraphModel.cpp; sourceTree = "<group>"; };
 		5C5DCB6915C32BAD007F6AC4 /* GraphModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphModel.h; path = Classes/Qt/GraphModel.h; sourceTree = "<group>"; };
-		5C5DCB6A15C32BAD007F6AC4 /* GraphTreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphTreeView.cpp; path = Classes/Qt/GraphTreeView.cpp; sourceTree = "<group>"; };
-		5C5DCB6B15C32BAD007F6AC4 /* GraphTreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphTreeView.h; path = Classes/Qt/GraphTreeView.h; sourceTree = "<group>"; };
 		5C5DCB6C15C32BAD007F6AC4 /* SceneGraphItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphItem.cpp; path = Classes/Qt/SceneGraphItem.cpp; sourceTree = "<group>"; };
 		5C5DCB6D15C32BAD007F6AC4 /* SceneGraphItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphItem.h; path = Classes/Qt/SceneGraphItem.h; sourceTree = "<group>"; };
 		5C5DCB6E15C32BAD007F6AC4 /* SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphModel.cpp; path = Classes/Qt/SceneGraphModel.cpp; sourceTree = "<group>"; };
@@ -686,7 +682,6 @@
 		5C5DCB7515C32BB9007F6AC4 /* QtUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtUtils.h; path = Classes/Qt/QtUtils.h; sourceTree = "<group>"; };
 		5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_davaglwidget.cpp; path = QtBuildTool/moc_davaglwidget.cpp; sourceTree = "<group>"; };
 		5C5DCB7915C33020007F6AC4 /* moc_mainwindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_mainwindow.cpp; path = QtBuildTool/moc_mainwindow.cpp; sourceTree = "<group>"; };
-		5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GraphTreeView.cpp; path = QtBuildTool/moc_GraphTreeView.cpp; sourceTree = "<group>"; };
 		5C6549C615D3CE2900C3AC3F /* LibraryCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryCommands.cpp; path = Classes/Commands/LibraryCommands.cpp; sourceTree = "<group>"; };
 		5C6549C715D3CE2900C3AC3F /* LibraryCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryCommands.h; path = Classes/Commands/LibraryCommands.h; sourceTree = "<group>"; };
 		5C6549CA15D3E48C00C3AC3F /* ScenePreviewDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScenePreviewDialog.cpp; path = Classes/Qt/ScenePreviewDialog.cpp; sourceTree = "<group>"; };
@@ -1034,7 +1029,6 @@
 				5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */,
 				5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */,
 				5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */,
-				5C5DCB8015C33350007F6AC4 /* moc_GraphTreeView.cpp */,
 				5C5DCB7615C33020007F6AC4 /* moc_davaglwidget.cpp */,
 				5C5DCB7915C33020007F6AC4 /* moc_mainwindow.cpp */,
 			);
@@ -1507,8 +1501,6 @@
 				5C5DCB6715C32BAD007F6AC4 /* GraphItem.h */,
 				5C5DCB6C15C32BAD007F6AC4 /* SceneGraphItem.cpp */,
 				5C5DCB6D15C32BAD007F6AC4 /* SceneGraphItem.h */,
-				5C5DCB6A15C32BAD007F6AC4 /* GraphTreeView.cpp */,
-				5C5DCB6B15C32BAD007F6AC4 /* GraphTreeView.h */,
 				5C5DCB6815C32BAD007F6AC4 /* GraphModel.cpp */,
 				5C5DCB6915C32BAD007F6AC4 /* GraphModel.h */,
 				5C5DCB6E15C32BAD007F6AC4 /* SceneGraphModel.cpp */,
@@ -2215,12 +2207,10 @@
 				5CFD6F6E15C06D160030029D /* GUIState.cpp in Build Sources */,
 				5C5DCB7015C32BAD007F6AC4 /* GraphItem.cpp in Build Sources */,
 				5C5DCB7115C32BAD007F6AC4 /* GraphModel.cpp in Build Sources */,
-				5C5DCB7215C32BAD007F6AC4 /* GraphTreeView.cpp in Build Sources */,
 				5C5DCB7315C32BAD007F6AC4 /* SceneGraphItem.cpp in Build Sources */,
 				5C5DCB7415C32BAD007F6AC4 /* SceneGraphModel.cpp in Build Sources */,
 				5C5DCB7A15C33020007F6AC4 /* moc_davaglwidget.cpp in Build Sources */,
 				5C5DCB7D15C33020007F6AC4 /* moc_mainwindow.cpp in Build Sources */,
-				5C5DCB8115C33350007F6AC4 /* moc_GraphTreeView.cpp in Build Sources */,
 				5CF412BD15C7E0B6004725FD /* SceneData.cpp in Build Sources */,
 				5CF412C015C7E2B4004725FD /* SceneDataManager.cpp in Build Sources */,
 				5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */,
