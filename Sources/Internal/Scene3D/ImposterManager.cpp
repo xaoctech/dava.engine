@@ -42,7 +42,7 @@ ImposterManager::ImposterManager(Scene * _scene)
 	setup.blocks.push_back(std::pair<int32, Vector2>(16, Vector2(256.f, 256.f)));
 	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
 	setup.blocks.push_back(std::pair<int32, Vector2>(112, Vector2(64.f, 64.f)));
-  setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(32.f, 32.f)));
+    setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(32.f, 32.f)));
     	//setup.size = Vector2(512, 512);
     	//setup.pixelFormat = FORMAT_RGBA4444;
         //setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
@@ -110,7 +110,7 @@ void ImposterManager::ProcessQueue()
 			node->UpdateImposter();
 		}
 
-		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+		BindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 		camera->Set();
 	}
 }

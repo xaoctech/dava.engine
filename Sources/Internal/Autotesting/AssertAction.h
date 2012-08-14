@@ -51,6 +51,8 @@ public:
 
     virtual const VariantType &Get() { return value; };
 protected:
+	virtual String Dump();
+
     VariantType value;
 };
 
@@ -63,7 +65,9 @@ public:
    virtual const VariantType &Get();
 
 protected:
-    Vector<String> controlPath;
+	virtual String Dump();
+    
+	Vector<String> controlPath;
 };
 
 class ControlTextGetter : public ControlGetter
@@ -95,6 +99,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     String message;
     Getter *expected;
     Getter *actual;

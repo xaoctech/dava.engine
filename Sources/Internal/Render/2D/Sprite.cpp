@@ -1306,7 +1306,7 @@ void Sprite::ValidateForSize()
 		(*it)->PrepareForNewSize();
 	}
 	Logger::Debug("----------- Sprites validation for new resolution DONE  --------------");
-	Texture::DumpTextures();
+//	Texture::DumpTextures();
 }
 
 	

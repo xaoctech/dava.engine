@@ -825,7 +825,7 @@ void LandscapeNode::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode)
     Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE; 
     
     if (currentNode->data.size >= 2)
-    frustumRes = frustum->Classify(currentNode->data.bbox);
+        frustumRes = frustum->Classify(currentNode->data.bbox);
     
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
@@ -1523,7 +1523,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     UnbindMaterial();
 
 #ifdef __DAVAENGINE_OPENGL__
-	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+	BindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
     
 	RenderManager::Instance()->SetViewport(oldViewport, true);

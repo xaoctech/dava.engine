@@ -488,7 +488,14 @@ public:
 
 	RenderOptions * GetOptions();
 
-	uint32 fboViewFramebuffer;
+    uint32 GetFBOViewFramebuffer() const;
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    void HWglBindBuffer(GLenum target, GLuint  	buffer);
+    GLuint bufferBindingId[2];    
+#endif
+    
+
 	
 protected:
     //
@@ -548,6 +555,7 @@ protected:
 
 	// fbo data
 	uint32 fboViewRenderbuffer;
+	uint32 fboViewFramebuffer;
 
 	// state information
 //	Color oldColor;                 // UNIFORM - can be used or not used by RenderEffect
@@ -583,11 +591,6 @@ protected:
     float32 alphaTestCmpValue;                      // default value: 0.0f
     bool cullingEnabled, oldCullingEnabled;
     eCull cullFace, oldCullFace;*/
-    
-    
-    
-    
-    
     
     uint32 pointerArraysCurrentState;
     uint32 pointerArraysRendererState;

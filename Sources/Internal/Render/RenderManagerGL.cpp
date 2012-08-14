@@ -579,7 +579,6 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 		GL_UNSIGNED_INT,
 	};
 	
-    //RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
 	RENDER_VERIFY(glDrawElements(mode, count, indexTypes[indexFormat], indices));
     stats.drawElementsCalls++;
     switch(type)
@@ -773,7 +772,16 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
         RENDER_VERIFY(glLoadMatrixf(matrix.data));
     }
 }
-    
+        
+void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
+{
+    DVASSERT(target - GL_ARRAY_BUFFER <= 1);
+    if (bufferBindingId[target - GL_ARRAY_BUFFER] != buffer)
+    {
+        RENDER_VERIFY(glBindBuffer(target, buffer));
+        bufferBindingId[target - GL_ARRAY_BUFFER] = buffer;
+    }
+}
     
 void RenderManager::AttachRenderData()
 {
@@ -786,18 +794,11 @@ void RenderManager::AttachRenderData()
     if (!shader)
     {
         // TODO: should be moved to RenderManagerGL
-#if defined(__DAVAENGINE_OPENGL__)
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("!shader glBindBufferARB: %d", currentRenderData->vboBuffer);
-        RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
-#else
-        RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("!shader glBindBuffer: %d", currentRenderData->vboBuffer);
-        uint32 indexBuffer = currentRenderData->indexBuffer;
-        RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
-#endif
-#elif defined(__DAVAENGINE_DIRECTX9__)
+        HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
+        HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
+        
+        
+#if defined(__DAVAENGINE_DIRECTX9__)
         DVASSERT(currentRenderData->vboBuffer == 0);
 #endif
         if (enabledAttribCount != 0)
@@ -906,20 +907,8 @@ void RenderManager::AttachRenderData()
         //glDisableVertexAttribArray(1);
         //pointerArraysCurrentState = 0;
         
-        //if (currentRenderData->vboBuffer != 0)
-        //{
-#if defined(__DAVAENGINE_OPENGL__)
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("shader glBindBufferARB: %d", currentRenderData->vboBuffer);
-        RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
-#else
-        RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
-		if (DEBUG)Logger::Debug("shader glBindBuffer: %d", currentRenderData->vboBuffer);
-		RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
-#endif
-#endif 
-        //}
+        HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
+        HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
         
         
         int32 size = (int32)currentRenderData->streamArray.size();
