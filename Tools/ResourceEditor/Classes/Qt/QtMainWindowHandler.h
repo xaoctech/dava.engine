@@ -12,7 +12,7 @@ class Command;
 class QMenu;
 class QAction;
 class QTreeView;
-class QtMainWindowHandler: public QObject
+class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
     
@@ -28,6 +28,9 @@ public:
 
     //MENU FILE
     void MenuFileWillShow();
+
+	void SetDefaultFocusWidget(QWidget *widget);
+	void RestoreDefaultFocus();
     
 public slots:
     //menu
@@ -83,6 +86,8 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
+
+	QWidget *defaultFocusWidget;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__

@@ -19,11 +19,14 @@
 #include <QMenu>
 #include <QAction>
 #include <QCursor>
+#include <QWidget>
 
 using namespace DAVA;
 
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
+	,	menuResentScenes(NULL)
+	,	defaultFocusWidget(NULL)
 {
     new CommandsManager();
     
@@ -36,12 +39,11 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
         resentSceneActions[i] = new QAction(this);
         resentSceneActions[i]->setObjectName(QString::fromUtf8(Format("resentSceneActions[%d]", i)));
     }
-    
-    menuResentScenes = NULL;
 }
 
 QtMainWindowHandler::~QtMainWindowHandler()
 {
+	defaultFocusWidget = NULL;
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
         SafeDelete(resentSceneActions[i]);
@@ -315,5 +317,18 @@ void QtMainWindowHandler::Beast()
     Execute(new CommandBeast());
 }
 
+void QtMainWindowHandler::SetDefaultFocusWidget(QWidget *widget)
+{
+	defaultFocusWidget = widget;
+}
+
+void QtMainWindowHandler::RestoreDefaultFocus()
+{
+	if(defaultFocusWidget)
+	{
+		defaultFocusWidget->setEnabled(false);
+		defaultFocusWidget->setEnabled(true);
+	}
+}
 
 
