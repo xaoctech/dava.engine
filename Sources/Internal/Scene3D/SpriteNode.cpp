@@ -283,9 +283,6 @@ void SpriteNode::Draw()
 //	RenderManager::Instance()->FlushState();
     
     RenderManager::Instance()->SetRenderData(renderData);
-
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, frame * 4, 4);
 
 
