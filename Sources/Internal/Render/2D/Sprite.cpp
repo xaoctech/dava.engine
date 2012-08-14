@@ -1009,6 +1009,11 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
 
 void Sprite::Draw()
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
+
     PrepareSpriteRenderData(0);
     
 	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
@@ -1023,6 +1028,11 @@ void Sprite::Draw()
 	
 void Sprite::Draw(DrawState * state)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
+
 	if (state->usePerPixelAccuracy) 
 		RenderManager::Instance()->PushMappingMatrix();
 
@@ -1073,6 +1083,10 @@ void Sprite::DrawPoints(Vector2 *verticies, Vector2 *textureCoordinates)
 
 void Sprite::DrawPoints(Vector2 *verticies)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
 
 	float32 x = drawCoord.x;
 	float32 y = drawCoord.y;

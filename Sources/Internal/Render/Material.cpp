@@ -616,7 +616,12 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		return;
 	}
 
-	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
+	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
+	{
+		return;
+	}
+
+	if(!isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
 	}
