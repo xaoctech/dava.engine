@@ -54,7 +54,6 @@ namespace DAVA
 	if (err != GL_NO_ERROR)\
     {  \
         Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-        OGLDebugBreak(); \
     }\
 }
 #elif defined(__DAVAENGINE_ANDROID__)
