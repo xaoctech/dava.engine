@@ -66,9 +66,6 @@ void DavaGLWidget::paintEvent(QPaintEvent *)
 
 void DavaGLWidget::resizeEvent(QResizeEvent *e)
 {	
-	DAVA::Logger::Debug("[resizeEvent]");
-
-
     QWidget::resizeEvent(e);
         
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
@@ -79,8 +76,6 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 
 void DavaGLWidget::moveEvent(QMoveEvent *e)
 {
-	DAVA::Logger::Debug("[moveEvent]");
-
 	QWidget::moveEvent(e);
 
     QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
@@ -114,8 +109,6 @@ void DavaGLWidget::FpsTimerDone()
 
 void DavaGLWidget::showEvent(QShowEvent *e)
 {
-	DAVA::Logger::Debug("[showEvent]");
-
 	QWidget::showEvent(e);
     
 	DAVA::QtLayer::Instance()->OnResume();
@@ -123,8 +116,6 @@ void DavaGLWidget::showEvent(QShowEvent *e)
 
 void DavaGLWidget::hideEvent(QHideEvent *e)
 {
-	DAVA::Logger::Debug("[hideEvent]");
-
 	QWidget::hideEvent(e);
     
 	DAVA::QtLayer::Instance()->OnSuspend();
