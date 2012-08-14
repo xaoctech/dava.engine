@@ -21,6 +21,8 @@ public:
     
     FileSelectionModel *GetSelectionModel();
     
+    virtual QVariant data(const QModelIndex &index, int role) const;
+    
 protected:
 
     FileSelectionModel *fileSelectionModel;
