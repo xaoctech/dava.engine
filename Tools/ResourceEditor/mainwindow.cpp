@@ -19,6 +19,13 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
+    new QtMainWindowHandler(this);
+    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
+
+    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
+    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
+
+    
     RegisterBasePointerTypes();
     
     if(DAVA::Core::Instance())
@@ -32,15 +39,13 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     }
     
     new GUIState();
-    SetupProjectPath();
-
-	new QtMainWindowHandler(this);
-    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
 
     SetupMainMenu();
     SetupToolBar();
     
     SetupDockWidgets();
+
+    SetupProjectPath();
 }
 
 QtMainWindow::~QtMainWindow()
@@ -172,13 +177,11 @@ void QtMainWindow::SetupProjectPath()
 
 void QtMainWindow::SetupDockWidgets()
 {
-    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
     ui->sceneGraphTree->setDragDropMode(QAbstractItemView::InternalMove);
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
-    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
     
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 }
