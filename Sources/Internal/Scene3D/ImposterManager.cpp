@@ -110,7 +110,7 @@ void ImposterManager::ProcessQueue()
 			node->UpdateImposter();
 		}
 
-		BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+		BindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 		camera->Set();
 	}
 }
