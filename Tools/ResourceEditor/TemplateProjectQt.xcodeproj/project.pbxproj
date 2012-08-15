@@ -339,13 +339,13 @@
 /* Begin PBXFileReference section */
 		00BD80432B2C7B49A27A3DC5 /* TemplateProjectQt.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = TemplateProjectQt.pro; sourceTree = "<group>"; };
 		118FCBAABA162BA17933C789 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../dava.framework/Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
-		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../dava.framework/Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
+		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework; sourceTree = "<group>"; };
+		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
-		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../dava.framework/Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
-		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../dava.framework/Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
+		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
+		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
 		5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ViewCommands.cpp; path = Classes/Commands/ViewCommands.cpp; sourceTree = "<group>"; };
 		5C03FA9115D4F6AD0048024E /* ViewCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewCommands.h; path = Classes/Commands/ViewCommands.h; sourceTree = "<group>"; };
 		5C03FABE15D530270048024E /* LibraryModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryModel.cpp; path = Classes/Qt/LibraryModel.cpp; sourceTree = "<group>"; };
@@ -956,20 +956,20 @@
 		5CFD6F6D15C06D160030029D /* GUIState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIState.h; path = Classes/Qt/GUIState.h; sourceTree = "<group>"; };
 		5CFEEBBE15CAB60B00ABF023 /* SceneGraphCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneGraphCommands.cpp; path = Classes/Commands/SceneGraphCommands.cpp; sourceTree = "<group>"; };
 		5CFEEBBF15CAB60B00ABF023 /* SceneGraphCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneGraphCommands.h; path = Classes/Commands/SceneGraphCommands.h; sourceTree = "<group>"; };
-		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework; sourceTree = "<group>"; };
-		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../dava.framework/Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
+		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
+		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		6D3A4A84E8680AFD0352C6BB /* davaglwidget.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = davaglwidget.ui; path = Classes/davaglwidget.ui; sourceTree = "<group>"; };
-		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../dava.framework/Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
-		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
-		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../dava.framework/Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
-		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework; sourceTree = "<group>"; };
-		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../../../QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework; sourceTree = "<group>"; };
+		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
+		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
+		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
+		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
+		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		AB241F823D3821A41AAC4BDE /* mainwindow.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = mainwindow.ui; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../dava.framework/Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
+		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
-		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../dava.framework/Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
+		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2056,7 +2056,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#make -C /Users/klesch/Work/WoT/Framework/TemplateProjectQt -f 'TemplateProjectQt.xcodeproj/qt_makeqmake.mak'\nmake -C $PROJECT_DIR -f 'TemplateProjectQt.xcodeproj/qt_makeqmake.mak'";
+			shellScript = "#make -C ~/Work/WoT/Framework/TemplateProjectQt -f 'TemplateProjectQt.xcodeproj/qt_makeqmake.mak'\nmake -C $PROJECT_DIR -f 'TemplateProjectQt.xcodeproj/qt_makeqmake.mak'";
 		};
 		5C42E09615B42E2E00F71425 /* Qt Preprocessors */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2423,7 +2423,6 @@
 					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
-					"-DQT_NETWORK_LIB",
 					"-DQT_CORE_LIB",
 					"-DQT_SHARED",
 				);
@@ -2434,7 +2433,6 @@
 					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
-					"-DQT_NETWORK_LIB",
 					"-DQT_CORE_LIB",
 					"-DQT_SHARED",
 				);
@@ -2532,7 +2530,6 @@
 					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
-					"-DQT_NETWORK_LIB",
 					"-DQT_CORE_LIB",
 					"-DQT_SHARED",
 				);
@@ -2543,7 +2540,6 @@
 					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
-					"-DQT_NETWORK_LIB",
 					"-DQT_CORE_LIB",
 					"-DQT_SHARED",
 				);
