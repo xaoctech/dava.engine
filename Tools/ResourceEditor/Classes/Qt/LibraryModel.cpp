@@ -6,6 +6,8 @@
 
 #include "../SceneEditor/EditorSettings.h"
 
+#include "QtUtils.h"
+
 #include "DAVAEngine.h"
 
 using namespace DAVA;
@@ -69,4 +71,25 @@ FileSelectionModel * LibraryModel::GetSelectionModel()
 {
     return fileSelectionModel;
 }
+
+QVariant LibraryModel::data(const QModelIndex &index, int role) const
+{
+    if(index.isValid() && (Qt::TextColorRole == role))
+    {
+        QFileInfo info = fileInfo(index);
+        
+        if(info.isFile())
+        {
+            String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(info.fileName()));
+            if(0 == CompareStrings(".sc2", extension))
+            {
+                return QColor(158, 0, 0);
+            }
+            return QColor(Qt::black);
+        }
+    }
+    
+    return QFileSystemModel::data(index, role);
+}
+
 

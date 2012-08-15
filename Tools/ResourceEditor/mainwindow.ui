@@ -22,6 +22,9 @@
     <height>200</height>
    </size>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::CustomContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -30,7 +33,7 @@
   </property>
   <widget class="DavaGLWidget" name="centralWidget">
    <property name="focusPolicy">
-    <enum>Qt::ClickFocus</enum>
+    <enum>Qt::StrongFocus</enum>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="margin">
@@ -44,7 +47,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -155,6 +158,9 @@
      </property>
      <item>
       <widget class="QTreeView" name="sceneGraphTree">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
@@ -170,54 +176,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnRemoveRootNodes">
-       <property name="text">
-        <string>Remove Root Nodes</string>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="btnRefresh">
        <property name="text">
         <string>Refresh</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnLockAtObject">
-       <property name="text">
-        <string>Lock at Object</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnRemoveObject">
-       <property name="text">
-        <string>Remove Object</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnDebugFlags">
-       <property name="text">
-        <string>Debug Flags</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnBakeMatrices">
-       <property name="text">
-        <string>Bake Matrices</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnBuildQuadTree">
-       <property name="text">
-        <string>Build Quad Tree</string>
        </property>
       </widget>
      </item>

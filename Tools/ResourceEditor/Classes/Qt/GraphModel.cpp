@@ -4,8 +4,10 @@
 #include <QTreeView>
 #include <QMimeData>
 
-#include "QtUtils.h"
+#include "PointerHolder.h"
 
+#include "DAVAEngine.h"
+using namespace DAVA;
 
 GraphModel::GraphModel(QObject *parent)
     :   QAbstractItemModel(parent)
@@ -204,6 +206,13 @@ QStringList GraphModel::mimeTypes() const
 
 QMimeData *GraphModel::mimeData(const QModelIndexList &indexes) const
 {
+    bool keyPressed = InputSystem::Instance()->GetKeyboard()->IsKeyPressed(DVKEY_SHIFT);
+    if(!keyPressed)
+    {
+        return NULL;
+    }
+    
+    
     QMimeData *mimeData = new QMimeData();
     QByteArray encodedData;
     
@@ -215,7 +224,7 @@ QMimeData *GraphModel::mimeData(const QModelIndexList &indexes) const
         {
             GraphItem *item = static_cast<GraphItem *>(index.internalPointer());
 //            QVariant uData = QVariant::fromValue(item);
-            QVariant uData = PointerHolder::ToQVariant(item);
+            QVariant uData = PointerHolder<GraphItem *>::ToQVariant(item);
             stream << uData;
         }
     }
@@ -251,7 +260,7 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
         QVariant uData;
         stream >> uData;
 
-        GraphItem *movedItem = PointerHolder::ToGraphItem(uData);
+        GraphItem *movedItem = PointerHolder<GraphItem *>::ToPointer(uData);
         MoveItemToParent(movedItem, parent);
 
         

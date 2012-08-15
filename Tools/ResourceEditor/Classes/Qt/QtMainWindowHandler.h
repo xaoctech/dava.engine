@@ -12,7 +12,7 @@ class Command;
 class QMenu;
 class QAction;
 class QTreeView;
-class QtMainWindowHandler: public QObject
+class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
     
@@ -28,6 +28,9 @@ public:
 
     //MENU FILE
     void MenuFileWillShow();
+
+	void SetDefaultFocusWidget(QWidget *widget);
+	void RestoreDefaultFocus();
     
 public slots:
     //menu
@@ -61,13 +64,7 @@ public slots:
     void Beast();
     
     //scene graph
-    void RemoveRootNodes();
     void RefreshSceneGraph();
-    void LockAtObject();
-    void RemoveObject();
-    void DebugFlags();
-    void BakeMatrixes();
-    void BuildQuadTree();
     
 private:
     //create node
@@ -89,6 +86,8 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
+
+	QWidget *defaultFocusWidget;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__
