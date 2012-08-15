@@ -46,6 +46,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupDockWidgets();
 
     SetupProjectPath();
+    
+    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 QtMainWindow::~QtMainWindow()
