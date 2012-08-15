@@ -519,7 +519,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
         if(0 == CompareStrings(extension, String(".sc2")) && isFile)
         {
-            screen->ShowScenePreview(QSTRING_TO_DAVASTRING(filePathname));
+            screen->ShowScenePreview(PathnameToDAVAStyle(filePathname));
         }
         else
         {
