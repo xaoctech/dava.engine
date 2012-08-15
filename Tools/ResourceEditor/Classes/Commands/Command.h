@@ -36,9 +36,6 @@ protected:
     
     inline eCommandType Type() const {return commandType; };
 	
-	DAVA::String NormalizePath(const DAVA::String &pathname);
-
-    
     inline void SetState(eCommandState newState) {commandState = newState; };
     inline eCommandState State() const {return commandState; };
 
