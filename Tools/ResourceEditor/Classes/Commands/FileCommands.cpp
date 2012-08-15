@@ -117,7 +117,16 @@ void CommandSaveScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen && screen->SaveIsAvailable())
     {
-        String currentPath = PathnameToDAVAStyle(screen->CurrentScenePathname());    
+		String currentPath;
+		if(0 < screen->CurrentScenePathname().length())
+		{
+			currentPath = screen->CurrentScenePathname();    
+		}
+		else
+		{
+			currentPath = EditorSettings::Instance()->GetDataSourcePath();    
+		}
+
         String folderPathname, filename;
         FileSystem::Instance()->SplitPath(currentPath, folderPathname, filename);
         
