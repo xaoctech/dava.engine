@@ -5,7 +5,10 @@
 #include "SceneDataManager.h"
 #include "../EditorScene.h"
 
-#include "QtUtils.h"
+#include "GraphItem.h"
+//#include "QtUtils.h"
+#include "PointerHolder.h"
+
 
 #include <QTreeView>
 
@@ -49,8 +52,6 @@ void SceneGraphModel::AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node)
 
 void SceneGraphModel::Rebuild()
 {
-//    selectedNode = NULL;
-    
     SafeRelease(rootItem);
 	rootItem = new SceneGraphItem();
 	rootItem->SetUserData(scene);
@@ -258,7 +259,7 @@ bool SceneGraphModel::setData(const QModelIndex &index, const QVariant &value, i
     GraphItem *item = static_cast<GraphItem*>(index.internalPointer());
     
     //TODO: change on real value
-    GraphItem *newItem = PointerHolder::ToGraphItem(value);
+    GraphItem *newItem = PointerHolder<GraphItem *>::ToPointer(value);
     SceneNode *newNode = (SceneNode *)newItem->GetUserData();
     SafeRetain(newNode);
     

@@ -69,11 +69,11 @@ protected:
 };
 
 
-class CommandBakeMatrices: public Command
+class CommandBakeMatrixes: public Command
 {
     
 public:
-	CommandBakeMatrices();
+	CommandBakeMatrixes();
     
 protected:
     

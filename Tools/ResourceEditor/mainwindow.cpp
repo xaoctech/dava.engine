@@ -7,19 +7,26 @@
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/SceneDataManager.h"
 
-#include "Classes/Qt/QtUtils.h"
+#include "Classes/Qt/PointerHolder.h"
 
 #include <QToolBar>
 
-QtMainWindow::QtMainWindow(QWidget *parent) 
+
+QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
-    qRegisterMetaTypeStreamOperators<PointerHolder>("PointerHolder");
-    qRegisterMetaTypeStreamOperators<QList<PointerHolder> >("QList<PointerHolder>");
+    new QtMainWindowHandler(this);
+    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
+
+    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
+    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
+
+    
+    RegisterBasePointerTypes();
     
     if(DAVA::Core::Instance())
     {
@@ -32,18 +39,20 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     }
     
     new GUIState();
-    SetupProjectPath();
 
-    actionHandler = new QtMainWindowHandler(this);
     SetupMainMenu();
     SetupToolBar();
     
     SetupDockWidgets();
+
+    SetupProjectPath();
+    
+    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 QtMainWindow::~QtMainWindow()
 {
-    DAVA::SafeDelete(actionHandler);
+	QtMainWindowHandler::Instance()->Release();
     
     GUIState::Instance()->Release();
     
@@ -52,6 +61,7 @@ QtMainWindow::~QtMainWindow()
 
 void QtMainWindow::SetupMainMenu()
 {
+    QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
     //File
     connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
@@ -162,33 +172,25 @@ void QtMainWindow::SetupProjectPath()
     DAVA::String projectPath = EditorSettings::Instance()->GetProjetcPath();
     while(0 == projectPath.length())
     {
-        actionHandler->OpenProject();
+        QtMainWindowHandler::Instance()->OpenProject();
         projectPath = EditorSettings::Instance()->GetProjetcPath();
     }
 }
 
 void QtMainWindow::SetupDockWidgets()
 {
-    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
     ui->sceneGraphTree->setDragDropMode(QAbstractItemView::InternalMove);
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
 
-    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
     
-    connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
-    connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));
-    connect(ui->btnLockAtObject, SIGNAL(clicked()), actionHandler, SLOT(LockAtObject()));
-    connect(ui->btnRemoveObject, SIGNAL(clicked()), actionHandler, SLOT(RemoveObject()));
-    connect(ui->btnDebugFlags, SIGNAL(clicked()), actionHandler, SLOT(DebugFlags()));
-    connect(ui->btnBakeMatrices, SIGNAL(clicked()), actionHandler, SLOT(BakeMatrixes()));
-    connect(ui->btnBuildQuadTree, SIGNAL(clicked()), actionHandler, SLOT(BuildQuadTree()));
+    connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 }
 
 void QtMainWindow::MenuFileWillShow()
 {
-    actionHandler->SetResentMenu(ui->menuResentScenes);
-    actionHandler->MenuFileWillShow();
+    QtMainWindowHandler::Instance()->SetResentMenu(ui->menuResentScenes);
+    QtMainWindowHandler::Instance()->MenuFileWillShow();
 }
 

@@ -156,6 +156,11 @@ SpriteNode::eType SpriteNode::GetType()
 void SpriteNode::Draw()
 {
 	if (!(flags&SceneNode::NODE_VISIBLE))return;
+
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
     
     // Get current modelview matrix, and in this case it's always a camera matrix
 	Matrix4 modelViewMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
@@ -283,9 +288,6 @@ void SpriteNode::Draw()
 //	RenderManager::Instance()->FlushState();
     
     RenderManager::Instance()->SetRenderData(renderData);
-
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, frame * 4, 4);
 
 
