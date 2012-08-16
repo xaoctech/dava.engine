@@ -102,7 +102,7 @@ public:
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
 	virtual int32 CellWidth(UIList *forList, int32 index)//calls only for horizontal orientation
-	{return forList->GetSize().x;};
+	{return (int32)forList->GetSize().x;};
 	virtual int32 CellHeight(UIList *forList, int32 index);//calls only for vertical orientation
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
     
