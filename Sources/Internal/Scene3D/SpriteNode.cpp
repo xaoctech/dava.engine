@@ -271,6 +271,7 @@ void SpriteNode::Draw()
     RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ONE_MINUS_SRC_ALPHA);
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_WRITE);
 //    RenderManager::Instance()->EnableBlending(true);
 //    RenderManager::Instance()->EnableTexturing(true);//TODO: Move all this code to the RenderState node
 //    RenderManager::Instance()->EnableDepthTest(false);
