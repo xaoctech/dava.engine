@@ -294,7 +294,7 @@ public: //For Qt integration
     ScenePreviewDialog *scenePreviewDialog;
 #endif //#if defined (DAVA_QT)
 
-    
+    UIControl *focusedControl;
 };
 
 #endif // __SCENE_EDITOR_SCREEN_MAIN_H__

@@ -31,6 +31,7 @@
 
 #endif //#if defined (DAVA_QT)
 
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
@@ -43,6 +44,8 @@ void SceneEditorScreenMain::LoadResources()
     font = ControlsFactory::GetFontLight();
 
     helpDialog = new HelpDialog();
+    
+    focusedControl = NULL;
 
     InitializeNodeDialogs();
 
@@ -210,6 +213,7 @@ void SceneEditorScreenMain::WillDisappear()
 
 void SceneEditorScreenMain::Update(float32 timeElapsed)
 {
+    focusedControl = UIControlSystem::Instance()->GetFocusedControl();
     UIScreen::Update(timeElapsed);
 }
 
@@ -1197,34 +1201,36 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             }
             else if(DVKEY_0 == event->tid)
             {
-//                for(int32 i = 0; i < bodies.size(); ++i)
-//                {
-//                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
-//                    scene->SetForceLodLayer(-1);
-//                }
-//                EditorSettings::Instance()->SetForceLodLayer(-1);
                 EditorSettings::Instance()->Save();
             }
         }
         
+        
         //ckecking help
-        if (event->phase == UIEvent::PHASE_KEYCHAR)
+        UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+        UITextField *tf1 = dynamic_cast<UITextField *>(focusedControl);
+        if(!tf && !tf1)
         {
-            UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
-            if(!tf)
+            if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
             {
-                if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
+                if(helpDialog->GetParent())
                 {
-                    if(helpDialog->GetParent())
-                    {
-                        helpDialog->Close();
-                    }
-                    else 
-                    {
-                        helpDialog->Show();
-                    }
+                    helpDialog->Close();
+                }
+                else
+                {
+                    helpDialog->Show();
                 }
             }
+            
+            if(DVKEY_ESCAPE == event->tid)
+            {
+                if(materialEditor && materialEditor->GetParent())
+                {
+                    MaterialsTriggered();
+                }
+            }
+
         }
     }
 }
