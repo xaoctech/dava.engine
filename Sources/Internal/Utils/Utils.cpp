@@ -134,7 +134,7 @@ int32 GetSavedFBO()
 
 	return saveFBO;
 }
-void BindFBO(int32 fbo)
+void BindFBO(const int32 fbo)
 {
 //	if(0 != fbo)
 	{

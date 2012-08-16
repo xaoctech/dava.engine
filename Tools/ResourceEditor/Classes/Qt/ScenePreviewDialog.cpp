@@ -6,6 +6,10 @@
 ScenePreviewDialog::ScenePreviewDialog()
     :   ExtendedDialog()
 {
+	Rect dialogRect = DialogRect();
+	SetRect(dialogRect);
+
+	dialogRect.x = dialogRect.y = 0;
     draggableDialog->SetRect(DialogRect());
     
     fontLight = ControlsFactory::GetFontLight();

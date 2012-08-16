@@ -3,10 +3,11 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
+#include "../SceneEditor/SceneValidator.h"
 
 #include "../Qt/QtUtils.h"
 #include "../Qt/GUIState.h"
-
+#include "../Qt/QtMainWindowHandler.h"
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
 
@@ -28,7 +29,7 @@ void CommandOpenProject::Execute()
     
     if(0 < path.size())
     {
-		String projectPath = NormalizePath(QSTRING_TO_DAVASTRING(path));
+		String projectPath = PathnameToDAVAStyle(path);
 		if('/' != projectPath[projectPath.length() - 1])
         {
             projectPath += '/';
@@ -37,9 +38,16 @@ void CommandOpenProject::Execute()
         EditorSettings::Instance()->SetProjectPath(projectPath);
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
 
+		SceneValidator::Instance()->SetPathForChecking(projectPath);
+
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-		activeScene->ReloadLibrary();
+        if(activeScene)
+        {
+            activeScene->ReloadLibrary();
+        }
 	}
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 
@@ -60,7 +68,7 @@ void CommandOpenScene::Execute()
                                                         QString("Scene File (*.sc2)")
                                                         );
   
-		selectedScenePathname = NormalizePath(QSTRING_TO_DAVASTRING(filePath));
+		selectedScenePathname = PathnameToDAVAStyle(filePath);
     }
     
     if(0 < selectedScenePathname.size())
@@ -76,6 +84,8 @@ void CommandOpenScene::Execute()
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //New
@@ -107,7 +117,16 @@ void CommandSaveScene::Execute()
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
     if(screen && screen->SaveIsAvailable())
     {
-        String currentPath = NormalizePath(screen->CurrentScenePathname());    
+		String currentPath;
+		if(0 < screen->CurrentScenePathname().length())
+		{
+			currentPath = screen->CurrentScenePathname();    
+		}
+		else
+		{
+			currentPath = EditorSettings::Instance()->GetDataSourcePath();    
+		}
+
         String folderPathname, filename;
         FileSystem::Instance()->SplitPath(currentPath, folderPathname, filename);
         
@@ -116,7 +135,7 @@ void CommandSaveScene::Execute()
                                                         );
         if(0 < filePath.size())
         {
-			String normalizedPathname = NormalizePath(QSTRING_TO_DAVASTRING(filePath));
+			String normalizedPathname = PathnameToDAVAStyle(filePath);
 
             EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
             screen->SaveSceneToFile(normalizedPathname);
@@ -124,6 +143,8 @@ void CommandSaveScene::Execute()
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //Export

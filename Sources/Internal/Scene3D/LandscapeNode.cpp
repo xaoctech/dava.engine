@@ -1523,7 +1523,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
     UnbindMaterial();
 
 #ifdef __DAVAENGINE_OPENGL__
-	BindFBO(RenderManager::Instance()->fboViewFramebuffer);
+	BindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#ifdef __DAVAENGINE_OPENGL__
     
 	RenderManager::Instance()->SetViewport(oldViewport, true);
