@@ -157,10 +157,14 @@ void QtMainWindow::SetupToolBar()
  	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/openproject.png"));
  	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
 
+ 	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
+    
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
     ui->mainToolBar->addAction(ui->actionSaveScene);
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction(ui->actionMaterialEditor);
     ui->mainToolBar->addSeparator();
 }
 
