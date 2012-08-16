@@ -7,7 +7,6 @@ namespace Ui {
 class MainWindow;
 }
 
-class QtMainWindowHandler;
 class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -28,10 +27,7 @@ private:
 private slots:
 
     void MenuFileWillShow();
-    
-private:
-    QtMainWindowHandler *actionHandler;
-    
+        
 private:
     Ui::MainWindow *ui;
 };

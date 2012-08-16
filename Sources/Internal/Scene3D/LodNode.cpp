@@ -436,7 +436,7 @@ void LodNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
         archive->SetInt32(Format("lod%d_cnt", lodIdx), (int32)size);
         for (size_t idx = 0; idx < size; ++idx)
         {
-            for (int i = 0; i < (int)children.size(); i++) 
+            for (int32 i = 0; i < (int32)children.size(); i++) 
             {
                 if(children[i] == ld.nodes[idx])
                 {
