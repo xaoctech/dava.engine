@@ -1247,12 +1247,7 @@ void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
 {
-    if(textureTrianglesDialog && textureTrianglesDialog->GetParent())
-    {
-        textureTrianglesDialog->GetParent()->RemoveControl(textureTrianglesDialog);
-    }
-    
-    SafeRelease(textureTrianglesDialog);
+    ReleaseResizedControl(textureTrianglesDialog);
     textureTrianglesDialog = new TextureTrianglesDialog();
     
     if(textureTrianglesDialog)
@@ -1435,6 +1430,9 @@ void SceneEditorScreenMain::MaterialsTriggered()
     BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
+        ReleaseResizedControl(materialEditor);
+        materialEditor = new MaterialEditor();
+        
         materialEditor->SetWorkingScene(iBody->bodyControl->GetScene(), iBody->bodyControl->GetSelectedSGNode());
         
         AddControl(materialEditor);
@@ -1450,12 +1448,7 @@ void SceneEditorScreenMain::MaterialsTriggered()
 
 void SceneEditorScreenMain::TextureConverterTriggered()
 {
-    if(textureConverterDialog && textureConverterDialog->GetParent())
-    {
-        textureConverterDialog->GetParent()->RemoveControl(textureConverterDialog);
-    }
-    
-    SafeRelease(textureConverterDialog);
+    ReleaseResizedControl(textureConverterDialog);
     textureConverterDialog = new TextureConverterDialog(this->GetRect());
     
     if(textureConverterDialog)
@@ -1574,4 +1567,14 @@ void SceneEditorScreenMain::SetSize(const Vector2 &newSize)
     }
 }
 #endif //#if defined (DAVA_QT)
+
+void SceneEditorScreenMain::ReleaseResizedControl(UIControl *control)
+{
+    if(control && control->GetParent())
+    {
+        control->GetParent()->RemoveControl(control);
+    }
+    
+    SafeRelease(control);
+}
 

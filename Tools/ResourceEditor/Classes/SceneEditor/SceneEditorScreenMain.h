@@ -264,6 +264,8 @@ private:
     
     HelpDialog *helpDialog;
     
+    void ReleaseResizedControl(UIControl *control);
+    
 public: //For Qt integration
     void OpenFileAtScene(const String &pathToFile);
     void NewScene();
