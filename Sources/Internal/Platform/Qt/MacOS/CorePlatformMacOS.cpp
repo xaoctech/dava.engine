@@ -29,6 +29,8 @@
 =====================================================================================*/
 #include "Base/BaseTypes.h"
 #include "Platform/Qt/MacOS/CorePlatformMacOS.h"
+#include "Platform/Qt/QtLayer.h"
+
 
 #if defined(__DAVAENGINE_MACOS__)
 
@@ -120,8 +122,7 @@ void CoreMacOSPlatform::SwitchScreenToMode(eScreenMode screenMode)
 
 void CoreMacOSPlatform::Quit()
 {
-//    mainWindowController->openGLView.willQuit = true;
-//    [[NSApplication sharedApplication] terminate: nil];
+    QtLayer::Instance()->Quit();
 }
 
 Vector2 CoreMacOSPlatform::GetMousePosition()

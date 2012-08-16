@@ -3,17 +3,22 @@
 
 #include <QWidget>
 
+#include "Platform/Qt/QtLayer.h"
+
 namespace Ui {
 class DavaGLWidget;
 }
 
-class DavaGLWidget : public QWidget
+class DavaGLWidget : public QWidget, public DAVA::QtLayerDelegate
 {
     Q_OBJECT
     
 public:
     explicit DavaGLWidget(QWidget *parent = 0);
     ~DavaGLWidget();
+    
+    virtual void Quit();
+
     
 protected:
 
