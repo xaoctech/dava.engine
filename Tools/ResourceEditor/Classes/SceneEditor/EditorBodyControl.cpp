@@ -86,8 +86,9 @@ void EditorBodyControl::InitControls()
 {
     Rect rect = GetRect();
 
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
     scene3dView = new UI3DView(Rect(SCENE_OFFSET, SCENE_OFFSET,
-                                    rect.dx - 2 * SCENE_OFFSET,
+                                    rect.dx - 2 * SCENE_OFFSET - rightSideWidth,
                                     rect.dy - 2 * SCENE_OFFSET));
 }
 #else //#if defined (DAVA_QT)
@@ -1493,5 +1494,18 @@ void EditorBodyControl::OnReloadRootNodesQt()
 {
     modificationPanel->OnReloadScene();
 }
+
+void EditorBodyControl::SetSize(const Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    scene3dView->SetSize(newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET));
+    
+    sceneGraph->SetSize(newSize);
+    
+    sceneInfoControl->SetPosition(Vector2(newSize.x - rightSideWidth * 2, 0));
+}
+
 #endif //#if defined (DAVA_QT)
 

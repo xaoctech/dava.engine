@@ -20,7 +20,6 @@ public:
 
     virtual void Update(float32 timeElapsed);
 
-
     void Show(Scene * scene);
     virtual void OnFormatSelected(int32 newFormat, bool generateMimpaps);
     

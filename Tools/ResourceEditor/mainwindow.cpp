@@ -160,7 +160,6 @@ void QtMainWindow::SetupToolBar()
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
-    ui->mainToolBar->addAction(ui->actionOpenProject);
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
 }
