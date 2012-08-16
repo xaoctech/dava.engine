@@ -1907,6 +1907,9 @@
     <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
+      <Filter>Internal\Platform\Qt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">
