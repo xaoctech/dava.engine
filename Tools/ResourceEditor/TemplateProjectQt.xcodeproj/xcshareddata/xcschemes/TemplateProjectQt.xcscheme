@@ -57,6 +57,12 @@
             ReferencedContainer = "container:TemplateProjectQt.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-sceneexporter -export -indir /Users/klesch/Work/WoT/Framework/wot.sniper/DataSource/3d/ -outdir /Users/klesch/Work/WoT/Framework/wot.sniper/Data/3d -processfile Maps/test/treetest/TEST_1HI.sc2"
+            isEnabled = "NO">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
