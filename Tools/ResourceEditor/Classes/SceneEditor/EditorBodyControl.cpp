@@ -58,16 +58,15 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
     AddControl(sceneInfoControl);
 
+	CreateModificationPanel();
+    CreateLandscapeEditor();
+
 #if defined (DAVA_QT)
     scene = NULL;
     cameraController = NULL;
 #else //#if defined (DAVA_QT)
     CreateScene(true);
 #endif //#if defined (DAVA_QT)
-
-    
-	CreateModificationPanel();
-    CreateLandscapeEditor();
 
 	mainCam = 0;
 	debugCam = 0;
@@ -196,7 +195,10 @@ void EditorBodyControl::CreateScene(bool withCameras)
     dataGraph->SetScene(scene);
 	entitiesGraph->SetScene(scene);
     
-    modificationPanel->SetScene(scene);
+    if(modificationPanel)
+    {
+        modificationPanel->SetScene(scene);
+    }
 }
 
 void EditorBodyControl::ReleaseScene()
