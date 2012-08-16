@@ -195,6 +195,8 @@ void EditorBodyControl::CreateScene(bool withCameras)
     sceneGraph->SetScene(scene);
     dataGraph->SetScene(scene);
 	entitiesGraph->SetScene(scene);
+    
+    modificationPanel->SetScene(scene);
 }
 
 void EditorBodyControl::ReleaseScene()
@@ -1477,6 +1479,8 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     
     scene3dView->SetScene(scene);
 	sceneGraph->SetScene(scene);
+    
+    modificationPanel->SetScene(scene);
 }
 
 void EditorBodyControl::SetCameraController(CameraController *newCameraController)
