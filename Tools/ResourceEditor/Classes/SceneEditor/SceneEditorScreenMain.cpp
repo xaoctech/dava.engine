@@ -1418,6 +1418,31 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
 
 void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
 {
+	Rect rect = GetRect();
+
+	if(dialogBack->GetSize() != rect.GetSize())
+	{
+		ReleaseResizedControl(dialogBack);
+		ReleaseResizedControl(nodeDialog);
+
+
+		dialogBack = ControlsFactory::CreatePanelControl(rect);
+		ControlsFactory::CustomizeDialogFreeSpace(dialogBack);
+
+		Rect r;
+		r.dx = rect.dx / 2;
+		r.dy = rect.dy / 2;
+
+		r.x = rect.x + r.dx / 2;
+		r.y = rect.y + r.dy / 2;
+
+		nodeDialog = new CreateNodesDialog(r);
+		nodeDialog->SetDelegate(this);
+	}
+
+
+
+
     nodeDialog->CreateNode(nodeType);
     
     AddControl(dialogBack);
@@ -1427,6 +1452,8 @@ void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
 
 void SceneEditorScreenMain::MaterialsTriggered()
 {
+	Core::Instance()->Quit();
+
     BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
