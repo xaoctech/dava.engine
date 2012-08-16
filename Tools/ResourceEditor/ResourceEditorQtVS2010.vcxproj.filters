@@ -2030,5 +2030,8 @@
     <None Include="Data\QtIcons\savescene.png">
       <Filter>Resources</Filter>
     </None>
+    <None Include="Data\QtIcons\materialeditor.png">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>
