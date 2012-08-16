@@ -4,12 +4,12 @@
 ErrorDialog::ErrorDialog()
     :   ExtendedDialog()
 {
-    draggableDialog->SetRect(DialogRect());
+    draggableDialog->SetRect(GetDialogRect());
     
     errorList = NULL;
     RecreateListControl();
     
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
     float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
     float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
     closeButton = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.close"));
@@ -31,14 +31,14 @@ void ErrorDialog::RecreateListControl()
         SafeRelease(errorList);
     }
     
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
     errorList = new UIList(Rect(0, 0, rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT), UIList::ORIENTATION_VERTICAL);
     ControlsFactory::SetScrollbar(errorList);
     errorList->SetDelegate(this);
     draggableDialog->AddControl(errorList);
 }
 
-int32 ErrorDialog::ElementsCount(UIList * list)
+int32 ErrorDialog::ElementsCount(UIList *)
 {
     return errorMessages.size();
 }
@@ -69,7 +69,7 @@ UIListCell *ErrorDialog::CellAtIndex(UIList *list, int32 index)
     return c;
 }
 
-int32 ErrorDialog::CellHeight(UIList * list, int32 index)
+int32 ErrorDialog::CellHeight(UIList *, int32)
 {
     return (ControlsFactory::ERROR_MESSAGE_HEIGHT);
 }
@@ -80,7 +80,7 @@ void ErrorDialog::Show(const Set<String> &newErrorMessages)
     {
         errorMessages = newErrorMessages;
 
-        Rect r = DialogRect();
+        Rect r = GetDialogRect();
         draggableDialog->SetRect(r);
 
         Vector2 pos = closeButton->GetPosition();
@@ -96,20 +96,22 @@ void ErrorDialog::Show(const Set<String> &newErrorMessages)
 }
 
 
-const Rect ErrorDialog::DialogRect()
+const Rect ErrorDialog::GetDialogRect() const
 {
-    Rect baseRect(GetRect().dx/8, GetRect().dy/4, GetRect().dx * 3 / 4, GetRect().dy/2);
+    const Rect screenRect = GetScreenRect();
+    
+    Rect baseRect(screenRect.dx/8, screenRect.dy/4, screenRect.dx * 3 / 4, screenRect.dy/2);
     int32 height = (errorMessages.size() + 1) * ControlsFactory::ERROR_MESSAGE_HEIGHT;
     if(height + ControlsFactory::BUTTON_HEIGHT < baseRect.dy)
     {
         baseRect.dy = height + ControlsFactory::BUTTON_HEIGHT;
-        baseRect.y = (GetRect().dy - baseRect.dy) / 2;
+        baseRect.y = (screenRect.dy - baseRect.dy) / 2;
     }
     
     return baseRect;
 }
 
-void ErrorDialog::OnCancel(BaseObject * owner, void * userData, void * callerData)
+void ErrorDialog::OnCancel(BaseObject *, void *, void *)
 {
     Close();
 }
