@@ -115,3 +115,13 @@ void ErrorDialog::OnCancel(BaseObject *, void *, void *)
 {
     Close();
 }
+
+void ErrorDialog::UpdateSize()
+{
+    ExtendedDialog::UpdateSize();
+    
+    Rect rect = GetDialogRect();
+    float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
+    float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
+    closeButton->SetPosition(Vector2(buttonX, buttonY));
+}

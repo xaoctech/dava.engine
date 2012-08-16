@@ -95,8 +95,9 @@ public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Draw(const UIGeometricData &geometricData);
 
-    
-#if !defined (DAVA_QT)
+#if defined (DAVA_QT)
+    virtual void SetSize(const Vector2 &newSize);
+#else //#if defined (DAVA_QT)
 	virtual void OnEditSCE(const String &pathName, const String &name);
 	virtual void OnAddSCE(const String &pathName);
 	virtual void OnReloadSCE(const String &pathName);
@@ -106,7 +107,7 @@ public:
 	virtual void MenuSelected(int32 menuID, int32 itemID);
     virtual WideString MenuItemText(int32 menuID, int32 itemID);
     virtual int32 MenuItemsCount(int32 menuID);
-#endif //#if !defined (DAVA_QT)
+#endif //#if defined (DAVA_QT)
 
     // create node dialog
     virtual void DialogClosed(int32 retCode);

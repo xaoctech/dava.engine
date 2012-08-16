@@ -52,11 +52,6 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     propertyList->AddIntProperty("settingsdialog.leftpanelwidth", PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->AddIntProperty("settingsdialog.rightpanelwidth", PropertyList::PROPERTY_IS_EDITABLE);
     
-//    for(int32 i = 0; i < LodNode::MAX_LOD_LAYERS; ++i)
-//    {
-//        propertyList->AddFloatProperty(Format("Lod distance #%d", i), PropertyList::PROPERTY_IS_EDITABLE);
-//    }
-    
     propertyList->AddBoolProperty("settingsdialog.drawgrid", PropertyList::PROPERTY_IS_EDITABLE);
 
 	propertyList->AddBoolProperty("settingsdialog.imposters", PropertyList::PROPERTY_IS_EDITABLE);
@@ -68,7 +63,7 @@ SettingsDialog::~SettingsDialog()
     SafeRelease(dialogPanel);
 }
 
-void SettingsDialog::OnClose(BaseObject * object, void * userData, void * callerData)
+void SettingsDialog::OnClose(BaseObject * , void * , void * )
 {
     for(int32 iLod = 1; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
     {
@@ -97,7 +92,7 @@ void SettingsDialog::WillAppear()
     
     String language = EditorSettings::Instance()->GetLanguage();
     int32 index = 0;
-    for(int32 i = 0; i < languages.size(); ++i)
+    for(int32 i = 0; i < (int32)languages.size(); ++i)
     {
         if(language == languages[i])
         {
@@ -116,21 +111,27 @@ void SettingsDialog::WillAppear()
     propertyList->SetIntPropertyValue("settingsdialog.leftpanelwidth", EditorSettings::Instance()->GetLeftPanelWidth());
     propertyList->SetIntPropertyValue("settingsdialog.rightpanelwidth", EditorSettings::Instance()->GetRightPanelWidth());
     
-//    for(int32 i = 0; i < LodNode::MAX_LOD_LAYERS; ++i)
-//    {
-//        propertyList->SetFloatPropertyValue(Format("Lod distance #%d", i), EditorSettings::Instance()->GetLodLayerDistance(i));
-//    }
-    
     propertyList->SetBoolPropertyValue("settingsdialog.drawgrid", EditorSettings::Instance()->GetDrawGrid());
 	propertyList->SetBoolPropertyValue("settingsdialog.imposters", EditorSettings::Instance()->GetEnableImposters());
+    
+    
+    UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
+    if(activeScreen)
+    {
+        Vector2 screenSize = activeScreen->GetSize();
+        Vector2 dialogSize = dialogPanel->GetSize();
+        dialogPanel->SetPosition((screenSize - dialogSize) / 2);
+
+        this->SetSize(screenSize);
+    }
 }
 
-void SettingsDialog::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void SettingsDialog::OnStringPropertyChanged(PropertyList *, const String &, const String &)
 {
     
 }
 
-void SettingsDialog::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
+void SettingsDialog::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
 {
     if ("settingsdialog.autosave" == forKey) 
     {
@@ -157,21 +158,9 @@ void SettingsDialog::OnFloatPropertyChanged(PropertyList *forList, const String 
         EditorSettings::Instance()->SetCameraSpeed(3, newValue);
         EditorSettings::Instance()->Save();
     }
-//    else 
-//    {   //LODS
-//        String DISTANCE_ID = "Lod distance #";
-//        String::size_type distancePos = forKey.find(DISTANCE_ID);
-//        if(String::npos != distancePos)
-//        {
-//            String numStr = forKey.substr(DISTANCE_ID.length());
-//            int32 lodIndex = atoi(numStr.c_str());
-//            EditorSettings::Instance()->SetLodLayerDistance(lodIndex, newValue);
-//            EditorSettings::Instance()->Save();
-//        }
-//    }
 }
 
-void SettingsDialog::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+void SettingsDialog::OnIntPropertyChanged(PropertyList *, const String &forKey, int newValue)
 {
     if("settingsdialog.screenwidth" == forKey)
     {
@@ -195,7 +184,7 @@ void SettingsDialog::OnIntPropertyChanged(PropertyList *forList, const String &f
     }
 }
 
-void SettingsDialog::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+void SettingsDialog::OnBoolPropertyChanged(PropertyList *, const String &forKey, bool newValue)
 {
     if("settingsdialog.output" == forKey)
     {
@@ -214,7 +203,7 @@ void SettingsDialog::OnBoolPropertyChanged(PropertyList *forList, const String &
 	}
 }
 
-void SettingsDialog::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
+void SettingsDialog::OnComboIndexChanged(PropertyList *, const String &forKey, int32 , const String &newItemKey)
 {
     if("settingsdialog.language" == forKey)
     {

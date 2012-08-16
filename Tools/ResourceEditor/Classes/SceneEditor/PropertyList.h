@@ -102,7 +102,7 @@ public:
     virtual int32 ElementsCount(UIList *forList);
 	virtual UIListCell *CellAtIndex(UIList *forList, int32 index);
 	virtual int32 CellWidth(UIList *forList, int32 index)//calls only for horizontal orientation
-	{return 20;};
+	{return forList->GetSize().x;};
 	virtual int32 CellHeight(UIList *forList, int32 index);//calls only for vertical orientation
 	virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
     
@@ -112,7 +112,10 @@ public:
     
     const List<UIControl*> &GetVisibleCells();
 
-    
+#if defined (DAVA_QT)
+    virtual void SetSize(const Vector2 &newSize);
+#endif //#if defined (DAVA_QT)
+
 protected:
     
 //    PropertyCellData *GetDataForIndex(int32 index);

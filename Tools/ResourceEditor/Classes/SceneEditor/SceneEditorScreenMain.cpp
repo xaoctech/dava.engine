@@ -52,7 +52,6 @@ void SceneEditorScreenMain::LoadResources()
     textureConverterDialog = new TextureConverterDialog(fullRect);
     materialEditor = new MaterialEditor();
 	particlesEditor = new ParticlesEditorControl();
-
     
     InitControls();
     
@@ -1248,6 +1247,14 @@ void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
 {
+    if(textureTrianglesDialog && textureTrianglesDialog->GetParent())
+    {
+        textureTrianglesDialog->GetParent()->RemoveControl(textureTrianglesDialog);
+    }
+    
+    SafeRelease(textureTrianglesDialog);
+    textureTrianglesDialog = new TextureTrianglesDialog();
+    
     if(textureTrianglesDialog)
     {
         textureTrianglesDialog->Show(polygonGroup);
@@ -1443,6 +1450,14 @@ void SceneEditorScreenMain::MaterialsTriggered()
 
 void SceneEditorScreenMain::TextureConverterTriggered()
 {
+    if(textureConverterDialog && textureConverterDialog->GetParent())
+    {
+        textureConverterDialog->GetParent()->RemoveControl(textureConverterDialog);
+    }
+    
+    SafeRelease(textureConverterDialog);
+    textureConverterDialog = new TextureConverterDialog(this->GetRect());
+    
     if(textureConverterDialog)
     {
         BodyItem *body = FindCurrentBody();
@@ -1546,4 +1561,17 @@ void SceneEditorScreenMain::ProcessBeast()
 	bodies[0]->bodyControl->BeastProcessScene();
 #endif //#ifdef __DAVAENGINE_BEAST__
 }
+
+#if defined (DAVA_QT)
+void SceneEditorScreenMain::SetSize(const Vector2 &newSize)
+{
+    UIScreen::SetSize(newSize);
+    
+    Vector2 bodySize(newSize.x, newSize.y - ControlsFactory::BUTTON_HEIGHT - 1);
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
+    {
+        bodies[i]->bodyControl->SetSize(bodySize);
+    }
+}
+#endif //#if defined (DAVA_QT)
 

@@ -17,6 +17,8 @@ GraphBase::GraphBase(GraphBaseDelegate *newDelegate, const Rect &rect)
 
 GraphBase::~GraphBase()
 {
+    SafeRelease(refreshButton);
+    
     SafeRelease(workingScene);
 
     SafeRelease(graphPanel);
@@ -41,16 +43,14 @@ void GraphBase::CreatePropertyPanel(const Rect &rect)
     int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth(); 
     
     propertyPanelRect = Rect(rect.dx - rightSideWidth, 0, rightSideWidth, rect.dy);
-    propertyPanel = ControlsFactory::CreatePanelControl(propertyPanelRect);
+    propertyPanel = ControlsFactory::CreatePanelControl(propertyPanelRect, false);
 
-    UIButton *refreshButton = ControlsFactory::CreateButton(Rect(0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT, 
+    refreshButton = ControlsFactory::CreateButton(Rect(0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT, 
                                                                  propertyPanelRect.dx, ControlsFactory::BUTTON_HEIGHT), 
                                                             LocalizedString(L"panel.refresh"));
     refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &GraphBase::OnRefreshPropertyControl));
     
     propertyPanel->AddControl(refreshButton);
-    
-    SafeRelease(refreshButton);
     
     propertyPanelRect.x = propertyPanelRect.y = 0;
     propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
@@ -80,7 +80,7 @@ void GraphBase::SetScene(EditorScene *scene)
     workingScene = SafeRetain(scene);
 }
 
-void GraphBase::OnRefreshPropertyControl(DAVA::BaseObject *object, void *userData, void *callerData)
+void GraphBase::OnRefreshPropertyControl(DAVA::BaseObject *, void *, void *)
 {
     RefreshProperties();
 }
