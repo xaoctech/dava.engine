@@ -1452,8 +1452,6 @@ void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
 
 void SceneEditorScreenMain::MaterialsTriggered()
 {
-	Core::Instance()->Quit();
-
     BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
