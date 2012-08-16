@@ -885,6 +885,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">RCC QtIcons.qrc</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">RCC QtIcons.qrc</Message>
     </CustomBuild>
+    <None Include="Data\QtIcons\materialeditor.png" />
     <None Include="Data\QtIcons\newscene.png" />
     <None Include="Data\QtIcons\openproject.png" />
     <None Include="Data\QtIcons\openscene.png" />
