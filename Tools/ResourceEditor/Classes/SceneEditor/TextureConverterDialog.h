@@ -2,7 +2,6 @@
 #define __TEXTURE_CONVERTER_DIALOG_H__
 
 #include "DAVAEngine.h"
-#include "ExtendedDialog.h"
 #include "TextureFormatDialog.h"
 
 using namespace DAVA;

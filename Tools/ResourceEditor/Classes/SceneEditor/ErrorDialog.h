@@ -20,7 +20,7 @@ public:
     
 protected:
 
-    virtual const Rect DialogRect();
+    virtual const Rect GetDialogRect() const;
     void OnCancel(BaseObject * owner, void * userData, void * callerData);
 
     void RecreateListControl();

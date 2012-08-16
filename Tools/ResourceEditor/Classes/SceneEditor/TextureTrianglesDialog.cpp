@@ -7,7 +7,7 @@ TextureTrianglesDialog::TextureTrianglesDialog()
     workingPolygonGroup = NULL;
     previewSprite = NULL;
 
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
     draggableDialog->SetRect(rect);
 
     rect.x = rect.y = 0;
@@ -46,9 +46,9 @@ TextureTrianglesDialog::~TextureTrianglesDialog()
     SafeRelease(combobox);
 }
 
-const Rect TextureTrianglesDialog::DialogRect()
+const Rect TextureTrianglesDialog::GetDialogRect() const
 {
-    Rect rect = GetRect();
+    Rect rect = GetScreenRect();
     
     if(rect.dx < rect.dy)
     {
@@ -59,8 +59,8 @@ const Rect TextureTrianglesDialog::DialogRect()
         rect.dx = rect.dy - ControlsFactory::BUTTON_HEIGHT * 2;
     }
     
-    rect.y = (GetRect().dy - rect.dy) / 2;
-    rect.x = (GetRect().dx - rect.dx) / 2;
+    rect.y = (GetScreenRect().dy - rect.dy) / 2;
+    rect.x = (GetScreenRect().dx - rect.dx) / 2;
     
     return rect;
 }
@@ -73,7 +73,7 @@ void TextureTrianglesDialog::Close()
 }
 
 
-void TextureTrianglesDialog::OnClose(BaseObject * owner, void * userData, void * callerData)
+void TextureTrianglesDialog::OnClose(BaseObject *, void *, void *)
 {
     Close();
 }
@@ -185,7 +185,7 @@ void TextureTrianglesDialog::FillRenderTarget(int32 textureIndex)
     texturePreview->SetSprite(previewSprite, 0);
 }
 
-void TextureTrianglesDialog::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
+void TextureTrianglesDialog::OnItemSelected(ComboBox *, const String &, int itemIndex)
 {
     FillRenderTarget(itemIndex);
 }
