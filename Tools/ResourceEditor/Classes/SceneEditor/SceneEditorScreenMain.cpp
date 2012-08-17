@@ -31,6 +31,12 @@
 
 #endif //#if defined (DAVA_QT)
 
+SceneEditorScreenMain::SceneEditorScreenMain()
+	:	UIScreen()
+{
+	particlesEditor = NULL;
+
+}
 
 void SceneEditorScreenMain::LoadResources()
 {
