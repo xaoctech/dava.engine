@@ -37,6 +37,7 @@ void CommandOpenProject::Execute()
         
         EditorSettings::Instance()->SetProjectPath(projectPath);
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
+		EditorSettings::Instance()->Save();
 
 		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
