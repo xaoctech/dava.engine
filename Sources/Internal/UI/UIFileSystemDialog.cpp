@@ -109,7 +109,7 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     
     historyPosition = 0;
-    historyBackwardButton = new UIButton(Rect(border, (float32)positiveButton->relativePosition.y, (float32)cellH, (float32)cellH));
+    historyBackwardButton = new UIButton(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)cellH, (float32)cellH));
     historyBackwardButton->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     historyBackwardButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.5f, 0.6f, 0.5f, 0.5f));
     historyBackwardButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
@@ -138,10 +138,10 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
 
 //    textField = new UITextField(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)negativeButton->relativePosition.x - border*2, (float32)cellH));
-    int32 textFieldOffset = historyForwardButton->relativePosition.x + historyForwardButton->size.x + border;
+    float32 textFieldOffset = historyForwardButton->relativePosition.x + historyForwardButton->size.x + border;
     textField = new UITextField(Rect(textFieldOffset,
                                      (float32)positiveButton->relativePosition.y, 
-                                     (float32)negativeButton->relativePosition.x - border - textFieldOffset, (float32)cellH));
+                                     (float32)(negativeButton->relativePosition.x - border - textFieldOffset), (float32)cellH));
     textField->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     textField->GetBackground()->SetColor(Color(0.25f, 0.25f, 0.25f, 0.25f));
     textField->SetFont(f);
