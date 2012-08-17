@@ -19,7 +19,7 @@ LibraryCommand::LibraryCommand(const DAVA::String &pathname, eCommandType _type)
 {
 }
 
-bool LibraryCommand::IsExtensionCorrect(const DAVA::String &extenstionToChecking)
+bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 {
     String extension = FileSystem::Instance()->GetExtension(filePathname);
     return (0 == CompareStrings(extension, extenstionToChecking));
@@ -36,7 +36,7 @@ CommandAddScene::CommandAddScene(const DAVA::String &pathname)
 
 void CommandAddScene::Execute()
 {
-    DVASSERT(IsExtensionCorrect(String(".sc2")) && "Wrong extension");
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     
     SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
     sceneData->AddScene(filePathname);
@@ -44,7 +44,7 @@ void CommandAddScene::Execute()
 
 void CommandAddScene::Cancel()
 {
-    DVASSERT(IsExtensionCorrect(String(".sc2")) && "Wrong extension");
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
 
     //TODO: need code here
 }
@@ -59,7 +59,7 @@ CommandEditScene::CommandEditScene(const DAVA::String &pathname)
 
 void CommandEditScene::Execute()
 {
-    DVASSERT(IsExtensionCorrect(String(".sc2")) && "Wrong extension");
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     
     String path, name;
     FileSystem::Instance()->SplitPath(filePathname, path, name);
@@ -84,7 +84,7 @@ CommandReloadScene::CommandReloadScene(const DAVA::String &pathname)
 
 void CommandReloadScene::Execute()
 {
-    DVASSERT(IsExtensionCorrect(String(".sc2")) && "Wrong extension");
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
 
     SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
     sceneData->ReloadRootNode(filePathname);
@@ -92,7 +92,7 @@ void CommandReloadScene::Execute()
 
 void CommandReloadScene::Cancel()
 {
-    DVASSERT(IsExtensionCorrect(String(".sc2")) && "Wrong extension");
+    DVASSERT(CheckExtension(String(".sc2")) && "Wrong extension");
     //TODO: need code here
 }
 
@@ -106,7 +106,7 @@ CommandConvertScene::CommandConvertScene(const DAVA::String &pathname)
 
 void CommandConvertScene::Execute()
 {
-    DVASSERT(IsExtensionCorrect(String(".dae")) && "Wrong extension");
+    DVASSERT(CheckExtension(String(".dae")) && "Wrong extension");
 
     ConvertDaeToSce(filePathname);
     
