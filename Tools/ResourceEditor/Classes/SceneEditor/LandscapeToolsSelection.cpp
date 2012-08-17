@@ -3,20 +3,20 @@
 #include "ControlsFactory.h"
 #include "LandscapeTool.h"
 
-#pragma mark  --LandscapeToolsSelection
+#include "EditorSettings.h"
+
 LandscapeToolsSelection::LandscapeToolsSelection(LandscapeToolsSelectionDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
+    ,   parentBodyControl(NULL)
     ,   selectedTool(NULL)
     ,   delegate(newDelegate)
-    ,   parentBodyControl(NULL)
 {
     ControlsFactory::CustomizeDialog(this);
     
     Rect closeRect(rect.dx - ControlsFactory::BUTTON_HEIGHT, 0, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT);
-    UIButton *closeButton = ControlsFactory::CreateCloseWindowButton(closeRect);
+    closeButton = ControlsFactory::CreateCloseWindowButton(closeRect);
     closeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LandscapeToolsSelection::OnClose));
     AddControl(closeButton);
-    SafeRelease(closeButton);
     
     toolsList = new UIList(Rect(0, 0, rect.dx - ControlsFactory::BUTTON_HEIGHT, rect.dy), UIList::ORIENTATION_VERTICAL);
     toolsList->SetDelegate(this);
@@ -29,6 +29,7 @@ LandscapeToolsSelection::LandscapeToolsSelection(LandscapeToolsSelectionDelegate
 
 LandscapeToolsSelection::~LandscapeToolsSelection()
 {
+    SafeRelease(closeButton);
     SafeRelease(toolsList);
     
     ReleaseTools();
@@ -42,7 +43,7 @@ LandscapeTool * LandscapeToolsSelection::Tool()
     return selectedTool;
 }
 
-void LandscapeToolsSelection::OnClose(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsSelection::OnClose(DAVA::BaseObject *, void *, void *)
 {
     Close();
 }
@@ -68,7 +69,7 @@ void LandscapeToolsSelection::SetBodyControl(DAVA::UIControl *parent)
     parentBodyControl = parent;
 }
 
-void LandscapeToolsSelection::OnToolSelected(BaseObject * object, void * userData, void * callerData)
+void LandscapeToolsSelection::OnToolSelected(BaseObject * , void * userData, void * )
 {
     if(delegate)
     {
@@ -79,6 +80,8 @@ void LandscapeToolsSelection::OnToolSelected(BaseObject * object, void * userDat
 
 void LandscapeToolsSelection::WillAppear()
 {
+    UpdateSize();
+
     if(!selectedTool)
     {
         selectedTool = (tools.size()) ? tools[0] : NULL;
@@ -119,7 +122,7 @@ void LandscapeToolsSelection::EnumerateTools()
 
 void LandscapeToolsSelection::ReleaseTools()
 {
-    for(int32 iTool = 0; iTool < tools.size(); ++iTool)
+    for(int32 iTool = 0; iTool < (int32)tools.size(); ++iTool)
     {
         SafeRelease(tools[iTool]);
     }
@@ -134,7 +137,6 @@ void LandscapeToolsSelection::SetDelegate(LandscapeToolsSelectionDelegate *newDe
 
 
 
-#pragma mark  --UIListDelegate
 int32 LandscapeToolsSelection::ElementsCount(UIList * list)
 {
     int32 countInRow = (list->GetSize().dx - ControlsFactory::BUTTON_HEIGHT) / ControlsFactory::TOOLS_HEIGHT;
@@ -164,7 +166,7 @@ UIListCell *LandscapeToolsSelection::CellAtIndex(UIList *list, int32 index)
         UIControl *toolControl = GetToolControl(i, cell);
         toolControl->RemoveAllEvents();
         
-        if(toolIndex < tools.size())
+        if(toolIndex < (int32)tools.size())
         {
             toolControl->SetSprite(tools[toolIndex]->sprite, 0);
             toolControl->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, 
@@ -198,7 +200,34 @@ UIControl * LandscapeToolsSelection::GetToolControl(int32 indexAtRow, DAVA::UILi
     return c;
 }
 
-int32 LandscapeToolsSelection::CellHeight(UIList * list, int32 index)
+int32 LandscapeToolsSelection::CellHeight(UIList *, int32)
 {
     return ControlsFactory::TOOLS_HEIGHT;
+}
+
+void LandscapeToolsSelection::UpdateSize()
+{
+    UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
+    if(activeScreen)
+    {
+        Rect screenRect = activeScreen->GetRect();
+
+        Rect controlRect(0, screenRect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT,
+                              screenRect.dx - EditorSettings::Instance()->GetRightPanelWidth(), ControlsFactory::OUTPUT_PANEL_HEIGHT);
+        
+        this->SetRect(controlRect);
+        
+        closeButton->SetPosition(Vector2(controlRect.dx - ControlsFactory::BUTTON_HEIGHT, 0));
+
+        if(toolsList && toolsList->GetParent())
+        {
+            toolsList->GetParent()->RemoveControl(toolsList);
+        }
+        SafeRelease(toolsList);
+        
+        toolsList = new UIList(Rect(0, 0, controlRect.dx - ControlsFactory::BUTTON_HEIGHT, controlRect.dy), UIList::ORIENTATION_VERTICAL);
+        toolsList->SetDelegate(this);
+        ControlsFactory::SetScrollbar(toolsList);
+        AddControl(toolsList);
+    }
 }

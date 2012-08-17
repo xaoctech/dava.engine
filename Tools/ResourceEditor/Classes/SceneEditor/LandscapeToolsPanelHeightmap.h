@@ -33,6 +33,8 @@ public:
     //LandscapeToolsSelectionDelegate
     virtual void OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool);
 
+    virtual void SetSize(const Vector2 &newSize);
+
 protected:
 
     void OnDropperTool(BaseObject * object, void * userData, void * callerData);
@@ -69,6 +71,8 @@ protected:
     UICheckBox *showGrid;
     
     float32 prevHeightValue;
+    
+    UIControl *line;
 };
 
 #endif // __LANDSCAPE_TOOLS_PANEL_HEIGHTMAP_H__
