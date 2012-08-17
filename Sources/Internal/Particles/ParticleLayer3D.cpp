@@ -126,7 +126,10 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 		RenderManager::Instance()->SetRenderData(renderData);
 
+		RenderManager::Instance()->FlushState();
+		RenderManager::Instance()->AttachRenderData();
  		material->PrepareRenderState();
+
 
 		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 	}
