@@ -207,18 +207,22 @@ int32 LandscapeToolsSelection::CellHeight(UIList *, int32)
 
 void LandscapeToolsSelection::UpdateSize()
 {
-    UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
-    if(activeScreen)
+    if(parentBodyControl)
     {
-        Rect screenRect = activeScreen->GetRect();
+        Rect parentRect = parentBodyControl->GetRect();
 
-        Rect controlRect(0, screenRect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT,
-                              screenRect.dx - EditorSettings::Instance()->GetRightPanelWidth(), ControlsFactory::OUTPUT_PANEL_HEIGHT);
+#if defined(DAVA_QT)
+        Rect controlRect(0, parentRect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT,
+                         parentRect.dx - EditorSettings::Instance()->GetRightPanelWidth(), ControlsFactory::OUTPUT_PANEL_HEIGHT);
+#else //#if defined(DAVA_QT)
+        Rect controlRect(EditorSettings::Instance()->GetLeftPanelWidth(), parentRect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT,
+                         parentRect.dx - EditorSettings::Instance()->GetRightPanelWidth() - EditorSettings::Instance()->GetLeftPanelWidth(), ControlsFactory::OUTPUT_PANEL_HEIGHT);
+#endif //#if defined(DAVA_QT)
         
         this->SetRect(controlRect);
         
         closeButton->SetPosition(Vector2(controlRect.dx - ControlsFactory::BUTTON_HEIGHT, 0));
-
+        
         if(toolsList && toolsList->GetParent())
         {
             toolsList->GetParent()->RemoveControl(toolsList);
@@ -230,4 +234,5 @@ void LandscapeToolsSelection::UpdateSize()
         ControlsFactory::SetScrollbar(toolsList);
         AddControl(toolsList);
     }
+    
 }
