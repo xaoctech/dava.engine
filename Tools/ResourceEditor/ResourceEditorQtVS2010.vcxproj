@@ -434,6 +434,7 @@
     <ClCompile Include="QtBuildTool\moc_QtMainWindowHandler.cpp" />
     <ClCompile Include="QtBuildTool\moc_SceneData.cpp" />
     <ClCompile Include="QtBuildTool\moc_SceneGraphModel.cpp" />
+    <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastLight.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastManager.h" />

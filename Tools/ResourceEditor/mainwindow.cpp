@@ -152,14 +152,12 @@ void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &ico
 
 void QtMainWindow::SetupToolBar()
 {
-#if defined (__DAVAENGINE_MACOS__)
  	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/newscene.png"));
  	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/openscene.png"));
  	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/openproject.png"));
  	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
 
  	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
-#endif //#if defined (__DAVAENGINE_MACOS__)
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
