@@ -84,6 +84,8 @@ public:
 
 public:
     
+	SceneEditorScreenMain();
+
     struct BodyItem;
 
 
