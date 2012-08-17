@@ -3,6 +3,8 @@
 #include "ControlsFactory.h"
 #include "LandscapeTool.h"
 
+#include "EditorSettings.h"
+
 LandscapeToolsPanel::LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   UIControl(rect)
     ,   delegate(newDelegate)
@@ -67,6 +69,7 @@ void LandscapeToolsPanel::AddSliderHeader(UISlider *slider, const WideString &te
     rect.x -= rect.dx - OFFSET;
     
     UIStaticText *textControl = new UIStaticText(rect);
+    textControl->SetName(WStringToString(text));
     textControl->SetText(text);
     textControl->SetFont(ControlsFactory::GetFontLight());
     textControl->SetAlign(ALIGN_VCENTER | ALIGN_RIGHT);
@@ -112,7 +115,7 @@ void LandscapeToolsPanel::SetSelectionPanel(LandscapeToolsSelection *newPanel)
 }
 
 
-void LandscapeToolsPanel::OnBrushTool(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanel::OnBrushTool(DAVA::BaseObject *, void *, void *)
 {
     if(selectedTool == selectedBrushTool)
     {
@@ -149,6 +152,8 @@ void LandscapeToolsPanel::WillAppear()
         }
         ToolIconSelected(brushIcon);
     }
+    
+    UpdateRect();
 }
 
 void LandscapeToolsPanel::Input(DAVA::UIEvent *currentInput)
@@ -176,7 +181,7 @@ void LandscapeToolsPanel::Input(DAVA::UIEvent *currentInput)
     }
 }
 
-void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *, void *, void *)
 {
     if(selectedBrushTool)
     {
@@ -184,7 +189,7 @@ void LandscapeToolsPanel::OnStrengthChanged(DAVA::BaseObject *object, void *user
     }
 }
 
-void LandscapeToolsPanel::OnSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanel::OnSizeChanged(DAVA::BaseObject *, void *, void *)
 {
     if(selectedBrushTool)
     {
@@ -198,9 +203,7 @@ void LandscapeToolsPanel::ToolIconSelected(UIControl *focused)
 }
 
 
-
-#pragma mark  --LandscapeToolsSelectionDelegate
-void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
+void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * , LandscapeTool *newTool)
 {
     DVASSERT(newTool);
     
@@ -218,8 +221,46 @@ void LandscapeToolsPanel::OnToolSelected(LandscapeToolsSelection * forControl, L
     }
 }
 
-#pragma mark  --UICheckBoxDelegate
-void LandscapeToolsPanel::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+void LandscapeToolsPanel::ValueChanged(UICheckBox *, bool )
 {
+}
+
+
+void LandscapeToolsPanel::UpdateRect()
+{
+    UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
+    if(activeScreen)
+    {
+        Vector2 screenSize = activeScreen->GetSize();
+        
+        Vector2 panelSize = this->GetSize();
+        this->SetSize(Vector2(screenSize.x - EditorSettings::Instance()->GetRightPanelWidth(), panelSize.y));
+        
+        Vector2 panelPosition = this->GetPosition();
+        this->SetPosition(Vector2(0, panelPosition.y));
+    }
+}
+
+void LandscapeToolsPanel::SetSize(const Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+    
+    sizeSlider->SetPosition(Vector2(newSize.x - SLIDER_WIDTH - TEXTFIELD_WIDTH, 0));
+    strengthSlider->SetPosition(Vector2(newSize.x - SLIDER_WIDTH - TEXTFIELD_WIDTH, ControlsFactory::TOOLS_HEIGHT / 2));
+
+    SetSliderHeaderPoition(sizeSlider, LocalizedString(L"landscapeeditor.size"));
+    SetSliderHeaderPoition(strengthSlider, LocalizedString(L"landscapeeditor.strength"));
+}
+
+void LandscapeToolsPanel::SetSliderHeaderPoition(UISlider *slider, const WideString &headerText)
+{
+    UIStaticText *textControl = static_cast<UIStaticText *>(this->FindByName(WStringToString(headerText)));
+    if(textControl)
+    {
+        Rect sliderRect = slider->GetRect();
+        Vector2 textPosition = textControl->GetPosition();
+
+        textControl->SetPosition(Vector2(sliderRect.x - OFFSET - sliderRect.dx, textPosition.y));
+    }
 }
 
