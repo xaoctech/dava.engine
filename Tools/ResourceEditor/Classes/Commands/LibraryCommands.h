@@ -11,7 +11,7 @@ public:
     
 protected:
     
-    bool IsExtensionCorrect(const DAVA::String &extenstionToChecking);
+    bool CheckExtension(const DAVA::String &extenstionToChecking);
     
 protected:
     

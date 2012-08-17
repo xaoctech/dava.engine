@@ -378,7 +378,7 @@ bool SceneFile::ReadMaterial()
 	mat->reflectivity = materialDef.reflectivity;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
-    mat->SetOpaque(materialDef.hasOpacity);
+    mat->SetOpaque(materialDef.hasOpacity != 0);
 	
     // retain object when we put it to array
     materials.push_back(SafeRetain(mat));
@@ -658,7 +658,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 			sceneFP->Read(&polyGroupIndex, sizeof(int32));
 			sceneFP->Read(&materialIndex, sizeof(int32));
             
-            DVASSERT(materialIndex < materials.size());
+            DVASSERT(materialIndex < (int)materials.size());
 
 			if (debugLogEnabled)Logger::Debug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1), meshIndex, polyGroupIndex, materialIndex); 
 		
