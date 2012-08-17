@@ -930,6 +930,9 @@
     <ClCompile Include="Classes\Qt\PointerHolder.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
+    <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
