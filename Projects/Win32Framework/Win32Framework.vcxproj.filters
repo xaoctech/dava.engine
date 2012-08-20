@@ -345,9 +345,6 @@
     <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h">
       <Filter>Internal\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Camera.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Math\Circle.h">
       <Filter>Internal\Math</Filter>
     </ClInclude>

@@ -293,7 +293,6 @@
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h" />
-    <ClInclude Include="..\..\Sources\Internal\Math\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Circle.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Color.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Math2D.h" />
