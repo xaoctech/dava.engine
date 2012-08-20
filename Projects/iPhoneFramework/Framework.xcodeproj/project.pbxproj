@@ -295,7 +295,6 @@
 		FECFB60912E5904500C71562 /* AABBox3.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39012E5904400C71562 /* AABBox3.h */; };
 		FECFB60A12E5904500C71562 /* BezierSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB39112E5904400C71562 /* BezierSpline.cpp */; };
 		FECFB60B12E5904500C71562 /* BezierSpline.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39212E5904400C71562 /* BezierSpline.h */; };
-		FECFB60C12E5904500C71562 /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39312E5904400C71562 /* Camera.h */; };
 		FECFB60F12E5904500C71562 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39612E5904400C71562 /* Color.h */; };
 		FECFB61012E5904500C71562 /* Math2D.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39712E5904400C71562 /* Math2D.h */; };
 		FECFB61112E5904500C71562 /* Math2DTemplateClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39812E5904400C71562 /* Math2DTemplateClasses.h */; };
@@ -844,7 +843,6 @@
 		FECFB39012E5904400C71562 /* AABBox3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AABBox3.h; sourceTree = "<group>"; };
 		FECFB39112E5904400C71562 /* BezierSpline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierSpline.cpp; sourceTree = "<group>"; };
 		FECFB39212E5904400C71562 /* BezierSpline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierSpline.h; sourceTree = "<group>"; };
-		FECFB39312E5904400C71562 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		FECFB39612E5904400C71562 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		FECFB39712E5904400C71562 /* Math2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math2D.h; sourceTree = "<group>"; };
 		FECFB39812E5904400C71562 /* Math2DTemplateClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math2DTemplateClasses.h; sourceTree = "<group>"; };
@@ -1467,7 +1465,6 @@
 				FECFB39012E5904400C71562 /* AABBox3.h */,
 				FECFB39112E5904400C71562 /* BezierSpline.cpp */,
 				FECFB39212E5904400C71562 /* BezierSpline.h */,
-				FECFB39312E5904400C71562 /* Camera.h */,
 				FECFB39612E5904400C71562 /* Color.h */,
 				FECFB39712E5904400C71562 /* Math2D.h */,
 				FEB6037612E8ED7200C749A1 /* Math2D.cpp */,
@@ -1951,7 +1948,6 @@
 				FECFB60712E5904500C71562 /* AABBox2.h in Headers */,
 				FECFB60912E5904500C71562 /* AABBox3.h in Headers */,
 				FECFB60B12E5904500C71562 /* BezierSpline.h in Headers */,
-				FECFB60C12E5904500C71562 /* Camera.h in Headers */,
 				FECFB60F12E5904500C71562 /* Color.h in Headers */,
 				FECFB61012E5904500C71562 /* Math2D.h in Headers */,
 				FECFB61112E5904500C71562 /* Math2DTemplateClasses.h in Headers */,
