@@ -58,16 +58,15 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
     AddControl(sceneInfoControl);
 
+	CreateModificationPanel();
+    CreateLandscapeEditor();
+
 #if defined (DAVA_QT)
     scene = NULL;
     cameraController = NULL;
 #else //#if defined (DAVA_QT)
     CreateScene(true);
 #endif //#if defined (DAVA_QT)
-
-    
-	CreateModificationPanel();
-    CreateLandscapeEditor();
 
 	mainCam = 0;
 	debugCam = 0;
@@ -86,8 +85,9 @@ void EditorBodyControl::InitControls()
 {
     Rect rect = GetRect();
 
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
     scene3dView = new UI3DView(Rect(SCENE_OFFSET, SCENE_OFFSET,
-                                    rect.dx - 2 * SCENE_OFFSET,
+                                    rect.dx - 2 * SCENE_OFFSET - rightSideWidth,
                                     rect.dy - 2 * SCENE_OFFSET));
 }
 #else //#if defined (DAVA_QT)
@@ -194,6 +194,11 @@ void EditorBodyControl::CreateScene(bool withCameras)
     sceneGraph->SetScene(scene);
     dataGraph->SetScene(scene);
 	entitiesGraph->SetScene(scene);
+    
+    if(modificationPanel)
+    {
+        modificationPanel->SetScene(scene);
+    }
 }
 
 void EditorBodyControl::ReleaseScene()
@@ -1476,6 +1481,8 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     
     scene3dView->SetScene(scene);
 	sceneGraph->SetScene(scene);
+    
+    modificationPanel->SetScene(scene);
 }
 
 void EditorBodyControl::SetCameraController(CameraController *newCameraController)
@@ -1493,5 +1500,18 @@ void EditorBodyControl::OnReloadRootNodesQt()
 {
     modificationPanel->OnReloadScene();
 }
+
+void EditorBodyControl::SetSize(const Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    scene3dView->SetSize(newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET));
+    
+    sceneGraph->SetSize(newSize);
+    
+    sceneInfoControl->SetPosition(Vector2(newSize.x - rightSideWidth * 2, 0));
+}
+
 #endif //#if defined (DAVA_QT)
 

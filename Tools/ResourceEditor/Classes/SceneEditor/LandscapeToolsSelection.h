@@ -47,6 +47,8 @@ protected:
     void EnumerateTools();
     void ReleaseTools();
 
+    void UpdateSize();
+    
     
     UIControl *parentBodyControl;
 
@@ -54,6 +56,7 @@ protected:
     Vector<LandscapeTool *>tools;
     
     UIList *toolsList;
+    UIButton *closeButton;
     
     LandscapeToolsSelectionDelegate *delegate;
 };

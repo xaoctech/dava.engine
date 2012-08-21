@@ -75,7 +75,7 @@ public:
     
 protected:
 
-    virtual const Rect DialogRect();
+    virtual const Rect GetDialogRect() const;
 
     void SetColor(const Color & newColor, bool updateColorMap, bool updateSelector);
 

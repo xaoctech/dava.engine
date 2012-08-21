@@ -21,9 +21,10 @@ public:
     
 protected:
 
+    virtual const Rect GetDialogRect() const;
+    virtual void UpdateSize();
     
     void OnClose(BaseObject *, void *, void *);
-    virtual const Rect DialogRect();
 
     ScenePreviewControl *preview;
     
@@ -32,8 +33,6 @@ protected:
     Font *fontDark;
     
     UIStaticText *errorMessage;
-    
-    
 };
 
 

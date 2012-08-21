@@ -21,9 +21,8 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     lineRect.dx = 2;
     lineRect.y = strengthSlider->GetRect().y - 2;
     lineRect.dy = strengthSlider->GetRect().dy + 4;
-    UIControl *line = ControlsFactory::CreateLine(lineRect);
+    line = ControlsFactory::CreateLine(lineRect);
     AddControl(line);
-    SafeRelease(line);
 
     showGrid = CreateCkeckbox(Rect(0, ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
                               LocalizedString(L"landscapeeditor.showgrid"));
@@ -118,6 +117,9 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
 
 LandscapeToolsPanelHeightmap::~LandscapeToolsPanelHeightmap()
 {
+    SafeRelease(line);
+
+    
     SafeRelease(copypasteIcon);
     SafeRelease(copypasteTool);
     
@@ -155,7 +157,7 @@ UITextField *LandscapeToolsPanelHeightmap::CreateTextField(const Rect &rect)
     return tf;
 }
 
-void LandscapeToolsPanelHeightmap::OnDropperTool(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanelHeightmap::OnDropperTool(DAVA::BaseObject *, void *, void *)
 {
     selectedTool = dropperTool;
     if(delegate)
@@ -179,7 +181,7 @@ void LandscapeToolsPanelHeightmap::OnDropperTool(DAVA::BaseObject *object, void 
     ToolIconSelected(dropperIcon);
 }
 
-void LandscapeToolsPanelHeightmap::OnCopypasteTool(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanelHeightmap::OnCopypasteTool(DAVA::BaseObject *, void *, void *)
 {
     copypasteTool->size = sizeSlider->GetValue();
     copypasteTool->strength = strengthSlider->GetValue();
@@ -218,7 +220,7 @@ void LandscapeToolsPanelHeightmap::OnCopypasteTool(DAVA::BaseObject *object, voi
 }
 
 
-void LandscapeToolsPanelHeightmap::OnAverageSizeChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+void LandscapeToolsPanelHeightmap::OnAverageSizeChanged(DAVA::BaseObject *, void *, void *)
 {
     selectedTool->averageStrength = averageStrength->GetValue();
 }
@@ -331,7 +333,7 @@ bool LandscapeToolsPanelHeightmap::TextFieldKeyPressed(UITextField * textField, 
     WideString newText = textField->GetAppliedChanges(replacementLocation, replacementLength, replacementString);
     bool allOk;
     int pointsCount = 0;
-    for (int i = 0; i < newText.length(); i++) 
+    for (int i = 0; i < (int32)newText.length(); i++)
     {
         allOk = false;
         if (newText[i] == L'-' && i == 0)
@@ -355,7 +357,6 @@ bool LandscapeToolsPanelHeightmap::TextFieldKeyPressed(UITextField * textField, 
     return true;
 };
 
-#pragma mark  --UICheckBoxDelegate
 void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 {
     LandscapeToolsPanel::ValueChanged(forCheckbox, newValue);
@@ -408,7 +409,6 @@ void LandscapeToolsPanelHeightmap::ValueChanged(UICheckBox *forCheckbox, bool ne
     }
 }
 
-#pragma mark  --LandscapeToolsSelectionDelegate
 void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forControl, LandscapeTool *newTool)
 {
     newTool->height = atof(WStringToString(heightValue->GetText()).c_str());
@@ -422,3 +422,15 @@ void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forC
     LandscapeToolsPanel::OnToolSelected(forControl, newTool);
 }
 
+void LandscapeToolsPanelHeightmap::SetSize(const Vector2 &newSize)
+{
+    LandscapeToolsPanel::SetSize(newSize);
+    
+    line->SetPosition(Vector2(strengthSlider->GetRect().x + strengthSlider->GetRect().dx/2, strengthSlider->GetRect().y - 2));
+
+    averageStrength->SetPosition(Vector2(newSize.x - SLIDER_WIDTH, ControlsFactory::TOOLS_HEIGHT));
+    SetSliderHeaderPoition(averageStrength, LocalizedString(L"landscapeeditor.averagestrength"));
+
+    sizeValue->SetPosition(Vector2(newSize.x - sizeValue->GetSize().dx, 0));
+    strengthValue->SetPosition(Vector2(newSize.x - strengthValue->GetSize().dx, strengthValue->GetPosition().y));
+}

@@ -293,7 +293,6 @@
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox2.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\AABBox3.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h" />
-    <ClInclude Include="..\..\Sources\Internal\Math\Camera.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Circle.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Color.h" />
     <ClInclude Include="..\..\Sources\Internal\Math\Math2D.h" />
@@ -638,6 +637,7 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\CorePlatformMacOS.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\MacOS\QtLayerMacOS.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
