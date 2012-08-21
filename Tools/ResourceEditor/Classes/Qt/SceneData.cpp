@@ -326,10 +326,10 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
     QFileInfo fileInfo = libraryModel->fileInfo(index);
     if(fileInfo.isFile())
     {
-        String filePathname = QSTRING_TO_DAVASTRING(fileInfo.filePath());
+        String filePathname = PathnameToDAVAStyle(fileInfo.filePath());
         QMenu menu;
 
-        String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(fileInfo.fileName()));
+        String extension = FileSystem::Instance()->GetExtension(filePathname);
         if(0 == CompareStrings(String(".sc2"), extension))
         {
             QAction *addAction = menu.addAction(QString("Add"));
@@ -519,7 +519,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
         if(0 == CompareStrings(extension, String(".sc2")) && isFile)
         {
-            screen->ShowScenePreview(QSTRING_TO_DAVASTRING(filePathname));
+            screen->ShowScenePreview(PathnameToDAVAStyle(filePathname));
         }
         else
         {

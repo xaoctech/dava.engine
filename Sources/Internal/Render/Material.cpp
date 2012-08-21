@@ -381,8 +381,8 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
     DataNode::Load(keyedArchive, sceneFile);
 
-    int texCount = keyedArchive->GetInt32("mat.texCount");
-    for (int k = 0; k < texCount; ++k)
+    int32 texCount = keyedArchive->GetInt32("mat.texCount");
+    for (int32 k = 0; k < texCount; ++k)
     {
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
         if (relativePathname.length() > 0)

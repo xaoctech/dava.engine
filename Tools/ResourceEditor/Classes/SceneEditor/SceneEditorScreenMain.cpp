@@ -31,6 +31,13 @@
 
 #endif //#if defined (DAVA_QT)
 
+SceneEditorScreenMain::SceneEditorScreenMain()
+	:	UIScreen()
+{
+	particlesEditor = NULL;
+
+}
+
 void SceneEditorScreenMain::LoadResources()
 {
     new ErrorNotifier();
@@ -43,6 +50,8 @@ void SceneEditorScreenMain::LoadResources()
     font = ControlsFactory::GetFontLight();
 
     helpDialog = new HelpDialog();
+    
+    focusedControl = NULL;
 
     InitializeNodeDialogs();
 
@@ -52,7 +61,6 @@ void SceneEditorScreenMain::LoadResources()
     textureConverterDialog = new TextureConverterDialog(fullRect);
     materialEditor = new MaterialEditor();
 	particlesEditor = new ParticlesEditorControl();
-
     
     InitControls();
     
@@ -211,6 +219,7 @@ void SceneEditorScreenMain::WillDisappear()
 
 void SceneEditorScreenMain::Update(float32 timeElapsed)
 {
+    focusedControl = UIControlSystem::Instance()->GetFocusedControl();
     UIScreen::Update(timeElapsed);
 }
 
@@ -1198,34 +1207,36 @@ void SceneEditorScreenMain::Input(DAVA::UIEvent *event)
             }
             else if(DVKEY_0 == event->tid)
             {
-//                for(int32 i = 0; i < bodies.size(); ++i)
-//                {
-//                    EditorScene *scene = bodies[i]->bodyControl->GetScene();
-//                    scene->SetForceLodLayer(-1);
-//                }
-//                EditorSettings::Instance()->SetForceLodLayer(-1);
                 EditorSettings::Instance()->Save();
             }
         }
         
+        
         //ckecking help
-        if (event->phase == UIEvent::PHASE_KEYCHAR)
+        UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
+        UITextField *tf1 = dynamic_cast<UITextField *>(focusedControl);
+        if(!tf && !tf1)
         {
-            UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
-            if(!tf)
+            if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
             {
-                if((DVKEY_F1 == event->tid) || (DVKEY_H == event->tid))
+                if(helpDialog->GetParent())
                 {
-                    if(helpDialog->GetParent())
-                    {
-                        helpDialog->Close();
-                    }
-                    else 
-                    {
-                        helpDialog->Show();
-                    }
+                    helpDialog->Close();
+                }
+                else
+                {
+                    helpDialog->Show();
                 }
             }
+            
+            if(DVKEY_ESCAPE == event->tid)
+            {
+                if(materialEditor && materialEditor->GetParent())
+                {
+                    MaterialsTriggered();
+                }
+            }
+
         }
     }
 }
@@ -1248,6 +1259,9 @@ void SceneEditorScreenMain::OpenFileAtScene(const String &pathToFile)
 
 void SceneEditorScreenMain::ShowTextureTriangles(PolygonGroup *polygonGroup)
 {
+    ReleaseResizedControl(textureTrianglesDialog);
+    textureTrianglesDialog = new TextureTrianglesDialog();
+    
     if(textureTrianglesDialog)
     {
         textureTrianglesDialog->Show(polygonGroup);
@@ -1416,6 +1430,31 @@ void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)
 
 void SceneEditorScreenMain::CreateNode(ResourceEditor::eNodeType nodeType)
 {
+	Rect rect = GetRect();
+
+	if(dialogBack->GetSize() != rect.GetSize())
+	{
+		ReleaseResizedControl(dialogBack);
+		ReleaseResizedControl(nodeDialog);
+
+
+		dialogBack = ControlsFactory::CreatePanelControl(rect);
+		ControlsFactory::CustomizeDialogFreeSpace(dialogBack);
+
+		Rect r;
+		r.dx = rect.dx / 2;
+		r.dy = rect.dy / 2;
+
+		r.x = rect.x + r.dx / 2;
+		r.y = rect.y + r.dy / 2;
+
+		nodeDialog = new CreateNodesDialog(r);
+		nodeDialog->SetDelegate(this);
+	}
+
+
+
+
     nodeDialog->CreateNode(nodeType);
     
     AddControl(dialogBack);
@@ -1428,6 +1467,9 @@ void SceneEditorScreenMain::MaterialsTriggered()
     BodyItem *iBody = FindCurrentBody();
     if (!materialEditor->GetParent())
     {
+        ReleaseResizedControl(materialEditor);
+        materialEditor = new MaterialEditor();
+        
         materialEditor->SetWorkingScene(iBody->bodyControl->GetScene(), iBody->bodyControl->GetSelectedSGNode());
         
         AddControl(materialEditor);
@@ -1443,6 +1485,9 @@ void SceneEditorScreenMain::MaterialsTriggered()
 
 void SceneEditorScreenMain::TextureConverterTriggered()
 {
+    ReleaseResizedControl(textureConverterDialog);
+    textureConverterDialog = new TextureConverterDialog(this->GetRect());
+    
     if(textureConverterDialog)
     {
         BodyItem *body = FindCurrentBody();
@@ -1545,5 +1590,35 @@ void SceneEditorScreenMain::ProcessBeast()
 #ifdef __DAVAENGINE_BEAST__
 	bodies[0]->bodyControl->BeastProcessScene();
 #endif //#ifdef __DAVAENGINE_BEAST__
+}
+
+#if defined (DAVA_QT)
+void SceneEditorScreenMain::SetSize(const Vector2 &newSize)
+{
+    UIScreen::SetSize(newSize);
+    
+    Vector2 bodySize(newSize.x, newSize.y - ControlsFactory::BUTTON_HEIGHT - 1);
+    for(int32 i = 0; i < (int32)bodies.size(); ++i)
+    {
+        bodies[i]->bodyControl->SetSize(bodySize);
+    }
+
+    if(particlesEditor && !particlesEditor->GetParent())
+    {
+        SafeRelease(particlesEditor);
+        particlesEditor = new ParticlesEditorControl();
+    }
+    
+}
+#endif //#if defined (DAVA_QT)
+
+void SceneEditorScreenMain::ReleaseResizedControl(UIControl *control)
+{
+    if(control && control->GetParent())
+    {
+        control->GetParent()->RemoveControl(control);
+    }
+    
+    SafeRelease(control);
 }
 

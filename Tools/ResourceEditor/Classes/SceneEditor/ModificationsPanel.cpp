@@ -8,7 +8,7 @@ static const WideString mods[3] = { L"M", L"R", L"S"};
 static const WideString axises[3] = { L"X", L"Y", L"Z"};
 
 ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, const Rect &rect, bool rectInAbsoluteCoordinates)
-    :   UIControl(rect)
+    :   UIControl(rect, rectInAbsoluteCoordinates)
     ,   delegate(newDelegate)
     ,   workingScene(NULL)
 
@@ -100,7 +100,7 @@ void ModificationsPanel::SetScene(EditorScene *scene)
 }
 
 
-void ModificationsPanel::OnModePressed(BaseObject * object, void * userData, void * callerData)
+void ModificationsPanel::OnModePressed(BaseObject * object, void *, void *)
 {
 	isModeModification = (object == btnModeModification);
 	
@@ -116,7 +116,7 @@ void ModificationsPanel::OnModePressed(BaseObject * object, void * userData, voi
 	}
 }
 
-void ModificationsPanel::OnCollisionPressed(BaseObject * object, void * userData, void * callerData)
+void ModificationsPanel::OnCollisionPressed(BaseObject *, void *, void *)
 {
 	isModeCollision = !isModeCollision;
 	if (isModeCollision)
@@ -131,7 +131,7 @@ void ModificationsPanel::OnCollisionPressed(BaseObject * object, void * userData
 }
 
 
-void ModificationsPanel::OnLandscapeRelative(BaseObject * object, void * userData, void * callerData)
+void ModificationsPanel::OnLandscapeRelative(BaseObject *, void *, void *)
 {
     isLandscapeRelative = !isLandscapeRelative;
 	if (isLandscapeRelative)
@@ -181,7 +181,7 @@ void ModificationsPanel::OnReloadScene()
 }
 
 
-void ModificationsPanel::OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData)
+void ModificationsPanel::OnModificationPopUpPressed(BaseObject *, void *, void *)
 {
 	if(modificationPopUp->GetParent())
 	{
@@ -195,7 +195,7 @@ void ModificationsPanel::OnModificationPopUpPressed(BaseObject * object, void * 
 	}
 }
 
-void ModificationsPanel::OnModificationPressed(BaseObject * object, void * userData, void * callerData)
+void ModificationsPanel::OnModificationPressed(BaseObject * object, void *, void *)
 {
 	if (object == btnPlaceOn)
 	{
