@@ -123,6 +123,7 @@ void SceneNode::AddNode(SceneNode * node)
         children.push_back(node);
         node->SetParent(this);
         node->SetScene(GetScene());
+		UpdateTransform();
     }
 }
     
