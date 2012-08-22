@@ -965,6 +965,8 @@ public:
     
     virtual void OnFocused();
     
+    /// sets rect to match background sprite, also moves pivot point to center
+    void SetSizeFromBg(bool pivotToCenter = true);
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
