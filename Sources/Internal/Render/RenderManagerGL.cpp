@@ -205,77 +205,103 @@ void RenderManager::EndFrame()
 void RenderManager::MakeGLScreenShot()
 {
     Logger::Debug("RenderManager::MakeGLScreenShot");
-    
-    if(testSprite && screenShotSprite)
-    {
-        int32 width = frameBufferWidth;
-        int32 height = frameBufferHeight;
-        PixelFormat format = FORMAT_RGBA8888;
-        
-        // picture is rotated (framebuffer coordinates start from bottom left)
-        Image *image = Image::Create(height, width, format);
-        uint8 *imageData = image->GetData();
-        
-        int32 formatSize = Image::GetFormatSize(format);
-        uint32 imageDataSize = width * height * formatSize;
-        uint8 *tempData = new uint8[imageDataSize];
-        
 #if defined(__DAVAENGINE_OPENGL__)
-        
-        LockNonMain();
-        
-        glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
-        
-        RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-        switch(format)
+    
+
+    int32 width = frameBufferWidth;
+    int32 height = frameBufferHeight;
+    PixelFormat format = FORMAT_RGBA8888;
+    
+    Logger::Debug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
+    
+    // picture is rotated (framebuffer coordinates start from bottom left)
+    Image *image = NULL;
+#if defined(__DAVAENGINE_IPHONE__)    
+    image = Image::Create(height, width, format);
+#else
+    image = Image::Create(width, height, format);
+#endif
+    uint8 *imageData = image->GetData();
+    
+    int32 formatSize = Image::GetFormatSize(format);
+    uint8 *tempData;
+    
+    uint32 imageDataSize = width * height * formatSize;
+    tempData = new uint8[imageDataSize];
+
+    LockNonMain();
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
+#else
+    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_EXT, fboViewRenderbuffer);
+#endif
+    
+    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
+    switch(format)
+    {
+        case FORMAT_RGBA8888:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
+            break;
+        case FORMAT_RGB565:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)tempData));
+            break;
+        case FORMAT_A8:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
+            break;
+        case FORMAT_RGBA4444:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)tempData));
+            break;
+        case FORMAT_A16:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)tempData));
+            break;
+        default:
+            break;
+    }
+    UnlockNonMain();
+    
+    //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)
+    
+    // iOS frame buffer starts from bottom left corner, but we need from top left, so we rotate picture here
+    uint32 newIndex = 0;
+    uint32 oldIndex = 0;
+#if defined(__DAVAENGINE_IPHONE__)
+    for(int32 w = 0; w < width; ++w)
+    {
+        for(int32 h = 0; h < height; ++h)
         {
-            case FORMAT_RGBA8888:
-                RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
-                break;
-            case FORMAT_RGB565:
-                RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)tempData));
-                break;
-            case FORMAT_A8:
-                RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
-                break;
-            case FORMAT_RGBA4444:
-                RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)tempData));
-                break;
-            case FORMAT_A16:
-                RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)tempData));
-                break;
-            default:
-                break;
-        }
-        UnlockNonMain();
-        
-#endif //#if defined(__DAVAENGINE_OPENGL__)
-        
-        //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)
-        
-        // frame buffer starts from bottom left corner, but we need from top left, so we rotate picture here
-        uint32 newIndex = 0;
-        uint32 oldIndex = 0;
-        
-        for(uint32 w = 0; w < width; ++w)
-        {
-            for(uint32 h = 0; h < height; ++h)
+            for(int32 b = 0; b < formatSize; ++b)
             {
-                for(int32 b = 0; b < formatSize; ++b)
-                {
-                    oldIndex = formatSize*width*h + formatSize*w + b;
-                    imageData[newIndex++] = tempData[oldIndex];
-                }
+                oldIndex = formatSize*width*h + formatSize*w + b;
+                imageData[newIndex++] = tempData[oldIndex];
             }
         }
-        SafeDeleteArray(tempData);
-        
-        if(image)
+    }
+#else
+    //MacOS
+    //TODO: test on Windows and android
+
+    for(int32 h = height - 1; h >= 0; --h)
+    {
+        for(int32 w = 0; w < width; ++w)
         {
-            image->Save(FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:screenshot%d.png", ++screenShotIndex)));
-            SafeRelease(image);
+            for(int32 b = 0; b < formatSize; ++b)
+            {
+                oldIndex = formatSize*width*h + formatSize*w + b;
+                imageData[newIndex++] = tempData[oldIndex];
+            }
         }
     }
+    
+#endif
+    SafeDeleteArray(tempData);
+    
+    if(image)
+    {
+        image->Save(FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
+        SafeRelease(image);
+    }
+    
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 }
     
 void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates)
