@@ -14,6 +14,7 @@ public:
 	virtual void Update(float32 timeElapsed);
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
