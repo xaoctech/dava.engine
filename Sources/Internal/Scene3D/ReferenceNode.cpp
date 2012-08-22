@@ -8,11 +8,17 @@ namespace DAVA
 
 REGISTER_CLASS(ReferenceNode);
 
+ReferenceNode::ReferenceNode()
+{
+	nodeToAdd = 0;
+}
+
 void ReferenceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
 	if(GetChildrenCount() == 1)
 	{
 		SceneNode * child = GetChild(0);
+
 		String path = child->GetCustomProperties()->GetString("editor.referenceToOwner");
 		String newPath = sceneFileV2->AbsoluteToRelative(path);
 		customProperties->SetString("reference.path", newPath);
@@ -32,9 +38,26 @@ void ReferenceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 		SceneNode * node = scene->GetRootNode(absolutePath);
 		if(node)
 		{
-			AddNode(node);
+			nodeToAdd = node->Clone();
 		}
 	}
 }
+
+void ReferenceNode::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+}
+
+void ReferenceNode::Update(float32 timeElapsed)
+{
+	SceneNode::Update(timeElapsed);
+
+	if(nodeToAdd)
+	{
+		AddNode(nodeToAdd);
+		SafeRelease(nodeToAdd);
+	}
+}
+
+
 
 };
