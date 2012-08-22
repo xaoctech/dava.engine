@@ -15,16 +15,20 @@ ReferenceNode::ReferenceNode()
 
 void ReferenceNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 {
-	if(GetChildrenCount() == 1)
+	String savedPath = "";
+	if(customProperties && customProperties->IsKeyExists("reference.path"))
 	{
-		SceneNode * child = GetChild(0);
-
-		String path = child->GetCustomProperties()->GetString("editor.referenceToOwner");
-		String newPath = sceneFileV2->AbsoluteToRelative(path);
+		savedPath = customProperties->GetString("reference.path");
+		String newPath = sceneFileV2->AbsoluteToRelative(savedPath);
 		customProperties->SetString("reference.path", newPath);
 	}
 
 	SceneNode::Save(archive, sceneFileV2);
+
+	if(customProperties && savedPath.length())
+	{
+		customProperties->SetString("reference.path", savedPath);
+	}
 }
 
 void ReferenceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
@@ -49,15 +53,23 @@ void ReferenceNode::GetDataNodes(Set<DataNode*> & dataNodes)
 
 void ReferenceNode::Update(float32 timeElapsed)
 {
-	SceneNode::Update(timeElapsed);
-
 	if(nodeToAdd)
 	{
 		AddNode(nodeToAdd);
 		SafeRelease(nodeToAdd);
 	}
+
+	SceneNode::Update(timeElapsed);
 }
 
+SceneNode* ReferenceNode::Clone(SceneNode *dstNode /*= NULL*/)
+{
+	if (!dstNode) 
+	{
+		dstNode = new ReferenceNode();
+	}
 
+	return SceneNode::Clone(dstNode);
+}
 
 };

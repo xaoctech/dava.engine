@@ -45,6 +45,7 @@ public:
     
     void AddScene(const DAVA::String &scenePathname);
     void EditScene(const DAVA::String &scenePathname);
+	void AddReferenceScene(const DAVA::String &scenePathname);
     
     void SetScenePathname(const DAVA::String &newPathname);
     DAVA::String GetScenePathname() const;
