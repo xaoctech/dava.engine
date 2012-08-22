@@ -1107,6 +1107,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1906,6 +1909,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
       <Filter>Internal\Platform\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

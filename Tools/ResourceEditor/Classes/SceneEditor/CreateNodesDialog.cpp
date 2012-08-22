@@ -9,6 +9,7 @@
 #include "EditorBodyControl.h"
 #include "EditorLightNode.h"
 #include "Scene3D/UserNode.h"
+#include "Scene3D/ReferenceNode.h"
 #include "EditorSettings.h"
 
 CreateNodesDialog::CreateNodesDialog(const Rect & rect)
@@ -150,6 +151,12 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			SetHeader(LocalizedString(L"createnode.imposter"));
 			sceneNode = new ImposterNode();
 			sceneNode->SetName("Imposter");
+			break;
+
+		case ResourceEditor::NODE_REFERENCE:
+			SetHeader(LocalizedString(L"createnode.reference"));
+			sceneNode = new ReferenceNode();
+			sceneNode->SetName("Reference");
 			break;
 
 		case ResourceEditor::NODE_PARTICLE_EMITTER:
