@@ -37,6 +37,7 @@ void CommandOpenProject::Execute()
         
         EditorSettings::Instance()->SetProjectPath(projectPath);
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
+		EditorSettings::Instance()->Save();
 
 		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
@@ -124,13 +125,10 @@ void CommandSaveScene::Execute()
 		}
 		else
 		{
-			currentPath = EditorSettings::Instance()->GetDataSourcePath();    
+			currentPath = EditorSettings::Instance()->GetDataSourcePath();
 		}
 
-        String folderPathname, filename;
-        FileSystem::Instance()->SplitPath(currentPath, folderPathname, filename);
-        
-        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(folderPathname.c_str()),
+        QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save Scene File"), QString(currentPath.c_str()),
                                                         QString("Scene File (*.sc2)")
                                                         );
         if(0 < filePath.size())

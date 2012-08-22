@@ -1398,7 +1398,7 @@ void	btCollisionWorld::debugDrawWorld()
 	if (getDebugDrawer() && getDebugDrawer()->getDebugMode() & btIDebugDraw::DBG_DrawContactPoints)
 	{
 		int numManifolds = getDispatcher()->getNumManifolds();
-		btVector3 color(1,0.65,0);
+		btVector3 color(1.0f,0.65f,0.0f);
 		for (int i=0;i<numManifolds;i++)
 		{
 			btPersistentManifold* contactManifold = getDispatcher()->getManifoldByIndexInternal(i);

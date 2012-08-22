@@ -392,7 +392,7 @@ void SceneGraph::RemoveRootNodes()
             
             workingScene->SetSelection(NULL);
             workingNode = NULL;
-            for(int32 i = 0; i < nodesForDeletion.size(); ++i)
+            for(int32 i = 0; i < (int32)nodesForDeletion.size(); ++i)
             {
                 SceneNode *node = nodesForDeletion[i];
                 
@@ -412,7 +412,7 @@ void SceneGraph::RemoveRootNodes()
 
 
 #pragma mark --UIHierarchyDelegate
-bool SceneGraph::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
+bool SceneGraph::IsNodeExpandable(UIHierarchy *, void *forNode)
 {
     if (forNode) 
     {
@@ -430,7 +430,7 @@ bool SceneGraph::IsNodeExpandable(UIHierarchy *forHierarchy, void *forNode)
     return workingScene->GetChildrenCount() > 0;
 }
 
-int32 SceneGraph::ChildrenCount(UIHierarchy *forHierarchy, void *forParent)
+int32 SceneGraph::ChildrenCount(UIHierarchy *, void *forParent)
 {
     if (forParent) 
     {
@@ -451,7 +451,7 @@ int32 SceneGraph::ChildrenCount(UIHierarchy *forHierarchy, void *forParent)
     return 0;
 }
 
-void * SceneGraph::ChildAtIndex(UIHierarchy *forHierarchy, void *forParent, int32 index)
+void * SceneGraph::ChildAtIndex(UIHierarchy *, void *forParent, int32 index)
 {
     if (forParent) 
     {
@@ -513,3 +513,24 @@ void SceneGraph::RefreshGraph()
     
     SceneValidator::Instance()->EnumerateNodes(workingScene);
 }
+
+#if defined (DAVA_QT)
+void SceneGraph::SetSize(const Vector2 &newSize)
+{
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    
+    propertyPanelRect = Rect(newSize.x - rightSideWidth, 0, rightSideWidth, newSize.y);
+    propertyPanel->SetRect(propertyPanelRect);
+    
+    refreshButton->SetPosition(Vector2(0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT));
+    
+    propertyPanelRect.x = propertyPanelRect.y = 0;
+    propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
+    
+    if(propertyControl)
+    {
+        propertyControl->SetSize(propertyPanelRect.GetSize());
+    }
+}
+#endif //#if defined (DAVA_QT)
+

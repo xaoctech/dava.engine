@@ -133,14 +133,13 @@ void SceneGraphModel::SelectNode(DAVA::SceneNode *node, bool selectAtGraph)
         if(selectedNode)
         {
             GraphItem *selectedItem = ItemForData(selectedNode);
-//            SelectItem(selectedItem);
             if(selectedItem)
             {
                 SelectItem(selectedItem);
             }
             else
             {
-                SelectNode(NULL);
+                Rebuild();
             }
 
         }

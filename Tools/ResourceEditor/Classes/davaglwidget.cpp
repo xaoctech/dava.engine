@@ -3,6 +3,7 @@
 #include "davaglwidget.h"
 #include "ui_davaglwidget.h"
 
+#include <QApplication>
 #include <QResizeEvent>
 #include <QTimer>
 #include <QElapsedTimer>
@@ -36,6 +37,9 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 	DVASSERT(false && "Wrong platform");
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
+    DAVA::QtLayer::Instance()->SetDelegate(this);
+    
+    
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     
 	DAVA::QtLayer::Instance()->Resize(size().width(), size().height());
@@ -141,4 +145,9 @@ void DavaGLWidget::closeEvent(QCloseEvent *e)
 	willClose = true;
 
 	QWidget::closeEvent(e);
+}
+
+void DavaGLWidget::Quit()
+{
+    QApplication::quit();
 }

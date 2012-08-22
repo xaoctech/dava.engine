@@ -34,11 +34,19 @@
 
 namespace DAVA 
 {
+class QtLayerDelegate
+{
+public:
+    
+    virtual void Quit() = 0;
+    
+};
+    
 class QtLayer: public Singleton<QtLayer>
 {
 public:
 
-    QtLayer() {};
+    QtLayer();
     virtual ~QtLayer() {};
     
     virtual void WidgetCreated() = 0;
@@ -54,6 +62,13 @@ public:
 	virtual void Move(int32 x, int32 y) = 0;
     
     virtual void ProcessFrame() = 0;
+
+    void Quit();
+    void SetDelegate(QtLayerDelegate *delegate);
+    
+protected:
+    
+    QtLayerDelegate *delegate;
 };	
 };
 

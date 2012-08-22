@@ -11,13 +11,19 @@ class ExtendedDialog : public UIControl
 public:
     
     ExtendedDialog();
-    ~ExtendedDialog();
+    virtual ~ExtendedDialog();
     
     virtual void Close();
+    
+    virtual void WillAppear();
 
 protected:
 
-    virtual const Rect DialogRect();
+    const Rect GetScreenRect() const;
+    
+    virtual void UpdateSize();
+    
+    virtual const Rect GetDialogRect() const;
     DraggableDialog *draggableDialog;
 };
 

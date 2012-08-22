@@ -408,6 +408,16 @@ void ControlsFactory::SetScrollbar(DAVA::UIList *l)
     SafeRelease(scrollBar);
 }
 
+void ControlsFactory::RemoveScrollbar(UIList *l)
+{
+    UIControl *scrollBar = l->FindByName("ScrollBar");
+    if(scrollBar)
+    {
+        scrollBar->GetParent()->RemoveControl(scrollBar);
+    }
+}
+
+
 void ControlsFactory::SetScrollbar(DAVA::UIHierarchy *h)
 {
     Rect fr = h->GetRect();
