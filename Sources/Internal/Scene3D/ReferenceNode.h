@@ -9,8 +9,15 @@ namespace DAVA
 class ReferenceNode : public SceneNode
 {
 public:
+	ReferenceNode();
+
+	virtual void Update(float32 timeElapsed);
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+
+	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+
+	SceneNode * nodeToAdd;
 };
 
 };
