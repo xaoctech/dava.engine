@@ -61,7 +61,9 @@ public:
     virtual void Input(UIEvent * touch);
 	virtual void Draw(const UIGeometricData &geometricData);
 
-#if !defined (DAVA_QT)
+#if defined (DAVA_QT)
+    virtual void SetSize(const Vector2 &newSize);
+#else //#if defined (DAVA_QT)
     void OpenScene(const String &pathToFile, bool editScene);
 
     void ShowProperties(bool show);
@@ -80,7 +82,7 @@ public:
     
     void BakeScene();
 
-#endif //#if !defined (DAVA_QT)
+#endif //#if defined (DAVA_QT)
 
     void ReloadRootScene(const String &pathToFile);
     void ReloadNode(SceneNode *node, const String &pathToFile);

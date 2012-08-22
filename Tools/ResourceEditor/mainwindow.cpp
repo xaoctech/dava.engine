@@ -152,19 +152,19 @@ void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &ico
 
 void QtMainWindow::SetupToolBar()
 {
-// 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
-// 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
-// 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
-// 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
+ 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/newscene.png"));
+ 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/openscene.png"));
+ 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/openproject.png"));
+ 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
 
+ 	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
-    ui->mainToolBar->addAction(ui->actionOpenProject);
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
-    
-    ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    ui->mainToolBar->addAction(ui->actionMaterialEditor);
+    ui->mainToolBar->addSeparator();
 }
 
 void QtMainWindow::SetupProjectPath()

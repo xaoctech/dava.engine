@@ -930,6 +930,9 @@
     <ClCompile Include="Classes\Qt\PointerHolder.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
+    <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -2018,7 +2021,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Data\QtIcons\newscene.png">
       <Filter>Resources</Filter>
     </None>
@@ -2029,6 +2031,9 @@
       <Filter>Resources</Filter>
     </None>
     <None Include="Data\QtIcons\savescene.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\materialeditor.png">
       <Filter>Resources</Filter>
     </None>
   </ItemGroup>

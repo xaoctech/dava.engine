@@ -6,11 +6,7 @@
 ScenePreviewDialog::ScenePreviewDialog()
     :   ExtendedDialog()
 {
-	Rect dialogRect = DialogRect();
-	SetRect(dialogRect);
-
-	dialogRect.x = dialogRect.y = 0;
-    draggableDialog->SetRect(DialogRect());
+    UpdateSize();
     
     fontLight = ControlsFactory::GetFontLight();
     fontDark = ControlsFactory::GetFontDark();
@@ -118,11 +114,23 @@ void ScenePreviewDialog::Close()
     ExtendedDialog::Close();
 }
 
-const Rect ScenePreviewDialog::DialogRect()
+const Rect ScenePreviewDialog::GetDialogRect() const
 {
-    int32 x = (GetRect().dx - ControlsFactory::PREVIEW_PANEL_HEIGHT);
+    Rect screenRect = GetScreenRect();
+    
+    int32 x = (screenRect.dx - ControlsFactory::PREVIEW_PANEL_HEIGHT);
     int32 h = ControlsFactory::PREVIEW_PANEL_HEIGHT + ControlsFactory::BUTTON_HEIGHT;
-    int32 y = (GetRect().dy - h) / 2;
+    int32 y = (screenRect.dy - h) / 2;
     
     return Rect(x, y, ControlsFactory::PREVIEW_PANEL_HEIGHT, h);
+}
+
+
+void ScenePreviewDialog::UpdateSize()
+{
+	Rect dialogRect = GetDialogRect();
+	SetRect(dialogRect);
+    
+	dialogRect.x = dialogRect.y = 0;
+    draggableDialog->SetRect(dialogRect);
 }

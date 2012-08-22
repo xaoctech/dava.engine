@@ -441,11 +441,11 @@ void MongodbClient::ReadData(KeyedArchive* archive, void* bsonObj)
                 break;
                 
             case BSON_LONG:
-                archive->SetInt32(key, bson_iterator_long(&it));
+                archive->SetInt32(key, (int32)bson_iterator_long(&it));
                 break;
                 
             case BSON_DOUBLE:
-                archive->SetFloat(key, bson_iterator_double(&it));
+                archive->SetFloat(key, (float32)bson_iterator_double(&it));
                 break;
                 
             case BSON_OBJECT:

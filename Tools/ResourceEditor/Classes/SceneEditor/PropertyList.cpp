@@ -249,10 +249,10 @@ void PropertyList::OnPropertyChanged(PropertyCellData *changedProperty)
 
 
 
-int32 PropertyList::ElementsCount(UIList *forList)
+int32 PropertyList::ElementsCount(UIList *)
 {
     int32 count = 0;
-    for (int32 i = 0; i < props.size(); i++) 
+    for (int32 i = 0; i < (int32)props.size(); i++)
     {
         if (props[i]->GetValueType() == PropertyCellData::PROP_VALUE_SECTION)
         {
@@ -357,7 +357,7 @@ UIListCell *PropertyList::CellAtIndex(UIList *forList, int32 index)
     return c;
 }
 
-int32 PropertyList::CellHeight(UIList *forList, int32 index)
+int32 PropertyList::CellHeight(UIList *, int32 index)
 {
     index = GetRealIndex(index);
     switch (props[index]->cellType) 
@@ -390,7 +390,7 @@ int32 PropertyList::CellHeight(UIList *forList, int32 index)
     return 50;//todo: rework
 }
 
-void PropertyList::OnCellSelected(UIList *forList, UIListCell *selectedCell)
+void PropertyList::OnCellSelected(UIList *, UIListCell *)
 {
 //    PropertySectionHeaderCell *sectionHeader = dynamic_cast<PropertySectionHeaderCell *> (selectedCell);
 //    if(sectionHeader)
@@ -412,7 +412,7 @@ void PropertyList::ReleaseProperties()
 {
 	propsMap.clear();
     
-    for (int32 i = 0; i < props.size(); ++i)
+    for (int32 i = 0; i < (int32)props.size(); ++i)
     {
         SafeRelease(props[i]);
     }
@@ -659,4 +659,20 @@ float32 PropertyList::GetDistancePropertyValue(const String &propertyName, int32
     DVASSERT((0 <= index) && (index < p->GetDistancesCount()));
     return p->GetDistances()[index];   
 }
+
+#if defined (DAVA_QT)
+void PropertyList::SetSize(const Vector2 &newSize)
+{
+    ControlsFactory::RemoveScrollbar(propsList);
+
+    
+    UIControl::SetSize(newSize);
+    
+    propsList->SetSize(newSize);
+    propsList->Refresh();
+    
+    ControlsFactory::SetScrollbar(propsList);
+}
+#endif //#if defined (DAVA_QT)
+
 

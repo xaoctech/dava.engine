@@ -367,6 +367,10 @@
    </property>
   </action>
   <action name="actionMaterialEditor">
+   <property name="icon">
+    <iconset>
+     <normaloff>Data/QtIcons/materialeditor.png</normaloff>Data/QtIcons/materialeditor.png</iconset>
+   </property>
    <property name="text">
     <string>Material Editor</string>
    </property>
