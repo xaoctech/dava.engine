@@ -96,10 +96,10 @@ void UIStaticText::SetFont(Font * _font)
 	PrepareSprite();
 }
 
-void UIStaticText::SetMultiline(bool _isMultilineEnabled)
+void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 {
 	textBlock->SetRectSize(size);
-	textBlock->SetMultiline(_isMultilineEnabled);
+	textBlock->SetMultiline(_isMultilineEnabled, bySymbol);
 	PrepareSprite();
 }
 	
@@ -112,7 +112,6 @@ void UIStaticText::SetAlign(int32 _align)
 {
 	textBlock->SetAlign(_align);
 }
-
 	
 const Vector2 &UIStaticText::GetTextSize()
 {
@@ -127,9 +126,6 @@ const Vector2 &UIStaticText::GetTextSize()
 
 	return tempSize;
 }
-	
-
-
 
 void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
@@ -137,6 +133,11 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 	PrepareSprite();
 	textBlock->PreDraw();
 	UIControl::Draw(geometricData);	
+}
+    
+const Vector<WideString> & UIStaticText::GetMultilineStrings()
+{
+    return textBlock->GetMultilineStrings();
 }
 	
 const WideString & UIStaticText::GetText()
@@ -151,6 +152,7 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	YamlNode * fontNode = node->Get("font");
 	YamlNode * textNode = node->Get("text");
 	YamlNode * multilineNode = node->Get("multiline");
+    YamlNode * multilineBySymbolNode = node->Get("multilineBySymbol");
     YamlNode * fittingNode = node->Get("fitting");
 
 	if (fontNode)
@@ -161,7 +163,8 @@ void UIStaticText::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	}
 
 	bool multiline = loader->GetBoolFromYamlNode(multilineNode, false);
-	SetMultiline(multiline);
+    bool multilineBySymbol = loader->GetBoolFromYamlNode(multilineBySymbolNode, false);
+	SetMultiline(multiline, multilineBySymbol);
 	
     if(fittingNode)
     {

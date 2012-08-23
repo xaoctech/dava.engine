@@ -332,18 +332,21 @@ bool SceneFile::ReadMaterial()
     if (strlen(materialDef.diffuseTexture))
     {
         // TODO rethink how to deal with paths here.
-        mat->names[Material::TEXTURE_DIFFUSE] = scenePath + String(materialDef.diffuseTexture);
-        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
+//        mat->names[Material::TEXTURE_DIFFUSE] = scenePath + String(materialDef.diffuseTexture);
+//        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
+        
+        mat->SetTexture(Material::TEXTURE_DIFFUSE, scenePath + String(materialDef.diffuseTexture));
+        
     }
         
     String diffuseTextureName = "no texture"; 
-    if (mat->textures[Material::TEXTURE_DIFFUSE])
+    if (mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
         String tempPath;
-        FileSystem::SplitPath(mat->textures[Material::TEXTURE_DIFFUSE]->GetPathname(), tempPath, diffuseTextureName);
+        FileSystem::SplitPath(mat->GetTexture(Material::TEXTURE_DIFFUSE)->GetPathname(), tempPath, diffuseTextureName);
     }
     
-    if (!mat->textures[Material::TEXTURE_DIFFUSE])
+    if (!mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
         //Logger::Debug("*** error reading texture: %s\n", textureDef.name);
         uint8 * textureData = new uint8[8 * 8 * 4]; 
@@ -354,8 +357,10 @@ bool SceneFile::ReadMaterial()
             textureData[k + 2] = 0xFF; 
             textureData[k + 3] = 0xFF; 
         }
-        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
-        mat->textures[Material::TEXTURE_DIFFUSE]->GenerateMipmaps();
+        Texture * texture = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
+        texture->GenerateMipmaps();
+        mat->SetTexture(Material::TEXTURE_DIFFUSE, texture);
+        
         SafeDeleteArray(textureData);
     }
 
@@ -368,8 +373,8 @@ bool SceneFile::ReadMaterial()
 
     for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
     {
-        if (mat->textures[k])
-            mat->textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        if (mat->GetTexture((Material::eTextureLevel)k))
+            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
     }
     
 	mat->indexOfRefraction = materialDef.indexOfRefraction;

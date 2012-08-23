@@ -91,6 +91,7 @@ TextBlock::TextBlock()
 	align = ALIGN_HCENTER|ALIGN_VCENTER;
 	RegisterTextBlock(this);
 	isPredrawed = true;
+    isMultilineBySymbolEnabled = false;
     
     pointsStr = L"";
 }
@@ -144,10 +145,11 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
 	Prepare();
 }
 
-void TextBlock::SetMultiline(bool _isMultilineEnabled)
+void TextBlock::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 {
-	if (isMultilineEnabled != _isMultilineEnabled) 
+	if (isMultilineEnabled != _isMultilineEnabled || isMultilineBySymbolEnabled != bySymbol) 
 	{
+        isMultilineBySymbolEnabled = bySymbol;
 		isMultilineEnabled = _isMultilineEnabled;
 		needRedraw = true;
 		Prepare();
@@ -169,7 +171,12 @@ Font * TextBlock::GetFont()
 {
 	return font;
 }
-
+    
+const Vector<WideString> & TextBlock::GetMultilineStrings()
+{
+    return multilineStrings;
+}
+    
 const WideString & TextBlock::GetText()
 {
 	return text;
@@ -178,6 +185,11 @@ const WideString & TextBlock::GetText()
 bool TextBlock::GetMultiline()
 {
 	return isMultilineEnabled;
+}
+    
+bool TextBlock::GetMultilineBySymbol()
+{
+    return isMultilineBySymbolEnabled;
 }
 
 int32 TextBlock::GetFittingOption()
@@ -421,7 +433,10 @@ void TextBlock::Prepare()
 				{
 					rectSz.dx = requestedSize.dx;
 				}
-				font->SplitTextToStrings(text, rectSz, multilineStrings);
+                if(isMultilineBySymbolEnabled)
+                    font->SplitTextBySymbolsToStrings(text, rectSz, multilineStrings);
+                else
+                    font->SplitTextToStrings(text, rectSz, multilineStrings);
 				
 				textSize.dx = 0;
 				textSize.dy = 0;
@@ -494,7 +509,11 @@ void TextBlock::Prepare()
 					
 					font->SetSize(finalSize);
 //					textSize = font->GetStringSize(text);
-					font->SplitTextToStrings(text, rectSz, multilineStrings);
+                    
+                    if(isMultilineBySymbolEnabled)
+                        font->SplitTextBySymbolsToStrings(text, rectSz, multilineStrings);
+                    else
+                        font->SplitTextToStrings(text, rectSz, multilineStrings);
 					
 					textSize.dy = 0;
 					
@@ -515,7 +534,10 @@ void TextBlock::Prepare()
 			{
 				rectSz.dx = requestedSize.dx;
 			}
-			font->SplitTextToStrings(text, rectSz, multilineStrings);
+            if(isMultilineBySymbolEnabled)
+                font->SplitTextBySymbolsToStrings(text, rectSz, multilineStrings);
+            else
+                font->SplitTextToStrings(text, rectSz, multilineStrings);
 			
 			textSize.dx = 0;
 			textSize.dy = 0;
@@ -832,7 +854,7 @@ TextBlock * TextBlock::Clone()
     TextBlock *block = new TextBlock();
 
     block->SetRectSize(rectSize);
-    block->SetMultiline(GetMultiline());
+    block->SetMultiline(GetMultiline(), GetMultilineBySymbol());
     block->SetAlign(GetAlign());
     block->SetFittingOption(fittingType);
     

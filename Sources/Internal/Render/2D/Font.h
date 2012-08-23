@@ -129,6 +129,14 @@ public:
 	void SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);
 
 	/**
+     \brief Split string into substrings by characters.
+     \param[in] text - string to be splitted
+     \param[in] targetRectSize - targetRectSize.dx sets desirable maximum substring width
+     \param[in, out] resultVector - contains resulting substrings
+     */
+	void SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector);    
+    
+	/**
 		\brief Get string size(rect).
 		\param[in] str - processed string
 		\param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str 
