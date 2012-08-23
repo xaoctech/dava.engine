@@ -110,6 +110,65 @@ int32 Font::GetVerticalSpacing()
 	return verticalSpacing;
 }
 
+    
+void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
+{
+	int32 targetWidth = (int32)(targetRectSize.dx * Core::GetVirtualToPhysicalFactor());
+    int32 totalSize = (int)text.length();
+    
+    int32 currentLineStart = 0;
+	int32 currentLineEnd = 0;
+    int32 currentLineDx = 0;
+    
+	resultVector.clear();
+    
+    Vector<int32> sizes;
+	GetStringSize(text, &sizes);
+    
+    for(int pos = 0; pos < totalSize; pos++)
+    {
+        wchar_t t = text[pos];
+        wchar_t tNext = 0;
+        if(pos+1 < totalSize)
+            tNext = text[pos+1];
+        
+        currentLineEnd = pos;
+        
+        if(t == '\n')
+        {
+            WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
+            resultVector.push_back(currentLine);
+            
+            currentLineStart = pos + 1;
+            currentLineDx = 0;
+        }
+        if(t == '\\' && tNext == 'n')
+        {
+            WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
+            resultVector.push_back(currentLine);
+            
+            currentLineStart = pos + 2;
+            currentLineDx = 0;
+        }
+        
+        if(currentLineDx + sizes[pos] > targetWidth)
+        {
+            WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
+            resultVector.push_back(currentLine);
+            
+            currentLineStart = pos;
+            currentLineDx = 0;
+            pos--;
+        }
+        else
+        {
+            currentLineDx += sizes[pos];
+        }
+    }
+    
+    WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart + 1);
+    resultVector.push_back(currentLine);
+}    
 void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
 	int32 targetWidth = (int32)(targetRectSize.dx * Core::GetVirtualToPhysicalFactor());

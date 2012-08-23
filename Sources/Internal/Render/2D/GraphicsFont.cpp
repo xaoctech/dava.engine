@@ -32,6 +32,7 @@
 #include "Render/RenderManager.h"
 #include "FileSystem/File.h"
 #include "Debug/DVAssert.h"
+#include "FileSystem/LocalizationSystem.h"
 
 namespace DAVA
 {
@@ -62,6 +63,7 @@ GraphicsFont::GraphicsFont()
 	fontType = TYPE_GRAPHICAL;
 	fdef = 0;
 	fontScaleCoeff = 1.0f;
+    horizontalSpacing = 0;
 }
 
 GraphicsFont::~GraphicsFont()
@@ -69,7 +71,12 @@ GraphicsFont::~GraphicsFont()
 	SafeRelease(fdef);
 	SafeRelease(fontSprite);
 }	
-	
+
+int32 GraphicsFont::GetHorizontalSpacing()
+{
+    return horizontalSpacing;
+}
+    
 Font * GraphicsFont::Clone()
 {
 	GraphicsFont * cloneFont = new GraphicsFont();
@@ -79,6 +86,7 @@ Font * GraphicsFont::Clone()
 
 	cloneFont->SetColor(this->GetColor());
 	cloneFont->SetVerticalSpacing(this->GetVerticalSpacing());
+    cloneFont->SetHorizontalSpacing(this->GetHorizontalSpacing());
 	cloneFont->SetSize(this->GetSize());
 	
 	return cloneFont;
@@ -108,7 +116,8 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *cha
 		
 		if (chIndex == GraphicsFontDefinition::INVALID_CHARACTER_INDEX)
 		{
-			Logger::Debug("*** Error: can't find character %c in font", c);
+            if(c != '\n')
+                Logger::Debug("*** Error: can't find character %c in font", c);
 			if (charSizes)charSizes->push_back(0); // push zero size if character is not available
 			continue;
 		}
@@ -120,7 +129,7 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *cha
 			currentX += GetDistanceFromAtoB(prevChIndex, chIndex);
 		}
 			
-		currentX += fdef->characterWidthTable[chIndex] * fontScaleCoeff;
+		currentX += (fdef->characterWidthTable[chIndex] + horizontalSpacing) * fontScaleCoeff;
 //		if (c == ' ')currentX += fdef->characterWidthTable[chIndex] * fontScaleCoeff;
 //		else currentX += fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::ACTIVE_WIDTH) * fontScaleCoeff;
 		
@@ -135,7 +144,7 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *cha
 	
 	DVASSERT(prevChIndex < fdef->tableLenght);
 
-	currentX -= fdef->characterWidthTable[prevChIndex] * fontScaleCoeff;
+	currentX -= (fdef->characterWidthTable[prevChIndex] + horizontalSpacing) * fontScaleCoeff;
 	currentX += (fdef->characterPreShift[prevChIndex] + fontSprite->GetRectOffsetValueForFrame(prevChIndex, Sprite::ACTIVE_WIDTH)) * fontScaleCoeff; // characterWidthTable[prevChIndex];
 
 //	float32 lastCharSize = fdef->characterWidthTable[prevChIndex] * fontScaleCoeff;
@@ -152,9 +161,14 @@ bool GraphicsFont::IsCharAvaliable(char16 ch)
 
 uint32 GraphicsFont::GetFontHeight()
 {
-	return (uint32)(fdef->fontHeight * fontScaleCoeff);
+	return (uint32)((fdef->fontHeight) * fontScaleCoeff);
 }
 	
+void GraphicsFont::SetHorizontalSpacing(int32 _horizontalSpacing)
+{
+    horizontalSpacing = _horizontalSpacing;
+}
+
 void GraphicsFont::SetSize(float32 _size)
 {
 	size = _size;
@@ -164,12 +178,22 @@ void GraphicsFont::SetSize(float32 _size)
 
 bool GraphicsFontDefinition::LoadFontDefinition(const String & fontDefName)
 {
-	File * file = File::Create(fontDefName, File::OPEN | File::READ);
-	if (!file)
-	{
-		return false;
-	}
-	
+    File * file = 0;
+    size_t pos = fontDefName.rfind("/");
+    String fileName = fontDefName.substr(pos + 1);
+    String pathName = fontDefName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+    
+    file = File::Create(pathName, File::READ|File::OPEN);
+    
+    if (!file)
+    {
+        file = File::Create(fontDefName, File::READ|File::OPEN);
+        if (!file)
+        {
+            return false;
+        }
+    }
+    
 	char header[4];
 	DVVERIFY(file->Read(header, 4) == 4);
 	if ((header[0] != 'F') || (header[1] != 'D') || (header[2] != 'E') || (header[3] != 'F'))
@@ -346,7 +370,8 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 		
 		if (chIndex == GraphicsFontDefinition::INVALID_CHARACTER_INDEX)
 		{
-			Logger::Debug("*** Error: can't find character %c in font", c);
+            if(c != '\n')
+                Logger::Debug("*** Error: can't find character %c in font", c);
 			continue;
 		}
 		
@@ -376,7 +401,7 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 //		RenderManager::Instance()->DrawRect(Rect(drawX + fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::X_OFFSET_TO_ACTIVE) * fontScaleCoeff, drawY + fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::Y_OFFSET_TO_ACTIVE) * fontScaleCoeff, fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::ACTIVE_WIDTH), fontSprite->GetHeight() * fontScaleCoeff));
 //		RenderManager::Instance()->ResetColor();
 		
-		currentX += fdef->characterWidthTable[chIndex] * fontScaleCoeff;
+		currentX += (fdef->characterWidthTable[chIndex] + horizontalSpacing) * fontScaleCoeff;
 //		Logger::Debug("%c w:%f pos: %f\n", c, fdef->characterWidthTable[chIndex] * fontScaleCoeff, currentX); 
 //		if (c == ' ')currentX += fdef->characterWidthTable[chIndex] * fontScaleCoeff;
 //		else currentX += fontSprite->GetRectOffsetValueForFrame(chIndex, Sprite::ACTIVE_WIDTH) * fontScaleCoeff;
@@ -385,7 +410,7 @@ Size2i GraphicsFont::DrawString(float32 x, float32 y, const WideString & string,
 	}
     RenderManager::Instance()->ResetColor();
 
-	currentX -= fdef->characterWidthTable[prevChIndex] * fontScaleCoeff;
+	currentX -= (fdef->characterWidthTable[prevChIndex] + horizontalSpacing) * fontScaleCoeff;
 	currentX += (fdef->characterPreShift[prevChIndex] + fontSprite->GetRectOffsetValueForFrame(prevChIndex, Sprite::ACTIVE_WIDTH)) * fontScaleCoeff; // characterWidthTable[prevChIndex];
 	
 //	Sprite::DrawState drwState;
