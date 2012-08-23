@@ -49,7 +49,7 @@ int32 GetSavedTextureID();
 void BindTexture(int32 tId);
 
 int32 GetSavedFBO();
-void BindFBO(int32 fbo);
+void BindFBO(const int32 fbo);
 #elif defined(__DAVAENGINE_DIRECTX9__)
 void BindFBO(int32 fbo);
 #endif 

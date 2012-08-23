@@ -1,23 +1,24 @@
-#ifndef __GUI_ACTION_MANAGER_H__
-#define __GUI_ACTION_MANAGER_H__
+#ifndef __QT_MAIN_WINDOW_HANDLER_H__
+#define __QT_MAIN_WINDOW_HANDLER_H__
 
 #include <QObject>
+#include <QPoint>
+
 #include "DAVAEngine.h"
 #include "../Constants.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 
-#include <QAction>
-#include <QMenu>
-#include <QItemSelection>
-
 class Command;
-class GUIActionHandler: public QObject
+class QMenu;
+class QAction;
+class QTreeView;
+class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
     
 public:
-    GUIActionHandler(QObject *parent = 0);
-    virtual ~GUIActionHandler();
+    QtMainWindowHandler(QObject *parent = 0);
+    virtual ~QtMainWindowHandler();
 
     void RegisterNodeActions(DAVA::int32 count, ...);
     void RegisterViewportActions(DAVA::int32 count, ...);
@@ -28,6 +29,8 @@ public:
     //MENU FILE
     void MenuFileWillShow();
 
+	void SetDefaultFocusWidget(QWidget *widget);
+	void RestoreDefaultFocus();
     
 public slots:
     //menu
@@ -49,21 +52,19 @@ public slots:
     
     //View
     void RestoreViews();
+    void ToggleSceneInfo();
 
     //tools
     void Materials();
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void ShowSettings();
+    void BakeScene();
+    void Beast();
     
     //scene graph
-    void RemoveRootNodes();
     void RefreshSceneGraph();
-    void LockAtObject();
-    void RemoveObject();
-    void DebugFlags();
-    void BakeMatrixes();
-    void BuildQuadTree();
     
 private:
     //create node
@@ -85,6 +86,8 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
+
+	QWidget *defaultFocusWidget;
 };
 
-#endif // __GUI_ACTION_MANAGER_H__
+#endif // __QT_MAIN_WINDOW_HANDLER_H__

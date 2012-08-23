@@ -37,6 +37,10 @@ using namespace DAVA;
 
 GameCore::GameCore()
 {
+#if defined (DAVA_QT)
+    virtualSize.x = Core::Instance()->GetVirtualScreenWidth();
+    virtualSize.y = Core::Instance()->GetVirtualScreenHeight();
+#endif //#if defined (DAVA_QT)
 }
 
 GameCore::~GameCore()
@@ -131,7 +135,18 @@ void GameCore::BeginFrame()
 }
 
 void GameCore::Update(float32 timeElapsed)
-{	
+{
+#if defined (DAVA_QT)
+    Vector2 newVirtualSize(Core::Instance()->GetVirtualScreenWidth(), Core::Instance()->GetVirtualScreenHeight());
+    
+    if(virtualSize != newVirtualSize)
+    {
+        virtualSize = newVirtualSize;
+        ResizeScreens();
+    }
+
+#endif //#if defined (DAVA_QT)
+    
 	ApplicationCore::Update(timeElapsed);
 }
 
@@ -140,3 +155,14 @@ void GameCore::Draw()
 	ApplicationCore::Draw();
 
 }
+
+#if defined (DAVA_QT)
+void GameCore::ResizeScreens()
+{
+    if(sceneEditorScreenMain)
+    {
+        sceneEditorScreenMain->SetSize(virtualSize);
+    }
+}
+
+#endif //#if defined (DAVA_QT)

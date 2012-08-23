@@ -20,7 +20,9 @@ public:
     
 protected:
 
-    virtual const Rect DialogRect();
+    virtual const Rect GetDialogRect() const;
+    virtual void UpdateSize();
+    
     virtual void Close();
 
     void OnClose(BaseObject * owner, void * userData, void * callerData);
@@ -36,6 +38,8 @@ protected:
     
     UIControl *texturePreview;
     Sprite *previewSprite;
+    
+    UIButton *btnCancel;
 };
 
 

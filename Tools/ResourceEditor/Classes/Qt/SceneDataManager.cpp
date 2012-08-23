@@ -12,6 +12,7 @@ using namespace DAVA;
 SceneDataManager::SceneDataManager()
     :   currentScene(NULL)
     ,   sceneGraphView(NULL)
+    ,   libraryView(NULL)
 {
 }
 
@@ -38,13 +39,13 @@ void SceneDataManager::ActivateScene(EditorScene *scene)
     
     DVASSERT(sceneGraphView && "QTreeView not initialized");
     currentScene->RebuildSceneGraph();
-    currentScene->Activate(sceneGraphView);
+    currentScene->Activate(sceneGraphView, libraryView);
 }
 
 SceneData * SceneDataManager::FindDataForScene(EditorScene *scene)
 {
     SceneData *foundData = NULL;
-    
+
     List<SceneData *>::iterator endIt = scenes.end();
     for(List<SceneData *>::iterator it = scenes.begin(); it != endIt; ++it)
     {
@@ -114,5 +115,10 @@ DAVA::int32 SceneDataManager::ScenesCount()
 void SceneDataManager::SetSceneGraphView(QTreeView *view)
 {
     sceneGraphView = view;
+}
+
+void SceneDataManager::SetLibraryView(QTreeView *view)
+{
+    libraryView = view;
 }
 

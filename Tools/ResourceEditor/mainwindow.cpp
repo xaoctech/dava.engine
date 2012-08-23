@@ -2,24 +2,31 @@
 #include "ui_mainwindow.h"
 
 #include "DAVAEngine.h"
-#include "Classes/Qt/GUIActionHandler.h"
+#include "Classes/Qt/QtMainWindowHandler.h"
 #include "Classes/Qt/GUIState.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 #include "Classes/Qt/SceneDataManager.h"
 
-#include "Classes/Qt/QtUtils.h"
+#include "Classes/Qt/PointerHolder.h"
 
 #include <QToolBar>
 
-QtMainWindow::QtMainWindow(QWidget *parent) 
+
+QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
-    qRegisterMetaTypeStreamOperators<PointerHolder>("PointerHolder");
-    qRegisterMetaTypeStreamOperators<QList<PointerHolder> >("QList<PointerHolder>");
+    new QtMainWindowHandler(this);
+    QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
+
+    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
+    SceneDataManager::Instance()->SetLibraryView(ui->libraryView);
+
+    
+    RegisterBasePointerTypes();
     
     if(DAVA::Core::Instance())
     {
@@ -32,18 +39,20 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     }
     
     new GUIState();
-    SetupProjectPath();
 
-    actionHandler = new GUIActionHandler(this);
     SetupMainMenu();
     SetupToolBar();
     
     SetupDockWidgets();
+
+    SetupProjectPath();
+    
+    QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 QtMainWindow::~QtMainWindow()
 {
-    DAVA::SafeDelete(actionHandler);
+	QtMainWindowHandler::Instance()->Release();
     
     GUIState::Instance()->Release();
     
@@ -52,6 +61,7 @@ QtMainWindow::~QtMainWindow()
 
 void QtMainWindow::SetupMainMenu()
 {
+    QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
     //File
     connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
     connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
@@ -66,6 +76,7 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ResentSceneTriggered(QAction *)));
 
     //View
+    connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
     connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
     QAction *actionSceneGraph = ui->dockSceneGraph->toggleViewAction();
     QAction *actionDataGraph = ui->dockDataGraph->toggleViewAction();
@@ -85,6 +96,11 @@ void QtMainWindow::SetupMainMenu()
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
                                        actionProperties, actionLibrary, actionToolBar);
+
+
+    ui->dockDataGraph->hide();
+    ui->dockEntities->hide();
+    ui->dockProperties->hide();
     
     
     //CreateNode
@@ -108,6 +124,12 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionHeightMapEditor, SIGNAL(triggered()), actionHandler, SLOT(HeightmapEditor()));
     connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
     
+    connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
+    connect(ui->actionBakeScene, SIGNAL(triggered()), actionHandler, SLOT(BakeScene()));
+    connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
+
+    
+    
     //Viewport
     connect(ui->menuViewPort, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ViewportTriggered(QAction *)));
     actionHandler->RegisterViewportActions(ResourceEditor::VIEWPORT_COUNT,
@@ -116,6 +138,8 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionIPad,
                                            ui->actionDefault
                                        );
+    
+    
 }
 
 void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename)
@@ -128,19 +152,19 @@ void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &ico
 
 void QtMainWindow::SetupToolBar()
 {
-// 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
-// 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
-// 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
-// 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
+ 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/newscene.png"));
+ 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/openscene.png"));
+ 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/openproject.png"));
+ 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
 
+ 	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
-    ui->mainToolBar->addAction(ui->actionOpenProject);
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
-    
-    ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    ui->mainToolBar->addAction(ui->actionMaterialEditor);
+    ui->mainToolBar->addSeparator();
 }
 
 void QtMainWindow::SetupProjectPath()
@@ -148,33 +172,25 @@ void QtMainWindow::SetupProjectPath()
     DAVA::String projectPath = EditorSettings::Instance()->GetProjetcPath();
     while(0 == projectPath.length())
     {
-        actionHandler->OpenProject();
+        QtMainWindowHandler::Instance()->OpenProject();
         projectPath = EditorSettings::Instance()->GetProjetcPath();
     }
 }
 
 void QtMainWindow::SetupDockWidgets()
 {
-    SceneDataManager::Instance()->SetSceneGraphView(ui->sceneGraphTree);
     ui->sceneGraphTree->setDragDropMode(QAbstractItemView::InternalMove);
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
+
     
-    
-    
-    connect(ui->btnRemoveRootNodes, SIGNAL(clicked()), actionHandler, SLOT(RemoveRootNodes()));
-    connect(ui->btnRefresh, SIGNAL(clicked()), actionHandler, SLOT(RefreshSceneGraph()));
-    connect(ui->btnLockAtObject, SIGNAL(clicked()), actionHandler, SLOT(LockAtObject()));
-    connect(ui->btnRemoveObject, SIGNAL(clicked()), actionHandler, SLOT(RemoveObject()));
-    connect(ui->btnDebugFlags, SIGNAL(clicked()), actionHandler, SLOT(DebugFlags()));
-    connect(ui->btnBakeMatrices, SIGNAL(clicked()), actionHandler, SLOT(BakeMatrixes()));
-    connect(ui->btnBuildQuadTree, SIGNAL(clicked()), actionHandler, SLOT(BuildQuadTree()));
+    connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 }
 
 void QtMainWindow::MenuFileWillShow()
 {
-    actionHandler->SetResentMenu(ui->menuResentScenes);
-    actionHandler->MenuFileWillShow();
+    QtMainWindowHandler::Instance()->SetResentMenu(ui->menuResentScenes);
+    QtMainWindowHandler::Instance()->MenuFileWillShow();
 }
 

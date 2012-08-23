@@ -1,4 +1,4 @@
-#include "GUIActionHandler.h"
+#include "QtMainWindowHandler.h"
 
 #include "../Commands/CommandCreateNode.h"
 #include "../Commands/CommandsManager.h"
@@ -6,16 +6,27 @@
 #include "../Commands/ToolsCommands.h"
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
+#include "../Commands/ViewCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "GUIState.h"
 #include "SceneDataManager.h"
+#include "SceneData.h"
+#include "QtUtils.h"
+
+#include <QPoint>
+#include <QMenu>
+#include <QAction>
+#include <QCursor>
+#include <QWidget>
 
 using namespace DAVA;
 
-GUIActionHandler::GUIActionHandler(QObject *parent)
+QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
+	,	menuResentScenes(NULL)
+	,	defaultFocusWidget(NULL)
 {
     new CommandsManager();
     
@@ -28,12 +39,11 @@ GUIActionHandler::GUIActionHandler(QObject *parent)
         resentSceneActions[i] = new QAction(this);
         resentSceneActions[i]->setObjectName(QString::fromUtf8(Format("resentSceneActions[%d]", i)));
     }
-    
-    menuResentScenes = NULL;
 }
 
-GUIActionHandler::~GUIActionHandler()
+QtMainWindowHandler::~QtMainWindowHandler()
 {
+	defaultFocusWidget = NULL;
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
         SafeDelete(resentSceneActions[i]);
@@ -46,7 +56,7 @@ GUIActionHandler::~GUIActionHandler()
     CommandsManager::Instance()->Release();
 }
 
-void GUIActionHandler::ClearActions(int32 count, QAction **actions)
+void QtMainWindowHandler::ClearActions(int32 count, QAction **actions)
 {
     for(int32 i = 0; i < count; ++i)
     {
@@ -54,86 +64,86 @@ void GUIActionHandler::ClearActions(int32 count, QAction **actions)
     }
 }
 
-
-
-void GUIActionHandler::NewScene()
-{
-    Execute(new CommandNewScene());
-}
-
-
-void GUIActionHandler::OpenScene()
-{
-    Execute(new CommandOpenScene());
-}
-
-
-void GUIActionHandler::OpenProject()
-{
-    Execute(new CommandOpenProject());
-}
-
-void GUIActionHandler::OpenResentScene(int32 index)
-{
-    Execute(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
-}
-
-void GUIActionHandler::SaveScene()
-{
-    Execute(new CommandSaveScene());
-}
-
-void GUIActionHandler::ExportAsPNG()
-{
-    Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
-}
-void GUIActionHandler::ExportAsPVR()
-{
-    Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
-}
-
-void GUIActionHandler::ExportAsDXT()
-{
-    Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
-}
-
-void GUIActionHandler::CreateNode(ResourceEditor::eNodeType type)
-{
-    Execute(new CommandCreateNode(type));
-}
-
-void GUIActionHandler::Materials()
-{
-    Execute(new CommandMaterials());
-}
-
-void GUIActionHandler::HeightmapEditor()
-{
-    Execute(new CommandHeightmapEditor());
-}
-
-void GUIActionHandler::TilemapEditor()
-{
-    Execute(new CommandTilemapEditor());
-}
-
-void GUIActionHandler::ConvertTextures()
-{
-    Execute(new CommandTextureConverter());
-}
-
-void GUIActionHandler::SetViewport(ResourceEditor::eViewportType type)
-{
-    Execute(new CommandViewport(type));
-}
-
-void GUIActionHandler::Execute(Command *command)
+void QtMainWindowHandler::Execute(Command *command)
 {
     CommandsManager::Instance()->Execute(command);
     SafeRelease(command);
 }
 
-void GUIActionHandler::CreateNodeTriggered(QAction *nodeAction)
+
+void QtMainWindowHandler::NewScene()
+{
+    Execute(new CommandNewScene());
+}
+
+
+void QtMainWindowHandler::OpenScene()
+{
+    Execute(new CommandOpenScene());
+}
+
+
+void QtMainWindowHandler::OpenProject()
+{
+    Execute(new CommandOpenProject());
+}
+
+void QtMainWindowHandler::OpenResentScene(int32 index)
+{
+    Execute(new CommandOpenScene(EditorSettings::Instance()->GetLastOpenedFile(index)));
+}
+
+void QtMainWindowHandler::SaveScene()
+{
+    Execute(new CommandSaveScene());
+}
+
+void QtMainWindowHandler::ExportAsPNG()
+{
+    Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
+}
+void QtMainWindowHandler::ExportAsPVR()
+{
+    Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
+}
+
+void QtMainWindowHandler::ExportAsDXT()
+{
+    Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
+}
+
+void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)
+{
+    Execute(new CommandCreateNode(type));
+}
+
+void QtMainWindowHandler::Materials()
+{
+    Execute(new CommandMaterials());
+}
+
+void QtMainWindowHandler::HeightmapEditor()
+{
+    Execute(new CommandHeightmapEditor());
+}
+
+void QtMainWindowHandler::TilemapEditor()
+{
+    Execute(new CommandTilemapEditor());
+}
+
+void QtMainWindowHandler::ConvertTextures()
+{
+    Execute(new CommandTextureConverter());
+}
+
+void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)
+{
+    Execute(new CommandViewport(type));
+}
+
+
+void QtMainWindowHandler::CreateNodeTriggered(QAction *nodeAction)
 {
     for(int32 i = 0; i < ResourceEditor::NODE_COUNT; ++i)
     {
@@ -145,7 +155,7 @@ void GUIActionHandler::CreateNodeTriggered(QAction *nodeAction)
     }
 }
 
-void GUIActionHandler::ViewportTriggered(QAction *viewportAction)
+void QtMainWindowHandler::ViewportTriggered(QAction *viewportAction)
 {
     for(int32 i = 0; i < ResourceEditor::VIEWPORT_COUNT; ++i)
     {
@@ -157,12 +167,12 @@ void GUIActionHandler::ViewportTriggered(QAction *viewportAction)
     }
 }
 
-void GUIActionHandler::SetResentMenu(QMenu *menu)
+void QtMainWindowHandler::SetResentMenu(QMenu *menu)
 {
     menuResentScenes = menu;
 }
 
-void GUIActionHandler::MenuFileWillShow()
+void QtMainWindowHandler::MenuFileWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
     
@@ -196,7 +206,7 @@ void GUIActionHandler::MenuFileWillShow()
     GUIState::Instance()->SetNeedUpdatedFileMenu(false);
 }
 
-void GUIActionHandler::MenuToolsWillShow()
+void QtMainWindowHandler::MenuToolsWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedToolsMenu()) return;
 
@@ -212,7 +222,7 @@ void GUIActionHandler::MenuToolsWillShow()
 }
 
 
-void GUIActionHandler::ResentSceneTriggered(QAction *resentScene)
+void QtMainWindowHandler::ResentSceneTriggered(QAction *resentScene)
 {
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -224,7 +234,7 @@ void GUIActionHandler::ResentSceneTriggered(QAction *resentScene)
 }
 
 
-void GUIActionHandler::RegisterNodeActions(int32 count, ...)
+void QtMainWindowHandler::RegisterNodeActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::NODE_COUNT == count) && "Wrong count of actions");
 
@@ -237,7 +247,7 @@ void GUIActionHandler::RegisterNodeActions(int32 count, ...)
 }
 
 
-void GUIActionHandler::RegisterViewportActions(int32 count, ...)
+void QtMainWindowHandler::RegisterViewportActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::VIEWPORT_COUNT == count) && "Wrong count of actions");
     
@@ -249,7 +259,7 @@ void GUIActionHandler::RegisterViewportActions(int32 count, ...)
     va_end(vl);
 }
 
-void GUIActionHandler::RegisterDockActions(int32 count, ...)
+void QtMainWindowHandler::RegisterDockActions(int32 count, ...)
 {
     DVASSERT((ResourceEditor::HIDABLEWIDGET_COUNT == count) && "Wrong count of actions");
     
@@ -262,7 +272,7 @@ void GUIActionHandler::RegisterDockActions(int32 count, ...)
 }
 
 
-void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
+void QtMainWindowHandler::RegisterActions(QAction **actions, int32 count, va_list &vl)
 {
     for(int32 i = 0; i < count; ++i)
     {
@@ -271,7 +281,7 @@ void GUIActionHandler::RegisterActions(QAction **actions, int32 count, va_list &
 }
 
 
-void GUIActionHandler::RestoreViews()
+void QtMainWindowHandler::RestoreViews()
 {
     for(int32 i = 0; i < ResourceEditor::HIDABLEWIDGET_COUNT; ++i)
     {
@@ -282,39 +292,43 @@ void GUIActionHandler::RestoreViews()
     }
 }
 
-void GUIActionHandler::RemoveRootNodes()
-{
-    Execute(new CommandRemoveRootNodes());
-}
-
-void GUIActionHandler::RefreshSceneGraph()
+void QtMainWindowHandler::RefreshSceneGraph()
 {
     Execute(new CommandRefreshSceneGraph());
 }
 
-void GUIActionHandler::LockAtObject()
+void QtMainWindowHandler::ToggleSceneInfo()
 {
-    Execute(new CommandLockAtObject());
+    Execute(new CommandSceneInfo());
 }
 
-void GUIActionHandler::RemoveObject()
+void QtMainWindowHandler::ShowSettings()
 {
-    Execute(new CommandRemoveSceneNode());
+    Execute(new CommandSettings());
 }
 
-void GUIActionHandler::DebugFlags()
+void QtMainWindowHandler::BakeScene()
 {
-    Execute(new CommandDebugFlags());
+    Execute(new CommandBakeScene());
 }
 
-void GUIActionHandler::BakeMatrixes()
+void QtMainWindowHandler::Beast()
 {
-    Execute(new CommandBakeMatrices());
+    Execute(new CommandBeast());
 }
 
-void GUIActionHandler::BuildQuadTree()
+void QtMainWindowHandler::SetDefaultFocusWidget(QWidget *widget)
 {
-    Execute(new CommandBuildQuadTree());
+	defaultFocusWidget = widget;
+}
+
+void QtMainWindowHandler::RestoreDefaultFocus()
+{
+	if(defaultFocusWidget)
+	{
+		defaultFocusWidget->setEnabled(false);
+		defaultFocusWidget->setEnabled(true);
+	}
 }
 
 

@@ -47,8 +47,13 @@ public:
     //UICheckBoxDelegate
     virtual void ValueChanged(UICheckBox *forCheckbox, bool newValue);
 
+    virtual void SetSize(const Vector2 &newSize);
+    
 protected:
 
+    void UpdateRect();
+    void SetSliderHeaderPoition(UISlider *slider, const WideString &headerText);
+    
     virtual void ToolIconSelected(UIControl *focused);
 
     

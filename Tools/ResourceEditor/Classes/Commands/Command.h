@@ -36,9 +36,6 @@ protected:
     
     inline eCommandType Type() const {return commandType; };
 	
-	DAVA::String NormalizePath(const DAVA::String &pathname);
-
-    
     inline void SetState(eCommandState newState) {commandState = newState; };
     inline eCommandState State() const {return commandState; };
 
@@ -48,6 +45,8 @@ protected:
     eCommandState commandState;
 };
 
+#include "../Qt/PointerHolder.h"
+DECLARE_POINTER_TYPE(Command *);
 
 
 #endif // #ifndef __COMMAND_H__

@@ -124,7 +124,10 @@ Material::Material()
 	,	isAlphablend(false)
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
+	,	renderStateBlock(RenderManager::Instance()->GetRenderer())
 {
+	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
+
 //    if (scene)
 //    {
 //        DataNode * materialsNode = scene->GetMaterials();
@@ -378,8 +381,8 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
     DataNode::Load(keyedArchive, sceneFile);
 
-    int texCount = keyedArchive->GetInt32("mat.texCount");
-    for (int k = 0; k < texCount; ++k)
+    int32 texCount = keyedArchive->GetInt32("mat.texCount");
+    for (int32 k = 0; k < texCount; ++k)
     {
         String relativePathname = keyedArchive->GetString(Format("mat.tex%d", k));
         if (relativePathname.length() > 0)
@@ -528,43 +531,44 @@ const Color & Material::GetFogColor() const
 
 void Material::PrepareRenderState()
 {
-	RenderManager::Instance()->SetShader(shader);
+	renderStateBlock.shader = shader;
 
 	if (textures[Material::TEXTURE_DIFFUSE])
 	{
-		RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
+		renderStateBlock.SetTexture(textures[Material::TEXTURE_DIFFUSE], 0);
 	}
 
 	if (textures[Material::TEXTURE_DECAL]) // this is normal map as well
 	{
-		RenderManager::Instance()->SetTexture(textures[Material::TEXTURE_DECAL], 1);
+		renderStateBlock.SetTexture(textures[Material::TEXTURE_DECAL], 1);
 	}
 
-	if (isOpaque)
+	if (isOpaque || isTwoSided)
 	{
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE & (~RenderStateBlock::STATE_CULL));
-	}else
+		renderStateBlock.state &= ~RenderStateBlock::STATE_CULL;
+	}
+	else
 	{
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+		renderStateBlock.state |= RenderStateBlock::STATE_CULL;
 	}
 
 
 	if(isAlphablend)
 	{
-		RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE_BLEND);
+		renderStateBlock.state |= RenderStateBlock::STATE_BLEND;
 		//Dizz: dunno what it was for
 		//RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_DEPTH_TEST);
 
-		RenderManager::Instance()->SetBlendMode(blendSrc, blendDst);
+		renderStateBlock.SetBlendMode(blendSrc, blendDst);
 	}
-
-	if(isTwoSided)
+	else
 	{
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_CULL);
+		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 
 	// render
-	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->FlushState(&renderStateBlock);
+	RenderManager::Instance()->AttachRenderData();
 
 
 	if (textures[Material::TEXTURE_DECAL])
@@ -612,7 +616,12 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
 		return;
 	}
 
-	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
+	if(isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TRANSPARENT_DRAW))
+	{
+		return;
+	}
+
+	if(!isOpaque && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::OPAQUE_DRAW))
 	{
 		return;
 	}
@@ -685,17 +694,18 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
     if (group->renderDataObject->GetIndexBufferID() != 0)
 	{
 		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
-	}else
+	}
+	else
 	{
 		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
 	}
     
-	RenderManager::Instance()->SetTexture(0, 1); 
-	RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
-	if(isAlphablend)
-	{
-		RenderManager::Instance()->SetBlendMode(oldSrc, oldDst);
-	}
+	//RenderManager::Instance()->SetTexture(0, 1); 
+	//RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+	//if(isAlphablend)
+	//{
+	//	RenderManager::Instance()->SetBlendMode(oldSrc, oldDst);
+	//}
 }
 
 
@@ -748,6 +758,11 @@ void Material::SetAlphablend(bool _isAlphablend)
 bool Material::GetAlphablend()
 {
 	return isAlphablend;
+}
+
+RenderStateBlock * Material::GetRenderStateBlock()
+{
+	return &renderStateBlock;
 }
 
 

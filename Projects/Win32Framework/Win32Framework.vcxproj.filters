@@ -345,9 +345,6 @@
     <ClInclude Include="..\..\Sources\Internal\Math\BezierSpline.h">
       <Filter>Internal\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Math\Camera.h">
-      <Filter>Internal\Math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Math\Circle.h">
       <Filter>Internal\Math</Filter>
     </ClInclude>
@@ -1109,6 +1106,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
       <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h">
+      <Filter>Internal\Scene3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1905,6 +1905,12 @@
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\RenderOptions.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\QtLayer.cpp">
+      <Filter>Internal\Platform\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>

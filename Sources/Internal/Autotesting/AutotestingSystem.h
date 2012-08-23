@@ -90,6 +90,7 @@ public:
     void OnTestsSatrted();
     void OnTestAssert(const String & text, bool isPassed);
     void OnError(const String & errorMessage = "");
+	void OnMessage(const String & logMessage = "");
     void OnTestsFinished();
 
     // API (high level)

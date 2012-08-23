@@ -881,7 +881,7 @@ void UIHierarchy::ScrollToData(void *userData)
     
     GetCount(NULL, userData, count);
     
-    float32 scrollPos = count * GetCellHeight();
+    float32 scrollPos = (float32)(count * GetCellHeight());
     scroll->SetPosition(-scrollPos);
 }
   

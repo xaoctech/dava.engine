@@ -167,17 +167,6 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     
     int32 stride = streamArray[0]->stride;
     
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-    if (vboBuffer)
-    {
-        RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
-        vboBuffer = 0;
-    }
-    
-    RENDER_VERIFY(glGenBuffersARB(1, &vboBuffer));
-    RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, vboBuffer));
-    RENDER_VERIFY(glBufferDataARB(GL_ARRAY_BUFFER_ARB, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW_ARB));
-#else
     if (vboBuffer)
     {
         RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
@@ -186,9 +175,9 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
 //    Logger::Debug("glGenBuffers: %d", vboBuffer);
-    RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
+    RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
-#endif
+
     streamArray[0]->pointer = 0;
     for (uint32 k = 1; k < size; ++k)
     {
@@ -196,11 +185,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
         //Logger::Debug("vbo offset: %d", (uint32)streamArray[k]->pointer);
     }
     
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-    RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0));
-#else
-    RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, 0));
-#endif
+    RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, 0));
 
 #endif // #if defined (__DAVAENGINE_OPENGL__)
     

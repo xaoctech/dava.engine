@@ -229,6 +229,8 @@ public:
 	 */
 	void FlushState();
 
+	void FlushState(RenderStateBlock * stateBlock);
+
 	/** 
 	 \brief 
 	 \param[in] sfactor
@@ -295,7 +297,7 @@ public:
     
     
     void SetRenderData(RenderDataObject * object);
-    virtual void AttachRenderData(Shader * shader);
+	virtual void AttachRenderData();
 	
 	/** 
 	 \brief 
@@ -341,6 +343,8 @@ public:
 	 \brief Restore current screen
 	 */
 	virtual void ClipPop();
+    
+    virtual void Clear(const Color & color, float32 depth, int32 stencil);
 	
 	/** 
         \brief Clear rendering surface with required color 
@@ -484,7 +488,15 @@ public:
 
 	RenderOptions * GetOptions();
 
-	uint32 fboViewFramebuffer;
+    uint32 GetFBOViewFramebuffer() const;
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    void HWglBindBuffer(GLenum target, GLuint  	buffer);
+    GLuint bufferBindingId[2];    
+#endif
+    
+    void RequestGLScreenShot() { needGLScreenShot = true; };
+
 	
 protected:
     //
@@ -544,6 +556,7 @@ protected:
 
 	// fbo data
 	uint32 fboViewRenderbuffer;
+	uint32 fboViewFramebuffer;
 
 	// state information
 //	Color oldColor;                 // UNIFORM - can be used or not used by RenderEffect
@@ -579,11 +592,6 @@ protected:
     float32 alphaTestCmpValue;                      // default value: 0.0f
     bool cullingEnabled, oldCullingEnabled;
     eCull cullFace, oldCullFace;*/
-    
-    
-    
-    
-    
     
     uint32 pointerArraysCurrentState;
     uint32 pointerArraysRendererState;
@@ -672,6 +680,10 @@ protected:
 #endif // #if defined(__DAVAENGINE_DIRECTX9__)
 	
 	Cursor * cursor;
+    
+    bool needGLScreenShot;
+    int32 screenShotIndex;
+    void MakeGLScreenShot();
 };
 
 

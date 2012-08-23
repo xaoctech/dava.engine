@@ -7,7 +7,7 @@ TextureTrianglesDialog::TextureTrianglesDialog()
     workingPolygonGroup = NULL;
     previewSprite = NULL;
 
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
     draggableDialog->SetRect(rect);
 
     rect.x = rect.y = 0;
@@ -32,23 +32,24 @@ TextureTrianglesDialog::TextureTrianglesDialog()
     
     float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
     float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
-    UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.close"));
+    btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.close"));
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &TextureTrianglesDialog::OnClose));
     draggableDialog->AddControl(btnCancel);
-    SafeRelease(btnCancel);
 }
 
 TextureTrianglesDialog::~TextureTrianglesDialog()
 {
+    SafeRelease(btnCancel);
+
     SafeRelease(workingPolygonGroup);
     SafeRelease(previewSprite);
     SafeRelease(texturePreview);
     SafeRelease(combobox);
 }
 
-const Rect TextureTrianglesDialog::DialogRect()
+const Rect TextureTrianglesDialog::GetDialogRect() const
 {
-    Rect rect = GetRect();
+    Rect rect = GetScreenRect();
     
     if(rect.dx < rect.dy)
     {
@@ -59,11 +60,29 @@ const Rect TextureTrianglesDialog::DialogRect()
         rect.dx = rect.dy - ControlsFactory::BUTTON_HEIGHT * 2;
     }
     
-    rect.y = (GetRect().dy - rect.dy) / 2;
-    rect.x = (GetRect().dx - rect.dx) / 2;
+    rect.y = (GetScreenRect().dy - rect.dy) / 2;
+    rect.x = (GetScreenRect().dx - rect.dx) / 2;
     
     return rect;
 }
+
+void TextureTrianglesDialog::UpdateSize()
+{
+    ExtendedDialog::UpdateSize();
+    
+    Rect rect = GetDialogRect();
+    rect.x = rect.y = 0;
+    
+    Rect previewRect = rect;
+    previewRect.y = ControlsFactory::BUTTON_HEIGHT;
+    previewRect.dy -= ControlsFactory::BUTTON_HEIGHT * 2;
+    texturePreview->SetRect(previewRect);
+
+    float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
+    float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
+    btnCancel->SetPosition(Vector2(buttonX, buttonY));
+}
+
 
 void TextureTrianglesDialog::Close()
 {
@@ -73,7 +92,7 @@ void TextureTrianglesDialog::Close()
 }
 
 
-void TextureTrianglesDialog::OnClose(BaseObject * owner, void * userData, void * callerData)
+void TextureTrianglesDialog::OnClose(BaseObject *, void *, void *)
 {
     Close();
 }
@@ -185,7 +204,7 @@ void TextureTrianglesDialog::FillRenderTarget(int32 textureIndex)
     texturePreview->SetSprite(previewSprite, 0);
 }
 
-void TextureTrianglesDialog::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
+void TextureTrianglesDialog::OnItemSelected(ComboBox *, const String &, int itemIndex)
 {
     FillRenderTarget(itemIndex);
 }

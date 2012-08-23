@@ -38,7 +38,6 @@ public:
     
     virtual void Rebuild() = 0;
     
-    
     virtual void MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndext) = 0;
     
     

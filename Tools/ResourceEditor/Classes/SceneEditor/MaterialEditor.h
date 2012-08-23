@@ -51,6 +51,8 @@ public:
     //Fog control delegate
     virtual void SetupFog(bool enabled, float32 dencity, const Color &newColor);
     
+    virtual void SetSize(const Vector2 &newSize);
+    
 protected:
     
     Vector<Material*> materials;
@@ -88,6 +90,9 @@ protected:
     
     void OnSetupFog(BaseObject * object, void * userData, void * callerData);
     FogControl *fogControl;
+    
+    UIButton *btnSetupFog;
+    UIControl *line;
 };
 
 #endif

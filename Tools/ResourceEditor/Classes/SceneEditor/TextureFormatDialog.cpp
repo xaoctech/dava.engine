@@ -9,7 +9,7 @@ TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegat
     ,   delegate(newDelegate)
     ,   currentPVRButton(PVR_NONE)
 {
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
     draggableDialog->SetRect(rect);
     
     //close
@@ -95,25 +95,25 @@ void TextureFormatDialog::Show()
 }
 
 
-const Rect TextureFormatDialog::DialogRect()
+const Rect TextureFormatDialog::GetDialogRect() const
 {
     Rect rect;
     
     rect.dx = ControlsFactory::BUTTON_WIDTH * 3;
     rect.dy = ControlsFactory::BUTTON_HEIGHT * 4;
     
-    rect.x = (GetRect().dx - rect.dx) / 2;
-    rect.y = (GetRect().dy - rect.dy) / 2;
+    rect.x = (GetScreenRect().dx - rect.dx) / 2;
+    rect.y = (GetScreenRect().dy - rect.dy) / 2;
     
     return rect;
 }
 
-void TextureFormatDialog::OnCancel(BaseObject * owner, void * userData, void * callerData)
+void TextureFormatDialog::OnCancel(BaseObject *, void *, void *)
 {
     Close();
 }
 
-void TextureFormatDialog::OnPVRButton(BaseObject * owner, void * userData, void * callerData)
+void TextureFormatDialog::OnPVRButton(BaseObject * owner, void *, void *)
 {
     UIButton *btn = (UIButton *)owner;
     for(int32 iPvr = 0; iPvr < PVR_COUNT; ++iPvr)
@@ -133,7 +133,7 @@ void TextureFormatDialog::OnPVRButton(BaseObject * owner, void * userData, void 
 
 }
 
-void TextureFormatDialog::OnConvert(DAVA::BaseObject *owner, void *userData, void *callerData)
+void TextureFormatDialog::OnConvert(DAVA::BaseObject *, void *, void *)
 {
     if(PVR_NONE == currentPVRButton)
     {

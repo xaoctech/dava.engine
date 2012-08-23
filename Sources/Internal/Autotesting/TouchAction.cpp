@@ -17,7 +17,7 @@ TouchAction::TouchAction(int32 _id) : Action()
 TouchAction::~TouchAction()
 {
 }
-    
+
 void TouchAction::TouchDown(const Vector2 &point)
 {
     //TODO: multitouch
@@ -186,6 +186,12 @@ Vector2 TouchAction::GetVirtualPoint(const Vector2 &physicalPoint)
     return virtualPoint;
 }
 
+String TouchAction::Dump()
+{
+	String baseStr = Action::Dump();
+	return Format("%s id=%d", baseStr.c_str(), id);
+}
+
 //----------------------------------------------------------------------
 
 TouchDownAction::TouchDownAction(const Vector2 &_point, int32 _id) : TouchAction(_id)
@@ -202,6 +208,12 @@ void TouchDownAction::Execute()
     //Logger::Debug("TouchDownAction::Execute point=(%f, %f)",point.x, point.y);
     TouchDown(point);
     Action::Execute();
+}
+
+String TouchDownAction::Dump()
+{
+	String baseStr = TouchAction::Dump();
+	return Format("%s point=(%.2f, %.2f)", baseStr.c_str(), point.x, point.y);
 }
 
 //----------------------------------------------------------------------
@@ -223,6 +235,13 @@ void TouchDownControlAction::Execute()
 {
     TouchDown(controlPath);
     Action::Execute();
+}
+
+String TouchDownControlAction::Dump()
+{
+	String baseStr = TouchAction::Dump();
+	String controlPathStr = PathToString(controlPath);
+	return Format("%s controlPath=%s", baseStr.c_str(), controlPathStr.c_str());
 }
 
 //----------------------------------------------------------------------
@@ -253,6 +272,12 @@ TouchMoveAction::~TouchMoveAction()
 void TouchMoveAction::Execute()
 {
     Action::Execute();
+}
+
+String TouchMoveAction::Dump()
+{
+	String baseStr = TouchAction::Dump();
+	return Format("%s point=(%.2f, %.2f) time=%.2f", baseStr.c_str(), point.x, point.y, moveTime);
 }
 
 void TouchMoveAction::Update(float32 timeElapsed)
@@ -287,6 +312,8 @@ bool TouchMoveAction::TestCondition()
     return (moveTime <= 0.0f);
 }
 
+//----------------------------------------------------------------------
+
 TouchMoveControlAction::TouchMoveControlAction(const String &_controlName, float32 _moveTime, int32 _id) : TouchMoveAction(Vector2(), _moveTime, _id)
 {
     controlPath.push_back(_controlName);
@@ -306,6 +333,13 @@ void TouchMoveControlAction::Execute()
 {
     point = FindControlPosition(controlPath);
     TouchMoveAction::Execute();
+}
+
+String TouchMoveControlAction::Dump()
+{
+	String baseStr = TouchMoveAction::Dump();
+	String controlPathStr = PathToString(controlPath);
+	return Format("%s controlPath=%s", baseStr.c_str(), controlPathStr.c_str());
 }
 
 //----------------------------------------------------------------------
@@ -384,6 +418,13 @@ void ScrollControlAction::Execute()
 {
     FindScrollPoints();
     WaitAction::Execute();
+}
+
+String ScrollControlAction::Dump()
+{
+	String baseStr = WaitAction::Dump();
+	String controlPathStr = PathToString(controlPath);
+	return Format("%s controlPath=%s", baseStr.c_str(), controlPathStr.c_str());
 }
 
 bool ScrollControlAction::TestCondition()

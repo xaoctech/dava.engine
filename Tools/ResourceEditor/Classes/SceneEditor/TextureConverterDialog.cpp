@@ -664,7 +664,7 @@ String TextureConverterDialog::NormalizePath(const String &pathname)
         }
         else 
         {
-            if(i == tokens.size() - 1)
+            if(i == (int32)tokens.size() - 1)
             {
                 retString = tokens[i];
             }

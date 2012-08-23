@@ -60,6 +60,7 @@ void TextureMulColorAlphaTestEffectGL::DrawArrays(ePrimitiveType mode, int32 fir
     RenderManager::Instance()->SetAlphaFunc(CMP_GREATER, 0.9f);
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 }
@@ -70,6 +71,7 @@ void TextureMulColorAlphaTestEffectGL::DrawElements(ePrimitiveType type, int32 c
     RenderManager::Instance()->SetAlphaFunc(CMP_GREATER, 0.9f);
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
 }
@@ -91,6 +93,7 @@ void TextureMulColorAlphaTestEffectGL20::DrawArrays(ePrimitiveType mode, int32 f
 {
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
     
@@ -98,6 +101,7 @@ void TextureMulColorAlphaTestEffectGL20::DrawElements(ePrimitiveType type, int32
 {
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 #endif 
@@ -110,6 +114,7 @@ void TextureMulColorAlphaTestEffectDX9::DrawArrays(ePrimitiveType mode, int32 fi
     RenderManager::Instance()->SetAlphaFunc(CMP_GREATER, 0.9f);
     RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
 
@@ -119,6 +124,7 @@ void TextureMulColorAlphaTestEffectDX9::DrawElements(ePrimitiveType type, int32 
 	RenderManager::Instance()->SetAlphaFunc(CMP_GREATER, 0.9f);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 
