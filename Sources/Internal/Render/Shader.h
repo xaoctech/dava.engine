@@ -64,6 +64,26 @@ public:
         UNIFORM_COLOR,
         UNIFORM_COUNT,
     };
+    
+    enum eUniformType
+    {
+        UT_FLOAT_VEC2 = GL_FLOAT_VEC2,
+        UT_FLOAT_VEC3 = GL_FLOAT_VEC3,
+        UT_FLOAT_VEC4 = GL_FLOAT_VEC4,
+        UT_INT = GL_INT,
+        UT_INT_VEC2 = GL_INT_VEC2,
+        UT_INT_VEC3 = GL_INT_VEC3,
+        UT_INT_VEC4 = GL_INT_VEC4,
+        UT_BOOL = GL_BOOL,
+        UT_BOOL_VEC2 = GL_BOOL_VEC2,
+        UT_BOOL_VEC3 = GL_BOOL_VEC3,
+        UT_BOOL_VEC4 = GL_BOOL_VEC4,
+        UT_FLOAT_MAT2 = GL_FLOAT_MAT2,
+        UT_FLOAT_MAT3 = GL_FLOAT_MAT3,
+        UT_FLOAT_MAT4 = GL_FLOAT_MAT4,
+        UT_SAMPLER_2D = GL_SAMPLER_2D,
+        UT_SAMPLER_CUBE = GL_SAMPLER_CUBE,
+    };
 
     Shader();
     virtual ~Shader();
@@ -85,6 +105,9 @@ public:
     int32 GetAttributeIndex(eVertexFormat vertexFormat);
     int32 GetAttributeCount();
     
+    int32 GetUniformCount();
+    eUniformType GetUniformType(int32 index);
+    const String & GetUniformName(int32 index);
     
     void SetUniformValue(int32 uniformLocation, int32 value);
     void SetUniformValue(int32 uniformLocation, float32 value);
@@ -128,6 +151,7 @@ private:
     eUniform *uniformIDs;
     String * uniformNames;
     GLint * uniformLocations;
+    eUniformType * uniformTypes;
     
     int32 vertexFormatAttribIndeces[VERTEX_FORMAT_STREAM_MAX_COUNT];
     

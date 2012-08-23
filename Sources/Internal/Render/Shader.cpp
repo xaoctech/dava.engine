@@ -58,6 +58,7 @@ Shader::Shader()
     uniformIDs = 0;
     uniformNames = 0;
     uniformLocations = 0;
+    uniformTypes = 0;
     
     for (int32 ki = 0; ki < VERTEX_FORMAT_STREAM_MAX_COUNT; ++ki)
          vertexFormatAttribIndeces[ki] = -1;
@@ -114,6 +115,21 @@ Shader::eUniform Shader::GetUniformByName(const char * name)
         if (strcmp(name, uniformStrings[k]) == 0)return (Shader::eUniform)k; 
     return Shader::UNIFORM_NONE;
 };
+    
+int32 Shader::GetUniformCount()
+{
+    return activeUniforms;
+}
+    
+Shader::eUniformType Shader::GetUniformType(int32 index)
+{
+    return uniformTypes[index];
+}
+    
+const String & Shader::GetUniformName(int32 index)
+{
+    return uniformNames[index];
+}
 
 int32 Shader::GetAttributeIndexByName(const char * name)
 {
@@ -214,6 +230,8 @@ Shader::~Shader()
     SafeDeleteArray(uniformNames);
     SafeDeleteArray(uniformIDs);
     SafeDeleteArray(uniformLocations);
+    SafeDeleteArray(uniformTypes);
+    
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
     
@@ -275,6 +293,8 @@ bool Shader::Recompile()
     uniformLocations = new GLint[activeUniforms];
     uniformIDs = new eUniform[activeUniforms];
     uniformNames = new String[activeUniforms];
+    uniformTypes = new eUniformType[activeUniforms];
+    
     for (int32 k = 0; k < activeUniforms; ++k)
     {
         GLint size;
@@ -285,6 +305,7 @@ bool Shader::Recompile()
         uniformNames[k] = attributeName;
         uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
         uniformIDs[k] = uniform;
+        uniformTypes[k] = (eUniformType)type;
 //        Logger::Debug("shader known uniform: %s(%d) size: %d type: %s", uniformNames[k].c_str(), uniform, size, VertexTypeStringFromEnum(type).c_str());
     }
     
