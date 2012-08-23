@@ -34,6 +34,7 @@
 #include "Debug/DVAssert.h"
 #include "FileSystem/File.h"
 #include "Core/Core.h"
+#include "FileSystem/LocalizationSystem.h"
 
 #include <ft2build.h>
 #include <freetype/ftglyph.h>
@@ -178,13 +179,22 @@ FTInternalFont::FTInternalFont(const String& path)
 :	face(0),
 	fontPath(path)
 {
-
-	File * fp = File::Create(path, File::READ|File::OPEN);
-	if (!fp)
-	{
-		Logger::Error("Failed to open font: %s", path.c_str());
-		return;
-	}
+    File * fp = 0;
+    size_t pos = path.rfind("/");
+    String fileName = path.substr(pos + 1);
+    String pathName = path.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+        
+    fp = File::Create(pathName, File::READ|File::OPEN);
+        
+    if (!fp)
+    {    
+        fp = File::Create(path, File::READ|File::OPEN);
+        if (!fp)
+        {
+            Logger::Error("Failed to open font: %s", path.c_str());
+            return;
+        }
+    }
 
 	memoryFontSize = fp->GetSize();
 	memoryFont = new uint8[memoryFontSize];

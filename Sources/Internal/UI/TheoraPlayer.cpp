@@ -57,7 +57,8 @@ videoTime(0),
 isRepeat(false),
 currFrameTime(0),
 frameTime(0),
-file(0)
+file(0),
+frameBuffer(0)
 {
     theoraData = new TheoraData();
     theoraData->thSetup = 0;
@@ -98,7 +99,11 @@ void TheoraPlayer::CloseFile()
     isVideoBufReady = false;
     videoTime = 0;
     SafeRelease(file);
-    SafeDelete(frameBuffer);
+    if(frameBuffer)
+    {
+        delete [] frameBuffer;
+        frameBuffer = 0;
+    }
 }
 
 void TheoraPlayer::OpenFile(const String &path)
