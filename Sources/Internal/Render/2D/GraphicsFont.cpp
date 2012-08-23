@@ -178,12 +178,22 @@ void GraphicsFont::SetSize(float32 _size)
 
 bool GraphicsFontDefinition::LoadFontDefinition(const String & fontDefName)
 {
-	File * file = File::Create(fontDefName, File::OPEN | File::READ);
-	if (!file)
-	{
-		return false;
-	}
-	
+    File * file = 0;
+    size_t pos = fontDefName.rfind("/");
+    String fileName = fontDefName.substr(pos + 1);
+    String pathName = fontDefName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+    
+    file = File::Create(pathName, File::READ|File::OPEN);
+    
+    if (!file)
+    {
+        file = File::Create(fontDefName, File::READ|File::OPEN);
+        if (!file)
+        {
+            return false;
+        }
+    }
+    
 	char header[4];
 	DVVERIFY(file->Read(header, 4) == 4);
 	if ((header[0] != 'F') || (header[1] != 'D') || (header[2] != 'E') || (header[3] != 'F'))
