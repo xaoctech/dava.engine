@@ -39,6 +39,7 @@ Q_SIGNALS:
 protected:
     
     void SelectNode(DAVA::SceneNode *node, bool selectAtGraph);
+    void SelectItem(GraphItem *item);
     
     virtual void SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 

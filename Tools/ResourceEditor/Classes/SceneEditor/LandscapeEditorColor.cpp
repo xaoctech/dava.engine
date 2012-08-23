@@ -157,6 +157,7 @@ void LandscapeEditorColor::UpdateTileMask()
 	RenderManager::Instance()->SetTexture(oldMaskSprite->GetTexture(), 0);
 	RenderManager::Instance()->SetTexture(toolSprite->GetTexture(), 1);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     
 	int32 tex0 = tileMaskEditorShader->FindUniformLocationByName("texture0");
 	tileMaskEditorShader->SetUniformValue(tex0, 0);

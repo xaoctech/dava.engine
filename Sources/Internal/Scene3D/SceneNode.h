@@ -261,7 +261,7 @@ public:
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
      */
-    virtual AABBox3 GetWTMaximumBoundingBox();
+    virtual AABBox3 GetWTMaximumBoundingBoxSlow();
     
     /**
         \brief virtual function to save node to KeyedArchive

@@ -29,23 +29,41 @@ mocclean: compiler_moc_header_clean compiler_moc_source_clean
 
 mocables: compiler_moc_header_make_all compiler_moc_source_make_all
 
-compilers: QtBuildTool/moc_mainwindow.cpp QtBuildTool/moc_davaglwidget.cpp QtBuildTool/moc_GUIActionHandler.cpp QtBuildTool/moc_GraphTreeView.cpp ./ui_mainwindow.h ./ui_davaglwidget.h QtBuildTool/moc_GraphModel.cpp QtBuildTool/moc_SceneData.cpp QtBuildTool/moc_SceneGraphModel.cpp QtBuildTool/qrc_QtIcons.cpp
+
+SOURCE_FILES = QtBuildTool/moc_mainwindow.cpp \
+			QtBuildTool/moc_davaglwidget.cpp \
+			QtBuildTool/moc_QtMainWindowHandler.cpp \
+			QtBuildTool/moc_GraphModel.cpp \
+			QtBuildTool/moc_SceneData.cpp \
+			QtBuildTool/moc_SceneGraphModel.cpp \
+			QtBuildTool/moc_FileSelectionModel.cpp \
+			QtBuildTool/moc_LibraryModel.cpp
+
+HEADER_FILES = ui_mainwindow.h \
+				ui_davaglwidget.h \
+				
+
+RESUORCE_FILES = QtBuildTool/qrc_QtIcons.cpp \
+
+
+compilers: $(SOURCE_FILES) $(HEADER_FILES) $(RESUORCE_FILES)
 compiler_objective_c_make_all:
 compiler_objective_c_clean:
-compiler_moc_header_make_all: QtBuildTool/moc_mainwindow.cpp QtBuildTool/moc_davaglwidget.cpp QtBuildTool/moc_GUIActionHandler.cpp QtBuildTool/moc_GraphTreeView.cpp QtBuildTool/moc_GraphModel.cpp QtBuildTool/moc_SceneData.cpp QtBuildTool/moc_SceneGraphModel.cpp
+compiler_moc_header_make_all: $(SOURCE_FILES)
 compiler_moc_header_clean:
-	-$(DEL_FILE) QtBuildTool/moc_mainwindow.cpp QtBuildTool/moc_davaglwidget.cpp QtBuildTool/moc_GUIActionHandler.cpp QtBuildTool/moc_GraphTreeView
+	-$(DEL_FILE) $(SOURCE_FILES)
+	
 QtBuildTool/moc_mainwindow.cpp: mainwindow.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ mainwindow.h -o QtBuildTool/moc_mainwindow.cpp
 
 QtBuildTool/moc_davaglwidget.cpp: Classes/davaglwidget.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/davaglwidget.h -o QtBuildTool/moc_davaglwidget.cpp
 
-QtBuildTool/moc_GUIActionHandler.cpp: Classes/Qt/GUIActionHandler.h
-	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/GUIActionHandler.h -o QtBuildTool/moc_GUIActionHandler.cpp
+QtBuildTool/moc_QtMainWindowHandler.cpp: Classes/Qt/QtMainWindowHandler.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/QtMainWindowHandler.h -o QtBuildTool/moc_QtMainWindowHandler.cpp
 
-#QtBuildTool/moc_GraphModel.cpp: Classes/Qt/GraphModel.h
-#	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/GraphModel.h -o QtBuildTool/moc_GraphModel.cpp
+QtBuildTool/moc_GraphModel.cpp: Classes/Qt/GraphModel.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/GraphModel.h -o QtBuildTool/moc_GraphModel.cpp
 
 QtBuildTool/moc_SceneGraphModel.cpp: Classes/Qt/SceneGraphModel.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/SceneGraphModel.h -o QtBuildTool/moc_SceneGraphModel.cpp
@@ -53,10 +71,16 @@ QtBuildTool/moc_SceneGraphModel.cpp: Classes/Qt/SceneGraphModel.h
 QtBuildTool/moc_SceneData.cpp: Classes/Qt/SceneData.h
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/SceneData.h -o QtBuildTool/moc_SceneData.cpp
 
+QtBuildTool/moc_FileSelectionModel.cpp: Classes/Qt/FileSelectionModel.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/FileSelectionModel.h -o QtBuildTool/moc_FileSelectionModel.cpp
 
-compiler_rcc_make_all: QtBuildTool/qrc_QtIcons.cpp
+QtBuildTool/moc_LibraryModel.cpp: Classes/Qt/LibraryModel.h
+	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ Classes/Qt/LibraryModel.h -o QtBuildTool/moc_LibraryModel.cpp
+
+compiler_rcc_make_all: $(RESUORCE_FILES)
 compiler_rcc_clean:
-	-$(DEL_FILE) QtBuildTool/qrc_QtIcons.cpp
+	-$(DEL_FILE) $(RESUORCE_FILES)
+	
 QtBuildTool/qrc_QtIcons.cpp: QtIcons.qrc
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/rcc -name QtIcons QtIcons.qrc -o QtBuildTool/qrc_QtIcons.cpp
 
@@ -68,9 +92,9 @@ compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_rez_source_make_all:
 compiler_rez_source_clean:
-compiler_uic_make_all: ui_mainwindow.h ui_davaglwidget.h
+compiler_uic_make_all: $(HEADER_FILES)
 compiler_uic_clean:
-	-$(DEL_FILE) ui_mainwindow.h ui_davaglwidget.h
+	-$(DEL_FILE) $(HEADER_FILES)
 ui_mainwindow.h: mainwindow.ui
 	~/QtSDK/Desktop/Qt/4.8.1/gcc/bin/uic mainwindow.ui -o ui_mainwindow.h
 

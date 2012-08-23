@@ -75,9 +75,6 @@ void GameCore::OnAppStarted()
         new LandscapeTest(String("Landscape Tiled Mode"), LandscapeNode::TILED_MODE_TILEMASK);
         new LandscapeTest(String("Landscape Texture Mode"), LandscapeNode::TILED_MODE_TEXTURE);
         
-        new TreeTest(String(""), String(""));
-        new TreeTest(String(""), String(""));
-        
         new TreeTest(String("TreeTest TEST_1HI"), String("~res:/3d/Maps/test/treetest/TEST_1HI.sc2"));
         new TreeTest(String("TreeTest TEST_2"), String("~res:/3d/Maps/test/treetest/TEST_2.sc2"));
         

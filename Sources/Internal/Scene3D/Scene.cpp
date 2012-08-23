@@ -479,10 +479,22 @@ void Scene::Draw()
 
 	shadowVolumes.clear();
     
+    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+    //RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
+    //glDepthMask(GL_TRUE);
+    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+    
+    if(imposterManager)
+	{
+		//imposterManager->ProcessQueue();
+	}
+    
     RenderManager::Instance()->SetCullMode(FACE_BACK);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
-    RenderManager::Instance()->ClearDepthBuffer();
+	RenderManager::Instance()->ClearDepthBuffer();
+    //glDepthMask(GL_TRUE);
+    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
     
 	
     if (currentCamera)
@@ -496,12 +508,13 @@ void Scene::Draw()
 
 	//entityManager->Dump();
 
-	if(imposterManager)
+    SceneNode::Draw();
+    
+    if(imposterManager)
 	{
 		imposterManager->Draw();
 	}
-
-    SceneNode::Draw();
+    
 	//LandscapeGeometrySystem::Run(this);
 	//MeshInstanceDrawSystem::Run(this);
 

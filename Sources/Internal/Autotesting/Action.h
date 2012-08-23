@@ -50,11 +50,15 @@ public:
     Action();
     virtual ~Action();
 
+	void SetName(const String &actionName);
+
     virtual void Update(float32 timeElapsed);
     virtual void Execute();
     inline bool IsExecuted() { return isExecuted; };
 
 protected:
+	virtual String Dump();
+
     virtual bool TestCondition();
 
     void SetText(const Vector<String> &controlPath, const WideString &text);
@@ -74,6 +78,7 @@ protected:
 // helper for messages
     String PathToString(const Vector<String>& controlPath);
 
+	String name;
     bool isExecuted;
 };
 
@@ -85,6 +90,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     void KeyPress(char16 keyChar);
     char16 keyChar;
 };
@@ -98,6 +105,8 @@ public:
     virtual void Execute();
     virtual void Update(float32 timeElapsed);
 protected:
+	virtual String Dump();
+
     virtual bool TestCondition();
     float32 waitTime;
 };
@@ -111,6 +120,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     virtual bool TestCondition();
     Vector<String> controlPath;
 };
@@ -124,6 +135,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     Vector<String> controlPath;
     WideString text;
 };

@@ -565,6 +565,7 @@ void Core::SystemAppStarted()
 	}
 
 	if (core)core->OnAppStarted();
+    
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->OnAppStarted();
 #endif //__DAVAENGINE_AUTOTESTING__

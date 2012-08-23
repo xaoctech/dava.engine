@@ -57,6 +57,7 @@ void ColorOnlyEffectGL::DrawArrays(ePrimitiveType mode, int32 first, int32 count
     RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
     
@@ -65,6 +66,7 @@ void ColorOnlyEffectGL::DrawElements(ePrimitiveType type, int32 count, eIndexFor
     RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
     RenderManager::Instance()->SetShader(0);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
     
@@ -84,6 +86,7 @@ void ColorOnlyEffectGL20::DrawArrays(ePrimitiveType mode, int32 first, int32 cou
 {
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
     
@@ -91,6 +94,7 @@ void ColorOnlyEffectGL20::DrawElements(ePrimitiveType type, int32 count, eIndexF
 {
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
     RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
     
@@ -104,6 +108,7 @@ void ColorOnlyEffectDX9::DrawArrays(ePrimitiveType mode, int32 first, int32 coun
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawArrays(mode, first, count);
 }
 
@@ -112,6 +117,7 @@ void ColorOnlyEffectDX9::DrawElements(ePrimitiveType type, int32 count, eIndexFo
 	RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_TEXTURE0);
 	RenderManager::Instance()->SetShader(0);
 	RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
 	RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 #endif

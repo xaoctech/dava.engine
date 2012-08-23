@@ -40,15 +40,13 @@ MaterialEditor::MaterialEditor()
 
 
     Rect setupRect(GetRect().dx - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
-    UIButton *btnSetupFog = ControlsFactory::CreateButton(setupRect, LocalizedString(L"materialeditor.setupfog"));
+    btnSetupFog = ControlsFactory::CreateButton(setupRect, LocalizedString(L"materialeditor.setupfog"));
     btnSetupFog->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &MaterialEditor::OnSetupFog));
     AddControl(btnSetupFog);
-    SafeRelease(btnSetupFog);
 
-    UIControl *line = ControlsFactory::CreateLine(Rect(GetRect().dx - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT * 2, ControlsFactory::BUTTON_WIDTH*2, 1), 
+    line = ControlsFactory::CreateLine(Rect(GetRect().dx - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT * 2, ControlsFactory::BUTTON_WIDTH*2, 1),
                                                   Color::White());
     AddControl(line);
-    SafeRelease(line);
     
     Rect fogRect(setupRect.x - ControlsFactory::BUTTON_WIDTH, setupRect.dy + setupRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
     fogControl = new FogControl(fogRect, this);
@@ -90,6 +88,10 @@ MaterialEditor::MaterialEditor()
 
 MaterialEditor::~MaterialEditor()
 {
+    SafeRelease(btnSetupFog);
+    SafeRelease(line);
+
+    
     for (int32 k = 0; k < (int32)materials.size(); ++k)
     {
         SafeRelease(materials[k]);
@@ -155,6 +157,13 @@ void MaterialEditor::UpdateNodeMaterialsVector()
 
 void MaterialEditor::WillAppear()
 {
+    UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
+    if(activeScreen)
+    {
+        int32 height = GetSize().y;
+        SetRect(Rect(GetScreenWidth()/8, (GetScreenHeight() - height) / 2, GetScreenWidth()/4*3, height));
+    }
+    
     UpdateInternalMaterialsVector();
     UpdateNodeMaterialsVector();
     
@@ -229,7 +238,7 @@ void MaterialEditor::SetWorkingScene(Scene *newWorkingScene, SceneNode *newWorki
     RefreshList();
 }
 
-void MaterialEditor::OnButton(BaseObject * object, void * userData, void * callerData)
+void MaterialEditor::OnButton(BaseObject * , void * , void * )
 {
 }
 
@@ -278,7 +287,7 @@ void MaterialEditor::PreparePropertiesForMaterialType(int materialType)
 }
 
 
-int32 MaterialEditor::ElementsCount(UIList *forList)
+int32 MaterialEditor::ElementsCount(UIList *)
 {
     if(EDM_ALL == displayMode)
     {
@@ -299,7 +308,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     UIListCell *c = forList->GetReusableCell("Material name cell");
     if (!c) 
     {
-        c = new UIListCell(Rect(0, 0, size.x * materialListPart, 20), "Material name cell");
+        c = new UIListCell(Rect(0, 0, forList->GetRect().dx, 20), "Material name cell");
 
         float32 boxSize = 16;
         float32 y = (CellHeight(forList, index) - boxSize) / 2;
@@ -319,7 +328,7 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     bool found = false;
     if(EDM_ALL == displayMode)
     {
-        for (int32 i = 0; i < workingNodeMaterials.size(); ++i) 
+        for (int32 i = 0; i < (int32)workingNodeMaterials.size(); ++i)
         {
             if(workingNodeMaterials[i] == mat)
             {
@@ -350,12 +359,12 @@ UIListCell *MaterialEditor::CellAtIndex(UIList *forList, int32 index)
     return c;
 }
 
-int32 MaterialEditor::CellHeight(UIList *forList, int32 index)
+int32 MaterialEditor::CellHeight(UIList *, int32 )
 {
     return 20;
 }
 
-void MaterialEditor::OnCellSelected(UIList *forList, UIListCell *selectedCell)
+void MaterialEditor::OnCellSelected(UIList *, UIListCell *selectedCell)
 {
     if (selectedCell->GetIndex() != selectedMaterial)
     {
@@ -370,7 +379,7 @@ void MaterialEditor::OnCellSelected(UIList *forList, UIListCell *selectedCell)
 }
 
 
-void MaterialEditor::OnAllPressed(BaseObject * object, void * userData, void * callerData)
+void MaterialEditor::OnAllPressed(BaseObject * , void * , void * )
 {
     displayMode = EDM_ALL;
     btnAll->SetSelected(true, false);
@@ -386,7 +395,7 @@ void MaterialEditor::OnAllPressed(BaseObject * object, void * userData, void * c
     RefreshList();
 }
 
-void MaterialEditor::OnSelectedPressed(BaseObject * object, void * userData, void * callerData)
+void MaterialEditor::OnSelectedPressed(BaseObject * , void * , void * )
 {
     displayMode = EDM_SELECTED;
 
@@ -435,14 +444,14 @@ Material * MaterialEditor::GetMaterial(int32 index)
     Material *mat = NULL;
     if(EDM_ALL == displayMode)
     {
-        if((0 <= index) && (index < materials.size()))
+        if((0 <= index) && (index < (int32)materials.size()))
         {
             mat = materials[index];
         }
     }
     else
     {
-        if((0 <= index) && (index < workingNodeMaterials.size()))
+        if((0 <= index) && (index < (int32)workingNodeMaterials.size()))
         {
             mat = workingNodeMaterials[index];
         }
@@ -450,7 +459,7 @@ Material * MaterialEditor::GetMaterial(int32 index)
     return mat;
 }
 
-void MaterialEditor::OnSetupFog(BaseObject * object, void * userData, void * callerData)
+void MaterialEditor::OnSetupFog(BaseObject *, void *, void *)
 {
     if(fogControl)
     {
@@ -459,13 +468,11 @@ void MaterialEditor::OnSetupFog(BaseObject * object, void * userData, void * cal
 }
 
 
-#pragma mark  --NodesPropertyDelegate
 void MaterialEditor::NodesPropertyChanged()
 {
     RefreshList();
 }
 
-#pragma mark --FogControlDelegate
 void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &newColor)
 {
     for(int32 i = 0; i < (int32)materials.size(); ++i)
@@ -480,10 +487,48 @@ void MaterialEditor::SetupFog(bool enabled, float32 dencity, const DAVA::Color &
         Vector<LandscapeNode *> landscapes;
         workingScene->GetChildNodes(landscapes);
 
-        DVASSERT(1 == landscapes.size());
-        
-        landscapes[0]->SetFog(enabled);
-        landscapes[0]->SetFogDensity(dencity);
-        landscapes[0]->SetFogColor(newColor);
+        DVASSERT((landscapes.size() <= 1) && "Can't be nore than 1 landscape at level");
+        if(0 < landscapes.size())
+        {
+            landscapes[0]->SetFog(enabled);
+            landscapes[0]->SetFogDensity(dencity);
+            landscapes[0]->SetFogColor(newColor);
+        }
     }
 }
+
+void MaterialEditor::SetSize(const Vector2 &newSize)
+{
+    DraggableDialog::SetSize(newSize);
+    
+    btnSetupFog->SetPosition(Vector2(newSize.x - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT));
+    line->SetPosition(Vector2(newSize.x - ControlsFactory::BUTTON_WIDTH*2, ControlsFactory::BUTTON_HEIGHT * 2));
+    
+
+    Rect setupRect(newSize.x - ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_WIDTH, ControlsFactory::BUTTON_HEIGHT);
+    Rect fogRect(setupRect.x - ControlsFactory::BUTTON_WIDTH, setupRect.dy + setupRect.y, ControlsFactory::BUTTON_WIDTH * 2, ControlsFactory::BUTTON_HEIGHT * 5);
+    fogControl->SetRect(fogRect);
+    
+    
+    float32 materialListWidth = materialsList->GetSize().x;
+    Rect noMaterialsRect = noMaterials->GetRect();
+    noMaterials->SetRect(Rect(materialListWidth, noMaterialsRect.y, newSize.x - materialListWidth, noMaterialsRect.dy));
+
+    
+    Rect propsRect = materialProps->GetRect();
+
+    RemoveControl(materialProps);
+    SafeRelease(materialProps);
+    
+    materialProps = new MaterialPropertyControl(Rect(materialListWidth,
+                                                     propsRect.y,
+                                                     newSize.x - materialListWidth,
+                                                     propsRect.dy),
+                                                false);
+    materialProps->SetDelegate(this);
+    AddControl(materialProps);
+
+    
+    SelectMaterial(selectedMaterial);
+}
+

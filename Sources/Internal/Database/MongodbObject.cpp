@@ -199,7 +199,7 @@ void MongodbObject::Finish()
 
 bool MongodbObject::IsFinished()
 {
-    return objectData->object->finished;
+    return (0 != objectData->object->finished);
 }
     
 String MongodbObject::GetObjectName()
