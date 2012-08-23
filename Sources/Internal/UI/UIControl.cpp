@@ -1715,6 +1715,15 @@ namespace DAVA
     void UIControl::OnFocused()
     {
     }
-    
+ 
+    void UIControl::SetSizeFromBg(bool pivotToCenter)
+    {
+        SetSize(GetBackground()->GetSprite()->GetSize());
+
+        if (pivotToCenter)
+        {
+            pivotPoint = GetSize()/2.f;
+        }        
+    }
     
 }

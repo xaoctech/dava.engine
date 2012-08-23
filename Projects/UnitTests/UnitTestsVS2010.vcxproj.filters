@@ -45,6 +45,9 @@
     <ClInclude Include="Classes\MemoryAllocatorsTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\SplitTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp">
@@ -75,6 +78,9 @@
       <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="Classes\MemoryAllocatorsTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SplitTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>

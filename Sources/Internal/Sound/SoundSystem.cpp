@@ -34,19 +34,35 @@
 #include "Sound/SoundInstance.h"
 #include "Sound/SoundGroup.h"
 
+#ifdef __DAVAENGINE_IPHONE__
+#include "AudioToolbox/AudioServices.h"
+#endif
+
+
+#ifdef __DAVAENGINE_IPHONE__
+void interrruptionListenerCallback(void * userData, UInt32 iterruptionState)
+{
+
+}
+#endif
 
 namespace DAVA
 {
-
-#ifdef __DAVASOUND_AL__
-ALCcontext * context = NULL;
-ALCdevice * device = NULL;
-#endif //#ifdef __DAVASOUND_AL__
     
-SoundSystem::SoundSystem(int32 _maxChannels)
-:	maxChannels(_maxChannels),
-	volume(1.f)
-{
+#ifdef __DAVASOUND_AL__
+    ALCcontext * context = NULL;
+    ALCdevice * device = NULL;
+#endif //#ifdef __DAVASOUND_AL__
+    SoundSystem::SoundSystem(int32 _maxChannels)
+    :maxChannels(_maxChannels),
+        volume(1.f)
+    {
+#ifdef __DAVAENGINE_IPHONE__
+        OSStatus result = AudioSessionInitialize(NULL, NULL, interrruptionListenerCallback, NULL);
+        UInt32 category = kAudioSessionCategory_AmbientSound;
+        result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
+#endif
+        
 #ifdef __DAVASOUND_AL__
 	device = alcOpenDevice(0);
 	if(device)
