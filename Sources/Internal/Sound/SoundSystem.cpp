@@ -33,7 +33,10 @@
 #include "Sound/ALUtils.h"
 #include "Sound/SoundInstance.h"
 #include "Sound/SoundGroup.h"
+
+#ifdef __DAVAENGINE_IPHONE__
 #include "AudioToolbox/AudioServices.h"
+#endif
 
 
 #ifdef __DAVAENGINE_IPHONE__
