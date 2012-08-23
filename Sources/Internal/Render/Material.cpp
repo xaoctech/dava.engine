@@ -290,8 +290,8 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
             uniformTexture0 = shader->FindUniformLocationByName("texture0");
             uniformTexture1 = shader->FindUniformLocationByName("texture1");
-			uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
-			uniformUvScale = shader->FindUniformLocationByName("uvScale");
+            uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
+            uniformUvScale = shader->FindUniformLocationByName("uvScale");
             
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
@@ -329,6 +329,16 @@ void Material::RebuildShader()
         uniformFogDensity = shader->FindUniformLocationByName("fogDensity");
         uniformFogColor = shader->FindUniformLocationByName("fogColor");
     }
+    
+    RetrieveTextureSlotNames();
+}
+    
+void Material::RetrieveTextureSlotNames()
+{
+    // 
+    //shader->F
+    
+    
 }
     
 void Material::SetType(eType _type)
@@ -729,6 +739,15 @@ void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
 	setupLightmapSize = _setupLightmapSize;
 }
     
+void Material::SetTexture(eTextureLevel level, Texture * texture)
+{
+    if (texture == textures[level])return;
+    
+    SafeRelease(textures[level]);
+    names[level] = "";
+    textures[level] = SafeRetain(texture);
+}
+
 void Material::SetTexture(eTextureLevel level, const String & textureName)
 {
     SafeRelease(textures[level]);

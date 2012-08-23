@@ -200,9 +200,9 @@ void MeshInstanceNode::Draw()
 			if(data && data->lightmap)
 			{
 				polygroup->material->SetSetupLightmap(false);
-				polygroup->material->textures[Material::TEXTURE_DECAL] = data->lightmap;
-				polygroup->material->uvOffset = data->uvOffset;
-				polygroup->material->uvScale = data->uvScale;
+				polygroup->material->SetTexture(Material::TEXTURE_DECAL, data->lightmap);
+				polygroup->material->SetUvOffset(data->uvOffset);
+				polygroup->material->SetUvScale(data->uvScale);
 			}
 			else
 			{
