@@ -105,11 +105,24 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 		return spr;
 	}
 
-	
-	File *fp = File::Create(scaledPath, File::READ|File::OPEN);
+    File * fp = 0;
+    String texturePath;
+    
+	size_t slashPos = scaledPath.rfind("/");
+    String fileName = scaledPath.substr(slashPos + 1);
+    String localizedScaledPath = scaledPath.substr(0, slashPos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+
+    fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
+    texturePath = localizedScaledPath.substr(0, localizedScaledPath.length() - 4);
+    
+    if(!fp)
+    {
+    	fp = File::Create(scaledPath, File::READ|File::OPEN);
+        texturePath = scaledName;
+    }
 	
 	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
-	String texturePath = scaledName;
+
 
 	if (!fp)
 	{
@@ -123,18 +136,17 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 			return spr;
 		}
 	
+        size_t pos = pathName.rfind("/");
+        String fileName = pathName.substr(pos + 1);
+        String localizedPathName = pathName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+		texturePath = localizedPathName.substr(0, pathName.length() - 4);
 	
-		fp = File::Create(pathName, File::READ|File::OPEN);
+		fp = File::Create(localizedPathName, File::READ|File::OPEN);
 	
-
 		if (!fp)
 		{
-            size_t pos = pathName.rfind("/");
-            String fileName = pathName.substr(pos + 1);
-            pathName = pathName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-            
             fp = File::Create(pathName, File::READ|File::OPEN);
-            
+            texturePath = pathName.substr(0, pathName.length() - 4);
             if (!fp)
             {    
                 Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
@@ -146,7 +158,6 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 			spr = new Sprite();
 		}
 		spr->resourceSizeIndex = Core::Instance()->GetBaseResourceIndex();
-		texturePath = pathName.substr(0, pathName.length() - 4);
 	}
 	else 
 	{
@@ -155,7 +166,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 			spr = new Sprite();
 		}
 		spr->resourceSizeIndex = Core::Instance()->GetDesirableResourceIndex();
-		texturePath = scaledName;
+//		texturePath = scaledName;
 	}
 
 	
