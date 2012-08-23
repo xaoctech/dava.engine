@@ -98,10 +98,10 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
 			blendTypes.push_back(BlendModeNames[i]);
 		}
 		propertyList->AddComboProperty("property.material.blendSrc", blendTypes);
-		propertyList->SetComboPropertyIndex("property.material.blendSrc", material->blendSrc);
+		propertyList->SetComboPropertyIndex("property.material.blendSrc", material->GetBlendSrc());
 
 		propertyList->AddComboProperty("property.material.blendDst", blendTypes);
-		propertyList->SetComboPropertyIndex("property.material.blendDst", material->blendDst);
+		propertyList->SetComboPropertyIndex("property.material.blendDst", material->GetBlendDest());
 	}
     
     if (    (Material::MATERIAL_VERTEX_LIT_TEXTURE == materialType) 
@@ -138,9 +138,9 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
 
 void MaterialPropertyControl::SetFilepathValue(Material *material, int32 type)
 {
-    if (material->textures[textureTypes[type]])
+    if (material->GetTexture((Material::eTextureLevel)textureTypes[type]))
     {
-        propertyList->SetFilepathPropertyValue(textureNames[type], material->names[textureTypes[type]]);
+        propertyList->SetFilepathPropertyValue(textureNames[type], material->GetTextureName((Material::eTextureLevel)textureTypes[type]));
     }
     else 
     {
@@ -217,12 +217,12 @@ void MaterialPropertyControl::OnComboIndexChanged(PropertyList *forList, const S
 	else if ("property.material.blendSrc" == forKey) 
 	{
 		Material *material = dynamic_cast<Material *> (currentDataNode);
-		material->blendSrc = (eBlendMode)newItemIndex;
+		material->SetBlendSrc((eBlendMode)newItemIndex);
 	}
 	else if ("property.material.blendDst" == forKey) 
 	{
 		Material *material = dynamic_cast<Material *> (currentDataNode);
-		material->blendDst = (eBlendMode)newItemIndex;
+		material->SetBlendDest((eBlendMode)newItemIndex);
 	}
 
     NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
@@ -253,7 +253,7 @@ void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, c
             Material *material = dynamic_cast<Material *> (currentDataNode);
 
             material->SetTexture((Material::eTextureLevel)textureTypes[i], newValue);
-            Texture *tx = material->textures[textureTypes[i]];
+            Texture *tx = material->GetTexture((Material::eTextureLevel)textureTypes[i]);
             if(tx)
             {
                 SceneValidator::Instance()->ValidateTexture(tx);

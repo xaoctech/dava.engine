@@ -15,8 +15,8 @@ ParticleLayer3D::ParticleLayer3D()
 	material = new Material();
 	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
 	material->SetAlphablend(true);
-	material->blendSrc = BLEND_SRC_ALPHA;
-	material->blendDst = BLEND_ONE;
+	material->SetBlendSrc(BLEND_SRC_ALPHA);
+	material->SetBlendDest(BLEND_ONE);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -141,13 +141,13 @@ void ParticleLayer3D::LoadFromYaml(YamlNode * node)
 
 	if(additive)
 	{
-		material->blendSrc = BLEND_SRC_ALPHA;
-		material->blendDst = BLEND_ONE;
+		material->SetBlendSrc(BLEND_SRC_ALPHA);
+		material->SetBlendDest(BLEND_ONE);
 	}
 	else
 	{
-		material->blendSrc = BLEND_SRC_ALPHA;
-		material->blendDst = BLEND_ONE_MINUS_SRC_ALPHA;
+		material->SetBlendSrc(BLEND_SRC_ALPHA);
+		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 }
 
