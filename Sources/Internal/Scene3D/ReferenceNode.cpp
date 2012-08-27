@@ -2,6 +2,8 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "FileSystem/KeyedArchive.h"
+#include "FileSystem/FileSystem.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -39,6 +41,7 @@ void ReferenceNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
 	{
 		const String & relativePath = customProperties->GetString("reference.path");
 		String absolutePath = sceneFileV2->RelativeToAbsolute(relativePath);
+		customProperties->SetString("reference.path", absolutePath);
 		SceneNode * node = scene->GetRootNode(absolutePath);
 		if(node)
 		{
@@ -57,6 +60,22 @@ void ReferenceNode::Update(float32 timeElapsed)
 	{
 		AddNode(nodeToAdd);
 		SafeRelease(nodeToAdd);
+	}
+
+	if(scene->IsReferenceNodeSuffixChanged())
+	{
+		RemoveAllChildren();
+		String newFileName = FileSystem::Instance()->ReplaceExtension(customProperties->GetString("reference.path"), Format("_%s.sc2", scene->GetReferenceNodeSuffix().c_str()));
+		SceneNode * node = scene->GetRootNode(newFileName);
+		if(node)
+		{
+			nodeToAdd = node->Clone();
+		}
+		else
+		{
+			SceneNode * node = scene->GetRootNode(customProperties->GetString("reference.path"));
+			nodeToAdd = node->Clone();
+		}
 	}
 
 	SceneNode::Update(timeElapsed);

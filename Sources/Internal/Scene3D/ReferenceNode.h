@@ -18,6 +18,8 @@ public:
 
 	virtual void GetDataNodes(Set<DataNode*> & dataNodes);
 
+private:
+
 	SceneNode * nodeToAdd;
 };
 
