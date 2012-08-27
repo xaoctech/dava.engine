@@ -213,6 +213,7 @@ property.landscape.showgrid: "Show Grid:"
 property.landscape.tilemode: "Tile mode:"
 property.landscape.texture.tiledtexture: "Tiled texture:"
 property.landscape.generatefulltiled: "Save TiledTexture"
+property.landscape.saveheightmaptopng: "Save height map to PNG"
 
 property.landscape.subsection.textures: "Landscape textures: "
 property.landscape.subsection.build_mask: "Merge png texture and alpha mask:"

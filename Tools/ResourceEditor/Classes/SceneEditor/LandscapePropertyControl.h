@@ -29,6 +29,8 @@ protected:
 
     void GenerateFullTiledTexture(BaseObject * object, void * userData, void * callerData);
     
+    void SaveHeightmapToPng(BaseObject * object, void * userData, void * callerData);
+    
     void AddFilepathProperty(const String &key, const String &filter, LandscapeNode::eTextureLevel level);
 };
 

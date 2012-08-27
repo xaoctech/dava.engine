@@ -48,7 +48,7 @@ public: // from UIStaticText
 
     void SetText(const WideString &string, const Vector2 &requestedTextRectSize = Vector2(0,0));
     void SetFont(Font *font, bool prepareSprite = true);
-    void SetMultiline(bool isMultilineEnabled);
+    void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
     void SetFittingOption(int32 fittingType);
     void SetAlign(int32 alignment);
 

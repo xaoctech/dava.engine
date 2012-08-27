@@ -53,9 +53,9 @@ void TextGameObject::SetFont( Font *font, bool prepareSprite /*= true*/ )
         PrepareSprite();
 }
 
-void TextGameObject::SetMultiline(bool isMultilineEnabled)
+void TextGameObject::SetMultiline(bool isMultilineEnabled, bool bySymbol)
 {
-    textBlock->SetMultiline(isMultilineEnabled);
+    textBlock->SetMultiline(isMultilineEnabled, bySymbol);
     PrepareSprite();
 }
 

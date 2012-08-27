@@ -90,6 +90,8 @@
 		5CF6FF2E1563A8390070C3DB /* SharedFBO.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF6FF2B1563A8390070C3DB /* SharedFBO.h */; };
 		5CFA5D4F156E3EBF00EDB730 /* UserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */; };
 		5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D4E156E3EBF00EDB730 /* UserNode.h */; };
+		C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */; };
+		C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -664,6 +666,8 @@
 		5CF6FF2B1563A8390070C3DB /* SharedFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFBO.h; sourceTree = "<group>"; };
 		5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserNode.cpp; sourceTree = "<group>"; };
 		5CFA5D4E156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
+		C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
+		C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C784403A158204A000F75358 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -1785,6 +1789,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */,
+				C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */,
 				5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */,
 				5CD7158315AC454A00D08E8E /* ParticleEmitterNode.h */,
 				5CFA5D4D156E3EBF00EDB730 /* UserNode.cpp */,
@@ -2289,6 +2295,7 @@
 				5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */,
 				5C19F49815A42D920064E889 /* KeyedUnarchiver.h in Headers */,
 				5CBF71CE15C6DFCB00CD1736 /* RenderOptions.h in Headers */,
+				C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2613,6 +2620,7 @@
 				5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */,
 				5C8E672B15A58CA400A87103 /* FileSystemObjective.mm in Sources */,
 				5CBF71CD15C6DFCB00CD1736 /* RenderOptions.cpp in Sources */,
+				C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
