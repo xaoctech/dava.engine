@@ -14,6 +14,7 @@
 #include "SceneDataManager.h"
 #include "SceneData.h"
 #include "QtUtils.h"
+#include "mainwindow.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -330,5 +331,7 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 		defaultFocusWidget->setEnabled(true);
 	}
 }
+
+
 
 
