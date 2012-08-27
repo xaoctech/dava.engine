@@ -34,7 +34,6 @@
 #include "Input/AccelerometeriPhone.h"
 #include "FileSystem/Logger.h"
 
-
 @interface UIAccelerometerEventCatcher : NSObject<UIAccelerometerDelegate>
 {
 }
@@ -44,13 +43,13 @@
 @end
 
 
-UIAccelerometerEventCatcher * realCatcher;
+UIAccelerometerEventCatcher *realCatcher;
 
 namespace DAVA 
 {
-	
 AccelerometeriPhoneImpl::AccelerometeriPhoneImpl()
 {
+	[UIAccelerometer sharedAccelerometer].delegate = nil;
 	realCatcher = [[UIAccelerometerEventCatcher alloc] init];
 	Logger::Debug("Accelerometer iPhone");
 };
@@ -71,6 +70,11 @@ void AccelerometeriPhoneImpl::Disable()
 	[UIAccelerometer sharedAccelerometer].delegate = nil;
 }
 
+bool AccelerometeriPhoneImpl::IsEnabled() const
+{
+    return nil != [UIAccelerometer sharedAccelerometer].delegate;
+}
+
 void AccelerometeriPhoneImpl::SetAccelerationData(float x, float y, float z)
 {
 	accelerationData.x = x;
@@ -78,14 +82,10 @@ void AccelerometeriPhoneImpl::SetAccelerationData(float x, float y, float z)
 	accelerationData.z = z;
 }
 
-
 EventDispatcher * AccelerometeriPhoneImpl::GetEventDispatcher()
 {
 	return &eventDispatcher;
 }
-	
-	
-	
 };
 
 
@@ -100,4 +100,3 @@ EventDispatcher * AccelerometeriPhoneImpl::GetEventDispatcher()
 
 @end
 #endif
-

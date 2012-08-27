@@ -32,19 +32,39 @@ void Action::Update(float32 timeElapsed)
     if(!isExecuted)
     {
         isExecuted = TestCondition();
+
+		//TODO: use ifdef for this debug feature?
+		if(isExecuted)
+		{
+			DebugLog("EXECUTED", true);
+		}
     }
 }
 
 void Action::Execute()
 {
+	DebugLog("EXECUTE", true);
+
     isExecuted = TestCondition();
 
 	//TODO: use ifdef for this debug feature?
 	if(isExecuted)
 	{
-		String logMsg = Dump();
-		logMsg = Format("EXECUTED %s", logMsg.c_str());
+		DebugLog("EXECUTED", true);
+	}
+}
+
+void Action::DebugLog(const String &prefix, bool toAutotestingSystem)
+{
+	String logMsg = Dump();
+	logMsg = Format("%s %s", prefix.c_str(), logMsg.c_str());
+	if(toAutotestingSystem)
+	{
 		AutotestingSystem::Instance()->OnMessage(logMsg);
+	}
+	else
+	{
+		Logger::Debug("Action::DebugLog %s", logMsg.c_str());
 	}
 }
 

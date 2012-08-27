@@ -51,10 +51,13 @@ public:
     virtual ~Action();
 
 	void SetName(const String &actionName);
+	const String &GetName() { return name; };
 
     virtual void Update(float32 timeElapsed);
     virtual void Execute();
     inline bool IsExecuted() { return isExecuted; };
+
+	void DebugLog(const String &prefix, bool toAutotestingSystem);
 
 protected:
 	virtual String Dump();
