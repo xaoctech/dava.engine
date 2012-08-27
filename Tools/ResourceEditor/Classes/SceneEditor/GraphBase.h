@@ -68,6 +68,8 @@ protected:
     
     GraphBaseDelegate *delegate;
     EditorScene *workingScene;
+    
+    UIButton *refreshButton;
 };
 
 

@@ -39,6 +39,7 @@
 #include "MemoryAllocatorsTest.h"
 #include "HashMapTest.h"
 #include "SoundTest.h"
+#include "SplitTest.h"
 
 using namespace DAVA;
 
@@ -69,6 +70,7 @@ void GameCore::OnAppStarted()
     new MemoryAllocatorsTest();
     new HashMapTest();
     new SoundTest();
+    new SplitTest();
     
     errors.reserve(TestCount());
 

@@ -38,6 +38,7 @@
 #include "Scene3D/BoneNode.h"
 #include "Scene3D/Camera.h"
 #include "Scene3D/SceneNodeAnimationList.h"
+#include "Scene3D/ReferenceNode.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
 #include "Base/ObjectFactory.h"
@@ -384,11 +385,11 @@ bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
     archive->SetInt32("#childrenCount", node->GetChildrenCount());
     archive->Save(file);
     
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
-    {
-        DataNode * child = node->GetChild(ci);
-        SaveDataHierarchy(child, file, level + 1);
-    }
+	for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+	{
+		DataNode * child = node->GetChild(ci);
+		SaveDataHierarchy(child, file, level + 1);
+	}
     
     SafeRelease(archive);
     return true;
@@ -465,17 +466,23 @@ bool SceneFileV2::SaveHierarchy(SceneNode * node, File * file, int32 level)
     if (isDebugLogEnabled)
         Logger::Debug("%s %s(%s) %d", GetIndentString('-', level), node->GetName().c_str(), node->GetClassName().c_str(), node->GetChildrenCount());
     node->Save(archive, this);    
+	ReferenceNode * ref = dynamic_cast<ReferenceNode*>(node);
     
-    archive->SetInt32("#childrenCount", node->GetChildrenCount());
-
-    
+	if(!ref)
+	{
+		archive->SetInt32("#childrenCount", node->GetChildrenCount());
+	}
+ 
     archive->Save(file);
 
-    for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
-    {
-        SceneNode * child = node->GetChild(ci);
-        SaveHierarchy(child, file, level + 1);
-    }
+	if(!ref)
+	{
+		for (int ci = 0; ci < node->GetChildrenCount(); ++ci)
+		{
+			SceneNode * child = node->GetChild(ci);
+			SaveHierarchy(child, file, level + 1);
+		}
+	}
     
     SafeRelease(archive);
     return true;
@@ -492,7 +499,7 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 
 	//TODO: refactor this elegant fix
 	bool skipNode = false;
-	if(!node) //in case if editor class is loading in non-editor project
+	if(!node) //in case if editor class is loading in non-editor sprsoject
 	{
 		node = new SceneNode();
 		skipNode = true;
@@ -513,12 +520,12 @@ void SceneFileV2::LoadHierarchy(Scene * scene, SceneNode * parent, File * file, 
 			parent->AddNode(node);
 		}
         
-        int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+		int32 childrenCount = archive->GetInt32("#childrenCount", 0);
 
-        for (int ci = 0; ci < childrenCount; ++ci)
-        {
-            LoadHierarchy(scene, node, file, level + 1);
-        }
+		for (int ci = 0; ci < childrenCount; ++ci)
+		{
+			LoadHierarchy(scene, node, file, level + 1);
+		}
         SafeRelease(node);
     }
     

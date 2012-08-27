@@ -112,6 +112,7 @@ public:
     
     void EnumerateSceneTextures();
     void CollectSceneStats(const RenderManager::Stats &newStats);
+    void EnumerateNodes(Scene *scene);
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
@@ -120,6 +121,8 @@ public:
     void ReloadTextures();
     
 protected:
+    
+    int32 EnumerateSceneNodes(SceneNode *node);
     
     void ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String> &errorsLog);
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);

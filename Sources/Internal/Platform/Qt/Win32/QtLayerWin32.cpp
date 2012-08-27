@@ -142,6 +142,7 @@ void QtLayerWin32::Resize(int32 width, int32 height)
 	RenderManager::Instance()->Init(currentMode.width, currentMode.height);
 	UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
 	Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
+	Core::Instance()->SetVirtualScreenSize(currentMode.width, currentMode.height);
 }
     
 void QtLayerWin32::Move(int32 x, int32 y)

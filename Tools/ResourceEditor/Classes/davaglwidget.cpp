@@ -3,10 +3,12 @@
 #include "davaglwidget.h"
 #include "ui_davaglwidget.h"
 
+#include <QApplication>
 #include <QResizeEvent>
 #include <QTimer>
 #include <QElapsedTimer>
 #include <QMoveEvent>
+#include <QKeyEvent>
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -35,6 +37,9 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 	DVASSERT(false && "Wrong platform");
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
+    DAVA::QtLayer::Instance()->SetDelegate(this);
+    
+    
     setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     
 	DAVA::QtLayer::Instance()->Resize(size().width(), size().height());
@@ -75,7 +80,7 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
 
 void DavaGLWidget::moveEvent(QMoveEvent *e)
 {
-    QWidget::moveEvent(e);
+	QWidget::moveEvent(e);
 
     QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
 	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
@@ -108,17 +113,18 @@ void DavaGLWidget::FpsTimerDone()
 
 void DavaGLWidget::showEvent(QShowEvent *e)
 {
-    QWidget::showEvent(e);
+	QWidget::showEvent(e);
     
 	DAVA::QtLayer::Instance()->OnResume();
 }
 
 void DavaGLWidget::hideEvent(QHideEvent *e)
 {
-    QWidget::hideEvent(e);
+	QWidget::hideEvent(e);
     
 	DAVA::QtLayer::Instance()->OnSuspend();
 }
+
 
 #if defined(Q_WS_WIN)
 bool DavaGLWidget::winEvent(MSG *message, long *result)
@@ -126,7 +132,8 @@ bool DavaGLWidget::winEvent(MSG *message, long *result)
 	DAVA::CoreWin32Platform *core = dynamic_cast<DAVA::CoreWin32Platform *>(DAVA::CoreWin32Platform::Instance());
 	if (NULL != core)
 	{
-		return core->WinEvent(message, result);
+		return 
+			core->WinEvent(message, result);
 	}
 
 	return false;
@@ -138,4 +145,9 @@ void DavaGLWidget::closeEvent(QCloseEvent *e)
 	willClose = true;
 
 	QWidget::closeEvent(e);
+}
+
+void DavaGLWidget::Quit()
+{
+    QApplication::quit();
 }

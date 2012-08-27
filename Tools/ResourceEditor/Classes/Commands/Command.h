@@ -8,6 +8,14 @@ class Command: public DAVA::BaseObject
 {
     friend class CommandsManager;
     
+protected:
+    enum eCommandState
+    {
+        STATE_VALID = 0,
+        STATE_INVALID
+    };
+    
+    
 public:
     
     enum eCommandType
@@ -28,13 +36,17 @@ protected:
     
     inline eCommandType Type() const {return commandType; };
 	
-	DAVA::String NormalizePath(const DAVA::String &pathname);
+    inline void SetState(eCommandState newState) {commandState = newState; };
+    inline eCommandState State() const {return commandState; };
 
 protected:
     
     eCommandType commandType;
+    eCommandState commandState;
 };
 
+#include "../Qt/PointerHolder.h"
+DECLARE_POINTER_TYPE(Command *);
 
 
 #endif // #ifndef __COMMAND_H__

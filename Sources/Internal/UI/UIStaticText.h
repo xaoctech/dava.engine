@@ -52,7 +52,7 @@ public:
 	//if requested size in <0 - rect creates for the all text size	
 	void SetText(const WideString & string, const Vector2 &requestedTextRectSize = Vector2(0,0));
 	void SetFont(Font * font);
-	void SetMultiline(bool isMultilineEnabled);
+	void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
 	void SetAlign(int32 _align);
 	virtual void SetSpriteAlign(int32 align);
@@ -77,7 +77,7 @@ public:
 
 	
 	const WideString & GetText();
-
+    const Vector<WideString> & GetMultilineStrings();
 	
 	Font * GetFont() { return textBlock->GetFont(); }
 	

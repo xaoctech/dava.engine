@@ -66,6 +66,12 @@ public:
 	//! Normalize plane equation
 	inline void Normalize();
 
+    /// Projects point onto this plane
+    void ProjectPoint(const DAVA::Vector3 & p, DAVA::Vector3 & projected) const
+    {
+        float dist = DistanceToPoint(p);
+        projected = p - dist*n;
+    }
 };
 
 

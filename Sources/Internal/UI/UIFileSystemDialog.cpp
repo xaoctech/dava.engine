@@ -109,7 +109,7 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
     
     historyPosition = 0;
-    historyBackwardButton = new UIButton(Rect(border, (float32)positiveButton->relativePosition.y, (float32)cellH, (float32)cellH));
+    historyBackwardButton = new UIButton(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)cellH, (float32)cellH));
     historyBackwardButton->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
     historyBackwardButton->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.5f, 0.6f, 0.5f, 0.5f));
     historyBackwardButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
@@ -138,10 +138,10 @@ UIFileSystemDialog::UIFileSystemDialog(const String &_fontPath)
     
 
 //    textField = new UITextField(Rect((float32)border, (float32)positiveButton->relativePosition.y, (float32)negativeButton->relativePosition.x - border*2, (float32)cellH));
-    int32 textFieldOffset = historyForwardButton->relativePosition.x + historyForwardButton->size.x + border;
+    float32 textFieldOffset = historyForwardButton->relativePosition.x + historyForwardButton->size.x + border;
     textField = new UITextField(Rect(textFieldOffset,
                                      (float32)positiveButton->relativePosition.y, 
-                                     (float32)negativeButton->relativePosition.x - border - textFieldOffset, (float32)cellH));
+                                     (float32)(negativeButton->relativePosition.x - border - textFieldOffset), (float32)cellH));
     textField->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     textField->GetBackground()->SetColor(Color(0.25f, 0.25f, 0.25f, 0.25f));
     textField->SetFont(f);
@@ -275,11 +275,11 @@ void UIFileSystemDialog::SetCurrentDir(const String &newDirPath)
     
     // enable/disable navigation buttons
     historyBackwardButton->SetDisabled(0 == historyPosition, false);
-    historyForwardButton->SetDisabled(historyPosition == foldersHistory.size() - 1, false);
+    historyForwardButton->SetDisabled(historyPosition == (int32)foldersHistory.size() - 1, false);
 
-    Logger::Info("Setting path: %s", currentDir.c_str());
-    Logger::Info("Setting file: %s", selectedFile.c_str());
-    if (GetParent()) 
+//    Logger::Info("Setting path: %s", currentDir.c_str());
+//    Logger::Info("Setting file: %s", selectedFile.c_str());
+    if (GetParent())
     {
         RefreshList();
     }
@@ -575,7 +575,7 @@ void UIFileSystemDialog::HistoryButtonPressed(BaseObject *obj, void *data, void 
     }
     else if (obj == historyForwardButton)
     {
-        if(historyPosition < foldersHistory.size() - 1)
+        if(historyPosition < (int32)foldersHistory.size() - 1)
         {
             SetCurrentDir(foldersHistory[historyPosition + 1]);
         }
@@ -589,7 +589,7 @@ void UIFileSystemDialog::CreateHistoryForPath(const String &pathToFile)
 
     foldersHistory.clear();
     foldersHistory.push_back("");
-    for(int32 iFolder = 0; iFolder < folders.size(); ++iFolder)
+    for(int32 iFolder = 0; iFolder < (int32)folders.size(); ++iFolder)
     {
         foldersHistory.push_back(foldersHistory[iFolder] + "/" + folders[iFolder]);
     }

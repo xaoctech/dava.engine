@@ -1,34 +1,39 @@
-#ifndef __GUI_ACTION_MANAGER_H__
-#define __GUI_ACTION_MANAGER_H__
+#ifndef __QT_MAIN_WINDOW_HANDLER_H__
+#define __QT_MAIN_WINDOW_HANDLER_H__
 
 #include <QObject>
+#include <QPoint>
+
 #include "DAVAEngine.h"
 #include "../Constants.h"
 #include "Classes/SceneEditor/EditorSettings.h"
 
-#include <QAction>
-#include <QMenu>
-
-
 class Command;
-class GUIActionHandler: public QObject
+class QMenu;
+class QAction;
+class QTreeView;
+class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
     
 public:
-    GUIActionHandler(QObject *parent = 0);
-    virtual ~GUIActionHandler();
+    QtMainWindowHandler(QObject *parent = 0);
+    virtual ~QtMainWindowHandler();
 
     void RegisterNodeActions(DAVA::int32 count, ...);
     void RegisterViewportActions(DAVA::int32 count, ...);
     void RegisterDockActions(DAVA::int32 count, ...);
     
     void SetResentMenu(QMenu *menu);
-    
+
+    //MENU FILE
+    void MenuFileWillShow();
+
+	void SetDefaultFocusWidget(QWidget *widget);
+	void RestoreDefaultFocus();
     
 public slots:
     //menu
-    void MenuFileWillShow();
     void MenuToolsWillShow();
 
     void CreateNodeTriggered(QAction *nodeAction);
@@ -47,12 +52,21 @@ public slots:
     
     //View
     void RestoreViews();
+    void ToggleSceneInfo();
 
     //tools
     void Materials();
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void ShowSettings();
+    void BakeScene();
+    void Beast();
+    
+    //scene graph
+    void RefreshSceneGraph();
+
+	
     
 private:
     //create node
@@ -71,9 +85,11 @@ private:
     QAction *resentSceneActions[EditorSettings::RESENT_FILES_COUNT];
     QAction *nodeActions[ResourceEditor::NODE_COUNT];
     QAction *viewportActions[ResourceEditor::VIEWPORT_COUNT];
-    QAction *dockActions[ResourceEditor::VIEWPORT_COUNT];
+    QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
+
+	QWidget *defaultFocusWidget;
 };
 
-#endif // __GUI_ACTION_MANAGER_H__
+#endif // __QT_MAIN_WINDOW_HANDLER_H__

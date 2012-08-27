@@ -3,27 +3,31 @@
 
 #include "DAVAEngine.h"
 
+#include <QItemSelection>
 class QTreeView;
 
 class SceneData;
+class EditorScene;
 class SceneDataManager: public DAVA::Singleton<SceneDataManager>
 {
 public:
     SceneDataManager();
     virtual ~SceneDataManager();
 
-    void ActivateScene(DAVA::Scene *scene);
+    void ActivateScene(EditorScene *scene);
     SceneData *GetActiveScene();
-    
-    void RegisterNewScene(DAVA::Scene *scene);
-    void ReleaseScene(DAVA::Scene *scene);
+    SceneData *GetLevelScene();
+
+    EditorScene * RegisterNewScene();
+    void ReleaseScene(EditorScene *scene);
     DAVA::int32 ScenesCount();
 
     void SetSceneGraphView(QTreeView *view);
+    void SetLibraryView(QTreeView *view);
     
 protected:
 
-    SceneData * FindDataForScene(DAVA::Scene *scene);
+    SceneData * FindDataForScene(EditorScene *scene);
     
 protected:
     
@@ -31,8 +35,7 @@ protected:
     DAVA::List<SceneData *>scenes;
     
     QTreeView *sceneGraphView;
-//    QTreeView *dataGraphView;
-//    QTreeView *entityGraphView;
+    QTreeView *libraryView;
     
 };
 

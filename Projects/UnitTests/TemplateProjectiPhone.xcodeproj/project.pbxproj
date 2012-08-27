@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		02B3D3DF159C8D360082111B /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02B3D3DD159C8D360082111B /* SoundTest.cpp */; };
+		02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02BC3C0515E6399C0047F67F /* SplitTest.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -55,6 +56,8 @@
 /* Begin PBXFileReference section */
 		02B3D3DD159C8D360082111B /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundTest.cpp; sourceTree = "<group>"; };
 		02B3D3DE159C8D360082111B /* SoundTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundTest.h; sourceTree = "<group>"; };
+		02BC3C0515E6399C0047F67F /* SplitTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SplitTest.cpp; sourceTree = "<group>"; };
+		02BC3C0615E6399C0047F67F /* SplitTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitTest.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -196,6 +199,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				02BC3C0515E6399C0047F67F /* SplitTest.cpp */,
+				02BC3C0615E6399C0047F67F /* SplitTest.h */,
 				FEC95C6C15B409E500588BBF /* HashMapTest.cpp */,
 				FEC95C6D15B409E500588BBF /* HashMapTest.h */,
 				FEC95C6E15B409E500588BBF /* MemoryAllocatorsTest.cpp */,
@@ -344,6 +349,7 @@
 				02B3D3DF159C8D360082111B /* SoundTest.cpp in Sources */,
 				FEC95C7015B409E500588BBF /* HashMapTest.cpp in Sources */,
 				FEC95C7115B409E500588BBF /* MemoryAllocatorsTest.cpp in Sources */,
+				02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

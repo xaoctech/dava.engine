@@ -38,11 +38,11 @@ namespace DAVA
 {
 void LocalizationIPhone::SelecePreferedLocalizationForPath(const String &directoryPath)
 {
-	NSArray *ar = [NSLocale preferredLanguages];
-	for (int i = 0; i < (int)[ar count]; i++) 
-	{
-		String lid = [[ar objectAtIndex:i] UTF8String];
-		Logger::Info("LocalizationIPhone:: pref lang = %s", lid.c_str());
+    NSString * lang = [[NSUserDefaults standardUserDefaults] stringForKey:@"lang"];
+    
+    if(lang)
+    {
+        String lid = [lang UTF8String];
 		File *fl = File::Create(directoryPath + "/" + lid.c_str() + ".yaml", File::OPEN|File::READ);
 		if(fl)
 		{
@@ -50,9 +50,25 @@ void LocalizationIPhone::SelecePreferedLocalizationForPath(const String &directo
 			LocalizationSystem::Instance()->SetCurrentLocale(lid);
 			SafeRelease(fl);
 			return;
-		}
+		}        
+    }
+    else
+    {
+        NSArray *ar = [NSLocale preferredLanguages];
+        for (int i = 0; i < (int)[ar count]; i++) 
+        {
+            String lid = [[ar objectAtIndex:i] UTF8String];
 
-	}
-		
+            Logger::Info("LocalizationIPhone:: pref lang = %s", lid.c_str());
+            File *fl = File::Create(directoryPath + "/" + lid.c_str() + ".yaml", File::OPEN|File::READ);
+            if(fl)
+            {
+                Logger::Info("LocalizationIPhone:: selected lang = %s", lid.c_str());
+                LocalizationSystem::Instance()->SetCurrentLocale(lid);
+                SafeRelease(fl);
+                return;
+            }
+        }
+    }
 }
 };

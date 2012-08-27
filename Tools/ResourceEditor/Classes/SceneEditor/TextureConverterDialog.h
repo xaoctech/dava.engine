@@ -2,7 +2,6 @@
 #define __TEXTURE_CONVERTER_DIALOG_H__
 
 #include "DAVAEngine.h"
-#include "ExtendedDialog.h"
 #include "TextureFormatDialog.h"
 
 using namespace DAVA;
@@ -20,7 +19,6 @@ public:
     virtual void OnCellSelected(UIList *forList, UIListCell *selectedCell);
 
     virtual void Update(float32 timeElapsed);
-
 
     void Show(Scene * scene);
     virtual void OnFormatSelected(int32 newFormat, bool generateMimpaps);

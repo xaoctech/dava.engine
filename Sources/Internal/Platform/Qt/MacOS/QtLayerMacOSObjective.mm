@@ -69,7 +69,6 @@ void QtLayerMacOS::Resize(int32 width, int32 height)
 	rect.size.height = height;
  
     [openGLView setFrame: rect];
-    [openGLView reshape];
     
     [openGLView disableTrackingArea];
     [openGLView enableTrackingArea];

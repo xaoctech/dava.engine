@@ -181,7 +181,7 @@ public:
         \brief Function to receive pathname of texture object
         \returns pathname of texture
      */
-    inline const String & GetPathname();
+    inline const String & GetPathname() const;
     
     Image * CreateImageFromMemory();
 
@@ -275,7 +275,7 @@ inline void Texture::EnableRenderTargetAutosave(bool isEnabled)
     renderTargetAutosave = isEnabled;
 #endif //#if defined(__DAVAENGINE_DIRECTX9__) || defined(__DAVAENGINE_ANDROID__)
 }
-inline const String & Texture::GetPathname()
+inline const String & Texture::GetPathname() const
 {
     return relativePathname;
 }

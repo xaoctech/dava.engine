@@ -81,7 +81,7 @@ void CubeNode::CreateCube(Vector3 _size, Color c)
     size = _size;
     color = c;
 
-    RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
+    RGBColor color((uint8)(c.r * 255.0f), (uint8)(c.g * 255.0f), (uint8)(c.b * 255.0f), (uint8)(c.a * 255.0f));
     
     Vector3 halfSize = size / 2;
     float32 vertices[] = 
@@ -171,7 +171,7 @@ void CubeNode::SetSize(Vector3 _size)
 void CubeNode::SetColor(Color c)
 {
     color = c;
-    RGBColor color(c.r * 255, c.g * 255, c.b * 255, c.a * 255);
+    RGBColor color((uint8)(c.r * 255.0f), (uint8)(c.g * 255.0f), (uint8)(c.b * 255.0f), (uint8)(c.a * 255.0f));
     
     PolygonGroup * cube = cubeMesh->GetPolygonGroup(0);
 	for (int32 i = 0; i < 8 ; ++i)

@@ -128,8 +128,10 @@ void MeshInstanceNode::Update(float32 timeElapsed)
     }
     else
     {
-        //if (GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
-        UpdateLights();
+        if(GetScene()->GetFlags() & SCENE_LIGHTS_MODIFIED)
+		{
+			UpdateLights();
+		}
     }
     SceneNode::Update(timeElapsed);
     
@@ -198,9 +200,9 @@ void MeshInstanceNode::Draw()
 			if(data && data->lightmap)
 			{
 				polygroup->material->SetSetupLightmap(false);
-				polygroup->material->textures[Material::TEXTURE_DECAL] = data->lightmap;
-				polygroup->material->uvOffset = data->uvOffset;
-				polygroup->material->uvScale = data->uvScale;
+				polygroup->material->SetTexture(Material::TEXTURE_DECAL, data->lightmap);
+				polygroup->material->SetUvOffset(data->uvOffset);
+				polygroup->material->SetUvScale(data->uvScale);
 			}
 			else
 			{
@@ -220,6 +222,7 @@ void MeshInstanceNode::Draw()
 	if (debugFlags != DEBUG_DRAW_NONE)
 	{
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+		uint32 oldState = RenderManager::Instance()->GetState();
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		
 		if (debugFlags & DEBUG_DRAW_LOCAL_AXIS)
@@ -300,7 +303,7 @@ void MeshInstanceNode::Draw()
 		
 //      RenderManager::Instance()->EnableDepthTest(true);
 //		RenderManager::Instance()->EnableTexturing(true);
-        RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
+        RenderManager::Instance()->SetState(oldState);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	//glPopMatrix();
@@ -333,14 +336,14 @@ SceneNode* MeshInstanceNode::Clone(SceneNode *dstNode)
     return dstNode;
 }
 
-AABBox3 MeshInstanceNode::GetWTMaximumBoundingBox()
+AABBox3 MeshInstanceNode::GetWTMaximumBoundingBoxSlow()
 {
 	AABBox3 retBBox = transformedBox;
     
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
-        AABBox3 box = (*it)->GetWTMaximumBoundingBox();
+        AABBox3 box = (*it)->GetWTMaximumBoundingBoxSlow();
         if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)
            &&(-AABBOX_INFINITY != box.max.x && -AABBOX_INFINITY != box.max.y && -AABBOX_INFINITY != box.max.z))
         {

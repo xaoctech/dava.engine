@@ -91,7 +91,7 @@ void QuadTree::Build(Scene * scene)
     List<MeshInstanceNode*> meshNodes;
     scene->GetChildNodes(meshNodes);
     
-    AABBox3 sceneBoundingBox = scene->GetWTMaximumBoundingBox();
+    AABBox3 sceneBoundingBox = scene->GetWTMaximumBoundingBoxSlow();
     //Logger::Debug("min(%f, %f, %f)-max(%f, %f, %f)", sceneBoundingBox.min.x, sceneBoundingBox.min.y, sceneBoundingBox.min.z, sceneBoundingBox.max.x, sceneBoundingBox.max.y, sceneBoundingBox.max.z);
     head = cache.New();
     head->SetBoundingBox(sceneBoundingBox);
@@ -139,7 +139,7 @@ void QuadTree::BuildRecursive(QuadTreeNode * node, List<MeshInstanceNode*> & mes
         bool nodeIn = false;
         for (int k = 0; k < 4; ++k)
         {
-            const AABBox3 & bbox = mesh->GetWTMaximumBoundingBox();
+            const AABBox3 & bbox = mesh->GetWTMaximumBoundingBoxSlow();
             if (childBoxes[k].IsInside(bbox))
             {
                 childCount[k]++;

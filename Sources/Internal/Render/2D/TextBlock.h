@@ -71,12 +71,14 @@ public:
 	//if requested size is >0 - text creates int the rect with the requested size
 	//if requested size in <0 - rect creates for the all text size	
 	virtual void SetText(const WideString & string, const Vector2 &requestedTextRectSize = Vector2(0,0));	
-	virtual void SetMultiline(bool isMultilineEnabled);
+	virtual void SetMultiline(bool isMultilineEnabled, bool bySymbol = false);
 	virtual void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE, FITTING_POINTS
 
 	virtual Font * GetFont();
 	virtual const WideString & GetText();
+    virtual const Vector<WideString> & GetMultilineStrings();
 	virtual bool GetMultiline();
+    virtual bool GetMultilineBySymbol();
 	virtual int32 GetFittingOption();
 	
 	Sprite * GetSprite();
@@ -113,6 +115,7 @@ protected:
 	WideString text;
     WideString pointsStr;
 	bool isMultilineEnabled;
+    bool isMultilineBySymbolEnabled;
 	int32 fittingType;
 	Vector2 rectSize;
 	int32 align;

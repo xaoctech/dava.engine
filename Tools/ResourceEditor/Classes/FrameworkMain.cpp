@@ -19,7 +19,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.15"
+#define VERSION     "0.0.19"
  
 //void EntityTest();
 
@@ -115,11 +115,6 @@ void FrameworkDidLaunched()
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
     
-
-    printf("Running\n");
-    Logger::Info("Running");
-
-    
 	if (Core::Instance()->IsConsoleMode())
 	{
         if(     CommandLineTool::Instance()->CommandsCount() < 2 
@@ -161,23 +156,27 @@ void FrameworkDidLaunched()
     
 //    int32 width = 1024;
 //    int32 height = 690;
-    int32 width = EditorSettings::Instance()->GetScreenWidth();
-    int32 height = EditorSettings::Instance()->GetScreenHeight();
+        
+    
+    int32 width = DAVA::Core::Instance()->GetVirtualScreenWidth();
+    int32 height = DAVA::Core::Instance()->GetVirtualScreenHeight();
+    if(width <= 0 || height <= 0)
+    {
+        width = EditorSettings::Instance()->GetScreenWidth();
+        height = EditorSettings::Instance()->GetScreenHeight();
 
+        DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
+    }
     
 	appOptions->SetString("title", Format("DAVA SDK - Studio. %s", VERSION));
 	appOptions->SetInt32("width",	width);
 	appOptions->SetInt32("height", height);
 
-	//appOptions->SetInt("fullscreen.width",	1280);
-	//appOptions->SetInt("fullscreen.height", 800);
-	
 	appOptions->SetInt32("fullscreen", 0);
 	appOptions->SetInt32("bpp", 32); 
 
-	DAVA::Core::Instance()->SetVirtualScreenSize(width, height);
 	DAVA::Core::Instance()->RegisterAvailableResourceSize(width, height, "XGfx");
-#endif 
+#endif
     
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);

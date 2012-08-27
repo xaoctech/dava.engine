@@ -75,6 +75,7 @@ Scene::Scene()
 	,	imposterManager(0)
 	,	enableImposters(true)
 	,	entityManager(0)
+	,	referenceNodeSuffixChanged(false)
 {   
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
@@ -449,6 +450,8 @@ void Scene::Update(float timeElapsed)
 	}
 	
 	SceneNode::Update(timeElapsed);
+
+	referenceNodeSuffixChanged = false;
 	
 	size = (int32)animatedMeshes.size();
 	for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
@@ -479,10 +482,22 @@ void Scene::Draw()
 
 	shadowVolumes.clear();
     
+    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+    //RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
+    //glDepthMask(GL_TRUE);
+    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+    
+    if(imposterManager)
+	{
+		//imposterManager->ProcessQueue();
+	}
+    
     RenderManager::Instance()->SetCullMode(FACE_BACK);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
-    RenderManager::Instance()->ClearDepthBuffer();
+	RenderManager::Instance()->ClearDepthBuffer();
+    //glDepthMask(GL_TRUE);
+    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
     
 	
     if (currentCamera)
@@ -496,12 +511,13 @@ void Scene::Draw()
 
 	//entityManager->Dump();
 
-	if(imposterManager)
+    SceneNode::Draw();
+    
+    if(imposterManager)
 	{
 		imposterManager->Draw();
 	}
-
-    SceneNode::Draw();
+    
 	//LandscapeGeometrySystem::Run(this);
 	//MeshInstanceDrawSystem::Run(this);
 
@@ -699,20 +715,14 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
 	for (Set<LightNode*>::iterator it = lights.begin(); it != endIt; ++it)
 	{
 		LightNode * node = *it;
-		//TODO: use simple flag for "dynamic" option in non-editor projects
-		bool isDynamic = node->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
-		if(isDynamic)
+		const Vector3 & lightPosition = node->GetPosition();
+
+		float32 squareDistanceToLight = (position - lightPosition).SquareLength();
+		if (squareDistanceToLight < squareMinDistance)
 		{
-			const Vector3 & lightPosition = node->GetPosition();
-
-			float32 squareDistanceToLight = (position - lightPosition).SquareLength();
-			if (squareDistanceToLight < squareMinDistance)
-			{
-				squareMinDistance = squareDistanceToLight;
-				nearestLight = node;
-			}
+			squareMinDistance = squareDistanceToLight;
+			nearestLight = node;
 		}
-
 	}
 
 	return nearestLight;
@@ -756,6 +766,22 @@ void Scene::EnableImposters(bool enable)
 bool Scene::IsImposterEnabled()
 {
 	return enableImposters;
+}
+
+void Scene::SetReferenceNodeSuffix(const String & suffix)
+{
+	referenceNodeSuffix = suffix;
+	referenceNodeSuffixChanged = true;
+}
+
+const String & Scene::GetReferenceNodeSuffix()
+{
+	return referenceNodeSuffix;
+}
+
+bool Scene::IsReferenceNodeSuffixChanged()
+{
+	return referenceNodeSuffixChanged;
 }
 
 

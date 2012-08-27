@@ -61,7 +61,6 @@ RenderStateBlock::~RenderStateBlock()
 void RenderStateBlock::Reset(bool doHardwareReset)
 {
     state = DEFAULT_2D_STATE;
-    changeSet = 0;
     color.r = 1.0f;
     color.g = 1.0f;
     color.b = 1.0f;
@@ -75,7 +74,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
 	depthFunc = CMP_LESS;
     shader = 0;
     cullMode = FACE_BACK;
-	scissorRect = Rect(0, 0, -1.f, -1.f);
+	scissorRect = Rect(0, 0, 0, 0);
     
     if (doHardwareReset)
     {
@@ -129,7 +128,7 @@ bool RenderStateBlock::IsEqual(RenderStateBlock * anotherState)
     return true;
 }
 
-void RenderStateBlock::Flush(RenderStateBlock * previousState)
+void RenderStateBlock::Flush(RenderStateBlock * hardwareState) const
 {
     RenderManager::Instance()->LockNonMain();
 
@@ -137,7 +136,7 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
     Logger::Debug("RenderState::Flush started");
 #endif    
 
-    uint32 diffState = state ^ previousState->state;
+    uint32 diffState = state ^ hardwareState->state;
     if (diffState != 0)
     {
         if (diffState & STATE_BLEND)
@@ -165,143 +164,178 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
             if (diffState & STATE_ALPHA_TEST)
                 SetAlphaTestInHW();
-        
-        changeSet |= diffState & (STATE_TEXTURE0 | STATE_TEXTURE1 | STATE_TEXTURE2 | STATE_TEXTURE3);
-        
-        previousState->state = state;
+                
+		if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+		{
+			for (uint32 textureLevel = 0; textureLevel < MAX_TEXTURE_LEVELS; ++textureLevel)
+			{	
+				if (diffState & (STATE_TEXTURE0 << textureLevel))
+				{
+					if (state & (STATE_TEXTURE0 << textureLevel))
+					{
+						RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
+						RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
+					}
+					else 
+					{
+						RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
+						RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
+					}
+				}
+			}
+		}
+
+        hardwareState->state = state;
     }
     
-    if (changeSet != 0)
+    //if (changeSet != 0)
     {
-        if (changeSet & STATE_CHANGED_COLOR)
-            if (color != previousState->color)
-            {
-                SetColorInHW();
-                previousState->color = color;
-            }
-        if (changeSet & (STATE_CHANGED_SRC_BLEND | STATE_CHANGED_DEST_BLEND))
-            if (sourceFactor != previousState->sourceFactor || destFactor != previousState->destFactor)
-            {
-                SetBlendModeInHW();
-                previousState->sourceFactor = sourceFactor;
-                previousState->destFactor = destFactor;
-            }
+        if (color != hardwareState->color)
+        {
+            SetColorInHW();
+            hardwareState->color = color;
+        }
+        if (sourceFactor != hardwareState->sourceFactor || destFactor != hardwareState->destFactor)
+        {
+            SetBlendModeInHW();
+            hardwareState->sourceFactor = sourceFactor;
+            hardwareState->destFactor = destFactor;
+        }
         
-        if (changeSet & STATE_CHANGED_CULLMODE)
-            if (cullMode != previousState->cullMode)
-            {
-                SetCullModeInHW();
-                previousState->cullMode = cullMode;
-            }
+        if (cullMode != hardwareState->cullMode)
+        {
+            SetCullModeInHW();
+            hardwareState->cullMode = cullMode;
+        }
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
-            if (changeSet & STATE_CHANGED_ALPHA_FUNC)
-                if ((alphaFunc != previousState->alphaFunc) || (alphaFuncCmpValue != previousState->alphaFuncCmpValue))
-                {
-                    SetAlphaTestFuncInHW();
-                    previousState->alphaFunc = alphaFunc;
-                    previousState->alphaFuncCmpValue = alphaFuncCmpValue;
-                }
-
-		if (changeSet & STATE_CHANGED_DEPTH_FUNC)
-            if (previousState->depthFunc != depthFunc)
+            if ((alphaFunc != hardwareState->alphaFunc) || (alphaFuncCmpValue != hardwareState->alphaFuncCmpValue))
             {
-                SetDepthFuncInHW();
-                previousState->depthFunc = depthFunc;
+                SetAlphaTestFuncInHW();
+                hardwareState->alphaFunc = alphaFunc;
+                hardwareState->alphaFuncCmpValue = alphaFuncCmpValue;
             }
 
-		if (changeSet & STATE_CHANGED_SCISSOR_RECT)
-            if(previousState->scissorRect != scissorRect)
-            {
-                SetScissorRectInHW();
-                previousState->scissorRect = scissorRect;
-            }
-        
-        if (changeSet & STATE_CHANGED_TEXTURE0)
+        if (hardwareState->depthFunc != depthFunc)
         {
-            SetTextureLevelInHW(0);
-            previousState->currentTexture[0] = currentTexture[0];
+            SetDepthFuncInHW();
+            hardwareState->depthFunc = depthFunc;
         }
-        if (changeSet & STATE_CHANGED_TEXTURE1)
+
+        if(hardwareState->scissorRect != scissorRect)
+        {
+            SetScissorRectInHW();
+            hardwareState->scissorRect = scissorRect;
+        }
+        
+        //if (changeSet & STATE_CHANGED_TEXTURE0)
+		if (currentTexture[0] != hardwareState->currentTexture[0])	
+		{
+            SetTextureLevelInHW(0);
+            hardwareState->currentTexture[0] = currentTexture[0];
+        }
+		//  if (changeSet & STATE_CHANGED_TEXTURE1)
+		if (currentTexture[1] != hardwareState->currentTexture[1])	
         {
             SetTextureLevelInHW(1);
-            previousState->currentTexture[1] = currentTexture[1];
+            hardwareState->currentTexture[1] = currentTexture[1];
         }
-        if (changeSet & STATE_CHANGED_TEXTURE2)
+		//  if (changeSet & STATE_CHANGED_TEXTURE2)
+		if (currentTexture[2] != hardwareState->currentTexture[2])	
         {
             SetTextureLevelInHW(2);
-            previousState->currentTexture[2] = currentTexture[2];
+            hardwareState->currentTexture[2] = currentTexture[2];
         }
-        if (changeSet & STATE_CHANGED_TEXTURE3)
-        {
+        //if (changeSet & STATE_CHANGED_TEXTURE3)
+		if (currentTexture[3] != hardwareState->currentTexture[3])		
+		{
             SetTextureLevelInHW(3);
-            previousState->currentTexture[3] = currentTexture[3];
+            hardwareState->currentTexture[3] = currentTexture[3];
         }
-		if (changeSet & STATE_CHANGED_TEXTURE4)
+		//if (changeSet & STATE_CHANGED_TEXTURE4)
+		if (currentTexture[4] != hardwareState->currentTexture[4])
 		{
 			SetTextureLevelInHW(4);
-			previousState->currentTexture[4] = currentTexture[4];
+			hardwareState->currentTexture[4] = currentTexture[4];
 		}
-		if (changeSet & STATE_CHANGED_TEXTURE5)
+		//if (changeSet & STATE_CHANGED_TEXTURE5)
+		if (currentTexture[5] != hardwareState->currentTexture[5])
 		{
 			SetTextureLevelInHW(5);
-			previousState->currentTexture[5] = currentTexture[5];
+			hardwareState->currentTexture[5] = currentTexture[5];
 		}
-		if (changeSet & STATE_CHANGED_TEXTURE6)
+		//if (changeSet & STATE_CHANGED_TEXTURE6)
+		if (currentTexture[6] != hardwareState->currentTexture[6])
 		{
 			SetTextureLevelInHW(6);
-			previousState->currentTexture[6] = currentTexture[6];
+			hardwareState->currentTexture[6] = currentTexture[6];
 		}
-		if (changeSet & STATE_CHANGED_TEXTURE7)
+		//if (changeSet & STATE_CHANGED_TEXTURE7)
+		if (currentTexture[7] != hardwareState->currentTexture[7])
 		{
 			SetTextureLevelInHW(7);
-			previousState->currentTexture[7] = currentTexture[7];
+			hardwareState->currentTexture[7] = currentTexture[7];
 		}
 
-		if (changeSet & STATE_CHANGED_STENCIL_REF)
+		//if (changeSet & STATE_CHANGED_STENCIL_REF)
+		if (hardwareState->stencilState.ref != stencilState.ref)
 		{
 			SetStencilRefInHW();
-			previousState->stencilState.ref = stencilState.ref;
+			hardwareState->stencilState.ref = stencilState.ref;
 		}
-		if (changeSet & STATE_CHANGED_STENCIL_MASK)
+		//if (changeSet & STATE_CHANGED_STENCIL_MASK)
+		if(hardwareState->stencilState.mask != stencilState.mask)
 		{
 			SetStencilMaskInHW();
-			previousState->stencilState.mask = stencilState.mask;
+			hardwareState->stencilState.mask = stencilState.mask;
 		}
-		if (changeSet & STATE_CHANGED_STENCIL_FUNC)
+		//if (changeSet & STATE_CHANGED_STENCIL_FUNC)
+		if (hardwareState->stencilState.func[0] != stencilState.func[0] || 
+			hardwareState->stencilState.func[1] != stencilState.func[1])
 		{
 			SetStencilFuncInHW();
-			previousState->stencilState.func[0] = stencilState.func[0];
-			previousState->stencilState.func[1] = stencilState.func[1];
+			hardwareState->stencilState.func[0] = stencilState.func[0];
+			hardwareState->stencilState.func[1] = stencilState.func[1];
 		}
 
-		if (changeSet & STATE_CHANGED_STENCIL_PASS)
-		{
-			SetStencilPassInHW();
-			previousState->stencilState.pass[0] = stencilState.pass[0];
-			previousState->stencilState.pass[1] = stencilState.pass[1];
-		}
-		if (changeSet & STATE_CHANGED_STENCIL_FAIL)
-		{
-			SetStencilFailInHW();
-			previousState->stencilState.fail[0] = stencilState.fail[0];
-			previousState->stencilState.fail[1] = stencilState.fail[1];
-		}
-		if (changeSet & STATE_CHANGED_STENCIL_ZFAIL)
-		{
-			SetStencilZFailInHW();
-			previousState->stencilState.zFail[0] = stencilState.zFail[0];
-			previousState->stencilState.zFail[1] = stencilState.zFail[1];
-		}
-		if((changeSet & STATE_CHANGED_STENCIL_PASS) || (changeSet & STATE_CHANGED_STENCIL_FAIL) || (changeSet & STATE_CHANGED_STENCIL_ZFAIL))
+		if (hardwareState->stencilState.pass[0] != stencilState.pass[0] ||
+			hardwareState->stencilState.pass[1] != stencilState.pass[1] ||
+			hardwareState->stencilState.fail[0] != stencilState.fail[0] ||
+			hardwareState->stencilState.fail[1] != stencilState.fail[1] ||
+			hardwareState->stencilState.zFail[0] != stencilState.zFail[0] ||
+			hardwareState->stencilState.zFail[1] != stencilState.zFail[1])
 		{
 			SetStencilOpInHW();
-			previousState->stencilState.pass[0] = stencilState.pass[0];
-			previousState->stencilState.pass[1] = stencilState.pass[1];
-			previousState->stencilState.fail[0] = stencilState.fail[0];
-			previousState->stencilState.fail[1] = stencilState.fail[1];
-			previousState->stencilState.zFail[0] = stencilState.zFail[0];
-			previousState->stencilState.zFail[1] = stencilState.zFail[1];
+			hardwareState->stencilState.pass[0] = stencilState.pass[0];
+			hardwareState->stencilState.pass[1] = stencilState.pass[1];
+			hardwareState->stencilState.fail[0] = stencilState.fail[0];
+			hardwareState->stencilState.fail[1] = stencilState.fail[1];
+			hardwareState->stencilState.zFail[0] = stencilState.zFail[0];
+			hardwareState->stencilState.zFail[1] = stencilState.zFail[1];
+		}
+
+		if (hardwareState->stencilState.pass[0] != stencilState.pass[0] || 
+			hardwareState->stencilState.pass[1] != stencilState.pass[1])
+		{
+			SetStencilPassInHW();
+			hardwareState->stencilState.pass[0] = stencilState.pass[0];
+			hardwareState->stencilState.pass[1] = stencilState.pass[1];
+		}
+
+		if (hardwareState->stencilState.fail[0] != stencilState.fail[0] ||
+			hardwareState->stencilState.fail[1] != stencilState.fail[1])
+		{
+			SetStencilFailInHW();
+			hardwareState->stencilState.fail[0] = stencilState.fail[0];
+			hardwareState->stencilState.fail[1] = stencilState.fail[1];
+		}
+
+		if (hardwareState->stencilState.zFail[0] != stencilState.zFail[0] || 
+			hardwareState->stencilState.zFail[1] != stencilState.zFail[1])
+		{
+			SetStencilZFailInHW();
+			hardwareState->stencilState.zFail[0] = stencilState.zFail[0];
+			hardwareState->stencilState.zFail[1] = stencilState.zFail[1];
 		}
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -314,12 +348,10 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
 //            }
 //        }
 
-        changeSet = 0;
-        previousState->changeSet = 0;
     }
     if (shader)shader->Bind();
     else Shader::Unbind();
-    previousState->shader = shader;
+    hardwareState->shader = shader;
     
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::Flush finished");
@@ -330,7 +362,7 @@ void RenderStateBlock::Flush(RenderStateBlock * previousState)
     
     
 #if defined (__DAVAENGINE_OPENGL__)
-inline void RenderStateBlock::SetColorInHW()
+inline void RenderStateBlock::SetColorInHW() const
 {
     if (renderer != Core::RENDERER_OPENGL_ES_2_0)
     {
@@ -341,7 +373,7 @@ inline void RenderStateBlock::SetColorInHW()
     }
 }
     
-inline void RenderStateBlock::SetColorMaskInHW()
+inline void RenderStateBlock::SetColorMaskInHW() const
 {
     GLboolean redMask = (state & STATE_COLORMASK_RED) != 0;
     GLboolean greenMask = (state & STATE_COLORMASK_GREEN) != 0;
@@ -357,7 +389,7 @@ inline void RenderStateBlock::SetColorMaskInHW()
                               alphaMask));
 }
 
-inline void RenderStateBlock::SetStensilTestInHW()
+inline void RenderStateBlock::SetStensilTestInHW() const
 {
 	if (state & STATE_STENCIL_TEST)
 	{
@@ -375,7 +407,7 @@ inline void RenderStateBlock::SetStensilTestInHW()
 	}
 }
 
-inline void RenderStateBlock::SetEnableBlendingInHW()
+inline void RenderStateBlock::SetEnableBlendingInHW() const
 {
     if (state & STATE_BLEND)
     {
@@ -393,7 +425,7 @@ inline void RenderStateBlock::SetEnableBlendingInHW()
     }
 }
     
-inline void RenderStateBlock::SetCullInHW()
+inline void RenderStateBlock::SetCullInHW() const
 {
     if (state & STATE_CULL)
     {
@@ -412,7 +444,7 @@ inline void RenderStateBlock::SetCullInHW()
     }
 }
 
-inline void RenderStateBlock::SetCullModeInHW()
+inline void RenderStateBlock::SetCullModeInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::cull_mode = %d", cullMode);
@@ -422,7 +454,7 @@ inline void RenderStateBlock::SetCullModeInHW()
 }
 
 
-inline void RenderStateBlock::SetBlendModeInHW()
+inline void RenderStateBlock::SetBlendModeInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::blend_src_dst = (%d, %d)", sourceFactor, destFactor);
@@ -431,52 +463,24 @@ inline void RenderStateBlock::SetBlendModeInHW()
     RENDER_VERIFY(glBlendFunc(BLEND_MODE_MAP[sourceFactor], BLEND_MODE_MAP[destFactor]));
 }
 
-inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel)
+inline void RenderStateBlock::SetTextureLevelInHW(uint32 textureLevel) const
 {
+	RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
     if(currentTexture[textureLevel])
     {
-        RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
-        
-        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
-        {
-            if (state & (STATE_TEXTURE0 << textureLevel))
-            {
-                RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
-            }
-            else 
-            {
-                RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
-            }
-        }
-        
 #if defined (LOG_FINAL_RENDER_STATE)
         Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, currentTexture[textureLevel]->id);
 #endif    
-
         BindTexture(currentTexture[textureLevel]->id);
     }else
     {
-        RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
-
-        if (renderer != Core::RENDERER_OPENGL_ES_2_0)
-        {
-            if (state & (STATE_TEXTURE0 << textureLevel))
-            {
-                RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
-            }else
-            {
-                RENDER_VERIFY(glDisable(GL_TEXTURE_2D));
-            }
-        }
-
 #if defined (LOG_FINAL_RENDER_STATE)
         Logger::Debug("RenderState::bind_texture %d = (%d)", textureLevel, 0);
 #endif    
-
         BindTexture(0);
     }    
 }
-inline void RenderStateBlock::SetDepthTestInHW()
+inline void RenderStateBlock::SetDepthTestInHW() const
 {
     if(state & STATE_DEPTH_TEST)
     {
@@ -494,7 +498,7 @@ inline void RenderStateBlock::SetDepthTestInHW()
     }    
 }
 
-inline void RenderStateBlock::SetDepthWriteInHW()
+inline void RenderStateBlock::SetDepthWriteInHW() const
 {
     if(state & STATE_DEPTH_WRITE)
     {
@@ -513,7 +517,7 @@ inline void RenderStateBlock::SetDepthWriteInHW()
     }
 }
     
-inline void RenderStateBlock::SetAlphaTestInHW()
+inline void RenderStateBlock::SetAlphaTestInHW() const
 {
     if(state & STATE_ALPHA_TEST)
     {
@@ -532,7 +536,7 @@ inline void RenderStateBlock::SetAlphaTestInHW()
     }
 }
 
-inline void RenderStateBlock::SetAlphaTestFuncInHW()
+inline void RenderStateBlock::SetAlphaTestFuncInHW() const
 {
     if (renderer == Core::RENDERER_OPENGL)
     {
@@ -550,7 +554,7 @@ inline void RenderStateBlock::SetAlphaTestFuncInHW()
     }
 }
 
-inline void RenderStateBlock::SetDepthFuncInHW()
+inline void RenderStateBlock::SetDepthFuncInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::depth func = (%d)", depthFunc);
@@ -559,7 +563,7 @@ inline void RenderStateBlock::SetDepthFuncInHW()
 	RENDER_VERIFY(glDepthFunc(COMPARE_FUNCTION_MAP[depthFunc]));
 }
 
-inline void RenderStateBlock::SetScissorTestInHW()
+inline void RenderStateBlock::SetScissorTestInHW() const
 {
 	if(state & STATE_SCISSOR_TEST)
 	{
@@ -577,7 +581,7 @@ inline void RenderStateBlock::SetScissorTestInHW()
 	}
 }
 
-inline void RenderStateBlock::SetScissorRectInHW()
+inline void RenderStateBlock::SetScissorRectInHW() const
 {
 #if defined (LOG_FINAL_RENDER_STATE)
     Logger::Debug("RenderState::scissor_rect = (%d, %d, %d, %d)", scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
@@ -586,17 +590,15 @@ inline void RenderStateBlock::SetScissorRectInHW()
 	RENDER_VERIFY(glScissor(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy));
 }
 
-inline void RenderStateBlock::SetStencilRefInHW()
+inline void RenderStateBlock::SetStencilRefInHW() const
 {
-	changeSet |= STATE_CHANGED_STENCIL_FUNC;
 }
 
-inline void RenderStateBlock::SetStencilMaskInHW()
+inline void RenderStateBlock::SetStencilMaskInHW() const
 {
-	changeSet |= STATE_CHANGED_STENCIL_FUNC;
 }
 
-inline void RenderStateBlock::SetStencilFuncInHW()
+inline void RenderStateBlock::SetStencilFuncInHW() const
 {
 	if(stencilState.func[0] == (stencilState.func[1]))
 	{
@@ -609,22 +611,22 @@ inline void RenderStateBlock::SetStencilFuncInHW()
 	}
 }
 
-inline void RenderStateBlock::SetStencilPassInHW()
+inline void RenderStateBlock::SetStencilPassInHW() const
 {
 	//nothing
 }
 
-inline void RenderStateBlock::SetStencilFailInHW()
+inline void RenderStateBlock::SetStencilFailInHW() const
 {
 	//nothing
 }
 
-inline void RenderStateBlock::SetStencilZFailInHW()
+inline void RenderStateBlock::SetStencilZFailInHW() const
 {
 	//nothing
 }
 
-inline void RenderStateBlock::SetStencilOpInHW()
+inline void RenderStateBlock::SetStencilOpInHW() const
 {
 	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[FACE_FRONT], STENCIL_OP_MAP[stencilState.fail[0]], STENCIL_OP_MAP[stencilState.zFail[0]], STENCIL_OP_MAP[stencilState.pass[0]]));
 	RENDER_VERIFY(glStencilOpSeparate(CULL_FACE_MAP[FACE_BACK], STENCIL_OP_MAP[stencilState.fail[1]], STENCIL_OP_MAP[stencilState.zFail[1]], STENCIL_OP_MAP[stencilState.pass[1]]));

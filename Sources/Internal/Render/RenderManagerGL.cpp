@@ -36,6 +36,10 @@
 #include "Render/OGLHelpers.h"
 #include "Render/Shader.h"
 
+#include "Render/Image.h"
+#include "FileSystem/FileSystem.h"
+#include "Utils/StringFormat.h"
+
 #ifdef __DAVAENGINE_OPENGL__
 
 namespace DAVA
@@ -190,9 +194,115 @@ void RenderManager::EndFrame()
 #endif //#if defined(__DAVAENGINE_WIN32__)
 	
 	RENDER_VERIFY("");	// verify at the end of the frame
+    
+    if(needGLScreenShot)
+    {
+        needGLScreenShot = false;
+        MakeGLScreenShot();
+    }
 }
     
+void RenderManager::MakeGLScreenShot()
+{
+    Logger::Debug("RenderManager::MakeGLScreenShot");
+#if defined(__DAVAENGINE_OPENGL__)
     
+
+    int32 width = frameBufferWidth;
+    int32 height = frameBufferHeight;
+    PixelFormat format = FORMAT_RGBA8888;
+    
+    Logger::Debug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
+    
+    // picture is rotated (framebuffer coordinates start from bottom left)
+    Image *image = NULL;
+#if defined(__DAVAENGINE_IPHONE__)    
+    image = Image::Create(height, width, format);
+#else
+    image = Image::Create(width, height, format);
+#endif
+    uint8 *imageData = image->GetData();
+    
+    int32 formatSize = Image::GetFormatSize(format);
+    uint8 *tempData;
+    
+    uint32 imageDataSize = width * height * formatSize;
+    tempData = new uint8[imageDataSize];
+
+    LockNonMain();
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
+#else
+    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_EXT, fboViewRenderbuffer);
+#endif
+    
+    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
+    switch(format)
+    {
+        case FORMAT_RGBA8888:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
+            break;
+        case FORMAT_RGB565:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)tempData));
+            break;
+        case FORMAT_A8:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
+            break;
+        case FORMAT_RGBA4444:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)tempData));
+            break;
+        case FORMAT_A16:
+            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)tempData));
+            break;
+        default:
+            break;
+    }
+    UnlockNonMain();
+    
+    //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)
+    
+    // iOS frame buffer starts from bottom left corner, but we need from top left, so we rotate picture here
+    uint32 newIndex = 0;
+    uint32 oldIndex = 0;
+#if defined(__DAVAENGINE_IPHONE__)
+    for(int32 w = 0; w < width; ++w)
+    {
+        for(int32 h = 0; h < height; ++h)
+        {
+            for(int32 b = 0; b < formatSize; ++b)
+            {
+                oldIndex = formatSize*width*h + formatSize*w + b;
+                imageData[newIndex++] = tempData[oldIndex];
+            }
+        }
+    }
+#else
+    //MacOS
+    //TODO: test on Windows and android
+
+    for(int32 h = height - 1; h >= 0; --h)
+    {
+        for(int32 w = 0; w < width; ++w)
+        {
+            for(int32 b = 0; b < formatSize; ++b)
+            {
+                oldIndex = formatSize*width*h + formatSize*w + b;
+                imageData[newIndex++] = tempData[oldIndex];
+            }
+        }
+    }
+    
+#endif
+    SafeDeleteArray(tempData);
+    
+    if(image)
+    {
+        image->Save(FileSystem::Instance()->SystemPathForFrameworkPath(Format("~doc:/screenshot%d.png", ++screenShotIndex)));
+        SafeRelease(image);
+    }
+    
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+}
     
 void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates)
 {    
@@ -470,9 +580,15 @@ void RenderManager::EnableColorArray(bool isEnabled)
 void RenderManager::FlushState()
 {
 	PrepareRealMatrix();
-    AttachRenderData(currentState.shader);
-
+    
     currentState.Flush(&hardwareState);
+}
+
+void RenderManager::FlushState(RenderStateBlock * stateBlock)
+{
+	PrepareRealMatrix();
+	
+	stateBlock->Flush(&hardwareState);
 }
 
 void RenderManager::SetTexCoordPointer(int size, eVertexDataType _typeIndex, int stride, const void *pointer)
@@ -573,7 +689,6 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 		GL_UNSIGNED_INT,
 	};
 	
-    //RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
 	RENDER_VERIFY(glDrawElements(mode, count, indexTypes[indexFormat], indices));
     stats.drawElementsCalls++;
     switch(type)
@@ -619,6 +734,20 @@ void RenderManager::ClearStencilBuffer(int32 stencil)
 {
 	RENDER_VERIFY(glClearStencil(stencil));
 	RENDER_VERIFY(glClear(GL_STENCIL_BUFFER_BIT));
+}
+    
+void RenderManager::Clear(const Color & color, float32 depth, int32 stencil)
+{
+    RENDER_VERIFY(glClearColor(color.r, color.g, color.b, color.a));
+#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glClearDepthf(depth));
+#else //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glClearDepth(depth));
+#endif //#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
+    RENDER_VERIFY(glClearStencil(stencil));
+
+    
+    RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
 }
 
 void RenderManager::SetHWClip(const Rect &rect)
@@ -753,30 +882,33 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
         RENDER_VERIFY(glLoadMatrixf(matrix.data));
     }
 }
+        
+void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
+{
+    DVASSERT(target - GL_ARRAY_BUFFER <= 1);
+    if (bufferBindingId[target - GL_ARRAY_BUFFER] != buffer)
+    {
+        RENDER_VERIFY(glBindBuffer(target, buffer));
+        bufferBindingId[target - GL_ARRAY_BUFFER] = buffer;
+    }
+}
     
-    
-void RenderManager::AttachRenderData(Shader * shader)
+void RenderManager::AttachRenderData()
 {
     if (!currentRenderData)return;
 
     const int DEBUG = 0;
+	Shader * shader = hardwareState.shader;
     
     RenderManager::Instance()->LockNonMain();
     if (!shader)
     {
         // TODO: should be moved to RenderManagerGL
-#if defined(__DAVAENGINE_OPENGL__)
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("!shader glBindBufferARB: %d", currentRenderData->vboBuffer);
-        RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
-#else
-        RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("!shader glBindBuffer: %d", currentRenderData->vboBuffer);
-        uint32 indexBuffer = currentRenderData->indexBuffer;
-        RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
-#endif
-#elif defined(__DAVAENGINE_DIRECTX9__)
+        HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
+        HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
+        
+        
+#if defined(__DAVAENGINE_DIRECTX9__)
         DVASSERT(currentRenderData->vboBuffer == 0);
 #endif
         if (enabledAttribCount != 0)
@@ -885,20 +1017,8 @@ void RenderManager::AttachRenderData(Shader * shader)
         //glDisableVertexAttribArray(1);
         //pointerArraysCurrentState = 0;
         
-        //if (currentRenderData->vboBuffer != 0)
-        //{
-#if defined(__DAVAENGINE_OPENGL__)
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        RENDER_VERIFY(glBindBufferARB(GL_ARRAY_BUFFER_ARB, currentRenderData->vboBuffer));
-        if (DEBUG)Logger::Debug("shader glBindBufferARB: %d", currentRenderData->vboBuffer);
-        RENDER_VERIFY(glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, currentRenderData->indexBuffer));
-#else
-        RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer));
-		if (DEBUG)Logger::Debug("shader glBindBuffer: %d", currentRenderData->vboBuffer);
-		RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer));
-#endif
-#endif 
-        //}
+        HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
+        HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
         
         
         int32 size = (int32)currentRenderData->streamArray.size();

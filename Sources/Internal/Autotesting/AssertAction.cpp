@@ -7,6 +7,14 @@
 namespace DAVA
 {
 
+String Getter::Dump()
+{
+	String baseStr = Action::Dump();
+	return Format("%s type=%d", baseStr.c_str(), value.type);
+}
+
+//-----------------------------------------------------------------
+
 const VariantType &ControlGetter::Get()
 {
     if(!isExecuted)
@@ -14,6 +22,13 @@ const VariantType &ControlGetter::Get()
         Execute();
     }
     return Getter::Get();
+}
+
+String ControlGetter::Dump()
+{
+	String baseStr = Getter::Dump();
+	String controlPathStr = PathToString(controlPath);
+	return Format("%s controlPath=%s", baseStr.c_str(), controlPathStr.c_str());
 }
 
 //-----------------------------------------------------------------
@@ -67,6 +82,12 @@ void AssertAction::Execute()
     }
     AutotestingSystem::Instance()->OnTestAssert(message, isPassed);
     Action::Execute();
+}
+
+String AssertAction::Dump()
+{
+	String baseStr = Action::Dump();
+	return Format("%s message=%s", baseStr.c_str(), message.c_str());
 }
 
 //-----------------------------------------------------------------

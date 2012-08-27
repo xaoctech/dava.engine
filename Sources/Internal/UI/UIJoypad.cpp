@@ -178,7 +178,7 @@ void UIJoypad::RecalcAnalogPosition()
 	needRecalcAnalog = false;
     analogVector.x = currentPos.x/(size.x/2);
     analogVector.y = currentPos.y/(size.y/2);
-    Logger::Info("Analog joy pos x = %f, y = %f", analogVector.x, analogVector.y);
+    //Logger::Info("Analog joy pos x = %f, y = %f", analogVector.x, analogVector.y);
 }
 
 void UIJoypad::SetStickSprite(Sprite *stickSprite, int32 frame)

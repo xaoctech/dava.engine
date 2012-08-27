@@ -38,39 +38,43 @@ namespace DAVA
 class CameraController : public BaseObject
 {
 public:
-    CameraController();
+    CameraController(float32 newSpeed);
     ~CameraController();
     
     virtual void SetScene(Scene *scene);
     virtual void Input(UIEvent * event);
     
     virtual void Update(float32 timeElapsed) {};
-    
+
+    inline void SetSelection(SceneNode * _selection)
+	{
+		selection = _selection;
+	}
+
+    void SetSpeed(float32 newSpeed);
+    inline float32 GetSpeed() { return speed; };
+
 protected:
     Scene * currScene;
+    SceneNode *selection;
+    float32 speed;
 };
     
 class WASDCameraController : public CameraController
 {
 public:
-    WASDCameraController(float32 speed);
+    WASDCameraController(float32 newSpeed);
     ~WASDCameraController();
     
     virtual void Input(UIEvent * event);
-    void SetSpeed(float32 _speed);
-    inline float32 GetSpeed() { return speed; };
-    inline void SetSelection(SceneNode * _selection)
-	{
-		selection = _selection;
-	}
     
     virtual void Update(float32 timeElapsed);
 	virtual void SetScene(Scene *_scene);
 
-
+    void LockAtSelection();
+    
+    
 protected:
-	SceneNode * selection;
-    float32 speed;
     float32 viewZAngle, viewYAngle;
     Vector2 oldTouchPoint;
 	

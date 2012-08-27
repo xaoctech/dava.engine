@@ -18,6 +18,8 @@ public:
     void InvalidateTexturesInfo(int32 count, int32 size);
     void SetRenderStats(const RenderManager::Stats & newRenderStats);
     
+    void SetNodesCount(int32 nodesCount);
+    
 protected:
 
     void InvalidateRenderStats();

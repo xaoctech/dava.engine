@@ -30,9 +30,9 @@ public:
 				if(data && data->lightmap)
 				{
 					material->SetSetupLightmap(false);
-					material->textures[Material::TEXTURE_DECAL] = data->lightmap;
-					material->uvOffset = data->uvOffset;
-					material->uvScale = data->uvScale;
+					material->SetTexture(Material::TEXTURE_DECAL, data->lightmap);
+					material->SetUvOffset(data->uvOffset);
+					material->SetUvScale(data->uvScale);
 				}
 				else
 				{

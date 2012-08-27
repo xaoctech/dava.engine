@@ -339,7 +339,7 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     :   ExtendedDialog()
     ,   delegate(newDelegate)
 {
-    draggableDialog->SetRect(DialogRect());
+    draggableDialog->SetRect(GetDialogRect());
     
     colorMapControl = new ColorMapControl(Rect(ControlsFactory::OFFSET, ControlsFactory::OFFSET, 
                                                ControlsFactory::COLOR_MAP_SIDE, ControlsFactory::COLOR_MAP_SIDE));
@@ -397,7 +397,7 @@ ColorPicker::ColorPicker(ColorPickerDelegate *newDelegate)
     colorList->AddIntProperty("colorpicker.a", PropertyList::PROPERTY_IS_EDITABLE);
     draggableDialog->AddControl(colorList);
     
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
     float32 buttonX = rect.dx /2 - ControlsFactory::BUTTON_WIDTH;
     float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
     UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.cancel"));
@@ -425,7 +425,7 @@ ColorPicker::~ColorPicker()
 }
 
 
-void ColorPicker::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+void ColorPicker::OnIntPropertyChanged(PropertyList *, const String &, int)
 {
     currentColor = Color(
                 colorList->GetIntPropertyValue("colorpicker.r") / 255.f,
@@ -437,7 +437,7 @@ void ColorPicker::OnIntPropertyChanged(PropertyList *forList, const String &forK
     SetColor(currentColor, true, true);
 }
 
-void ColorPicker::OnOk(BaseObject * owner, void * userData, void * callerData)
+void ColorPicker::OnOk(BaseObject *, void *, void *)
 {
     Color color(
                 colorList->GetIntPropertyValue("colorpicker.r") / 255.f,
@@ -453,18 +453,18 @@ void ColorPicker::OnOk(BaseObject * owner, void * userData, void * callerData)
     Close();
 }
 
-void ColorPicker::OnCancel(BaseObject * owner, void * userData, void * callerData)
+void ColorPicker::OnCancel(BaseObject *, void *, void *)
 {
     Close();
 }
 
-void ColorPicker::OnMapColorChanged(BaseObject * owner, void * userData, void * callerData)
+void ColorPicker::OnMapColorChanged(BaseObject *, void *, void *)
 {
     Color color = colorMapControl->GetColor();
     SetColor(color, false, false);
 }
 
-void ColorPicker::OnSelectorColorChanged(BaseObject * owner, void * userData, void * callerData)
+void ColorPicker::OnSelectorColorChanged(BaseObject *, void *, void *)
 {
     Color color = colorSelectorControl->GetColor();
     SetColor(color, true, false);
@@ -506,7 +506,7 @@ void ColorPicker::SetColor(const Color & newColor, bool updateColorMap, bool upd
 }
 
 
-void ColorPicker::OnAlphaChanged(BaseObject * owner, void * userData, void * callerData)
+void ColorPicker::OnAlphaChanged(BaseObject *, void *, void *)
 {
     currentColor.a = alphaValue->GetValue();
     SetColor(currentColor, true, true);
@@ -520,7 +520,7 @@ void ColorPicker::Show()
     }
 }
 
-const Rect ColorPicker::DialogRect()
+const Rect ColorPicker::GetDialogRect() const
 {
     Rect dialogRect;
     dialogRect.dx = ControlsFactory::COLOR_MAP_SIDE + 
@@ -532,8 +532,8 @@ const Rect ColorPicker::DialogRect()
                     ControlsFactory::BUTTON_HEIGHT*2 + 
                     ControlsFactory::OFFSET * 3;
 
-    dialogRect.x = (GetRect().dx - dialogRect.dx) / 2;
-    dialogRect.y = (GetRect().dy - dialogRect.dy) / 2;
+    dialogRect.x = (GetScreenRect().dx - dialogRect.dx) / 2;
+    dialogRect.y = (GetScreenRect().dy - dialogRect.dy) / 2;
     return dialogRect;
 }
 

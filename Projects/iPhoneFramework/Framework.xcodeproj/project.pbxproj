@@ -99,6 +99,8 @@
 		5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */; };
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */; };
+		C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C22651F415E3D7A900E25BF4 /* ReferenceNode.h */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
 		C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895CE157FA00C00B0E00A /* Action.cpp */; };
 		C7E895D9157FA00C00B0E00A /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895CF157FA00C00B0E00A /* Action.h */; };
@@ -295,7 +297,6 @@
 		FECFB60912E5904500C71562 /* AABBox3.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39012E5904400C71562 /* AABBox3.h */; };
 		FECFB60A12E5904500C71562 /* BezierSpline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FECFB39112E5904400C71562 /* BezierSpline.cpp */; };
 		FECFB60B12E5904500C71562 /* BezierSpline.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39212E5904400C71562 /* BezierSpline.h */; };
-		FECFB60C12E5904500C71562 /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39312E5904400C71562 /* Camera.h */; };
 		FECFB60F12E5904500C71562 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39612E5904400C71562 /* Color.h */; };
 		FECFB61012E5904500C71562 /* Math2D.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39712E5904400C71562 /* Math2D.h */; };
 		FECFB61112E5904500C71562 /* Math2DTemplateClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = FECFB39812E5904400C71562 /* Math2DTemplateClasses.h */; };
@@ -646,6 +647,8 @@
 		5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
+		C22651F415E3D7A900E25BF4 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		C7E895CE157FA00C00B0E00A /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
 		C7E895CF157FA00C00B0E00A /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
@@ -844,7 +847,6 @@
 		FECFB39012E5904400C71562 /* AABBox3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AABBox3.h; sourceTree = "<group>"; };
 		FECFB39112E5904400C71562 /* BezierSpline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierSpline.cpp; sourceTree = "<group>"; };
 		FECFB39212E5904400C71562 /* BezierSpline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierSpline.h; sourceTree = "<group>"; };
-		FECFB39312E5904400C71562 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		FECFB39612E5904400C71562 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		FECFB39712E5904400C71562 /* Math2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math2D.h; sourceTree = "<group>"; };
 		FECFB39812E5904400C71562 /* Math2DTemplateClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math2DTemplateClasses.h; sourceTree = "<group>"; };
@@ -1467,7 +1469,6 @@
 				FECFB39012E5904400C71562 /* AABBox3.h */,
 				FECFB39112E5904400C71562 /* BezierSpline.cpp */,
 				FECFB39212E5904400C71562 /* BezierSpline.h */,
-				FECFB39312E5904400C71562 /* Camera.h */,
 				FECFB39612E5904400C71562 /* Color.h */,
 				FECFB39712E5904400C71562 /* Math2D.h */,
 				FEB6037612E8ED7200C749A1 /* Math2D.cpp */,
@@ -1688,6 +1689,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */,
+				C22651F415E3D7A900E25BF4 /* ReferenceNode.h */,
 				5CD7156815AC3B7D00D08E8E /* ParticleEmitterNode.cpp */,
 				5CD7156915AC3B7D00D08E8E /* ParticleEmitterNode.h */,
 				5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */,
@@ -1951,7 +1954,6 @@
 				FECFB60712E5904500C71562 /* AABBox2.h in Headers */,
 				FECFB60912E5904500C71562 /* AABBox3.h in Headers */,
 				FECFB60B12E5904500C71562 /* BezierSpline.h in Headers */,
-				FECFB60C12E5904500C71562 /* Camera.h in Headers */,
 				FECFB60F12E5904500C71562 /* Color.h in Headers */,
 				FECFB61012E5904500C71562 /* Math2D.h in Headers */,
 				FECFB61112E5904500C71562 /* Math2DTemplateClasses.h in Headers */,
@@ -2175,6 +2177,7 @@
 				5C44738F15B5A1C500028948 /* Mallocator.h in Headers */,
 				5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */,
 				5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */,
+				C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2489,6 +2492,7 @@
 				5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */,
 				5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */,
 				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
+				C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

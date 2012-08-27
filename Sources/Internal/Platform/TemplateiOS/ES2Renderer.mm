@@ -32,6 +32,10 @@
 
 #import "Platform/TemplateiOS/ES2Renderer.h"
 #include "Render/RenderManager.h"
+#include "Platform/Thread.h"
+#include "FileSystem/Logger.h"
+
+using namespace DAVA;
 
 @implementation ES2Renderer
 
@@ -73,6 +77,9 @@
     
 	// This application only creates a single default framebuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple framebuffers.
+    glDepthMask(GL_TRUE);
+    RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
+    
     glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
     glViewport(0, 0, backingWidth, backingHeight);
     
@@ -82,7 +89,11 @@
 	// This application only creates a single color renderbuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple renderbuffers.
     glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
+    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+    RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
     [context presentRenderbuffer:GL_RENDERBUFFER];
+    
+    
 }
 
 - (BOOL) resizeFromLayer:(CAEAGLLayer *)layer

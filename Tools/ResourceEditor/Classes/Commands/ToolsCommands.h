@@ -46,6 +46,37 @@ protected:
 };
 
 
+class CommandSettings: public Command
+{
+public:
+	CommandSettings();
+    
+protected:
+    
+    virtual void Execute();
+};
+
+class CommandBakeScene: public Command
+{
+public:
+	CommandBakeScene();
+    
+protected:
+    
+    virtual void Execute();
+    virtual void Cancel();
+
+};
+
+class CommandBeast: public Command
+{
+public:
+	CommandBeast();
+    
+protected:
+    
+    virtual void Execute();
+};
 
 
 #endif // #ifndef __TOOLS_COMMANDS_H__

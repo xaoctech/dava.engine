@@ -24,6 +24,11 @@
 #include "DataGraph.h"
 #include "EntitiesGraph.h"
 
+#if defined (DAVA_QT)        
+#include "../Qt/SceneDataManager.h"
+#include "../Qt/SceneData.h"
+#endif //#if defined (DAVA_QT)
+
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
 	, beastManager(0)
@@ -35,88 +40,117 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     ControlsFactory::CusomizeBottomLevelControl(this);
 
     sceneGraph = new SceneGraph(this, rect);
+#if defined (DAVA_QT)
+    currentGraph = sceneGraph;
+#else //#if defined (DAVA_QT)
     dataGraph = new DataGraph(this, rect);
 	entitiesGraph = new EntitiesGraph(this, rect);
     currentGraph = NULL;
-    
-    bool showOutput = EditorSettings::Instance()->GetShowOutput();
-    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
-    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-    if(showOutput)
-    {
-        scene3dView = new UI3DView(Rect(leftSideWidth + SCENE_OFFSET, SCENE_OFFSET, 
-                                        rect.dx - leftSideWidth - 2 * SCENE_OFFSET, 
-                                        rect.dy - 2 * SCENE_OFFSET - ControlsFactory::OUTPUT_PANEL_HEIGHT));
-    }
-    else
-    {
-        scene3dView = new UI3DView(Rect(leftSideWidth + SCENE_OFFSET, SCENE_OFFSET, 
-                                        rect.dx - leftSideWidth - 2 * SCENE_OFFSET, 
-                                        rect.dy - 2 * SCENE_OFFSET));
-    }
+#endif //#if defined (DAVA_QT)
+
+    InitControls();
 
     scene3dView->SetDebugDraw(true);
     scene3dView->SetInputEnabled(false);
     AddControl(scene3dView);
 
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
     sceneInfoControl = new SceneInfoControl(Rect(rect.dx - rightSideWidth * 2 , 0, rightSideWidth, rightSideWidth));
     AddControl(sceneInfoControl);
-    
-    CreateScene(true);
 
-    if(showOutput)
-    {
-        outputPanel = new OutputPanelControl(scene, Rect(leftSideWidth, rect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT, 
-                                                         rect.dx - leftSideWidth, 
-                                                         ControlsFactory::OUTPUT_PANEL_HEIGHT));
-        ControlsFactory::CustomizePanelControl(outputPanel, false);
-        AddControl(outputPanel);
-    }
-    else
-    {
-        outputPanel = NULL;
-    }
-    
 	CreateModificationPanel();
     CreateLandscapeEditor();
+
+#if defined (DAVA_QT)
+    scene = NULL;
+    cameraController = NULL;
+#else //#if defined (DAVA_QT)
+    CreateScene(true);
+#endif //#if defined (DAVA_QT)
 
 	mainCam = 0;
 	debugCam = 0;
     
     propertyShowState = EPSS_ONSCREEN;
+
+#if defined (DAVA_QT)
+    AddControl(currentGraph->GetPropertyPanel());
+#else //#if defined (DAVA_QT)
     ToggleSceneGraph();
-    
-#ifdef FORCE_LOD_UPDATE
-    UIButton *btn = ControlsFactory::CreateButton(Vector2(200, 100), L"ForceLod");
-    btn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditorBodyControl::OnForceLod));
-    AddControl(btn);
-    SafeRelease(btn);
-#endif //#ifdef FORCE_LOD_UPDATE
-    
+#endif //#if defined (DAVA_QT)
 }
+
+#if defined (DAVA_QT)
+void EditorBodyControl::InitControls()
+{
+    Rect rect = GetRect();
+
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    scene3dView = new UI3DView(Rect(SCENE_OFFSET, SCENE_OFFSET,
+                                    rect.dx - 2 * SCENE_OFFSET - rightSideWidth,
+                                    rect.dy - 2 * SCENE_OFFSET));
+}
+#else //#if defined (DAVA_QT)
+void EditorBodyControl::InitControls()
+{
+    Rect rect = GetRect();
+    
+    bool showOutput = EditorSettings::Instance()->GetShowOutput();
+    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+    if(showOutput)
+    {
+        scene3dView = new UI3DView(Rect(leftSideWidth + SCENE_OFFSET, SCENE_OFFSET,
+                                        rect.dx - leftSideWidth - 2 * SCENE_OFFSET,
+                                        rect.dy - 2 * SCENE_OFFSET - ControlsFactory::OUTPUT_PANEL_HEIGHT));
+        
+        outputPanel = new OutputPanelControl(scene, Rect(leftSideWidth, rect.dy - ControlsFactory::OUTPUT_PANEL_HEIGHT,
+                                                         rect.dx - leftSideWidth,
+                                                         ControlsFactory::OUTPUT_PANEL_HEIGHT));
+        ControlsFactory::CustomizePanelControl(outputPanel, false);
+        AddControl(outputPanel);
+        
+    }
+    else
+    {
+        scene3dView = new UI3DView(Rect(leftSideWidth + SCENE_OFFSET, SCENE_OFFSET,
+                                        rect.dx - leftSideWidth - 2 * SCENE_OFFSET,
+                                        rect.dy - 2 * SCENE_OFFSET));
+        
+        outputPanel = NULL;
+        
+    }
+}
+#endif //#if defined (DAVA_QT)
+
+
 
 
 EditorBodyControl::~EditorBodyControl()
 {
-    SafeRelease(dataGraph);
     SafeRelease(sceneGraph);
-	SafeRelease(entitiesGraph);
     currentGraph = NULL;
     
     SafeRelease(sceneInfoControl);
     
     ReleaseModificationPanel();
     
-    SafeRelease(outputPanel);
     
     ReleaseLandscapeEditor();
     
+#if defined (DAVA_QT)
+    SafeRelease(scene);
+    SafeRelease(cameraController);
+#else //#if defined (DAVA_QT)
     ReleaseScene();
+    SafeRelease(dataGraph);
+	SafeRelease(entitiesGraph);
+    SafeRelease(outputPanel);
+#endif //#if defined (DAVA_QT)
   
     SafeRelease(scene3dView);
 }
 
-
+#if !defined (DAVA_QT)
 void EditorBodyControl::CreateScene(bool withCameras)
 {
     scene = new EditorScene();
@@ -160,7 +194,378 @@ void EditorBodyControl::CreateScene(bool withCameras)
     sceneGraph->SetScene(scene);
     dataGraph->SetScene(scene);
 	entitiesGraph->SetScene(scene);
+    
+    if(modificationPanel)
+    {
+        modificationPanel->SetScene(scene);
+    }
 }
+
+void EditorBodyControl::ReleaseScene()
+{
+    //TODO: need to release root nodes?
+    ResetSelection();
+    
+    SafeRelease(scene);
+    SafeRelease(cameraController);
+}
+
+void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
+{
+    if (FileSystem::Instance()->GetExtension(pathToFile) == ".sce")
+    {
+        if(editScene)
+        {
+            SceneNode *rootNode = scene->GetRootNode(pathToFile);
+            
+            mainFilePath = pathToFile;
+            scene->AddNode(rootNode);
+        }
+        else
+        {
+            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
+            
+            KeyedArchive * customProperties = rootNode->GetCustomProperties();
+            customProperties->SetString("editor.referenceToOwner", pathToFile);
+            
+            rootNode->SetSolid(true);
+            scene->AddNode(rootNode);
+            
+            SafeRelease(rootNode);
+        }
+        
+        if (scene->GetCamera(0))
+        {
+            scene->SetCurrentCamera(scene->GetCamera(0));
+            cameraController->SetScene(scene);
+        }
+    }
+    else if(FileSystem::Instance()->GetExtension(pathToFile) == ".sc2")
+    {
+        if(editScene)
+        {
+            SceneNode * rootNode = scene->GetRootNode(pathToFile);
+            if(rootNode)
+            {
+                mainFilePath = pathToFile;
+                for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+                {
+                    //рут нода это сама сцена в данном случае
+                    scene->AddNode(rootNode->GetChild(ci));
+                }
+            }
+        }
+        else
+        {
+            SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
+            
+            KeyedArchive * customProperties = rootNode->GetCustomProperties();
+            customProperties->SetString("editor.referenceToOwner", pathToFile);
+            
+            rootNode->SetSolid(true);
+            scene->AddNode(rootNode);
+            
+            Camera *currCamera = scene->GetCurrentCamera();
+            if(currCamera)
+            {
+                Vector3 pos = currCamera->GetPosition();
+                Vector3 direction  = currCamera->GetDirection();
+                
+                Vector3 nodePos = pos + 10 * direction;
+                nodePos.z = 0;
+                
+                LandscapeNode * ls = scene->GetLandScape(scene);
+                if(ls)
+                {
+                    Vector3 result;
+                    bool res = ls->PlacePoint(nodePos, result);
+                    if(res)
+                    {
+                        nodePos = result;
+                    }
+                }
+                
+                Matrix4 mod;
+                mod.CreateTranslation(nodePos);
+                rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
+            }
+            
+            SafeRelease(rootNode);
+        }
+        
+        Refresh();
+    }
+    
+    SelectNodeAtTree(scene->GetSelection());
+    SceneValidator::Instance()->ValidateScene(scene);
+    SceneValidator::Instance()->EnumerateSceneTextures();
+}
+
+
+const String &EditorBodyControl::GetFilePath()
+{
+    return mainFilePath;
+}
+
+void EditorBodyControl::SetFilePath(const String &newFilePath)
+{
+    mainFilePath = newFilePath;
+}
+
+
+void EditorBodyControl::ShowProperties(bool show)
+{
+    if(currentGraph)
+    {
+        int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+        if(show && !currentGraph->GetPropertyPanel()->GetParent())
+        {
+            if(!ControlsAreLocked())
+            {
+                AddControl(currentGraph->GetPropertyPanel());
+                
+                ChangeControlWidthRight(scene3dView, -rightSideWidth);
+                if(outputPanel)
+                {
+                    ChangeControlWidthRight(outputPanel, -rightSideWidth);
+                }
+            }
+        }
+        else if(!show && currentGraph->GetPropertyPanel()->GetParent())
+        {
+            RemoveControl(currentGraph->GetPropertyPanel());
+            
+            ChangeControlWidthRight(scene3dView, rightSideWidth);
+            if(outputPanel)
+            {
+                ChangeControlWidthRight(outputPanel, rightSideWidth);
+            }
+        }
+    }
+    
+    propertyShowState = (show) ? EPSS_ONSCREEN : EPSS_HIDDEN;
+}
+
+bool EditorBodyControl::PropertiesAreShown()
+{
+    if(currentGraph)
+    {
+        return currentGraph->PropertiesOnScreen();
+    }
+    
+    return false;
+}
+
+
+void EditorBodyControl::ToggleGraph(GraphBase *graph)
+{
+    bool needToResizeControls = false;
+    
+    if(currentGraph == graph)
+    {
+        if(graph->GetGraphPanel()->GetParent())
+        {
+            RemoveControl(graph->GetGraphPanel());
+            needToResizeControls = true;
+        }
+        else
+        {
+            if(!ControlsAreLocked())
+            {
+                AddControl(graph->GetGraphPanel());
+                needToResizeControls = true;
+                
+                graph->RefreshGraph();
+                graph->UpdatePropertyPanel();
+                
+            }
+        }
+    }
+    else  //if(currentGraph == graph)
+    {
+        if(!ControlsAreLocked())
+        {
+            ePropertyShowState oldState = propertyShowState;
+            ShowProperties(false);
+            
+            if(currentGraph && currentGraph->GetGraphPanel()->GetParent())
+            {
+                RemoveControl(currentGraph->GetGraphPanel());
+            }
+            else if(currentGraph && !currentGraph->GetGraphPanel()->GetParent())
+            {
+                needToResizeControls = true;
+            }
+            
+            AddControl(graph->GetGraphPanel());
+            
+            currentGraph = graph;
+            if(EPSS_ONSCREEN == oldState)
+            {
+                ShowProperties(true);
+            }
+            
+            graph->RefreshGraph();
+            graph->UpdatePropertyPanel();
+        }
+    }
+    
+    if(needToResizeControls)
+    {
+        int32 leftSideWidth = graph->GetGraphPanel()->GetSize().x;
+        if(graph->GetGraphPanel()->GetParent())
+        {
+            ChangeControlWidthLeft(scene3dView, leftSideWidth);
+            if(outputPanel)
+            {
+                ChangeControlWidthLeft(outputPanel, leftSideWidth);
+            }
+        }
+        else
+        {
+            ChangeControlWidthLeft(scene3dView, -leftSideWidth);
+            if(outputPanel)
+            {
+                ChangeControlWidthLeft(outputPanel, -leftSideWidth);
+            }
+        }
+    }
+}
+
+
+void EditorBodyControl::ToggleSceneGraph()
+{
+    ToggleGraph(sceneGraph);
+}
+
+void EditorBodyControl::ToggleDataGraph()
+{
+    ToggleGraph(dataGraph);
+}
+
+void EditorBodyControl::ToggleEntities()
+{
+	ToggleGraph(entitiesGraph);
+}
+
+
+void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
+{
+    if(isShown)
+    {
+        ShowProperties(false);
+        
+        ChangeControlWidthRight(scene3dView, -width);
+        if(outputPanel)
+        {
+            ChangeControlWidthRight(outputPanel, -width);
+        }
+    }
+    else
+    {
+        int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+        ChangeControlWidthRight(scene3dView, rightSideWidth);
+        if(outputPanel)
+        {
+            ChangeControlWidthRight(outputPanel, rightSideWidth);
+        }
+    }
+}
+
+
+void EditorBodyControl::BakeNode(SceneNode *node)
+{
+    if(node->GetSolid())
+    {
+        node->BakeTransforms();
+        return;
+    }
+    
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        BakeNode(node->GetChild(i));
+    }
+}
+
+void EditorBodyControl::RemoveIdentityNodes(DAVA::SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *removedChild = node->GetChild(i);
+        
+        if(
+           (removedChild->GetFlags() & SceneNode::NODE_LOCAL_MATRIX_IDENTITY)
+           &&   (typeid(SceneNode) == typeid(*removedChild))
+           &&   (typeid(LodNode) != typeid(*node))
+           &&   (removedChild->GetChildrenCount() == 1))
+        {
+            SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            removedChild->RemoveNode(child);
+            node->AddNode(child);
+            SafeRelease(child);
+            
+            node->RemoveNode(removedChild);
+            
+            i = -1;
+        }
+        else
+        {
+            RemoveIdentityNodes(removedChild);
+        }
+    }
+}
+
+void EditorBodyControl::FindIdentityNodes(SceneNode *node)
+{
+    for(int32 i = 0; i < node->GetChildrenCount(); ++i)
+    {
+        SceneNode *child = node->GetChild(i);
+        
+        if(child->GetSolid())
+        {
+            RemoveIdentityNodes(child);
+        }
+        else
+        {
+            FindIdentityNodes(child);
+        }
+    }
+}
+
+
+void EditorBodyControl::BakeScene()
+{
+    if(scene)
+    {
+#if !defined(DAVA_QT)
+        ResetSelection();
+#endif //#if !defined(DAVA_QT)
+        
+        BakeNode(scene);
+        FindIdentityNodes(scene);
+        
+        Refresh();
+    }
+}
+
+
+void EditorBodyControl::ChangeControlWidthRight(UIControl *c, float32 width)
+{
+    Rect r = c->GetRect();
+    r.dx += width;
+    c->SetRect(r);
+}
+
+void EditorBodyControl::ChangeControlWidthLeft(UIControl *c, float32 width)
+{
+    Rect r = c->GetRect();
+    r.dx -= width;
+    r.x += width;
+    c->SetRect(r);
+}
+
+
+#endif //#if !defined (DAVA_QT)
 
 void RemoveDeepCamera(SceneNode * curr)
 {
@@ -217,16 +622,6 @@ void EditorBodyControl::PopDebugCamera()
 	mainCam = 0;
 	debugCam = 0;
 }
-
-void EditorBodyControl::ReleaseScene()
-{
-    //TODO: need to release root nodes?
-    ResetSelection();
-    
-    SafeRelease(scene);
-    SafeRelease(cameraController);
-}
-
 
 void EditorBodyControl::CreateModificationPanel(void)
 {
@@ -319,7 +714,12 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     UIControl *c = UIControlSystem::Instance()->GetFocusedControl();
                     if(c == this || c == scene3dView)
                     {
+#if defined (DAVA_QT)
+                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+                        activeScene->SelectNode(NULL);
+#else //#if defined (DAVA_QT)                        
                         ResetSelection();
+#endif //#if defined (DAVA_QT)
                     }
                     
                     break;
@@ -681,99 +1081,6 @@ void EditorBodyControl::Update(float32 timeElapsed)
 	}
 }
 
-
-void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
-{
-    if (FileSystem::Instance()->GetExtension(pathToFile) == ".sce")
-    {
-        if(editScene)
-        {
-            SceneNode *rootNode = scene->GetRootNode(pathToFile);
-            
-            mainFilePath = pathToFile;
-            scene->AddNode(rootNode);
-        }
-        else
-        {
-            SceneNode *rootNode = scene->GetRootNode(pathToFile)->Clone();
-            
-            KeyedArchive * customProperties = rootNode->GetCustomProperties();
-            customProperties->SetString("editor.referenceToOwner", pathToFile);
-
-            rootNode->SetSolid(true);
-            scene->AddNode(rootNode);
-            
-            SafeRelease(rootNode);
-        }
-        
-        if (scene->GetCamera(0))
-        {
-            scene->SetCurrentCamera(scene->GetCamera(0));
-            cameraController->SetScene(scene);
-        }
-    }    
-    else if(FileSystem::Instance()->GetExtension(pathToFile) == ".sc2")
-    {
-        if(editScene)
-        {
-            SceneNode * rootNode = scene->GetRootNode(pathToFile);
-            if(rootNode)
-            {
-                mainFilePath = pathToFile;
-                for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-                {   
-                    //рут нода это сама сцена в данном случае
-                    scene->AddNode(rootNode->GetChild(ci));
-                }
-            }
-        }
-        else
-        {
-            SceneNode * rootNode = scene->GetRootNode(pathToFile)->Clone();
-
-            KeyedArchive * customProperties = rootNode->GetCustomProperties();
-            customProperties->SetString("editor.referenceToOwner", pathToFile);
-
-            rootNode->SetSolid(true);
-            scene->AddNode(rootNode);
-            
-            Camera *currCamera = scene->GetCurrentCamera();
-            if(currCamera)
-            {
-                Vector3 pos = currCamera->GetPosition();
-                Vector3 direction  = currCamera->GetDirection();
-                
-                Vector3 nodePos = pos + 10 * direction;
-                nodePos.z = 0;
-                
-                LandscapeNode * ls = scene->GetLandScape(scene);
-                if(ls)
-                {
-                    Vector3 result;
-                    bool res = ls->PlacePoint(nodePos, result);
-                    if(res)
-                    {
-                        nodePos = result;
-                    }
-                }
-
-                Matrix4 mod;
-                mod.CreateTranslation(nodePos);
-                rootNode->SetLocalTransform(rootNode->GetLocalTransform() * mod);
-            }
-                        
-            SafeRelease(rootNode); 
-        }
-
-        Refresh();
-    }
-    
-    SelectNodeAtTree(scene->GetSelection());
-    
-    SceneValidator::Instance()->ValidateScene(scene);
-    SceneValidator::Instance()->EnumerateSceneTextures();
-}
-
 void EditorBodyControl::ReloadRootScene(const String &pathToFile)
 {
     scene->ReleaseRootNode(pathToFile);
@@ -823,68 +1130,17 @@ void EditorBodyControl::ReloadNode(SceneNode *node, const String &pathToFile)
 }
 
 
-
-const String &EditorBodyControl::GetFilePath()
-{
-    return mainFilePath;
-}
-
-void EditorBodyControl::SetFilePath(const String &newFilePath)
-{
-    mainFilePath = newFilePath;
-}
-
 void EditorBodyControl::WillAppear()
 {
     cameraController->SetSpeed(EditorSettings::Instance()->GetCameraSpeed());
     
     sceneGraph->SelectNode(NULL);
+#if !defined (DAVA_QT)
     dataGraph->SelectNode(NULL);
 	entitiesGraph->SelectNode(NULL);
+#endif //#if !defied (DAVA_QT)
 }
 
-void EditorBodyControl::ShowProperties(bool show)
-{
-    if(currentGraph)
-    {
-        int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-        if(show && !currentGraph->GetPropertyPanel()->GetParent())
-        {
-            if(!ControlsAreLocked())
-            {
-                AddControl(currentGraph->GetPropertyPanel());
-                
-                ChangeControlWidthRight(scene3dView, -rightSideWidth);
-                if(outputPanel)
-                {
-                    ChangeControlWidthRight(outputPanel, -rightSideWidth);   
-                }
-            }
-        }
-        else if(!show && currentGraph->GetPropertyPanel()->GetParent())
-        {
-            RemoveControl(currentGraph->GetPropertyPanel());
-            
-            ChangeControlWidthRight(scene3dView, rightSideWidth);
-            if(outputPanel)
-            {
-                ChangeControlWidthRight(outputPanel, rightSideWidth);
-            }
-        }
-    }
-    
-    propertyShowState = (show) ? EPSS_ONSCREEN : EPSS_HIDDEN;
-}
-
-bool EditorBodyControl::PropertiesAreShown()
-{
-    if(currentGraph)
-    {
-        return currentGraph->PropertiesOnScreen();
-    }
-    
-    return false;
-}
 
 void EditorBodyControl::RefreshProperties()
 {
@@ -894,120 +1150,6 @@ void EditorBodyControl::RefreshProperties()
     }
 }
 
-void EditorBodyControl::ToggleGraph(GraphBase *graph)
-{
-    bool needToResizeControls = false;
-    
-    if(currentGraph == graph)
-    {
-        if(graph->GetGraphPanel()->GetParent())
-        {
-            RemoveControl(graph->GetGraphPanel());
-            needToResizeControls = true;
-        }
-        else
-        {
-            if(!ControlsAreLocked())
-            {
-                AddControl(graph->GetGraphPanel());
-                needToResizeControls = true;
-
-                graph->RefreshGraph();
-                graph->UpdatePropertyPanel();
-                
-            }
-        }
-    }
-    else  //if(currentGraph == graph)
-    {
-        if(!ControlsAreLocked())
-        {
-            ePropertyShowState oldState = propertyShowState;
-            ShowProperties(false);
-            
-            if(currentGraph && currentGraph->GetGraphPanel()->GetParent())
-            {
-                RemoveControl(currentGraph->GetGraphPanel());
-            }
-            else if(currentGraph && !currentGraph->GetGraphPanel()->GetParent())
-            {
-                needToResizeControls = true;
-            }
-            
-            AddControl(graph->GetGraphPanel());
-            
-            currentGraph = graph;
-            if(EPSS_ONSCREEN == oldState)
-            {
-                ShowProperties(true);
-            }
-
-            graph->RefreshGraph();
-            graph->UpdatePropertyPanel();
-        }
-    }
-    
-    if(needToResizeControls)
-    {
-        int32 leftSideWidth = graph->GetGraphPanel()->GetSize().x;
-        if(graph->GetGraphPanel()->GetParent())
-        {
-            ChangeControlWidthLeft(scene3dView, leftSideWidth);
-            if(outputPanel)
-            {
-                ChangeControlWidthLeft(outputPanel, leftSideWidth);
-            }   
-        }
-        else 
-        {
-            ChangeControlWidthLeft(scene3dView, -leftSideWidth);
-            if(outputPanel)
-            {
-                ChangeControlWidthLeft(outputPanel, -leftSideWidth);
-            }   
-        }
-    }
-}
-
-
-void EditorBodyControl::ToggleSceneGraph()
-{
-    ToggleGraph(sceneGraph);
-}
-
-void EditorBodyControl::ToggleDataGraph()
-{
-    ToggleGraph(dataGraph);
-}
-
-void EditorBodyControl::ToggleEntities()
-{
-	ToggleGraph(entitiesGraph);
-}
-
-
-void EditorBodyControl::UpdateLibraryState(bool isShown, int32 width)
-{
-    if(isShown)
-    {
-        ShowProperties(false);
-        
-        ChangeControlWidthRight(scene3dView, -width);
-        if(outputPanel)
-        {
-            ChangeControlWidthRight(outputPanel, -width);
-        }
-    }
-    else
-    {
-        int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
-        ChangeControlWidthRight(scene3dView, rightSideWidth);
-        if(outputPanel)
-        {
-            ChangeControlWidthRight(outputPanel, rightSideWidth);
-        }
-    }
-}
 
 void EditorBodyControl::BeastProcessScene()
 {
@@ -1034,8 +1176,14 @@ EditorScene * EditorBodyControl::GetScene()
 
 void EditorBodyControl::AddNode(SceneNode *node)
 {
+#if defined (DAVA_QT)
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->AddSceneNode(node);
+#else //#if defined (DAVA_QT)
     scene->AddNode(node);
     Refresh();
+#endif // #if defined (DAVA_QT)
+
 }
 
 SceneNode * EditorBodyControl::GetSelectedSGNode()
@@ -1045,48 +1193,48 @@ SceneNode * EditorBodyControl::GetSelectedSGNode()
 
 void EditorBodyControl::RemoveSelectedSGNode()
 {
+#if defined (DAVA_QT)
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RemoveSceneNode(GetSelectedSGNode());
+#else //#if defined (DAVA_QT)
     sceneGraph->RemoveWorkingNode();
+#endif // #if defined (DAVA_QT)
 }
 
 
-void EditorBodyControl::ChangeControlWidthRight(UIControl *c, float32 width)
-{
-    Rect r = c->GetRect();
-    r.dx += width;
-    c->SetRect(r);
-}
-
-void EditorBodyControl::ChangeControlWidthLeft(UIControl *c, float32 width)
-{
-    Rect r = c->GetRect();
-    r.dx -= width;
-    r.x += width;
-    c->SetRect(r);
-}
 
 
 void EditorBodyControl::Refresh()
 {
     sceneGraph->RefreshGraph();
+#if !defined (DAVA_QT)
     dataGraph->RefreshGraph();
+#endif //#if !defined(DAVA_QT)
 }
 
 
 void EditorBodyControl::SelectNodeAtTree(DAVA::SceneNode *node)
 {
+#if defined(DAVA_QT)
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    sceneData->SelectNode(node);
+#else //#if defined(DAVA_QT)
     if(sceneGraph)
         sceneGraph->SelectNode(node);
     
     if(dataGraph)
         dataGraph->RefreshGraph();
+#endif //#if defined(DAVA_QT)
+    
 }
 
+#if !defined (DAVA_QT)
 void EditorBodyControl::ResetSelection()
 {
     scene->SetSelection(0);
     SelectNodeAtTree(0);
 }
-
+#endif //#if defined (DAVA_QT)
 
 void EditorBodyControl::SetViewportSize(ResourceEditor::eViewportType viewportType)
 {
@@ -1094,19 +1242,26 @@ void EditorBodyControl::SetViewportSize(ResourceEditor::eViewportType viewportTy
         return;
     
     currentViewportType = viewportType;
+
+    Rect fullRect = GetRect();
+    Rect viewRect = Rect(SCENE_OFFSET, SCENE_OFFSET, fullRect.dx - 2 * SCENE_OFFSET, fullRect.dy - 2 * SCENE_OFFSET);
     
+#if defined (DAVA_QT)
+    viewRect.dx -= EditorSettings::Instance()->GetRightPanelWidth();
+
+#else //#if defined (DAVA_QT)
     if(currentGraph->GetGraphPanel()->GetParent())
     {
         ToggleGraph(currentGraph);
     }
     ShowProperties(false);
     
-    Rect fullRect = GetRect();
-    Rect viewRect = Rect(SCENE_OFFSET, SCENE_OFFSET, fullRect.dx - 2 * SCENE_OFFSET, fullRect.dy - 2 * SCENE_OFFSET);
     if(outputPanel)
     {
         viewRect.dy -= outputPanel->GetRect().dy;
     }
+    
+#endif //#if defined (DAVA_QT)
     
     Rect newRect = viewRect;
     switch (viewportType)
@@ -1161,7 +1316,12 @@ void EditorBodyControl::PackLightmaps()
 {
 	LightmapsPacker packer;
 	packer.SetInputDir("lightmaps_temp/");
+#if defined (DAVA_QT)	
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	packer.SetOutputDir(sceneData->GetScenePathname() + "_lightmaps/");
+#else //#if defined (DAVA_QT)
 	packer.SetOutputDir(GetFilePath()+"_lightmaps/");
+#endif //#if defined (DAVA_QT)	
 	packer.Pack();
 	packer.Compress();
 	packer.ParseSpriteDescriptors();
@@ -1184,30 +1344,12 @@ void EditorBodyControl::RecreteFullTilingTexture()
     Vector<LandscapeNode *>landscapes;
     scene->GetChildNodes(landscapes);
     
-    for(int32 i = 0; i < landscapes.size(); ++i)
+    for(int32 i = 0; i < (int32)landscapes.size(); ++i)
     {
         landscapes[i]->UpdateFullTiledTexture();
     }
 }
 
-#ifdef FORCE_LOD_UPDATE
-void EditorBodyControl::OnForceLod(BaseObject * object, void * userData, void * callerData)
-{
-    Vector<LodNode *> lodnodes;
-    scene->GetChildNodes(lodnodes);
-    
-    float32 distances[LodNode::MAX_LOD_LAYERS] = {0, 13, 32, 900};
-    
-    for(int32 i = 0; i < lodnodes.size(); ++i)
-    {
-        int32 count = lodnodes[i]->GetLodLayersCount();
-        for(int32 iLayer = 0; iLayer < count; ++iLayer)
-        {
-            lodnodes[i]->SetLodLayerDistance(iLayer, distances[iLayer]);
-        }
-    }
-}
-#endif //#ifdef FORCE_LOD_UPDATE
 
 
 #pragma mark --Landscape Editor
@@ -1316,13 +1458,11 @@ void EditorBodyControl::LandscapeEditorFinished()
 }
 
 
-#pragma marlk --ModificationsPanelDelegate
 void EditorBodyControl::OnPlaceOnLandscape()
 {
     PlaceOnLandscape();
 }
 
-#pragma marlk --GraphBaseDelegate
 bool EditorBodyControl::LandscapeEditorActive()
 {
     return (currentLandscapeEditor && currentLandscapeEditor->IsActive());
@@ -1332,3 +1472,46 @@ NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)
 {
     return currentLandscapeEditor->GetPropertyControl(rect);
 }
+
+#if defined (DAVA_QT)
+void EditorBodyControl::SetScene(EditorScene *newScene)
+{
+    SafeRelease(scene);
+    scene = SafeRetain(newScene);
+    
+    scene3dView->SetScene(scene);
+	sceneGraph->SetScene(scene);
+    
+    modificationPanel->SetScene(scene);
+}
+
+void EditorBodyControl::SetCameraController(CameraController *newCameraController)
+{
+    SafeRelease(cameraController);
+    cameraController = SafeRetain(newCameraController);
+}
+
+void EditorBodyControl::SelectNodeQt(DAVA::SceneNode *node)
+{
+    sceneGraph->SelectNode(node);
+}
+
+void EditorBodyControl::OnReloadRootNodesQt()
+{
+    modificationPanel->OnReloadScene();
+}
+
+void EditorBodyControl::SetSize(const Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+
+    int32 rightSideWidth = EditorSettings::Instance()->GetRightPanelWidth();
+    scene3dView->SetSize(newSize - Vector2(2 * SCENE_OFFSET + rightSideWidth, 2 * SCENE_OFFSET));
+    
+    sceneGraph->SetSize(newSize);
+    
+    sceneInfoControl->SetPosition(Vector2(newSize.x - rightSideWidth * 2, 0));
+}
+
+#endif //#if defined (DAVA_QT)
+

@@ -26,6 +26,7 @@ AutotestingSystem::AutotestingSystem() : currentAction(NULL)
 	, isDB(true)
     , testReportsFolder("")
     , reportFile(NULL)
+	, parsingMultitouch(NULL)
 {
 }
 
@@ -373,8 +374,24 @@ void AutotestingSystem::AddAction(Action* action)
 {
     if(!isInit) return;
 
-    SafeRetain(action);
-    actions.push_back(action);
+	if(parsingMultitouch)
+	{
+		TouchAction* touch = dynamic_cast<TouchAction*>(action);
+		if(touch)
+		{
+			parsingMultitouch->AddTouch(touch);
+		}
+		else
+		{
+			OnError("AddAction not a touch is passed into multitouch");
+		}
+	}
+	else if(action)
+	{
+		action->Retain();
+		actions.push_back(action);
+		action->DebugLog("AddAction", false);
+	}
 }
 
 void AutotestingSystem::AddActionsFromYaml(const String &yamlFilePath)
@@ -412,7 +429,7 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
             if(actionNode && actionNameNode)
             {                        
                 String actionName = actionNameNode->AsString();
-                Logger::Debug("AddActionsFromYamlNode action=%s", actionName.c_str());
+                //Logger::Debug("AddActionsFromYamlNode action=%s", actionName.c_str());
                 if(actionName == "ExecuteYaml")
                 {
                     YamlNode* pathNode = actionNode->Get("path");
@@ -512,20 +529,51 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                     YamlNode* idNode = actionNode->Get("id");
                     YamlNode* pointNode = actionNode->Get("point");
                     YamlNode* timeNode = actionNode->Get("time");
-                    if(pointNode)
+
+					YamlNode* directionNode = actionNode->Get("direction");
+					YamlNode* speedNode = actionNode->Get("speed");
+
+                    if(pointNode || directionNode)
                     {
                         float32 time = 0.0f;
                         if(timeNode)
                         {
                             time = timeNode->AsFloat();
                         }
-                        if(idNode)
+
+						float32 speed = 1.0f;
+						if(speedNode)
+						{
+							speed = speedNode->AsFloat();
+						}
+
+						int32 id = 1;
+						if(idNode)
+						{
+							id = idNode->AsInt();
+						}
+
+                        if(directionNode)
                         {
-                            TouchMove(pointNode->AsVector2(), time, idNode->AsInt());
+							if(idNode)
+							{
+								TouchMove(directionNode->AsVector2(), speed, time, idNode->AsInt());
+							}
+							else
+							{
+								TouchMove(directionNode->AsVector2(), speed, time);
+							}
                         }
                         else
                         {
-                            TouchMove(pointNode->AsVector2(), time);
+							if(idNode)
+							{
+								TouchMove(pointNode->AsVector2(), time, idNode->AsInt());
+							}
+							else
+							{
+								 TouchMove(pointNode->AsVector2(), time);
+							}
                         }
                     }
                     else
@@ -533,6 +581,13 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         OnError(Format("AddActionsFromYamlNode action %s no point", actionName.c_str()));
                     }
                 }
+				else if(actionName == "MultiTouch")
+				{
+					BeginMultitouch();
+					YamlNode* touchesNode = actionNode->Get("touches");
+					AddActionsFromYamlNode(touchesNode);
+					EndMultitouch();
+				}
                 else if(actionName == "SetText")
                 {
                     YamlNode* controlPathNode = actionNode->Get("controlPath");
@@ -849,6 +904,17 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 	}
 }
 
+void AutotestingSystem::OnMessage(const String & logMessage)
+{
+	Logger::Debug("AutotestingSystem::OnMessage %s", logMessage.c_str());
+    
+	String logMsg = Format("%s OnMessage %s", testName.c_str(), logMessage.c_str());
+	if(reportFile)
+	{
+		reportFile->WriteLine(logMsg);
+	}
+}
+
 void AutotestingSystem::OnError(const String & errorMessage)
 {
     Logger::Error("AutotestingSystem::OnError %s",errorMessage.c_str());
@@ -904,6 +970,7 @@ void AutotestingSystem::Click(const Vector<String> &controlPath, int32 id)
 void AutotestingSystem::TouchDown(const Vector2 &point, int32 id)
 {
     TouchDownAction* touchDownAction = new TouchDownAction(point, id);
+	touchDownAction->SetName("TouchDownAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
@@ -911,6 +978,7 @@ void AutotestingSystem::TouchDown(const Vector2 &point, int32 id)
 void AutotestingSystem::TouchDown(const String &controlName, int32 id)
 {
     TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlName, id);
+	touchDownAction->SetName("TouchDownControlAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
@@ -918,6 +986,7 @@ void AutotestingSystem::TouchDown(const String &controlName, int32 id)
 void AutotestingSystem::TouchDown(const Vector<String> &controlPath, int32 id)
 {
     TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlPath, id);
+	touchDownAction->SetName("TouchDownControlAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
@@ -925,13 +994,23 @@ void AutotestingSystem::TouchDown(const Vector<String> &controlPath, int32 id)
 void AutotestingSystem::TouchUp(int32 id)
 {
     TouchUpAction* touchUpAction = new TouchUpAction(id);
+	touchUpAction->SetName("TouchUpAction");
     AddAction(touchUpAction);
     SafeRelease(touchUpAction);
+}
+
+void AutotestingSystem::TouchMove(const Vector2 &direction, float32 speed, float32 time, int32 id)
+{
+	TouchMoveDirAction* touchMoveDirAction = new TouchMoveDirAction(direction, speed, time, id);
+	touchMoveDirAction->SetName("TouchMoveDirAction");
+    AddAction(touchMoveDirAction);
+    SafeRelease(touchMoveDirAction);
 }
 
 void AutotestingSystem::TouchMove(const Vector2 &point, float32 time, int32 id)
 {
     TouchMoveAction* touchMoveAction = new TouchMoveAction(point, time, id);
+	touchMoveAction->SetName("TouchMoveAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
 }
@@ -939,6 +1018,7 @@ void AutotestingSystem::TouchMove(const Vector2 &point, float32 time, int32 id)
 void AutotestingSystem::TouchMove(const String &controlName, float32 time, int32 id)
 {
     TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlName, time, id);
+	touchMoveAction->SetName("TouchMoveControlAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
 }
@@ -946,13 +1026,31 @@ void AutotestingSystem::TouchMove(const String &controlName, float32 time, int32
 void AutotestingSystem::TouchMove(const Vector<String> &controlPath, float32 time, int32 id)
 {
     TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlPath, time, id);
+	touchMoveAction->SetName("TouchMoveControlAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
+}
+
+void AutotestingSystem::BeginMultitouch()
+{
+	SafeRelease(parsingMultitouch);
+
+	MultitouchAction* newMultitouch = new MultitouchAction();
+	newMultitouch->SetName("MultitouchAction");
+	AddAction(newMultitouch);
+
+	parsingMultitouch = newMultitouch;
+}
+
+void AutotestingSystem::EndMultitouch()
+{
+	SafeRelease(parsingMultitouch);
 }
 
 void AutotestingSystem::KeyPress(char16 keyChar)
 {
     KeyPressAction* keyPressAction = new KeyPressAction(keyChar);
+	keyPressAction->SetName("KeyPressAction");
     AddAction(keyPressAction);
     SafeRelease(keyPressAction);
 }
@@ -968,6 +1066,7 @@ void AutotestingSystem::KeyboardInput(const WideString &text)
 void AutotestingSystem::SetText(const String &controlName, const WideString &text)
 {
     SetTextAction* setTextAction = new SetTextAction(controlName, text);
+	setTextAction->SetName("SetTextAction");
     AddAction(setTextAction);
     SafeRelease(setTextAction);
 }
@@ -975,6 +1074,7 @@ void AutotestingSystem::SetText(const String &controlName, const WideString &tex
 void AutotestingSystem::SetText(const Vector<String> &controlPath, const WideString &text)
 {
     SetTextAction* setTextAction = new SetTextAction(controlPath, text);
+	setTextAction->SetName("SetTextAction");
     AddAction(setTextAction);
     SafeRelease(setTextAction);
 }
@@ -982,6 +1082,7 @@ void AutotestingSystem::SetText(const Vector<String> &controlPath, const WideStr
 void AutotestingSystem::Wait(float32 time)
 {
     WaitAction* waitAction = new WaitAction(time);
+	waitAction->SetName("WaitAction");
     AddAction(waitAction);
     SafeRelease(waitAction);
 }
@@ -989,6 +1090,7 @@ void AutotestingSystem::Wait(float32 time)
 void AutotestingSystem::WaitForUI(const String &controlName, float32 timeout)
 {
     WaitForUIAction* waitForUIAction = new WaitForUIAction(controlName, timeout);
+	waitForUIAction->SetName("WaitForUIAction");
     AddAction(waitForUIAction);
     SafeRelease(waitForUIAction);
 }
@@ -996,6 +1098,7 @@ void AutotestingSystem::WaitForUI(const String &controlName, float32 timeout)
 void AutotestingSystem::WaitForUI(const Vector<String> &controlPath, float32 timeout)
 {
     WaitForUIAction* waitForUIAction = new WaitForUIAction(controlPath, timeout);
+	waitForUIAction->SetName("WaitForUIAction");
     AddAction(waitForUIAction);
     SafeRelease(waitForUIAction);
 }
@@ -1003,6 +1106,7 @@ void AutotestingSystem::WaitForUI(const Vector<String> &controlPath, float32 tim
 void AutotestingSystem::Scroll(const String &controlName, int32 id, float32 timeout)
 {
     ScrollControlAction* scrollControlAction = new ScrollControlAction(controlName, id, timeout);
+	scrollControlAction->SetName("ScrollControlAction");
     AddAction(scrollControlAction);
     SafeRelease(scrollControlAction);
 }
