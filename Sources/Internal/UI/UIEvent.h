@@ -102,14 +102,16 @@ public:
 	int32 tapCount;//!< count of the continuous inputs (clicks for mouse)
 	char16 keyChar;//!< unicode/translated character produced by key using current language, caps etc. Used only with PHASE_KEYCHAR.
 
-	UIEvent()
-	{
-		activeState = ACTIVITY_STATE_INACTIVE;
-		touchLocker = NULL;
-		tid = 0;
-		controlState = CONTROL_STATE_RELEASED;
-		tapCount = 0;
-	}
+	UIEvent() :
+        tid(0),
+        timestamp(0.f),
+        phase(0),
+        touchLocker(NULL),
+        activeState(ACTIVITY_STATE_INACTIVE),
+        controlState(CONTROL_STATE_RELEASED),
+        tapCount(0),
+        keyChar(0)
+	{ }
 };
 };
 

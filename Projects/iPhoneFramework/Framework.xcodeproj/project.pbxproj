@@ -99,6 +99,8 @@
 		5CFE6D1C1536FB8E005DA604 /* Heightmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */; };
 		5CFE6D1D1536FB8E005DA604 /* Heightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFE6D1B1536FB8E005DA604 /* Heightmap.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */; };
+		C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C22651F415E3D7A900E25BF4 /* ReferenceNode.h */; };
 		C7E766E014AB4DB2004383FB /* BaseObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E766DF14AB4DB2004383FB /* BaseObject.cpp */; };
 		C7E895D8157FA00C00B0E00A /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E895CE157FA00C00B0E00A /* Action.cpp */; };
 		C7E895D9157FA00C00B0E00A /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = C7E895CF157FA00C00B0E00A /* Action.h */; };
@@ -645,6 +647,8 @@
 		5CFE6D1A1536FB8E005DA604 /* Heightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Heightmap.cpp; sourceTree = "<group>"; };
 		5CFE6D1B1536FB8E005DA604 /* Heightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Heightmap.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
+		C22651F415E3D7A900E25BF4 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
 		C7E766DF14AB4DB2004383FB /* BaseObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseObject.cpp; sourceTree = "<group>"; };
 		C7E895CE157FA00C00B0E00A /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
 		C7E895CF157FA00C00B0E00A /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
@@ -1685,6 +1689,8 @@
 		FECFB41812E5904400C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				C22651F315E3D7A900E25BF4 /* ReferenceNode.cpp */,
+				C22651F415E3D7A900E25BF4 /* ReferenceNode.h */,
 				5CD7156815AC3B7D00D08E8E /* ParticleEmitterNode.cpp */,
 				5CD7156915AC3B7D00D08E8E /* ParticleEmitterNode.h */,
 				5CFA5D52156E3EBF00EDB730 /* UserNode.cpp */,
@@ -2171,6 +2177,7 @@
 				5C44738F15B5A1C500028948 /* Mallocator.h in Headers */,
 				5C44739015B5A1C500028948 /* TemplateHelpers.h in Headers */,
 				5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */,
+				C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2485,6 +2492,7 @@
 				5C44738B15B5A1C500028948 /* FixedSizePoolAllocator.cpp in Sources */,
 				5C44738D15B5A1C500028948 /* HashMap.cpp in Sources */,
 				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
+				C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,6 +20,7 @@
     <ClInclude Include="Classes\MemoryAllocatorsTest.h" />
     <ClInclude Include="Classes\SampleTest.h" />
     <ClInclude Include="Classes\SoundTest.h" />
+    <ClInclude Include="Classes\SplitTest.h" />
     <ClInclude Include="Classes\TestTemplate.h" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClCompile Include="Classes\MemoryAllocatorsTest.cpp" />
     <ClCompile Include="Classes\SampleTest.cpp" />
     <ClCompile Include="Classes\SoundTest.cpp" />
+    <ClCompile Include="Classes\SplitTest.cpp" />
     <ClCompile Include="Classes\TestTemplate.cpp" />
     <ClCompile Include="Win32Specific\main.cpp" />
   </ItemGroup>

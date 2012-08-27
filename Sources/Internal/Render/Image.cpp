@@ -507,7 +507,7 @@ void Image::Resize(int32 newWidth, int32 newHeight)
             // resized data
             width = newWidth;
             height = newHeight;
-            SafeDelete(data); // TODO: Need to change to SaveDeleteArray
+            SafeDeleteArray(data);
             data = newData;
         }
     }
