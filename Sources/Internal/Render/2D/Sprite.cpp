@@ -105,11 +105,24 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 		return spr;
 	}
 
-	
-	File *fp = File::Create(scaledPath, File::READ|File::OPEN);
+    File * fp = 0;
+    String texturePath;
+    
+	size_t slashPos = scaledPath.rfind("/");
+    String fileName = scaledPath.substr(slashPos + 1);
+    String localizedScaledPath = scaledPath.substr(0, slashPos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+
+    fp = File::Create(localizedScaledPath, File::READ|File::OPEN);
+    texturePath = localizedScaledPath.substr(0, localizedScaledPath.length() - 4);
+    
+    if(!fp)
+    {
+    	fp = File::Create(scaledPath, File::READ|File::OPEN);
+        texturePath = scaledName;
+    }
 	
 	uint64 timeSpriteRead = SystemTimer::Instance()->AbsoluteMS();
-	String texturePath = scaledName;
+
 
 	if (!fp)
 	{
@@ -123,18 +136,17 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 			return spr;
 		}
 	
+        size_t pos = pathName.rfind("/");
+        String fileName = pathName.substr(pos + 1);
+        String localizedPathName = pathName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
+		texturePath = localizedPathName.substr(0, pathName.length() - 4);
 	
-		fp = File::Create(pathName, File::READ|File::OPEN);
+		fp = File::Create(localizedPathName, File::READ|File::OPEN);
 	
-
 		if (!fp)
 		{
-            size_t pos = pathName.rfind("/");
-            String fileName = pathName.substr(pos + 1);
-            pathName = pathName.substr(0, pos + 1) + LocalizationSystem::Instance()->GetCurrentLocale() + "/" + fileName;
-            
             fp = File::Create(pathName, File::READ|File::OPEN);
-            
+            texturePath = pathName.substr(0, pathName.length() - 4);
             if (!fp)
             {    
                 Logger::Instance()->Warning("Failed to open sprite file: %s", pathName.c_str());
@@ -146,7 +158,6 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 			spr = new Sprite();
 		}
 		spr->resourceSizeIndex = Core::Instance()->GetBaseResourceIndex();
-		texturePath = pathName.substr(0, pathName.length() - 4);
 	}
 	else 
 	{
@@ -155,7 +166,7 @@ Sprite* Sprite::PureCreate(const String & spriteName, Sprite* forPointer)
 			spr = new Sprite();
 		}
 		spr->resourceSizeIndex = Core::Instance()->GetDesirableResourceIndex();
-		texturePath = scaledName;
+//		texturePath = scaledName;
 	}
 
 	
@@ -1009,6 +1020,11 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
 
 void Sprite::Draw()
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
+
     PrepareSpriteRenderData(0);
     
 	RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
@@ -1023,6 +1039,11 @@ void Sprite::Draw()
 	
 void Sprite::Draw(DrawState * state)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
+
 	if (state->usePerPixelAccuracy) 
 		RenderManager::Instance()->PushMappingMatrix();
 
@@ -1073,6 +1094,10 @@ void Sprite::DrawPoints(Vector2 *verticies, Vector2 *textureCoordinates)
 
 void Sprite::DrawPoints(Vector2 *verticies)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
 
 	float32 x = drawCoord.x;
 	float32 y = drawCoord.y;
@@ -1306,7 +1331,7 @@ void Sprite::ValidateForSize()
 		(*it)->PrepareForNewSize();
 	}
 	Logger::Debug("----------- Sprites validation for new resolution DONE  --------------");
-	Texture::DumpTextures();
+//	Texture::DumpTextures();
 }
 
 	

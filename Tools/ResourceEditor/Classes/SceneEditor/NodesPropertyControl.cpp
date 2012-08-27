@@ -66,6 +66,10 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
         btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnCancel));
         listHolder->AddControl(btnCancel);
     }
+    else
+    {
+        btnPlusCollision = NULL;
+    }
     
     propertyList = new PropertyList(propertyRect, this);
     AddControl(propertyList);
@@ -333,7 +337,7 @@ void NodesPropertyControl::ReadFrom(Entity *entity)
 }
 
 
-void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index)
+void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *, const String &forKey, float32 newValue, int32 index)
 {
     if("property.lodnode.distances" == forKey)
     {
@@ -364,7 +368,7 @@ void NodesPropertyControl::OnDistancePropertyChanged(PropertyList *forList, cons
 }
 
 
-void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue)
+void NodesPropertyControl::OnSliderPropertyChanged(PropertyList *, const String &forKey, float32 newValue)
 {
     if("property.lodnode.distanceslider" == forKey)
     {
@@ -397,7 +401,7 @@ void NodesPropertyControl::SetDelegate(NodesPropertyDelegate *delegate)
     nodesDelegate = delegate;
 }
 
-void NodesPropertyControl::OnStringPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void NodesPropertyControl::OnStringPropertyChanged(PropertyList *, const String &forKey, const String &newValue)
 {
     if(forKey == "property.scenenode.name") //SceneNode
     {
@@ -427,7 +431,7 @@ void NodesPropertyControl::OnStringPropertyChanged(PropertyList *forList, const 
         nodesDelegate->NodesPropertyChanged();
     }
 }
-void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const String &forKey, float newValue)
+void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *, const String &forKey, float newValue)
 {
     if(!createNodeProperties)
     {
@@ -447,7 +451,7 @@ void NodesPropertyControl::OnFloatPropertyChanged(PropertyList *forList, const S
         nodesDelegate->NodesPropertyChanged();
     }
 }
-void NodesPropertyControl::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)
+void NodesPropertyControl::OnIntPropertyChanged(PropertyList *, const String &forKey, int newValue)
 {
     if(!createNodeProperties)
     {
@@ -468,7 +472,7 @@ void NodesPropertyControl::OnIntPropertyChanged(PropertyList *forList, const Str
     }
 }
 
-void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
+void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &forKey, bool newValue)
 {
     if(currentSceneNode)
     {
@@ -533,15 +537,15 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *forList, const St
         nodesDelegate->NodesPropertyChanged();
     }
 }
-void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
+void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const String &, const String &)
 {
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged();
     }
 }
-void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, 
-                                               int32 newItemIndex, const String &newItemKey)
+void NodesPropertyControl::OnComboIndexChanged(PropertyList *, const String &, 
+                                               int32 , const String &)
 {
     if(nodesDelegate)
     {
@@ -549,7 +553,7 @@ void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const Stri
     }
 }
 
-void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String &forKey, const Matrix4 & matrix4)
+void NodesPropertyControl::OnMatrix4Changed(PropertyList *, const String &forKey, const Matrix4 & matrix4)
 {
     if(forKey == "property.scenenode.localmatrix")
     {
@@ -566,13 +570,13 @@ void NodesPropertyControl::OnMatrix4Changed(PropertyList *forList, const String 
     }
 }
 
-void NodesPropertyControl::OnSectionExpanded(PropertyList *forList, const String &forKey, bool isExpanded)
+void NodesPropertyControl::OnSectionExpanded(PropertyList *, const String &forKey, bool isExpanded)
 {
     SetHeaderState(forKey, isExpanded);
 }
 
 
-void NodesPropertyControl::OnPlus(BaseObject * object, void * userData, void * callerData)
+void NodesPropertyControl::OnPlus(BaseObject * , void * , void * )
 {
     if(propControl->GetParent() || listHolder->GetParent())
     {
@@ -582,7 +586,7 @@ void NodesPropertyControl::OnPlus(BaseObject * object, void * userData, void * c
     AddControl(propControl);
 }
 
-void NodesPropertyControl::OnPlusCollision(BaseObject * object, void * userData, void * callerData)
+void NodesPropertyControl::OnPlusCollision(BaseObject * , void * , void * )
 {
 	KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
 	currentProperties->SetBool("CollisionFlag", false);
@@ -590,7 +594,7 @@ void NodesPropertyControl::OnPlusCollision(BaseObject * object, void * userData,
 	currentSceneNode->PropagateBoolProperty("CollisionFlag", false);
 }
 
-void NodesPropertyControl::OnMinus(BaseObject * object, void * userData, void * callerData)
+void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
 {
     if(propControl->GetParent() || listHolder->GetParent())
     {
@@ -658,7 +662,7 @@ void NodesPropertyControl::NodeCreated(bool success)
 }
 
 
-int32 NodesPropertyControl::ElementsCount(UIList * list)
+int32 NodesPropertyControl::ElementsCount(UIList * )
 {
     if(currentSceneNode)
     {
@@ -699,12 +703,12 @@ UIListCell *NodesPropertyControl::CellAtIndex(UIList *list, int32 index)
     return c;
 }
 
-int32 NodesPropertyControl::CellHeight(UIList * list, int32 index)
+int32 NodesPropertyControl::CellHeight(UIList * , int32 )
 {
     return CELL_HEIGHT;
 }
 
-void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedCell)
+void NodesPropertyControl::OnCellSelected(UIList *, UIListCell *selectedCell)
 {
     if(currentSceneNode)
     {
@@ -726,7 +730,7 @@ void NodesPropertyControl::OnCellSelected(UIList *forList, UIListCell *selectedC
     }
 }
 
-void NodesPropertyControl::OnCancel(BaseObject * object, void * userData, void * callerData)
+void NodesPropertyControl::OnCancel(BaseObject * , void * , void * )
 {
     listHolder->RemoveControl(deletionList);
     SafeRelease(deletionList);
@@ -761,7 +765,7 @@ void NodesPropertyControl::SetHeaderState(const String & headerName, bool newSta
     EditorSettings::Instance()->Save();
 }
 
-void NodesPropertyControl::OnSetDistancesForLodNodes(BaseObject * object, void * userData, void * callerData)
+void NodesPropertyControl::OnSetDistancesForLodNodes(BaseObject * , void * , void * )
 {
     SetChildLodDistances();
     for(int32 i = 0; i < (int32)childLodNodes.size(); ++i)
@@ -772,10 +776,6 @@ void NodesPropertyControl::OnSetDistancesForLodNodes(BaseObject * object, void *
         }
     }
 
-//    if(nodesDelegate)
-//    {
-//        nodesDelegate->NodesPropertyChanged();
-//    }
 }
 
 void NodesPropertyControl::SetChildLodDistances()
@@ -811,4 +811,32 @@ void NodesPropertyControl::RestoreChildLodDistances()
         }
     }
 }
+
+#if defined (DAVA_QT)
+void NodesPropertyControl::SetSize(const Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+    
+    Rect propertyRect(0, 0, newSize.x, newSize.y);
+    
+    if(!createNodeProperties)
+    {
+        propertyRect.dy -= ControlsFactory::BUTTON_HEIGHT;
+        
+        btnPlus->SetPosition(Vector2(0, propertyRect.dy));
+        btnMinus->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT, propertyRect.dy));
+		btnPlusCollision ->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT << 1, propertyRect.dy));
+
+        propControl->SetPosition(Vector2(0, newSize.y - ControlsFactory::BUTTON_HEIGHT*4));
+
+        listHolder->SetSize(propertyRect.GetSize());
+        
+
+        btnCancel->SetPosition(Vector2(0, propertyRect.dy - ControlsFactory::BUTTON_HEIGHT));
+    }
+
+    
+    propertyList->SetSize(propertyRect.GetSize());
+}
+#endif //#if defined (DAVA_QT)
 

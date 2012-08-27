@@ -15,8 +15,8 @@ ParticleLayer3D::ParticleLayer3D()
 	material = new Material();
 	material->SetType(Material::MATERIAL_VERTEX_COLOR_ALPHABLENDED);
 	material->SetAlphablend(true);
-	material->blendSrc = BLEND_SRC_ALPHA;
-	material->blendDst = BLEND_ONE;
+	material->SetBlendSrc(BLEND_SRC_ALPHA);
+	material->SetBlendDest(BLEND_ONE);
 }
 
 ParticleLayer3D::~ParticleLayer3D()
@@ -126,7 +126,10 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
 		renderData->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());
 		RenderManager::Instance()->SetRenderData(renderData);
 
+		RenderManager::Instance()->FlushState();
+		RenderManager::Instance()->AttachRenderData();
  		material->PrepareRenderState();
+
 
 		RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLELIST, 0, 6*totalCount);
 	}
@@ -138,13 +141,13 @@ void ParticleLayer3D::LoadFromYaml(YamlNode * node)
 
 	if(additive)
 	{
-		material->blendSrc = BLEND_SRC_ALPHA;
-		material->blendDst = BLEND_ONE;
+		material->SetBlendSrc(BLEND_SRC_ALPHA);
+		material->SetBlendDest(BLEND_ONE);
 	}
 	else
 	{
-		material->blendSrc = BLEND_SRC_ALPHA;
-		material->blendDst = BLEND_ONE_MINUS_SRC_ALPHA;
+		material->SetBlendSrc(BLEND_SRC_ALPHA);
+		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 }
 

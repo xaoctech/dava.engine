@@ -332,18 +332,21 @@ bool SceneFile::ReadMaterial()
     if (strlen(materialDef.diffuseTexture))
     {
         // TODO rethink how to deal with paths here.
-        mat->names[Material::TEXTURE_DIFFUSE] = scenePath + String(materialDef.diffuseTexture);
-        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
+//        mat->names[Material::TEXTURE_DIFFUSE] = scenePath + String(materialDef.diffuseTexture);
+//        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromFile(scenePath + String(materialDef.diffuseTexture));
+        
+        mat->SetTexture(Material::TEXTURE_DIFFUSE, scenePath + String(materialDef.diffuseTexture));
+        
     }
         
     String diffuseTextureName = "no texture"; 
-    if (mat->textures[Material::TEXTURE_DIFFUSE])
+    if (mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
         String tempPath;
-        FileSystem::SplitPath(mat->textures[Material::TEXTURE_DIFFUSE]->GetPathname(), tempPath, diffuseTextureName);
+        FileSystem::SplitPath(mat->GetTexture(Material::TEXTURE_DIFFUSE)->GetPathname(), tempPath, diffuseTextureName);
     }
     
-    if (!mat->textures[Material::TEXTURE_DIFFUSE])
+    if (!mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
         //Logger::Debug("*** error reading texture: %s\n", textureDef.name);
         uint8 * textureData = new uint8[8 * 8 * 4]; 
@@ -354,8 +357,10 @@ bool SceneFile::ReadMaterial()
             textureData[k + 2] = 0xFF; 
             textureData[k + 3] = 0xFF; 
         }
-        mat->textures[Material::TEXTURE_DIFFUSE] = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
-        mat->textures[Material::TEXTURE_DIFFUSE]->GenerateMipmaps();
+        Texture * texture = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
+        texture->GenerateMipmaps();
+        mat->SetTexture(Material::TEXTURE_DIFFUSE, texture);
+        
         SafeDeleteArray(textureData);
     }
 
@@ -368,8 +373,8 @@ bool SceneFile::ReadMaterial()
 
     for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
     {
-        if (mat->textures[k])
-            mat->textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        if (mat->GetTexture((Material::eTextureLevel)k))
+            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
     }
     
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
@@ -378,7 +383,7 @@ bool SceneFile::ReadMaterial()
 	mat->reflectivity = materialDef.reflectivity;
 	mat->transparency = materialDef.transparency;
 	mat->transparent = materialDef.transparent;
-    mat->SetOpaque(materialDef.hasOpacity);
+    mat->SetOpaque(materialDef.hasOpacity != 0);
 	
     // retain object when we put it to array
     materials.push_back(SafeRetain(mat));
@@ -658,7 +663,7 @@ bool SceneFile::ReadSceneNode(SceneNode * parentNode, int level)
 			sceneFP->Read(&polyGroupIndex, sizeof(int32));
 			sceneFP->Read(&materialIndex, sizeof(int32));
             
-            DVASSERT(materialIndex < materials.size());
+            DVASSERT(materialIndex < (int)materials.size());
 
 			if (debugLogEnabled)Logger::Debug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1), meshIndex, polyGroupIndex, materialIndex); 
 		

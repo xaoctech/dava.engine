@@ -6,7 +6,7 @@
 
 // ***************** PreviewCameraController *************** //
 PreviewCameraController::PreviewCameraController()
-    :   CameraController()
+    :   CameraController(35)
 {
     angleVertical = 0.f;
     angleHorizontal = 0.f;
@@ -181,15 +181,6 @@ void ScenePreviewControl::RecreateScene()
     }
     
     editorScene = new Scene();
-//    editorScene->RegisterLodLayer(0, 5);
-//    editorScene->RegisterLodLayer(3, 10);
-//    editorScene->RegisterLodLayer(7, 15);
-//    editorScene->RegisterLodLayer(13, 20);
-//    editorScene->RegisterLodLayer(17, 25);
-//    editorScene->RegisterLodLayer(23, 30);
-//    editorScene->RegisterLodLayer(27, 35);
-//    editorScene->RegisterLodLayer(33, 40);
-
     SetScene(editorScene);
     cameraController->SetScene(editorScene);
 }
@@ -299,7 +290,7 @@ void ScenePreviewControl::SetupCamera()
     Camera *camera = editorScene->GetCamera(0);
     if (camera)
     {
-        AABBox3 sceneBox = rootNode->GetWTMaximumBoundingBox();
+        AABBox3 sceneBox = rootNode->GetWTMaximumBoundingBoxSlow();
         Vector3 target = sceneBox.GetCenter();
         camera->SetTarget(target);
         Vector3 dir = (sceneBox.max - sceneBox.min); 

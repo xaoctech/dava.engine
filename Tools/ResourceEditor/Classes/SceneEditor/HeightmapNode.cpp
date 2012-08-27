@@ -215,6 +215,7 @@ void HeightmapNode::Draw()
 
         RenderManager::Instance()->SetRenderData(renderDataObject);
         RenderManager::Instance()->FlushState();
+		RenderManager::Instance()->AttachRenderData();
         RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
     }
     

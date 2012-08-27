@@ -30,7 +30,7 @@
 #ifndef __DAVAENGINE_OGLHELPERS_H__
 #define __DAVAENGINE_OGLHELPERS_H__
 
-//#define __ENABLE_OGL_DEBUG_BREAK__
+#define __ENABLE_OGL_DEBUG_BREAK__
 #if defined(__ENABLE_OGL_DEBUG_BREAK__)
 #include <signal.h>
 #define OGLDebugBreak() { kill( getpid(), SIGINT ) ; }
@@ -42,7 +42,7 @@
 namespace DAVA
 {
 
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || (defined(__DAVAENGINE_IPHONE__) && defined (__DAVAENGINE_DEBUG__))
 #define RENDER_VERIFY(command) \
 { \
 	if(!Thread::IsMainThread() && RenderManager::Instance()->GetNonMainLockCount() == 0)\
@@ -54,7 +54,6 @@ namespace DAVA
 	if (err != GL_NO_ERROR)\
     {  \
         Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", #command, __FILE__, __LINE__, err);\
-        OGLDebugBreak(); \
     }\
 }
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -71,6 +70,26 @@ namespace DAVA
 #else
 #define RENDER_VERIFY(command) command;  
 #endif //#if defined(__DAVAENGINE_WIN32__)
+    
+
+    
+// REDEFINED OPENGL FUNCTIONS
+    
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+#define glBindBuffer glBindBufferARB
+#define glGenBuffers glGenBuffersARB
+#define glDeleteBuffers glDeleteBuffersARB
+#define glBufferData glBufferDataARB
+
+#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+#define GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
+#define GL_STATIC_DRAW GL_STATIC_DRAW_ARB
+#define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
+    
+#endif
+    
+    
     
 };
 #endif // #if defined(__DAVAENGINE_OPENGL__)

@@ -46,6 +46,11 @@ RenderHelper::~RenderHelper()
     
 void RenderHelper::FillRect(const Rect & rect)
 {
+	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+	{
+		return;
+	}
+
     vertices[0] = rect.x;						
     vertices[1] = rect.y;
     vertices[2] = rect.x + rect.dx;

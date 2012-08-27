@@ -23,7 +23,7 @@ public:
 
 protected:
 
-    virtual const Rect DialogRect();
+    virtual const Rect GetDialogRect() const;
 
     UIButton *closeButtonTop;
     void OnCancel(BaseObject * owner, void * userData, void * callerData);

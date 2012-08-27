@@ -230,7 +230,7 @@ void TextureConverterDialog::EnumerateTexturesFromMaterials()
 				continue;
 			}
 
-            Texture *t = materials[iMat]->textures[iTex];
+            Texture *t = materials[iMat]->GetTexture((Material::eTextureLevel)iTex);
             CollectTexture(t);
         }
     }
@@ -286,7 +286,7 @@ void TextureConverterDialog::RestoreTexturesFromMaterials(Texture *t, const Stri
     {
         for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
         {
-            Texture *tex = materials[iMat]->textures[iTex];
+            Texture *tex = materials[iMat]->GetTexture((Material::eTextureLevel)iTex);
             if(t == tex)
             {
                 materials[iMat]->SetTexture((Material::eTextureLevel)iTex, newTexturePath);
@@ -664,7 +664,7 @@ String TextureConverterDialog::NormalizePath(const String &pathname)
         }
         else 
         {
-            if(i == tokens.size() - 1)
+            if(i == (int32)tokens.size() - 1)
             {
                 retString = tokens[i];
             }

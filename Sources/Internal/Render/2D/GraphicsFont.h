@@ -50,10 +50,13 @@ public:
 	virtual Size2i	GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL);
 	virtual bool	IsCharAvaliable(char16 ch);
 	virtual uint32	GetFontHeight();
+    virtual int32   GetHorizontalSpacing();
 	
 	virtual bool	IsTextSupportsHardwareRendering();
 	virtual Size2i	DrawString(float32 x, float32 y, const WideString & string, int32 justifyWidth = 0);
 	
+    virtual void    SetHorizontalSpacing(int32 horizontalSpacing);
+    
 	virtual Font	* Clone();
 
 	
@@ -62,7 +65,9 @@ protected:
 	virtual ~GraphicsFont();
 	
 	float32 GetDistanceFromAtoB(int32 aIndex, int32 bIndex);
-
+    
+	int32 horizontalSpacing;
+    
 	Sprite * fontSprite;
 	GraphicsFontDefinition * fdef;
 	float32 fontScaleCoeff;
@@ -108,7 +113,7 @@ public:
 	void AddKerningPair(KerningPair * kpair);
 	KerningPair * FindKerningPair(uint16 ch1Index, uint16 c2Index);
 	uint16 CharacterToIndex(char16 c);
-	
+    
 	static const uint16 INVALID_CHARACTER_INDEX = 0xffff;
 	
 	bool LoadFontDefinition(const String & fontDefName);

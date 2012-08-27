@@ -398,7 +398,7 @@ void SceneNode::UpdateTransformNow()
 
 void SceneNode::UpdateTransform()
 {
-	if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
+	//if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
 	{
 		if (parent)
 		{
@@ -442,12 +442,11 @@ void SceneNode::Draw()
 //		Matrix4 finalMatrix = worldTransform * prevMatrix;
 //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
 		
-		AABBox3 box = GetWTMaximumBoundingBox();
+		AABBox3 box = GetWTMaximumBoundingBoxSlow();
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
         RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 		RenderHelper::Instance()->DrawCornerBox(box);
-			RenderHelper::Instance()->DrawBox(box);
         RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
         RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
@@ -455,7 +454,7 @@ void SceneNode::Draw()
 
 	if (debugFlags & DEBUG_DRAW_RED_AABBOX)
 	{
-		AABBox3 box = GetWTMaximumBoundingBox();
+		AABBox3 box = GetWTMaximumBoundingBoxSlow();
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetState(RenderStateBlock::STATE_COLORMASK_ALL | RenderStateBlock::STATE_DEPTH_WRITE | RenderStateBlock::STATE_DEPTH_TEST); 
 		RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -585,13 +584,13 @@ bool SceneNode::FindNodesByNamePart(const String &namePart, List<SceneNode *> &o
     return isFind;
 }
 
-AABBox3 SceneNode::GetWTMaximumBoundingBox()
+AABBox3 SceneNode::GetWTMaximumBoundingBoxSlow()
 {
     AABBox3 retBBox;
     const Vector<SceneNode*>::iterator & itEnd = children.end();
 	for (Vector<SceneNode*>::iterator it = children.begin(); it != itEnd; ++it)
     {
-        AABBox3 box = (*it)->GetWTMaximumBoundingBox();
+        AABBox3 box = (*it)->GetWTMaximumBoundingBoxSlow();
         if(  (AABBOX_INFINITY != box.min.x && AABBOX_INFINITY != box.min.y && AABBOX_INFINITY != box.min.z)
            &&(-AABBOX_INFINITY != box.max.x && -AABBOX_INFINITY != box.max.y && -AABBOX_INFINITY != box.max.z))
         {

@@ -64,11 +64,20 @@
     <Filter Include="Sources\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\Graph">
-      <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt\Scene Data">
       <UniqueIdentifier>{2b0ff764-5b5d-43e7-a8cf-76ae700bff20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtBuildTool">
+      <UniqueIdentifier>{830edf1a-2cbf-4b69-866a-427e1fdfbbd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{a18c56f3-ac1d-43b8-beb8-0a5ea83a03e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\ScenePreviewDialog">
+      <UniqueIdentifier>{0513be28-848d-4ada-b8ce-5cbef00089d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Dock">
+      <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -213,9 +222,6 @@
     <ClCompile Include="Classes\BulletObject.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\davaglwidget.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\DebugNode.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -250,12 +256,6 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Classes\VertexOctTree.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="mainwindow.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
@@ -300,13 +300,7 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
@@ -486,14 +480,8 @@
     <ClInclude Include="Classes\Commands\FileCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\GUIActionHandler.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\FuckingErrorDialog.h">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtDefines.h">
-      <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandCreateNode.h">
       <Filter>Sources\Commands</Filter>
@@ -508,21 +496,12 @@
       <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\GraphItem.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\GraphModel.h">
-      <Filter>Sources\Qt\Graph</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\GraphTreeView.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClCompile Include="QtBuildTool\moc_davaglwidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QtBuildTool\moc_GraphTreeView.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QtBuildTool\moc_GuiActionHandler.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="QtBuildTool\moc_mainwindow.cpp">
@@ -886,10 +865,73 @@
       <Filter>Sources\Qt\Scene Data</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtUtils.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_GraphModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_SceneData.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_SceneGraphModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\davaglwidget.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp">
+      <Filter>Sources\Qt\ScenePreviewDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_FileSelectionModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
+      <Filter>Sources\Qt\Dock</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\LibraryModel.cpp">
+      <Filter>Sources\Qt\Dock</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_LibraryModel.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\moc_QtMainWindowHandler.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\ViewCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
+      <Filter>Sources\SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
+      <Filter>Sources\SceneEditor\Properties</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\PointerHolder.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -899,10 +941,33 @@
     <CustomBuild Include="mainwindow.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="QtBuildTool\mainwindow.build" />
-    <CustomBuild Include="QtBuildTool\davaglwidget.build" />
-    <CustomBuild Include="QtBuildTool\GraphTreeView.build" />
-    <CustomBuild Include="QtBuildTool\GUIActionHandler.build" />
+    <CustomBuild Include="QtBuildTool\davaglwidget.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\mainwindow.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\GraphModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\SceneData.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\SceneGraphModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtIcons.qrc">
+      <Filter>Resources</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\FileSelectionModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\LibraryModel.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtBuildTool\QtMainWindowHandler.build">
+      <Filter>QtBuildTool</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1058,9 +1123,6 @@
     <ClInclude Include="Classes\config.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\davaglwidget.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\DebugNode.h">
       <Filter>Sources</Filter>
     </ClInclude>
@@ -1095,9 +1157,6 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\VertexOctTree.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="mainwindow.h">
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.h">
@@ -1677,10 +1736,55 @@
       <Filter>Sources\Qt\Scene Data</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\SceneGraphModel.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\SceneGraphItem.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtUtils.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\SceneGraphCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\davaglwidget.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="mainwindow.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_davaglwidget.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\ScenePreviewDialog.h">
+      <Filter>Sources\Qt\ScenePreviewDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\LibraryCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\FileSelectionModel.h">
+      <Filter>Sources\Qt\Dock</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtMainWindowHandler.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\LibraryModel.h">
+      <Filter>Sources\Qt\Dock</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\ViewCommands.h">
+      <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h">
+      <Filter>Sources\SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
+      <Filter>Sources\SceneEditor\Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\PointerHolder.h">
+      <Filter>Sources\Qt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1723,13 +1827,7 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
@@ -1900,9 +1998,6 @@
     <ClCompile Include="Classes\Commands\FileCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\GUIActionHandler.cpp">
-      <Filter>Sources\Qt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\FuckingErrorDialog.cpp">
       <Filter>Sources\SceneEditor\Dialogs</Filter>
     </ClCompile>
@@ -1919,16 +2014,27 @@
       <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\GraphItem.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\GraphModel.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\GraphTreeView.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="Data\QtIcons\newscene.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\openproject.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\openscene.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\savescene.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Data\QtIcons\materialeditor.png">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

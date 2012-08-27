@@ -6,9 +6,8 @@
 HelpDialog::HelpDialog()
     :   ExtendedDialog()
 {
-    draggableDialog->SetRect(DialogRect());
-    
-    Rect rect = DialogRect();
+    Rect rect = GetDialogRect();
+    draggableDialog->SetRect(rect);
     
     float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
     float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
@@ -62,17 +61,17 @@ void HelpDialog::Show()
 }
 
 
-const Rect HelpDialog::DialogRect()
+const Rect HelpDialog::GetDialogRect() const
 {
     float32 width = 510.f;
     float32 height = 500.f;
-    float32 x = (GetRect().dx - width)/2.f;
-    float32 y = (GetRect().dy - height)/2.f;
+    float32 x = (GetScreenRect().dx - width)/2.f;
+    float32 y = (GetScreenRect().dy - height)/2.f;
     
     return Rect(x, y, width, height);
 }
 
-void HelpDialog::OnCancel(BaseObject * owner, void * userData, void * callerData)
+void HelpDialog::OnCancel(BaseObject *, void *, void *)
 {
     Close();
 }

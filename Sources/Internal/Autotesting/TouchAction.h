@@ -47,6 +47,8 @@ public:
     virtual ~TouchAction();
 
 protected:
+	virtual String Dump();
+
     void TouchDown(const Vector2 &point);
     void TouchDown(const Vector<String> &controlPath);
     void TouchUp();
@@ -66,6 +68,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     Vector2 point;
 };
 
@@ -78,6 +82,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     Vector<String> controlPath;
 };
 
@@ -100,9 +106,24 @@ public:
     virtual void Update(float32 timeElapsed);
 
 protected:
+	virtual String Dump();
     virtual bool TestCondition();
+
     Vector2 point;
     float32 moveTime;
+};
+
+class TouchMoveDirAction : public TouchMoveAction
+{
+public:
+    TouchMoveDirAction(const Vector2 &_direction, float32 _speed, float32 _moveTime, int32 _id);
+
+    virtual void Execute();
+protected:
+	virtual String Dump();
+
+    Vector2 direction;
+    float32 speed;
 };
 
 class TouchMoveControlAction : public TouchMoveAction
@@ -114,6 +135,8 @@ public:
 
     virtual void Execute();
 protected:
+	virtual String Dump();
+
     Vector<String> controlPath;
 };
 
@@ -127,6 +150,7 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual void Execute();
 protected:
+	virtual String Dump();
     virtual bool TestCondition();
     void FindScrollPoints();
 
@@ -139,6 +163,24 @@ protected:
 
     Vector<String> controlPath;
     int32 id;
+};
+
+class MultitouchAction : public Action
+{
+public:
+	MultitouchAction();
+	virtual ~MultitouchAction();
+
+	virtual void AddTouch(TouchAction *touchAction);
+
+	virtual void Update(float32 timeElapsed);
+	virtual void Execute();
+
+protected:
+	virtual String Dump();
+	virtual bool TestCondition();
+
+	Vector<TouchAction *> touchActions;
 };
 
 };

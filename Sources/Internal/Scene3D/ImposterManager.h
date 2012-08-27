@@ -56,13 +56,14 @@ public:
 	void AddToQueue(ImposterNode * node);
 	void RemoveFromQueue(ImposterNode * node);
 	void UpdateQueue(ImposterNode * node);
+    void ProcessQueue();
 
 private:
 	List<ImposterNode*> imposters;
 	List<ImposterNode*> queue;
 
 	
-	void ProcessQueue();
+	
 	void AddToPrioritizedPosition(ImposterNode * node);
 
 	SharedFBO * sharedFBO;

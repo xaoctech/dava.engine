@@ -3,12 +3,10 @@
 
 #include <QMainWindow>
 
-
 namespace Ui {
 class MainWindow;
 }
 
-class GUIActionHandler;
 class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,14 +17,23 @@ public:
     
 private:
     void SetupMainMenu();
+    
+	void SetupToolBar();
+	void DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename);
+
     void SetupProjectPath();
     void SetupDockWidgets();
-    
-private:
-    GUIActionHandler *actionHandler;
-    
+        
+private slots:
+
+    void MenuFileWillShow();
+	
+	//reference
+	void ApplyReferenceNodeSuffix();
+        
 private:
     Ui::MainWindow *ui;
 };
+
 
 #endif // MAINWINDOW_H
