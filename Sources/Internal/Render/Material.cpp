@@ -337,10 +337,32 @@ void Material::RetrieveTextureSlotNames()
 {
     // 
     //shader->F
-    
-    
+    textureSlotCount = 0;
+    for (int32  k = 0; k < shader->GetUniformCount(); ++k)
+    {
+        if (shader->GetUniformType(k) == Shader::UT_SAMPLER_2D)
+        {
+            textureSlotNames[textureSlotCount] = shader->GetUniformName(k);
+            textureSlotCount++;
+        }
+    }
 }
     
+uint32 Material::GetTextureSlotCount() const
+{
+    return textureSlotCount;
+}
+    
+const String & Material::GetTextureSlotName(uint32 index) const
+{
+    return textureSlotNames[index];
+}
+    
+uint32 Material::GetTextureSlotIndexByName(const String & string) const
+{
+    return -1;
+}
+
 void Material::SetType(eType _type)
 {
     type = _type;

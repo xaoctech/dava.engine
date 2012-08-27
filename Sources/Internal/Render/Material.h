@@ -189,9 +189,9 @@ public:
     
     //void SetTextureSlotName(uint32 index, const String & string);
 
-    uint32 GetTextureSlotCount();
-    uint32 GetTextureSlotName(uint32 index);
-    uint32 GetTextureSlotIndexByName(const String & string);
+    uint32 GetTextureSlotCount() const;
+    const String & GetTextureSlotName(uint32 index) const;
+    uint32 GetTextureSlotIndexByName(const String & string) const;
     
     
     void SetTexture(eTextureLevel level, Texture * texture);
@@ -218,6 +218,7 @@ private:
     Texture * textures[TEXTURE_COUNT];
     String names[TEXTURE_COUNT];
     String textureSlotNames[TEXTURE_COUNT];
+    uint32 textureSlotCount;
     
     Vector2 uvOffset;
 	Vector2 uvScale;
