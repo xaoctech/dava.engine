@@ -84,6 +84,17 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
         Logger::Error("Heightmap build from wrong formatted image: format = %d", image->format);
     }
 }
+
+void Heightmap::SaveToImage(const String & filename)
+{
+    Image * image = new Image();
+    image->Create(size, size, FORMAT_A16);
+    
+    Memcpy(image->data, data, size*size*sizeof(uint16));
+
+    image->Save(filename);
+    SafeRelease(image);
+}
   
 uint16 * Heightmap::Data()
 {
