@@ -225,6 +225,10 @@ public:
 	void CreateSystems();
 
 	EntityManager * entityManager;
+
+	void SetReferenceNodeSuffix(const String & suffix);
+	const String & GetReferenceNodeSuffix();
+	bool IsReferenceNodeSuffixChanged();
     
 protected:	
     
@@ -259,7 +263,8 @@ protected:
 	ImposterManager * imposterManager;
 	bool enableImposters;
 
-	
+	String referenceNodeSuffix;
+	bool referenceNodeSuffixChanged;
 
     friend class SceneNode;
 };
