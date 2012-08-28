@@ -175,6 +175,12 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->SetName("UserNode");
 			break;
 
+		case ResourceEditor::NODE_SWITCH_NODE:
+			SetHeader(LocalizedString(L"createnode.switchode"));
+			sceneNode = new SwitchNode();
+			sceneNode->SetName("SwitchNode");
+			break;
+
             
         default:
             break;

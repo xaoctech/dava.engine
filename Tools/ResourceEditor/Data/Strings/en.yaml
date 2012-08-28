@@ -90,6 +90,7 @@ createnode.imposter: "Create imposter"
 createnode.reference: "Create reference"
 createnode.lodnode: "Create lod node"
 createnode.usernode: "Create user node"
+createnode.switchnode: "Create switch node"
 createnode.particleemitter: "Create particle emitter"
 
 #Create Property Dialog

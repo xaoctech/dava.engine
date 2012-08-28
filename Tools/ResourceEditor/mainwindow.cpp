@@ -119,7 +119,8 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionCamera,
                                        ui->actionImposter,
                                        ui->actionParticleEmitter,
-                                       ui->actionUserNode
+                                       ui->actionUserNode,
+									   ui->actionSwitchNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
 

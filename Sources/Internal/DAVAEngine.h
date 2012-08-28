@@ -209,6 +209,7 @@
 #include "Scene3D/ImposterNode.h"
 #include "Scene3D/ParticleEmitterNode.h"
 #include "Scene3D/ReferenceNode.h"
+#include "Scene3D/SwitchNode.h"
 
 
 // Application core 

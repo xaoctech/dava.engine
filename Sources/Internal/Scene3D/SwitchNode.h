@@ -12,7 +12,7 @@ public:
 	SwitchNode();
 
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
-	virtual void Update();
+	virtual void Update(float32 timeElapsed);
 
 	void SetSwitchIndex(int32 switchIndex);
 
