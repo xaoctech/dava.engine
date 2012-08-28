@@ -25,7 +25,7 @@ void SwitchNode::SetSwitchIndex(int32 _switchIndex)
 	newSwitchIndex = _switchIndex;
 }
 
-void SwitchNode::Update()
+void SwitchNode::Update(float32 timeElapsed)
 {
 	if(oldSwitchIndex != newSwitchIndex)
 	{
@@ -37,6 +37,8 @@ void SwitchNode::Update()
 
 		oldSwitchIndex = newSwitchIndex;
 	}
+
+	SceneNode::Update(timeElapsed);
 }
 
 }
