@@ -75,6 +75,7 @@ Scene::Scene()
 	,	imposterManager(0)
 	,	enableImposters(true)
 	,	entityManager(0)
+	,	referenceNodeSuffixChanged(false)
 {   
 	bvHierarchy = new BVHierarchy();
 	bvHierarchy->ChangeScene(this);
@@ -449,6 +450,8 @@ void Scene::Update(float timeElapsed)
 	}
 	
 	SceneNode::Update(timeElapsed);
+
+	referenceNodeSuffixChanged = false;
 	
 	size = (int32)animatedMeshes.size();
 	for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
@@ -763,6 +766,22 @@ void Scene::EnableImposters(bool enable)
 bool Scene::IsImposterEnabled()
 {
 	return enableImposters;
+}
+
+void Scene::SetReferenceNodeSuffix(const String & suffix)
+{
+	referenceNodeSuffix = suffix;
+	referenceNodeSuffixChanged = true;
+}
+
+const String & Scene::GetReferenceNodeSuffix()
+{
+	return referenceNodeSuffix;
+}
+
+bool Scene::IsReferenceNodeSuffixChanged()
+{
+	return referenceNodeSuffixChanged;
 }
 
 

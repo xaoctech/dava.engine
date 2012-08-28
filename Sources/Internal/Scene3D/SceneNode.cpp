@@ -398,7 +398,7 @@ void SceneNode::UpdateTransformNow()
 
 void SceneNode::UpdateTransform()
 {
-	if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
+	//if (!(flags & NODE_WORLD_MATRIX_ACTUAL))  
 	{
 		if (parent)
 		{
