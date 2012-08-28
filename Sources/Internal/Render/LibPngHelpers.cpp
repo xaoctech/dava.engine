@@ -352,7 +352,7 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
         sig_bit.blue = 0;
         
         sig_bit.gray = 8;
-        sig_bit.alpha = 8;
+        sig_bit.alpha = 0;
     }
     else if(FORMAT_A16 == format)
     {
@@ -361,7 +361,7 @@ void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 heigh
         sig_bit.blue = 0;
         
         sig_bit.gray = 16;
-        sig_bit.alpha = 8;
+        sig_bit.alpha = 0;
     }
     else 
     {
