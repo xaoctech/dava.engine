@@ -164,6 +164,12 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
 
 		 propertyList->AddBoolProperty("Used in static lighting");
 		 propertyList->SetBoolPropertyValue("Used in static lighting", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.used", true));
+
+		 propertyList->AddBoolProperty("Cast shadows");
+		 propertyList->SetBoolPropertyValue("Cast shadows", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.castshadows", true));
+
+		 propertyList->AddBoolProperty("Receive shadows");
+		 propertyList->SetBoolPropertyValue("Receive shadows", sceneNode->GetCustomProperties()->GetBool("editor.staticlight.receiveshadows", true));
 	}
     
     
@@ -482,6 +488,14 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
         {
             customProperties->SetBool("editor.staticlight.used", newValue);
         }
+		else if("Cast shadows" == forKey)
+		{
+			customProperties->SetBool("editor.staticlight.castshadows", newValue);
+		}
+		else if("Receive shadows" == forKey)
+		{
+			customProperties->SetBool("editor.staticlight.receiveshadows", newValue);
+		}
         else if("property.lodnode.forcedistance" == forKey)
         {
             float32 forceDistance = (newValue)  ? propertyList->GetSliderPropertyValue("property.lodnode.distanceslider")
