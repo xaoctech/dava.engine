@@ -716,6 +716,9 @@
     <ClCompile Include="Classes\bullet\LinearMath\btSerializer.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp">
+      <Filter>SceneEditor\Properties</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\AppScreens.h" />
@@ -1669,6 +1672,9 @@
     </ClInclude>
     <ClInclude Include="Classes\bullet\Bullet-C-Api.h">
       <Filter>Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h">
+      <Filter>SceneEditor\Properties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
