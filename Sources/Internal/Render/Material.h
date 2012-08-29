@@ -120,6 +120,9 @@ public:
 	void SetAlphablend(bool isAlphablend);
 	bool GetAlphablend();
     
+    void SetWireframe(bool isWireframe);
+    bool GetWireframe();
+    
     void SetFog(bool _fogEnabled);
     bool IsFogEnabled() const;
     void SetFogDensity(float32 _fogDensity);
@@ -246,6 +249,8 @@ private:
     Color   fogColor;
 
 	bool isAlphablend;
+    
+    bool isWireframe;
     
     Shader  * shader;
     

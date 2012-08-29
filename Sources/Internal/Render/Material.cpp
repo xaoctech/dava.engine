@@ -125,6 +125,7 @@ Material::Material()
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
 	,	renderStateBlock(RenderManager::Instance()->GetRenderer())
+    ,   isWireframe(false)
 {
 	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
 
@@ -700,15 +701,22 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
         }
     }
     
+    ePrimitiveType primitiveType = PRIMITIVETYPE_TRIANGLELIST;
+    if(isWireframe)
+    {
+        primitiveType = PRIMITIVETYPE_LINELIST;
+    }
+
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
-	}
-	else
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
-	}
+    {
+        RenderManager::Instance()->HWDrawElements(primitiveType, group->indexCount, EIF_16, 0);
+    }
+    else
+    {
+        RenderManager::Instance()->HWDrawElements(primitiveType, group->indexCount, EIF_16, group->indexArray);
+    }
+
     
 	//RenderManager::Instance()->SetTexture(0, 1); 
 	//RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
@@ -784,5 +792,14 @@ RenderStateBlock * Material::GetRenderStateBlock()
 	return &renderStateBlock;
 }
 
+void Material::SetWireframe(bool _isWireframe)
+{
+    isWireframe = _isWireframe;
+}
+    
+bool Material::GetWireframe()
+{
+    return isWireframe;
+}
 
 };
