@@ -581,6 +581,10 @@ void Material::PrepareRenderState()
 	{
 		renderStateBlock.SetFillMode(FILLMODE_WIREFRAME);
 	}
+	else
+	{
+		renderStateBlock.SetFillMode(FILLMODE_SOLID);
+	}
 
 	// render
 	RenderManager::Instance()->FlushState(&renderStateBlock);
