@@ -933,6 +933,9 @@
     <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp">
+      <Filter>Sources\SceneEditor\Properties</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1785,6 +1788,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\PointerHolder.h">
       <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h">
+      <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
