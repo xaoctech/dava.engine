@@ -13,8 +13,9 @@ public:
 
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 	virtual void Update(float32 timeElapsed);
-
 	virtual void AddNode(SceneNode * node);
+	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
+	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2);
 
 	void SetSwitchIndex(int32 switchIndex);
 	int32 GetSwitchIndex();

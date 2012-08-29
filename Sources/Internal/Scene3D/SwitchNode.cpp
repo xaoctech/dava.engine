@@ -1,4 +1,5 @@
 #include "Scene3D/SwitchNode.h"
+#include "FileSystem/KeyedArchive.h"
 
 namespace DAVA
 {
@@ -58,6 +59,21 @@ void SwitchNode::AddNode(SceneNode * node)
 void SwitchNode::ReapplySwitch()
 {
 	oldSwitchIndex = -1;
+}
+
+void SwitchNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+{
+	SceneNode::Save(archive, sceneFileV2);
+
+	archive->SetInt32("switchIndex", newSwitchIndex);
+}
+
+void SwitchNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFileV2)
+{
+	SceneNode::Load(archive, sceneFileV2);
+
+	int32 loadedSwitchIndex = archive->GetInt32("switchIndex");
+	SetSwitchIndex(loadedSwitchIndex);
 }
 
 }
