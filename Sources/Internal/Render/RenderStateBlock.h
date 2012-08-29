@@ -280,13 +280,14 @@ public:
     uint32 state;
     //mutable uint32 changeSet;
     
-    Color color;
-    eBlendMode sourceFactor, destFactor;
-    eFace cullMode;
-    eCmpFunc alphaFunc;
-    uint8    alphaFuncCmpValue;
-	eCmpFunc depthFunc;
-	Rect scissorRect;
+    Color		color;
+    eBlendMode	sourceFactor, destFactor;
+    eFace		cullMode;
+    eCmpFunc	alphaFunc;
+    uint8		alphaFuncCmpValue;
+	eCmpFunc	depthFunc;
+	Rect		scissorRect;
+	eFillMode	fillMode;
 
 	struct StencilState
 	{
@@ -342,6 +343,9 @@ public:
 	//SCISSOR
 	inline void SetScissorRect(const Rect & rect);
 
+	//FILL
+	inline void SetFillMode(eFillMode fillMode);
+
 	inline void SetEnableBlendingInHW() const;
 	inline void SetTextureLevelInHW(uint32 textureLevel) const;
 	inline void SetBlendModeInHW() const;
@@ -367,6 +371,8 @@ public:
 
 	inline void SetScissorTestInHW() const;
 	inline void SetScissorRectInHW() const;
+
+	inline void SetFillModeInHW() const;
     
     /**
         Function to reset state to original zero state.
@@ -487,6 +493,11 @@ inline void RenderStateBlock::SetScissorRect(const Rect & rect)
 		scissorRect = rect;
 		//changeSet |= STATE_CHANGED_SCISSOR_RECT;
 	}
+}
+
+inline void RenderStateBlock::SetFillMode(eFillMode _fillMode)
+{
+	fillMode = _fillMode;
 }
     
 inline eBlendMode RenderStateBlock::GetSrcBlend()
