@@ -319,7 +319,7 @@ enum eFillMode
 
 	FILLMODE_COUNT
 };
-#if defined(__DAVAENGINE_OPENGL__)
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined (__DAVAENGINE__WIN32__))
 static const GLint FILLMODE_MAP[FILLMODE_COUNT] = 
 {
 	GL_POINT,

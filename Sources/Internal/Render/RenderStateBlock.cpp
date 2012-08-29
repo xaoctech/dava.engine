@@ -599,7 +599,9 @@ inline void RenderStateBlock::SetScissorRectInHW() const
 
 inline void RenderStateBlock::SetFillModeInHW() const
 {
+#if defined(__DAVAENGINE_MACOS__) || defined (__DAVAENGINE__WIN32__)
 	RENDER_VERIFY(glPolygonMode(GL_FRONT_AND_BACK, FILLMODE_MAP[fillMode]));
+#endif
 }
 
 inline void RenderStateBlock::SetStencilRefInHW() const
