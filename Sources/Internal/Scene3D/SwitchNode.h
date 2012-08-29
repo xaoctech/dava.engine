@@ -14,11 +14,16 @@ public:
 	virtual SceneNode* Clone(SceneNode *dstNode = NULL);
 	virtual void Update(float32 timeElapsed);
 
+	virtual void AddNode(SceneNode * node);
+
 	void SetSwitchIndex(int32 switchIndex);
+	int32 GetSwitchIndex();
 
 private:
 	int32 oldSwitchIndex;
 	int32 newSwitchIndex;
+
+	void ReapplySwitch();
 };
 
 };

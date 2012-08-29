@@ -3,6 +3,8 @@
 namespace DAVA
 {
 
+REGISTER_CLASS(SwitchNode);
+
 SwitchNode::SwitchNode()
 :	oldSwitchIndex(0),
 	newSwitchIndex(0)
@@ -25,6 +27,11 @@ void SwitchNode::SetSwitchIndex(int32 _switchIndex)
 	newSwitchIndex = _switchIndex;
 }
 
+int32 SwitchNode::GetSwitchIndex()
+{
+	return newSwitchIndex;
+}
+
 void SwitchNode::Update(float32 timeElapsed)
 {
 	if(oldSwitchIndex != newSwitchIndex)
@@ -39,6 +46,18 @@ void SwitchNode::Update(float32 timeElapsed)
 	}
 
 	SceneNode::Update(timeElapsed);
+}
+
+void SwitchNode::AddNode(SceneNode * node)
+{
+	SceneNode::AddNode(node);
+
+	ReapplySwitch();
+}
+
+void SwitchNode::ReapplySwitch()
+{
+	oldSwitchIndex = -1;
 }
 
 }

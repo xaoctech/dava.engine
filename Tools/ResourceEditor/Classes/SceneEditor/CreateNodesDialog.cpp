@@ -153,12 +153,6 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			sceneNode->SetName("Imposter");
 			break;
 
-		case ResourceEditor::NODE_REFERENCE:
-			SetHeader(LocalizedString(L"createnode.reference"));
-			sceneNode = new ReferenceNode();
-			sceneNode->SetName("Reference");
-			break;
-
 		case ResourceEditor::NODE_PARTICLE_EMITTER:
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
@@ -176,7 +170,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			break;
 
 		case ResourceEditor::NODE_SWITCH_NODE:
-			SetHeader(LocalizedString(L"createnode.switchode"));
+			SetHeader(LocalizedString(L"createnode.switchnode"));
 			sceneNode = new SwitchNode();
 			sceneNode->SetName("SwitchNode");
 			break;
