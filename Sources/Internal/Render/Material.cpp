@@ -577,6 +577,11 @@ void Material::PrepareRenderState()
 		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 
+	if(isWireframe)
+	{
+		renderStateBlock.SetFillMode(FILLMODE_WIREFRAME);
+	}
+
 	// render
 	RenderManager::Instance()->FlushState(&renderStateBlock);
 	RenderManager::Instance()->AttachRenderData();
@@ -700,21 +705,15 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
             }
         }
     }
-    
-    ePrimitiveType primitiveType = PRIMITIVETYPE_TRIANGLELIST;
-    if(isWireframe)
-    {
-        primitiveType = PRIMITIVETYPE_LINELIST;
-    }
 
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
     {
-        RenderManager::Instance()->HWDrawElements(primitiveType, group->indexCount, EIF_16, 0);
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
     }
     else
     {
-        RenderManager::Instance()->HWDrawElements(primitiveType, group->indexCount, EIF_16, group->indexArray);
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
     }
 
     

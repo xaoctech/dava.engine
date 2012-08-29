@@ -75,6 +75,7 @@ void RenderStateBlock::Reset(bool doHardwareReset)
     shader = 0;
     cullMode = FACE_BACK;
 	scissorRect = Rect(0, 0, 0, 0);
+	fillMode = FILLMODE_SOLID;
     
     if (doHardwareReset)
     {
@@ -228,6 +229,12 @@ void RenderStateBlock::Flush(RenderStateBlock * hardwareState) const
             hardwareState->scissorRect = scissorRect;
         }
         
+		if(hardwareState->fillMode != fillMode)
+		{
+			SetFillModeInHW();
+			hardwareState->fillMode = fillMode;
+		}
+
         //if (changeSet & STATE_CHANGED_TEXTURE0)
 		if (currentTexture[0] != hardwareState->currentTexture[0])	
 		{
@@ -590,6 +597,11 @@ inline void RenderStateBlock::SetScissorRectInHW() const
 	RENDER_VERIFY(glScissor(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy));
 }
 
+inline void RenderStateBlock::SetFillModeInHW() const
+{
+	RENDER_VERIFY(glPolygonMode(GL_FRONT_AND_BACK, FILLMODE_MAP[fillMode]));
+}
+
 inline void RenderStateBlock::SetStencilRefInHW() const
 {
 }
@@ -787,6 +799,8 @@ inline void RenderStateBlock::SetStencilZFailInHW()
 inline void RenderStateBlock::SetStencilOpInHW()
 {
 }
+
+
 
 #endif 
     
