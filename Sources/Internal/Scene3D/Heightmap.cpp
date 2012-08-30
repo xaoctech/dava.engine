@@ -65,15 +65,24 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
         data = new uint16[size * size];
     }
 
-    uint16 *dstData = data;
-    uint8 *srcData = image->data;
     
     if(FORMAT_A16 == image->format)
     {
-        Memcpy(dstData, srcData, size*size*sizeof(uint16));
+        uint16 *dstData = data;
+        uint16 *srcData = (uint16*)image->data;
+        for(int32 i = size*size - 1; i >= 0; --i)
+        {
+            uint16 packed = *srcData++;
+            uint16 unpacked = ((packed & 0xFF) << 8) | ((packed & 0xFF00) >> 8);
+            
+            *dstData++ = unpacked;
+        }
     }
     else if(FORMAT_A8 == image->format)
     {
+        uint16 *dstData = data;
+        uint8 *srcData = image->data;
+
         for(int32 i = size*size - 1; i >= 0; --i)
         {
             *dstData++ = *srcData++ * IMAGE_CORRECTION;
@@ -83,6 +92,24 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
     {
         Logger::Error("Heightmap build from wrong formatted image: format = %d", image->format);
     }
+}
+
+void Heightmap::SaveToImage(const String & filename)
+{
+    Image * image = image->Create(size, size, FORMAT_A16);
+    
+    uint16 * unpackedBytes = new uint16[size * size];
+
+    for (int32 k = 0; k < size * size; ++k)
+    {
+        unpackedBytes[k] = ((data[k] & 0xFF) << 8) | ((data[k] & 0xFF00) >> 8);
+    }
+    Memcpy(image->data, unpackedBytes, size*size*sizeof(uint16));
+
+    SafeDeleteArray(unpackedBytes);
+    
+    image->Save(filename);
+    SafeRelease(image);
 }
   
 uint16 * Heightmap::Data()

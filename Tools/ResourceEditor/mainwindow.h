@@ -27,6 +27,9 @@ private:
 private slots:
 
     void MenuFileWillShow();
+	
+	//reference
+	void ApplyReferenceNodeSuffix();
         
 private:
     Ui::MainWindow *ui;

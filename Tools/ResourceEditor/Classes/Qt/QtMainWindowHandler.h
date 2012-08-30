@@ -65,6 +65,8 @@ public slots:
     
     //scene graph
     void RefreshSceneGraph();
+
+	
     
 private:
     //create node

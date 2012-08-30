@@ -11,6 +11,9 @@
 
 #include <QToolBar>
 
+#include "../SceneEditor/SceneEditorScreenMain.h"
+#include "../SceneEditor/EditorBodyControl.h"
+
 
 QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
@@ -83,11 +86,13 @@ void QtMainWindow::SetupMainMenu()
     QAction *actionEntities = ui->dockEntities->toggleViewAction();
     QAction *actionProperties = ui->dockProperties->toggleViewAction();
     QAction *actionLibrary = ui->dockLibrary->toggleViewAction();
+	QAction *actionReferences = ui->dockReferences->toggleViewAction();
     QAction *actionToolBar = ui->mainToolBar->toggleViewAction();
     ui->menuView->insertAction(ui->actionRestoreViews, actionToolBar);
     ui->menuView->insertAction(actionToolBar, actionLibrary);
     ui->menuView->insertAction(actionLibrary, actionProperties);
-    ui->menuView->insertAction(actionProperties, actionEntities);
+	ui->menuView->insertAction(actionProperties, actionReferences);
+    ui->menuView->insertAction(actionReferences, actionEntities);
     ui->menuView->insertAction(actionEntities, actionDataGraph);
     ui->menuView->insertAction(actionDataGraph, actionSceneGraph);
     ui->menuView->insertSeparator(ui->actionRestoreViews);
@@ -95,12 +100,13 @@ void QtMainWindow::SetupMainMenu()
     ui->menuView->insertSeparator(actionProperties);
     actionHandler->RegisterDockActions(ResourceEditor::HIDABLEWIDGET_COUNT,
                                        actionSceneGraph, actionDataGraph, actionEntities,
-                                       actionProperties, actionLibrary, actionToolBar);
+                                       actionProperties, actionLibrary, actionToolBar, actionReferences);
 
 
     ui->dockDataGraph->hide();
     ui->dockEntities->hide();
     ui->dockProperties->hide();
+	//ui->dockReferences->hide();
     
     
     //CreateNode
@@ -113,7 +119,8 @@ void QtMainWindow::SetupMainMenu()
                                        ui->actionCamera,
                                        ui->actionImposter,
                                        ui->actionParticleEmitter,
-                                       ui->actionUserNode
+                                       ui->actionUserNode,
+									   ui->actionSwitchNode
                                        );
     connect(ui->menuCreateNode, SIGNAL(triggered(QAction *)), actionHandler, SLOT(CreateNodeTriggered(QAction *)));
 
@@ -138,8 +145,10 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionIPad,
                                            ui->actionDefault
                                        );
-    
-    
+
+	//Reference
+	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
+ 
 }
 
 void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &iconFilename)
@@ -192,5 +201,17 @@ void QtMainWindow::MenuFileWillShow()
 {
     QtMainWindowHandler::Instance()->SetResentMenu(ui->menuResentScenes);
     QtMainWindowHandler::Instance()->MenuFileWillShow();
+}
+
+void QtMainWindow::ApplyReferenceNodeSuffix()
+{
+	QString qStr = ui->referenceSuffixEdit->text();
+	QByteArray array = qStr.toLatin1();
+	char * chars = array.data();
+	String str(chars);
+
+	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	Scene * scene = screen->FindCurrentBody()->bodyControl->GetScene();
+	scene->SetReferenceNodeSuffix(str);
 }
 

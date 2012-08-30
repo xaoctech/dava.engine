@@ -128,3 +128,15 @@ void CommandConvertScene::Execute()
     
     SafeRelease(scene);
 }
+
+CommandAddReferenceScene::CommandAddReferenceScene(const DAVA::String &pathname)
+:   LibraryCommand(pathname, Command::COMMAND_UNDO_REDO)
+{
+
+}
+
+void CommandAddReferenceScene::Execute()
+{
+	SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+	sceneData->AddReferenceScene(filePathname);
+}

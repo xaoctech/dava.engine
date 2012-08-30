@@ -397,6 +397,7 @@
     <ClCompile Include="Classes\SceneEditor\SceneValidator.cpp" />
     <ClCompile Include="Classes\SceneEditor\SettingsDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp" />
+    <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureConverterCell.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureConverterDialog.cpp" />
     <ClCompile Include="Classes\SceneEditor\TextureFormatDialog.cpp" />
@@ -765,6 +766,7 @@
     <ClInclude Include="Classes\SceneEditor\SceneValidator.h" />
     <ClInclude Include="Classes\SceneEditor\SettingsDialog.h" />
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h" />
+    <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h" />
     <ClInclude Include="Classes\SceneEditor\TextureConverterCell.h" />
     <ClInclude Include="Classes\SceneEditor\TextureConverterDialog.h" />
     <ClInclude Include="Classes\SceneEditor\TextureFormatDialog.h" />
