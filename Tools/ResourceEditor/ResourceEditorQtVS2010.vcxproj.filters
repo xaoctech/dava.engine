@@ -64,9 +64,6 @@
     <Filter Include="Sources\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\Graph">
-      <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Qt\Scene Data">
       <UniqueIdentifier>{2b0ff764-5b5d-43e7-a8cf-76ae700bff20}</UniqueIdentifier>
     </Filter>
@@ -78,6 +75,9 @@
     </Filter>
     <Filter Include="Sources\Qt\ScenePreviewDialog">
       <UniqueIdentifier>{0513be28-848d-4ada-b8ce-5cbef00089d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\Dock">
+      <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -496,10 +496,10 @@
       <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\GraphItem.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\GraphModel.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClCompile Include="QtBuildTool\moc_davaglwidget.cpp">
       <Filter>Generated Files</Filter>
@@ -865,10 +865,10 @@
       <Filter>Sources\Qt\Scene Data</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtUtils.cpp">
       <Filter>Sources\Qt</Filter>
@@ -904,13 +904,13 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\LibraryModel.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="QtBuildTool\moc_LibraryModel.cpp">
       <Filter>Generated Files</Filter>
@@ -932,6 +932,9 @@
     </ClCompile>
     <ClCompile Include="QtBuildTool\qrc_QtIcons.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp">
+      <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1736,10 +1739,10 @@
       <Filter>Sources\Qt\Scene Data</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\SceneGraphModel.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\SceneGraphItem.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtUtils.h">
       <Filter>Sources\Qt</Filter>
@@ -1766,13 +1769,13 @@
       <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\FileSelectionModel.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtMainWindowHandler.h">
       <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\LibraryModel.h">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ViewCommands.h">
       <Filter>Sources\Commands</Filter>
@@ -1785,6 +1788,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\PointerHolder.h">
       <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h">
+      <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2014,10 +2020,10 @@
       <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\GraphItem.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\GraphModel.cpp">
-      <Filter>Sources\Qt\Graph</Filter>
+      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

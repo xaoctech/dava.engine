@@ -11,6 +11,7 @@
 #include "EntityPropertyControl.h"
 #include "Entity/Entity.h"
 #include "ParticleEmitterPropertyControl.h"
+#include "SwitchNodePropertyControl.h"
 
 
 PropertyControlCreator::PropertyControlCreator()
@@ -78,6 +79,12 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(SceneNode * 
 	if(particleEmitterNode)
 	{
 		return CreateControlForNode(EPCID_PARTICLE_EMITTER, rect, createNodeProperties);
+	}
+
+	SwitchNode * switchNode = dynamic_cast<SwitchNode*>(sceneNode);
+	if(switchNode)
+	{
+		return CreateControlForNode(EPCID_SWITCH, rect, createNodeProperties);
 	}
 
 	return CreateControlForNode(EPCID_NODE, rect, createNodeProperties);
@@ -149,6 +156,9 @@ NodesPropertyControl * PropertyControlCreator::CreateControlForNode(
 				break;
 			case EPCID_PARTICLE_EMITTER:
 				controls[controlID] = new ParticleEmitterPropertyControl(rect, createNodeProperties);
+				break;
+			case EPCID_SWITCH:
+				controls[controlID] = new SwitchNodePropertyControl(rect, createNodeProperties);
 				break;
                 
             default:

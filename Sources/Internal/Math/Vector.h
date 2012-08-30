@@ -141,9 +141,12 @@ public:
 	
 	//! Additional functions
 	inline Vector3	CrossProduct(const Vector3 & _v) const;
-	inline void CrossProduct( const Vector3& v1, const Vector3& v2 );
+	inline void     CrossProduct(const Vector3& v1, const Vector3& v2);
 	inline float32	DotProduct(const Vector3 & _v) const;
 	inline void		Lerp(const Vector3 & _v1, const Vector3 & _v2, float32 t);
+
+    inline float32 Yaw() const { return atan2f(x, y); }
+    inline float32 Pitch() const { return -atan2f(z, sqrtf(x*x + y*y)); }
 
 	//! On functions
 	inline float32 SquareLength()  const;

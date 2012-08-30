@@ -265,6 +265,7 @@ TouchMoveAction::TouchMoveAction(const Vector2 &_point, float32 _moveTime, int32
     , moveTime(_moveTime)
 {
 }
+
 TouchMoveAction::~TouchMoveAction()
 {
 }
@@ -310,6 +311,26 @@ void TouchMoveAction::Update(float32 timeElapsed)
 bool TouchMoveAction::TestCondition()
 {
     return (moveTime <= 0.0f);
+}
+
+//----------------------------------------------------------------------
+
+TouchMoveDirAction::TouchMoveDirAction(const Vector2 &_direction, float32 _speed, float32 _moveTime, int32 _id) : TouchMoveAction(Vector2(), _moveTime, _id)
+    , direction(_direction)
+    , speed(_speed)
+{
+}
+
+void TouchMoveDirAction::Execute()
+{
+	point = AutotestingSystem::Instance()->GetMousePosition() + speed*moveTime*direction;
+    TouchMoveAction::Execute();
+}
+
+String TouchMoveDirAction::Dump()
+{
+	String baseStr = TouchAction::Dump();
+	return Format("%s direction=(%.2f, %.2f) time=%.2f speed=%.2f", baseStr.c_str(), direction.x, direction.y, moveTime, speed);
 }
 
 //----------------------------------------------------------------------
@@ -532,6 +553,67 @@ void ScrollControlAction::FindScrollPoints()
     }
 }
 
-};
+MultitouchAction::MultitouchAction() : Action()
+{
+}
+
+MultitouchAction::~MultitouchAction()
+{
+	for_each(touchActions.begin(), touchActions.end(), SafeRelease<TouchAction>);
+	touchActions.clear();
+}
+
+void MultitouchAction::AddTouch(TouchAction *touchAction)
+{
+	if(touchAction)
+	{
+		Logger::Debug("MultitouchAction::AddTouch %s", touchAction->GetName().c_str());
+		touchAction->Retain();
+		touchActions.push_back(touchAction);
+	}
+}
+
+void MultitouchAction::Update(float32 timeElapsed)
+{
+	int32 touchActionsCount = touchActions.size();
+	for(int32 i = 0; i < touchActionsCount; ++i)
+	{
+		if(!touchActions[i]->IsExecuted())
+		{
+			touchActions[i]->Update(timeElapsed);
+		}
+	}
+	Action::Update(timeElapsed);
+}
+
+void MultitouchAction::Execute()
+{
+	int32 touchActionsCount = touchActions.size();
+	for(int32 i = 0; i < touchActionsCount; ++i)
+	{
+		touchActions[i]->Execute();
+	}
+	Action::Execute();
+}
+
+String MultitouchAction::Dump()
+{
+	return Action::Dump(); //TODO: get detailed info
+}
+
+bool MultitouchAction::TestCondition()
+{
+	int32 touchActionsCount = touchActions.size();
+	for(int32 i = 0; i < touchActionsCount; ++i)
+	{
+		if(!touchActions[i]->IsExecuted())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+}; // namespace DAVA
 
 #endif //__DAVAENGINE_AUTOTESTING__

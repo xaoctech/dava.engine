@@ -125,6 +125,7 @@ Material::Material()
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
 	,	renderStateBlock(RenderManager::Instance()->GetRenderer())
+    ,   isWireframe(false)
 {
 	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
 
@@ -598,6 +599,15 @@ void Material::PrepareRenderState()
 		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 
+	if(isWireframe)
+	{
+		renderStateBlock.SetFillMode(FILLMODE_WIREFRAME);
+	}
+	else
+	{
+		renderStateBlock.SetFillMode(FILLMODE_SOLID);
+	}
+
 	// render
 	RenderManager::Instance()->FlushState(&renderStateBlock);
 	RenderManager::Instance()->AttachRenderData();
@@ -721,16 +731,17 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
             }
         }
     }
-    
+
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
-	}
-	else
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
-	}
+    {
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+    }
+    else
+    {
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+    }
+
     
 	//RenderManager::Instance()->SetTexture(0, 1); 
 	//RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
@@ -806,5 +817,14 @@ RenderStateBlock * Material::GetRenderStateBlock()
 	return &renderStateBlock;
 }
 
+void Material::SetWireframe(bool _isWireframe)
+{
+    isWireframe = _isWireframe;
+}
+    
+bool Material::GetWireframe()
+{
+    return isWireframe;
+}
 
 };

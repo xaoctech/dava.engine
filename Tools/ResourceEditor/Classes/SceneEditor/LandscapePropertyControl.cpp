@@ -2,6 +2,7 @@
 #include "EditorSettings.h"
 #include "SceneValidator.h"
 #include "ControlsFactory.h"
+#include "Scene3D/Heightmap.h"
 
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
@@ -57,6 +58,10 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     AddFilepathProperty(String("property.landscape.texture.tiledtexture"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE_FULL);
     propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"), 
                                      Message(this, &LandscapePropertyControl::GenerateFullTiledTexture));
+
+    propertyList->AddMessageProperty(String("property.landscape.saveheightmaptopng"),
+                                     Message(this, &LandscapePropertyControl::SaveHeightmapToPng));
+
 
     propertyList->AddSubsection("property.landscape.subsection.build_mask");
     propertyList->AddFilepathProperty("property.landscape.lightmap", String(".png;.pvr"), true, PropertyList::PROPERTY_IS_EDITABLE);
@@ -366,4 +371,13 @@ void LandscapePropertyControl::GenerateFullTiledTexture(DAVA::BaseObject *object
     
     propertyList->SetFilepathPropertyValue(String("property.landscape.texture.tiledtexture"), texPathname);
     landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, texPathname);
+}
+
+void LandscapePropertyControl::SaveHeightmapToPng(DAVA::BaseObject *object, void *userData, void *callerData)
+{
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+    Heightmap * heightmap = landscape->GetHeightmap();
+    String heightmapPath = landscape->GetHeightmapPathname();
+    heightmapPath = FileSystem::ReplaceExtension(heightmapPath, ".png");
+    heightmap->SaveToImage(heightmapPath);
 }

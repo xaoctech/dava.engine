@@ -104,9 +104,14 @@ public:
 
     void TouchUp(int32 id = 1);
 
+	void TouchMove(const Vector2 &direction, float32 speed, float32 time, int32 id = 1);
+
     void TouchMove(const Vector2 &point, float32 time, int32 id = 1);
     void TouchMove(const String &controlName, float32 time, int32 id = 1);
     void TouchMove(const Vector<String> &controlPath, float32 time, int32 id = 1);
+
+	void BeginMultitouch();
+	void EndMultitouch();
 
     void KeyPress(char16 keyChar);
     void KeyboardInput(const WideString &text);
@@ -149,6 +154,8 @@ protected:
 
     bool isInit;
     bool isRunning;
+
+	MultitouchAction* parsingMultitouch;
 
     Action* currentAction;
     Deque<Action*> actions;
