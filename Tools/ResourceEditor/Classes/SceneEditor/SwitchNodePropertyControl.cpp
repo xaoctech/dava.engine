@@ -1,4 +1,4 @@
-#include "SceneEditor/SwitchNodePropertyControl.h"
+#include "SwitchNodePropertyControl.h"
 
 SwitchNodePropertyControl::SwitchNodePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
