@@ -144,6 +144,8 @@ void Action::ProcessInput(const UIEvent &input)
 
 UIControl* Action::FindControl(const Vector<String>& controlPath)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     UIControl* control = NULL;
     if(UIScreenManager::Instance()->GetScreen() && (!controlPath.empty()))
     {
@@ -160,6 +162,8 @@ UIControl* Action::FindControl(const Vector<String>& controlPath)
 
 UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcControl)
     {
         int32 index = atoi(controlName.c_str());
@@ -187,6 +191,8 @@ UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
 
 UIControl* Action::FindControl(UIControl* srcControl, int32 index)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcControl)
     {
         const List<UIControl*> children = srcControl->GetChildren();
@@ -205,6 +211,8 @@ UIControl* Action::FindControl(UIControl* srcControl, int32 index)
 
 UIControl* Action::FindControl(UIList* srcList, int32 index)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcList)
     {
         const List<UIControl*> &cells = srcList->GetVisibleCells();
@@ -366,7 +374,7 @@ bool WaitForUIAction::TestCondition()
 {
     if(WaitAction::TestCondition())
     {
-        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", controlPath.back().c_str()));
+        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", PathToString(controlPath).c_str()));
         return true;
     }
     return (FindControl(controlPath) != NULL);
