@@ -170,9 +170,13 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			break;
 
 		case ResourceEditor::NODE_SWITCH_NODE:
+		{
 			SetHeader(LocalizedString(L"createnode.switchnode"));
 			sceneNode = new SwitchNode();
 			sceneNode->SetName("SwitchNode");
+			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+			customProperties->SetBool("editor.isSolid", false);
+		}
 			break;
 
             
