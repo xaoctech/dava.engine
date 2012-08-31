@@ -270,7 +270,7 @@ void SceneExporter::ExportMeshLightmaps(Scene *scene, Set<String> &errorLog)
 
 bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &errorLog)
 {
-    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
+		//    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
 
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
     
@@ -301,7 +301,7 @@ bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &
 
 String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
 {
-    Logger::Debug("[ExportTexture] %s", texturePathname.c_str());
+		//    Logger::Debug("[ExportTexture] %s", texturePathname.c_str());
     
     //TODO: return at format will be enabled
     String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
