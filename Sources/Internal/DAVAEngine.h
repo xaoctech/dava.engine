@@ -192,6 +192,11 @@
 #include "Render/3D/PolygonGroup.h"
 #include "Render/3D/EdgeAdjacency.h"
 
+// Material compiler
+#include "Render/Material/MaterialCompiler.h"
+#include "Render/Material/MaterialGraph.h"
+#include "Render/Material/MaterialGraphNode.h"
+
 // 3D scene management
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneNode.h"
