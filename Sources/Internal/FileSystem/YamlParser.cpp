@@ -189,7 +189,7 @@ Vector<YamlNode*> & YamlNode::AsVector()
 	return objectArray;
 }
 
-Map<String, YamlNode*> & YamlNode::AsMap()
+std::multimap<String, YamlNode*> & YamlNode::AsMap()
 {
 	return objectMap;
 }
@@ -346,13 +346,13 @@ bool YamlParser::Parse(const String & pathName)
 						if (mapKey == 0)mapKey = node;
 						else
 						{
-							if (topContainer->Get(mapKey->nwStringValue))
-							{
-								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-							}
+//							if (topContainer->Get(mapKey->nwStringValue))
+//							{
+//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
+//							}
 							
 							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap[mapKey->nwStringValue] = node;
+							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
 							topContainer->objectArray.push_back(SafeRetain(node)); // duplicate in array
 							SafeRelease(mapKey);
 						}
@@ -403,13 +403,13 @@ bool YamlParser::Parse(const String & pathName)
 //							String s = String(mapKey->stringValue.begin(), mapKey->stringValue.end());
 //							printf("put to map: %s\n", s.c_str());
 							
-							if (topContainer->Get(mapKey->nwStringValue))
-							{
-								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-							}
+//							if (topContainer->Get(mapKey->nwStringValue))
+//							{
+//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
+//							}
 							
 							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap[mapKey->nwStringValue] = node;
+							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
 							topContainer->objectArray.push_back(SafeRetain(node));
 							SafeRelease(mapKey);
 						}
@@ -448,13 +448,13 @@ bool YamlParser::Parse(const String & pathName)
 							//String s = String(mapKey->stringValue.begin(), mapKey->stringValue.end());
 //							printf("put to map: %s\n", s.c_str());
 
-							if (topContainer->Get(mapKey->nwStringValue))
-							{
-								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-							}
+//							if (topContainer->Get(mapKey->nwStringValue))
+//							{
+//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
+//							}
 							
 							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap[mapKey->nwStringValue] = node;
+							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
 							node->stringValue = mapKey->stringValue;
 							node->nwStringValue = mapKey->nwStringValue;
 							topContainer->objectArray.push_back(SafeRetain(node));
