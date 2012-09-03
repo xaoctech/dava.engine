@@ -28,6 +28,8 @@ class PropertyControlCreator: public Singleton<PropertyControlCreator>
 
 		EPCID_ENTITY,
 		EPCID_PARTICLE_EMITTER,
+
+		EPCID_SWITCH,
         
         EPCID_COUNT
     };

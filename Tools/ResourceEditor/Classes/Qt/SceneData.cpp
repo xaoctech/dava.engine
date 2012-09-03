@@ -279,6 +279,60 @@ void SceneData::EditScene(const String &scenePathname)
     SceneValidator::Instance()->EnumerateSceneTextures();
 }
 
+void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
+{
+	String extension = FileSystem::Instance()->GetExtension(scenePathname);
+	DVASSERT((".sc2" == extension) && "Wrong file extension.");
+
+	SceneNode * rootNode = scene->GetRootNode(scenePathname);
+
+	DVASSERT(rootNode->GetChildrenCount() == 1);
+	ReferenceNode * refNode = new ReferenceNode();
+	SceneNode * clone = rootNode->GetChild(0)->Clone();
+	refNode->AddNode(clone);
+	refNode->SetName(rootNode->GetName());
+	SafeRelease(clone);
+
+	KeyedArchive * customProperties = refNode->GetCustomProperties();
+	customProperties->SetString("reference.path", scenePathname);
+
+	refNode->SetSolid(true);
+	scene->AddNode(refNode);
+
+	Camera *currCamera = scene->GetCurrentCamera();
+	if(currCamera)
+	{
+		Vector3 pos = currCamera->GetPosition();
+		Vector3 direction  = currCamera->GetDirection();
+
+		Vector3 nodePos = pos + 10 * direction;
+		nodePos.z = 0;
+
+		LandscapeNode * ls = scene->GetLandScape(scene);
+		if(ls)
+		{
+			Vector3 result;
+			bool res = ls->PlacePoint(nodePos, result);
+			if(res)
+			{
+				nodePos = result;
+			}
+		}
+
+		Matrix4 mod;
+		mod.CreateTranslation(nodePos);
+		refNode->SetLocalTransform(refNode->GetLocalTransform() * mod);
+	}
+	SafeRelease(refNode);
+
+	//TODO: need selection?
+	//    SelectNode(scene->GetSelection());
+
+	RebuildSceneGraph();
+	SceneValidator::Instance()->ValidateScene(scene);
+	SceneValidator::Instance()->EnumerateSceneTextures();
+}
+
 void SceneData::SetScenePathname(const String &newPathname)
 {
     sceneFilePathname = newPathname;
@@ -334,10 +388,12 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
         {
             QAction *addAction = menu.addAction(QString("Add"));
             QAction *editAction = menu.addAction(QString("Edit"));
+			QAction *referenceAction = menu.addAction(QString("Add reference"));
             QAction *reloadAction = menu.addAction(QString("Reload"));
             
             addAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddScene(filePathname)));
             editAction->setData(PointerHolder<Command *>::ToQVariant(new CommandEditScene(filePathname)));
+			referenceAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddReferenceScene(filePathname)));
             reloadAction->setData(PointerHolder<Command *>::ToQVariant(new CommandReloadScene(filePathname)));
         }
         else if(0 == CompareStrings(String(".dae"), extension))
@@ -575,3 +631,5 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
     connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
     menu.exec(point);
 }
+
+

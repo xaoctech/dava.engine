@@ -32,19 +32,39 @@ void Action::Update(float32 timeElapsed)
     if(!isExecuted)
     {
         isExecuted = TestCondition();
+
+		//TODO: use ifdef for this debug feature?
+		if(isExecuted)
+		{
+			DebugLog("EXECUTED", true);
+		}
     }
 }
 
 void Action::Execute()
 {
+	DebugLog("EXECUTE", true);
+
     isExecuted = TestCondition();
 
 	//TODO: use ifdef for this debug feature?
 	if(isExecuted)
 	{
-		String logMsg = Dump();
-		logMsg = Format("EXECUTED %s", logMsg.c_str());
+		DebugLog("EXECUTED", true);
+	}
+}
+
+void Action::DebugLog(const String &prefix, bool toAutotestingSystem)
+{
+	String logMsg = Dump();
+	logMsg = Format("%s %s", prefix.c_str(), logMsg.c_str());
+	if(toAutotestingSystem)
+	{
 		AutotestingSystem::Instance()->OnMessage(logMsg);
+	}
+	else
+	{
+		Logger::Debug("Action::DebugLog %s", logMsg.c_str());
 	}
 }
 
@@ -124,6 +144,8 @@ void Action::ProcessInput(const UIEvent &input)
 
 UIControl* Action::FindControl(const Vector<String>& controlPath)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     UIControl* control = NULL;
     if(UIScreenManager::Instance()->GetScreen() && (!controlPath.empty()))
     {
@@ -140,6 +162,8 @@ UIControl* Action::FindControl(const Vector<String>& controlPath)
 
 UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcControl)
     {
         int32 index = atoi(controlName.c_str());
@@ -167,6 +191,8 @@ UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
 
 UIControl* Action::FindControl(UIControl* srcControl, int32 index)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcControl)
     {
         const List<UIControl*> children = srcControl->GetChildren();
@@ -185,6 +211,8 @@ UIControl* Action::FindControl(UIControl* srcControl, int32 index)
 
 UIControl* Action::FindControl(UIList* srcList, int32 index)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcList)
     {
         const List<UIControl*> &cells = srcList->GetVisibleCells();
@@ -323,6 +351,39 @@ String WaitAction::Dump()
 
 //----------------------------------------------------------------------
 
+WaitForScreenAction::WaitForScreenAction(const String &_screenName, float32 timeout) : WaitAction(timeout)
+	, screenName(_screenName)
+{
+}
+
+WaitForScreenAction::~WaitForScreenAction()
+{
+}
+
+void WaitForScreenAction::Execute()
+{
+    WaitAction::Execute();
+}
+
+bool WaitForScreenAction::TestCondition()
+{
+    if(WaitAction::TestCondition())
+    {
+        AutotestingSystem::Instance()->OnError(Format("WaitForScreenAction %s timeout", screenName.c_str()));
+        return true;
+    }
+	return (UIScreenManager::Instance()->GetScreen()->GetName() == screenName);
+}
+
+String WaitForScreenAction::Dump()
+{
+	String baseStr = WaitAction::Dump();
+	return Format("%s screenName=%s", baseStr.c_str(), screenName.c_str());
+}
+
+
+//----------------------------------------------------------------------
+
 WaitForUIAction::WaitForUIAction(const String &_controlName, float32 timeout) : WaitAction(timeout)
 {
     controlPath.push_back(_controlName);
@@ -346,7 +407,7 @@ bool WaitForUIAction::TestCondition()
 {
     if(WaitAction::TestCondition())
     {
-        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", controlPath.back().c_str()));
+        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", PathToString(controlPath).c_str()));
         return true;
     }
     return (FindControl(controlPath) != NULL);

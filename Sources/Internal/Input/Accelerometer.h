@@ -37,7 +37,6 @@
 
 namespace DAVA
 {
-	
 #define DEFAULT_UPDATE_RATE 1.0f / 10.0f
 
 /**
@@ -46,8 +45,7 @@ namespace DAVA
 /**
 	\ingroup input
 	\brief Accelerometer access. Available only on devices that have accelerometer. 
- */
-	
+ */	
 class Accelerometer : public Singleton<Accelerometer>
 {
 	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
@@ -57,7 +55,6 @@ public:
 		EVENT_ACCELLEROMETER_DATA = 1,
 	};
 	
-	
 	Accelerometer();
 	virtual ~Accelerometer();
 	
@@ -65,19 +62,18 @@ public:
 	 Always return true for iPhone, but not supported by PSP & Nintendo DS
 	 By default if nothing provided by platform layer this function return false
 	 */
-	virtual bool	IsSupportedByHW() {return false; };
+	virtual bool IsSupportedByHW() { return false; }
 	/*
 	 
 	*/
-	virtual const Vector3 & GetAccelerationData() {return accelerationData; }
+	virtual const Vector3 & GetAccelerationData() { return accelerationData; }
 
 	virtual void Enable(float32 updateRate = DEFAULT_UPDATE_RATE){}
 	virtual void Disable(){}
+    virtual bool IsEnabled() const { return false; }
 
 protected:	
 	Vector3 accelerationData;
 };
-		
 };
-
 #endif // __DAVAENGINE_ACCELEROMETER_H__

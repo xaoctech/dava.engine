@@ -205,6 +205,7 @@
 		D979C678149A133200FA98C0 /* SceneNodeUserData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C677149A133200FA98C0 /* SceneNodeUserData.cpp */; };
 		D979C67B149A138300FA98C0 /* BulletObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C67A149A138300FA98C0 /* BulletObject.cpp */; };
 		D979C7AC149A31EC00FA98C0 /* DebugNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */; };
+		D9D89FC515EF63C6001B6329 /* SwitchNodePropertyControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9D89FC315EF63C6001B6329 /* SwitchNodePropertyControl.cpp */; };
 		EA9D6B5A149A86080012E1FB /* BeastProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA9D6B58149A86080012E1FB /* BeastProxy.cpp */; };
 		FE1AE2E21455B51F00C6F712 /* VertexOctTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE1AE2E01455B51F00C6F712 /* VertexOctTree.cpp */; };
 		FE1B7D5113DF052300BA032C /* CameraController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE1B7D5013DF052300BA032C /* CameraController.cpp */; };
@@ -781,6 +782,8 @@
 		D979C67A149A138300FA98C0 /* BulletObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BulletObject.cpp; path = Classes/BulletObject.cpp; sourceTree = SOURCE_ROOT; };
 		D979C7AA149A31EC00FA98C0 /* DebugNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugNode.h; path = Classes/DebugNode.h; sourceTree = SOURCE_ROOT; };
 		D979C7AB149A31EC00FA98C0 /* DebugNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugNode.cpp; path = Classes/DebugNode.cpp; sourceTree = SOURCE_ROOT; };
+		D9D89FC315EF63C6001B6329 /* SwitchNodePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchNodePropertyControl.cpp; path = Classes/SceneEditor/SwitchNodePropertyControl.cpp; sourceTree = "<group>"; };
+		D9D89FC415EF63C6001B6329 /* SwitchNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchNodePropertyControl.h; path = Classes/SceneEditor/SwitchNodePropertyControl.h; sourceTree = "<group>"; };
 		D9E3958D14C4727900975626 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = Classes/config.h; sourceTree = "<group>"; };
 		EA9D6B58149A86080012E1FB /* BeastProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeastProxy.cpp; path = Classes/BeastProxy.cpp; sourceTree = "<group>"; };
 		EA9D6B59149A86080012E1FB /* BeastProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeastProxy.h; path = Classes/BeastProxy.h; sourceTree = "<group>"; };
@@ -1623,6 +1626,8 @@
 		FE445A961153C27800F5EFD6 /* User classes */ = {
 			isa = PBXGroup;
 			children = (
+				D9D89FC315EF63C6001B6329 /* SwitchNodePropertyControl.cpp */,
+				D9D89FC415EF63C6001B6329 /* SwitchNodePropertyControl.h */,
 				5C2F106B15BD67A100E3C8F9 /* Constants.h */,
 				5CECF988151476D600FFAE80 /* LightmapsPacker.cpp */,
 				5CECF989151476D600FFAE80 /* LightmapsPacker.h */,
@@ -2152,6 +2157,7 @@
 				5C57507715C94D600015537A /* btGeometryUtil.cpp in Sources */,
 				5C57507815C94D600015537A /* btQuickprof.cpp in Sources */,
 				5C57507915C94D600015537A /* btSerializer.cpp in Sources */,
+				D9D89FC515EF63C6001B6329 /* SwitchNodePropertyControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

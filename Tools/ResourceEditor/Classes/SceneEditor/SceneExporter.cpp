@@ -191,19 +191,19 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
         Material *m = materials[i];
         if (m->GetName().find("editor.") == String::npos)
         {
-			if (m->textures[Material::TEXTURE_DIFFUSE])
+			if (m->GetTexture(Material::TEXTURE_DIFFUSE))
 			{
-				if (!m->textures[Material::TEXTURE_DIFFUSE]->relativePathname.empty()) 
+				if (!m->GetTexture(Material::TEXTURE_DIFFUSE)->relativePathname.empty())
 				{
-                    m->names[Material::TEXTURE_DIFFUSE] = ExportTexture(m->names[Material::TEXTURE_DIFFUSE], errorLog);
+                    m->SetTexture(Material::TEXTURE_DIFFUSE, ExportTexture(m->GetTextureName(Material::TEXTURE_DIFFUSE), errorLog));
 				}
 			}
             
-			if (m->textures[Material::TEXTURE_DECAL])
+			if (m->GetTexture(Material::TEXTURE_DECAL))
 			{
-				if (!m->textures[Material::TEXTURE_DECAL]->relativePathname.empty()) 
+				if (!m->GetTexture(Material::TEXTURE_DECAL)->relativePathname.empty())
 				{
-                    m->names[Material::TEXTURE_DECAL] = ExportTexture(m->names[Material::TEXTURE_DECAL], errorLog);
+                    m->SetTexture(Material::TEXTURE_DECAL, ExportTexture(m->GetTextureName(Material::TEXTURE_DECAL), errorLog));
 				}
 			}
         }
@@ -270,7 +270,7 @@ void SceneExporter::ExportMeshLightmaps(Scene *scene, Set<String> &errorLog)
 
 bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &errorLog)
 {
-    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
+		//    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
 
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
     
@@ -301,7 +301,7 @@ bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &
 
 String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
 {
-    Logger::Debug("[ExportTexture] %s", texturePathname.c_str());
+		//    Logger::Debug("[ExportTexture] %s", texturePathname.c_str());
     
     //TODO: return at format will be enabled
     String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);

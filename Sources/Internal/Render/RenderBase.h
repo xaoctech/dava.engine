@@ -310,6 +310,30 @@ static const int32 STENCIL_OP_MAP[STENCILOP_COUNT] =
 	D3DSTENCILOP_INVERT
 };
 #endif
+
+enum eFillMode
+{
+	FILLMODE_POINT,
+	FILLMODE_WIREFRAME,
+	FILLMODE_SOLID,
+
+	FILLMODE_COUNT
+};
+#if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__))
+static const GLint FILLMODE_MAP[FILLMODE_COUNT] = 
+{
+	GL_POINT,
+	GL_LINE,
+	GL_FILL
+};
+#elif defined(__DAVAENGINE_DIRECTX9__) 
+static const int32 FILLMODE_MAP[FILLMODE_COUNT] = 
+{
+	D3DFILL_POINT,
+	D3DFILL_WIREFRAME,
+	D3DFILL_SOLID
+};
+#endif
     
 enum ePrimitiveType
 {
