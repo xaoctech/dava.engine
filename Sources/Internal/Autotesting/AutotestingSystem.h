@@ -121,6 +121,8 @@ public:
     
     void Wait(float32 time);
 
+	void WaitForScreen(const String &screenName, float32 timeout = 10.0f);
+
     void WaitForUI(const String &controlName, float32 timeout = 10.0f);
     void WaitForUI(const Vector<String> &controlPath, float32 timeout = 10.0f);
 
