@@ -36,7 +36,6 @@
 #ifdef __DAVAENGINE_IPHONE__
 namespace DAVA
 {
-	
 class AccelerometeriPhoneImpl : public Accelerometer
 {
 	IMPLEMENT_EVENT_DISPATCHER(eventDispatcher);
@@ -47,6 +46,8 @@ public:
 	
 	virtual void Enable(float32 updateRate);
 	virtual void Disable();
+    virtual bool IsEnabled() const;
+    
 	void SetAccelerationData(float x, float y, float z);
 	EventDispatcher * GetEventDispatcher();
 };		

@@ -674,12 +674,6 @@ WideString SceneEditorScreenMain::MenuItemText(int32 menuID, int32 itemID)
 					break;
 				}
 
-				case ResourceEditor::NODE_REFERENCE:
-				{
-					text = LocalizedString(L"menu.createnode.reference");
-					break;
-				}
-                    
 				case ResourceEditor::NODE_PARTICLE_EMITTER:
 				{
 					text = LocalizedString(L"menu.createnode.particleemitter");

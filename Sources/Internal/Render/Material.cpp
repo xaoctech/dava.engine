@@ -125,6 +125,7 @@ Material::Material()
 	,	blendSrc(BLEND_ONE)
 	,	blendDst(BLEND_ONE)
 	,	renderStateBlock(RenderManager::Instance()->GetRenderer())
+    ,   isWireframe(false)
 {
 	renderStateBlock.state = RenderStateBlock::DEFAULT_3D_STATE;
 
@@ -290,8 +291,8 @@ void Material::RebuildShader()
         case MATERIAL_UNLIT_TEXTURE_DETAIL:
             uniformTexture0 = shader->FindUniformLocationByName("texture0");
             uniformTexture1 = shader->FindUniformLocationByName("texture1");
-			uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
-			uniformUvScale = shader->FindUniformLocationByName("uvScale");
+            uniformUvOffset = shader->FindUniformLocationByName("uvOffset");
+            uniformUvScale = shader->FindUniformLocationByName("uvScale");
             
             break;
         case MATERIAL_VERTEX_LIT_TEXTURE:
@@ -329,6 +330,16 @@ void Material::RebuildShader()
         uniformFogDensity = shader->FindUniformLocationByName("fogDensity");
         uniformFogColor = shader->FindUniformLocationByName("fogColor");
     }
+    
+    RetrieveTextureSlotNames();
+}
+    
+void Material::RetrieveTextureSlotNames()
+{
+    // 
+    //shader->F
+    
+    
 }
     
 void Material::SetType(eType _type)
@@ -566,6 +577,15 @@ void Material::PrepareRenderState()
 		renderStateBlock.state &= ~RenderStateBlock::STATE_BLEND;
 	}
 
+	if(isWireframe)
+	{
+		renderStateBlock.SetFillMode(FILLMODE_WIREFRAME);
+	}
+	else
+	{
+		renderStateBlock.SetFillMode(FILLMODE_SOLID);
+	}
+
 	// render
 	RenderManager::Instance()->FlushState(&renderStateBlock);
 	RenderManager::Instance()->AttachRenderData();
@@ -689,16 +709,17 @@ void Material::Draw(PolygonGroup * group, InstanceMaterialState * instanceMateri
             }
         }
     }
-    
+
     // TODO: rethink this code
     if (group->renderDataObject->GetIndexBufferID() != 0)
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
-	}
-	else
-	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
-	}
+    {
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, 0);
+    }
+    else
+    {
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, group->indexCount, EIF_16, group->indexArray);
+    }
+
     
 	//RenderManager::Instance()->SetTexture(0, 1); 
 	//RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_3D_STATE);
@@ -729,6 +750,15 @@ void Material::SetSetupLightmapSize(int32 _setupLightmapSize)
 	setupLightmapSize = _setupLightmapSize;
 }
     
+void Material::SetTexture(eTextureLevel level, Texture * texture)
+{
+    if (texture == textures[level])return;
+    
+    SafeRelease(textures[level]);
+    names[level] = "";
+    textures[level] = SafeRetain(texture);
+}
+
 void Material::SetTexture(eTextureLevel level, const String & textureName)
 {
     SafeRelease(textures[level]);
@@ -765,5 +795,14 @@ RenderStateBlock * Material::GetRenderStateBlock()
 	return &renderStateBlock;
 }
 
+void Material::SetWireframe(bool _isWireframe)
+{
+    isWireframe = _isWireframe;
+}
+    
+bool Material::GetWireframe()
+{
+    return isWireframe;
+}
 
 };

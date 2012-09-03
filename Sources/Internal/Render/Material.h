@@ -120,6 +120,9 @@ public:
 	void SetAlphablend(bool isAlphablend);
 	bool GetAlphablend();
     
+    void SetWireframe(bool isWireframe);
+    bool GetWireframe();
+    
     void SetFog(bool _fogEnabled);
     bool IsFogEnabled() const;
     void SetFogDensity(float32 _fogDensity);
@@ -172,11 +175,6 @@ public:
 	float	transparency; 
 	float	indexOfRefraction;
 
-	Vector2 uvOffset;
-	Vector2 uvScale;
-
-	eBlendMode blendSrc;
-	eBlendMode blendDst;
 
     enum eTextureLevel
     {
@@ -186,21 +184,51 @@ public:
         TEXTURE_DECAL = 1,
         
         TEXTURE_COUNT, 
-    };
-    Texture * textures[TEXTURE_COUNT];  
-    String names[TEXTURE_COUNT];
-    
+    };    
 
     void Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile);
     
+    
+    //void SetTextureSlotName(uint32 index, const String & string);
+
+    uint32 GetTextureSlotCount();
+    uint32 GetTextureSlotName(uint32 index);
+    uint32 GetTextureSlotIndexByName(const String & string);
+    
+    
+    void SetTexture(eTextureLevel level, Texture * texture);
     void SetTexture(eTextureLevel level, const String & textureName);
-	inline const Texture * GetTexture(eTextureLevel level);
-	inline const String & GetTextureName(eTextureLevel level);
+	inline Texture * GetTexture(eTextureLevel level) const;
+	inline const String & GetTextureName(eTextureLevel level) const;
 
 	RenderStateBlock * GetRenderStateBlock();
     
+    inline void SetUvOffset(const Vector2 & uvOffset);
+    inline void SetUvScale(const Vector2 & uvScale);
+    inline const Vector2 & GetUvOffset() const;
+    inline const Vector2 & GetUvScale() const;
+    
+    inline void SetBlendSrc(eBlendMode _blendSrc);
+    inline void SetBlendDest(eBlendMode _blendDest);
+    inline eBlendMode GetBlendSrc() const;
+    inline eBlendMode GetBlendDest() const;
+    
 private:
+    void RetrieveTextureSlotNames();
+    
+    
+    Texture * textures[TEXTURE_COUNT];
+    String names[TEXTURE_COUNT];
+    String textureSlotNames[TEXTURE_COUNT];
+    
+    Vector2 uvOffset;
+	Vector2 uvScale;
+
+	eBlendMode blendSrc;
+	eBlendMode blendDst;
+
+
     void RebuildShader();
     
     bool    isOpaque;  
@@ -221,6 +249,8 @@ private:
     Color   fogColor;
 
 	bool isAlphablend;
+    
+    bool isWireframe;
     
     Shader  * shader;
     
@@ -250,16 +280,51 @@ private:
     static UberShader * uberShader;
 };
 
-const Texture * Material::GetTexture(eTextureLevel level)
+Texture * Material::GetTexture(eTextureLevel level) const
 {
-	DVASSERT(level >= TEXTURE_COUNT);
+	DVASSERT(level < TEXTURE_COUNT);
 	return textures[level];
 }
 
-inline const String & Material::GetTextureName(eTextureLevel level)
+inline const String & Material::GetTextureName(eTextureLevel level) const
 {
-	DVASSERT(level >= TEXTURE_COUNT);
+	DVASSERT(level < TEXTURE_COUNT);
 	return names[level];
+}
+    
+inline void Material::SetUvOffset(const Vector2 & _uvOffset)
+{
+    uvOffset = _uvOffset;
+}
+
+inline void Material::SetUvScale(const Vector2 & _uvScale)
+{
+    uvScale = _uvScale;
+}
+inline const Vector2 & Material::GetUvOffset() const
+{
+    return uvOffset;
+}
+inline const Vector2 & Material::GetUvScale() const
+{
+    return uvScale;
+}
+
+inline void Material::SetBlendSrc(eBlendMode _blendSrc)
+{
+    blendSrc = _blendSrc;
+}
+inline void Material::SetBlendDest(eBlendMode _blendDest)
+{
+    blendDst = _blendDest;
+}
+inline eBlendMode Material::GetBlendSrc() const
+{
+    return blendSrc;
+}
+inline eBlendMode Material::GetBlendDest() const
+{
+    return blendDst;
 }
 
 };

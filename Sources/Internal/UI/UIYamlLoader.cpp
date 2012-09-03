@@ -238,6 +238,12 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const String & yamlPathn
             {
                 font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
             }
+            
+            YamlNode * fontHorizontalSpacingNode = node->Get("horizontalSpacing");
+            if(fontHorizontalSpacingNode)
+            {
+                font->SetHorizontalSpacing(fontHorizontalSpacingNode->AsInt());
+            }
 
 			fontMap[t->first] = font;
 		}

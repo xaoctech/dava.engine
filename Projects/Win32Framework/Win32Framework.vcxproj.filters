@@ -1110,6 +1110,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ReferenceNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h">
+      <Filter>Internal\Scene3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1911,6 +1914,9 @@
       <Filter>Internal\Platform\Qt</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ReferenceNode.cpp">
+      <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
   </ItemGroup>

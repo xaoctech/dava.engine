@@ -105,6 +105,8 @@
 		C7DE597D157F8CA10045CA41 /* TouchAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DE5973157F8CA10045CA41 /* TouchAction.cpp */; };
 		C7DE597E157F8CA10045CA41 /* TouchAction.h in Headers */ = {isa = PBXBuildFile; fileRef = C7DE5974157F8CA10045CA41 /* TouchAction.h */; };
 		C7F60A8D159B07C100A57634 /* MongodbUpdateObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */; };
+		CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFF221115EE10E400363446 /* SwitchNode.cpp */; };
+		CCFF221415EE10E400363446 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFF221215EE10E400363446 /* SwitchNode.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EA29C3401446EF270049FD7A /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		ED2F52F4158A4B0D009E0EC7 /* Component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED2F52DC158A4B0D009E0EC7 /* Component.cpp */; };
@@ -683,6 +685,8 @@
 		C7DE5974157F8CA10045CA41 /* TouchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAction.h; sourceTree = "<group>"; };
 		C7F60A7B159B022200A57634 /* MongodbUpdateObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MongodbUpdateObject.h; sourceTree = "<group>"; };
 		C7F60A8C159B07C100A57634 /* MongodbUpdateObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MongodbUpdateObject.cpp; sourceTree = "<group>"; };
+		CCFF221115EE10E400363446 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
+		CCFF221215EE10E400363446 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EA29C33F1446EF270049FD7A /* libfreetype_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_macos.a; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -1789,6 +1793,8 @@
 		FECFC1A012E87E3000C71562 /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
+				CCFF221115EE10E400363446 /* SwitchNode.cpp */,
+				CCFF221215EE10E400363446 /* SwitchNode.h */,
 				C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */,
 				C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */,
 				5CD7158215AC454A00D08E8E /* ParticleEmitterNode.cpp */,
@@ -2296,6 +2302,7 @@
 				5C19F49815A42D920064E889 /* KeyedUnarchiver.h in Headers */,
 				5CBF71CE15C6DFCB00CD1736 /* RenderOptions.h in Headers */,
 				C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */,
+				CCFF221415EE10E400363446 /* SwitchNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2621,6 +2628,7 @@
 				5C8E672B15A58CA400A87103 /* FileSystemObjective.mm in Sources */,
 				5CBF71CD15C6DFCB00CD1736 /* RenderOptions.cpp in Sources */,
 				C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */,
+				CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
