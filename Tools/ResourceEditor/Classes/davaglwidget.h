@@ -19,6 +19,8 @@ public:
     
     virtual void Quit();
 
+	virtual QPaintEngine *paintEngine() const;
+
     
 protected:
 
@@ -42,6 +44,11 @@ protected slots:
     
     void FpsTimerDone();
     
+private:
+
+	void InitFrameTimer();
+	void DisableWidgetBlinking();
+
 private:
 
     QTimer *fpsTimer;
