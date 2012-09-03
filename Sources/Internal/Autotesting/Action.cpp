@@ -351,6 +351,39 @@ String WaitAction::Dump()
 
 //----------------------------------------------------------------------
 
+WaitForScreenAction::WaitForScreenAction(const String &_screenName, float32 timeout) : WaitAction(timeout)
+	, screenName(_screenName)
+{
+}
+
+WaitForScreenAction::~WaitForScreenAction()
+{
+}
+
+void WaitForScreenAction::Execute()
+{
+    WaitAction::Execute();
+}
+
+bool WaitForScreenAction::TestCondition()
+{
+    if(WaitAction::TestCondition())
+    {
+        AutotestingSystem::Instance()->OnError(Format("WaitForScreenAction %s timeout", screenName.c_str()));
+        return true;
+    }
+	return (UIScreenManager::Instance()->GetScreen()->GetName() == screenName);
+}
+
+String WaitForScreenAction::Dump()
+{
+	String baseStr = WaitAction::Dump();
+	return Format("%s screenName=%s", baseStr.c_str(), screenName.c_str());
+}
+
+
+//----------------------------------------------------------------------
+
 WaitForUIAction::WaitForUIAction(const String &_controlName, float32 timeout) : WaitAction(timeout)
 {
     controlPath.push_back(_controlName);
