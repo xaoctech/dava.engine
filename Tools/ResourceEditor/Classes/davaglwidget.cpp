@@ -22,36 +22,27 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
     ui(new Ui::DavaGLWidget)
 {
 	ui->setupUi(this);
+	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 	
 #if defined (__DAVAENGINE_MACOS__)
 	DAVA::QtLayerMacOS *qtLayer = new DAVA::QtLayerMacOS();
     qtLayer->InitializeGlWindow((void *)this->winId(), this->size().width(), this->size().height());
-    
 #elif defined (__DAVAENGINE_WIN32__)
 	DAVA::QtLayerWin32 *qtLayer = new DAVA::QtLayerWin32();
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	qtLayer->SetWindow(hInstance, this->winId(), this->size().width(), this->size().height());
 	qtLayer->OnResume();
-	
 #else 
 	DVASSERT(false && "Wrong platform");
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
-    DAVA::QtLayer::Instance()->SetDelegate(this);
-    
-    
-    setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    
+	DAVA::QtLayer::Instance()->SetDelegate(this);
 	DAVA::QtLayer::Instance()->Resize(size().width(), size().height());
-    
-	willClose = false;
-    fpsTimer = new QTimer();
-    connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
 
-    DAVA::RenderManager::Instance()->SetFPS(60);
-    frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
-    
-    fpsTimer->start(frameTime);
+	willClose = false;
+
+	DisableWidgetBlinking();
+	InitFrameTimer();
 }
 
 DavaGLWidget::~DavaGLWidget()
@@ -63,7 +54,7 @@ DavaGLWidget::~DavaGLWidget()
 }
 
 
-void DavaGLWidget::paintEvent(QPaintEvent *)
+void DavaGLWidget::paintEvent(QPaintEvent *e)
 {
     //Do nothing
 }
@@ -87,7 +78,6 @@ void DavaGLWidget::moveEvent(QMoveEvent *e)
 }
 
 
-
 void DavaGLWidget::FpsTimerDone()
 {
     QElapsedTimer timer;
@@ -108,7 +98,6 @@ void DavaGLWidget::FpsTimerDone()
 		}
 	}
 }
-
 
 
 void DavaGLWidget::showEvent(QShowEvent *e)
@@ -150,4 +139,27 @@ void DavaGLWidget::closeEvent(QCloseEvent *e)
 void DavaGLWidget::Quit()
 {
     QApplication::quit();
+}
+
+QPaintEngine *DavaGLWidget::paintEngine() const
+{
+	return NULL;
+}
+
+void DavaGLWidget::DisableWidgetBlinking()
+{
+	setAttribute(Qt::WA_OpaquePaintEvent, true);
+	setAttribute(Qt::WA_NoSystemBackground, true);
+	setAttribute(Qt::WA_PaintOnScreen, true);
+}
+
+void DavaGLWidget::InitFrameTimer()
+{
+	fpsTimer = new QTimer();
+	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
+
+	DAVA::RenderManager::Instance()->SetFPS(60);
+	frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
+
+	fpsTimer->start(frameTime);
 }
