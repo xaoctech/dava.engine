@@ -1555,6 +1555,12 @@ void SceneEditorScreenMain::HideScenePreview()
     }
 }
 
+bool SceneEditorScreenMain::LandscapeEditorModeEnabled()
+{
+    BodyItem *iBody = FindCurrentBody();
+    return iBody->bodyControl->LandscapeEditorActive();
+}
+
 #endif //#if defined (DAVA_QT)
 
 
