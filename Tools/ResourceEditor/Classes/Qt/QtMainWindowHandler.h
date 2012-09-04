@@ -66,6 +66,8 @@ public slots:
     //scene graph
     void RefreshSceneGraph();
 
+    //
+    void ReloadTexturesFromFileSystem();
 	
     
 private:

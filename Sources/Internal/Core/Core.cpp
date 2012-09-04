@@ -73,6 +73,8 @@ Core::Core()
 	firstRun = true;
 	isConsoleMode = false;
 	options = new KeyedArchive();
+    
+    EnableReloadResourceOnResize(true);
 }
 
 Core::~Core()
@@ -306,8 +308,11 @@ void Core::CalculateScaleMultipliers()
 	drawOffset.y = floorf(drawOffset.y);
 	drawOffset.x = floorf(drawOffset.x);
 	
-	Sprite::ValidateForSize();
-	TextBlock::ScreenResolutionChanged();
+    if(enabledReloadResourceOnResize)
+    {
+        Sprite::ValidateForSize();
+        TextBlock::ScreenResolutionChanged();
+    }
 			
 	Logger::Debug("[Core] CalculateScaleMultipliers desirableIndex: %d", desirableIndex);
 		
@@ -706,6 +711,10 @@ Core::eDeviceFamily Core::GetDeviceFamily()
 }
 #endif //#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)    
     
-
+void Core::EnableReloadResourceOnResize(bool enable)
+{
+    enabledReloadResourceOnResize = enable;
+}
+    
 
 };

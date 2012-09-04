@@ -6,5 +6,6 @@
     <file>Data/QtIcons/openscene.png</file>
     <file>Data/QtIcons/savescene.png</file>
     <file>Data/QtIcons/materialeditor.png</file>
+    <file>Data/QtIcons/reloadtextures.png</file>
 </qresource>
 </RCC>
