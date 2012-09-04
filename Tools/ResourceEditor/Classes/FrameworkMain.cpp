@@ -181,6 +181,12 @@ void FrameworkDidLaunched()
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
 	DAVA::Core::Instance()->SetOptions(appOptions);
+    
+    
+#if defined (DAVA_QT)
+    DAVA::Core::Instance()->EnableReloadResourceOnResize(false);
+#endif //#if defined (DAVA_QT)
+    
 }
 
 

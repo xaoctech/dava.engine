@@ -44,6 +44,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     new GUIState();
 
     SetupMainMenu();
+    
     SetupToolBar();
     
     SetupDockWidgets();
@@ -173,6 +174,10 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction(ui->actionMaterialEditor);
+    ui->mainToolBar->addSeparator();
+    QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Reload Textures"));
+    DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/Data/QtIcons/reloadtextures.png"));
+    connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(ReloadTexturesFromFileSystem()));
     ui->mainToolBar->addSeparator();
 }
 
