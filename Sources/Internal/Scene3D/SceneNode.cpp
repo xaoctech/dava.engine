@@ -39,6 +39,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Debug/Stats.h"
 #include "Entity/Entity.h"
+#include "iostream"
 
 namespace DAVA
 {
@@ -747,5 +748,31 @@ void SceneNode::RecursiveEnableImposters(bool enable)
 		children[c]->RecursiveEnableImposters(enable); 
 	}
 }
-    
+
+String SceneNode::GetPathID()
+{
+	String result;
+	SceneNode * curr = this;
+	SceneNode * parent = NULL;
+	int32 sz, i;
+	char buff[10];
+
+	while (curr != scene)
+	{
+		parent = curr->GetParent();
+		sz = parent->GetChildrenCount();
+		for (i = 0; i < sz; i++)
+		{
+			if (curr == parent->GetChild(i))
+			{
+				_snprintf( buff, sizeof(buff), ":%d", i);
+				result = result + buff;
+				break;
+			}
+		}
+		curr = parent;
+	}
+	return result;
+}
+
 };
