@@ -40,7 +40,6 @@
 namespace DAVA 
 {
 
-#pragma mark  --LodDistance
 LodNode::LodDistance::LodDistance()
 {
     distance = nearDistance = nearDistanceSq = farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
@@ -64,7 +63,6 @@ void LodNode::LodDistance::SetFarDistance(float32 newDistance)
 }
     
 
-#pragma mark  --LodNode
 REGISTER_CLASS(LodNode);
     
 
