@@ -249,7 +249,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             {
                 mainFilePath = pathToFile;
                 for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-                {
+                {//TODO: Если этот код когда-либо будет раскомментирован, нужно будет исправить по примеру qt версии
                     //рут нода это сама сцена в данном случае
                     scene->AddNode(rootNode->GetChild(ci));
                 }
