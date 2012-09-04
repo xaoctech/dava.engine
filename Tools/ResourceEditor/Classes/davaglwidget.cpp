@@ -49,12 +49,11 @@ DavaGLWidget::~DavaGLWidget()
 {
     DAVA::QtLayer::Instance()->Release();
 
-	DAVA::SafeDelete(fpsTimer);
     delete ui;
 }
 
 
-void DavaGLWidget::paintEvent(QPaintEvent *e)
+void DavaGLWidget::paintEvent(QPaintEvent *)
 {
     //Do nothing
 }
@@ -65,16 +64,16 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
         
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
     
-    QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
-	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
+    QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
+	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 }
 
 void DavaGLWidget::moveEvent(QMoveEvent *e)
 {
 	QWidget::moveEvent(e);
 
-    QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
-	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
+    QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
+	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 }
 
 
@@ -85,16 +84,16 @@ void DavaGLWidget::FpsTimerDone()
     
 	DAVA::QtLayer::Instance()->ProcessFrame();
     
-	if(!willClose && fpsTimer)
+	if(!willClose)
 	{
 		int timeForNewFrame = frameTime - timer.elapsed();
 		if(timeForNewFrame < 0)
 		{
-			fpsTimer->start(0);
+			QTimer::singleShot(1, this, SLOT(FpsTimerDone()));
 		}
 		else 
 		{
-			fpsTimer->start(timeForNewFrame);
+			QTimer::singleShot(timeForNewFrame, this, SLOT(FpsTimerDone()));
 		}
 	}
 }
@@ -155,11 +154,7 @@ void DavaGLWidget::DisableWidgetBlinking()
 
 void DavaGLWidget::InitFrameTimer()
 {
-	fpsTimer = new QTimer();
-	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
-
 	DAVA::RenderManager::Instance()->SetFPS(60);
 	frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
-
-	fpsTimer->start(frameTime);
+	QTimer::singleShot(frameTime, this, SLOT(FpsTimerDone()));
 }

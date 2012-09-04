@@ -140,10 +140,12 @@ public:
     
     void ShowScenePreview(const String scenePathname);
     void HideScenePreview();
-    
+
+    bool LandscapeEditorModeEnabled();
 #endif //#if defined (DAVA_QT)
     
     void AddBodyItem(const WideString &text, bool isCloseable);
+    
 
 private:
     

@@ -40,58 +40,25 @@ namespace DAVA
 class CoreWin32Platform : public Core
 {
 public:
-	virtual eScreenMode GetScreenMode();
-	virtual void SwitchScreenToMode(eScreenMode screenMode); 
-	virtual void GetAvailableDisplayModes(List<DisplayMode> & availableModes);
-
-	virtual DisplayMode GetCurrentDisplayMode();
 
 	virtual void Quit();
 
-//	virtual bool CreateWin32Window(HINSTANCE hInstance); //true if window created, if false, need to quit the app
-
 	bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
-
 	bool WinEvent(MSG *message, long *result);
 
-	virtual void Run();
-
-	virtual void ToggleFullscreen();
-
-	virtual void SetIcon(int32 iconId);
-
 	void InitArgs();
-	void InitOpenGL();
-	void ReleaseOpenGL();
 
+	
 	HWND hWindow;
-	HDC hDC;
-	HGLRC hRC;
 	HANDLE hMutex;
+
 #if defined(__DAVAENGINE_DIRECTX9__)
 	LPDIRECT3D9 d3d9;
-#endif 
+#endif //#if defined(__DAVAENGINE_DIRECTX9__)
 
-/*	int32 screenWidth;
-	int32 screenHeight;
-	int32 bpp;
-
-	bool isFullscreen;
-	bool isInFullscreenNow;	*/
-
-	DisplayMode currentMode;
-	DisplayMode fullscreenMode;
-	DisplayMode windowedMode;
-	bool isFullscreen;
-	RECT		windowPositionBeforeFullscreen;
 private:
 
-	static const uint32 WINDOWED_STYLE = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
-	static const uint32 FULLSCREEN_STYLE = WS_VISIBLE | WS_POPUP;
-
-	RECT GetWindowedRectForDisplayMode(DisplayMode & dm);
 	bool willQuit;
-
 };	
 };
 #endif // #if defined(__DAVAENGINE_WIN32__)
