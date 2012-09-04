@@ -3,9 +3,6 @@
 
 #include "Command.h"
 
-#endif //__PARTICLE_EDITOR_COMMANDS_H__
-
-
 class CommandOpenParticleEditorConfig: public Command
 {
 public:	
@@ -15,3 +12,15 @@ protected:
 
 	virtual void Execute();
 };
+
+class CommandSaveParticleEditorConfig: public Command
+{
+public:	
+	CommandSaveParticleEditorConfig();
+
+protected:	
+
+	virtual void Execute();
+};
+
+#endif //__PARTICLE_EDITOR_COMMANDS_H__

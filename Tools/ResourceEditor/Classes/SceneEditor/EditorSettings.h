@@ -24,7 +24,7 @@ public:
     void Save();
 
     void SetProjectPath(const String &projectPath);
-    String GetProjetcPath();
+    String GetProjectPath();
     
     void SetDataSourcePath(const String &datasourcePath);
     String GetDataSourcePath();
