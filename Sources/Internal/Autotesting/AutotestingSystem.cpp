@@ -639,6 +639,25 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         OnError(Format("AddActionsFromYamlNode action %s no path", actionName.c_str()));
                     }
                 }
+				else if(actionName == "WaitForScreen")
+				{
+					float32 timeout = 10.0f;
+                    YamlNode* timeoutNode = actionNode->Get("timeout");
+                    if(timeoutNode)
+                    {
+                        timeout = timeoutNode->AsFloat();
+                    }
+
+                    YamlNode* screenNameNode = actionNode->Get("screenName");
+                    if(screenNameNode)
+                    {
+                        WaitForScreen(screenNameNode->AsString(), timeout);
+                    }
+                    else
+                    {
+                        OnError(Format("AddActionsFromYamlNode action %s no screen name", actionName.c_str()));
+                    }
+				}
                 else if(actionName == "KeyPress")
                 {
                     YamlNode* keyNode = actionNode->Get("key");
@@ -951,19 +970,21 @@ void AutotestingSystem::OnTestsFinished()
 void AutotestingSystem::Click(const Vector2 &point, int32 id)
 {
     TouchDown(point, id);
-    Wait(0.1f);
+    Wait(0.05f);
     TouchUp(id);
 }
 
 void AutotestingSystem::Click(const String &controlName, int32 id)
 {
     TouchDown(controlName, id);
+	Wait(0.05f);
     TouchUp(id);
 }
 
 void AutotestingSystem::Click(const Vector<String> &controlPath, int32 id)
 {
     TouchDown(controlPath, id);
+	Wait(0.05f);
     TouchUp(id);
 }
 
@@ -1085,6 +1106,15 @@ void AutotestingSystem::Wait(float32 time)
 	waitAction->SetName("WaitAction");
     AddAction(waitAction);
     SafeRelease(waitAction);
+}
+
+void AutotestingSystem::WaitForScreen(const String &screenName, float32 timeout)
+{
+    WaitForScreenAction* waitForScreenAction = new WaitForScreenAction(screenName, timeout);
+	waitForScreenAction->SetName("WaitForScreenAction");
+    AddAction(waitForScreenAction);
+    SafeRelease(waitForScreenAction);
+	Wait(0.01f); // skip first update - it can be invalid in some cases
 }
 
 void AutotestingSystem::WaitForUI(const String &controlName, float32 timeout)

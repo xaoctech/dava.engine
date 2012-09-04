@@ -1281,6 +1281,9 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 	//BodyItem *iBody = FindCurrentBody();
 	if (!particlesEditor->GetParent())
 	{
+		SafeRelease(particlesEditor);
+		particlesEditor = new ParticlesEditorControl();
+
 		particlesEditor->SetEmitter(emitter->GetEmitter());
 		AddControl(particlesEditor);
 	}
@@ -1552,6 +1555,12 @@ void SceneEditorScreenMain::HideScenePreview()
     }
 }
 
+bool SceneEditorScreenMain::LandscapeEditorModeEnabled()
+{
+    BodyItem *iBody = FindCurrentBody();
+    return iBody->bodyControl->LandscapeEditorActive();
+}
+
 #endif //#if defined (DAVA_QT)
 
 
@@ -1603,11 +1612,11 @@ void SceneEditorScreenMain::SetSize(const Vector2 &newSize)
         bodies[i]->bodyControl->SetSize(bodySize);
     }
 
-    if(particlesEditor && !particlesEditor->GetParent())
-    {
-        SafeRelease(particlesEditor);
-        particlesEditor = new ParticlesEditorControl();
-    }
+//     if(particlesEditor && !particlesEditor->GetParent())
+//     {
+//         SafeRelease(particlesEditor);
+//         particlesEditor = new ParticlesEditorControl();
+//     }
     
 }
 #endif //#if defined (DAVA_QT)

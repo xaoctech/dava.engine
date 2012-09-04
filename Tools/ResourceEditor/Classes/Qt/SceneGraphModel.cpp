@@ -6,9 +6,8 @@
 #include "../EditorScene.h"
 
 #include "GraphItem.h"
-//#include "QtUtils.h"
 #include "PointerHolder.h"
-
+#include "../SceneEditor/SceneEditorScreenMain.h"
 
 #include <QTreeView>
 
@@ -86,6 +85,9 @@ void SceneGraphModel::Rebuild()
 
 void SceneGraphModel::SelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    if(LandscapeEditorModeEnabled())
+        return;
+    
     int32 deselectedSize = deselected.size();
     int32 selectedSize = selected.size();
     
@@ -174,9 +176,23 @@ Qt::ItemFlags SceneGraphModel::flags(const QModelIndex &index) const
 		return Qt::ItemIsDropEnabled;
 	}
     
-    Qt::ItemFlags flags = GraphModel::flags(index);
-    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-    return flags;
+    if(LandscapeEditorModeEnabled())
+    {
+        return Qt::ItemIsEnabled;
+    }
+
+    return (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | GraphModel::flags(index));
+}
+
+bool SceneGraphModel::LandscapeEditorModeEnabled() const
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        return screen->LandscapeEditorModeEnabled();
+    }
+    
+    return false;
 }
 
 Qt::DropActions SceneGraphModel::supportedDropActions() const
