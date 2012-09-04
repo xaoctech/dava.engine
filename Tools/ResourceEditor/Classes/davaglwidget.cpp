@@ -54,7 +54,7 @@ DavaGLWidget::~DavaGLWidget()
 }
 
 
-void DavaGLWidget::paintEvent(QPaintEvent *e)
+void DavaGLWidget::paintEvent(QPaintEvent *)
 {
     //Do nothing
 }
@@ -157,6 +157,7 @@ void DavaGLWidget::InitFrameTimer()
 {
 	fpsTimer = new QTimer();
 	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(FpsTimerDone()));
+    fpsTimer->setSingleShot(true);
 
 	DAVA::RenderManager::Instance()->SetFPS(60);
 	frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
