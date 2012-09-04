@@ -51,7 +51,6 @@ private:
 
 private:
 
-    QTimer *fpsTimer;
     int frameTime;
 	bool willClose;
 
