@@ -111,38 +111,17 @@ void QtLayerWin32::SetWindow(HINSTANCE hInstance, HWND hWindow, int32 width, int
 		FrameworkDidLaunched();
 
 		Resize(width, height);
-// 		DisplayMode currentMode = DisplayMode(width, height, 16, 0);
-// 
-// 		KeyedArchive * options = Core::Instance()->GetOptions();
-// 		if (options)
-// 		{
-// 			currentMode.bpp = options->GetInt32("bpp");
-// 		}
-// 
-// 		RenderManager::Instance()->ChangeDisplayMode(currentMode, false);
-// 		RenderManager::Instance()->Init(currentMode.width, currentMode.height);
-// 		UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
-// 		Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
-
 		AppStarted();
 	}
 }
 
+
 void QtLayerWin32::Resize(int32 width, int32 height)
 {
-	DisplayMode currentMode = DisplayMode(width, height, 16, 0);
-
-	KeyedArchive * options = Core::Instance()->GetOptions();
-	if (options)
-	{
-		currentMode.bpp = options->GetInt32("bpp");
-	}
-
-	RenderManager::Instance()->ChangeDisplayMode(currentMode, false);
-	RenderManager::Instance()->Init(currentMode.width, currentMode.height);
-	UIControlSystem::Instance()->SetInputScreenAreaSize(currentMode.width, currentMode.height);
-	Core::Instance()->SetPhysicalScreenSize(currentMode.width, currentMode.height);
-	Core::Instance()->SetVirtualScreenSize(currentMode.width, currentMode.height);
+	RenderManager::Instance()->Init(width, height);
+	UIControlSystem::Instance()->SetInputScreenAreaSize(width, height);
+	Core::Instance()->SetPhysicalScreenSize(width, height);
+	Core::Instance()->SetVirtualScreenSize(width, height);
 }
     
 void QtLayerWin32::Move(int32 x, int32 y)
