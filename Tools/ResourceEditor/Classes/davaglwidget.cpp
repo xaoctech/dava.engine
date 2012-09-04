@@ -65,16 +65,16 @@ void DavaGLWidget::resizeEvent(QResizeEvent *e)
         
 	DAVA::QtLayer::Instance()->Resize(e->size().width(), e->size().height());
     
-    QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
-	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
+    QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
+	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 }
 
 void DavaGLWidget::moveEvent(QMoveEvent *e)
 {
 	QWidget::moveEvent(e);
 
-    QPoint mousePos = mapTo(parentWidget(), QPoint(0, 0));
-	DAVA::QtLayer::Instance()->Move(mousePos.x(), mousePos.y());
+    QPoint newPosition = mapTo(parentWidget(), QPoint(0, 0));
+	DAVA::QtLayer::Instance()->Move(newPosition.x(), newPosition.y());
 }
 
 
