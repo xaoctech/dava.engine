@@ -255,7 +255,7 @@ void LandscapeEditorBase::SaveTexture()
     }
     else if(!fileSystemDialog->GetParent())
     {
-        fileSystemDialog->SetExtensionFilter(".png");
+        fileSystemDialog->SetExtensionFilter(String(".png"));
         fileSystemDialog->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
         
         fileSystemDialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
