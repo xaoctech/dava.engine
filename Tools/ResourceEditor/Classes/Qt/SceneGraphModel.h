@@ -46,6 +46,8 @@ protected:
     void AddNodeToTree(GraphItem *parent, DAVA::SceneNode *node);
 
     
+    bool LandscapeEditorModeEnabled() const;
+    
 protected:
 
     EditorScene *scene;

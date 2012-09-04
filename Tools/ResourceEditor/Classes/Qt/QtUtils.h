@@ -10,5 +10,7 @@ DAVA::String PathnameToDAVAStyle(const DAVA::String &convertedPathname);
 DAVA::String PathnameToDAVAStyle(const QString &convertedPathname);
 
 
+DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::String &pathname, const DAVA::String &filter);
+
 
 #endif // __QT_UTILS_H__
