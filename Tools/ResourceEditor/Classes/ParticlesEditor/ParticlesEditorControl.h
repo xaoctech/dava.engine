@@ -193,8 +193,10 @@ public:
 
 	
 	void SetEmitter(ParticleEmitter *emitter);
-
 	void LoadFromYaml(const String &pathToFile);
+	const String & GetLastOpenedConfigName() { return lastOpenedConfigName; }
+	void SetNode(ParticleEmitterNode * node);
+
     
 protected:
     virtual int32 ElementsCount(UIList *forList);
@@ -349,5 +351,8 @@ protected:
     UIControl *colorView;
     
     ForcePreviewControl *forcePreview;
-};
 
+	String lastOpenedConfigName;
+
+	ParticleEmitterNode * particleEmitterNode;
+};
