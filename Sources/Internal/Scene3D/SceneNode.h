@@ -83,7 +83,13 @@ public:
         
 	virtual bool FindNodesByNamePart(const String & namePart, List<SceneNode *> &outNodeList);
     
-    /**
+	/**
+        \brief Get string with path by indexes in scenegraph from root node to current node.
+        \returns result string.
+     */
+	String GetPathID();
+
+	/**
         \brief Find node by it's name inside this scene node.
         \param[in] name name of object you want to find. 
         \returns pointer to the object if object with such name available, 0 in case if it's not exists.
