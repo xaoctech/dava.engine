@@ -131,19 +131,19 @@ btKinematicCharacterController::btKinematicCharacterController (btPairCachingGho
 {
 	m_upAxis = upAxis;
 	m_addedMargin = 0.02f;
-	m_walkDirection.setValue(0,0,0);
+	m_walkDirection.setValue(0.0f, 0.0f, 0.0f);
 	m_useGhostObjectSweepTest = true;
 	m_ghostObject = ghostObject;
 	m_stepHeight = stepHeight;
-	m_turnAngle = btScalar(0.0f);
+	m_turnAngle = btScalar(0.0);
 	m_convexShape=convexShape;	
 	m_useWalkDirection = true;	// use walk direction by default, legacy behavior
-	m_velocityTimeInterval = 0.0f;
-	m_verticalVelocity = 0.0f;
-	m_verticalOffset = 0.0f;
+	m_velocityTimeInterval = 0.0;
+	m_verticalVelocity = 0.0;
+	m_verticalOffset = 0.0;
 	m_gravity = 9.8f * 3.0f ; // 3G acceleration.
-	m_fallSpeed = 55.0f; // Terminal velocity of a sky diver in m/s.
-	m_jumpSpeed = 10.0f; // ?
+	m_fallSpeed = 55.0; // Terminal velocity of a sky diver in m/s.
+	m_jumpSpeed = 10.0; // ?
 	m_wasOnGround = false;
 	m_wasJumping = false;
 	setMaxSlope(btRadians(45.0f));

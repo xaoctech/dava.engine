@@ -65,11 +65,7 @@ void CommandOpenScene::Execute()
     if(0 == selectedScenePathname.length())
     {
         String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-        QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Scene File"), QString(dataSourcePath.c_str()),
-                                                        QString("Scene File (*.sc2)")
-                                                        );
-  
-		selectedScenePathname = PathnameToDAVAStyle(filePath);
+        selectedScenePathname = GetOpenFileName(String("Open Scene File"), (dataSourcePath.c_str()), String("Scene File (*.sc2)"));
     }
     
     if(0 < selectedScenePathname.size())
@@ -85,8 +81,6 @@ void CommandOpenScene::Execute()
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //New

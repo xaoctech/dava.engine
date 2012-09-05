@@ -77,6 +77,10 @@ PHY_ScalarType hdt, bool flipQuadEdges
 	m_maxHeight = maxHeight;
 	m_width = (btScalar) (heightStickWidth - 1);
 	m_length = (btScalar) (heightStickLength - 1);
+	
+	m_width2 = - m_width * btScalar(0.5f);
+	m_length2 = - m_length * btScalar(0.5f);
+	
 	m_heightScale = heightScale;
 	m_heightfieldDataUnknown = heightfieldData;
 	m_heightDataType = hdt;
@@ -151,34 +155,37 @@ void btHeightfieldTerrainShape::getAabb(const btTransform& t,btVector3& aabbMin,
 btScalar
 btHeightfieldTerrainShape::getRawHeightFieldValue(int x,int y) const
 {
+		//BTREVIEW 0.1%
 	btScalar val = 0.f;
-	switch (m_heightDataType)
-	{
-	case PHY_FLOAT:
-		{
+
+		//i've commented this lines to improve speed!
+//	switch (m_heightDataType)
+//	{
+//	case PHY_FLOAT:
+//		{
 			val = m_heightfieldDataFloat[(y*m_heightStickWidth)+x];
-			break;
-		}
-
-	case PHY_UCHAR:
-		{
-			unsigned char heightFieldValue = m_heightfieldDataUnsignedChar[(y*m_heightStickWidth)+x];
-			val = heightFieldValue * m_heightScale;
-			break;
-		}
-
-	case PHY_SHORT:
-		{
-			short hfValue = m_heightfieldDataShort[(y * m_heightStickWidth) + x];
-			val = hfValue * m_heightScale;
-			break;
-		}
-
-	default:
-		{
-			btAssert(!"Bad m_heightDataType");
-		}
-	}
+//			break;
+//		}
+//
+//	case PHY_UCHAR:
+//		{
+//			unsigned char heightFieldValue = m_heightfieldDataUnsignedChar[(y*m_heightStickWidth)+x];
+//			val = heightFieldValue * m_heightScale;
+//			break;
+//		}
+//
+//	case PHY_SHORT:
+//		{
+//			short hfValue = m_heightfieldDataShort[(y * m_heightStickWidth) + x];
+//			val = hfValue * m_heightScale;
+//			break;
+//		}
+//
+//	default:
+//		{
+//			btAssert(!"Bad m_heightDataType");
+//		}
+//	}
 
 	return val;
 }
@@ -189,6 +196,8 @@ btHeightfieldTerrainShape::getRawHeightFieldValue(int x,int y) const
 /// this returns the vertex in bullet-local coordinates
 void	btHeightfieldTerrainShape::getVertex(int x,int y,btVector3& vertex) const
 {
+		//BTREVIEW 1%
+	
 	btAssert(x>=0);
 	btAssert(y>=0);
 	btAssert(x<m_heightStickWidth);
@@ -196,43 +205,40 @@ void	btHeightfieldTerrainShape::getVertex(int x,int y,btVector3& vertex) const
 
 	btScalar	height = getRawHeightFieldValue(x,y);
 
-	switch (m_upAxis)
-	{
-	case 0:
-		{
-		vertex.setValue(
-			height - m_localOrigin.getX(),
-			(-m_width/btScalar(2.0)) + x,
-			(-m_length/btScalar(2.0) ) + y
-			);
-			break;
-		}
-	case 1:
-		{
-			vertex.setValue(
-			(-m_width/btScalar(2.0)) + x,
-			height - m_localOrigin.getY(),
-			(-m_length/btScalar(2.0)) + y
-			);
-			break;
-		};
-	case 2:
-		{
-			vertex.setValue(
-			(-m_width/btScalar(2.0)) + x,
-			(-m_length/btScalar(2.0)) + y,
-			height - m_localOrigin.getZ()
-			);
-			break;
-		}
-	default:
-		{
-			//need to get valid m_upAxis
-			btAssert(0);
-		}
-	}
+		//i've commented this lines to improve speed!
+//	switch (m_upAxis)
+//	{
+//	case 0:
+//		{
+//		vertex.setValue(
+//			height - m_localOrigin.getX(),
+//			(-m_width/btScalar(2.0)) + x,
+//			(-m_length/btScalar(2.0) ) + y
+//			);
+//			break;
+//		}
+//	case 1:
+//		{
+//			vertex.setValue(
+//			(-m_width/btScalar(2.0)) + x,
+//			height - m_localOrigin.getY(),
+//			(-m_length/btScalar(2.0)) + y
+//			);
+//			break;
+//		};
+//	case 2:
+//		{
+			vertex.setValue(m_width2 + btScalar(x), m_length2 + btScalar(y), height - m_localOrigin.getZ());
+//			break;
+//		}
+//	default:
+//		{
+//			//need to get valid m_upAxis
+//			btAssert(0);
+//		}
+//	}
 
-	vertex*=m_localScaling;
+	vertex *= m_localScaling;
 }
 
 
@@ -283,6 +289,7 @@ void btHeightfieldTerrainShape::quantizeWithClamp(int* out, const btVector3& poi
  */
 void	btHeightfieldTerrainShape::processAllTriangles(btTriangleCallback* callback,const btVector3& aabbMin,const btVector3& aabbMax) const
 {
+		//BTREVIEW 2.2%
 	// scale down the input aabb's so they are in local (non-scaled) coordinates
 	btVector3	localAabbMin = aabbMin*btVector3(1.f/m_localScaling[0],1.f/m_localScaling[1],1.f/m_localScaling[2]);
 	btVector3	localAabbMax = aabbMax*btVector3(1.f/m_localScaling[0],1.f/m_localScaling[1],1.f/m_localScaling[2]);
@@ -309,34 +316,35 @@ void	btHeightfieldTerrainShape::processAllTriangles(btTriangleCallback* callback
 	int startJ=0;
 	int endJ=m_heightStickLength-1;
 
-	switch (m_upAxis)
-	{
-	case 0:
-		{
-			if (quantizedAabbMin[1]>startX)
-				startX = quantizedAabbMin[1];
-			if (quantizedAabbMax[1]<endX)
-				endX = quantizedAabbMax[1];
-			if (quantizedAabbMin[2]>startJ)
-				startJ = quantizedAabbMin[2];
-			if (quantizedAabbMax[2]<endJ)
-				endJ = quantizedAabbMax[2];
-			break;
-		}
-	case 1:
-		{
-			if (quantizedAabbMin[0]>startX)
-				startX = quantizedAabbMin[0];
-			if (quantizedAabbMax[0]<endX)
-				endX = quantizedAabbMax[0];
-			if (quantizedAabbMin[2]>startJ)
-				startJ = quantizedAabbMin[2];
-			if (quantizedAabbMax[2]<endJ)
-				endJ = quantizedAabbMax[2];
-			break;
-		};
-	case 2:
-		{
+		//i've commented this lines to improve speed!
+//	switch (m_upAxis)
+//	{
+//	case 0:
+//		{
+//			if (quantizedAabbMin[1]>startX)
+//				startX = quantizedAabbMin[1];
+//			if (quantizedAabbMax[1]<endX)
+//				endX = quantizedAabbMax[1];
+//			if (quantizedAabbMin[2]>startJ)
+//				startJ = quantizedAabbMin[2];
+//			if (quantizedAabbMax[2]<endJ)
+//				endJ = quantizedAabbMax[2];
+//			break;
+//		}
+//	case 1:
+//		{
+//			if (quantizedAabbMin[0]>startX)
+//				startX = quantizedAabbMin[0];
+//			if (quantizedAabbMax[0]<endX)
+//				endX = quantizedAabbMax[0];
+//			if (quantizedAabbMin[2]>startJ)
+//				startJ = quantizedAabbMin[2];
+//			if (quantizedAabbMax[2]<endJ)
+//				endJ = quantizedAabbMax[2];
+//			break;
+//		};
+//	case 2:
+//		{
 			if (quantizedAabbMin[0]>startX)
 				startX = quantizedAabbMin[0];
 			if (quantizedAabbMax[0]<endX)
@@ -345,14 +353,14 @@ void	btHeightfieldTerrainShape::processAllTriangles(btTriangleCallback* callback
 				startJ = quantizedAabbMin[1];
 			if (quantizedAabbMax[1]<endJ)
 				endJ = quantizedAabbMax[1];
-			break;
-		}
-	default:
-		{
-			//need to get valid m_upAxis
-			btAssert(0);
-		}
-	}
+//			break;
+//		}
+//	default:
+//		{
+//			//need to get valid m_upAxis
+//			btAssert(0);
+//		}
+//	}
 
 	
   
@@ -364,28 +372,28 @@ void	btHeightfieldTerrainShape::processAllTriangles(btTriangleCallback* callback
 			btVector3 vertices[3];
 			if (m_flipQuadEdges || (m_useDiamondSubdivision && !((j+x) & 1)))
 			{
-        //first triangle
-        getVertex(x,j,vertices[0]);
-        getVertex(x+1,j,vertices[1]);
-        getVertex(x+1,j+1,vertices[2]);
-        callback->processTriangle(vertices,x,j);
-        //second triangle
-        getVertex(x,j,vertices[0]);
-        getVertex(x+1,j+1,vertices[1]);
-        getVertex(x,j+1,vertices[2]);
-        callback->processTriangle(vertices,x,j);				
+					//first triangle
+				getVertex(x,j,vertices[0]);
+				getVertex(x+1,j,vertices[1]);
+				getVertex(x+1,j+1,vertices[2]);
+				callback->processTriangle(vertices,x,j);
+					//second triangle
+				getVertex(x,j,vertices[0]);
+				getVertex(x+1,j+1,vertices[1]);
+				getVertex(x,j+1,vertices[2]);
+				callback->processTriangle(vertices,x,j);
 			} else
 			{
-        //first triangle
-        getVertex(x,j,vertices[0]);
-        getVertex(x,j+1,vertices[1]);
-        getVertex(x+1,j,vertices[2]);
-        callback->processTriangle(vertices,x,j);
-        //second triangle
-        getVertex(x+1,j,vertices[0]);
-        getVertex(x,j+1,vertices[1]);
-        getVertex(x+1,j+1,vertices[2]);
-        callback->processTriangle(vertices,x,j);
+					//first triangle
+				getVertex(x,j,vertices[0]);
+				getVertex(x,j+1,vertices[1]);
+				getVertex(x+1,j,vertices[2]);
+				callback->processTriangle(vertices,x,j);
+					//second triangle
+				getVertex(x+1,j,vertices[0]);
+				getVertex(x,j+1,vertices[1]);
+				getVertex(x+1,j+1,vertices[2]);
+				callback->processTriangle(vertices,x,j);
 			}
 		}
 	}
