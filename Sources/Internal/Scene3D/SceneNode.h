@@ -87,7 +87,7 @@ public:
         \brief Get string with path by indexes in scenegraph from root node to current node.
         \returns result string.
      */
-	String GetPathID();
+	String GetPathID(SceneNode * root);
 
 	/**
         \brief Find node by it's name inside this scene node.
