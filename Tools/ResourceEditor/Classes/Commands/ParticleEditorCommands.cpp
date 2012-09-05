@@ -3,6 +3,8 @@
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../ParticlesEditor/ParticlesEditorControl.h"
+#include "../SceneEditor/EditorBodyControl.h"
+#include "../SceneEditor/SceneGraph.h"
 
 #include "../Qt/QtUtils.h"
 #include "../Qt/GUIState.h"
@@ -24,26 +26,22 @@ CommandOpenParticleEditorConfig::CommandOpenParticleEditorConfig()
 void CommandOpenParticleEditorConfig::Execute()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(screen)
+	DVASSERT(screen);
+
+	String currentPath = screen->GetParticlesEditor()->GetActiveConfigName();
+	if(currentPath.empty() || currentPath[0] == '~'/*default config is ~res:*/)
 	{
-		String currentPath = screen->GetParticlesEditor()->GetLastOpenedConfigName();
-		if(currentPath.empty())
-		{
-			currentPath = EditorSettings::Instance()->GetProjectPath();
-		}
+		currentPath = EditorSettings::Instance()->GetDataSourcePath();
+	}
 
-		QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle effect"), QString(currentPath.c_str()), QString("Scene File (*.yaml)"));
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
 
-		String selectedPathname = PathnameToDAVAStyle(filePath);
+	String selectedPathname = PathnameToDAVAStyle(filePath);
 
-		if(selectedPathname.length() > 0)
-		{
-			SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-			if(screen)
-			{
-				screen->GetParticlesEditor()->LoadFromYaml(selectedPathname);
-			}
-		}
+	if(selectedPathname.length() > 0)
+	{
+		screen->GetParticlesEditor()->LoadFromYaml(selectedPathname);
+		screen->FindCurrentBody()->bodyControl->GetSceneGraph()->UpdatePropertyPanel();
 	}
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
@@ -58,24 +56,19 @@ CommandSaveParticleEditorConfig::CommandSaveParticleEditorConfig()
 void CommandSaveParticleEditorConfig::Execute()
 {
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-	if(screen)
+	DVASSERT(screen);
+
+	String currentPath = screen->GetParticlesEditor()->GetActiveConfigName();
+	if(currentPath.empty() || currentPath[0] == '~'/*default config is ~res:*/)
 	{
-		String currentPath = screen->GetParticlesEditor()->GetLastOpenedConfigName();
-		if(currentPath.empty())
-		{
-			currentPath = EditorSettings::Instance()->GetProjectPath();
-		}
+		currentPath = EditorSettings::Instance()->GetDataSourcePath();
+	}
 
-		QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save particle effect"), QString(currentPath.c_str()), QString("Scene File (*.yaml)"));
-		//if(0 < filePath.size())
-		//{
-		//	String normalizedPathname = PathnameToDAVAStyle(filePath);
-
-		//	EditorSettings::Instance()->AddLastOpenedFile(normalizedPathname);
-		//	screen->SaveSceneToFile(normalizedPathname);
-
-		//	GUIState::Instance()->SetNeedUpdatedFileMenu(true);
-		//}
+	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
+	if(filePath.size() > 0)
+	{
+		String normalizedPathname = PathnameToDAVAStyle(filePath);
+		screen->GetParticlesEditor()->SaveToYaml(normalizedPathname);
 	}
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();

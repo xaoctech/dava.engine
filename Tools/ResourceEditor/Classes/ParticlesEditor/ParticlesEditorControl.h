@@ -194,7 +194,8 @@ public:
 	
 	void SetEmitter(ParticleEmitter *emitter);
 	void LoadFromYaml(const String &pathToFile);
-	const String & GetLastOpenedConfigName() { return lastOpenedConfigName; }
+	void SaveToYaml(const String &pathToFile);
+	String GetActiveConfigName();
 	void SetNode(ParticleEmitterNode * node);
 
     
@@ -247,7 +248,7 @@ protected:
     void HideForcesList();
     void ShowForcesList();
     
-    void SaveToYaml(const String &pathToFile);
+
     
     void PrintPropValue(File *file, const String &propName, PropertyLineValue<float32> *pv);
     void PrintPropValue(File *file, const String &propName, PropertyLineValue<Vector2> *pv);
@@ -351,8 +352,6 @@ protected:
     UIControl *colorView;
     
     ForcePreviewControl *forcePreview;
-
-	String lastOpenedConfigName;
 
 	ParticleEmitterNode * particleEmitterNode;
 };
