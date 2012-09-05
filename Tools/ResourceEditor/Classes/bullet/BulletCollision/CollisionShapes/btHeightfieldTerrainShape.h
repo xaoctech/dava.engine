@@ -80,8 +80,13 @@ protected:
 	int m_heightStickLength;
 	btScalar	m_minHeight;
 	btScalar	m_maxHeight;
+	
 	btScalar m_width;
 	btScalar m_length;
+
+	btScalar m_width2;
+	btScalar m_length2;
+	
 	btScalar m_heightScale;
 	union
 	{

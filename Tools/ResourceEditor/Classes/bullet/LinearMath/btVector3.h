@@ -31,7 +31,6 @@ subject to the following restrictions:
 
 
 
-
 /**@brief btVector3 can be used to represent 3D points and vectors.
  * It has an un-used w component to suit 16-byte alignment when btVector3 is stored in containers. This extra component can be used by derived classes (Quaternion?) or by user
  * Ideally, this class should be replaced by a platform optimized SIMD version that keeps the data in registers
@@ -126,6 +125,32 @@ public:
 	SIMD_FORCE_INLINE btScalar dot(const btVector3& v) const
 	{
 		return m_floats[0] * v.m_floats[0] + m_floats[1] * v.m_floats[1] +m_floats[2] * v.m_floats[2];
+		
+//			// Note that this inline assembly does NOT work correctly though it is *identical* to the dedicated assembly
+//			// version and has (in theory) properly assigned register constraints and clobbers. In fact, it produces a
+//			// correct numerical result, but gcc seems to not properly manage registers and this causes trouble downstream.
+//			// Forum discussions indicate gcc is not great at supporting inline assembly using NEON registers. Even the
+//			// two different but theoretically equivalent clobber lists produce different simulation results!
+//		float __attribute__((__aligned__((64)))) result[2]; // space for 2 floats since neon vst1.32 wants to store a double register
+//		asm volatile
+//		(
+//		 // Note this code is explicitly using register q0-q2 (and corresponding d/s registers)
+//		 // so that we can avoid the need to preserve them. We are applying instructions directly
+//		 // to s registers, which prevents us from using q8 and above, and would rather not
+//		 // use registers that gcc expects us to preserve, to avoid the cost of doing that.
+//		 "vld1.32 {d0,d1}, [%1]		@ input <x2,y2,z2,?> = d0,d1\n\t"
+//		 "vld1.32 {d2,d3}, [%0]		@ input <x1,y1,z1,?> = d2,d3\n\t"
+//		 "vmul.f32 d4, d0, d2		@ d4 = <x1*x2,y1*y2>\n\t"
+//		 "vpadd.f32 d4, d4, d4		@ d4 = <x1*x2 + y1*y2, x1*x2 + y1*y2>\n\t"
+//		 "vmla.f32 s8, s2, s6		@ s8 = <x1*x2 + y1*y2 + z1*z2\n\t"
+//		 "vst1.32 {d4}, [%2]			@ save result to memory. supports double/quad word only. We only care about first word\n\t"
+//		 : // NO explicit outputs!
+//		 : "r" (this), "r" (&v), "+r" (&result[0])	// inputs. output directly stored in result
+//		 //		: "memory", "d0", "d1", "d2", "d3", "d4"	// clobbers - this version causes chaos
+//		 : "memory", "q0", "q1", "d4"				// clobbers - this version is stable but simulation is still incorrect
+//		 );
+//		
+//		return(result[0]);
 	}
 
   /**@brief Return the length of the vector squared */
@@ -200,6 +225,32 @@ public:
 			m_floats[1] * v.m_floats[2] -m_floats[2] * v.m_floats[1],
 			m_floats[2] * v.m_floats[0] - m_floats[0] * v.m_floats[2],
 			m_floats[0] * v.m_floats[1] - m_floats[1] * v.m_floats[0]);
+
+//			// Note that this inline assembly function does seem to work okay;
+//			// however, given trouble produced elsewhere (e.g., see Vector3
+//			// dot product in this file), it is probably best to call the pure
+//			// assembly function
+//		btVector3 __attribute__((__aligned__((64)))) result;
+//		asm volatile
+//		(
+//		 "vld1.32 {d18,d19}, [%1]	@ input <x2,y2,z2,w2> = d18,d19\n\t"
+//		 "vld1.32 {d16,d17}, [%0]	@ input <x1,y1,z1,w1> = d16,d17\n\t"
+//		 "vtrn.32 d18,d19			@  q9 = <x2,z2,y2,w2> = d18,d19\n\t"
+//		 "vrev64.32 d16,d16			@  q8 = <y1,x1,z1,w1> = d16,d17\n\t"
+//		 "vrev64.32 d18,d18			@  q9 = <z2,x2,y2,w2> = d18,d19\n\t"
+//		 "vtrn.32 d16,d17			@  q8 = <y1,z1,x1,w1> = d16,d17\n\t"
+//		 "vmul.f32 q10, q8, q9		@ q10 = <y1*z2,z1*x2,x1*y2,w1*w2>\n\t"
+//		 "vtrn.32 d18,d19			@  q9 = <z2,y2,x2,w2> = d18,d19\n\t"
+//		 "vrev64.32 d16,d16			@  q8 = <z1,y1,x1,w1> = d16,d17\n\t"
+//		 "vrev64.32 d18,d18			@  q9 = <y2,z2,x2,w2> = d18,d19\n\t"
+//		 "vtrn.32 d16,d17			@  q8 = <z1,x1,y1,w1> = d16,d17\n\t"
+//		 "vmls.f32 q10, q8, q9		@ q10 = <y1*z2-y2*z1,z1*x2-z2*x1,x1*y2-x2*y1,w1*w2-w2*w1>\n\t"
+//		 "vst1.32 {q10}, [%2]\n\t"
+//		 : // NO explicit outputs!
+//		 : "r" (this), "r" (&v), "r" (&result) //inputs. output indirectly stored in result
+//		 : "memory", "q8", "q9", "q10" // clobbers
+//		 );
+//		return result;
 	}
 
 	SIMD_FORCE_INLINE btScalar triple(const btVector3& v1, const btVector3& v2) const
@@ -658,6 +709,7 @@ SIMD_FORCE_INLINE void	btSwapScalarEndian(const btScalar& sourceVal, btScalar& d
     dest[3] = src[0];
 #endif //BT_USE_DOUBLE_PRECISION
 }
+
 ///btSwapVector3Endian swaps vector endianness, useful for network and cross-platform serialization
 SIMD_FORCE_INLINE void	btSwapVector3Endian(const btVector3& sourceVec, btVector3& destVec)
 {
@@ -761,6 +813,7 @@ SIMD_FORCE_INLINE void	btVector3::deSerialize(const struct	btVector3Data& dataIn
 	for (int i=0;i<4;i++)
 		m_floats[i] = dataIn.m_floats[i];
 }
+
 
 
 #endif //BT_VECTOR3_H

@@ -132,6 +132,8 @@ btTriangleConvexcastCallback::btTriangleConvexcastCallback (const btConvexShape*
 void
 btTriangleConvexcastCallback::processTriangle (btVector3* triangle, int partId, int triangleIndex)
 {
+		//BTREVIEW 0.6%
+	
 	btTriangleShape triangleShape (triangle[0], triangle[1], triangle[2]);
     triangleShape.setMargin(m_triangleCollisionMargin);
 
