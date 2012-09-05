@@ -59,11 +59,16 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
     if(rootNode)
     {
         int32 count = rootNode->GetChildrenCount();
+		Vector<SceneNode*> tempV;
+		tempV.reserve((count));
         for(int32 i = 0; i < count; ++i)
         {
-            SceneNode *node = rootNode->GetChild(i);
-            scene->AddNode(node);
+			tempV.push_back(rootNode->GetChild(i));
         }
+		for(int32 i = 0; i < count; ++i)
+		{
+			scene->AddNode(tempV[i]);
+		}
     }
     
     ExportScene(scene, fileName, errorLog);

@@ -122,10 +122,10 @@ void SceneNode::AddNode(SceneNode * node)
     {
         node->Retain();
         children.push_back(node);
-        //if (node->parent)
-        //{
-        //    node->parent->RemoveNode(node);
-        //}
+        if (node->parent)
+        {
+            node->parent->RemoveNode(node);
+        }
         node->SetParent(this);
         node->SetScene(GetScene());
     }
@@ -142,10 +142,10 @@ void SceneNode::InsertBeforeNode(SceneNode *newNode, SceneNode *beforeNode)
             {
                 newNode->Retain();
                 children.insert(it, newNode);
-                //if (newNode->parent)
-                //{
-                //    newNode->parent->RemoveNode(newNode);
-                //}
+                if (newNode->parent)
+                {
+                    newNode->parent->RemoveNode(newNode);
+                }
                 newNode->SetParent(this);
                 newNode->SetScene(GetScene());
                 break;
