@@ -372,7 +372,7 @@ bool WaitForScreenAction::TestCondition()
         AutotestingSystem::Instance()->OnError(Format("WaitForScreenAction %s timeout", screenName.c_str()));
         return true;
     }
-	return (UIScreenManager::Instance()->GetScreen()->GetName() == screenName);
+	return (UIControlSystem::Instance()->GetScreen()->GetName() == screenName);
 }
 
 String WaitForScreenAction::Dump()

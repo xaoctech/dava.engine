@@ -298,7 +298,7 @@ protected:
         //int16   xbuf, ybuf;
         int16   size;
         int8    lod;
-        int8    rdoQuad;
+        int16   rdoQuad;
         AABBox3 bbox;
         uint32  frame;
     };
@@ -322,7 +322,7 @@ protected:
 
     AABBox3     box;
     
-    int8 AllocateRDOQuad(LandscapeQuad * quad);
+    int16 AllocateRDOQuad(LandscapeQuad * quad);
     void ReleaseAllRDOQuads();
 
     Vector<LandscapeVertex *> landscapeVerticesArray;
@@ -366,7 +366,7 @@ protected:
 
 	LandscapeCursor * cursor;
         
-    int8 queueRdoQuad;
+    int16 queueRdoQuad;
     int32 queueRenderCount;
     uint16 * queueDrawIndices;
     
