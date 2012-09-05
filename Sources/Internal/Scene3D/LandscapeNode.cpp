@@ -176,7 +176,7 @@ void LandscapeNode::ReleaseShaders()
 }
 
 
-int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
+int16 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
 {
 //    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
     DVASSERT(quad->size == RENDER_QUAD_WIDTH - 1);
@@ -208,7 +208,7 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     
 //    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
     
-    return (int8)landscapeRDOArray.size() - 1;
+    return (int16)landscapeRDOArray.size() - 1;
 }
 
 void LandscapeNode::ReleaseAllRDOQuads()
