@@ -2328,7 +2328,6 @@ void ParticlesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, fl
 
 void ParticlesEditorControl::LoadFromYaml(const String &pathToFile)
 {
-	lastOpenedConfigName = pathToFile;
 	particleEmitterNode->LoadFromYaml(pathToFile);
 	SetEmitter(particleEmitterNode->GetEmitter());
 }
@@ -3423,5 +3422,16 @@ void ParticlesEditorControl::SetNode(ParticleEmitterNode * node)
 {
 	SafeRelease(particleEmitterNode);
 	particleEmitterNode = SafeRetain(node);
+}
+
+String ParticlesEditorControl::GetActiveConfigName()
+{
+	String ret;
+	if(emitter)
+	{
+		ret = emitter->GetConfigPath();
+	}
+
+	return ret;
 }
 

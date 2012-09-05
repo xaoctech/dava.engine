@@ -199,9 +199,14 @@ void PropertyLineEditControl::Input(UIEvent * touch)
 		{
 			activeValueIndex = FindActiveValueFromPosition(absolutePoint);
             selectedValueIndex = activeValueIndex;
-            delegate->OnPointSelected(this, activeValueIndex, Vector2(values[activeValueIndex].x, values[activeValueIndex].y));
-            lastX = values[activeValueIndex].x;
-            lastY = values[activeValueIndex].y;
+			Vector2 val;
+			if(activeValueIndex >= 0)
+			{
+				lastX = values[activeValueIndex].x;
+				lastY = values[activeValueIndex].y;
+				val = Vector2(lastX, lastY);
+			}
+            delegate->OnPointSelected(this, activeValueIndex, val);
 		}
 		
 		if (touch->phase == UIEvent::PHASE_DRAG)
