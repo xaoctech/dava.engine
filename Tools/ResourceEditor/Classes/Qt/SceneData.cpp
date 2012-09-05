@@ -263,10 +263,17 @@ void SceneData::EditScene(const String &scenePathname)
     if(rootNode)
     {
         SetScenePathname(scenePathname);
-        for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+		Vector<SceneNode*> tempV;
+		tempV.reserve(rootNode->GetChildrenCount());
+
+		for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+		{
+			tempV.push_back(rootNode->GetChild(ci));
+		}
+        for (int ci = 0; ci < tempV.size(); ++ci)
         {
             //рут нода это сама сцена в данном случае
-            scene->AddNode(rootNode->GetChild(ci));
+            scene->AddNode(tempV[ci]);
         }
     }
 
@@ -494,10 +501,10 @@ void SceneData::RemoveIdentityNodes(DAVA::SceneNode *node)
            &&   (typeid(LodNode) != typeid(*node))
            &&   (removedChild->GetChildrenCount() == 1))
         {
-            SceneNode *child = SafeRetain(removedChild->GetChild(0));
-            removedChild->RemoveNode(child);
-            node->AddNode(child);
-            SafeRelease(child);
+            //SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            //removedChild->RemoveNode(child);
+            node->AddNode(removedChild->GetChild(0));
+            //SafeRelease(child);
             
             node->RemoveNode(removedChild);
             
