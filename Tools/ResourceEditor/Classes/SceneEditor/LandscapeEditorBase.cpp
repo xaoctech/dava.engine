@@ -160,7 +160,7 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
 
     Vector3 from, dir;
     parent->GetCursorVectors(&from, &dir, touchPoint);
-    Vector3 to = from + dir * 200.f;
+    Vector3 to = from + dir * (float32)RAY_TRACING_DISTANCE;
     
     Vector3 point;
     bool isIntersect = workingScene->LandscapeIntersection(from, to, point);
