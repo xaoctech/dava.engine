@@ -749,7 +749,7 @@ void SceneNode::RecursiveEnableImposters(bool enable)
 	}
 }
 
-String SceneNode::GetPathID()
+String SceneNode::GetPathID(SceneNode * root)
 {
 	String result;
 	SceneNode * curr = this;
@@ -757,7 +757,7 @@ String SceneNode::GetPathID()
 	int32 sz, i;
 	char buff[10];
 
-	while (curr != scene)
+	while (curr != root)
 	{
 		parent = curr->GetParent();
 		sz = parent->GetChildrenCount();
@@ -765,8 +765,8 @@ String SceneNode::GetPathID()
 		{
 			if (curr == parent->GetChild(i))
 			{
-				_snprintf( buff, sizeof(buff), ":%d", i);
-				result = result + buff;
+				_snprintf( buff, sizeof(buff), "%d:", i);
+				result = buff + result;
 				break;
 			}
 		}
