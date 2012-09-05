@@ -43,6 +43,7 @@ class LandscapeEditorBase
     enum eConst
     {
         INVALID_TOUCH_ID = -1,
+		RAY_TRACING_DISTANCE = 1000
     };
     
     
