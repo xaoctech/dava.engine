@@ -18,6 +18,7 @@ public:
 	virtual ~ParticleLayer3D();
 
 	virtual void LoadFromYaml(YamlNode * node);
+	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 
 	void Draw(const Vector3 & up, const Vector3 & left);
 
