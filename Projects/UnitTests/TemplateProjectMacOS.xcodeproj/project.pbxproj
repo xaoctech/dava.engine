@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 029E4D8915D403BA004A4167 /* SplitTest.cpp */; };
+		50A570B315F2A9DA0042C403 /* MaterialCompilerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A570B115F2A9DA0042C403 /* MaterialCompilerTest.cpp */; };
 		5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C44737515B5A0FD00028948 /* SoundTest.cpp */; };
 		5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2461B158F46D600465879 /* EntityTest.cpp */; };
 		5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FA156CC72400742348 /* SampleTest.cpp */; };
@@ -55,6 +56,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
+		50A570B115F2A9DA0042C403 /* MaterialCompilerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialCompilerTest.cpp; path = Classes/MaterialCompilerTest.cpp; sourceTree = "<group>"; };
+		50A570B215F2A9DA0042C403 /* MaterialCompilerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialCompilerTest.h; path = Classes/MaterialCompilerTest.h; sourceTree = "<group>"; };
 		5C44737515B5A0FD00028948 /* SoundTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SoundTest.cpp; path = Classes/SoundTest.cpp; sourceTree = "<group>"; };
 		5C44737615B5A0FD00028948 /* SoundTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundTest.h; path = Classes/SoundTest.h; sourceTree = "<group>"; };
 		5C6EF11B15751E1B001E45AD /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -189,9 +192,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		50A570AF15F2A9CB0042C403 /* MaterialCompilerTest */ = {
+			isa = PBXGroup;
+			children = (
+				50A570B115F2A9DA0042C403 /* MaterialCompilerTest.cpp */,
+				50A570B215F2A9DA0042C403 /* MaterialCompilerTest.h */,
+			);
+			name = MaterialCompilerTest;
+			sourceTree = "<group>";
+		};
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				50A570AF15F2A9CB0042C403 /* MaterialCompilerTest */,
 				029E4D8815D40386004A4167 /* SplitTest */,
 				5C44737415B5A0EB00028948 /* SoundTest */,
 				FEA8F70615A0A54700EED3DC /* HashMap */,
@@ -395,6 +408,7 @@
 				FEA8F70915A0A55600EED3DC /* HashMapTest.cpp in Sources */,
 				5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */,
 				029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */,
+				50A570B315F2A9DA0042C403 /* MaterialCompilerTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +454,7 @@
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = UnitTests;
 			};
 			name = Debug;
@@ -454,6 +469,7 @@
 				GCC_PREFIX_HEADER = TemplateProjectMacOS_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectMacOS-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = UnitTests;
 			};
 			name = Release;

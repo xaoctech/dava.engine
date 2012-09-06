@@ -88,11 +88,44 @@ bool MaterialGraph::LoadFromFile(const String & pathname)
 
 bool MaterialGraph::LoadNode(YamlNode * graphNode)
 {
-    YamlNode * typeNode = graphNode->Get("type");
+    YamlNode * typeNode = graphNode->Get("node");
     YamlNode * nameNode = graphNode->Get("name");
+    
+    
+    MaterialGraphNode * node = new MaterialGraphNode();
+    node->SetType(typeNode->AsString());
+    node->SetName(nameNode->AsString());
+    AddNode(node);
+    
     //YamlNode *
+    Logger::Debug("- %s %s", typeNode->AsString().c_str(), nameNode->AsString().c_str());
+
+    // Parse inputs
+    std::multimap<String, YamlNode*> & map = graphNode->AsMap();
+    std::pair<std::multimap<String, YamlNode*>::iterator, std::multimap<String, YamlNode*>::iterator> inputs = map.equal_range("input");
     
-    
+    uint32 count = 0;
+    for (std::multimap<String, YamlNode*>::iterator it = inputs.first; it != inputs.second; ++it)
+    {
+        YamlNode * inputNode = it->second;
+        const String & inputName = inputNode->Get(0)->AsString();
+        const String & nodeName = inputNode->Get(1)->AsString();
+        const String & connectionModifier = inputNode->Get(2)->AsString();
+        
+        MaterialGraphNode * connectNode = GetNodeByName(nodeName);
+        if (connectNode)
+        {
+            Logger::Debug("- input: %s connected:%s filter:%s",
+                          inputNode->Get(0)->AsString().c_str(),
+                          inputNode->Get(1)->AsString().c_str(),
+                          inputNode->Get(2)->AsString().c_str());
+
+            node->ConnectToNode(inputName, connectNode, connectionModifier);
+            count++;
+        }
+    }
+    SafeRelease(node);
+    return true;
 }
     
     

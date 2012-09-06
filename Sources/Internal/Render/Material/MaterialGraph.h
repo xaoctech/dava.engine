@@ -45,6 +45,7 @@ public:
     MaterialGraph();
     ~MaterialGraph();
     
+    
     bool LoadFromFile(const String & pathname);
     bool LoadNode(YamlNode * graphNode);
     

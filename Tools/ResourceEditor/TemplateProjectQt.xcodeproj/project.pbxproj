@@ -10,6 +10,7 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
+		50A570E015F4F1EA0042C403 /* SwitchNodePropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A570DE15F4F1EA0042C403 /* SwitchNodePropertyControl.cpp */; };
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
 		5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FABE15D530270048024E /* LibraryModel.cpp */; };
 		5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC115D535230048024E /* moc_LibraryModel.cpp */; };
@@ -343,6 +344,8 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
+		50A570DE15F4F1EA0042C403 /* SwitchNodePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchNodePropertyControl.cpp; path = Classes/SceneEditor/SwitchNodePropertyControl.cpp; sourceTree = "<group>"; };
+		50A570DF15F4F1EA0042C403 /* SwitchNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchNodePropertyControl.h; path = Classes/SceneEditor/SwitchNodePropertyControl.h; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -1598,6 +1601,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				50A570DE15F4F1EA0042C403 /* SwitchNodePropertyControl.cpp */,
+				50A570DF15F4F1EA0042C403 /* SwitchNodePropertyControl.h */,
 				5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */,
 				5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */,
 				5C7F48CE15B44B7A0038AF3A /* BoxPropertyControl.cpp */,
@@ -2346,6 +2351,7 @@
 				5C03FAC515D5399D0048024E /* QtMainWindowHandler.cpp in Build Sources */,
 				5C03FAC715D53E8B0048024E /* moc_QtMainWindowHandler.cpp in Build Sources */,
 				5C1DE96B15D8F10000C6948C /* PointerHolder.cpp in Build Sources */,
+				50A570E015F4F1EA0042C403 /* SwitchNodePropertyControl.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

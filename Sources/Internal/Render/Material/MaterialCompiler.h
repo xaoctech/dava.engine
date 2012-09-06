@@ -58,6 +58,7 @@ public:
     };
     
     eCompileResult Compile(MaterialGraph * materialGraph, uint32 maxLights, MaterialShaders * resultShaders);
+    
 private:
     void GenerateCode(MaterialGraph * graph);
     void RecursiveSetDepthMarker(MaterialGraphNode * node, uint32 depthMarker);

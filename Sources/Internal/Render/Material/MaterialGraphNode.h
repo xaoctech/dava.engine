@@ -52,6 +52,7 @@ public:
     {
         NO_ERROR = 1,
         ERROR_NOT_ENOUGH_CONNECTORS,
+        ERROR_UNUSED_NODE,
     };
     
     enum eType
@@ -59,14 +60,18 @@ public:
         TYPE_NONE = 0,
         TYPE_FORWARD_MATERIAL,
         TYPE_DEFERRED_MATERIAL,
+        TYPE_SAMPLE_2D,
         TYPE_MUL,
         TYPE_ADD,
+        TYPE_LERP,
+        TYPE_TIME,
         TYPE_SIN,
         TYPE_COS,
-        TYPE_LERP,
+        
+        TYPE_COUNT,
     };
     
-    MaterialGraphNode(YamlNode * node);
+    MaterialGraphNode();
     ~MaterialGraphNode();
     
     void SetDepthMarker(uint32 depthMarker);
@@ -83,11 +88,18 @@ public:
     
     const String & GetName() const;
     void SetName(const String & name);
+    void SetType(const String & type);
+    
+    void MergeConnectionModifiers(const String & usedByOtherNode);
+    
 protected:
+    String GetResultFormat(const String & s1, const String & s2);
+
     eType type;
     uint32 depthMarker;
     String name;
     bool isVertexShaderNode;
+    String usedByOthersModifier;
     Map<String, MaterialGraphNodeConnector*> inputConnectors;
 };
 
