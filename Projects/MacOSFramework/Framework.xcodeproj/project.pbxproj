@@ -31,6 +31,14 @@
 		47FBFFD713A790C800E5A7F6 /* UIHierarchy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */; };
 		47FBFFDA13A7951100E5A7F6 /* UIHierarchyCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */; };
 		47FBFFDB13A7951100E5A7F6 /* UIHierarchyCell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */; };
+		50A570A015F23E7F0042C403 /* MaterialCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A5709E15F23E7F0042C403 /* MaterialCompiler.cpp */; };
+		50A570A115F23E7F0042C403 /* MaterialCompiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A5709F15F23E7F0042C403 /* MaterialCompiler.h */; };
+		50A570A615F248BA0042C403 /* MaterialGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A570A215F248BA0042C403 /* MaterialGraph.cpp */; };
+		50A570A715F248BA0042C403 /* MaterialGraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A570A315F248BA0042C403 /* MaterialGraph.h */; };
+		50A570A815F248BA0042C403 /* MaterialGraphNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A570A415F248BA0042C403 /* MaterialGraphNode.cpp */; };
+		50A570A915F248BA0042C403 /* MaterialGraphNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A570A515F248BA0042C403 /* MaterialGraphNode.h */; };
+		50A570F515F8BA830042C403 /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50A570F315F8BA830042C403 /* Parser.cpp */; };
+		50A570F615F8BA830042C403 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 50A570F415F8BA830042C403 /* Parser.h */; };
 		5C19F49515A42D920064E889 /* KeyedArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49015A42D920064E889 /* KeyedArchiver.cpp */; };
 		5C19F49615A42D920064E889 /* KeyedArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C19F49115A42D920064E889 /* KeyedArchiver.h */; };
 		5C19F49715A42D920064E889 /* KeyedUnarchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */; };
@@ -608,6 +616,14 @@
 		47FBFFD513A790C800E5A7F6 /* UIHierarchy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchy.cpp; sourceTree = "<group>"; };
 		47FBFFD813A7951100E5A7F6 /* UIHierarchyCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHierarchyCell.h; sourceTree = "<group>"; };
 		47FBFFD913A7951100E5A7F6 /* UIHierarchyCell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIHierarchyCell.cpp; sourceTree = "<group>"; };
+		50A5709E15F23E7F0042C403 /* MaterialCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialCompiler.cpp; path = Material/MaterialCompiler.cpp; sourceTree = "<group>"; };
+		50A5709F15F23E7F0042C403 /* MaterialCompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialCompiler.h; path = Material/MaterialCompiler.h; sourceTree = "<group>"; };
+		50A570A215F248BA0042C403 /* MaterialGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialGraph.cpp; path = Material/MaterialGraph.cpp; sourceTree = "<group>"; };
+		50A570A315F248BA0042C403 /* MaterialGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialGraph.h; path = Material/MaterialGraph.h; sourceTree = "<group>"; };
+		50A570A415F248BA0042C403 /* MaterialGraphNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MaterialGraphNode.cpp; path = Material/MaterialGraphNode.cpp; sourceTree = "<group>"; };
+		50A570A515F248BA0042C403 /* MaterialGraphNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MaterialGraphNode.h; path = Material/MaterialGraphNode.h; sourceTree = "<group>"; };
+		50A570F315F8BA830042C403 /* Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
+		50A570F415F8BA830042C403 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
 		5C19F49015A42D920064E889 /* KeyedArchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiver.cpp; sourceTree = "<group>"; };
 		5C19F49115A42D920064E889 /* KeyedArchiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyedArchiver.h; sourceTree = "<group>"; };
 		5C19F49215A42D920064E889 /* KeyedUnarchiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedUnarchiver.cpp; sourceTree = "<group>"; };
@@ -1229,6 +1245,19 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
+		50A5709C15F23E760042C403 /* Material */ = {
+			isa = PBXGroup;
+			children = (
+				50A570A215F248BA0042C403 /* MaterialGraph.cpp */,
+				50A570A315F248BA0042C403 /* MaterialGraph.h */,
+				50A570A415F248BA0042C403 /* MaterialGraphNode.cpp */,
+				50A570A515F248BA0042C403 /* MaterialGraphNode.h */,
+				50A5709E15F23E7F0042C403 /* MaterialCompiler.cpp */,
+				50A5709F15F23E7F0042C403 /* MaterialCompiler.h */,
+			);
+			name = Material;
+			sourceTree = "<group>";
+		};
 		5C7BE58B1574BA6C004FF01C /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -1515,6 +1544,8 @@
 		FECFC0E512E87E3000C71562 /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
+				50A570F315F8BA830042C403 /* Parser.cpp */,
+				50A570F415F8BA830042C403 /* Parser.h */,
 				5C8E672A15A58CA400A87103 /* FileSystemObjective.mm */,
 				5C19F49015A42D920064E889 /* KeyedArchiver.cpp */,
 				5C19F49115A42D920064E889 /* KeyedArchiver.h */,
@@ -1664,6 +1695,7 @@
 		FECFC15B12E87E3000C71562 /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				50A5709C15F23E760042C403 /* Material */,
 				5CBF71CB15C6DFCA00CD1736 /* RenderOptions.cpp */,
 				5CBF71CC15C6DFCA00CD1736 /* RenderOptions.h */,
 				5CF6FF291563A8390070C3DB /* ImageConvert.h */,
@@ -2303,6 +2335,10 @@
 				5CBF71CE15C6DFCB00CD1736 /* RenderOptions.h in Headers */,
 				C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */,
 				CCFF221415EE10E400363446 /* SwitchNode.h in Headers */,
+				50A570A115F23E7F0042C403 /* MaterialCompiler.h in Headers */,
+				50A570A715F248BA0042C403 /* MaterialGraph.h in Headers */,
+				50A570A915F248BA0042C403 /* MaterialGraphNode.h in Headers */,
+				50A570F615F8BA830042C403 /* Parser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2629,6 +2665,10 @@
 				5CBF71CD15C6DFCB00CD1736 /* RenderOptions.cpp in Sources */,
 				C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */,
 				CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */,
+				50A570A015F23E7F0042C403 /* MaterialCompiler.cpp in Sources */,
+				50A570A615F248BA0042C403 /* MaterialGraph.cpp in Sources */,
+				50A570A815F248BA0042C403 /* MaterialGraphNode.cpp in Sources */,
+				50A570F515F8BA830042C403 /* Parser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

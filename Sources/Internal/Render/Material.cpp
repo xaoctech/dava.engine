@@ -70,6 +70,7 @@ LightNode * InstanceMaterialState::GetLight(int32 lightIndex)
     
 REGISTER_CLASS(Material);
     
+    
 UberShader * Material::uberShader = 0;
     
 const char8 * Material::GetTypeName(eType format)

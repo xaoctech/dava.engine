@@ -36,7 +36,7 @@ namespace DAVA
     
 MaterialCompiler::eCompileResult MaterialCompiler::Compile(MaterialGraph * materialGraph, uint32 maxLights, MaterialShaders * resultShaders)
 {
-    MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("result");
+    MaterialGraphNode * rootResultNode = materialGraph->GetNodeByName("material");
     if (!rootResultNode)
     {
         return COMPILATION_FAILED;

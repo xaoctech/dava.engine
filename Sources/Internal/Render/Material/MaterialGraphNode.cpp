@@ -45,8 +45,6 @@ namespace DAVA
     Lerp:
     var [name] = lerp([a], [b], [t]);
  
- 
- 
     <ambient diffuse>
     </>
     
@@ -54,10 +52,11 @@ namespace DAVA
  
  */
     
-MaterialGraphNode::MaterialGraphNode(YamlNode * node)
+MaterialGraphNode::MaterialGraphNode()
     :   type(TYPE_NONE)
     ,   depthMarker(0)
     ,   isVertexShaderNode(false)
+    ,   usedByOthersModifier()
 {
     
 }
@@ -93,6 +92,14 @@ void MaterialGraphNode::ConnectToNode(const String & connectorName, MaterialGrap
     connector->node = node;
     connector->modifier = connectionModifier;
     inputConnectors[connectorName] = connector;
+    node->MergeConnectionModifiers(connectionModifier);
+}
+    
+void MaterialGraphNode::MergeConnectionModifiers(const String & usedByOtherNode)
+{
+    usedByOthersModifier += usedByOtherNode;
+    //std::sort(usedByOthersModifier.begin(), usedByOthersModifier.end());
+    std::unique(usedByOthersModifier.begin(), usedByOthersModifier.end());
 }
 
 MaterialGraphNodeConnector * MaterialGraphNode::GetInputConnector(const String & name)
@@ -103,9 +110,51 @@ MaterialGraphNodeConnector * MaterialGraphNode::GetInputConnector(const String &
     return 0;
 }
 
+static const char * returnTypes[] =
+{
+    "wrong type",
+    "float",
+    "vec2",
+    "vec3",
+    "vec4",
+};
+
+String MaterialGraphNode::GetResultFormat(const String & s1, const String & s2)
+{
+    uint32 s1Len = s1.length();
+    uint32 s2Len = s2.length();
+    if ((s1Len == 1) || (s2Len == 1))
+    {
+        uint32 formatBytes = Max(s1Len, s2Len);
+        return returnTypes[formatBytes];
+    }
+    else if (s1Len == s2Len)return returnTypes[s1Len];
+    return returnTypes[0];
+}
+
 MaterialGraphNode::eCompileError MaterialGraphNode::GenerateCode(String & vertexShader, String & pixelShader)
 {
-    // 
+    uint32 usedByOthersCount = usedByOthersModifier.length();
+    if (usedByOthersCount == 0)
+    {
+        return ERROR_UNUSED_NODE;
+    }
+    //
+    if (type == TYPE_SAMPLE_2D)
+    {
+        
+        String shaderLine = Format("%s %s = sample2d(%s, textureCoord0).%s", returnTypes[usedByOthersCount],
+                                   name.c_str(),
+                                   name.c_str(),
+                                   usedByOthersModifier.c_str());
+        Logger::Debug("%s", shaderLine.c_str());
+        if (isVertexShaderNode)
+            vertexShader += shaderLine;
+        else
+            pixelShader += shaderLine;
+
+        
+    }
     if (type == TYPE_MUL)
     {
         MaterialGraphNodeConnector * connectorA = GetInputConnector("a");
@@ -113,19 +162,44 @@ MaterialGraphNode::eCompileError MaterialGraphNode::GenerateCode(String & vertex
         
         if (!connectorA || !connectorB)
             return ERROR_NOT_ENOUGH_CONNECTORS;
+        String resultFormat = GetResultFormat(connectorA->modifier, connectorB->modifier);
         
-        String shaderLine = Format("vec4 %s = %s.%s * %s.%s",  /*GetResultFormat(),*/
+        String shaderLine = Format("%s %s = %s.%s * %s.%s", resultFormat.c_str(),
                                                             name.c_str(),
                                                             connectorA->node->GetName().c_str(),
                                                             connectorA->modifier.c_str(),
                                                             connectorB->node->GetName().c_str(),
                                                             connectorB->modifier.c_str());
+        Logger::Debug("%s", shaderLine.c_str());
         if (isVertexShaderNode)
             vertexShader += shaderLine;
         else
             pixelShader += shaderLine;
     
     }
+    if (type == TYPE_ADD)
+    {
+        MaterialGraphNodeConnector * connectorA = GetInputConnector("a");
+        MaterialGraphNodeConnector * connectorB = GetInputConnector("b");
+        
+        if (!connectorA || !connectorB)
+            return ERROR_NOT_ENOUGH_CONNECTORS;
+        String resultFormat = GetResultFormat(connectorA->modifier, connectorB->modifier);
+        
+        String shaderLine = Format("%s %s = %s.%s + %s.%s", resultFormat.c_str(),
+                                   name.c_str(),
+                                   connectorA->node->GetName().c_str(),
+                                   connectorA->modifier.c_str(),
+                                   connectorB->node->GetName().c_str(),
+                                   connectorB->modifier.c_str());
+
+        Logger::Debug("%s", shaderLine.c_str());
+        if (isVertexShaderNode)
+            vertexShader += shaderLine;
+        else
+            pixelShader += shaderLine;
+    }
+    
     return NO_ERROR;
 }
 
@@ -137,6 +211,32 @@ const String & MaterialGraphNode::GetName() const
 void MaterialGraphNode::SetName(const String & _name)
 {
     name = _name;
+}
+
+static const char * types[] =
+{
+    "TYPE_NONE",
+    "TYPE_FORWARD_MATERIAL",
+    "TYPE_DEFERRED_MATERIAL",
+    "TYPE_SAMPLE_2D",
+    "TYPE_MUL",
+    "TYPE_ADD",
+    "TYPE_LERP",
+    "TYPE_TIME",
+    "TYPE_SIN",
+    "TYPE_COS",
+};
+
+void MaterialGraphNode::SetType(const String & _type)
+{
+    for (uint32 k = 0; k < TYPE_COUNT; ++k)
+    {
+        if (_type == types[k])
+        {
+            type = (eType)k;
+            break;
+        }
+    }
 }
 
 

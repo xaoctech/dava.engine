@@ -40,6 +40,7 @@
 #include "HashMapTest.h"
 #include "SoundTest.h"
 #include "SplitTest.h"
+#include "MaterialCompilerTest.h"
 
 using namespace DAVA;
 
@@ -65,12 +66,13 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new SampleTest();
-	new EntityTest(); 
-    new MemoryAllocatorsTest();
-    new HashMapTest();
-    new SoundTest();
-    new SplitTest();
+//    new SampleTest();
+//	new EntityTest(); 
+//    new MemoryAllocatorsTest();
+//    new HashMapTest();
+//    new SoundTest();
+//    new SplitTest();
+    new MaterialCompilerTest();
     
     errors.reserve(TestCount());
 

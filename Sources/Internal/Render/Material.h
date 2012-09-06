@@ -94,6 +94,25 @@ public:
         MATERIAL_TYPES_COUNT
     };
     
+    
+    /*
+        Plan of supported materials:
+            Default per vertex lighting material
+            Default per pixel lighting material
+            Default deferred lighting material
+     */
+    
+    enum eMaterialGeneratorInput
+    {
+        MATERIAL_INPUT_DIFFUSE = (1 << 1),
+        MATERIAL_INPUT_SPECULAR = (1 << 2),
+        MATERIAL_INPUT_SPECULAR_POWER = (1 << 3),
+        MATERIAL_INPUT_NORMAL = (1 << 4),
+        MATERIAL_INPUT_OPACITY = (1 << 5),
+        MATERIAL_INPUT_OPACITY_MASK = (1 << 6),
+        MATERIAL_INPUT_EMISSIVE = (1 << 7),
+    };
+    
     static const char8 * GetTypeName(eType type);
 
     Material();
