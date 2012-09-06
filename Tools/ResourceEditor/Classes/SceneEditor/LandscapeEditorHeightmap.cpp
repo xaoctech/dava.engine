@@ -11,7 +11,7 @@
 
 #include "UNDOManager.h"
 
-#pragma mark --LandscapeEditorHeightmap
+
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -182,7 +182,7 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
         }
         
-        heightmapNode->UpdateHeightmapRect(Rect(pos.x, pos.y, scaleSize, scaleSize));
+        UpdateHeightmap(Rect(pos.x, pos.y, scaleSize, scaleSize));
     }
 }
 
@@ -203,7 +203,7 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
             ImageRasterizer::DrawCopypasteRGBA(heightmap, toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
             
-            heightmapNode->UpdateHeightmapRect(Rect(posTo.x, posTo.y, scaleSize, scaleSize));
+            UpdateHeightmap(Rect(posTo.x, posTo.y, scaleSize, scaleSize));
         }
         
         if(currentTool->copyTilemask)
@@ -451,7 +451,7 @@ void LandscapeEditorHeightmap::UndoAction()
     if(UNDOAction::ACTION_HEIGHTMAP == type)
     {
         UNDOManager::Instance()->UndoHeightmap(heightmap);
-        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+        UpdateHeightmap(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
     }
 }
 
@@ -461,7 +461,7 @@ void LandscapeEditorHeightmap::RedoAction()
     if(UNDOAction::ACTION_HEIGHTMAP == type)
     {
         UNDOManager::Instance()->RedoHeightmap(heightmap);
-        heightmapNode->UpdateHeightmapRect(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+        UpdateHeightmap(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
     }
 }
 
@@ -493,8 +493,7 @@ NodesPropertyControl *LandscapeEditorHeightmap::GetPropertyControl(const Rect &r
 }
 
 
-#pragma mark -- LandscapeEditorPropertyControlDelegate
-void LandscapeEditorHeightmap::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
+void LandscapeEditorHeightmap::LandscapeEditorSettingsChanged(LandscapeEditorSettings *)
 {
 }
 
@@ -537,7 +536,6 @@ void LandscapeEditorHeightmap::TextureDidChanged(const String &forKey)
     }
 }
 
-#pragma mark  --LandscapeToolsPanelDelegate
 void LandscapeEditorHeightmap::OnToolSelected(LandscapeTool *newTool)
 {
     LandscapeEditorBase::OnToolSelected(newTool);
@@ -558,3 +556,18 @@ void LandscapeEditorHeightmap::OnShowGrid(bool show)
         landscapeDebugNode->SetDebugFlags(workingLandscape->GetDebugFlags());
     }
 }
+
+
+void LandscapeEditorHeightmap::UpdateHeightmap(const Rect &updatedRect)
+{
+    if(heightmapNode)
+    {
+        heightmapNode->UpdateHeightmapRect(updatedRect);
+    }
+    
+    if(landscapeDebugNode)
+    {
+        landscapeDebugNode->RebuildVertexes(updatedRect);
+    }
+}
+
