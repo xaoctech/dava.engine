@@ -25,15 +25,18 @@ public:
 protected:
 
 	virtual void resizeEvent(QResizeEvent *);
+    virtual void moveEvent(QMoveEvent *);
+
     virtual void paintEvent(QPaintEvent *);
 
 	virtual void showEvent(QShowEvent *);
 	virtual void hideEvent(QHideEvent *);
 
 	virtual void closeEvent(QCloseEvent *);
-
-    virtual void moveEvent(QMoveEvent *);
-
+    
+#if defined (Q_WS_MAC)
+    virtual void mouseMoveEvent(QMouseEvent *);
+#endif //#if defined (Q_WS_MAC)
     
 #if defined(Q_WS_WIN)
 	virtual bool winEvent(MSG *message, long *result);
