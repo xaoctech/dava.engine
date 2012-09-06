@@ -59,16 +59,8 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage
     
     ReleaseShaders();
     InitShaders();
-}
 
-void LandscapeDebugNode::Draw()
-{
-    if(0 == heightmap->Size())
-        return;
-    
-    BindMaterial(0);
-
-    int32 index = 0;
+	int32 index = 0;
 	for (int32 y = 0; y < heightmap->Size(); ++y)
 	{
 		for (int32 x = 0; x < heightmap->Size(); ++x)
@@ -96,8 +88,18 @@ void LandscapeDebugNode::Draw()
 		}
 	}
 
-    debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position); 
+	debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position); 
 	debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord); 
+}
+
+void LandscapeDebugNode::Draw()
+{
+    if(0 == heightmap->Size())
+        return;
+    
+    BindMaterial(0);
+
+
 
 #if defined(__DAVAENGINE_OPENGL__)
     if (debugFlags & DEBUG_DRAW_GRID)
