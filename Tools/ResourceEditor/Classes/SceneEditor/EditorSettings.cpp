@@ -45,7 +45,7 @@ void EditorSettings::SetProjectPath(const String &projectPath)
     settings->SetString(String("ProjectPath"), projectPath);
 }
 
-String EditorSettings::GetProjetcPath()
+String EditorSettings::GetProjectPath()
 {
     return settings->GetString(String("ProjectPath"), String(""));
 }

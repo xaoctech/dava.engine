@@ -8,6 +8,7 @@
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/ViewCommands.h"
 #include "../Commands/CommandReloadTextures.h"
+#include "../Commands/ParticleEditorCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -337,6 +338,16 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 void QtMainWindowHandler::ReloadTexturesFromFileSystem()
 {
     Execute(new CommandReloadTextures());
+}
+
+void QtMainWindowHandler::OpenParticleEditorConfig()
+{
+	Execute(new CommandOpenParticleEditorConfig());
+}
+
+void QtMainWindowHandler::SaveParticleEditorConfig()
+{
+	Execute(new CommandSaveParticleEditorConfig());
 }
 
 

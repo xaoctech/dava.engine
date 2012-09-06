@@ -113,7 +113,7 @@ void FrameworkDidLaunched()
     new SceneExporter();
     new EditorSettings();
     new SceneValidator();
-    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
+    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
     
 	if (Core::Instance()->IsConsoleMode())
 	{
