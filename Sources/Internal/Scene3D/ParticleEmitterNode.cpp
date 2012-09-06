@@ -1,6 +1,7 @@
 #include "Scene3D/ParticleEmitterNode.h"
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/SceneFileV2.h"
 #include "Render/Material.h"
 #include "Particles/ParticleEmitter3D.h"
 
@@ -89,7 +90,7 @@ void ParticleEmitterNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
 {
 	SceneNode::Save(archive, sceneFile);
 
-	archive->SetString("yamlPath", yamlPath);
+	archive->SetString("yamlPath", sceneFile->AbsoluteToRelative(yamlPath));
 }
 
 void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
@@ -97,6 +98,7 @@ void ParticleEmitterNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 	SceneNode::Load(archive, sceneFile);
 	
 	yamlPath = archive->GetString("yamlPath");
+	yamlPath = sceneFile->RelativeToAbsolute(yamlPath);
 	LoadFromYaml(yamlPath);
 }
 

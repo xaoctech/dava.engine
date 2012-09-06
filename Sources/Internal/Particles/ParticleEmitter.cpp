@@ -362,6 +362,7 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
 
 void ParticleEmitter::LoadFromYaml(const String & filename)
 {
+	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
 	lifeTime = 1000000000.0f;

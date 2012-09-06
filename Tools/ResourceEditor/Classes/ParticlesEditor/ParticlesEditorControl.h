@@ -193,6 +193,11 @@ public:
 
 	
 	void SetEmitter(ParticleEmitter *emitter);
+	void LoadFromYaml(const String &pathToFile);
+	void SaveToYaml(const String &pathToFile);
+	String GetActiveConfigName();
+	void SetNode(ParticleEmitterNode * node);
+
     
 protected:
     virtual int32 ElementsCount(UIList *forList);
@@ -211,6 +216,8 @@ protected:
     virtual void OnPointSelected(PropertyLineEditControl *forControl, int32 index, Vector2 value);
 	virtual void TextFieldShouldReturn(UITextField * textField);
 	virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
+
+	
     
     void ButtonPressed(BaseObject *obj, void *data, void *callerData);
     void ShowAddProps();
@@ -241,7 +248,7 @@ protected:
     void HideForcesList();
     void ShowForcesList();
     
-    void SaveToYaml(const String &pathToFile);
+
     
     void PrintPropValue(File *file, const String &propName, PropertyLineValue<float32> *pv);
     void PrintPropValue(File *file, const String &propName, PropertyLineValue<Vector2> *pv);
@@ -345,5 +352,6 @@ protected:
     UIControl *colorView;
     
     ForcePreviewControl *forcePreview;
-};
 
+	ParticleEmitterNode * particleEmitterNode;
+};

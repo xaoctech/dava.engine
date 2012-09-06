@@ -133,6 +133,8 @@ public:
 	};
     
     void RecreteFullTilingTexture();
+
+	ParticlesEditorControl * GetParticlesEditor() { return particlesEditor; }
     
 #if defined (DAVA_QT)
     void SelectNodeQt(SceneNode *node);

@@ -136,6 +136,8 @@ public:
 #endif //#if defined (DAVA_QT)        
     
     
+	SceneGraph * GetSceneGraph() { return sceneGraph; }
+
 protected:
 
     void InitControls();
