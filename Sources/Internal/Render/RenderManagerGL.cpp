@@ -193,7 +193,7 @@ void RenderManager::EndFrame()
 	::SwapBuffers(hDC);
 #endif //#if defined(__DAVAENGINE_WIN32__)
 	
-	RENDER_VERIFY();	// verify at the end of the frame
+	RENDER_VERIFY(;);	// verify at the end of the frame
     
     if(needGLScreenShot)
     {
@@ -434,7 +434,7 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
     IdentityModelMatrix();
     
-	RENDER_VERIFY();
+	RENDER_VERIFY(;);
 
 	IdentityMappingMatrix();
 	SetVirtualViewScale();
