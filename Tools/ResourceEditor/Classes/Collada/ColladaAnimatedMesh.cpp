@@ -40,11 +40,11 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController * animationController )
 
 		vertexWeights.resize(skinController->GetInfluenceCount());
 		int maxJoints = 0;
-		for (int index = 0; index < skinController->GetInfluenceCount(); ++index)
+		for (int index = 0; index < (int)skinController->GetInfluenceCount(); ++index)
 		{
 			FCDSkinControllerVertex * vert = skinController->GetVertexInfluence(index);
 			vertexWeights[index].jointCount = 0;
-			for (int pp = 0; pp < vert->GetPairCount(); ++pp)
+			for (int pp = 0; pp < (int)vert->GetPairCount(); ++pp)
 			{
 				FCDJointWeightPair * jointWeightPar = vert->GetPair(pp);
 				
@@ -140,7 +140,7 @@ void ColladaAnimatedMesh::UpdateSkinnedMesh( float32 time )
 		}
 	}
 	
-	for (int poly = 0; poly < mesh->polygons.size(); ++poly)
+	for (int poly = 0; poly < (int)mesh->polygons.size(); ++poly)
 	{
 		ColladaPolygonGroup * polyGroup = mesh->polygons[poly];	
 		
