@@ -96,7 +96,7 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
 
 void Heightmap::SaveToImage(const String & filename)
 {
-    Image * image = image->Create(size, size, FORMAT_A16);
+    Image * image = Image::Create(size, size, FORMAT_A16);
     
     uint16 * unpackedBytes = new uint16[size * size];
 
