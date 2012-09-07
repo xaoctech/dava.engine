@@ -849,6 +849,9 @@ void ColladaDocument::WriteLight(ColladaLight * light, int32 i)
 			ldef.position.Set(0, 0, 0.f, 1.f);
 			ldef.spotDirection.Set(0, 0, -1.f, 0);
 			break;
+            
+        default:
+            break;
 	}
 	
 	

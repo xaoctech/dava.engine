@@ -705,6 +705,9 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
         case LightNode::TYPE_DIRECTIONAL:
             
             break;
+            
+        default:
+            break;
     };
     
 	float32 squareMinDistance = 10000000.0f;
