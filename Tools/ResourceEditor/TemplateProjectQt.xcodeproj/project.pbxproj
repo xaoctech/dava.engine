@@ -2392,6 +2392,8 @@
 					DAVA_DEBUG,
 					DAVA_QT,
 				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2437,8 +2439,6 @@
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2447,8 +2447,6 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2499,6 +2497,8 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_QT;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2544,8 +2544,6 @@
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2554,8 +2552,6 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
