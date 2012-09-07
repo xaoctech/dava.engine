@@ -356,7 +356,7 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
                 particle->position += qvq1_v * radius->GetValue(time);
         }
        
-        particle->angle = 0.0f;
+        particle->angle = atanf(particle->velocity.z/particle->velocity.x);
     }
 }
 

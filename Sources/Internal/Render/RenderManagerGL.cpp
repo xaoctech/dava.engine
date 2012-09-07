@@ -512,7 +512,7 @@ void RenderManager::EnableDepthWrite(bool isEnabled)
 
 void RenderManager::EnableVertexArray(bool isEnabled)
 {
-    if(isEnabled != oldVertexArrayEnabled)
+    if(isEnabled != (oldVertexArrayEnabled != 0))
     {
         if(isEnabled)
         {
@@ -528,7 +528,7 @@ void RenderManager::EnableVertexArray(bool isEnabled)
 
 void RenderManager::EnableNormalArray(bool isEnabled)
 {
-    if(isEnabled != oldNormalArrayEnabled)
+    if(isEnabled != (oldNormalArrayEnabled != 0))
     {
         if(isEnabled)
         {
@@ -544,7 +544,7 @@ void RenderManager::EnableNormalArray(bool isEnabled)
 
 void RenderManager::EnableTextureCoordArray(bool isEnabled, int32 textureLevel)
 {
-    if(isEnabled != oldTextureCoordArrayEnabled[textureLevel])
+    if(isEnabled != (oldTextureCoordArrayEnabled[textureLevel] != 0))
     {
         glClientActiveTexture(GL_TEXTURE0 + textureLevel);
 
@@ -562,7 +562,7 @@ void RenderManager::EnableTextureCoordArray(bool isEnabled, int32 textureLevel)
 
 void RenderManager::EnableColorArray(bool isEnabled)
 {
-    if(isEnabled != oldColorArrayEnabled)
+    if(isEnabled != (oldColorArrayEnabled != 0))
     {
         if(isEnabled)
         {
@@ -831,7 +831,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
         
-        SetViewport(Rect(0, 0, renderTarget->GetTexture()->width, renderTarget->GetTexture()->height), true);
+        SetViewport(Rect(0, 0, (float32)(renderTarget->GetTexture()->width), (float32)(renderTarget->GetTexture()->height)), true);
 
 //		RENDER_VERIFY(glMatrixMode(GL_PROJECTION));
 //		RENDER_VERIFY(glLoadIdentity());
