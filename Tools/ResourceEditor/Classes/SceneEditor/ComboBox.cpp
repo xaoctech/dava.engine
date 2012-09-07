@@ -48,7 +48,7 @@ void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
     listWidth = size.x;
     for (int i = 0; i < items.size(); i++)
     {
-        int32 itemWidth = font->GetStringSize(StringToWString(items[i])).dx;
+        float itemWidth = (float32)font->GetStringSize(StringToWString(items[i])).dx;
         listWidth = Max(listWidth, itemWidth);
         
         indecesMap[items[i]] = i;

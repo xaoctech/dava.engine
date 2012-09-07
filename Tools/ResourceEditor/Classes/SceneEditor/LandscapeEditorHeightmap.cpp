@@ -86,13 +86,13 @@ void LandscapeEditorHeightmap::UpdateToolImage()
     {
         prevToolSize = currentTool->size;
 
-        int32 sideSize = currentTool->size;
+        int32 sideSize = (int32)currentTool->size;
         toolImage = CreateToolImage(sideSize);
         
         if(LandscapeTool::TOOL_COPYPASTE == currentTool->type && tilemaskImage)
         {
             float32 multiplier = (float32)tilemaskImage->GetWidth() / (float32)(landscapeSize);
-            int32 sideSize = currentTool->size * multiplier;
+            sideSize = (int32)currentTool->size * multiplier;
             toolImageTile = CreateToolImage(sideSize);
         }
     }
@@ -106,17 +106,17 @@ Image *LandscapeEditorHeightmap::CreateToolImage(int32 sideSize)
     Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
     Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                               image->GetWidth(), image->GetHeight());
-    Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, image->GetWidth(), image->GetHeight());
+    Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)image->GetWidth(), (float32)image->GetHeight());
     
     RenderManager::Instance()->SetRenderTarget(dstSprite);
     
     RenderManager::Instance()->SetColor(Color::Black());
-    RenderHelper::Instance()->FillRect(Rect(0, 0, dstSprite->GetTexture()->GetWidth(), dstSprite->GetTexture()->GetHeight()));
+    RenderHelper::Instance()->FillRect(Rect(0, 0, (float32)dstSprite->GetTexture()->GetWidth(), (float32)dstSprite->GetTexture()->GetHeight()));
     
     RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
     RenderManager::Instance()->SetColor(Color::White());
     
-    srcSprite->SetScaleSize(sideSize, sideSize);
+    srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
     srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f, 
                                    (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
     srcSprite->Draw();
@@ -152,12 +152,12 @@ void LandscapeEditorHeightmap::UpdateTileMaskTool(float32 timeElapsed)
 void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
 {
     int32 scaleSize = toolImage->GetWidth();
-    Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
+    Vector2 pos = landscapePoint - Vector2((float32)scaleSize, (float32)scaleSize)/2.0f;
     {
         if(currentTool->averageDrawing)
         {
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-            ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+            ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
         }
         else if(currentTool->relativeDrawing)
         {
@@ -166,7 +166,7 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             {
                 koef = -koef;
             }
-            ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef);
+            ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
         }
         else
         {
@@ -179,10 +179,10 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
             
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-            ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, pos.x, pos.y, scaleSize, scaleSize, koef, height);
+            ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
         }
         
-        UpdateHeightmap(Rect(pos.x, pos.y, scaleSize, scaleSize));
+        UpdateHeightmap(Rect(pos.x, pos.y, (float32)scaleSize, (float32)scaleSize));
     }
 }
 
@@ -195,15 +195,15 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
         if(currentTool->copyHeightmap)
         {
             int32 scaleSize = toolImage->GetWidth();
-            Vector2 posTo = landscapePoint - Vector2(scaleSize, scaleSize)/2;
+            Vector2 posTo = landscapePoint - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
             
             Vector2 deltaPos = landscapePoint - copyToCenter;
-            Vector2 posFrom = copyFromCenter + deltaPos - Vector2(scaleSize, scaleSize)/2;
+            Vector2 posFrom = copyFromCenter + deltaPos - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
             
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
             ImageRasterizer::DrawCopypasteRGBA(heightmap, toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
             
-            UpdateHeightmap(Rect(posTo.x, posTo.y, scaleSize, scaleSize));
+            UpdateHeightmap(Rect(posTo.x, posTo.y, (float32)scaleSize, (float32)scaleSize));
         }
         
         if(currentTool->copyTilemask)
@@ -215,10 +215,10 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
                 float32 multiplier = (float32)tilemaskImage->GetWidth() / (float32)(landscapeSize);
                 
                 int32 scaleSize = toolImageTile->GetWidth();
-                Vector2 posTo = landscapePoint * multiplier - Vector2(scaleSize, scaleSize)/2;
+                Vector2 posTo = landscapePoint * multiplier - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
                 
                 Vector2 deltaPos = landscapePoint - copyToCenter;
-                Vector2 posFrom = (copyFromCenter + deltaPos) * multiplier - Vector2(scaleSize, scaleSize)/2;
+                Vector2 posFrom = (copyFromCenter + deltaPos) * multiplier - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
                 
                 ImageRasterizer::DrawCopypasteRGBA(tilemaskImage, tilemaskImage, toolImageTile, posFrom, posTo, scaleSize, scaleSize);
                 
@@ -242,7 +242,7 @@ float32 LandscapeEditorHeightmap::GetDropperHeight()
     workingLandscape->GetBoundingBox().GetTransformedBox(workingLandscape->GetWorldTransform(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
 
-    int32 index = landscapePoint.x + landscapePoint.y * heightmap->Size();
+    int32 index = (int32)(landscapePoint.x + landscapePoint.y * heightmap->Size());
     float32 height = heightmap->Data()[index];
     float32 maxHeight = landSize.z;
     return (height / Heightmap::MAX_VALUE * maxHeight);
@@ -252,16 +252,16 @@ void LandscapeEditorHeightmap::UpdateCursor()
 {
 	if(currentTool)
 	{
-		int32 scaleSize = currentTool->size;
-		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
+		float32 scaleSize = (float32)((int32)currentTool->size);
+		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2.f;
 
 		landscapeDebugNode->SetCursorTexture(cursorTexture);
-		landscapeDebugNode->SetBigTextureSize(landscapeSize);
+		landscapeDebugNode->SetBigTextureSize((float32)landscapeSize);
 		landscapeDebugNode->SetCursorPosition(pos);
 		landscapeDebugNode->SetCursorScale(scaleSize);
         
         heightmapNode->cursor->SetCursorTexture(cursorTexture);
-		heightmapNode->cursor->SetBigTextureSize(landscapeSize);
+		heightmapNode->cursor->SetBigTextureSize((float32)landscapeSize);
 		heightmapNode->cursor->SetPosition(pos);
 		heightmapNode->cursor->SetScale(scaleSize);
 	}
@@ -451,7 +451,7 @@ void LandscapeEditorHeightmap::UndoAction()
     if(UNDOAction::ACTION_HEIGHTMAP == type)
     {
         UNDOManager::Instance()->UndoHeightmap(heightmap);
-        UpdateHeightmap(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+        UpdateHeightmap(Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f));
     }
 }
 
@@ -461,7 +461,7 @@ void LandscapeEditorHeightmap::RedoAction()
     if(UNDOAction::ACTION_HEIGHTMAP == type)
     {
         UNDOManager::Instance()->RedoHeightmap(heightmap);
-        UpdateHeightmap(Rect(0, 0, heightmap->Size()-1, heightmap->Size()-1));
+        UpdateHeightmap(Rect(0, 0, (float32)heightmap->Size()-1.f, (float32)heightmap->Size()-1.f));
     }
 }
 
