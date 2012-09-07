@@ -56,6 +56,9 @@ protected:
     void UpdateToolImage();
     float32 GetDropperHeight();
     
+    void UpdateHeightmap(const Rect &updatedRect);
+    
+    
     bool editingIsEnabled;
     
 	bool wasTileMaskToolUpdate;

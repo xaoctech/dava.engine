@@ -23,6 +23,7 @@
 		5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */; };
 		5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */; };
 		5C49A09915CFBCD8005C40BF /* QtUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A09815CFBCD7005C40BF /* QtUtils.cpp */; };
+		5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */; };
 		5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFC15C9463C0015537A /* btAxisSweep3.cpp */; };
 		5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFF15C9463C0015537A /* btBroadphaseProxy.cpp */; };
 		5C574E3B15C9463C0015537A /* btCollisionAlgorithm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574D0115C9463C0015537A /* btCollisionAlgorithm.cpp */; };
@@ -370,6 +371,8 @@
 		5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneData.cpp; path = QtBuildTool/moc_SceneData.cpp; sourceTree = "<group>"; };
 		5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneGraphModel.cpp; path = QtBuildTool/moc_SceneGraphModel.cpp; sourceTree = "<group>"; };
 		5C49A09815CFBCD7005C40BF /* QtUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtUtils.cpp; path = Classes/Qt/QtUtils.cpp; sourceTree = "<group>"; };
+		5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEditorCommands.cpp; path = Classes/Commands/ParticleEditorCommands.cpp; sourceTree = "<group>"; };
+		5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEditorCommands.h; path = Classes/Commands/ParticleEditorCommands.h; sourceTree = "<group>"; };
 		5C574CF715C9462D0015537A /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = Classes/bullet/btBulletCollisionCommon.h; sourceTree = "<group>"; };
 		5C574CF815C9462D0015537A /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = Classes/bullet/btBulletDynamicsCommon.h; sourceTree = "<group>"; };
 		5C574CF915C9462D0015537A /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "Classes/bullet/Bullet-C-Api.h"; sourceTree = "<group>"; };
@@ -1804,6 +1807,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */,
+				5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */,
 				5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */,
 				5C44DB4315F4DA9800A42B52 /* CommandReloadTextures.h */,
 				5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */,
@@ -2358,6 +2363,7 @@
 				5C1DE96B15D8F10000C6948C /* PointerHolder.cpp in Build Sources */,
 				5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */,
 				5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */,
+				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

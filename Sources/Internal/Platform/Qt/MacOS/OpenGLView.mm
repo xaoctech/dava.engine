@@ -95,7 +95,7 @@
     willQuit = false;
     
     windowOffset = Vector2(0.0f, 0.0f);
-    
+
 	return self;	
 }
 
@@ -122,14 +122,20 @@
 - (void) enableTrackingArea
 {
 	[trackingArea release];
-	trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInKeyWindow) owner:self userInfo:nil];
+    
+    NSWindow *window = [self window];
+    [window setAcceptsMouseMovedEvents:YES];
+
+    trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInKeyWindow) owner:self userInfo:nil];
 	[self addTrackingArea:trackingArea];
 }
 
 - (void) disableTrackingArea
 {
 	if (trackingArea)
+    {
 		[self removeTrackingArea: trackingArea];
+    }
 }
 
 - (void) dealloc
@@ -176,15 +182,6 @@
     if(willQuit)
         return;
     
-//	Logger::Debug("drawRect started");
-	
-//	if (activeCursor != RenderManager::Instance()->GetCursor())
-//	{
-//		activeCursor = RenderManager::Instance()->GetCursor();
-//		[[self window] invalidateCursorRectsForView: self];
-//	}
-	
-	
 	DAVA::RenderManager::Instance()->Lock();
 	
 	if (isFirstDraw)
@@ -201,23 +198,6 @@
     DAVA::RenderManager::Instance()->SetColor(Color::White());
     
     
-/*	// This is an optimization.  If the view is being
-	// resized, don't do a buffer swap.  The GL content
-	// will be updated as part of the window flush anyway.
-	// This makes live resize look nicer as the GL view
-	// won't get flushed ahead of the window flush.  It also
-	// makes live resize faster since we're not flushing twice.
-	// Because I want the animtion to continue while resize
-	// is happening, I use my own flag rather than calling
-	// [self inLiveReize].  For most apps this wouldn't be
-	// necessary.
- 
-	if(!sizeChanged)
-	{
-		[[self openGLContext] flushBuffer];
-	}
-	else glFlush();
-	sizeChanged = NO; */
     if(DAVA::Core::Instance()->IsActive())
     {
         [[self openGLContext] flushBuffer];
@@ -230,15 +210,7 @@
 - (void) resetCursorRects
 {
 	NSLog(@"OpenGLView resetCursorRects");
-	//
-//	if (activeCursor)
-//	{
-//		//activeCursor->MacOSX_Set();
-//		NSCursor * cursor = (NSCursor*)activeCursor->GetMacOSXCursor();
-//		[self addCursorRect: [self bounds] cursor: cursor];
-//	}else {
-		[super resetCursorRects];
-//	}
+    [super resetCursorRects];
 }
 
 -(void)cursorUpdate:(NSEvent *)theEvent
@@ -277,6 +249,8 @@ void NSEventToUIEvent(NSEvent *nsEvent, DAVA::UIEvent &uiEvent, const Vector2 &w
     pointOnScreen.y = height - p.y;
     
     uiEvent.physPoint = (pointOnScreen - windowOffset);
+    
+//    DAVA::Logger::Debug("phys _ [%f][%f]", uiEvent.physPoint.x, uiEvent.physPoint.y);
     
     uiEvent.timestamp = nsEvent.timestamp;
     uiEvent.tapCount = nsEvent.clickCount;
@@ -320,19 +294,6 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
 		{
-//				NSPoint p = [curEvent locationInWindow];
-//            NSWindow *window = [curEvent window];
-//            NSRect r = [window contentRectForFrameRect:[window frame]];
-//            CGFloat height = r.size.height;
-//            
-//				it->physPoint.x = p.x;
-////				it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-//                it->physPoint.y = height - p.y;
-            
-//            it->physPoint = CalculatePointOnScreen(curEvent, windowOffset);
-//            
-//            it->timestamp = curEvent.timestamp;
-//            it->tapCount = curEvent.clickCount;
             NSEventToUIEvent(curEvent, *it, windowOffset);
             it->phase = phase;
 		}
@@ -345,17 +306,6 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 		{
 			isFind = true;
 			
-//			NSPoint p = [curEvent locationInWindow];
-//            NSWindow *window = [curEvent window];
-//            NSRect r = [window contentRectForFrameRect:[window frame]];
-//            CGFloat height = r.size.height;
-//            
-//			it->physPoint.x = p.x;
-////			it->physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-//            it->physPoint.y = height - p.y;
-//
-//			it->timestamp = curEvent.timestamp;
-//			it->tapCount = curEvent.clickCount;
             NSEventToUIEvent(curEvent, *it, windowOffset);
 			it->phase = phase;
 
@@ -367,17 +317,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 	{
 		UIEvent newTouch;
 		newTouch.tid = button;
-//		NSPoint p = [curEvent locationInWindow];
-//        NSWindow *window = [curEvent window];
-//        NSRect r = [window contentRectForFrameRect:[window frame]];
-//        CGFloat height = r.size.height;
-//       
-//		newTouch.physPoint.x = p.x;
-////		newTouch.physPoint.y = Core::Instance()->GetPhysicalScreenHeight() - p.y;
-//        newTouch.physPoint.y = height - p.y;
-//
-//		newTouch.timestamp = curEvent.timestamp;
-//		newTouch.tapCount = curEvent.clickCount;
+
         NSEventToUIEvent(curEvent, newTouch, windowOffset);
 		newTouch.phase = phase;
 		activeTouches.push_back(newTouch);
@@ -411,7 +351,7 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 //	NSLog(@"----- Touches --------");
 //	for(int i = 0; i < touches.size(); i++)
 //	{
-//		NSLog(@"Button %d       phase %d", touches[i].buttonID, touches[i].phase);
+//		NSLog(@"Button %d       phase %d", touches[i].tid, touches[i].phase);
 //	}
 //	NSLog(@"----- ------- --------");
 	UIControlSystem::Instance()->OnInput(touchPhase, emptyTouches, touches);
@@ -426,6 +366,18 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 - (void)mouseMoved:(NSEvent *)theEvent
 {
 	[self process:DAVA::UIEvent::PHASE_MOVE touch:theEvent];
+    
+//    NSLog(@"----- MOVE --------");
+}
+
+- (void) MouseMoved:(int32)x y:(int32)y
+{
+    NSEvent *theEvent = [NSEvent mouseEventWithType:NSMouseMoved
+                                           location:NSMakePoint(x, y)
+                                      modifierFlags:0 timestamp:nil windowNumber:0 context:nil eventNumber:0 clickCount:1 pressure:0];
+	[self process:DAVA::UIEvent::PHASE_MOVE touch:theEvent];
+    
+//    NSLog(@"----- MOVE --!@!--");
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -484,7 +436,7 @@ static int32 oldModifersFlags = 0;
 - (void) keyDown:(NSEvent *)event
 {
 	{
-		Logger::Debug("glview keypress!");
+//		Logger::Debug("glview keypress!");
 		unichar c = [[event characters] characterAtIndex:0];
 		
 		Vector<DAVA::UIEvent> touches;
@@ -514,25 +466,6 @@ static int32 oldModifersFlags = 0;
     {
         InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
     }
-
-//NSLog(@"key Down View");
-//	unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
-//	
-//	if ([event modifierFlags] & NSCommandKeyMask)
-//	{
-//		if (c == 'f')
-//		{
-//			NSLog(@"[CoreMacOSPlatform] Switch screen mode");
-//			if (Core::Instance()->GetScreenMode() == Core::MODE_WINDOWED)
-//			{
-//				Core::Instance()->SwitchScreenToMode(Core::MODE_FULLSCREEN);
-//			}else 
-//			{	
-//				Core::Instance()->SwitchScreenToMode(Core::MODE_WINDOWED);
-//			}
-//		}
-//	}
-
 }	
 
 - (void) keyUp:(NSEvent *)event
