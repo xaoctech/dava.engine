@@ -9,6 +9,7 @@
 #include <QElapsedTimer>
 #include <QMoveEvent>
 #include <QKeyEvent>
+#include <QMouseEvent>
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -23,8 +24,10 @@ DavaGLWidget::DavaGLWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-	
+
 #if defined (__DAVAENGINE_MACOS__)
+    setMouseTracking(true);
+    
 	DAVA::QtLayerMacOS *qtLayer = new DAVA::QtLayerMacOS();
     qtLayer->InitializeGlWindow((void *)this->winId(), this->size().width(), this->size().height());
 #elif defined (__DAVAENGINE_WIN32__)
@@ -158,3 +161,18 @@ void DavaGLWidget::InitFrameTimer()
 	frameTime = 1000 / DAVA::RenderManager::Instance()->GetFPS();
 	QTimer::singleShot(frameTime, this, SLOT(FpsTimerDone()));
 }
+
+#if defined (Q_WS_MAC)
+void DavaGLWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    DAVA::QtLayerMacOS *qtLayer = dynamic_cast<DAVA::QtLayerMacOS *>(DAVA::QtLayer::Instance());
+    if(qtLayer)
+    {
+        const QRect geometry = this->geometry();
+        qtLayer->MouseMoved(e->x() + geometry.x(), -e->y() - geometry.y());
+    }
+    
+    QWidget::mouseMoveEvent(e);
+}
+#endif //#if defined (Q_WS_MAC)
+
