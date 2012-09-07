@@ -60,7 +60,7 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage
     ReleaseShaders();
     InitShaders();
     
-    RebuildVertexes(Rect(0,0, heightmap->Size(), heightmap->Size()));
+    RebuildVertexes(Rect(0,0, (float32)heightmap->Size(), (float32)heightmap->Size()));
     RebuildIndexes();
     
     debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position);
@@ -69,12 +69,12 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage
     
 void LandscapeDebugNode::RebuildVertexes(const Rect &rebuildAtRect)
 {
-    int32 lastY = rebuildAtRect.y + rebuildAtRect.dy;
-    int32 lastX = rebuildAtRect.x + rebuildAtRect.dx;
-    for (int32 y = rebuildAtRect.y; y < lastY; ++y)
+    int32 lastY = (int32)(rebuildAtRect.y + rebuildAtRect.dy);
+    int32 lastX = (int32)(rebuildAtRect.x + rebuildAtRect.dx);
+    for (int32 y = (int32)rebuildAtRect.y; y < lastY; ++y)
     {
         int32 index = y * heightmap->Size();
-        for (int32 x = rebuildAtRect.x; x < lastX; ++x)
+        for (int32 x = (int32)rebuildAtRect.x; x < lastX; ++x)
         {
             debugVertices[index + x].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
             debugVertices[index + x].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));

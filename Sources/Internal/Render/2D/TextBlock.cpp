@@ -808,13 +808,11 @@ void TextBlock::DrawToBuffer(int16 *buf)
 			{
 				if (cacheUseJustify) 
 				{
-					// TODO: Hottych fix warnings please??
-					ds = font->DrawString((/*Core::GetVirtualToPhysicalFactor() **/ xo), (/*Core::GetVirtualToPhysicalFactor() **/ yOffset), multilineStrings[line], (int32)ceilf(Core::GetVirtualToPhysicalFactor() * cacheW)); 
+					ds = font->DrawString((float32)xo, (float32)yOffset, multilineStrings[line], (int32)ceilf(Core::GetVirtualToPhysicalFactor() * cacheW)); 
 				}
 				else 
 				{
-					// TODO: Hottych fix warnings please??
-					ds = font->DrawString((/*Core::GetVirtualToPhysicalFactor() **/ xo), (/*Core::GetVirtualToPhysicalFactor() **/ yOffset), multilineStrings[line], 0); 
+					ds = font->DrawString((float32)xo, (float32)yOffset, multilineStrings[line], 0); 
 				}
 				
 			}
