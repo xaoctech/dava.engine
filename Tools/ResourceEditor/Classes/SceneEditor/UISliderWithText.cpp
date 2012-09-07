@@ -45,7 +45,7 @@ void UISliderWithText::Draw( const UIGeometricData &geometricData )
         //Draw text
         const Rect & tRect =  thumbButton->GetRect();
         Rect r = sliderText->GetRect();
-        int32 x = tRect.x + (tRect.dx / 2) - (r.dx / 2);
+        float32 x = tRect.x + (tRect.dx / 2.0f) - (r.dx / 2.0f);
         sliderText->SetRect(Rect(x, r.y, r.dx, r.dy));
     }
 }

@@ -631,7 +631,7 @@ void PropertySectionCell::OnButton(BaseObject * , void * , void * )
 }
 
 
-#pragma mark --PropertyButtonCell 
+
 PropertyButtonCell::PropertyButtonCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {

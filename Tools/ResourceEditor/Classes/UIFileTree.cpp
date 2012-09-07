@@ -70,9 +70,9 @@ UIListCell *UIFileTree::CellAtIndex(UIList *forList, int32 index)
         c = delegate->CellAtIndex(this, entry, index);
         c->SetItemInfo(entry);
         
-        int32 width = forList->GetRect().dx;
+        float32 width = forList->GetRect().dx;
         float32 shiftX = entry->GetLevel() * 10.0f;
-        c->SetRect(Rect(shiftX, 0, width - shiftX, 16));
+        c->SetRect(Rect(shiftX, 0, width - shiftX, 16.0));
 
 
         c->RemoveEvent(UIControl::EVENT_TOUCH_DOWN, Message(this, &UIFileTree::OnDirectoryChange));

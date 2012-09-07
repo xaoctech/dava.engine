@@ -35,7 +35,7 @@ void UIFilePreviewDialog::UpdatePreview(int32 unitIndex)
             tex = Texture::CreateFromFile(fileName);
             if(tex)
             {
-                sprite = Sprite::CreateFromTexture(tex, 0, 0, tex->GetWidth(), tex->GetHeight());
+                sprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->GetWidth(), (float32)tex->GetHeight());
             }
         }
     }
@@ -67,7 +67,7 @@ void UIFilePreviewDialog::OnFileSelected(const String &pathToFile)
 }
 
 
-#pragma mark  --UIListDelegate
+
 UIListCell *UIFilePreviewDialog::CellAtIndex(UIList *forList, int32 index)
 {
     UIListCell *c = UIFileSystemDialog::CellAtIndex(forList, index);

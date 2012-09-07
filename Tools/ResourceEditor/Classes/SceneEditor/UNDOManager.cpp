@@ -2,7 +2,6 @@
 #include "Scene3D/Heightmap.h"
 
 
-#pragma mark  --UNDOAction
 UNDOAction::UNDOAction()
 {
     type = ACTION_NONE;
@@ -12,7 +11,7 @@ UNDOAction::UNDOAction()
     actionData = NULL;
 }
 
-#pragma mark  --UNDOManager
+
 UNDOManager::UNDOManager()
     :   actionCounter(0)
 {
