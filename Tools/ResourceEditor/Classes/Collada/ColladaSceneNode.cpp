@@ -214,7 +214,7 @@ void ColladaSceneNode::UpdateTransforms( float time )
 	
 bool ColladaSceneNode::IsAnimated(FCDSceneNode * originalNode)
 {
-	for (int t = 0; t < originalNode->GetTransformCount(); ++t)
+	for (int t = 0; t < (int)originalNode->GetTransformCount(); ++t)
 	{
 		FCDTransform * transform = originalNode->GetTransform(t);
 		if (transform->IsAnimated()) // process all animations to make CalculateWorldTransform work
@@ -245,7 +245,7 @@ FMMatrix44 ColladaSceneNode::CalculateTransformForTime(FCDSceneNode * originalNo
 	FMMatrix44 colladaLocalMatrix;
 	colladaLocalMatrix = FMMatrix44::Identity;// = FMMatrix44::Identity(); 
 	
-	for (int t = 0; t < originalNode->GetTransformCount(); ++t)
+	for (int t = 0; t < (int)originalNode->GetTransformCount(); ++t)
 	{
 		FCDTransform * transform = originalNode->GetTransform(t);
 		if (transform->IsAnimated()) // process all animations to make CalculateWorldTransform work
@@ -372,7 +372,7 @@ SceneNodeAnimation * ColladaSceneNode::ExportNodeAnimation(FCDSceneNode * origin
 	
 	SceneNodeAnimation * anim = new SceneNodeAnimation(keys.size());
 	anim->SetDuration(endTime);
-	for (int k = 0; k < keys.size(); ++k)
+	for (int k = 0; k < (int)keys.size(); ++k)
 	{
 		anim->SetKey(k, keys[k]);
 	}
@@ -388,7 +388,7 @@ ColladaSceneNode * ColladaSceneNode::FindNode(const fstring & daeId)
 	if (originalNode->GetDaeId() == daeId)return this;
 	else
 	{
-		for (int k = 0; k < childs.size(); ++k)
+		for (int k = 0; k < (int)childs.size(); ++k)
 		{
 			ColladaSceneNode * node = childs[k]->FindNode(daeId);
 			if (node != 0)return node;
@@ -402,7 +402,7 @@ void ColladaSceneNode::SetAnimation(SceneNodeAnimation * _animation, bool recurs
 	animation = _animation;
 	if (recursive)
 	{
-		for (int k = 0; k < childs.size(); ++k)
+		for (int k = 0; k < (int)childs.size(); ++k)
 		{
 			ColladaSceneNode * node = childs[k];
 			node->SetAnimation(_animation, recursive);
