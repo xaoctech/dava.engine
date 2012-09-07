@@ -1,6 +1,6 @@
 #include "UIFilePreviewDialog.h"
 
-#pragma mark  --UIFilePreviewDialog
+
 UIFilePreviewDialog::UIFilePreviewDialog(const String &_fontPath)
     : UIFileSystemDialog(_fontPath)
 {
@@ -26,7 +26,7 @@ void UIFilePreviewDialog::UpdatePreview(int32 unitIndex)
     Texture *tex = NULL;
     Sprite *sprite = NULL;
     
-    if((0 <= unitIndex) && unitIndex < fileUnits.size())
+    if((0 <= unitIndex) && unitIndex < (int32)fileUnits.size())
     {
         int32 fileIndex = fileUnits[unitIndex].indexInFileList;
         if((0 <= fileIndex) && fileIndex < files->GetCount())
