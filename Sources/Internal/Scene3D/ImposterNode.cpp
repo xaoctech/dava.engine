@@ -286,7 +286,7 @@ void ImposterNode::UpdateImposter()
 	distanceSquaredToCamera = (center-cameraPos).SquareLength();
 
 	float32 nearPlane = sqrtf(distanceSquaredToCamera);
-	float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
+	//float32 farPlane = nearPlane + (bbox.max.z-bbox.min.z);
 	float32 w = (imposterVertices[1]-imposterVertices[0]).Length();
 	float32 h = (imposterVertices[2]-imposterVertices[0]).Length();
 	
@@ -295,7 +295,7 @@ void ImposterNode::UpdateImposter()
 
 	Rect oldViewport = RenderManager::Instance()->GetViewport();
 	
-	Texture * target = fbo->GetTexture();
+	//Texture * target = fbo->GetTexture();
 
 	RenderManager::Instance()->AppendState(RenderStateBlock::STATE_SCISSOR_TEST);
 	RenderManager::Instance()->State()->SetScissorRect(Rect(block->offset.x, block->offset.y, block->size.dx, block->size.dy));
