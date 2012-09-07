@@ -249,9 +249,10 @@ void SceneData::AddScene(const String &scenePathname)
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
     
-    RebuildSceneGraph();
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
+
+    RebuildSceneGraph();
 }
 
 void SceneData::EditScene(const String &scenePathname)
@@ -281,9 +282,10 @@ void SceneData::EditScene(const String &scenePathname)
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
     
-    RebuildSceneGraph();
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
+   
+    RebuildSceneGraph();
 }
 
 void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
