@@ -174,6 +174,12 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         sceneNode->GetDataNodes(dataNodeSet);
         if (dataNodeSet.size() == 0)
         {
+            KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+            if(customProperties && customProperties->IsKeyExists("editor.donotremove"))
+            {
+                return;
+            }
+            
             SceneNode * parent = sceneNode->GetParent();
             if (parent)
             {
