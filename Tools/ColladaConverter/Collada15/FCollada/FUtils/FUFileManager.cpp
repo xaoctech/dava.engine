@@ -24,6 +24,9 @@
 #elif defined(__APPLE__)
 	#include <mach-o/dyld.h>
 	typedef int (*NSGetExecutablePathProcPtr)(char *buf, size_t *bufsize);
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #elif defined(LINUX)
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -213,8 +216,7 @@ bool FUFileManager::MakeDirectory(const fstring& directory)
 #elif defined(LINUX)
 	if (mkdir(TO_STRING(absoluteDirectory).c_str(), ~0u) == 0) return true; // I think this means all permissions..
 #elif defined(__APPLE__)
-	fm::string _fname = TO_STRING(directory);
-	OSErr err = AddFolderDescriptor('extn', 0, 'relf', 0, 0, 0, _fname.c_str(), false);
+	if (mkdir(TO_STRING(absoluteDirectory).c_str(), 0777) == 0) return true;
 #endif // WIN32
 
 	return false;

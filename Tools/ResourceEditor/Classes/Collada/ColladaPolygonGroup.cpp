@@ -215,7 +215,7 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh * _parentMesh, FCDGeometryP
 	triangleCount = vertexIndexCount / 3;
 	unoptimizedVerteces.resize(vertexIndexCount);	
 
-	printf("- submesh verteces:%d indeces: %d %d %d\n", pVertexSource->GetDataCount(), vertexIndexCount, texIndexCount0, normalIndexCount);
+	printf("- submesh verteces:%ld indeces: %d %d %d\n", pVertexSource->GetDataCount(), vertexIndexCount, texIndexCount0, normalIndexCount);
 	
 	if ((vertexIndexCount != texIndexCount0) || (texIndexCount0 != normalIndexCount) || (texIndexCount1 != normalIndexCount))
 	{	

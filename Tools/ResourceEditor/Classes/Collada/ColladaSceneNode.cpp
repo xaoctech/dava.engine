@@ -377,7 +377,7 @@ SceneNodeAnimation * ColladaSceneNode::ExportNodeAnimation(FCDSceneNode * origin
 		anim->SetKey(k, keys[k]);
 	}
 	
-	printf("= keys export: frameCount: %d keyCount:%d compression: %f\n", frameCount, keys.size(), 100.0f * (float32)keys.size() / (float32)frameCount);
+	printf("= keys export: frameCount: %d keyCount:%ld compression: %f\n", frameCount, keys.size(), 100.0f * (float32)keys.size() / (float32)frameCount);
 		 
 	ExportAnimationKey(originalNode, 0);
 	return anim;

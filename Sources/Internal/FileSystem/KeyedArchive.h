@@ -94,14 +94,14 @@ public:
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
-	const String & GetString(const String & key, const String & defaultValue = "");
+	String GetString(const String & key, const String & defaultValue = "");
 	/**
 		\brief Function to get variable from archive.
 		\param[in] key string key
 		\param[in] defaultValue this is value that is used if variable with this key do not exists in archive
 		\returns value of variable or defaultValue if key isn't available
 	 */
-	const WideString & GetWideString(const String & key, const WideString & defaultValue = L"");
+	WideString GetWideString(const String & key, const WideString & defaultValue = L"");
 	/**
         \brief Function to get variable from archive.
         \param[in] key string key

@@ -36,7 +36,7 @@ ColladaAnimatedMesh::ColladaAnimatedMesh(FCDController * animationController )
 		colladaBindShapeMatrix = skinController->GetBindShapeTransform();
 		bindShapeMatrix = ConvertMatrix(colladaBindShapeMatrix);
 		
-		printf("- controller: %s influence: %d influence-entity: %s\n", animationController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
+		printf("- controller: %s influence: %ld influence-entity: %s\n", animationController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
 
 		vertexWeights.resize(skinController->GetInfluenceCount());
 		int maxJoints = 0;
