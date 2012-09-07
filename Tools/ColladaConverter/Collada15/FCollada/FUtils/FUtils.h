@@ -95,7 +95,9 @@ typedef struct _xmlNode xmlNode;
 #endif // NO_LIBXML
 
 // SAFE_DELETE Macro set.
+#undef  SAFE_DELETE
 #define SAFE_DELETE(ptr) if ((ptr) != NULL) { delete (ptr); (ptr) = NULL; } /**< This macro safely deletes a pointer and sets the given pointer to NULL. */
+#undef SAFE_DELETE_ARRAY
 #define SAFE_DELETE_ARRAY(ptr) if (ptr != NULL) { delete [] ptr; ptr = NULL; } /**< This macro safely deletes an heap array and sets the given pointer to NULL. */
 #define SAFE_FREE(ptr) if (ptr != NULL) { free(ptr); ptr = NULL; } /**< This macro safely frees a memory block and sets the given pointer to NULL. */
 #define SAFE_RELEASE(ptr) { if ((ptr) != NULL) { (ptr)->Release(); (ptr) = NULL; } } /**< This macro safely releases an interface and sets the given pointer to NULL. */
