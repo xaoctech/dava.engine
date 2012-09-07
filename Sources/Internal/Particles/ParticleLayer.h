@@ -71,7 +71,7 @@ public:
 		This function used inside ParticleEmitter class to clone layers. You can use 
 		\returns particle layer with same properties as this one
 	 */	
-	ParticleLayer * Clone();
+	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 
 	/**
 		\brief This function restarts this layer.
