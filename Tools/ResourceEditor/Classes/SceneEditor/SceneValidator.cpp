@@ -254,7 +254,7 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
     
     const Vector<PolygonGroupWithMaterial*> & polygroups = meshNode->GetPolygonGroups();
     //Vector<Material *>materials = meshNode->GetMaterials();
-    for(int32 iMat = 0; iMat < polygroups.size(); ++iMat)
+    for(int32 iMat = 0; iMat < (int32)polygroups.size(); ++iMat)
     {
         Material * material = polygroups[iMat]->GetMaterial();
 
@@ -386,7 +386,7 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
     Vector<LodNode *> lodnodes;
     scene->GetChildNodes(lodnodes); 
     
-    for(int32 index = 0; index < lodnodes.size(); ++index)
+    for(int32 index = 0; index < (int32)lodnodes.size(); ++index)
     {
         LodNode *ln = lodnodes[index];
         

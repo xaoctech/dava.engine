@@ -92,7 +92,7 @@ void LandscapeEditorHeightmap::UpdateToolImage()
         if(LandscapeTool::TOOL_COPYPASTE == currentTool->type && tilemaskImage)
         {
             float32 multiplier = (float32)tilemaskImage->GetWidth() / (float32)(landscapeSize);
-            sideSize = (int32)currentTool->size * multiplier;
+            sideSize = (int32)(currentTool->size * multiplier);
             toolImageTile = CreateToolImage(sideSize);
         }
     }
@@ -103,7 +103,7 @@ Image *LandscapeEditorHeightmap::CreateToolImage(int32 sideSize)
     RenderManager::Instance()->LockNonMain();
     
     Image *image = currentTool->image;
-    Sprite *dstSprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
+    Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)sideSize, (float32)sideSize, FORMAT_RGBA8888);
     Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
                                               image->GetWidth(), image->GetHeight());
     Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)image->GetWidth(), (float32)image->GetHeight());

@@ -10,7 +10,7 @@ LandscapeTool::LandscapeTool(int32 _ID, eToolType _type, const String & _imageNa
     
     RenderManager::Instance()->LockNonMain();
     
-    float32 sideSize = image->width;
+    float32 sideSize = (float32)image->width;
     sprite = Sprite::CreateAsRenderTarget(sideSize, sideSize, FORMAT_RGBA8888);
     
     Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
