@@ -59,47 +59,58 @@ void LandscapeDebugNode::SetDebugHeightmapImage(Heightmap * _debugHeightmapImage
     
     ReleaseShaders();
     InitShaders();
-
-	int32 index = 0;
-	for (int32 y = 0; y < heightmap->Size(); ++y)
-	{
-		for (int32 x = 0; x < heightmap->Size(); ++x)
-		{
-			debugVertices[index].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
-			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));           
-			index++;
-		}
-	}
-
-	int32 step = 1;
-	int32 indexIndex = 0;
-	int32 quadWidth = heightmap->Size();
-	for(int32 y = 0; y < heightmap->Size() - 1; y += step)
-	{
-		for(int32 x = 0; x < heightmap->Size() - 1; x += step)
-		{
-			debugIndices[indexIndex++] = x + y * quadWidth;
-			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
-			debugIndices[indexIndex++] = x + (y + step) * quadWidth;
-
-			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
-			debugIndices[indexIndex++] = (x + step) + (y + step) * quadWidth;
-			debugIndices[indexIndex++] = x + (y + step) * quadWidth;     
-		}
-	}
-
-	debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position); 
-	debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord); 
+    
+    RebuildVertexes(Rect(0,0, heightmap->Size(), heightmap->Size()));
+    RebuildIndexes();
+    
+    debugRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &debugVertices[0].position);
+	debugRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeVertex), &debugVertices[0].texCoord);
 }
+    
+void LandscapeDebugNode::RebuildVertexes(const Rect &rebuildAtRect)
+{
+    int32 lastY = rebuildAtRect.y + rebuildAtRect.dy;
+    int32 lastX = rebuildAtRect.x + rebuildAtRect.dx;
+    for (int32 y = rebuildAtRect.y; y < lastY; ++y)
+    {
+        int32 index = y * heightmap->Size();
+        for (int32 x = rebuildAtRect.x; x < lastX; ++x)
+        {
+            debugVertices[index + x].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
+            debugVertices[index + x].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));
+        }
+    }
+}
+
+void LandscapeDebugNode::RebuildIndexes()
+{
+    int32 step = 1;
+    int32 indexIndex = 0;
+    int32 quadWidth = heightmap->Size();
+    for(int32 y = 0; y < heightmap->Size() - 1; y += step)
+    {
+        for(int32 x = 0; x < heightmap->Size() - 1; x += step)
+        {
+            debugIndices[indexIndex++] = x + y * quadWidth;
+            debugIndices[indexIndex++] = (x + step) + y * quadWidth;
+            debugIndices[indexIndex++] = x + (y + step) * quadWidth;
+            
+            debugIndices[indexIndex++] = (x + step) + y * quadWidth;
+            debugIndices[indexIndex++] = (x + step) + (y + step) * quadWidth;
+            debugIndices[indexIndex++] = x + (y + step) * quadWidth;
+        }
+    }
+}
+
 
 void LandscapeDebugNode::Draw()
 {
+    if (!(flags & NODE_VISIBLE)) return;
+
     if(0 == heightmap->Size())
         return;
     
     BindMaterial(0);
-
-
 
 #if defined(__DAVAENGINE_OPENGL__)
     if (debugFlags & DEBUG_DRAW_GRID)
@@ -148,6 +159,7 @@ void LandscapeDebugNode::Draw()
     UnbindMaterial();
 }
     
+    
 void LandscapeDebugNode::DrawLandscape()
 {
     RenderManager::Instance()->SetRenderData(debugRenderDataObject);
@@ -162,6 +174,7 @@ void LandscapeDebugNode::SetHeightmapPath(const String &path)
 {
     heightmapPath = path;
 }
+  
     
 };
 

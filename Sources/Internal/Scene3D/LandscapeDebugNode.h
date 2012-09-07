@@ -73,7 +73,10 @@ public:
 
     void SetHeightmapPath(const String &path);
     
+    void RebuildVertexes(const Rect &rebuildAtRect);
+    
 protected:	
+    void RebuildIndexes();
     
     void DrawLandscape();
     
