@@ -594,7 +594,7 @@ inline void RenderStateBlock::SetScissorRectInHW() const
     Logger::Debug("RenderState::scissor_rect = (%d, %d, %d, %d)", scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
 #endif  
 
-	RENDER_VERIFY(glScissor(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy));
+	RENDER_VERIFY(glScissor((GLint)scissorRect.x, (GLint)scissorRect.y, (GLsizei)scissorRect.dx, (GLsizei)scissorRect.dy));
 }
 
 inline void RenderStateBlock::SetFillModeInHW() const
