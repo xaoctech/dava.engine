@@ -297,7 +297,7 @@ void LandscapeToolsPanelHeightmap::TextFieldLostFocus(UITextField * textField)
     }
     else if(textField == strengthValue)
     {
-        float32 value = (float32)fabsf(atof(WStringToString(strengthValue->GetText()).c_str()));
+        float32 value = (float32)fabsf((float32)atof(WStringToString(strengthValue->GetText()).c_str()));
 
         strengthSlider->SetMinMaxValue(-value, value);
         selectedBrushTool->maxStrength = value;
@@ -313,7 +313,7 @@ void LandscapeToolsPanelHeightmap::TextFieldLostFocus(UITextField * textField)
     }
     else if(textField == heightValue)
     {
-        prevHeightValue = (float32)fabsf(atof(WStringToString(heightValue->GetText()).c_str()));
+        prevHeightValue = (float32)fabsf((float32)atof(WStringToString(heightValue->GetText()).c_str()));
         dropperTool->height = prevHeightValue;
 
         if(selectedBrushTool)
@@ -415,8 +415,8 @@ void LandscapeToolsPanelHeightmap::OnToolSelected(LandscapeToolsSelection * forC
     newTool->averageDrawing = average->Checked();
     newTool->relativeDrawing = relative->Checked();
     
-    newTool->maxStrength = (float32)fabsf(atof(WStringToString(strengthValue->GetText()).c_str()));
-    newTool->maxSize = (float32)fabsf(atof(WStringToString(sizeValue->GetText()).c_str()));
+    newTool->maxStrength = (float32)fabsf((float32)atof(WStringToString(strengthValue->GetText()).c_str()));
+    newTool->maxSize = (float32)fabsf((float32)atof(WStringToString(sizeValue->GetText()).c_str()));
     newTool->averageStrength = averageStrength->GetValue();
 
     LandscapeToolsPanel::OnToolSelected(forControl, newTool);
