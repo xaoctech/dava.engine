@@ -1113,6 +1113,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SwitchNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayerLong.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1918,6 +1921,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SwitchNode.cpp">
       <Filter>Internal\Scene3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayerLong.cpp">
+      <Filter>Internal\Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
