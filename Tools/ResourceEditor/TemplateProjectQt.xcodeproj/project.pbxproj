@@ -316,27 +316,6 @@
 			remoteGlobalIDString = C315DFDB097840EB005D77BE;
 			remoteInfo = FColladaS;
 		};
-		5C7F4A0115B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C3D608B40ADFD5FC00019D9C;
-			remoteInfo = FColladaSU;
-		};
-		5C7F4A0315B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09B10BA0B866F5500122B1F;
-			remoteInfo = FColladaTest;
-		};
-		5C7F4A0515B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09F2DB30BD9527300447337;
-			remoteInfo = FColladaU;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -1789,9 +1768,6 @@
 			isa = PBXGroup;
 			children = (
 				5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */,
-				5C7F4A0215B44F6E0038AF3A /* libFColladaSU.a */,
-				5C7F4A0415B44F6E0038AF3A /* FColladaTest */,
-				5C7F4A0615B44F6E0038AF3A /* libFColladaU.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2019,27 +1995,6 @@
 			fileType = archive.ar;
 			path = libFColladaS.a;
 			remoteRef = 5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0215B44F6E0038AF3A /* libFColladaSU.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFColladaSU.a;
-			remoteRef = 5C7F4A0115B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0415B44F6E0038AF3A /* FColladaTest */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = FColladaTest;
-			remoteRef = 5C7F4A0315B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0615B44F6E0038AF3A /* libFColladaU.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libFColladaU.dylib;
-			remoteRef = 5C7F4A0515B44F6E0038AF3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -2454,8 +2409,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
-					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
@@ -2559,8 +2512,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
-					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",

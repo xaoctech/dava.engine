@@ -41,7 +41,7 @@
 	NSLog(@"[CoreMacOSPlatform] OpenGLView Init");
 	
 #ifdef __DAVAENGINE_MACOS_VERSION_10_6__
-	NSLog(@"Display bpp: %d", [self displayBitsPerPixel:kCGDirectMainDisplay]);
+	NSLog(@"Display bpp: %ld", [self displayBitsPerPixel:kCGDirectMainDisplay]);
 #else //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__
 	NSLog(@"Display bpp: %d", CGDisplayBitsPerPixel(kCGDirectMainDisplay));
 #endif //#ifdef __DAVAENGINE_MACOS_VERSION_10_6__

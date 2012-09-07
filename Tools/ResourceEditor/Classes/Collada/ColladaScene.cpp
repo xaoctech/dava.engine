@@ -294,7 +294,7 @@ ColladaMeshInstance * ColladaScene::CreateMeshInstance( ColladaMesh * mesh, FCDG
 		
 		
 		ColladaPolygonGroup * polyGroup = mesh->GetPolygonGroup(i);
-		printf("- mesh instance added polygroup: 0x%08x %d\n", polyGroup, i);
+		printf("- mesh instance added polygroup: %p %d\n", polyGroup, i);
 		ColladaPolygonGroupInstance * polygonGroupInstance = new ColladaPolygonGroupInstance(polyGroup, material);
 		meshInstance->AddPolygonGroupInstance(polygonGroupInstance);
 	}	
