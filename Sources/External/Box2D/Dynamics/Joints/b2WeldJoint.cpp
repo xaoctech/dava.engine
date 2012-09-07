@@ -64,12 +64,12 @@ void b2WeldJoint::InitVelocityConstraints(const b2SolverData& data)
 	m_invIA = m_bodyA->m_invI;
 	m_invIB = m_bodyB->m_invI;
 
-	b2Vec2 cA = data.positions[m_indexA].c;
+	//b2Vec2 cA = data.positions[m_indexA].c;
 	b2_float32 aA = data.positions[m_indexA].a;
 	b2Vec2 vA = data.velocities[m_indexA].v;
 	b2_float32 wA = data.velocities[m_indexA].w;
 
-	b2Vec2 cB = data.positions[m_indexB].c;
+	//b2Vec2 cB = data.positions[m_indexB].c;
 	b2_float32 aB = data.positions[m_indexB].a;
 	b2Vec2 vB = data.velocities[m_indexB].v;
 	b2_float32 wB = data.velocities[m_indexB].w;
