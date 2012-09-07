@@ -174,8 +174,7 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         sceneNode->GetDataNodes(dataNodeSet);
         if (dataNodeSet.size() == 0)
         {
-            KeyedArchive *customProperties = sceneNode->GetCustomProperties();
-            if(customProperties && customProperties->IsKeyExists("editor.donotremove"))
+            if(NodeRemovingDisabled(sceneNode))
             {
                 return;
             }
@@ -188,6 +187,13 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         }
     }
 }
+
+bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
+{
+    KeyedArchive *customProperties = node->GetCustomProperties();
+    return (customProperties && customProperties->IsKeyExists("editor.donotremove"));
+}
+
 
 void SceneValidator::ValidateTexture(Texture *texture)
 {
