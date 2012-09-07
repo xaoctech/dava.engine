@@ -118,9 +118,9 @@ const Rect ScenePreviewDialog::GetDialogRect() const
 {
     Rect screenRect = GetScreenRect();
     
-    int32 x = (screenRect.dx - ControlsFactory::PREVIEW_PANEL_HEIGHT);
-    int32 h = ControlsFactory::PREVIEW_PANEL_HEIGHT + ControlsFactory::BUTTON_HEIGHT;
-    int32 y = (screenRect.dy - h) / 2;
+    float32 x = (screenRect.dx - ControlsFactory::PREVIEW_PANEL_HEIGHT);
+    float32 h = ControlsFactory::PREVIEW_PANEL_HEIGHT + ControlsFactory::BUTTON_HEIGHT;
+    float32 y = (screenRect.dy - h) / 2;
     
     return Rect(x, y, ControlsFactory::PREVIEW_PANEL_HEIGHT, h);
 }

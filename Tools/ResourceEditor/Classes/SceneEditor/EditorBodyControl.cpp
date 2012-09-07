@@ -1352,7 +1352,6 @@ void EditorBodyControl::RecreteFullTilingTexture()
 
 
 
-#pragma mark --Landscape Editor
 void EditorBodyControl::CreateLandscapeEditor()
 {
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
@@ -1420,7 +1419,6 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
     return true;
 }
 
-#pragma mark --LandscapeEditorDelegate
 void EditorBodyControl::LandscapeEditorStarted()
 {
     RemoveControl(sceneInfoControl);

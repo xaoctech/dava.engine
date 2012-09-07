@@ -173,13 +173,13 @@ void WASDCameraController::SetScene(Scene *_scene)
 	viewYAngle = -RadToDeg(dirYZ.Angle());
 
 	if(viewYAngle > MAX_ANGLE)
-		viewYAngle -= 360;
+		viewYAngle -= 360.f;
 
 	if(viewYAngle < -MAX_ANGLE)
-		viewYAngle += 360;
+		viewYAngle += 360.f;
 
 	
-	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0);
+	viewZAngle = -(RadToDeg(dirXY.Angle()) - 90.0f);
 }
 	
 	
@@ -381,7 +381,7 @@ void WASDCameraController::UpdateCam2But(Camera * camera)
     if (!camera)return;
     Vector2 dp = stopPt - startPt;
     viewZAngle += dp.x * 0.15f;
-    viewYAngle += dp.y * 0.15;
+    viewYAngle += dp.y * 0.15f;
     
     if(viewYAngle < -MAX_ANGLE)
         viewYAngle = -MAX_ANGLE;
@@ -390,11 +390,11 @@ void WASDCameraController::UpdateCam2But(Camera * camera)
         viewYAngle = MAX_ANGLE;			
     
     Matrix4 mt, mt2;
-    mt.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
-    mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
+    mt.CreateRotation(Vector3(0.f,0.f,1.f), DegToRad(viewZAngle));
+    mt2.CreateRotation(Vector3(1.f,0.f,0.f), DegToRad(viewYAngle));
     mt2 *= mt;
     
-    Vector3 dir = Vector3(0, 10, 0) * mt2;
+    Vector3 dir = Vector3(0.f, 10.f, 0.f) * mt2;
     camera->SetDirection(dir);		
 }
 
@@ -429,9 +429,9 @@ void WASDCameraController::UpdateCam3But(Camera * camera)
     Vector2 dp = stopPt - startPt;
 
     Matrix4 mt, mt1, mt2, mt3;
-    mt1.CreateTranslation(Vector3(-dp.x * 0.15f, 0, dp.y * 0.1));
-    mt2.CreateRotation(Vector3(1,0,0), DegToRad(viewYAngle));
-    mt3.CreateRotation(Vector3(0,0,1), DegToRad(viewZAngle));
+    mt1.CreateTranslation(Vector3(-dp.x * 0.15f, 0.f, dp.y * 0.1f));
+    mt2.CreateRotation(Vector3(1.f,0.f,0.f), DegToRad(viewYAngle));
+    mt3.CreateRotation(Vector3(0.f,0.f,1.f), DegToRad(viewZAngle));
     
     mt = mt1 * mt2 * mt3;
     

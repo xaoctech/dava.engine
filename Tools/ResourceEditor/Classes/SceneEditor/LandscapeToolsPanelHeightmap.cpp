@@ -2,7 +2,7 @@
 #include "ControlsFactory.h"
 #include "LandscapeTool.h"
 
-#pragma mark  --LandscapeToolsPanelHeightmap
+
 LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect)
     :   LandscapeToolsPanel(newDelegate, rect)
 {
@@ -29,14 +29,14 @@ LandscapeToolsPanelHeightmap::LandscapeToolsPanelHeightmap(LandscapeToolsPanelDe
     
     int32 x = 0;
     int32 y = ControlsFactory::TOOLS_HEIGHT + ControlsFactory::TOOLS_HEIGHT/2;
-    relative = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+    relative = CreateCkeckbox(Rect(x, y, (float32)ControlsFactory::TOOLS_HEIGHT/2.f, (float32)ControlsFactory::TOOLS_HEIGHT/2.f), 
                               LocalizedString(L"landscapeeditor.relative"));
     x += (ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH);
-    average = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+    average = CreateCkeckbox(Rect(x, y, (float32)ControlsFactory::TOOLS_HEIGHT/2.f, (float32)ControlsFactory::TOOLS_HEIGHT/2.f), 
                               LocalizedString(L"landscapeeditor.average"));
     
     x += (ControlsFactory::TOOLS_HEIGHT/2 + OFFSET + TEXT_WIDTH);
-    absoluteDropper = CreateCkeckbox(Rect(x, y, ControlsFactory::TOOLS_HEIGHT/2, ControlsFactory::TOOLS_HEIGHT/2), 
+    absoluteDropper = CreateCkeckbox(Rect(x, y, (float32)ControlsFactory::TOOLS_HEIGHT/2.f, ControlsFactory::TOOLS_HEIGHT/2.f), 
                              LocalizedString(L"landscapeeditor.absolutedropper"));
 
     Rect heightRect;

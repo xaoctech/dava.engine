@@ -58,11 +58,11 @@ EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
             matrixButtons[i][j] = new UIButton(Rect(spacing + i * buttonWidth, spacing + j * buttonHeight, buttonWidth, buttonHeight));
             
             matrixButtons[i][j]->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);
-            matrixButtons[i][j]->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0, 0.0, 0.0, 0.5));
+            matrixButtons[i][j]->GetStateBackground(UIControl::STATE_NORMAL)->SetColor(Color(0.0f, 0.0f, 0.0f, 0.5f));
             matrixButtons[i][j]->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
-            matrixButtons[i][j]->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5, 0.5, 0.5, 0.5));
+            matrixButtons[i][j]->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.5f, 0.5f, 0.5f, 0.5f));
             matrixButtons[i][j]->SetStateDrawType(UIControl::STATE_HOVER, UIControlBackground::DRAW_FILL);
-            matrixButtons[i][j]->GetStateBackground(UIControl::STATE_HOVER)->SetColor(Color(0.2, 0.2, 0.2, 0.2));
+            matrixButtons[i][j]->GetStateBackground(UIControl::STATE_HOVER)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
             matrixButtons[i][j]->SetStateFont(UIControl::STATE_NORMAL, f);
             matrixButtons[i][j]->SetStateText(UIControl::STATE_NORMAL, L"0.00000");
             matrixButtons[i][j]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditMatrixControl::OnEditButtonPressed));
@@ -70,7 +70,7 @@ EditMatrixControl::EditMatrixControl(const Rect & _rect, bool _readOnly)
         }
     
     textFieldBackground = new UIControl(Rect(0, 0, _rect.dx, _rect.dy));
-    textFieldBackground->GetBackground()->SetColor(Color(0.0, 0.0, 0.0, 0.7));
+    textFieldBackground->GetBackground()->SetColor(Color(0.0f, 0.0f, 0.0f, 0.7f));
     textFieldBackground->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
     textFieldBackground->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &EditMatrixControl::OnEditClosePressed));
     //textFieldBackground->SetInputEnabled(false);

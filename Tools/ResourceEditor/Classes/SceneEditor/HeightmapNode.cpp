@@ -58,8 +58,8 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     
     
     uint16 *dt = heightmap->Data();
-    size.x = heightmap->Size();
-    size.y = heightmap->Size();
+    size.x = (float32)heightmap->Size();
+    size.y = (float32)heightmap->Size();
     hmap.resize(heightmap->Size() * heightmap->Size());
 
 	for (int32 y = 0; y < heightmap->Size(); ++y)

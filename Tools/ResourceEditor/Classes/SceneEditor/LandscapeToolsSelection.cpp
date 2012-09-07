@@ -139,7 +139,7 @@ void LandscapeToolsSelection::SetDelegate(LandscapeToolsSelectionDelegate *newDe
 
 int32 LandscapeToolsSelection::ElementsCount(UIList * list)
 {
-    int32 countInRow = (list->GetSize().dx - ControlsFactory::BUTTON_HEIGHT) / ControlsFactory::TOOLS_HEIGHT;
+    int32 countInRow = (int32)(list->GetSize().dx - ControlsFactory::BUTTON_HEIGHT) / ControlsFactory::TOOLS_HEIGHT;
     
     int32 rows = tools.size() / countInRow;
     if(tools.size() % countInRow)
@@ -159,7 +159,7 @@ UIListCell *LandscapeToolsSelection::CellAtIndex(UIList *list, int32 index)
         cell->SetInputEnabled(false, false);
     }
     
-    int32 countInRow = (list->GetSize().dx - ControlsFactory::BUTTON_HEIGHT) / ControlsFactory::TOOLS_HEIGHT;
+    int32 countInRow = (int32)(list->GetSize().dx - ControlsFactory::BUTTON_HEIGHT) / ControlsFactory::TOOLS_HEIGHT;
     int32 toolIndex = countInRow * index;
     for(int32 i = 0; i < countInRow; ++i, ++toolIndex)
     {
@@ -190,7 +190,7 @@ UIControl * LandscapeToolsSelection::GetToolControl(int32 indexAtRow, DAVA::UILi
     if(!c)
     {
         c = new UIControl(Rect(indexAtRow * ControlsFactory::TOOLS_HEIGHT, 0, 
-                               ControlsFactory::TOOLS_HEIGHT, ControlsFactory::TOOLS_HEIGHT));
+                               (float32)ControlsFactory::TOOLS_HEIGHT, (float32)ControlsFactory::TOOLS_HEIGHT));
         c->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
         
         c->SetName(controlName);
