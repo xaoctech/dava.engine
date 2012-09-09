@@ -318,7 +318,7 @@ void PolygonGroup::BuildTangentsBinormals(uint32 flagsToAdd)
         ////*bres = -*bres;
         //*tres = -*tres;
         
-        Vector3 nrecomp = CrossProduct(*tres, *bres);
+        //Vector3 nrecomp = CrossProduct(*tres, *bres);
         
         
         // int xt = 0;

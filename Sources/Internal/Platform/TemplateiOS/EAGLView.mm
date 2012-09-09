@@ -113,6 +113,9 @@
                 [[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationLandscapeRight animated: false];
             }
                 break;
+                
+            default:
+                break;
         }
         
         DAVA::Core::eRenderer rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_1_0;
