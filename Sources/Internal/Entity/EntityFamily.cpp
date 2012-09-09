@@ -104,7 +104,7 @@ void EntityFamily::MoveFromFamily(EntityFamily * oldFamily, Entity * entity)
     for (Map<const char *, Pool*>::iterator currentPoolIt = poolByDataName.begin(); currentPoolIt != poolByDataName.end(); ++currentPoolIt)
     {
 		Pool * oldPool = oldFamily->GetPoolByDataName(currentPoolIt->first);
-        Pool * newPool = currentPoolIt->second;
+        //Pool * newPool = currentPoolIt->second;
 
 		if(oldPool)
 		{

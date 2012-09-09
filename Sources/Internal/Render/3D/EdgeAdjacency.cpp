@@ -65,7 +65,7 @@ void EdgeAdjacency::InitFromPolygonGroup(PolygonGroup * _polygonGroup, int32 ind
 {
 	polygonGroup = _polygonGroup;
 
-	ePrimitiveType primitiveType = polygonGroup->GetPrimitiveType();
+	//ePrimitiveType primitiveType = polygonGroup->GetPrimitiveType();
 	DVASSERT(PRIMITIVETYPE_TRIANGLELIST == primitiveType);
 
 	for(int32 i = 0; i < indexCount; i += 3)
