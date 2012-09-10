@@ -250,7 +250,7 @@ public:
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
 
-public:
+    protected:
     enum
     {
         REQUIRE_REBUILD = 1,
