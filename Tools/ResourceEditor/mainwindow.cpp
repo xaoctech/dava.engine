@@ -183,11 +183,11 @@ void QtMainWindow::SetupToolBar()
 
 void QtMainWindow::SetupProjectPath()
 {
-    DAVA::String projectPath = EditorSettings::Instance()->GetProjetcPath();
+    DAVA::String projectPath = EditorSettings::Instance()->GetProjectPath();
     while(0 == projectPath.length())
     {
         QtMainWindowHandler::Instance()->OpenProject();
-        projectPath = EditorSettings::Instance()->GetProjetcPath();
+        projectPath = EditorSettings::Instance()->GetProjectPath();
     }
 }
 

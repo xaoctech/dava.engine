@@ -20,6 +20,10 @@ public:
     
 protected:
 
+	int32 GetFlagValue(const String &keyName, int32 flagValue);
+
+
+
 	int32 GetIndexFromKey(const String &forKey);
     void OnGo2Materials(BaseObject * object, void * userData, void * callerData);
     void OnShowTexture(BaseObject * object, void * userData, void * callerData);

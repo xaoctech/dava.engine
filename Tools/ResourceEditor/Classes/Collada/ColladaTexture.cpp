@@ -54,7 +54,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 	
 	swprintf(orig, 512,L"%S", image->GetFilename().c_str() );
 	size_t origsize = wcslen(orig) + 1;
-	for(int i = 0; i < origsize; ++i)
+	for(int i = 0; i < (int)origsize; ++i)
 	{
 		if(orig[i] == '\\')
 		{

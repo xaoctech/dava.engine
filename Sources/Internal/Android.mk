@@ -250,7 +250,7 @@ LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
 
 # set used libs
 
-LIBS_PATH := $(LOCAL_PATH)/../../Libs/libs
+LIBS_PATH := $(call host-path,$(LOCAL_PATH)/../../Libs/libs)
 
 LOCAL_LDLIBS := -lGLESv1_CM -llog -lGLESv2
 LOCAL_LDLIBS += $(LIBS_PATH)/libzip_android.a

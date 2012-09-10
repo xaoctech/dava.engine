@@ -58,6 +58,8 @@ using namespace DAVA;
 - (void) disableTrackingArea;
 - (void) setWindowOffset: (const Vector2 &) offset;
 
+- (void) MouseMoved:(int32)x y:(int32)y;
+
 @end
 
 #endif //#if defined(__DAVAENGINE_MACOS__)

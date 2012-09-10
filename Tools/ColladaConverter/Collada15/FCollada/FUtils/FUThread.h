@@ -27,7 +27,7 @@ private:
 #ifdef WIN32
 	HANDLE thread;
 #else
-#warning "Threads not yet implemented for non Windows."
+//#warning "Threads not yet implemented for non Windows."
 #endif
 
 private:

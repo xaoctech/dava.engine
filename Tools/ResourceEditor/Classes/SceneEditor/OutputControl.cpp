@@ -31,12 +31,12 @@ int32 OutputControl::ElementsCount(UIList * list)
 
 UIListCell *OutputControl::CellAtIndex(UIList *list, int32 index)
 {
-    int32 width = list->GetRect().dx;
+    float32 width = list->GetRect().dx;
     
 	UIListCell *c = (UIListCell *)list->GetReusableCell("OutputCell");
 	if(!c)
 	{ 
-		c = new UIListCell(Rect(0, 0, width, 20), "OutputCell");
+		c = new UIListCell(Rect(0, 0, width, 20.f), "OutputCell");
 	}
     
     LogMessage *lm = messages[index];

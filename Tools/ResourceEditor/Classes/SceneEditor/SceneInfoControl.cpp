@@ -83,7 +83,7 @@ void SceneInfoControl::InvalidateTexturesInfo(int32 count, int32 size)
 {
     SetIntInfoValue("Text.Count", count);
 //    SetIntInfoValue("Text.Memory", size);
-    SetStringInfoValue("Text.Memory", PVRUtils::SizeInBytesToString(size));
+    SetStringInfoValue("Text.Memory", PVRUtils::SizeInBytesToString((float32)size));
 
     if(workingScene)
     {
