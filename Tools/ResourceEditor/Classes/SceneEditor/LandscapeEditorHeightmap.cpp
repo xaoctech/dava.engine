@@ -11,6 +11,8 @@
 
 #include "UNDOManager.h"
 
+#include "../LandscapeEditor/EditorHeightmap.h"
+
 
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -355,14 +357,10 @@ void LandscapeEditorHeightmap::HideAction()
 {
 	landscapeDebugNode->CursorDisable();
     SafeRelease(toolImage);
-    
-    workingScene->AddNode(workingLandscape);
-    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
-    workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
+
     
     workingScene->RemoveNode(landscapeDebugNode);
     SafeRelease(landscapeDebugNode);
-    
     SafeRelease(heightmap);
     
     if(tilemaskImage && tilemaskWasChanged)
@@ -374,6 +372,9 @@ void LandscapeEditorHeightmap::HideAction()
     SafeRelease(tilemaskImage);
     SafeRelease(toolImageTile);
 
+    workingScene->AddNode(workingLandscape);
+    workingLandscape->SetDebugFlags(workingLandscape->GetDebugFlags() & ~SceneNode::DEBUG_DRAW_GRID);
+    workingLandscape->BuildLandscapeFromHeightmapImage(savedPath, workingLandscape->GetBoundingBox());
     workingLandscape->SetTexture(LandscapeNode::TEXTURE_TILE_MASK, tilemaskPathname);
 
     
@@ -404,7 +405,8 @@ void LandscapeEditorHeightmap::ShowAction()
     workingScene->AddNode(landscapeDebugNode);
 
 
-    heightmap = SafeRetain(workingLandscape->GetHeightmap());
+    heightmap = new EditorHeightmap(workingLandscape->GetHeightmap());
+
     savedPath = workingLandscape->GetHeightmapPathname();
     landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
     
@@ -521,7 +523,8 @@ void LandscapeEditorHeightmap::TextureDidChanged(const String &forKey)
     if("property.landscape.texture.heightmap" == forKey)
     {
         SafeRelease(heightmap);
-        heightmap = SafeRetain(workingLandscape->GetHeightmap());
+        heightmap = new EditorHeightmap(workingLandscape->GetHeightmap());
+
         savedPath = workingLandscape->GetHeightmapPathname();
         landscapeDebugNode->SetDebugHeightmapImage(heightmap, workingLandscape->GetBoundingBox());
         
@@ -568,6 +571,11 @@ void LandscapeEditorHeightmap::UpdateHeightmap(const Rect &updatedRect)
     if(landscapeDebugNode)
     {
         landscapeDebugNode->RebuildVertexes(updatedRect);
+    }
+    
+    if(heightmap)
+    {
+        heightmap->HeghtWasChanged(updatedRect);
     }
 }
 
