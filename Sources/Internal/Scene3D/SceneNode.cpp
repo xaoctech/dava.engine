@@ -765,8 +765,7 @@ String SceneNode::GetPathID(SceneNode * root)
 		{
 			if (curr == parent->GetChild(i))
 			{
-				_snprintf( buff, sizeof(buff), "%d:", i);
-				result = buff + result;
+				result = Format("%d:", i) + result;
 				break;
 			}
 		}
