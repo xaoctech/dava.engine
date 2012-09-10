@@ -79,6 +79,9 @@
     <Filter Include="Sources\Qt\Dock">
       <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\LandscapeEditor">
+      <UniqueIdentifier>{93b7e12d-cd91-46fd-944b-c75263b81dd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -942,6 +945,9 @@
     <ClCompile Include="Classes\Commands\CommandReloadTextures.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1803,6 +1809,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\CommandReloadTextures.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h">
+      <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
