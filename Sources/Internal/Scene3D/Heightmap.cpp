@@ -60,9 +60,7 @@ void Heightmap::BuildFromImage(DAVA::Image *image)
     if(size != image->width)
     {
         ReleaseData();
-            
-        size = image->width;
-        data = new uint16[size * size];
+        AllocateData(image->width);
     }
 
     
@@ -112,6 +110,16 @@ void Heightmap::SaveToImage(const String & filename)
     SafeRelease(image);
 }
   
+bool Heightmap::AllocateData(int32 newSize)
+{
+    size = newSize;
+    data = new uint16[size * size];
+
+    return (NULL != data);
+}
+
+    
+    
 uint16 * Heightmap::Data()
 {
     return data;
@@ -199,12 +207,9 @@ bool Heightmap::Load(const String &filePathname)
     if(size != newSize)
     {
         ReleaseData();
-        
-        size = newSize;
-        data = new uint16[size * size];
+        AllocateData(newSize);
     }
 
-    
     if(size && tileSize)
     {
         int32 blockCount = (size-1) / (tileSize - 1);
@@ -232,4 +237,50 @@ const String Heightmap::FileExtension()
 }
     
     
+Heightmap * Heightmap::Clone(DAVA::Heightmap *clonedHeightmap)
+{
+    Heightmap *createdHeightmap = clonedHeightmap;
+    if(createdHeightmap)
+    {
+        if(createdHeightmap->Size() != size)
+        {
+            createdHeightmap->ReleaseData();
+            createdHeightmap->AllocateData(size);
+            
+            if(!createdHeightmap->Data())
+            {
+                return NULL;
+            }
+        }
+    }
+    else
+    {
+        createdHeightmap = CreateHeightmapForSize(size);
+        if(!createdHeightmap)   return NULL;
+    }
+    
+    memmove(createdHeightmap->data, data, size * size);
+    createdHeightmap->SetTileSize(tileSize); //TODO: is it true?
+
+    return createdHeightmap;
+}
+    
+Heightmap * Heightmap::CreateHeightmapForSize(int32 newSize)
+{
+    Heightmap *createdHeightmap = new Heightmap();
+    if(!createdHeightmap)   return NULL;
+    
+    createdHeightmap->AllocateData(newSize);
+    
+    if(!createdHeightmap->data)
+    {
+        SafeRelease(createdHeightmap);
+        return NULL;
+    }
+
+    return createdHeightmap;
+}
+
+    
 };
+
