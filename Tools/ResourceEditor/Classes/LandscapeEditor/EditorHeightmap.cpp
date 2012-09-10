@@ -35,6 +35,17 @@ EditorHeightmap::EditorHeightmap(Heightmap *heightmap)
     DVASSERT(heightmap && "Can't be NULL");
     
     savedHeightmap = SafeRetain(heightmap);
+    DownscaleOrClone();
+}
+
+EditorHeightmap::~EditorHeightmap()
+{
+    SafeRelease(savedHeightmap);
+}
+
+
+void EditorHeightmap::DownscaleOrClone()
+{
     if(MAX_EDITOR_HEIGHTMAP_SIZE < savedHeightmap->Size())
     {
         Downscale(MAX_EDITOR_HEIGHTMAP_SIZE);
@@ -44,12 +55,6 @@ EditorHeightmap::EditorHeightmap(Heightmap *heightmap)
         savedHeightmap->Clone(this);
     }
 }
-
-EditorHeightmap::~EditorHeightmap()
-{
-    SafeRelease(savedHeightmap);
-}
-
     
 void EditorHeightmap::Downscale(int32 newSize)
 {
@@ -119,7 +124,6 @@ uint16 EditorHeightmap::GetVerticalValue(int32 posY, int32 muliplier)
     int32 index = savedHeightmap->Size() - 1;
     for(int32 y = firstY; y < lastY; ++y)
     {
-//        sum += savedHeightmap->Data()[y * savedHeightmap->Size() + (savedHeightmap->Size() - 1)];
         sum += savedHeightmap->Data()[index];
         index += savedHeightmap->Size();
     }
@@ -184,3 +188,13 @@ void EditorHeightmap::Save(const DAVA::String &filePathname)
 {
     savedHeightmap->Save(filePathname);
 }
+
+bool EditorHeightmap::Load(const DAVA::String &filePathname)
+{
+    bool loaded = savedHeightmap->Load(filePathname);
+    DownscaleOrClone();
+    
+    return loaded;
+}
+
+
