@@ -48,6 +48,7 @@ class Camera : public SceneNode
 {
 public:
 	Camera();
+    Camera(const Camera & c);
 	virtual ~Camera();
 	
     /**
@@ -249,6 +250,11 @@ public:
 
     void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
     void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+
+    /// Overwrites frustum data (not pointer) and other math data only, no SceneNode etc. stuff here.
+    /// Added to support some math caching. Future versions of this library should provide a separate class
+    /// for camera math and use composition to merge math and rendering scene node.
+    void CopyMathOnly(const Camera & c);
 
     protected:
     enum

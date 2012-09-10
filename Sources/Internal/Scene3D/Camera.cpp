@@ -667,7 +667,36 @@ void Camera::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
 //}
 
 
-	
+void Camera::CopyMathOnly(const Camera & c)
+{
+    *currentFrustum = *c.currentFrustum;
+    zoomFactor = c.zoomFactor;
+
+    xmin = c.xmin;
+    xmax = c.xmax;
+    ymin = c.ymin;
+    ymax = c.ymax;
+    znear = c.znear;
+    zfar = c.zfar;
+    aspect = c.aspect;
+    fovy = c.fovy;
+    ortho = c.ortho;
+
+    position = c.position;
+    target = c.target;
+    up = c.up;
+    left = c.left;
+
+    direction = c.direction;
+    
+    cameraTransform = c.cameraTransform;
+    modelMatrix = c.modelMatrix;
+    projMatrix = c.projMatrix;
+    uniformProjModelMatrix = c.uniformProjModelMatrix;
+    flags = c.flags;
+}
+
+
 } // ns
 
 
