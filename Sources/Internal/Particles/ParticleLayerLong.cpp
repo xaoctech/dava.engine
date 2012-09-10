@@ -11,7 +11,7 @@ ParticleLayerLong::ParticleLayerLong()
 	material->SetTwoSided(true);
 }
 
-void ParticleLayerLong::Draw(const Vector3 & _up, const Vector3 & _left)
+void ParticleLayerLong::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & _cameraPos)
 {
 	verts.clear();
 	textures.clear();
@@ -26,30 +26,17 @@ void ParticleLayerLong::Draw(const Vector3 & _up, const Vector3 & _left)
 
 	while(current != 0)
 	{
-		current->velocity;
+		Vector3 vecShort = current->velocity.CrossProduct(_cameraPos-current->position);
+		vecShort.Normalize();
+		vecShort /= 2.f;
 
+		Vector3 vecLong = -current->velocity;
+		vecLong.Normalize();
 
-		Vector3 dx(_left);
-		Vector3 dy(_up);
-
-		float32 sine;
-		float32 cosine;
-		SinCosFast(current->angle, sine, cosine);
-
-		float32 pivotRight = ((sprite->GetWidth()-pivotPoint.x)*current->size.x*current->sizeOverLife)/2.f;
-		float32 pivotLeft = (pivotPoint.x*current->size.x*current->sizeOverLife)/2.f;
-		float32 pivotUp = (pivotPoint.y*current->size.y*current->sizeOverLife)/2.f;
-		float32 pivotDown = ((sprite->GetHeight()-pivotPoint.y)*current->size.y*current->sizeOverLife)/2.f;
-
-		Vector3 dxc = dx*cosine;
-		Vector3 dxs = dx*sine;
-		Vector3 dyc = dy*cosine;
-		Vector3 dys = dy*sine;
-
-		Vector3 topLeft = current->position+(-dxc+dys)*pivotUp + (dxs+dyc)*pivotLeft;
-		Vector3 topRight = current->position+(-dxs-dyc)*pivotRight + (-dxc+dys)*pivotUp;
-		Vector3 botLeft = current->position+(dxs+dyc)*pivotLeft + (dxc-dys)*pivotDown;
-		Vector3 botRight = current->position+(dxc-dys)*pivotDown + (-dxs-dyc)*pivotRight;
+		Vector3 topRight = current->position + sprite->GetWidth()*vecShort;
+		Vector3 topLeft = current->position - sprite->GetWidth()*vecShort;
+		Vector3 botRight = topRight + vecLong;
+		Vector3 botLeft = topLeft + vecLong;
 
 		verts.push_back(topLeft.x);//0
 		verts.push_back(topLeft.y);

@@ -99,7 +99,8 @@ void CommandOpenParticleEditorSprite::Execute()
 	{
 		uint32 pos = selectedPathname.find(".txt");
 		selectedPathname = selectedPathname.substr(0, pos);
-		String relativePath = "~res:/" + FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath()+"Data/", selectedPathname);
+		String relativePath = "~res:/Data/" + FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath()+"Data/", selectedPathname);
+		FileSystem::Instance()->ReplaceBundleName(EditorSettings::Instance()->GetProjectPath());
 		screen->GetParticlesEditor()->SetActiveSprite(relativePath);
 	}
 
