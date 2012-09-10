@@ -46,6 +46,7 @@ protected:
     virtual void RedoAction();
 
     void CopyPasteBegin();
+    virtual void RecreateHeightmapNode();
 
     
 	void UpdateTileMaskTool(float32 timeElapsed);
