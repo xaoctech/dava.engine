@@ -5,12 +5,12 @@
 #include "LandscapeEditorBase.h"
 #include "LandscapeToolsPanel.h"
 #include "Scene3D/LandscapeDebugNode.h"
-#include "Scene3D/Heightmap.h"
 #include "LandscapeEditorPropertyControl.h"
 
 using namespace DAVA;
 
 class EditorScene;
+class EditorHeightmap;
 class LandscapeEditorHeightmap
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -56,12 +56,15 @@ protected:
     void UpdateToolImage();
     float32 GetDropperHeight();
     
+    void UpdateHeightmap(const Rect &updatedRect);
+    
+    
     bool editingIsEnabled;
     
 	bool wasTileMaskToolUpdate;
 
     LandscapeDebugNode *landscapeDebugNode;
-    Heightmap *heightmap;
+    EditorHeightmap *heightmap;
     
     Image *toolImage;
     Image *toolImageTile;

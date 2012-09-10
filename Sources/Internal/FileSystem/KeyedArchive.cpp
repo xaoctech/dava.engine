@@ -256,13 +256,13 @@ float32 KeyedArchive::GetFloat(const String & key, float32 defaultValue)
 	return defaultValue;
 }
 
-const String & KeyedArchive::GetString(const String & key, const String & defaultValue)
+String KeyedArchive::GetString(const String & key, const String & defaultValue)
 {
 	if (IsKeyExists(key))
 		return objectMap[key]->AsString();
 	return defaultValue;
 }
-const WideString & KeyedArchive::GetWideString(const String & key, const WideString & defaultValue)
+WideString KeyedArchive::GetWideString(const String & key, const WideString & defaultValue)
 {
 	if (IsKeyExists(key))
 		return objectMap[key]->AsWideString();

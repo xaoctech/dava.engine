@@ -13,10 +13,10 @@
 
 #include "MaterialPropertyControl.h"
 
-static const float32 materialListPart = 0.33;
-static const float32 previewHeightPart = 0.5;
+static const float32 materialListPart = 0.33f;
+static const float32 previewHeightPart = 0.5f;
 
-#pragma mark  --MaterialEditor
+
 MaterialEditor::MaterialEditor()
 : DraggableDialog(Rect(GetScreenWidth()/8, GetScreenHeight()/8, GetScreenWidth()/4*3, GetScreenHeight()/4*3))
 {//todo: create draggable dealog
@@ -64,8 +64,8 @@ MaterialEditor::MaterialEditor()
     AddControl(text);
     SafeRelease(text);
     
-    int32 textY = (GetRect().dy - ControlsFactory::BUTTON_HEIGHT ) / 2;
-    noMaterials = new UIStaticText(Rect(materialListWidth, textY, GetRect().dx - materialListWidth, ControlsFactory::BUTTON_HEIGHT));
+    float32 textY = (GetRect().dy - ControlsFactory::BUTTON_HEIGHT ) / 2.f;
+    noMaterials = new UIStaticText(Rect(materialListWidth, textY, GetRect().dx - materialListWidth, (float32)ControlsFactory::BUTTON_HEIGHT));
     noMaterials->SetFont(ControlsFactory::GetFontLight());
     noMaterials->SetText(LocalizedString(L"materialeditor.nomaterials"));
     
@@ -160,8 +160,8 @@ void MaterialEditor::WillAppear()
     UIScreen *activeScreen = UIScreenManager::Instance()->GetScreen();
     if(activeScreen)
     {
-        int32 height = GetSize().y;
-        SetRect(Rect(GetScreenWidth()/8, (GetScreenHeight() - height) / 2, GetScreenWidth()/4*3, height));
+        float32 height = GetSize().y;
+        SetRect(Rect(GetScreenWidth()/8.f, (GetScreenHeight() - height) / 2.f, GetScreenWidth()/4.f*3.f, height));
     }
     
     UpdateInternalMaterialsVector();

@@ -17,7 +17,7 @@ LibraryControl::LibraryControl(const Rect & rect)
 
     ControlsFactory::CustomizePanelControl(this);
     
-    int32 panelHeight = ControlsFactory::PREVIEW_PANEL_HEIGHT;
+    float32 panelHeight = ControlsFactory::PREVIEW_PANEL_HEIGHT;
 #if !defined(DAVA_QT)
     fileTreeControl = new UIFileTree(Rect(0, ControlsFactory::BUTTON_HEIGHT, 
                                           rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT - panelHeight));
@@ -43,20 +43,20 @@ LibraryControl::LibraryControl(const Rect & rect)
     btnConvert->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnConvertPressed));
     panelDAE->AddControl(btnConvert);
     
-    int32 btnwidth = (rect.dx) / 2;
+    float32 btnwidth = (rect.dx) / 2.f;
     panelSCE = ControlsFactory::CreatePanelControl(Rect(0, rect.dy - panelHeight, rect.dx, panelHeight));
-    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, ControlsFactory::BUTTON_HEIGHT), 
+    btnAdd = ControlsFactory::CreateButton(Rect(0, 0, btnwidth, (float32)ControlsFactory::BUTTON_HEIGHT), 
                                            LocalizedString(L"library.add"));
     btnAdd->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnAddPressed));
-    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, ControlsFactory::BUTTON_HEIGHT), 
+    btnEdit = ControlsFactory::CreateButton(Rect(rect.dx - btnwidth, 0, btnwidth, (float32)ControlsFactory::BUTTON_HEIGHT), 
                                             LocalizedString(L"library.edit"));
     btnEdit->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnEditPressed));
-    btnReload = ControlsFactory::CreateButton(Rect(0, ControlsFactory::BUTTON_HEIGHT, rect.dx, ControlsFactory::BUTTON_HEIGHT), 
+    btnReload = ControlsFactory::CreateButton(Rect(0, ControlsFactory::BUTTON_HEIGHT, rect.dx, (float32)ControlsFactory::BUTTON_HEIGHT), 
                                               LocalizedString(L"library.reload"));
     btnReload->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &LibraryControl::OnReloadPressed));
 
-    preview = new ScenePreviewControl(Rect(0, ControlsFactory::BUTTON_HEIGHT * 2, 
-                                           rect.dx, panelHeight - ControlsFactory::BUTTON_HEIGHT * 2));
+    preview = new ScenePreviewControl(Rect(0, ControlsFactory::BUTTON_HEIGHT * 2.f, 
+                                           rect.dx, (float32)panelHeight - ControlsFactory::BUTTON_HEIGHT * 2.f));
     preview->SetDebugDraw(true);
     panelSCE->AddControl(btnAdd);
     panelSCE->AddControl(btnEdit);
@@ -185,12 +185,12 @@ void LibraryControl::OnRefreshPressed(DAVA::BaseObject *object, void *userData, 
 
 UIFileTreeCell *LibraryControl::CellAtIndex(UIFileTree * tree, UITreeItemInfo *entry, int32 index)
 {
-    int32 width = tree->GetRect().dx;
+    float32 width = tree->GetRect().dx;
     
 	UIFileTreeCell *c = (UIFileTreeCell *)tree->GetReusableCell("FileTreeCell"); //try to get cell from the reusable cells store
 	if(!c)
 	{ //if cell of requested type isn't find in the store create new cell
-		c = new UIFileTreeCell(Rect(0, 0, width, 20), "FileTreeCell");
+		c = new UIFileTreeCell(Rect(0, 0, width, 20.f), "FileTreeCell");
 	}
 	//fill cell whith data
 	//c->serverName = GameServer::Instance()->totalServers[index].name + LocalizedString("'s game");

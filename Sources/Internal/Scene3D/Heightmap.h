@@ -51,7 +51,7 @@ public:
     void BuildFromImage(Image *image);
     void SaveToImage(const String & filename);
     
-    void Save(const String &filePathname);
+    virtual void Save(const String &filePathname);
     bool Load(const String &filePathname);
     
     uint16 * Data();
@@ -62,9 +62,16 @@ public:
     
     static const String FileExtension();
 
-protected:
+    Heightmap *Clone(Heightmap *clonedHeightmap);
 
-    void ReleaseData();
+protected:
+    
+    Heightmap *CreateHeightmapForSize(int32 newSize);
+    
+    bool AllocateData(int32 newSize);
+    void ReleaseData();    
+    
+protected:
     
 	uint16 *data;
     int32 size;

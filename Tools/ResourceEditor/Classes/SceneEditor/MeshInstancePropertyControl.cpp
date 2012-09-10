@@ -45,7 +45,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
 	}
 
     int32 matCount = (int32)materials.size();
-    for(int32 i = 0; i < materials.size(); ++i)
+    for(int32 i = 0; i < matCount; ++i)
     {
         Material *mat = materials[i];
         materialNames.push_back(mat->GetName());
@@ -63,31 +63,31 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
         
         String keyPrefix = Format("#%d", i);
         propertyList->AddBoolProperty(keyPrefix + ". fmt.NORMAL", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.NORMAL", vertexFormat & EVF_NORMAL);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.NORMAL", 0 != (vertexFormat & EVF_NORMAL));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.COLOR", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.COLOR", vertexFormat & EVF_COLOR);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.COLOR", 0 != (vertexFormat & EVF_COLOR));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.TEXCOORD0", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD0", vertexFormat & EVF_TEXCOORD0);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD0", 0 != (vertexFormat & EVF_TEXCOORD0));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.TEXCOORD1", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD1", vertexFormat & EVF_TEXCOORD1);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD1", 0 != (vertexFormat & EVF_TEXCOORD1));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.TEXCOORD2", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD2", vertexFormat & EVF_TEXCOORD2);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD2", 0 != (vertexFormat & EVF_TEXCOORD2));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.TEXCOORD3", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD3", vertexFormat & EVF_TEXCOORD3);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD3", 0 != (vertexFormat & EVF_TEXCOORD3));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.TANGENT", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TANGENT", vertexFormat & EVF_TANGENT);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.TANGENT", 0 != (vertexFormat & EVF_TANGENT));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.BINORMAL", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.BINORMAL", vertexFormat & EVF_BINORMAL);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.BINORMAL", 0 != (vertexFormat & EVF_BINORMAL));
         
         propertyList->AddBoolProperty(keyPrefix + ". fmt.JOINTWEIGHT", PropertyList::PROPERTY_IS_EDITABLE);
-        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT", vertexFormat & EVF_JOINTWEIGHT);
+        propertyList->SetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT", 0 != (vertexFormat & EVF_JOINTWEIGHT));
 
 		propertyList->AddIntProperty(keyPrefix + ".lightmap.size");
 		propertyList->SetIntPropertyValue(keyPrefix + ".lightmap.size", currentSceneNode->GetCustomProperties()->GetInt32(keyPrefix + ".lightmap.size", 128));
@@ -101,7 +101,7 @@ void MeshInstancePropertyControl::ReadFrom(SceneNode * sceneNode)
             if(polygroups[i]->GetMaterial())
             {
                 String meshMatName = polygroups[i]->GetMaterial()->GetName();
-                for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+                for(int32 iMat = 0; iMat < (int32)materials.size(); ++iMat)
                 {
                     if(meshMatName == materialNames[iMat])
                     {
@@ -155,15 +155,18 @@ void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, c
         
         String keyPrefix = Format("#%d", index);
         int32 vertexFormat = EVF_VERTEX;
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.NORMAL");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.COLOR");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD0");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD1");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD2");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TEXCOORD3");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.TANGENT");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.BINORMAL");
-        vertexFormat |= propertyList->GetBoolPropertyValue(keyPrefix + ". fmt.JOINTWEIGHT");
+
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.NORMAL", EVF_NORMAL);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.COLOR", EVF_COLOR);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.TEXCOORD0", EVF_TEXCOORD0);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.TEXCOORD1", EVF_TEXCOORD1);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.TEXCOORD2", EVF_TEXCOORD2);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.TEXCOORD3", EVF_TEXCOORD3);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.TANGENT", EVF_TANGENT);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.BINORMAL", EVF_BINORMAL);
+		vertexFormat |= GetFlagValue(keyPrefix + ". fmt.JOINTWEIGHT", EVF_JOINTWEIGHT);
+
+		//TODO: need to save new vertex format
     }
 
 	if(forKey == "property.meshinstance.dynamicshadow.enable")
@@ -180,6 +183,14 @@ void MeshInstancePropertyControl::OnBoolPropertyChanged(PropertyList *forList, c
 	}
 
     NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
+}
+
+int32 MeshInstancePropertyControl::GetFlagValue(const String &keyName, int32 flagValue)
+{
+	if(propertyList->GetBoolPropertyValue(keyName))
+		return flagValue;
+
+	return 0;
 }
 
 void MeshInstancePropertyControl::OnIntPropertyChanged(PropertyList *forList, const String &forKey, int newValue)

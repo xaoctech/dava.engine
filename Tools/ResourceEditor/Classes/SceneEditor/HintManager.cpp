@@ -2,7 +2,6 @@
 #include "ControlsFactory.h"
 
 
-#pragma mark  --HintControl
 HintControl::HintControl(const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)
 {
@@ -23,21 +22,21 @@ HintControl::~HintControl()
 void HintControl::SetText(const WideString &hintMessage)
 {
     Size2i requestedSize = hintText->GetFont()->GetStringSize(hintMessage);
-    Vector2 controlSize(requestedSize.dx + 20, requestedSize.dy + 10);
+    Vector2 controlSize((float32)requestedSize.dx + 20.f, (float32)requestedSize.dy + 10.f);
     hintText->SetRect(Rect(0, 0, controlSize.dx, controlSize.dy));
     this->SetSize(controlSize);
 
     hintText->SetText(hintMessage);
 }
 
-#pragma mark  --HintManager
+
 HintManager::HintManager()
 {
 }
     
 HintManager::~HintManager()
 {
-    for(int32 h = 0; h < hints.size(); ++h)
+    for(int32 h = 0; h < (int32)hints.size(); ++h)
     {
         if(hints[h] && hints[h]->GetParent())
         {

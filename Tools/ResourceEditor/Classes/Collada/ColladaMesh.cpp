@@ -20,7 +20,7 @@ ColladaMesh::ColladaMesh( FCDGeometryMesh * _mesh , ColladaVertexWeight * vertex
 		ColladaPolygonGroup * polyGroup = new ColladaPolygonGroup(this, poly, vertexWeightArray);
 		polygons.push_back(polyGroup);
 		
-		printf("- polygroup: 0x%08x\n", polyGroup);
+		printf("- polygroup: %p\n", polyGroup);
 	}
 }
 

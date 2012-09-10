@@ -24,15 +24,15 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
     
     for(int32 iDist = 0; iDist < LodNode::MAX_LOD_LAYERS; ++iDist)
     {
-        distanceText[iDist] = new UIStaticText(Rect(0, (iDist+1) * ControlsFactory::BUTTON_HEIGHT, 
-                                                    rect.dx / 2, ControlsFactory::BUTTON_HEIGHT));
+        distanceText[iDist] = new UIStaticText(Rect(0, (float32)((iDist+1) * ControlsFactory::BUTTON_HEIGHT), 
+                                                    rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
         
         distanceText[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
         distanceText[iDist]->SetFont(ControlsFactory::GetFontLight());
         
         
-        distanceTextValues[iDist] = new UITextField(Rect(rect.dx / 2, (iDist+1) * ControlsFactory::BUTTON_HEIGHT, 
-                                                         rect.dx / 2, ControlsFactory::BUTTON_HEIGHT));
+        distanceTextValues[iDist] = new UITextField(Rect(rect.dx / 2.f, (float32)((iDist+1) * ControlsFactory::BUTTON_HEIGHT), 
+                                                         rect.dx / 2.f, (float32)(ControlsFactory::BUTTON_HEIGHT)));
         ControlsFactory::CustomizeEditablePropertyCell(distanceTextValues[iDist]);
         distanceTextValues[iDist]->SetFont(ControlsFactory::GetFontLight());
         distanceTextValues[iDist]->SetDelegate(this);
@@ -87,7 +87,7 @@ void LodDistanceControl::ReleaseControls()
 void LodDistanceControl::SetDistances(float32 *newDistances, int32 newCount)
 {
     Vector2 newSize = GetSize();
-    newSize.y = (newCount + 1) * ControlsFactory::BUTTON_HEIGHT;
+    newSize.y = (float32)((newCount + 1) * ControlsFactory::BUTTON_HEIGHT);
     SetSize(newSize);
     
     ReleaseControls();
@@ -272,7 +272,7 @@ void LodDistanceControl::UpdateSliderPos()
     }
 }
 
-#pragma mark  --UITextFieldDelegate
+
 void LodDistanceControl::TextFieldShouldReturn(UITextField * textField)
 {
     textField->ReleaseFocus();
@@ -289,7 +289,7 @@ void LodDistanceControl::TextFieldLostFocus(UITextField * textField)
     {
         if(textField == distanceTextValues[iText])
         {
-            float32 newDistance = atof(WStringToString(textField->GetText()).c_str());
+            float32 newDistance = (float32)atof(WStringToString(textField->GetText()).c_str());
             
             newDistance = Max(newDistance, 0.f);
             newDistance = Min(newDistance, (float32)LodNode::MAX_LOD_DISTANCE);
@@ -342,7 +342,7 @@ bool LodDistanceControl::TextFieldKeyPressed(UITextField * textField, int32 repl
     WideString newText = textField->GetAppliedChanges(replacementLocation, replacementLength, replacementString);
     bool allOk;
     int pointsCount = 0;
-    for (int i = 0; i < newText.length(); i++) 
+    for (int32 i = 0; i < (int32)newText.length(); i++) 
     {
         allOk = false;
         if (newText[i] == L'-' && i == 0)

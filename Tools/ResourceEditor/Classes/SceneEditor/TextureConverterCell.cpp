@@ -4,7 +4,7 @@
 #include "PVRUtils.h"
 
 TextureConverterCell::TextureConverterCell(const Rect &rect, const String &cellIdentifier)
-:   UIListCell(Rect(rect.x, rect.y, rect.dx, GetCellHeight()), cellIdentifier)
+:   UIListCell(Rect(rect.x, rect.y, rect.dx, (float32)GetCellHeight()), cellIdentifier)
 {
     ControlsFactory::CustomizeListCell(this, L"");
     
@@ -39,7 +39,7 @@ TextureConverterCell::TextureConverterCell(const Rect &rect, const String &cellI
     AddControl(textureSize);
 
     
-    UIControl *line =  ControlsFactory::CreateLine(Rect(0, GetCellHeight() - 1, rect.dx, 1), Color(0.2f, 0.2f, 0.2f, 0.8f));
+    UIControl *line =  ControlsFactory::CreateLine(Rect(0, (float32)GetCellHeight() - 1.f, rect.dx, 1.f), Color(0.2f, 0.2f, 0.2f, 0.8f));
     AddControl(line);
     SafeRelease(line);
 }
@@ -70,7 +70,7 @@ void TextureConverterCell::SetTexture(const String &texturePath)
     textureName->SetText(StringToWString(filename));
     
     Texture *texture = Texture::CreateFromFile(textureWorkingPath);
-    Sprite *s = Sprite::CreateFromTexture(texture, 0, 0, texture->width, texture->height);
+    Sprite *s = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->width, (float32)texture->height);
     preview->SetSprite(s, 0);
     
     String ext = FileSystem::GetExtension(filename);
@@ -90,7 +90,7 @@ void TextureConverterCell::SetTexture(const String &texturePath)
             String pvrFormat = Texture::GetPixelFormatString(format);
             textureFormat->SetText(StringToWString(pngFormat + "/" + pvrFormat));
             
-            textureSize->SetText(PVRUtils::SizeInBytesToWideString(pvrHeader.dataLength));
+            textureSize->SetText(PVRUtils::SizeInBytesToWideString((float32)pvrHeader.dataLength));
             
             SafeRelease(pvrTex);
         }
@@ -106,7 +106,7 @@ void TextureConverterCell::SetTexture(const String &texturePath)
 
         PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
         String pvrFormat = Texture::GetPixelFormatString(format);
-        textureSize->SetText(PVRUtils::SizeInBytesToWideString(pvrHeader.dataLength));
+        textureSize->SetText(PVRUtils::SizeInBytesToWideString((float32)pvrHeader.dataLength));
 
         String pngPath = FileSystem::ReplaceExtension(textureWorkingPath, ".pvr");
         Texture *pngTex = Texture::CreateFromFile(pngPath);
