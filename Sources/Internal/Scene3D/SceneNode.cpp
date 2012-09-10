@@ -788,7 +788,10 @@ SceneNode * SceneNode::GetNodeByPathID(SceneNode * root, String pathID)
 		if (val < '0' || val > '9')
 		{
 			offs++;
-			result = result->GetChild(index);
+			if (index >=0 && result->GetChildrenCount() > index)
+				result = result->GetChild(index);
+			else
+				return NULL;
 			continue;
 		}
 		index = index * 10 + val - '0';
