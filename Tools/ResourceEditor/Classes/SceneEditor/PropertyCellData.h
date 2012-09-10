@@ -50,7 +50,7 @@ public:
     const Vector<String> & GetStringVector();
     int32 GetItemIndex(); 
     const Matrix4 & GetMatrix4() const;
-    int32 GetIsSectionOpened(); 
+    bool GetIsSectionOpened(); 
     int32 GetSectionElementsCount();
     const Message & GetMessage();
     bool GetClearDataEnabled();

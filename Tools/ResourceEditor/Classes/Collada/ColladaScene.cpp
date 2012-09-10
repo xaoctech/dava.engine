@@ -221,10 +221,10 @@ int	ColladaScene::FindMeshIndex(ColladaMesh * mesh)
 }
 bool ColladaScene::FindPolyGroupIndex(ColladaPolygonGroup * group, int & meshIndex, int & polygroupIndex)
 {
-	for (int m = 0; m < colladaMeshes.size(); ++m)
+	for (int m = 0; m < (int)colladaMeshes.size(); ++m)
 	{
 		ColladaMesh * mesh = colladaMeshes[m];
-		for (int p = 0; p < mesh->polygons.size(); ++p)
+		for (int p = 0; p < (int)mesh->polygons.size(); ++p)
 		{
 			if (mesh->polygons[p] == group)
 			{
@@ -236,10 +236,10 @@ bool ColladaScene::FindPolyGroupIndex(ColladaPolygonGroup * group, int & meshInd
 		}
 	}
 	
-	for (int m = 0; m < colladaAnimatedMeshes.size(); ++m)
+	for (int m = 0; m < (int)colladaAnimatedMeshes.size(); ++m)
 	{
 		ColladaAnimatedMesh * mesh = colladaAnimatedMeshes[m];
-		for (int p = 0; p < mesh->mesh->polygons.size(); ++p)
+		for (int p = 0; p < (int)mesh->mesh->polygons.size(); ++p)
 		{
 			if (mesh->mesh->polygons[p] == group)
 			{
@@ -294,7 +294,7 @@ ColladaMeshInstance * ColladaScene::CreateMeshInstance( ColladaMesh * mesh, FCDG
 		
 		
 		ColladaPolygonGroup * polyGroup = mesh->GetPolygonGroup(i);
-		printf("- mesh instance added polygroup: 0x%08x %d\n", polyGroup, i);
+		printf("- mesh instance added polygroup: %p %d\n", polyGroup, i);
 		ColladaPolygonGroupInstance * polygonGroupInstance = new ColladaPolygonGroupInstance(polyGroup, material);
 		meshInstance->AddPolygonGroupInstance(polygonGroupInstance);
 	}	
@@ -429,7 +429,7 @@ int	ColladaScene::FindCameraIndex(ColladaCamera * cam)
 	
 void ColladaScene::SetExclusiveAnimation(int32 index)
 {
-	if (index >= colladaAnimations.size())return;
+	if (index >= (int)colladaAnimations.size())return;
 	rootNode->SetAnimation(0, true);
 	colladaAnimations[index]->Assign();
 	animationEndTime = colladaAnimations[index]->duration;

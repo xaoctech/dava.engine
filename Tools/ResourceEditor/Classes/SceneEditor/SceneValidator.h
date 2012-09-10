@@ -132,6 +132,9 @@ protected:
     void ShowErrors();
     
     bool ValidatePathname(const String &pathForValidation);
+
+    bool NodeRemovingDisabled(SceneNode *node);
+    
     
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;

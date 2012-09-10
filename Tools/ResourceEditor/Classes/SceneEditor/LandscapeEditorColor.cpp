@@ -8,7 +8,7 @@
 
 #include "UNDOManager.h"
 
-#pragma mark --LandscapeEditorColor
+
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -85,10 +85,10 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
 	SafeRelease(oldMaskSprite);
     SafeRelease(toolSprite);
     
-    int32 texSize = settings->maskSize;
+    float32 texSize = (float32)settings->maskSize;
     if(tex)
     {
-        texSize = tex->width;
+        texSize = (float32)tex->width;
     }
     
     maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
@@ -99,7 +99,7 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     {
         RenderManager::Instance()->LockNonMain();
         
-        Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->height);
+        Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
         
         RenderManager::Instance()->SetRenderTarget(oldMaskSprite);
         oldMask->SetPosition(0.f, 0.f);
@@ -208,7 +208,7 @@ void LandscapeEditorColor::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);
-		workingLandscape->SetBigTextureSize(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaleSize);
 	}
@@ -290,7 +290,7 @@ void LandscapeEditorColor::HideAction()
 void LandscapeEditorColor::ShowAction()
 {
     CreateMaskTexture();
-    landscapeSize = maskSprite->GetWidth();
+    landscapeSize = (int32)maskSprite->GetWidth();
 
 	workingLandscape->CursorEnable();
 }
@@ -359,7 +359,7 @@ NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 }
 
 
-#pragma mark -- LandscapeEditorPropertyControlDelegate
+
 void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
 {
     settings = newSettings;

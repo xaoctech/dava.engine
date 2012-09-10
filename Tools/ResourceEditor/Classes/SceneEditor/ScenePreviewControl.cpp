@@ -148,7 +148,7 @@ ScenePreviewControl::ScenePreviewControl(const Rect & rect)
     // Camera setup
     cameraController = new PreviewCameraController();
     cameraController->SetRadius(10.f);
-    cameraController->SetControlHeight(rect.dy);
+    cameraController->SetControlHeight((int32)rect.dy);
     
     SetScene(editorScene);
     cameraController->SetScene(editorScene);

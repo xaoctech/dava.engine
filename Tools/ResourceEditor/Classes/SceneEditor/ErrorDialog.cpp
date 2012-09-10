@@ -101,7 +101,7 @@ const Rect ErrorDialog::GetDialogRect() const
     const Rect screenRect = GetScreenRect();
     
     Rect baseRect(screenRect.dx/8, screenRect.dy/4, screenRect.dx * 3 / 4, screenRect.dy/2);
-    int32 height = (errorMessages.size() + 1) * ControlsFactory::ERROR_MESSAGE_HEIGHT;
+    float32 height = (float32)((errorMessages.size() + 1) * ControlsFactory::ERROR_MESSAGE_HEIGHT);
     if(height + ControlsFactory::BUTTON_HEIGHT < baseRect.dy)
     {
         baseRect.dy = height + ControlsFactory::BUTTON_HEIGHT;

@@ -104,11 +104,13 @@ void EntityFamily::MoveFromFamily(EntityFamily * oldFamily, Entity * entity)
     for (Map<const char *, Pool*>::iterator currentPoolIt = poolByDataName.begin(); currentPoolIt != poolByDataName.end(); ++currentPoolIt)
     {
 		Pool * oldPool = oldFamily->GetPoolByDataName(currentPoolIt->first);
-        Pool * newPool = currentPoolIt->second;
 
 		if(oldPool)
 		{
+#ifdef __DAVAENGINE_DEBUG__
+			Pool * newPool = currentPoolIt->second;
 			DVASSERT(typeid(*oldPool) == typeid(*newPool));
+#endif
         
 			oldPool->MoveElement(oldIndex, oldPool, newIndex);
 		}

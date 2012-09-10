@@ -249,9 +249,10 @@ void SceneData::AddScene(const String &scenePathname)
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
     
-    RebuildSceneGraph();
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
+
+    RebuildSceneGraph();
 }
 
 void SceneData::EditScene(const String &scenePathname)
@@ -266,11 +267,11 @@ void SceneData::EditScene(const String &scenePathname)
 		Vector<SceneNode*> tempV;
 		tempV.reserve(rootNode->GetChildrenCount());
 
-		for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
 		{
 			tempV.push_back(rootNode->GetChild(ci));
 		}
-        for (int ci = 0; ci < tempV.size(); ++ci)
+        for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
         {
             //рут нода это сама сцена в данном случае
             scene->AddNode(tempV[ci]);
@@ -281,9 +282,10 @@ void SceneData::EditScene(const String &scenePathname)
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
     
-    RebuildSceneGraph();
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
+   
+    RebuildSceneGraph();
 }
 
 void SceneData::AddReferenceScene(const DAVA::String &scenePathname)

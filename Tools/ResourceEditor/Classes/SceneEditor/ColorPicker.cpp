@@ -63,10 +63,10 @@ ColorSelectorControl::ColorSelectorControl(const Rect &rect)
 
     SetInitialColors();
 
-    int32 sectionHeight = rect.dy / 6.f;
+    float32 sectionHeight = rect.dy / 6.f;
     
     float32 colorDelta = 1.0f / (sectionHeight);
-    for(int32 dy = 0; dy < sectionHeight; ++dy)
+    for(int32 dy = 0; dy < (int32)sectionHeight; ++dy)
     {
         for(int32 iSection = 0; iSection < 6; ++iSection)
         {
@@ -106,7 +106,7 @@ void ColorSelectorControl::ColorSelected(const Vector2 &point)
     float32 sectionHeight = GetRect().dy / 6.f;
     float32 colorDelta = 1.0f / (sectionHeight);
 
-    int32 sectionId = point.y / sectionHeight;
+    int32 sectionId = (int32)(point.y / sectionHeight);
     float32 sectionDelta = (point.y - (sectionHeight * sectionId));
     
     selectedColor = sections[sectionId];
@@ -144,7 +144,7 @@ void ColorSelectorControl::SetColor(const DAVA::Color &color)
 {
     float32 minLength = 100.f;
     
-    int32 sectionHeight = GetRect().dy / 6.f;
+    float32 sectionHeight = GetRect().dy / 6.f;
     float32 colorDelta = 1.0f / (sectionHeight);
         
     
@@ -157,7 +157,7 @@ void ColorSelectorControl::SetColor(const DAVA::Color &color)
     colors[5] = Color(1.0f, 1.f, 0.f, 1.0f);
 
     
-    for(int32 dy = 0; dy < sectionHeight; ++dy)
+    for(int32 dy = 0; dy < (int32)sectionHeight; ++dy)
     {
         for(int32 iSection = 0; iSection < 6; ++iSection)
         {
@@ -196,9 +196,9 @@ void ColorMapControl::SetColor(const Color &color)
     
     hue = RGBToH(color);
     
-    int32 dx = GetRect().dx / 101.f;
-    int32 dy = GetRect().dy / 101.f;
-    int32 y = 0.f;
+    float32 dx = GetRect().dx / 101.f;
+    float32 dy = GetRect().dy / 101.f;
+    float32 y = 0.f;
     
     float32 minLength = 100;
     for(float32 brightness = 1.0f; brightness >= 0.0f; brightness -= 0.01f)
@@ -240,7 +240,7 @@ Color ColorMapControl::HSBToRgb(float32 s, float32 b)
     else 
     {
         float32 h = hue/ 60.f;
-        int32 i = h;
+        int32 i = (int32)h;
         float32 f = h - i;
         float32 p = b * (1.0f - s);
         float32 q = b * (1.0f - s * f);
@@ -300,22 +300,22 @@ int32 ColorMapControl::RGBToH(const DAVA::Color &color)
     {
         if((max == color.r) && (color.g >= color.b))
         {
-            return (60 * (color.g - color.b) / (max - min));
+            return (int32)(60 * (color.g - color.b) / (max - min));
         }
         
         if((max == color.r) && (color.g < color.b))
         {
-            return (60 * (color.g - color.b) / (max - min) + 360);
+            return (int32)(60 * (color.g - color.b) / (max - min) + 360);
         }
         
         if(max == color.g)
         {
-            return (60 * (color.b - color.r) / (max - min) + 120);
+            return (int32)(60 * (color.b - color.r) / (max - min) + 120);
         }
         
         if(max == color.b)
         {
-            return (60 * (color.r - color.g) / (max - min) + 240);
+            return (int32)(60 * (color.r - color.g) / (max - min) + 240);
         }
     }
     
@@ -497,10 +497,10 @@ void ColorPicker::SetColor(const Color & newColor, bool updateColorMap, bool upd
         colorSelectorControl->SetColor(currentColor);
     }
     
-    colorList->SetIntPropertyValue("colorpicker.r", currentColor.r * 255);
-    colorList->SetIntPropertyValue("colorpicker.g", currentColor.g * 255);
-    colorList->SetIntPropertyValue("colorpicker.b", currentColor.b * 255);
-    colorList->SetIntPropertyValue("colorpicker.a", currentColor.a * 255);
+    colorList->SetIntPropertyValue("colorpicker.r", (int32)currentColor.r * 255);
+    colorList->SetIntPropertyValue("colorpicker.g", (int32)currentColor.g * 255);
+    colorList->SetIntPropertyValue("colorpicker.b", (int32)currentColor.b * 255);
+    colorList->SetIntPropertyValue("colorpicker.a", (int32)currentColor.a * 255);
     
     alphaValue->SetValue(currentColor.a);
 }

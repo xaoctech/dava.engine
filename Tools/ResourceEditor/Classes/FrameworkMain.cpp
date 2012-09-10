@@ -19,7 +19,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.20"
+#define VERSION     "0.0.21"
  
 //void EntityTest();
 
@@ -158,8 +158,8 @@ void FrameworkDidLaunched()
 //    int32 height = 690;
         
     
-    int32 width = DAVA::Core::Instance()->GetVirtualScreenWidth();
-    int32 height = DAVA::Core::Instance()->GetVirtualScreenHeight();
+    int32 width = (int32)DAVA::Core::Instance()->GetVirtualScreenWidth();
+    int32 height = (int32)DAVA::Core::Instance()->GetVirtualScreenHeight();
     if(width <= 0 || height <= 0)
     {
         width = EditorSettings::Instance()->GetScreenWidth();

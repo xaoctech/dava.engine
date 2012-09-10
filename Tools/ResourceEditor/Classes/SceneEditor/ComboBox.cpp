@@ -46,9 +46,9 @@ void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
 
     Font *font = ControlsFactory::GetFontLight();
     listWidth = size.x;
-    for (int i = 0; i < items.size(); i++)
+    for (int i = 0; i < (int32)items.size(); i++)
     {
-        int32 itemWidth = font->GetStringSize(StringToWString(items[i])).dx;
+        float itemWidth = (float32)font->GetStringSize(StringToWString(items[i])).dx;
         listWidth = Max(listWidth, itemWidth);
         
         indecesMap[items[i]] = i;
@@ -125,7 +125,7 @@ void ComboBox::OnButton(BaseObject * object, void * userData, void * callerData)
             Rect buttonRect = GetRect(true);
             Rect screenRect = screen->GetRect(true);
             
-            int32 toRight = (screenRect.x + screenRect.dx) - (buttonRect.x);
+            float32 toRight = (screenRect.x + screenRect.dx) - (buttonRect.x);
             if(toRight < listWidth)
             {
                 list->SetPosition(Vector2(buttonRect.x + buttonRect.dx - listWidth, buttonRect.y + buttonRect.dy));
@@ -206,7 +206,7 @@ UIListCell *ComboBox::CellAtIndex(UIList *forList, int32 index)
 
 int32 ComboBox::CellHeight(UIList *forList, int32 index)
 {
-    return size.y;
+    return (int32)size.y;
 }
 
 void ComboBox::OnCellSelected(UIList *forList, UIListCell *selectedCell)

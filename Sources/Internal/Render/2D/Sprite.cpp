@@ -378,7 +378,7 @@ Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTex
 	DVASSERT(fromTexture);
 	Sprite *spr = new Sprite();
 	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
-	spr->InitFromTexture(fromTexture, textureRegionOffset.x, textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, spriteSize.x, spriteSize.y, false);
+	spr->InitFromTexture(fromTexture, (int32)textureRegionOffset.x, (int32)textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, (int32)spriteSize.x, (int32)spriteSize.y, false);
 	return spr;
 }
 

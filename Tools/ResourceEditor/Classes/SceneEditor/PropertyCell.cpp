@@ -23,7 +23,7 @@
 
 
 
-#pragma mark --PropertyCell 
+
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
 {
@@ -57,7 +57,7 @@ String PropertyCell::GetTypeName(int cellType)
 }
 
 
-#pragma mark --PropertyTextCell 
+
 PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -251,7 +251,7 @@ void PropertyTextCell::OnHint(BaseObject *, void *, void *)
 }
 
 
-#pragma mark --PropertyBoolCell 
+
 PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -299,7 +299,7 @@ void PropertyBoolCell::ValueChanged(UICheckBox *, bool newValue)
 }
 
 
-#pragma mark --PropertyFilepathCell 
+
 PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -517,7 +517,7 @@ void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDial
 
 
 
-#pragma mark --PropertyComboboxCell 
+
 PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -554,7 +554,7 @@ void PropertyComboboxCell::OnItemSelected(ComboBox *, const String &, int itemIn
     propertyDelegate->OnPropertyChanged(property);
 }
 
-#pragma mark --PropertyMatrix4Cell 
+
 PropertyMatrix4Cell::PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -603,7 +603,7 @@ void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *, void *, vo
 }
 
 
-#pragma mark --PropertySectionCell 
+
 PropertySectionCell::PropertySectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -631,7 +631,7 @@ void PropertySectionCell::OnButton(BaseObject * , void * , void * )
 }
 
 
-#pragma mark --PropertyButtonCell 
+
 PropertyButtonCell::PropertyButtonCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -663,7 +663,7 @@ void PropertyButtonCell::SetData(PropertyCellData *prop)
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
 }
 
-#pragma mark --PropertyColorCell 
+
 PropertyColorCell::PropertyColorCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -718,7 +718,7 @@ void PropertyColorCell::ColorPickerDone(const Color &newColor)
 }
 
 
-#pragma mark --PropertySubsectionCell 
+
 PropertySubsectionCell::PropertySubsectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -738,7 +738,7 @@ float32 PropertySubsectionCell::GetHeightForWidth(float32 )
 }
 
 
-#pragma mark --PropertySliderCell 
+
 PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -820,7 +820,7 @@ void PropertySliderCell::SetData(PropertyCellData *prop)
 }
 
 
-#pragma mark --PropertyTexturePreviewCell 
+
 PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -897,7 +897,7 @@ void PropertyTexturePreviewCell::OnClick(DAVA::BaseObject *, void *, void *)
     checkBox->SetChecked(!checked, true);
 }
 
-#pragma mark  --PropertyDistanceCell
+
 PropertyDistanceCell::PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width, 0)), prop)
 {

@@ -411,7 +411,7 @@ void SceneGraph::RemoveRootNodes()
 }
 
 
-#pragma mark --UIHierarchyDelegate
+
 bool SceneGraph::IsNodeExpandable(UIHierarchy *, void *forNode)
 {
     if (forNode) 

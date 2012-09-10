@@ -108,7 +108,7 @@ void GraphBase::RefreshGraph()
     graphTree->Refresh();
 }
 
-#pragma mark --UIHierarchyDelegate
+
 UIHierarchyCell * GraphBase::CellForNode(UIHierarchy *forHierarchy, void *node)
 {
     UIHierarchyCell *c= forHierarchy->GetReusableCell("Graph cell"); //try to get cell from the reusable cells store
@@ -163,7 +163,7 @@ void GraphBase::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selec
     }
 }
 
-#pragma mark --NodesPropertyDelegate
+
 void GraphBase::NodesPropertyChanged()
 {
 #if defined (DAVA_QT)

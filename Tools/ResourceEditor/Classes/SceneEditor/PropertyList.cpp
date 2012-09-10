@@ -363,29 +363,29 @@ int32 PropertyList::CellHeight(UIList *, int32 index)
     switch (props[index]->cellType) 
     {
         case PropertyCell::PROP_CELL_TEXT:
-            return PropertyTextCell::GetHeightForWidth(size.x);
+            return (int32)PropertyTextCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_FILEPATH:
-            return PropertyFilepathCell::GetHeightForWidth(size.x);
+            return (int32)PropertyFilepathCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_BOOL:
-            return PropertyBoolCell::GetHeightForWidth(size.x);
+            return (int32)PropertyBoolCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_COMBO:
-            return PropertyComboboxCell::GetHeightForWidth(size.x);
+            return (int32)PropertyComboboxCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_MATRIX4:
-            return PropertyMatrix4Cell::GetHeightForWidth(size.x);
+            return (int32)PropertyMatrix4Cell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_SECTION:
-            return PropertySectionCell::GetHeightForWidth(size.x);
+            return (int32)PropertySectionCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_BUTTON:
-            return PropertyButtonCell::GetHeightForWidth(size.x);
+            return (int32)PropertyButtonCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_COLOR:
-            return PropertyColorCell::GetHeightForWidth(size.x);
+            return (int32)PropertyColorCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_SUBSECTION:
-            return PropertySubsectionCell::GetHeightForWidth(size.x);
+            return (int32)PropertySubsectionCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_SLIDER:
-            return PropertySliderCell::GetHeightForWidth(size.x);
+            return (int32)PropertySliderCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_TEXTUREPREVIEW:
-            return PropertyTexturePreviewCell::GetHeightForWidth(size.x);
+            return (int32)PropertyTexturePreviewCell::GetHeightForWidth(size.x);
         case PropertyCell::PROP_CELL_DISTANCE:
-            return PropertyDistanceCell::GetHeightForWidth(size.x, props[index]->GetDistancesCount());
+            return (int32)PropertyDistanceCell::GetHeightForWidth(size.x, props[index]->GetDistancesCount());
     }
     return 50;//todo: rework
 }
