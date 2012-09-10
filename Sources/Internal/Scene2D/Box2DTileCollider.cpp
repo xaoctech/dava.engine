@@ -146,6 +146,9 @@ namespace DAVA
 				sh = new b2PolygonShape();
 				*sh = *fixtureDef.shape;
 				break;
+                
+            default:
+                break;
 		}
 		reg.fixtureDef.shape = sh;
 		rangesVector.push_back(reg);

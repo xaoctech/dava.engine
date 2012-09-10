@@ -38,84 +38,11 @@
 #import <Foundation/NSData.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSURLRequest.h>
+#import <Foundation/NSURL.h>
 #endif //#if defined(__DAVAENGINE_MACOS__)
-
-@interface DownloaderObj : NSObject
-{
-	NSURLConnection					*connection;
-	NSMutableData					*receivedData;
-	
-	DAVA::HTTPDownloaderDelegate	*delegate;
-}
-
-- (void)downloadFileFromURLAddress: (NSString*)address delegate: (DAVA::HTTPDownloaderDelegate*)_delegate;
-
-@end
-
-@implementation DownloaderObj
-
-#pragma mark memory management
-
-- (void)dealloc
-{
-    [connection release];
-    [receivedData release];
-	
-    [super dealloc];
-}
-
-#pragma mark public methods
-
-- (void)downloadFileFromURLAddress: (NSString*)address delegate: (DAVA::HTTPDownloaderDelegate*)_delegate
-{
-	delegate					= _delegate;
-	
-	NSURL			*url		= [NSURL URLWithString: [address stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
-	NSURLRequest	*request	= [NSURLRequest requestWithURL: url cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 5.0];
-	
-	receivedData				= [NSMutableData new];
-	connection					= [[NSURLConnection alloc] initWithRequest: request delegate: self startImmediately: YES];
-}
-
-#pragma mark NSURLConnection delegate methods
-
-- (void)connection: (NSURLConnection*)theConnection didFailWithError: (NSError*)error
-{
-	DAVA::String errorMessage = [[error localizedDescription] UTF8String];
-	delegate->HTTPDownloaderDelegateDidFailWithErrorMessage(errorMessage);
-}
-
-- (void)connection: (NSURLConnection*)theConnection didReceiveData: (NSData*)data
-{
-    [receivedData appendData: data];
-}
-
-- (void)connectionDidFinishLoading: (NSURLConnection*)theConnection
-{
-	delegate->HTTPDownloaderDelegateDidFinish((const unsigned char*)[receivedData bytes], receivedData.length);
-}
-
-@end
-
-//Downloader *downloader;
 
 namespace DAVA 
 {
-	
-HTTPDownloader::HTTPDownloader()
-{
-	downloader = [DownloaderObj new];
-}
-
-HTTPDownloader::~HTTPDownloader()
-{
-	[(DownloaderObj*)downloader release];
-}
-
-void HTTPDownloader::DownloadFile(const String &address, HTTPDownloaderDelegate *delegate)
-{
-	[(DownloaderObj*)downloader downloadFileFromURLAddress: [NSString stringWithCString: address.c_str() encoding:NSASCIIStringEncoding] delegate: delegate];
-}
 
 bool DownloadFileFromURLToDocuments(const String & url, const String & documentsPathname)
 {

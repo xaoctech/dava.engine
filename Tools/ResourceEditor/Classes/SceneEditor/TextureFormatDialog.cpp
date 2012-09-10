@@ -19,9 +19,9 @@ TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegat
     draggableDialog->AddControl(closeButtonTop);
 
     //convert
-    int32 x = (rect.dx - ControlsFactory::BUTTON_WIDTH)/2;
+    float32 x = (rect.dx - ControlsFactory::BUTTON_WIDTH)/2;
     convertButton = ControlsFactory::CreateButton(Vector2(x, 
-                                                          rect.dy - ControlsFactory::BUTTON_HEIGHT), 
+                                                          rect.dy - (float32)ControlsFactory::BUTTON_HEIGHT), 
                                                   LocalizedString(L"textureconverter.convert"));
     convertButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &TextureFormatDialog::OnConvert));
     
@@ -35,8 +35,8 @@ TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegat
         L"PVRTC2"
     };
     
-    int32 pvrX = (rect.dx - ControlsFactory::BUTTON_WIDTH * PVR_COUNT) / 2;
-    int32 mipmapX = pvrX;
+    float32 pvrX = (rect.dx - ControlsFactory::BUTTON_WIDTH * PVR_COUNT) / 2.f;
+    float32 mipmapX = pvrX;
     for(int32 iPvr = 0; iPvr < PVR_COUNT; ++iPvr)
     {
         pvrButtons[iPvr] = ControlsFactory::CreateButton(Vector2(pvrX, ControlsFactory::BUTTON_HEIGHT), pvrNames[iPvr]);
@@ -48,8 +48,8 @@ TextureFormatDialog::TextureFormatDialog(TextureFormatDialogDelegate *newDelegat
     
 
     //MIPMAPS
-    mipmapEnabled = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(mipmapX, rect.dy - ControlsFactory::BUTTON_HEIGHT * 2, 
-                                                                ControlsFactory::BUTTON_HEIGHT, ControlsFactory::BUTTON_HEIGHT));
+    mipmapEnabled = new UICheckBox("~res:/Gfx/UI/chekBox", Rect(mipmapX, rect.dy - ControlsFactory::BUTTON_HEIGHT * 2.f, 
+                                                               (float32)ControlsFactory::BUTTON_HEIGHT, (float32)ControlsFactory::BUTTON_HEIGHT));
     draggableDialog->AddControl(mipmapEnabled);
     
     Rect textRect;

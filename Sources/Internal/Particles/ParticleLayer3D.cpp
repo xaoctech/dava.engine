@@ -151,4 +151,16 @@ void ParticleLayer3D::LoadFromYaml(YamlNode * node)
 	}
 }
 
+ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
+{
+	if(!dstLayer)
+	{
+		dstLayer = new ParticleLayer3D();
+	}
+
+	ParticleLayer::Clone(dstLayer);
+
+	return dstLayer;
+}
+
 };

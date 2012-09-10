@@ -23,74 +23,45 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
-#define __DAVAENGINE_LANDSCAPE_DEBUG_NODE_H__
 
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Scene3D/SceneNode.h"
-#include "Scene3D/Frustum.h"
-#include "Scene3D/LandscapeNode.h"
+#ifndef __EDITOR_HEIGHTMAP_H__
+#define __EDITOR_HEIGHTMAP_H__
 
-namespace DAVA
+#include "DAVAEngine.h"
+
+class EditorHeightmap: public DAVA::Heightmap
 {
+    enum eConst
+    {
+        MAX_EDITOR_HEIGHTMAP_SIZE = 513
+    };
+    
+public:
 
-class Scene;
-class Image;
-class Texture;
-class RenderDataObject;
-class Shader;
-class SceneFileV2;
-class Heightmap;
+    EditorHeightmap(DAVA::Heightmap *heightmap);
+	virtual ~EditorHeightmap();
+    
+    void HeghtWasChanged(const DAVA::Rect &changedRect);
+    
+    virtual void Save(const DAVA::String &filePathname);
+    
+protected:
+    
+    void Downscale(DAVA::int32 newSize);
+    
+    bool IsPowerOf2(DAVA::int32 num);
 
+    DAVA::uint16 GetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier);
+    DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
+    DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
+    
+    void SetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier, DAVA::uint16 value);
+    
+protected:
 
-/**    
-    \brief Implementation of cdlod algorithm to render landscapes
-    This class is base of the landscape code on all platforms
-    Landscape node is always axial aligned for simplicity of frustum culling calculations
-    Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
- */ 
-
-class LandscapeDebugNode : public LandscapeNode
-{
-public:	
-	LandscapeDebugNode();
-	virtual ~LandscapeDebugNode();
-    
-    
-    virtual void SetDebugHeightmapImage(Heightmap * _debugHeightmapImage, const AABBox3 & _box);
-  
-    /**
-        \brief Overloaded draw function to draw landscape.
-     */
-	virtual void Draw();
-
-    void SetHeightmapPath(const String &path);
-    
-    void RebuildVertexes(const Rect &rebuildAtRect);
-    
-protected:	
-    void RebuildIndexes();
-    
-    void DrawLandscape();
-    
-    Vector<LandscapeVertex> debugVertices;
-    Vector<uint32> debugIndices;
-    RenderDataObject * debugRenderDataObject;
+    Heightmap *savedHeightmap;
 };
 
-    
-};
 
-#endif // __DAVAENGINE_LANDSCAPE_NODE_H__
-
-
-
-
-
+#endif //__EDITOR_HEIGHTMAP_H__

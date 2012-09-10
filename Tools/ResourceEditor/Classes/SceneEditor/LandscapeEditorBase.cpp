@@ -6,7 +6,7 @@
 #include "ErrorNotifier.h"
 #include "EditorBodyControl.h"
 
-#pragma mark --LandscapeEditorBase
+
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
     :   delegate(newDelegate)
     ,   state(ELE_NONE)
@@ -160,7 +160,7 @@ bool LandscapeEditorBase::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &
 
     Vector3 from, dir;
     parent->GetCursorVectors(&from, &dir, touchPoint);
-    Vector3 to = from + dir * 200.f;
+    Vector3 to = from + dir * (float32)RAY_TRACING_DISTANCE;
     
     Vector3 point;
     bool isIntersect = workingScene->LandscapeIntersection(from, to, point);
@@ -183,8 +183,8 @@ bool LandscapeEditorBase::Input(DAVA::UIEvent *touch)
 	Vector2 point;
 	bool isIntersect = GetLandscapePoint(touch->point, point);
     
-    point.x = (int32)point.x;
-    point.y = (int32)point.y;
+    point.x = (float32)((int32)point.x);
+    point.y = (float32)((int32)point.y);
     
 	landscapePoint = point;
 	UpdateCursor();
@@ -281,7 +281,7 @@ LandscapeToolsPanel * LandscapeEditorBase::GetToolPanel()
     return toolsPanel;
 }
 
-#pragma mark -- LandscapeToolsPanelDelegate
+
 void LandscapeEditorBase::OnToolSelected(LandscapeTool *newTool)
 {
     SetTool(newTool);
@@ -307,7 +307,6 @@ void LandscapeEditorBase::OnShowGrid(bool show)
 }
 
 
-#pragma mark -- UIFileSystemDialogDelegate
 void LandscapeEditorBase::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
     switch (fileSystemDialogOpMode) 

@@ -100,6 +100,11 @@ void QtLayerMacOS::AppFinished()
     }
 #endif
 }
+    
+void QtLayerMacOS::MouseMoved(int32 x, int32 y)
+{
+    [openGLView MouseMoved:x y: y];
+}
 
 
 };

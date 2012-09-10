@@ -1,5 +1,6 @@
 #include "ParticlesEditorControl.h" 
 #include "../SceneEditor/ControlsFactory.h"
+#include "../Qt/QtMainWindowHandler.h"
 
 ParticlesEditorControl::ParticlesEditorControl()
 : DraggableDialog(Rect(GetScreenWidth()/8.f, GetScreenHeight()/16.f, 400.f, GetScreenHeight()-GetScreenHeight()/16.f-50.f))
@@ -52,6 +53,7 @@ ParticlesEditorControl::ParticlesEditorControl()
     curPropType = 0; //0 - value, 1 - Keyframed
     dblClickDelay = 500;
     activePropEdit = 0;
+	particleEmitterNode = 0;
 
 	emitter = 0;
 
@@ -617,13 +619,11 @@ void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
     }
     if(obj == loadEmitter)
     {
-        fsDlg->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
-        fsDlg->Show(this);
+        QtMainWindowHandler::Instance()->OpenParticleEditorConfig();
     }
     if(obj == saveEmitter)
     {
-        fsDlg->SetOperationType(UIFileSystemDialog::OPERATION_SAVE);
-        fsDlg->Show(this);
+        QtMainWindowHandler::Instance()->SaveParticleEditorConfig();
     }
     if(obj == addLayer)
     {        
@@ -2326,83 +2326,19 @@ void ParticlesEditorControl::OnMouseMove(PropertyLineEditControl *forControl, fl
             propEdit[i]->SetCurTime(t);
 }
 
+void ParticlesEditorControl::LoadFromYaml(const String &pathToFile)
+{
+	particleEmitterNode->LoadFromYaml(pathToFile);
+	SetEmitter(particleEmitterNode->GetEmitter());
+}
+
 void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
     if(forDialog == fsDlg)
     {
         if(forDialog->GetOperationType() == UIFileSystemDialog::OPERATION_LOAD)
         {
-            tip->SetText(L"");
-            selectedEmitterElement = -1;
-            selectedPropElement = -1;
-            selectedForceElement = -1;
-            forcePreview->SetValue(Vector3(0, 0, 0));
-            
-            SafeRelease(emitter);
-            emitter = new ParticleEmitter();
-            emitter->LoadFromYaml(pathToFile);
-
-			int32 size = layers.size();
-            for(int i = 0; i < size; i++)
-            {
-                SafeRemoveControl(layers[i]->curLayerTime);
-            }
-            layers.clear();
-            layers.push_back(new Layer(emitterProps, "", cellFont));
-            layers[0]->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, 0, buttonW, cellH));
-            SafeAddControl(layers[0]->curLayerTime);
-            selectedEmitterElement = 0;
-
-			size = emitterProps.size();
-            for(int i = 0; i < size; i++)
-            {
-                GetEmitterPropValue((eProps)i, true);
-            }
-
-			size = emitter->GetLayers().size();
-            for(int i = 0; i < size; i++)
-            {
-                String spritePath = emitter->GetLayers()[i]->GetSprite()->GetName();
-                Layer * l = new Layer(layerProps, spritePath.substr(0, spritePath.size()-4), cellFont);
-                l->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, cellH*(layers.size()), buttonW, cellH));
-                layers.push_back(l);
-                SafeAddControl(l->curLayerTime);
-                
-				size = layerProps.size();
-                for(int j = 0; j < size; j++)
-                {
-                    selectedEmitterElement = i + 1;
-                    selectedPropElement = j;
-                    if(j == 11)
-                    {
-						size = emitter->GetLayers()[i]->forces.size();
-                        for(int k = 0; k < size; k++)
-                            GetForcesValue(k, true);
-                    }
-                    else if(j == 12)
-                    {
-						size = emitter->GetLayers()[i]->forcesVariation.size();
-                        for(int k = 0; k < size; k++)
-                            GetForcesValue(k, true);
-                    }
-                    else if(j == 13)
-                    {
-						size = emitter->GetLayers()[i]->forcesOverLife.size();
-                        for(int k = 0; k < size; k++)
-                            GetForcesValue(k, true);
-                    }
-                    else
-                    {
-                        GetLayerPropValue((lProps)j, true);
-                    }
-                }
-            }
-            selectedEmitterElement = -1;
-            selectedPropElement = -1;
-            HideAndResetEditFields();
-            HideForcesList();
-            emitterList->Refresh();
-            propList->Refresh();
+            LoadFromYaml(pathToFile);
         }
         if(forDialog->GetOperationType() == UIFileSystemDialog::OPERATION_SAVE)
         {
@@ -2569,7 +2505,7 @@ void ParticlesEditorControl::HideAddProps()
 
 void ParticlesEditorControl::UnloadResources()
 {
-    
+    SafeRelease(particleEmitterNode);
     SafeRelease(cloneLayer);
     SafeRelease(disableLayer);
     SafeRelease(emitterTypeList);
@@ -3480,5 +3416,22 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 	HideForcesList();
 	emitterList->Refresh();
 	propList->Refresh();
+}
+
+void ParticlesEditorControl::SetNode(ParticleEmitterNode * node)
+{
+	SafeRelease(particleEmitterNode);
+	particleEmitterNode = SafeRetain(node);
+}
+
+String ParticlesEditorControl::GetActiveConfigName()
+{
+	String ret;
+	if(emitter)
+	{
+		ret = emitter->GetConfigPath();
+	}
+
+	return ret;
 }
 

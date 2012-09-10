@@ -23,6 +23,8 @@
 		5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */; };
 		5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */; };
 		5C49A09915CFBCD8005C40BF /* QtUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A09815CFBCD7005C40BF /* QtUtils.cpp */; };
+		5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */; };
+		5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */; };
 		5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFC15C9463C0015537A /* btAxisSweep3.cpp */; };
 		5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFF15C9463C0015537A /* btBroadphaseProxy.cpp */; };
 		5C574E3B15C9463C0015537A /* btCollisionAlgorithm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574D0115C9463C0015537A /* btCollisionAlgorithm.cpp */; };
@@ -315,27 +317,6 @@
 			remoteGlobalIDString = C315DFDB097840EB005D77BE;
 			remoteInfo = FColladaS;
 		};
-		5C7F4A0115B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C3D608B40ADFD5FC00019D9C;
-			remoteInfo = FColladaSU;
-		};
-		5C7F4A0315B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09B10BA0B866F5500122B1F;
-			remoteInfo = FColladaTest;
-		};
-		5C7F4A0515B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09F2DB30BD9527300447337;
-			remoteInfo = FColladaU;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -370,6 +351,10 @@
 		5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneData.cpp; path = QtBuildTool/moc_SceneData.cpp; sourceTree = "<group>"; };
 		5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneGraphModel.cpp; path = QtBuildTool/moc_SceneGraphModel.cpp; sourceTree = "<group>"; };
 		5C49A09815CFBCD7005C40BF /* QtUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtUtils.cpp; path = Classes/Qt/QtUtils.cpp; sourceTree = "<group>"; };
+		5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorHeightmap.cpp; path = Classes/LandscapeEditor/EditorHeightmap.cpp; sourceTree = "<group>"; };
+		5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorHeightmap.h; path = Classes/LandscapeEditor/EditorHeightmap.h; sourceTree = "<group>"; };
+		5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEditorCommands.cpp; path = Classes/Commands/ParticleEditorCommands.cpp; sourceTree = "<group>"; };
+		5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEditorCommands.h; path = Classes/Commands/ParticleEditorCommands.h; sourceTree = "<group>"; };
 		5C574CF715C9462D0015537A /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = Classes/bullet/btBulletCollisionCommon.h; sourceTree = "<group>"; };
 		5C574CF815C9462D0015537A /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = Classes/bullet/btBulletDynamicsCommon.h; sourceTree = "<group>"; };
 		5C574CF915C9462D0015537A /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "Classes/bullet/Bullet-C-Api.h"; sourceTree = "<group>"; };
@@ -1070,6 +1055,15 @@
 				5C7F49CB15B44BB70038AF3A /* davaglwidget.h */,
 			);
 			name = Qt;
+			sourceTree = "<group>";
+		};
+		5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */ = {
+			isa = PBXGroup;
+			children = (
+				5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */,
+				5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */,
+			);
+			name = LandscapeEditor;
 			sourceTree = "<group>";
 		};
 		5C574CFA15C9463C0015537A /* BulletCollision */ = {
@@ -1786,9 +1780,6 @@
 			isa = PBXGroup;
 			children = (
 				5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */,
-				5C7F4A0215B44F6E0038AF3A /* libFColladaSU.a */,
-				5C7F4A0415B44F6E0038AF3A /* FColladaTest */,
-				5C7F4A0615B44F6E0038AF3A /* libFColladaU.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1804,6 +1795,8 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */,
+				5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */,
 				5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */,
 				5C44DB4315F4DA9800A42B52 /* CommandReloadTextures.h */,
 				5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */,
@@ -1903,6 +1896,7 @@
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
 				5CDD9ABA15B893CF007CA99A /* Commands */,
 				5C2763A415B82BDF0030A8FD /* Qt */,
+				5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */,
 				5C7F49C415B44BB70038AF3A /* AppScreens.h */,
 				5C7F49C515B44BB70038AF3A /* BeastProxy.cpp */,
 				5C7F49C615B44BB70038AF3A /* BeastProxy.h */,
@@ -2014,27 +2008,6 @@
 			fileType = archive.ar;
 			path = libFColladaS.a;
 			remoteRef = 5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0215B44F6E0038AF3A /* libFColladaSU.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFColladaSU.a;
-			remoteRef = 5C7F4A0115B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0415B44F6E0038AF3A /* FColladaTest */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = FColladaTest;
-			remoteRef = 5C7F4A0315B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0615B44F6E0038AF3A /* libFColladaU.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libFColladaU.dylib;
-			remoteRef = 5C7F4A0515B44F6E0038AF3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -2358,6 +2331,8 @@
 				5C1DE96B15D8F10000C6948C /* PointerHolder.cpp in Build Sources */,
 				5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */,
 				5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */,
+				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
+				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2386,6 +2361,8 @@
 					DAVA_DEBUG,
 					DAVA_QT,
 				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2431,8 +2408,6 @@
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2441,8 +2416,6 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2450,8 +2423,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
-					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
@@ -2493,6 +2464,8 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_QT;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2538,8 +2511,6 @@
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2548,8 +2519,6 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2557,8 +2526,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
-					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",

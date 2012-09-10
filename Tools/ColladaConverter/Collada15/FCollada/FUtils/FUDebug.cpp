@@ -22,7 +22,7 @@ FUDebug::~FUDebug() {}
 #if defined(UNICODE)
 #define STRING_OUT(sz) fprintf(stderr, TO_STRING(sz).c_str()); fflush(stderr);
 #else
-#define STRING_OUT(sz) fprintf(stderr, sz); fflush(stderr);
+#define STRING_OUT(sz) fprintf(stderr, "%s", sz); fflush(stderr);
 #endif // UNICODE
 #elif defined(WIN32)
 #define STRING_OUT(sz) OutputDebugString(sz); OutputDebugString(FC("\n"))
@@ -70,7 +70,7 @@ void FUDebug::DebugOut(uint8 verbosity, const char* message, ...)
 void FUDebug::DebugOutV(uint8 verbosity, const char* filename, uint32 line, const char* message, va_list& vars)
 {
 	char buffer[256];
-	snprintf(buffer, 256, "[%s@%lu] ", filename, line);
+	snprintf(buffer, 256, "[%s@%du] ", filename, line);
 	buffer[255] = 0;
 	DebugString(buffer);
 

@@ -256,11 +256,13 @@ public:
     
     inline void Set3D(bool is3D);
     inline bool GetIs3D();
+
+	const String & GetConfigPath() { return configPath; }
     
 protected:
 	void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
 
-	String name;
+	String configPath;
 	
 	Vector<ParticleLayer*> layers;
 	Vector3 position;

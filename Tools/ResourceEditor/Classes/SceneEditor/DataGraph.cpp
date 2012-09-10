@@ -40,7 +40,7 @@ void DataGraph::CreateGraphPanel(const Rect &rect)
     graphPanel->AddControl(graphTree);
 
     
-    int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
+    float32 leftSideWidth = (float32)EditorSettings::Instance()->GetLeftPanelWidth();
     UIButton * refreshButton = ControlsFactory::CreateButton(Rect(0, graphRect.dy, 
                                                                   leftSideWidth,ControlsFactory::BUTTON_HEIGHT), 
                                                              LocalizedString(L"panel.refresh"));

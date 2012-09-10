@@ -98,7 +98,7 @@ void ImageRasterizer::DrawRelativeRGBA(Heightmap *dst, Image *src, int32 x, int3
                     newValue = Heightmap::MAX_VALUE;
                 }
                 
-                *dstData = newValue;
+                *dstData = (uint16)newValue;
                 
                 srcData += 4;
                 dstData += xAddDst;
@@ -181,7 +181,7 @@ void ImageRasterizer::DrawAverageRGBA(Heightmap *dst, Image *mask, int32 x, int3
                             newValue = Heightmap::MAX_VALUE;
                         }
                       
-                        *dstDataSaved = newValue;
+                        *dstDataSaved = (uint16)newValue;
                     }
                     
                     maskDataSaved += 4;
@@ -257,7 +257,7 @@ void ImageRasterizer::DrawAbsoluteRGBA(Heightmap *dst, Image *mask, int32 x, int
                             newValue = Heightmap::MAX_VALUE;
                         }
                         
-                        *dstDataSaved = newValue;
+                        *dstDataSaved = (uint16)newValue;
                     }
                     
                     maskDataSaved += 4;
@@ -291,8 +291,8 @@ void ImageRasterizer::DrawCopypasteRGBA(Heightmap *dst, Image *mask, const Vecto
     uint16 *dstData = dst->Data();
     for(int32 iRow = 0; iRow < height; ++iRow)
     {
-        int32 ySrc = posFrom.y + iRow;
-        int32 yDst = posTo.y + iRow;
+        int32 ySrc = (int32)(posFrom.y + iRow);
+        int32 yDst = (int32)(posTo.y + iRow);
         
         if(     (0 <= ySrc && ySrc < dst->Size())
            &&   (0 <= yDst && yDst < dst->Size()))
@@ -302,8 +302,8 @@ void ImageRasterizer::DrawCopypasteRGBA(Heightmap *dst, Image *mask, const Vecto
             
             for(int32 iCol = 0; iCol < width; ++iCol)
             {
-                int32 xSrc = posFrom.x + iCol;
-                int32 xDst = posTo.x + iCol;
+                int32 xSrc = (int32)(posFrom.x + iCol);
+                int32 xDst = (int32)(posTo.x + iCol);
 
                 if(     (0 <= xSrc && xSrc < dst->Size())
                    &&   (0 <= xDst && xDst < dst->Size()))
@@ -315,7 +315,7 @@ void ImageRasterizer::DrawCopypasteRGBA(Heightmap *dst, Image *mask, const Vecto
                         int32 srcOffset = (srcIndex + xSrc);
                         
                         dstData[dstOffset] = dstData[dstOffset] + 
-                                                (dstData[srcOffset] - dstData[dstOffset]) * koef * maskData / maskMax;
+                                                (uint16)((dstData[srcOffset] - dstData[dstOffset]) * koef * maskData / maskMax);
                     }
                 }
             }
@@ -336,8 +336,8 @@ void ImageRasterizer::DrawCopypasteRGBA(Image *src, Image *dst, Image *mask, con
     uint8 *dstData = dst->data;
     for(int32 iRow = 0; iRow < height; ++iRow)
     {
-        int32 ySrc = posFrom.y + iRow;
-        int32 yDst = posTo.y + iRow;
+        int32 ySrc = (int32)(posFrom.y + iRow);
+        int32 yDst = (int32)(posTo.y + iRow);
         
         if(     (0 <= ySrc && ySrc < src->height)
            &&   (0 <= yDst && yDst < dst->height))
@@ -347,8 +347,8 @@ void ImageRasterizer::DrawCopypasteRGBA(Image *src, Image *dst, Image *mask, con
             
             for(int32 iCol = 0; iCol < width; ++iCol)
             {
-                int32 xSrc = posFrom.x + iCol;
-                int32 xDst = posTo.x + iCol;
+                int32 xSrc = (int32)(posFrom.x + iCol);
+                int32 xDst = (int32)(posTo.x + iCol);
                 
                 if(     (0 <= xSrc && xSrc < src->width)
                    &&   (0 <= xDst && xDst < dst->width))

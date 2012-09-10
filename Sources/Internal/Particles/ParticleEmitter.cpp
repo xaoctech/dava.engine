@@ -356,12 +356,13 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
                 particle->position += qvq1_v * radius->GetValue(time);
         }
        
-        particle->angle = 0.0f;
+        particle->angle = atanf(particle->velocity.z/particle->velocity.x);
     }
 }
 
 void ParticleEmitter::LoadFromYaml(const String & filename)
 {
+	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
 	lifeTime = 1000000000.0f;

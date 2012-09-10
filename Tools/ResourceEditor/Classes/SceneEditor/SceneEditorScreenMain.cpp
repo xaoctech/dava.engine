@@ -356,7 +356,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             keyedArchieve->SetString("3dDataSourcePath", projectPath + "DataSource/3d/");
             EditorSettings::Instance()->Save();
             
-            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
+            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
             libraryControl->SetPath(EditorSettings::Instance()->GetDataSourcePath());
             break;
         }
@@ -1284,6 +1284,7 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 		SafeRelease(particlesEditor);
 		particlesEditor = new ParticlesEditorControl();
 
+		particlesEditor->SetNode(emitter);
 		particlesEditor->SetEmitter(emitter->GetEmitter());
 		AddControl(particlesEditor);
 	}
