@@ -45,9 +45,11 @@ public:
     void HeghtWasChanged(const DAVA::Rect &changedRect);
     
     virtual void Save(const DAVA::String &filePathname);
-    
+    virtual bool Load(const DAVA::String &filePathname);
+
 protected:
     
+    void DownscaleOrClone();
     void Downscale(DAVA::int32 newSize);
     
     bool IsPowerOf2(DAVA::int32 num);
