@@ -52,7 +52,7 @@ public:
     void SaveToImage(const String & filename);
     
     virtual void Save(const String &filePathname);
-    bool Load(const String &filePathname);
+    virtual bool Load(const String &filePathname);
     
     uint16 * Data();
     int32 Size();
