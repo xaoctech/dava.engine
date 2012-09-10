@@ -72,6 +72,7 @@ public slots:
 	//particles editor
 	void OpenParticleEditorConfig();
 	void SaveParticleEditorConfig();
+	void OpenParticleEditorSprite();
 	
     
 private:

@@ -88,6 +88,8 @@ protected:
     virtual void UndoAction() = 0;
     virtual void RedoAction() = 0;
     
+    virtual void RecreateHeightmapNode() = 0;
+    
     void Close();
     LandscapeEditorDelegate *delegate;
 

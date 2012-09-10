@@ -579,3 +579,10 @@ void LandscapeEditorHeightmap::UpdateHeightmap(const Rect &updatedRect)
     }
 }
 
+void LandscapeEditorHeightmap::RecreateHeightmapNode()
+{
+    SafeRelease(heightmapNode);
+    heightmapNode = new HeightmapNode(workingScene, landscapeDebugNode);
+    workingScene->AddNode(heightmapNode);
+}
+

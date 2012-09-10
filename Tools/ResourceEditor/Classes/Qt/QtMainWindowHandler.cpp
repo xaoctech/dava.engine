@@ -350,5 +350,10 @@ void QtMainWindowHandler::SaveParticleEditorConfig()
 	Execute(new CommandSaveParticleEditorConfig());
 }
 
+void QtMainWindowHandler::OpenParticleEditorSprite()
+{
+	Execute(new CommandOpenParticleEditorSprite());
+}
+
 
 
