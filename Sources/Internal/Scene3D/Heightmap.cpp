@@ -259,7 +259,7 @@ Heightmap * Heightmap::Clone(DAVA::Heightmap *clonedHeightmap)
         if(!createdHeightmap)   return NULL;
     }
     
-    memmove(createdHeightmap->data, data, size * size);
+    memmove(createdHeightmap->data, data, size * size * sizeof(uint16));
     createdHeightmap->SetTileSize(tileSize); //TODO: is it true?
 
     return createdHeightmap;
