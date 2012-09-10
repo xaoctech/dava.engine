@@ -572,10 +572,12 @@ void LandscapeEditorHeightmap::UpdateHeightmap(const Rect &updatedRect)
     {
         landscapeDebugNode->RebuildVertexes(updatedRect);
     }
-    
-    if(heightmap)
-    {
-        heightmap->HeghtWasChanged(updatedRect);
-    }
+}
+
+void LandscapeEditorHeightmap::RecreateHeightmapNode()
+{
+    SafeRelease(heightmapNode);
+    heightmapNode = new HeightmapNode(workingScene, landscapeDebugNode);
+    workingScene->AddNode(heightmapNode);
 }
 
