@@ -23,4 +23,14 @@ protected:
 	virtual void Execute();
 };
 
+class CommandOpenParticleEditorSprite: public Command
+{
+public:	
+	CommandOpenParticleEditorSprite();
+
+protected:	
+
+	virtual void Execute();
+};
+
 #endif //__PARTICLE_EDITOR_COMMANDS_H__

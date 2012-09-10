@@ -732,7 +732,7 @@ void ParticlesEditorControl::ButtonPressed(BaseObject *obj, void *data, void *ca
     }
     if(obj == spriteSelect)
     {
-        fsDlgSprite->Show(this);
+        QtMainWindowHandler::Instance()->OpenParticleEditorSprite();
     }
     if(obj == valueBut)
     {
@@ -2347,14 +2347,7 @@ void ParticlesEditorControl::OnFileSelected(UIFileSystemDialog *forDialog, const
     }
     if(forDialog == fsDlgSprite)
     {
-        String path = "~res:" + pathToFile.substr(pathToFile.rfind("/Data") + 5);
-        path = path.substr(0, path.size() - 4);
-
-        layers[selectedEmitterElement]->spritePath = path;
-        
-        sprite = Sprite::Create(path);
-        SetLayerPropValue(LAYER_SPRITE);
-        GetLayerPropValue(LAYER_SPRITE);
+		//
     }
     if(forDialog == fsDlgProject)
     {
@@ -3433,5 +3426,19 @@ String ParticlesEditorControl::GetActiveConfigName()
 	}
 
 	return ret;
+}
+
+void ParticlesEditorControl::SetActiveSprite(const String & path)
+{
+	layers[selectedEmitterElement]->spritePath = path;
+
+	sprite = Sprite::Create(path);
+	SetLayerPropValue(LAYER_SPRITE);
+	GetLayerPropValue(LAYER_SPRITE);
+}
+
+String ParticlesEditorControl::GetActiveSpriteName()
+{
+	return layers[selectedEmitterElement]->spritePath;
 }
 

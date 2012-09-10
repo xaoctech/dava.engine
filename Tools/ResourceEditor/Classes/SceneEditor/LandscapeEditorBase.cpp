@@ -112,10 +112,6 @@ void LandscapeEditorBase::Toggle()
     {
         touchID = INVALID_TOUCH_ID;
         
-        SafeRelease(heightmapNode);
-        heightmapNode = new HeightmapNode(workingScene, workingLandscape);
-        workingScene->AddNode(heightmapNode);
-                
         state = ELE_ACTIVE;
         
         SetTool(toolsPanel->CurrentTool());
@@ -126,6 +122,8 @@ void LandscapeEditorBase::Toggle()
         }
         
         ShowAction();
+        
+        RecreateHeightmapNode();
     }
 }
 
