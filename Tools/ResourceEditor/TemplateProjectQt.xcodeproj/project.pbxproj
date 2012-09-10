@@ -23,6 +23,7 @@
 		5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */; };
 		5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */; };
 		5C49A09915CFBCD8005C40BF /* QtUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A09815CFBCD7005C40BF /* QtUtils.cpp */; };
+		5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */; };
 		5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */; };
 		5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFC15C9463C0015537A /* btAxisSweep3.cpp */; };
 		5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFF15C9463C0015537A /* btBroadphaseProxy.cpp */; };
@@ -350,6 +351,8 @@
 		5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneData.cpp; path = QtBuildTool/moc_SceneData.cpp; sourceTree = "<group>"; };
 		5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneGraphModel.cpp; path = QtBuildTool/moc_SceneGraphModel.cpp; sourceTree = "<group>"; };
 		5C49A09815CFBCD7005C40BF /* QtUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtUtils.cpp; path = Classes/Qt/QtUtils.cpp; sourceTree = "<group>"; };
+		5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorHeightmap.cpp; path = Classes/LandscapeEditor/EditorHeightmap.cpp; sourceTree = "<group>"; };
+		5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorHeightmap.h; path = Classes/LandscapeEditor/EditorHeightmap.h; sourceTree = "<group>"; };
 		5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEditorCommands.cpp; path = Classes/Commands/ParticleEditorCommands.cpp; sourceTree = "<group>"; };
 		5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEditorCommands.h; path = Classes/Commands/ParticleEditorCommands.h; sourceTree = "<group>"; };
 		5C574CF715C9462D0015537A /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = Classes/bullet/btBulletCollisionCommon.h; sourceTree = "<group>"; };
@@ -1052,6 +1055,15 @@
 				5C7F49CB15B44BB70038AF3A /* davaglwidget.h */,
 			);
 			name = Qt;
+			sourceTree = "<group>";
+		};
+		5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */ = {
+			isa = PBXGroup;
+			children = (
+				5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */,
+				5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */,
+			);
+			name = LandscapeEditor;
 			sourceTree = "<group>";
 		};
 		5C574CFA15C9463C0015537A /* BulletCollision */ = {
@@ -1884,6 +1896,7 @@
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
 				5CDD9ABA15B893CF007CA99A /* Commands */,
 				5C2763A415B82BDF0030A8FD /* Qt */,
+				5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */,
 				5C7F49C415B44BB70038AF3A /* AppScreens.h */,
 				5C7F49C515B44BB70038AF3A /* BeastProxy.cpp */,
 				5C7F49C615B44BB70038AF3A /* BeastProxy.h */,
@@ -2319,6 +2332,7 @@
 				5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */,
 				5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */,
 				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
+				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
