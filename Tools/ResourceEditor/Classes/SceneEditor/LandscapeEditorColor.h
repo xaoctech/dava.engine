@@ -38,6 +38,8 @@ protected:
     virtual void UndoAction();
     virtual void RedoAction();
 
+    virtual void RecreateHeightmapNode();
+
     
     void CreateMaskTexture();
     void CreateMaskFromTexture(Texture *tex);

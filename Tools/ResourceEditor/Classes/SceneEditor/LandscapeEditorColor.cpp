@@ -7,6 +7,7 @@
 #include "EditorScene.h"
 
 #include "UNDOManager.h"
+#include "HeightmapNode.h"
 
 
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
@@ -383,3 +384,11 @@ void LandscapeEditorColor::TextureDidChanged(const String &forKey)
         CreateMaskTexture();
     }
 }
+
+void LandscapeEditorColor::RecreateHeightmapNode()
+{
+    SafeRelease(heightmapNode);
+    heightmapNode = new HeightmapNode(workingScene, workingLandscape);
+    workingScene->AddNode(heightmapNode);
+}
+
