@@ -775,4 +775,26 @@ String SceneNode::GetPathID(SceneNode * root)
 	return result;
 }
 
+SceneNode * SceneNode::GetNodeByPathID(SceneNode * root, String pathID)
+{
+	SceneNode * result = root;
+	int32 offs = 0;
+	int32 index = 0;
+	int32 sz = pathID.size();
+	char val;
+	while (offs < sz)
+	{
+		val = pathID[offs];
+		if (val < '0' || val > '9')
+		{
+			offs++;
+			result = result->GetChild(index);
+			continue;
+		}
+		index = index * 10 + val - '0';
+		offs++;
+	}
+	return result;
+}
+
 };
