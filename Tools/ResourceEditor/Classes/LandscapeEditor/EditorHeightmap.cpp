@@ -149,12 +149,12 @@ void EditorHeightmap::HeghtWasChanged(const DAVA::Rect &changedRect)
     int32 multiplier = savedHeightmapSize / heightmapSide;
 
     
-    int32 lastY = changedRect.y + changedRect.dy;
-    int32 lastX = changedRect.x + changedRect.dx;
-    for(int32 y = changedRect.y; y < lastY; ++y)
+    int32 lastY = (int32)(changedRect.y + changedRect.dy);
+    int32 lastX = (int32)(changedRect.x + changedRect.dx);
+    for(int32 y = (int32)changedRect.y; y < lastY; ++y)
     {
         int32 yOffset = y * size;
-        for(int32 x = changedRect.x; x < lastX; ++x)
+        for(int32 x = (int32)changedRect.x; x < lastX; ++x)
         {
             SetHeightValue(x, y, multiplier, data[yOffset + x]);
         }
