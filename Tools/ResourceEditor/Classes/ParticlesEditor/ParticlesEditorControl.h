@@ -197,7 +197,8 @@ public:
 	void SaveToYaml(const String &pathToFile);
 	String GetActiveConfigName();
 	void SetNode(ParticleEmitterNode * node);
-
+	void SetActiveSprite(const String & path);
+	String GetActiveSpriteName();
     
 protected:
     virtual int32 ElementsCount(UIList *forList);

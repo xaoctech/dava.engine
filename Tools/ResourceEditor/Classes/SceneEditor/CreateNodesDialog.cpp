@@ -157,7 +157,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
 			ParticleEmitterNode * node = new ParticleEmitterNode();
-			node->LoadFromYaml("~res:/Particles/sparkles.yaml");
+			node->LoadFromYaml("");
 
 			sceneNode = node;
 		}

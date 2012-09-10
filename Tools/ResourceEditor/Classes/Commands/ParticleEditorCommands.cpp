@@ -73,3 +73,35 @@ void CommandSaveParticleEditorConfig::Execute()
 
 	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
+
+CommandOpenParticleEditorSprite::CommandOpenParticleEditorSprite()
+:   Command(Command::COMMAND_CLEAR_UNDO_QUEUE)
+{
+
+}
+
+void CommandOpenParticleEditorSprite::Execute()
+{
+	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+	DVASSERT(screen);
+
+	String currentPath = screen->GetParticlesEditor()->GetActiveSpriteName();
+	if(currentPath.empty() || currentPath[0] == '~'/*default config is ~res:*/)
+	{
+		currentPath = EditorSettings::Instance()->GetProjectPath();
+	}
+
+	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString(currentPath.c_str()), QString("Sprite (*.txt)"));
+
+	String selectedPathname = PathnameToDAVAStyle(filePath);
+
+	if(selectedPathname.length() > 0)
+	{
+		uint32 pos = selectedPathname.find(".txt");
+		selectedPathname = selectedPathname.substr(0, pos);
+		String relativePath = "~res:/" + FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath()+"Data/", selectedPathname);
+		screen->GetParticlesEditor()->SetActiveSprite(relativePath);
+	}
+
+	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+}
