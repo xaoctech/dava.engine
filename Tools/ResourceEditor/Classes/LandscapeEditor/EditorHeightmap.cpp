@@ -191,8 +191,10 @@ void EditorHeightmap::Save(const DAVA::String &filePathname)
 
 bool EditorHeightmap::Load(const DAVA::String &filePathname)
 {
-    savedHeightmap->Load(filePathname);
+    bool loaded = savedHeightmap->Load(filePathname);
     DownscaleOrClone();
+    
+    return loaded;
 }
 
 
