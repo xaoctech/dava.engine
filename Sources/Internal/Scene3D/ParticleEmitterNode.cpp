@@ -45,7 +45,7 @@ void ParticleEmitterNode::Draw()
 		Vector3 left(mv._00, mv._10, mv._20);
 
 		ParticleEmitter3D * emitter3D = static_cast<ParticleEmitter3D*>(emitter);
-		emitter3D->Draw(up, left);
+		emitter3D->Draw(up, left, scene->GetCurrentCamera()->GetPosition());
 
 		
 		RenderManager::Instance()->SetBlendMode(sblend, dblend);
