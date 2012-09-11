@@ -25,7 +25,7 @@ ParticleLayer3D::~ParticleLayer3D()
 	SafeRelease(renderData);
 }
 
-void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
+void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & cameraPos)
 {
 	verts.clear();
 	textures.clear();
