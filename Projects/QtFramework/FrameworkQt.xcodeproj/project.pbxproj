@@ -280,6 +280,8 @@
 		50A570D815F4F1940042C403 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
 		50A570DB15F4F1B00042C403 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		50A570DC15F4F1B00042C403 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
+		50A5714015FA0AE80042C403 /* Parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
+		50A5714115FA0AE80042C403 /* Parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
 		5C5D973915B0230D0058B43A /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		5C5D973A15B0230D0058B43A /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		5C5D973B15B0230D0058B43A /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -1088,6 +1090,8 @@
 				5C5D97DF15B0230D0058B43A /* YamlArchive.h */,
 				5C5D97E015B0230D0058B43A /* YamlParser.cpp */,
 				5C5D97E115B0230D0058B43A /* YamlParser.h */,
+				50A5714015FA0AE80042C403 /* Parser.cpp */,
+				50A5714115FA0AE80042C403 /* Parser.h */,
 			);
 			name = FileSystem;
 			path = ../../Sources/Internal/FileSystem;
