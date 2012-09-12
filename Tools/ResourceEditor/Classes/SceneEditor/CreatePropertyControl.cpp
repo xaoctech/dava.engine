@@ -7,6 +7,7 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     :   UIControl(rect)
 	, presetText(NULL)
 	, presetCombo(NULL)
+	, isPresetMode(false)
 {
     ControlsFactory::CustomizeDialog(this);
     
@@ -33,17 +34,19 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     Rect textRect(0, 0, rect.dx / 3, (rect.dy - buttonRect.dy) / 3);
     Rect controlRect(textRect.dx, 0, rect.dx - textRect.dx, textRect.dy);
     
+	emptyPresetName = "(none)";
+
 	Vector<String> presetNames = EditorConfig::Instance()->GetProjectPropertyNames();
-	if(presetNames.empty())
-	{
-		presetNames.push_back("");
-	}
+	presetNames.insert(presetNames.begin(), emptyPresetName);
 
 	presetText = new UIStaticText(textRect);
 	presetText->SetText(LocalizedString(L"createproperty.preset"));
 	presetText->SetFont(ControlsFactory::GetFontLight());
+	AddControl(presetText);
 
 	presetCombo = new ComboBox(controlRect, this, presetNames);
+	presetCombo->SetMaxVisibleItemsCount(4);
+	AddControl(presetCombo);
 
 	textRect.y = textRect.dy;
     controlRect.y = controlRect.dy;
@@ -87,17 +90,28 @@ void CreatePropertyControl::WillAppear()
     typeCombo->SetSelectedIndex(0, false);
 
 	Vector<String> presetNames = EditorConfig::Instance()->GetProjectPropertyNames();
-	if(presetNames.empty())
-	{
-		presetNames.push_back("");
-	}
-	else
-	{
-		AddControl(presetText);
-		AddControl(presetCombo);
-	}
+	presetNames.insert(presetNames.begin(), emptyPresetName);
+
 	presetCombo->SetNewItemsSet(presetNames);
 	presetCombo->SetSelectedIndex(0, false);
+
+	isPresetMode = false;
+	
+	UpdateEditableControls();
+}
+
+void CreatePropertyControl::UpdateEditableControls()
+{
+	typeCombo->SetDisabled(isPresetMode);
+	nameField->SetDisabled(isPresetMode);
+	if(isPresetMode)
+	{
+		int32 index = GetTypeIndexFromValueType(EditorConfig::Instance()->GetPropertyValueType(selectedPresetName));
+		typeCombo->SetSelectedIndex(index, false);
+
+		nameField->SetText(StringToWString(selectedPresetName));
+		nameField->ReleaseFocus();
+	}
 }
 
 void CreatePropertyControl::TextFieldShouldReturn(UITextField * textField)
@@ -124,8 +138,10 @@ void CreatePropertyControl::OnItemSelected(ComboBox *forComboBox, const String &
 {
     if(delegate)
     {
-		int32 propertyValueType = EditorConfig::Instance()->GetPropertyValueType(itemKey);
-        delegate->NodeCreated(true, itemKey, propertyValueType);
+		isPresetMode = (emptyPresetName != itemKey);
+		selectedPresetName = itemKey;
+
+		UpdateEditableControls();
     }
 }
 
@@ -139,6 +155,52 @@ void CreatePropertyControl::OnItemSelected(ComboBox *forComboBox, const String &
 //     return typeCombo->GetSelectedIndex();
 // }
 
+int32 CreatePropertyControl::GetValueTypeFromTypeIndex(int32 typeIndex)
+{
+	int32 type = VariantType::TYPE_NONE;
+	switch (typeIndex) 
+    {
+        case CreatePropertyControl::EPT_STRING:
+			type = VariantType::TYPE_STRING;
+            break;
+        case CreatePropertyControl::EPT_INT:
+			type = VariantType::TYPE_INT32;
+            break;
+        case CreatePropertyControl::EPT_FLOAT:
+			type = VariantType::TYPE_FLOAT;
+            break;
+        case CreatePropertyControl::EPT_BOOL:
+			type = VariantType::TYPE_BOOLEAN;
+            break;
+        default:
+            break;
+    }
+	return type;
+}
+
+int32 CreatePropertyControl::GetTypeIndexFromValueType(int32 type)
+{
+	int32 index = 0;
+	switch (type) 
+    {
+		case  VariantType::TYPE_STRING:
+			index = CreatePropertyControl::EPT_STRING;
+            break;
+        case VariantType::TYPE_INT32:
+			index = CreatePropertyControl::EPT_INT;
+            break;
+        case VariantType::TYPE_FLOAT:
+			index = CreatePropertyControl::EPT_FLOAT;
+            break;
+        case VariantType::TYPE_BOOLEAN:
+			index = CreatePropertyControl::EPT_BOOL;
+            break;
+        default:
+            break;
+    }
+	return index;
+}
+
 void CreatePropertyControl::OnCancel(BaseObject * object, void * userData, void * callerData)
 {
     if(delegate)
@@ -151,7 +213,17 @@ void CreatePropertyControl::OnCreate(BaseObject * object, void * userData, void 
 {
     if(delegate)
     {
-        delegate->NodeCreated(true, WStringToString(nameField->GetText()), typeCombo->GetSelectedIndex());
+		if(isPresetMode)
+		{
+			int32 propertyValueType = EditorConfig::Instance()->GetPropertyValueType(selectedPresetName);
+			VariantType *defaultValue = EditorConfig::Instance()->GetPropertyDefaultValue(selectedPresetName);
+			delegate->NodeCreated(true, selectedPresetName, propertyValueType, defaultValue);
+		}
+		else
+		{
+			int32 valueType = GetValueTypeFromTypeIndex(typeCombo->GetSelectedIndex());
+			delegate->NodeCreated(true, WStringToString(nameField->GetText()), valueType);
+		}
     }
 }
 
