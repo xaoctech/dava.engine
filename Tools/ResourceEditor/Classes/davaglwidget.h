@@ -46,6 +46,7 @@ protected:
 protected slots:
     
     void FpsTimerDone();
+    void ReadyToQuit();
     
 private:
 
