@@ -121,7 +121,7 @@ uint16 EditorHeightmap::GetVerticalValue(int32 posY, int32 muliplier)
     
     int32 firstY = posY * muliplier;
     int32 lastY = firstY + muliplier;
-    int32 index = savedHeightmap->Size() - 1;
+    int32 index = firstY * savedHeightmap->Size() + savedHeightmap->Size() - 1;
     for(int32 y = firstY; y < lastY; ++y)
     {
         sum += savedHeightmap->Data()[index];
@@ -152,7 +152,6 @@ void EditorHeightmap::HeghtWasChanged(const DAVA::Rect &changedRect)
     int32 heightmapSide = size - 1;
     int32 multiplier = savedHeightmapSize / heightmapSide;
 
-    
     int32 lastY = (int32)(changedRect.y + changedRect.dy);
     int32 lastX = (int32)(changedRect.x + changedRect.dx);
     for(int32 y = (int32)changedRect.y; y < lastY; ++y)

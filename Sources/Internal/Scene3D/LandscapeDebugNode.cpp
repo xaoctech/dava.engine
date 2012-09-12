@@ -74,10 +74,11 @@ void LandscapeDebugNode::RebuildVertexes(const Rect &rebuildAtRect)
     for (int32 y = (int32)rebuildAtRect.y; y < lastY; ++y)
     {
         int32 index = y * heightmap->Size();
+        float32 deltaY =  (float32)y / (float32)(heightmap->Size() - 1);
         for (int32 x = (int32)rebuildAtRect.x; x < lastX; ++x)
         {
-            debugVertices[index + x].position = GetPoint(x, y, heightmap->Data()[y * heightmap->Size() + x]);
-            debugVertices[index + x].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), (float32)y / (float32)(heightmap->Size() - 1));
+            debugVertices[index + x].position = GetPoint(x, y, heightmap->Data()[index + x]);
+            debugVertices[index + x].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), deltaY);
         }
     }
 }

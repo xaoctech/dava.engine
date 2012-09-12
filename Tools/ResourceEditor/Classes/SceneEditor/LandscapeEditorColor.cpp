@@ -9,6 +9,8 @@
 #include "UNDOManager.h"
 #include "HeightmapNode.h"
 
+#include "../LandscapeEditor/EditorHeightmap.h"
+
 
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -24,6 +26,9 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 	toolSprite = NULL;
     savedTexture = NULL;
     settings = NULL;
+
+    editedHeightmap = NULL;
+    savedHeightmap = NULL;
     
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
@@ -37,6 +42,11 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 
 LandscapeEditorColor::~LandscapeEditorColor()
 {
+
+    SafeRelease(editedHeightmap);
+    SafeRelease(savedHeightmap);
+    
+    
     SafeRelease(tileMaskEditorShader);
 
     SafeRelease(savedTexture);
@@ -286,6 +296,10 @@ void LandscapeEditorColor::HideAction()
 	SafeRelease(toolSprite);
 
 	workingLandscape->CursorDisable();
+    
+    workingLandscape->SetHeightmap(savedHeightmap);
+    SafeRelease(editedHeightmap);
+    SafeRelease(savedHeightmap);
 }
 
 void LandscapeEditorColor::ShowAction()
@@ -294,6 +308,10 @@ void LandscapeEditorColor::ShowAction()
     landscapeSize = (int32)maskSprite->GetWidth();
 
 	workingLandscape->CursorEnable();
+    
+    savedHeightmap = SafeRetain(workingLandscape->GetHeightmap());
+    editedHeightmap = new EditorHeightmap(savedHeightmap);
+    workingLandscape->SetHeightmap(editedHeightmap);
 }
 
 void LandscapeEditorColor::UndoAction()
