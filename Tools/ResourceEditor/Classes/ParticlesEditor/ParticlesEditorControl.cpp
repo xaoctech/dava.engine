@@ -1,6 +1,7 @@
 #include "ParticlesEditorControl.h" 
 #include "../SceneEditor/ControlsFactory.h"
 #include "../Qt/QtMainWindowHandler.h"
+#include "../SpritesPacker.h"
 
 ParticlesEditorControl::ParticlesEditorControl()
 : DraggableDialog(Rect(GetScreenWidth()/8.f, GetScreenHeight()/16.f, 400.f, GetScreenHeight()-GetScreenHeight()/16.f-50.f))
@@ -3442,3 +3443,25 @@ String ParticlesEditorControl::GetActiveSpriteName()
 	return layers[selectedEmitterElement]->spritePath;
 }
 
+void ParticlesEditorControl::PackSprites()
+{
+	SpritesPacker packer;
+	packer.SetInputDir(GetSpritesDataSourcePath());
+	packer.SetOutputDir(GetSpritesDataPath());
+	packer.Pack();
+}
+
+String ParticlesEditorControl::GetConfigsPath()
+{
+	return EditorSettings::Instance()->GetProjectPath()+"Data/Configs/Particles";
+}
+
+String ParticlesEditorControl::GetSpritesDataSourcePath()
+{
+	return EditorSettings::Instance()->GetProjectPath()+"DataSource/Gfx/Particles";
+}
+
+String ParticlesEditorControl::GetSpritesDataPath()
+{
+	return EditorSettings::Instance()->GetProjectPath()+"Data/Gfx/Particles";
+}
