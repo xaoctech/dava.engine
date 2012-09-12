@@ -648,7 +648,7 @@ void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
     }
 }
 
-void NodesPropertyControl::NodeCreated(bool success, const String &name, int32 type)
+void NodesPropertyControl::NodeCreated(bool success, const String &name, int32 type, VariantType *defaultValue)
 {
     RemoveControl(propControl);
     if(success && currentSceneNode)
@@ -657,23 +657,46 @@ void NodesPropertyControl::NodeCreated(bool success, const String &name, int32 t
         
         switch (type) 
         {
-            case CreatePropertyControl::EPT_STRING:
-                currentProperties->SetString(name, "");
+			case VariantType::TYPE_STRING:    
+				if(defaultValue)
+				{
+					currentProperties->SetString(name, defaultValue->AsString());
+				}
+				else
+				{
+					currentProperties->SetString(name, "");
+				}
                 break;
-
-            case CreatePropertyControl::EPT_INT:
-                currentProperties->SetInt32(name, 0);
-
+			case VariantType::TYPE_INT32:  
+				if(defaultValue)
+				{
+					currentProperties->SetInt32(name, defaultValue->AsInt32());
+				}
+				else
+				{
+					currentProperties->SetInt32(name, 0);
+				}
                 break;
-            case CreatePropertyControl::EPT_FLOAT:
-                currentProperties->SetFloat(name, 0.f);
-
+			case VariantType::TYPE_FLOAT:
+				if(defaultValue)
+				{
+					currentProperties->SetFloat(name, defaultValue->AsFloat());
+				}
+				else
+				{
+					currentProperties->SetFloat(name, 0.f);
+				}
                 break;
-            case CreatePropertyControl::EPT_BOOL:
-                currentProperties->SetBool(name, false);
-
+			case VariantType::TYPE_BOOLEAN:
+				if(defaultValue)
+				{
+					currentProperties->SetBool(name, defaultValue->AsBool());
+				}
+				else
+				{
+					currentProperties->SetBool(name, false);
+				}
                 break;
-
             default:
                 break;
         }

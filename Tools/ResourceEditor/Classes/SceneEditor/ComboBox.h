@@ -30,7 +30,7 @@ public:
     ~ComboBox();
     
     void SetNewItemsSet(const Vector<String> &listItems);
-    
+    void SetMaxVisibleItemsCount(int32 itemsCount);
     
     void SetSelectedIndex(int32 newSelecetedIndex, bool reportToDelegatge);
     void SetSelectedKey(const String &newSelecetedKey);
@@ -66,6 +66,7 @@ protected:
     int32 selectionIndex;
     
     float32 listWidth;
+	int32 maxVisibleItemsCount;
     
 };
 
