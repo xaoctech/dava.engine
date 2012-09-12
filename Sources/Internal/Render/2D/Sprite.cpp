@@ -327,8 +327,7 @@ Sprite* Sprite::Create(const String &spriteName)
 	Sprite * spr = PureCreate(spriteName,NULL);
 	if (!spr)
 	{
-		spr = new Sprite();
-		spr->PreparePurplePlaceholder();
+		spr = CreateFromTexture(Vector2(16.f, 16.f), Texture::GetPinkPlaceholder(), Vector2(0.f, 0.f), Vector2(16.f, 16.f));
 	}
 	return spr;
 }
@@ -521,13 +520,6 @@ void Sprite::SetOffsetsForFrame(int frame, float32 xOff, float32 yOff)
 	frameVertices[frame][6] = xOff + rectsAndOffsets[frame][2];
 	frameVertices[frame][7] = yOff + rectsAndOffsets[frame][3];
 }
-
-	
-	
-void Sprite::PreparePurplePlaceholder()
-{
-	frameCount = 1;
-}	
 	
 int32 Sprite::Release()
 {
