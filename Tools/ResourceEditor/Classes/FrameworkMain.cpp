@@ -19,7 +19,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.22"
+#define VERSION     "0.0.23"
  
 //void EntityTest();
 
@@ -51,7 +51,6 @@ void PrintUsage()
     printf("-sceneexporter -clean /Users/User/Project/Data/3d/\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -force\n");
-    
 }
 
 
