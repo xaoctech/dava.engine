@@ -270,6 +270,7 @@ public:
 	void SetCursorScale(float32 scale);
 
     Heightmap *GetHeightmap();
+    void SetHeightmap(Heightmap *height);
     
     void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
@@ -374,6 +375,7 @@ protected:
     void ClearQueue();
     
     bool BuildHeightmap();
+    void BuildLandscape();
     Heightmap *heightmap;
     String heightmapPath;
     
