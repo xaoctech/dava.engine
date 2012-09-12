@@ -948,6 +948,9 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1812,6 +1815,9 @@
     </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h">
       <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorConfig.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
