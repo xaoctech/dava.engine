@@ -462,13 +462,20 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         YamlNode* controlPathNode = actionNode->Get("controlPath");
                         if(controlPathNode)
                         {
+							Vector2 offset;
+							YamlNode* offsetNode = actionNode->Get("offset");
+							if(offsetNode)
+							{
+								offset = offsetNode->AsVector2();
+							}
+
                             if(idNode)
                             {
-                                Click(ParseControlPath(controlPathNode), idNode->AsInt());
+                                Click(ParseControlPath(controlPathNode), offset, idNode->AsInt());
                             }
                             else
                             {
-                                Click(ParseControlPath(controlPathNode));
+                                Click(ParseControlPath(controlPathNode), offset);
                             }
                         }
                         else
@@ -497,13 +504,20 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         YamlNode* controlPathNode = actionNode->Get("controlPath");
                         if(controlPathNode)
                         {
+							Vector2 offset;
+							YamlNode* offsetNode = actionNode->Get("offset");
+							if(offsetNode)
+							{
+								offset = offsetNode->AsVector2();
+							}
+
                             if(idNode)
                             {
-                                TouchDown(ParseControlPath(controlPathNode), idNode->AsInt());
+                                TouchDown(ParseControlPath(controlPathNode), offset, idNode->AsInt());
                             }
                             else
                             {
-                                TouchDown(ParseControlPath(controlPathNode));
+                                TouchDown(ParseControlPath(controlPathNode), offset);
                             }
                         }
                         else
@@ -576,10 +590,38 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
 							}
                         }
                     }
-                    else
-                    {
-                        OnError(Format("AddActionsFromYamlNode action %s no point", actionName.c_str()));
-                    }
+					else
+					{
+						YamlNode* controlPathNode = actionNode->Get("controlPath");
+                        if(controlPathNode)
+                        {
+							Vector2 offset;
+							YamlNode* offsetNode = actionNode->Get("offset");
+							if(offsetNode)
+							{
+								offset = offsetNode->AsVector2();
+							}
+
+							float32 time = 0.0f;
+							if(timeNode)
+							{
+								time = timeNode->AsFloat();
+							}
+
+                            if(idNode)
+                            {
+                                TouchMove(ParseControlPath(controlPathNode), time, offset, idNode->AsInt());
+                            }
+                            else
+                            {
+                                TouchMove(ParseControlPath(controlPathNode), time, offset);
+                            }
+						}
+						else
+						{
+							OnError(Format("AddActionsFromYamlNode action %s no point", actionName.c_str()));
+						}
+					}
                 }
 				else if(actionName == "MultiTouch")
 				{
@@ -770,10 +812,17 @@ void AutotestingSystem::AddActionsFromYamlNode(YamlNode* actionsNode)
                         id = idNode->AsInt();
                     }
 
+					Vector2 offset;
+					YamlNode* offsetNode = actionNode->Get("offset");
+                    if(offsetNode)
+                    {
+                        offset = offsetNode->AsVector2();
+                    }
+
                     YamlNode* controlPathNode = actionNode->Get("controlPath");
                     if(controlPathNode)
                     {
-                        Scroll(ParseControlPath(controlPathNode), id, timeout);
+                        Scroll(ParseControlPath(controlPathNode), id, timeout, offset);
                     }
                     else
                     {
@@ -974,16 +1023,16 @@ void AutotestingSystem::Click(const Vector2 &point, int32 id)
     TouchUp(id);
 }
 
-void AutotestingSystem::Click(const String &controlName, int32 id)
+void AutotestingSystem::Click(const String &controlName, const Vector2 &offset, int32 id)
 {
-    TouchDown(controlName, id);
+    TouchDown(controlName, offset, id);
 	Wait(0.05f);
     TouchUp(id);
 }
 
-void AutotestingSystem::Click(const Vector<String> &controlPath, int32 id)
+void AutotestingSystem::Click(const Vector<String> &controlPath, const Vector2 &offset, int32 id)
 {
-    TouchDown(controlPath, id);
+    TouchDown(controlPath, offset, id);
 	Wait(0.05f);
     TouchUp(id);
 }
@@ -996,17 +1045,17 @@ void AutotestingSystem::TouchDown(const Vector2 &point, int32 id)
     SafeRelease(touchDownAction);
 }
 
-void AutotestingSystem::TouchDown(const String &controlName, int32 id)
+void AutotestingSystem::TouchDown(const String &controlName, const Vector2 &offset, int32 id)
 {
-    TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlName, id);
+    TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlName, offset, id);
 	touchDownAction->SetName("TouchDownControlAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
 }
 
-void AutotestingSystem::TouchDown(const Vector<String> &controlPath, int32 id)
+void AutotestingSystem::TouchDown(const Vector<String> &controlPath, const Vector2 &offset, int32 id)
 {
-    TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlPath, id);
+    TouchDownControlAction* touchDownAction = new TouchDownControlAction(controlPath, offset, id);
 	touchDownAction->SetName("TouchDownControlAction");
     AddAction(touchDownAction);
     SafeRelease(touchDownAction);
@@ -1036,17 +1085,17 @@ void AutotestingSystem::TouchMove(const Vector2 &point, float32 time, int32 id)
     SafeRelease(touchMoveAction);
 }
 
-void AutotestingSystem::TouchMove(const String &controlName, float32 time, int32 id)
+void AutotestingSystem::TouchMove(const String &controlName, float32 time, const Vector2 &offset, int32 id)
 {
-    TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlName, time, id);
+    TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlName, time, offset, id);
 	touchMoveAction->SetName("TouchMoveControlAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
 }
 
-void AutotestingSystem::TouchMove(const Vector<String> &controlPath, float32 time, int32 id)
+void AutotestingSystem::TouchMove(const Vector<String> &controlPath, float32 time, const Vector2 &offset, int32 id)
 {
-    TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlPath, time, id);
+    TouchMoveControlAction* touchMoveAction = new TouchMoveControlAction(controlPath, time, offset, id);
 	touchMoveAction->SetName("TouchMoveControlAction");
     AddAction(touchMoveAction);
     SafeRelease(touchMoveAction);
@@ -1133,17 +1182,17 @@ void AutotestingSystem::WaitForUI(const Vector<String> &controlPath, float32 tim
     SafeRelease(waitForUIAction);
 }
 
-void AutotestingSystem::Scroll(const String &controlName, int32 id, float32 timeout)
+void AutotestingSystem::Scroll(const String &controlName, int32 id, float32 timeout, const Vector2 &offset)
 {
-    ScrollControlAction* scrollControlAction = new ScrollControlAction(controlName, id, timeout);
+    ScrollControlAction* scrollControlAction = new ScrollControlAction(controlName, id, timeout, offset);
 	scrollControlAction->SetName("ScrollControlAction");
     AddAction(scrollControlAction);
     SafeRelease(scrollControlAction);
 }
 
-void AutotestingSystem::Scroll(const Vector<String> &controlPath, int32 id, float32 timeout)
+void AutotestingSystem::Scroll(const Vector<String> &controlPath, int32 id, float32 timeout, const Vector2 &offset)
 {
-    ScrollControlAction* scrollControlAction = new ScrollControlAction(controlPath, id, timeout);
+    ScrollControlAction* scrollControlAction = new ScrollControlAction(controlPath, id, timeout, offset);
     AddAction(scrollControlAction);
     SafeRelease(scrollControlAction);
 }
