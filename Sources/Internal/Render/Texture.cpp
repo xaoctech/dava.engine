@@ -104,6 +104,7 @@ public:
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
 Map<String, Texture*> Texture::textureMap;
+Texture * Texture::pinkPlaceholder = 0;
 static int32 textureFboCounter = 0;
 
 // Main constructurs
@@ -1024,19 +1025,30 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
 
 Texture * Texture::CreateFromFile(const String & pathName)
 {
+	Texture * texture = PureCreate(pathName);
+	if(!texture)
+	{
+		texture = GetPinkPlaceholder();
+	}
+
+	return texture;
+}
+
+Texture * Texture::PureCreate(const String & pathName)
+{
 	// TODO: add check that pathName 
 	String extension = FileSystem::GetExtension(pathName);
 
 	if (extension == String(".png"))
 		return CreateFromPNG(pathName);
 	else if (extension == String(".pvr"))
-    {
+	{
 #if defined(__DAVAENGINE_IPHONE__)
 		return CreateFromPVR(pathName);
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
-        return CreateFromPNG(pathName + ".png");
+		return CreateFromPNG(pathName + ".png");
 #endif
-    }
+	}
 	return 0;
 }
 	
@@ -1694,10 +1706,51 @@ int32 Texture::GetDataSize()
     
     return allocSize;
 }
-    
+
+Texture * Texture::GetPinkPlaceholder()
+{
+	if(pinkPlaceholder)
+	{
+		return SafeRetain(pinkPlaceholder);
+	}
+	else
+	{
+		uint32 width = 16;
+		uint32 height = 16;
+		uint8 * data = new uint8[width*height*4];
+		uint32 pink = 0xffff00ff;
+		uint32 gray = 0xff7f7f7f;
+		bool pinkOrGray = false;
+
+		uint32 * writeData = (uint32*)data;
+		for(uint32 w = 0; w < width; ++w)
+		{
+			pinkOrGray = !pinkOrGray;
+			for(uint32 h = 0; h < height; ++h)
+			{
+				*writeData++ = pinkOrGray ? pink : gray;
+				pinkOrGray = !pinkOrGray;
+			}
+		}
+
+		pinkPlaceholder = Texture::CreateFromData(FORMAT_RGBA8888, data, width, height);
+		SafeDelete(data);
+
+		return pinkPlaceholder;
+	}
+}
+
+void Texture::ReleasePinkPlaceholder()
+{
+	SafeRelease(pinkPlaceholder);
+}
+
+bool Texture::IsPinkPlaceholder()
+{
+	return ((pinkPlaceholder != 0) && (pinkPlaceholder == this));
+}
+
+
+
+
 };
-
-
-
-
-
