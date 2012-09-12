@@ -4,6 +4,7 @@
 #include "DraggableDialog.h"
 
 #include "EditorSettings.h"
+#include "EditorConfig.h"
 
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
@@ -53,9 +54,8 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
 		btnPlusCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnPlusCollision));
 		AddControl(btnPlusCollision);
 		
-        
-        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*4, 
-                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*3), this);
+        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*5, 
+                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*4), this);
         
         
         listHolder = new UIControl(propertyRect);
@@ -193,31 +193,39 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         {
             String name = it->first;
             VariantType * key = it->second;
-            switch (key->type) 
-            {
-                case VariantType::TYPE_BOOLEAN:
-                    propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetBoolPropertyValue(name, key->AsBool());
-                    break;
-                    
-                case VariantType::TYPE_STRING:
-                    propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetStringPropertyValue(name, key->AsString());
-                    break;
 
-                case VariantType::TYPE_INT32:
-                    propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetIntPropertyValue(name, key->AsInt32());
-                    break;
-
-                case VariantType::TYPE_FLOAT:
-                    propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetFloatPropertyValue(name, key->AsFloat());
-                    break;
+			if(EditorConfig::Instance()->HasProperty(name))
+			{
+				EditorConfig::Instance()->AddPropertyEditor(propertyList, name, key);
+			}
+			else
+			{
+				switch (key->type) 
+				{
+					case VariantType::TYPE_BOOLEAN:
+						propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetBoolPropertyValue(name, key->AsBool());
+						break;
                     
-                default:
-                    break;
-            }
+					case VariantType::TYPE_STRING:
+						propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetStringPropertyValue(name, key->AsString());
+						break;
+
+					case VariantType::TYPE_INT32:
+						propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetIntPropertyValue(name, key->AsInt32());
+						break;
+
+					case VariantType::TYPE_FLOAT:
+						propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetFloatPropertyValue(name, key->AsFloat());
+						break;
+                    
+					default:
+						break;
+				}
+			}
         }
     }
     else
@@ -640,15 +648,14 @@ void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
     }
 }
 
-void NodesPropertyControl::NodeCreated(bool success)
+void NodesPropertyControl::NodeCreated(bool success, const String &name, int32 type)
 {
     RemoveControl(propControl);
     if(success && currentSceneNode)
     {
         KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
         
-        String name = propControl->GetPropName();
-        switch (propControl->GetPropType()) 
+        switch (type) 
         {
             case CreatePropertyControl::EPT_STRING:
                 currentProperties->SetString(name, "");

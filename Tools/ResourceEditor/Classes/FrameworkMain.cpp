@@ -12,6 +12,7 @@
 #include "TexturePacker/CommandLineParser.h"
 
 #include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/EditorConfig.h"
 #include "SceneEditor/SceneValidator.h"
 
 #include "SceneEditor/CommandLineTool.h"
@@ -112,6 +113,7 @@ void FrameworkDidLaunched()
     new CommandLineTool();
     new SceneExporter();
     new EditorSettings();
+	new EditorConfig();
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
     

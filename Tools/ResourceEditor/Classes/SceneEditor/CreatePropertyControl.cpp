@@ -1,8 +1,12 @@
 #include "CreatePropertyControl.h"
 #include "ControlsFactory.h"
 
+#include "EditorConfig.h"
+
 CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyControlDelegate *newDelegate)
     :   UIControl(rect)
+	, presetText(NULL)
+	, presetCombo(NULL)
 {
     ControlsFactory::CustomizeDialog(this);
     
@@ -25,10 +29,24 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     btnCreate->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreatePropertyControl::OnCreate));
     AddControl(btnCreate);
     SafeRelease(btnCreate);
-
     
-    Rect textRect(0, 0, rect.dx / 3, (rect.dy - buttonRect.dy) / 2);
+    Rect textRect(0, 0, rect.dx / 3, (rect.dy - buttonRect.dy) / 3);
     Rect controlRect(textRect.dx, 0, rect.dx - textRect.dx, textRect.dy);
+    
+	Vector<String> presetNames = EditorConfig::Instance()->GetProjectPropertyNames();
+	if(presetNames.empty())
+	{
+		presetNames.push_back("");
+	}
+
+	presetText = new UIStaticText(textRect);
+	presetText->SetText(LocalizedString(L"createproperty.preset"));
+	presetText->SetFont(ControlsFactory::GetFontLight());
+
+	presetCombo = new ComboBox(controlRect, this, presetNames);
+
+	textRect.y = textRect.dy;
+    controlRect.y = controlRect.dy;
 
     UIStaticText *t = new UIStaticText(textRect);
     t->SetText(LocalizedString(L"createproperty.type"));
@@ -39,8 +57,8 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     typeCombo = new ComboBox(controlRect, NULL, types);
     AddControl(typeCombo);
 
-    textRect.y = textRect.dy;
-    controlRect.y = controlRect.dy;
+    textRect.y = 2*textRect.dy;
+    controlRect.y = 2*controlRect.dy;
     
     t = new UIStaticText(textRect);
     t->SetText(LocalizedString(L"createproperty.name"));
@@ -57,6 +75,8 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     
 CreatePropertyControl::~CreatePropertyControl()
 {
+	SafeRelease(presetText);
+	SafeRelease(presetCombo);
     SafeRelease(typeCombo);
     SafeRelease(nameField);
 }
@@ -65,6 +85,19 @@ void CreatePropertyControl::WillAppear()
 {
     nameField->SetText(L"");
     typeCombo->SetSelectedIndex(0, false);
+
+	Vector<String> presetNames = EditorConfig::Instance()->GetProjectPropertyNames();
+	if(presetNames.empty())
+	{
+		presetNames.push_back("");
+	}
+	else
+	{
+		AddControl(presetText);
+		AddControl(presetCombo);
+	}
+	presetCombo->SetNewItemsSet(presetNames);
+	presetCombo->SetSelectedIndex(0, false);
 }
 
 void CreatePropertyControl::TextFieldShouldReturn(UITextField * textField)
@@ -87,21 +120,30 @@ bool CreatePropertyControl::TextFieldKeyPressed(UITextField * textField, int32 r
     return true;
 }
 
-const String CreatePropertyControl::GetPropName() const
+void CreatePropertyControl::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
 {
-    return WStringToString(nameField->GetText());
+    if(delegate)
+    {
+		int32 propertyValueType = EditorConfig::Instance()->GetPropertyValueType(itemKey);
+        delegate->NodeCreated(true, itemKey, propertyValueType);
+    }
 }
 
-int32 CreatePropertyControl::GetPropType() const
-{
-    return typeCombo->GetSelectedIndex();
-}
+// const String CreatePropertyControl::GetPropName() const
+// {
+//     return WStringToString(nameField->GetText());
+// }
+// 
+// int32 CreatePropertyControl::GetPropType() const
+// {
+//     return typeCombo->GetSelectedIndex();
+// }
 
 void CreatePropertyControl::OnCancel(BaseObject * object, void * userData, void * callerData)
 {
     if(delegate)
     {
-        delegate->NodeCreated(false);
+        delegate->NodeCreated(false, "", VariantType::TYPE_NONE);
     }
 }
 
@@ -109,7 +151,7 @@ void CreatePropertyControl::OnCreate(BaseObject * object, void * userData, void 
 {
     if(delegate)
     {
-        delegate->NodeCreated(true);
+        delegate->NodeCreated(true, WStringToString(nameField->GetText()), typeCombo->GetSelectedIndex());
     }
 }
 

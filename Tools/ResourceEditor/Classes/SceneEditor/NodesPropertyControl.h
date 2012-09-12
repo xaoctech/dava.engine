@@ -53,7 +53,7 @@ public:
     
     void SetDelegate(NodesPropertyDelegate *delegate);
     
-    virtual void NodeCreated(bool success);
+    virtual void NodeCreated(bool success, const String &name, int32 type);
     
     
     virtual int32 ElementsCount(UIList * list);
