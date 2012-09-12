@@ -8,6 +8,7 @@
 
 using namespace DAVA;
 
+class EditorHeightmap;
 class LandscapeEditorColor
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -52,6 +53,10 @@ protected:
 	Sprite *toolSprite;
     
     Texture *savedTexture;
+    
+    EditorHeightmap *editedHeightmap;
+    Heightmap *savedHeightmap;
+
 
 	bool wasTileMaskToolUpdate;
     
