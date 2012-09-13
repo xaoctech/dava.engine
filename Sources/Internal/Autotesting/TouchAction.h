@@ -50,7 +50,7 @@ protected:
 	virtual String Dump();
 
     void TouchDown(const Vector2 &point);
-    void TouchDown(const Vector<String> &controlPath);
+    void TouchDown(const Vector<String> &controlPath, const Vector2 &offset);
     void TouchUp();
     void TouchMove(const Vector2 &point);
 
@@ -76,8 +76,8 @@ protected:
 class TouchDownControlAction : public TouchAction
 {
 public:
-    TouchDownControlAction(const String &_controlName, int32 _id);
-    TouchDownControlAction(const Vector<String> &_controlPath, int32 _id);
+    TouchDownControlAction(const String &_controlName, const Vector2 &offset, int32 _id);
+    TouchDownControlAction(const Vector<String> &_controlPath, const Vector2 &offset, int32 _id);
     virtual ~TouchDownControlAction();
 
     virtual void Execute();
@@ -85,6 +85,7 @@ protected:
 	virtual String Dump();
 
     Vector<String> controlPath;
+	Vector2 touchOffset;
 };
 
 class TouchUpAction : public TouchAction
@@ -129,8 +130,8 @@ protected:
 class TouchMoveControlAction : public TouchMoveAction
 {
 public:
-    TouchMoveControlAction(const String &_controlName, float32 _moveTime, int32 _id);
-    TouchMoveControlAction(const Vector<String> &_controlPath, float32 _moveTime, int32 _id);
+    TouchMoveControlAction(const String &_controlName, float32 _moveTime, const Vector2 &offset, int32 _id);
+    TouchMoveControlAction(const Vector<String> &_controlPath, float32 _moveTime, const Vector2 &offset, int32 _id);
     virtual ~TouchMoveControlAction();
 
     virtual void Execute();
@@ -138,13 +139,14 @@ protected:
 	virtual String Dump();
 
     Vector<String> controlPath;
+	Vector2 touchOffset;
 };
 
 class ScrollControlAction : public WaitAction
 {
 public:
-    ScrollControlAction(const String &_controlName, int32 _id, float32 timeout);
-    ScrollControlAction(const Vector<String> &_controlPath, int32 _id, float32 timeout);
+    ScrollControlAction(const String &_controlName, int32 _id, float32 timeout, const Vector2 &offset);
+    ScrollControlAction(const Vector<String> &_controlPath, int32 _id, float32 timeout, const Vector2 &offset);
     virtual ~ScrollControlAction();
 
     virtual void Update(float32 timeElapsed);
@@ -154,10 +156,12 @@ protected:
     virtual bool TestCondition();
     void FindScrollPoints();
 
+	bool wasFound;
     bool isFound;
     Action* currentAction;
     Deque<Action*> actions;
 
+	Vector2 touchOffset;
     Vector2 touchDownPoint;
     Vector2 touchUpPoint;
 

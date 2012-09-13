@@ -951,6 +951,9 @@
     <ClCompile Include="Classes\SpritesPacker.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1817,6 +1820,9 @@
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SpritesPacker.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\SceneEditor\EditorConfig.h">
       <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>

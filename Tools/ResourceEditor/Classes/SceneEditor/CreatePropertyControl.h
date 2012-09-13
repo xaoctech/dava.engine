@@ -9,10 +9,10 @@ using namespace DAVA;
 class CreatePropertyControlDelegate
 {
 public:
-    virtual void NodeCreated(bool success) = 0;
+    virtual void NodeCreated(bool success, const String &name, int32 type, VariantType *defaultValue = NULL) = 0;
 };
 
-class CreatePropertyControl: public UIControl, public UITextFieldDelegate
+class CreatePropertyControl: public UIControl, public UITextFieldDelegate, public ComboBoxDelegate
 {
     
 public:
@@ -38,14 +38,26 @@ public:
     virtual void TextFieldLostFocus(UITextField * textField);
     virtual bool TextFieldKeyPressed(UITextField * textField, int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
         
-    const String GetPropName() const;
-    int32 GetPropType() const;
-    
-        
+	virtual void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex);
+
+//     const String GetPropName() const;
+//     int32 GetPropType() const;
+            
 protected:
+	int32 GetValueTypeFromTypeIndex(int32 typeIndex);
+	int32 GetTypeIndexFromValueType(int32 type);
+
+	void UpdateEditableControls();
+
+	UIStaticText *presetText;
+	ComboBox *presetCombo;
+	String emptyPresetName;
+	String selectedPresetName;
 
     ComboBox *typeCombo;
     UITextField *nameField;
+
+	bool isPresetMode;
         
     CreatePropertyControlDelegate *delegate;
         
