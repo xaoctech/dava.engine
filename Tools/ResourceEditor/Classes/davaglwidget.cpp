@@ -140,6 +140,11 @@ void DavaGLWidget::closeEvent(QCloseEvent *e)
 
 void DavaGLWidget::Quit()
 {
+    QTimer::singleShot(0, this, SLOT(ReadyToQuit()));
+}
+
+void DavaGLWidget::ReadyToQuit()
+{
     QApplication::quit();
 }
 

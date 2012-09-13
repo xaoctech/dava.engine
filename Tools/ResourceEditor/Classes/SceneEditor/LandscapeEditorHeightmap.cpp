@@ -563,19 +563,27 @@ void LandscapeEditorHeightmap::OnShowGrid(bool show)
 
 void LandscapeEditorHeightmap::UpdateHeightmap(const Rect &updatedRect)
 {
+    Rect clippedRect;
+    clippedRect.x = (float32)Clamp((int32)updatedRect.x, 0, heightmap->Size()-1);
+    clippedRect.y = (float32)Clamp((int32)updatedRect.y, 0, heightmap->Size()-1);
+  
+    clippedRect.dx = Clamp((updatedRect.x + updatedRect.dx), 0.f, (float32)heightmap->Size() - 1.f) - clippedRect.x;
+    clippedRect.dy = Clamp((updatedRect.y + updatedRect.dy), 0.f, (float32)heightmap->Size() - 1.f) - clippedRect.y;
+    
+    
     if(heightmapNode)
     {
-        heightmapNode->UpdateHeightmapRect(updatedRect);
+        heightmapNode->UpdateHeightmapRect(clippedRect);
     }
     
     if(landscapeDebugNode)
     {
-        landscapeDebugNode->RebuildVertexes(updatedRect);
+        landscapeDebugNode->RebuildVertexes(clippedRect);
     }
     
     if(heightmap)
     {
-        heightmap->HeghtWasChanged(updatedRect);
+        heightmap->HeghtWasChanged(clippedRect);
     }
 }
 

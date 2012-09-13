@@ -78,7 +78,7 @@ public:
 	inline float32 Angle() const; // Need to normalize vector before use function
 
     inline bool IsZero() const { return x == 0.f && y == 0.f; }
-    inline void Zerofy() { x = y = 0.f; } // = 0
+    inline void SetZero() { x = y = 0.f; } // = 0
 
 	//! On operations
 	inline const Vector2 & operator += (const Vector2 & _v);

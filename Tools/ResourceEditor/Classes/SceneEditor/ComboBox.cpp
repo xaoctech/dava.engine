@@ -12,6 +12,7 @@
 
 ComboBox::ComboBox(const Rect &rect, ComboBoxDelegate *comboDelegate, const Vector<String> &listItems)
 : UIControl(rect)
+, maxVisibleItemsCount(0)
 {
     delegate = comboDelegate;
 
@@ -38,6 +39,10 @@ int32 ComboBox::IndexByKey(const String &key)
     return it->second;
 }
 
+void ComboBox::SetMaxVisibleItemsCount(int32 itemsCount)
+{
+	maxVisibleItemsCount = itemsCount;
+}
 
 void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
 {
@@ -61,6 +66,12 @@ void ComboBox::SetNewItemsSet(const Vector<String> &listItems)
     
 //    int32 sz = Min(8, (int32)items.size());
     int32 sz = (int32)items.size();
+
+	if(maxVisibleItemsCount > 0 && sz > maxVisibleItemsCount)
+	{
+		sz = maxVisibleItemsCount;
+	}
+
     SafeRelease(list);
     list = new UIList(Rect(size.x - listWidth, size.y, listWidth, size.y * sz), UIList::ORIENTATION_VERTICAL);
     list->SetDelegate(this);

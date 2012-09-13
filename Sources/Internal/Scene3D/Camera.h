@@ -43,6 +43,9 @@ namespace DAVA
     \brief this class is main class to perform camera transformations in our 3D engine.
     This class creates standard matrix-based view-directional camera. Right now engine do not have quaternion camera, and
     you can always add it support if it will be required.
+
+    TODO: Should it be a SceneNode? It doesn't use inherited transofrmations!
+    TODO: Move math to a separate class, use composition, see CopyMathOnly
  */
 class Camera : public SceneNode
 {
@@ -202,7 +205,7 @@ public:
 	
     /**
         \brief Clone current camera
-        
+        TODO: remove, make adjustments in copy constructor instead. Clone() is evil, see Effective Java for details.
      */
     virtual SceneNode* Clone(SceneNode *dstNode = NULL);
     
@@ -286,6 +289,8 @@ public:
     Matrix4 uniformProjModelMatrix;
 
     uint32 flags;
+
+    // TODO: not necessary to be a pointer here.
     Frustum * currentFrustum;
 	
 	void ExtractValuesFromMatrix();
