@@ -152,7 +152,7 @@ void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
 	if (isModeCollision)
 	{
 		KeyedArchive * customProperties = node->GetCustomProperties();
-		if(customProperties && customProperties->IsKeyExists("CollisionFlag") && customProperties->GetBool("CollisionFlag", false))
+		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0))
 		{
 			node->SetDebugFlags(node->GetDebugFlags() | (SceneNode::DEBUG_DRAW_RED_AABBOX));
 			return;
