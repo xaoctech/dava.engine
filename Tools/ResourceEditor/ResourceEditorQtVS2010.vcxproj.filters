@@ -954,6 +954,9 @@
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1824,6 +1827,9 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h">
+      <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
