@@ -45,14 +45,6 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
                                                  L"-");
         btnMinus->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnMinus));
         AddControl(btnMinus);
-
-
-		btnPlusCollision = ControlsFactory::CreateButton(
-			Rect(ControlsFactory::BUTTON_HEIGHT << 1, propertyRect.dy, 
-			ControlsFactory::BUTTON_HEIGHT << 1, ControlsFactory::BUTTON_HEIGHT), 
-			L"+C");
-		btnPlusCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnPlusCollision));
-		AddControl(btnPlusCollision);
 		
 		int32 elementsCount = 10;
         propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*(elementsCount + 1), 
@@ -66,10 +58,6 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
                                                 LocalizedString(L"dialog.cancel"));
         btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnCancel));
         listHolder->AddControl(btnCancel);
-    }
-    else
-    {
-        btnPlusCollision = NULL;
     }
     
     propertyList = new PropertyList(propertyRect, this);
@@ -89,7 +77,6 @@ NodesPropertyControl::~NodesPropertyControl()
     
     SafeRelease(btnMinus);
     SafeRelease(btnPlus);
-    SafeRelease(btnPlusCollision);
 
     SafeRelease(propertyList);
 }
@@ -609,14 +596,6 @@ void NodesPropertyControl::OnPlus(BaseObject * , void * , void * )
     AddControl(propControl);
 }
 
-void NodesPropertyControl::OnPlusCollision(BaseObject * , void * , void * )
-{
-	KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
-	currentProperties->SetBool("CollisionFlag", false);
-	UpdateFieldsForCurrentNode();
-	currentSceneNode->PropagateBoolProperty("CollisionFlag", false);
-}
-
 void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
 {
     if(propControl->GetParent() || listHolder->GetParent())
@@ -870,7 +849,6 @@ void NodesPropertyControl::SetSize(const Vector2 &newSize)
         
         btnPlus->SetPosition(Vector2(0, propertyRect.dy));
         btnMinus->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT, propertyRect.dy));
-		btnPlusCollision ->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT << 1, propertyRect.dy));
 
         propControl->SetPosition(Vector2(0, newSize.y - ControlsFactory::BUTTON_HEIGHT*4));
 
