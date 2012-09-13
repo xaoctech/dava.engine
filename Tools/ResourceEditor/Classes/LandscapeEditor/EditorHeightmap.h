@@ -34,7 +34,9 @@ class EditorHeightmap: public DAVA::Heightmap
 {
     enum eConst
     {
-        MAX_EDITOR_HEIGHTMAP_SIZE = 513
+        MAX_EDITOR_HEIGHTMAP_SIZE = 513,
+        VALUE_NOT_CHANGED = 0,
+        VALUE_WAS_CHANGED = 1,
     };
     
 public:
@@ -51,6 +53,10 @@ protected:
     
     void DownscaleOrClone();
     void Downscale(DAVA::int32 newSize);
+    void Upscale();
+    void InitializeScalingTable(DAVA::int32 count);
+    
+    void InitializeTableOfChanges();
     
     bool IsPowerOf2(DAVA::int32 num);
 
@@ -58,11 +64,14 @@ protected:
     DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
     DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
     
-    void SetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier, DAVA::uint16 value);
+    void UpscaleValue(DAVA::int32 leftX, DAVA::int32 topY, DAVA::int32 muliplier);
     
 protected:
 
     Heightmap *savedHeightmap;
+    
+    DAVA::uint8 *tableOfChanges;
+    DAVA::float32 *scalingTable;
 };
 
 
