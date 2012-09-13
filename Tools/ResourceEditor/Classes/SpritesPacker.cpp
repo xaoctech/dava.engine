@@ -28,7 +28,7 @@ void SpritesPacker::Pack()
 	resourcePackerScreen->clearProcessDirectory = true;
 	resourcePackerScreen->inputGfxDirectory = inputDir;
 	resourcePackerScreen->outputGfxDirectory = outputDir;
-	resourcePackerScreen->excludeDirectory = inputDir + "/../";
+	resourcePackerScreen->excludeDirectory = "/"+FileSystem::Instance()->RealPath(inputDir + "/../");
 	resourcePackerScreen->isLightmapsPacking = true;
 
 	resourcePackerScreen->PackResources();
