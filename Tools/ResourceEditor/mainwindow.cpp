@@ -13,7 +13,7 @@
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
-
+#include "../SceneEditor/EditorConfig.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
@@ -50,6 +50,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupDockWidgets();
 
     SetupProjectPath();
+	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
