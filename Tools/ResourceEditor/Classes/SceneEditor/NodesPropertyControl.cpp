@@ -54,8 +54,9 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
 		btnPlusCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnPlusCollision));
 		AddControl(btnPlusCollision);
 		
-        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*5, 
-                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*4), this);
+		int32 elementsCount = 10;
+        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*(elementsCount + 1), 
+                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*elementsCount), this);
         
         
         listHolder = new UIControl(propertyRect);
