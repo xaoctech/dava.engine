@@ -3458,10 +3458,10 @@ String ParticlesEditorControl::GetConfigsPath()
 
 String ParticlesEditorControl::GetSpritesDataSourcePath()
 {
-	return EditorSettings::Instance()->GetProjectPath()+"DataSource/Gfx/Particles";
+	return EditorSettings::Instance()->GetProjectPath()+"DataSource/Particles";
 }
 
 String ParticlesEditorControl::GetSpritesDataPath()
 {
-	return EditorSettings::Instance()->GetProjectPath()+"Data/Gfx/Particles";
+	return EditorSettings::Instance()->GetProjectPath()+"Data/Particles";
 }
