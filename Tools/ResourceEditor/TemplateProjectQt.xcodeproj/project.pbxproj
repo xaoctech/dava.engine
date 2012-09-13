@@ -293,6 +293,7 @@
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
+		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -957,6 +958,8 @@
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		AB241F823D3821A41AAC4BDE /* mainwindow.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = mainwindow.ui; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		C78621881602175100C96AA8 /* EditorConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorConfig.cpp; path = Classes/SceneEditor/EditorConfig.cpp; sourceTree = "<group>"; };
+		C78621891602175100C96AA8 /* EditorConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorConfig.h; path = Classes/SceneEditor/EditorConfig.h; sourceTree = "<group>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
@@ -1598,6 +1601,8 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
+				C78621881602175100C96AA8 /* EditorConfig.cpp */,
+				C78621891602175100C96AA8 /* EditorConfig.h */,
 				5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */,
 				5C44DB4015F4BD6C00A42B52 /* SwitchNodePropertyControl.h */,
 				5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */,
@@ -2333,6 +2338,7 @@
 				5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */,
 				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
 				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
+				C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
