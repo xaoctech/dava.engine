@@ -31,7 +31,8 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
     AddControl(btnCreate);
     SafeRelease(btnCreate);
     
-    Rect textRect(0, 0, rect.dx / 3, (rect.dy - buttonRect.dy) / 3);
+    //Rect textRect(0, 0, rect.dx / 3, (rect.dy - buttonRect.dy) / 3);
+	Rect textRect(0, 0, rect.dx / 3, buttonRect.dy);
     Rect controlRect(textRect.dx, 0, rect.dx - textRect.dx, textRect.dy);
     
 	emptyPresetName = "(none)";
@@ -45,7 +46,7 @@ CreatePropertyControl::CreatePropertyControl(const Rect & rect, CreatePropertyCo
 	AddControl(presetText);
 
 	presetCombo = new ComboBox(controlRect, this, presetNames);
-	presetCombo->SetMaxVisibleItemsCount(4);
+	presetCombo->SetMaxVisibleItemsCount(10);
 	AddControl(presetCombo);
 
 	textRect.y = textRect.dy;
