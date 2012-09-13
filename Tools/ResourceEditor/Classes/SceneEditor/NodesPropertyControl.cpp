@@ -46,9 +46,8 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
         btnMinus->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnMinus));
         AddControl(btnMinus);
 		
-		int32 elementsCount = 10;
-        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*(elementsCount + 1), 
-                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*elementsCount), this);
+        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*(PROP_CONTROL_ELEM_COUNT + 1), 
+                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*PROP_CONTROL_ELEM_COUNT), this);
         
         
         listHolder = new UIControl(propertyRect);
@@ -554,9 +553,20 @@ void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const Strin
         nodesDelegate->NodesPropertyChanged();
     }
 }
-void NodesPropertyControl::OnComboIndexChanged(PropertyList *, const String &, 
-                                               int32 , const String &)
+void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
+	if(!createNodeProperties)
+    {
+        if(currentSceneNode)
+        {
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetInt32(forKey, newItemIndex);
+            }
+        }
+    }
+
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged();
@@ -850,7 +860,7 @@ void NodesPropertyControl::SetSize(const Vector2 &newSize)
         btnPlus->SetPosition(Vector2(0, propertyRect.dy));
         btnMinus->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT, propertyRect.dy));
 
-        propControl->SetPosition(Vector2(0, newSize.y - ControlsFactory::BUTTON_HEIGHT*4));
+        propControl->SetPosition(Vector2(0, newSize.y - ControlsFactory::BUTTON_HEIGHT*(PROP_CONTROL_ELEM_COUNT + 1)));
 
         listHolder->SetSize(propertyRect.GetSize());
         
