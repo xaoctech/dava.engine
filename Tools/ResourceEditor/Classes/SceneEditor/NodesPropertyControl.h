@@ -95,6 +95,7 @@ protected:
     void OnPlus(BaseObject * object, void * userData, void * callerData);
     void OnMinus(BaseObject * object, void * userData, void * callerData);
 
+	static const int32 PROP_CONTROL_ELEM_COUNT = 10;
     CreatePropertyControl *propControl;
     SceneNode *currentSceneNode;
     DataNode *currentDataNode;
