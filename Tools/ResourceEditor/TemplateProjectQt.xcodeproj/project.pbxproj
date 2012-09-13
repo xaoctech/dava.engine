@@ -275,6 +275,8 @@
 		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
 		5C8B038E15D10CA300571D9F /* qrc_QtIcons.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */; };
 		5C8B039015D1113E00571D9F /* QtIcons.qrc in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C8B038F15D1113E00571D9F /* QtIcons.qrc */; };
+		5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */; };
+		5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
 		5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F465315B449450038AF3A /* libFrameworkQt.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
@@ -931,6 +933,10 @@
 		5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToolsCommands.h; path = Classes/Commands/ToolsCommands.h; sourceTree = "<group>"; };
 		5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = qrc_QtIcons.cpp; path = QtBuildTool/qrc_QtIcons.cpp; sourceTree = "<group>"; };
 		5C8B038F15D1113E00571D9F /* QtIcons.qrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = QtIcons.qrc; sourceTree = "<group>"; };
+		5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NotPassableTerrain.cpp; path = Classes/LandscapeEditor/NotPassableTerrain.cpp; sourceTree = "<group>"; };
+		5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotPassableTerrain.h; path = Classes/LandscapeEditor/NotPassableTerrain.h; sourceTree = "<group>"; };
+		5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritesPacker.cpp; path = Classes/SpritesPacker.cpp; sourceTree = "<group>"; };
+		5C8DA28E160263C200BCE6DF /* SpritesPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritesPacker.h; path = Classes/SpritesPacker.h; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		5CDD9ABB15B893E4007CA99A /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = Classes/Commands/Command.cpp; sourceTree = "<group>"; };
@@ -1063,6 +1069,8 @@
 		5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */ = {
 			isa = PBXGroup;
 			children = (
+				5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */,
+				5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */,
 				5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */,
 				5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */,
 			);
@@ -1898,6 +1906,8 @@
 		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */,
+				5C8DA28E160263C200BCE6DF /* SpritesPacker.h */,
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
 				5CDD9ABA15B893CF007CA99A /* Commands */,
 				5C2763A415B82BDF0030A8FD /* Qt */,
@@ -2339,6 +2349,8 @@
 				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
 				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
 				C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */,
+				5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */,
+				5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
