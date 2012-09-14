@@ -37,7 +37,6 @@ NotPassableTerrain::NotPassableTerrain(DAVA::LandscapeNode *land)
     SetName(String("NotPassableTerrain"));
 
     notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));
-    hardPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::HARD_PASSABLE_ANGLE));
 
     terrainRenderObject = new RenderDataObject();
     DVASSERT(terrainRenderObject);
@@ -50,14 +49,15 @@ NotPassableTerrain::NotPassableTerrain(DAVA::LandscapeNode *land)
     Texture *tex = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
     DVASSERT(tex);
     
-    notPassableMap = Texture::CreateFBO(tex->GetWidth(), tex->GetHeight(), DAVA::FORMAT_RGBA8888, Texture::DEPTH_NONE);
+    notPassableMapSprite = Sprite::CreateAsRenderTarget(MAP_TEXTURE_SIZE, MAP_TEXTURE_SIZE, DAVA::FORMAT_RGBA8888);
+    Texture *notPassableMap = notPassableMapSprite->GetTexture();
     
     BuildMapForLandscape();
 }
 
 NotPassableTerrain::~NotPassableTerrain()
 {
-    SafeRelease(notPassableMap);
+    SafeRelease(notPassableMapSprite);
     SafeRelease(landscape);
     
     SafeRelease(shader);
@@ -156,23 +156,22 @@ void NotPassableTerrain::BuildMapForLandscape()
     Heightmap *heightmap = landscape->GetHeightmap();
     float32 angleCellDistance = landSize.x / (float32)(heightmap->Size() - 1);
     float32 angleHeightDelta = landSize.z / (float32)(Heightmap::MAX_VALUE - 1);
-    
+    float32 tanCoef = angleHeightDelta / angleCellDistance;
+ 
+    Texture *notPassableMap = notPassableMapSprite->GetTexture();
     float32 dx = (float32)notPassableMap->GetWidth() / (float32)(heightmap->Size() - 1);
     
-    Rect oldViewport = RenderManager::Instance()->GetViewport();
-    RenderManager::Instance()->SetRenderTarget(notPassableMap);
-    RenderManager::Instance()->SetViewport(Rect(0, 0, (float32)(notPassableMap->width), (float32)(notPassableMap->height)), true);
-
-    Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
-    Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, fullTiledTexture->GetWidth(), fullTiledTexture->GetHeight());
-    background->SetPosition(0.f, 0.f);
-    background->SetScaleSize(notPassableMap->GetWidth(), notPassableMap->GetHeight());
-    background->Draw();
+    Color red(1.0f, 0.0f, 0.0f, 1.0f);
     
-    for (int32 y = 0; y < heightmap->Size() - 2; ++y)
+    RenderManager::Instance()->LockNonMain();
+    RenderManager::Instance()->SetRenderTarget(notPassableMapSprite);
+
+    DrawFullTiledTexture();
+    
+    for (int32 y = 0; y < heightmap->Size() - 1; ++y)
     {
         int32 yOffset = y * heightmap->Size();
-        for (int32 x = 0; x < heightmap->Size() - 2; ++x)
+        for (int32 x = 0; x < heightmap->Size() - 1; ++x)
         {
             uint16 currentPoint = heightmap->Data()[yOffset + x];
             uint16 rightPoint = heightmap->Data()[yOffset + x + 1];
@@ -181,40 +180,42 @@ void NotPassableTerrain::BuildMapForLandscape()
             uint16 deltaRight = (uint16)abs((int32)currentPoint - (int32)rightPoint);
             uint16 deltaBottom = (uint16)abs((int32)currentPoint - (int32)bottomPoint);
             
-            float32 tanRight = (float32)deltaRight * (float32)angleHeightDelta / (float32)angleCellDistance;
-            float32 tanBottom = (float32)deltaBottom * (float32)angleHeightDelta / (float32)angleCellDistance;
+            float32 tanRight = (float32)deltaRight * tanCoef;
+            float32 tanBottom = (float32)deltaBottom * tanCoef;
             
             float32 ydx = y * dx;
             float32 xdx = x * dx;
-            
-            RenderManager::Instance()->SetColor(GetColorForAngle(tanRight));
-            RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx), Vector2(xdx + dx, ydx));
 
-            RenderManager::Instance()->SetColor(GetColorForAngle(tanBottom));
-            RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx), Vector2(xdx, ydx + dx));
+            
+            if(notPassableAngleTan <= tanRight)
+            {
+                RenderManager::Instance()->SetColor(red);
+                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
+                                                   Vector2((xdx + dx), ydx));
+            }
+
+            
+            if(notPassableAngleTan <= tanBottom)
+            {
+                RenderManager::Instance()->SetColor(red);
+                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
+                                                   Vector2(xdx, (ydx + dx)));
+            }
         }
     }
-    
-#ifdef __DAVAENGINE_OPENGL__
-	BindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
-#endif //#ifdef __DAVAENGINE_OPENGL__
-    
-	RenderManager::Instance()->SetViewport(oldViewport, true);
+
+    RenderManager::Instance()->RestoreRenderTarget();
+    RenderManager::Instance()->UnlockNonMain();
 }
 
-
-DAVA::Color NotPassableTerrain::GetColorForAngle(DAVA::float32 tanOfAngle)
+void NotPassableTerrain::DrawFullTiledTexture()
 {
-    if(notPassableAngleTan <= tanOfAngle)
-    {
-        return Color(1.0f, 0.0f, 0.0f, 1.0f);
-    }
-    else if(hardPassableAngleTan <= tanOfAngle)
-    {
-        return Color(1.0f, 0.4f, 0.0f, 1.0f);
-    }
-
-    return Color(0.0f, 1.0f, 0.0f, 1.0f);
+    Texture *notPassableMap = notPassableMapSprite->GetTexture();
+    Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+    Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, fullTiledTexture->GetWidth(), fullTiledTexture->GetHeight());
+    background->SetPosition(0.f, 0.f);
+    background->SetScaleSize(notPassableMap->GetWidth(), notPassableMap->GetHeight());
+    background->Draw();
 }
 
 
@@ -237,7 +238,7 @@ void NotPassableTerrain::Draw()
     
 void NotPassableTerrain::BindMaterial()
 {
-    RenderManager::Instance()->SetTexture(notPassableMap, 0);
+    RenderManager::Instance()->SetTexture(notPassableMapSprite->GetTexture(), 0);
     
     RenderManager::Instance()->SetShader(shader);
     RenderManager::Instance()->FlushState();
