@@ -199,6 +199,11 @@ public:
 	void SetNode(ParticleEmitterNode * node);
 	void SetActiveSprite(const String & path);
 	String GetActiveSpriteName();
+
+	void PackSprites();
+	String GetConfigsPath();
+	String GetSpritesDataSourcePath();
+	String GetSpritesDataPath();
     
 protected:
     virtual int32 ElementsCount(UIList *forList);
