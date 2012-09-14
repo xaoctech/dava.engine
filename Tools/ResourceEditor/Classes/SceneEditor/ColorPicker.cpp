@@ -497,10 +497,10 @@ void ColorPicker::SetColor(const Color & newColor, bool updateColorMap, bool upd
         colorSelectorControl->SetColor(currentColor);
     }
     
-    colorList->SetIntPropertyValue("colorpicker.r", (int32)currentColor.r * 255);
-    colorList->SetIntPropertyValue("colorpicker.g", (int32)currentColor.g * 255);
-    colorList->SetIntPropertyValue("colorpicker.b", (int32)currentColor.b * 255);
-    colorList->SetIntPropertyValue("colorpicker.a", (int32)currentColor.a * 255);
+    colorList->SetIntPropertyValue("colorpicker.r", (int32)(currentColor.r * 255));
+    colorList->SetIntPropertyValue("colorpicker.g", (int32)(currentColor.g * 255));
+    colorList->SetIntPropertyValue("colorpicker.b", (int32)(currentColor.b * 255));
+    colorList->SetIntPropertyValue("colorpicker.a", (int32)(currentColor.a * 255));
     
     alphaValue->SetValue(currentColor.a);
 }

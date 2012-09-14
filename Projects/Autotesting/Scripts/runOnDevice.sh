@@ -7,4 +7,4 @@ UDID_device=`system_profiler SPUSBDataType | sed -n -e '/iPad/,/Serial/p' -e '/i
 echo "udid is ${UDID_device}"
 
 echo "run $1 on device"
-instruments -w ${UDID_device} -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$1" -e UIASCRIPT testRun.js
+instruments -w ${UDID_device} -t $PATH_TO_AUTO_TEMPL/Automation.tracetemplate "$1" -e UIASCRIPT testRun.js

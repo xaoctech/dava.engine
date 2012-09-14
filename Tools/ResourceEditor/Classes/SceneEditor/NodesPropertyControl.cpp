@@ -4,6 +4,7 @@
 #include "DraggableDialog.h"
 
 #include "EditorSettings.h"
+#include "EditorConfig.h"
 
 
 NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodeProperties)
@@ -44,18 +45,9 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
                                                  L"-");
         btnMinus->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnMinus));
         AddControl(btnMinus);
-
-
-		btnPlusCollision = ControlsFactory::CreateButton(
-			Rect(ControlsFactory::BUTTON_HEIGHT << 1, propertyRect.dy, 
-			ControlsFactory::BUTTON_HEIGHT << 1, ControlsFactory::BUTTON_HEIGHT), 
-			L"+C");
-		btnPlusCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnPlusCollision));
-		AddControl(btnPlusCollision);
 		
-        
-        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*4, 
-                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*3), this);
+        propControl = new CreatePropertyControl(Rect(0, rect.dy - ControlsFactory::BUTTON_HEIGHT*(PROP_CONTROL_ELEM_COUNT + 1), 
+                                                     rect.dx, ControlsFactory::BUTTON_HEIGHT*PROP_CONTROL_ELEM_COUNT), this);
         
         
         listHolder = new UIControl(propertyRect);
@@ -65,10 +57,6 @@ NodesPropertyControl::NodesPropertyControl(const Rect & rect, bool _createNodePr
                                                 LocalizedString(L"dialog.cancel"));
         btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NodesPropertyControl::OnCancel));
         listHolder->AddControl(btnCancel);
-    }
-    else
-    {
-        btnPlusCollision = NULL;
     }
     
     propertyList = new PropertyList(propertyRect, this);
@@ -88,7 +76,6 @@ NodesPropertyControl::~NodesPropertyControl()
     
     SafeRelease(btnMinus);
     SafeRelease(btnPlus);
-    SafeRelease(btnPlusCollision);
 
     SafeRelease(propertyList);
 }
@@ -193,31 +180,39 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         {
             String name = it->first;
             VariantType * key = it->second;
-            switch (key->type) 
-            {
-                case VariantType::TYPE_BOOLEAN:
-                    propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetBoolPropertyValue(name, key->AsBool());
-                    break;
-                    
-                case VariantType::TYPE_STRING:
-                    propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetStringPropertyValue(name, key->AsString());
-                    break;
 
-                case VariantType::TYPE_INT32:
-                    propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetIntPropertyValue(name, key->AsInt32());
-                    break;
-
-                case VariantType::TYPE_FLOAT:
-                    propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
-                    propertyList->SetFloatPropertyValue(name, key->AsFloat());
-                    break;
+			if(EditorConfig::Instance()->HasProperty(name))
+			{
+				EditorConfig::Instance()->AddPropertyEditor(propertyList, name, key);
+			}
+			else
+			{
+				switch (key->type) 
+				{
+					case VariantType::TYPE_BOOLEAN:
+						propertyList->AddBoolProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetBoolPropertyValue(name, key->AsBool());
+						break;
                     
-                default:
-                    break;
-            }
+					case VariantType::TYPE_STRING:
+						propertyList->AddStringProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetStringPropertyValue(name, key->AsString());
+						break;
+
+					case VariantType::TYPE_INT32:
+						propertyList->AddIntProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetIntPropertyValue(name, key->AsInt32());
+						break;
+
+					case VariantType::TYPE_FLOAT:
+						propertyList->AddFloatProperty(name, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetFloatPropertyValue(name, key->AsFloat());
+						break;
+                    
+					default:
+						break;
+				}
+			}
         }
     }
     else
@@ -558,9 +553,20 @@ void NodesPropertyControl::OnFilepathPropertyChanged(PropertyList *, const Strin
         nodesDelegate->NodesPropertyChanged();
     }
 }
-void NodesPropertyControl::OnComboIndexChanged(PropertyList *, const String &, 
-                                               int32 , const String &)
+void NodesPropertyControl::OnComboIndexChanged(PropertyList *forList, const String &forKey, int32 newItemIndex, const String &newItemKey)
 {
+	if(!createNodeProperties)
+    {
+        if(currentSceneNode)
+        {
+            KeyedArchive *customProperties = currentSceneNode->GetCustomProperties();
+            if(customProperties->IsKeyExists(forKey))
+            {
+                customProperties->SetInt32(forKey, newItemIndex);
+            }
+        }
+    }
+
     if(nodesDelegate)
     {
         nodesDelegate->NodesPropertyChanged();
@@ -600,14 +606,6 @@ void NodesPropertyControl::OnPlus(BaseObject * , void * , void * )
     AddControl(propControl);
 }
 
-void NodesPropertyControl::OnPlusCollision(BaseObject * , void * , void * )
-{
-	KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
-	currentProperties->SetBool("CollisionFlag", false);
-	UpdateFieldsForCurrentNode();
-	currentSceneNode->PropagateBoolProperty("CollisionFlag", false);
-}
-
 void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
 {
     if(propControl->GetParent() || listHolder->GetParent())
@@ -640,33 +638,55 @@ void NodesPropertyControl::OnMinus(BaseObject * , void * , void * )
     }
 }
 
-void NodesPropertyControl::NodeCreated(bool success)
+void NodesPropertyControl::NodeCreated(bool success, const String &name, int32 type, VariantType *defaultValue)
 {
     RemoveControl(propControl);
     if(success && currentSceneNode)
     {
         KeyedArchive *currentProperties = currentSceneNode->GetCustomProperties();
         
-        String name = propControl->GetPropName();
-        switch (propControl->GetPropType()) 
+        switch (type) 
         {
-            case CreatePropertyControl::EPT_STRING:
-                currentProperties->SetString(name, "");
+			case VariantType::TYPE_STRING:    
+				if(defaultValue)
+				{
+					currentProperties->SetString(name, defaultValue->AsString());
+				}
+				else
+				{
+					currentProperties->SetString(name, "");
+				}
                 break;
-
-            case CreatePropertyControl::EPT_INT:
-                currentProperties->SetInt32(name, 0);
-
+			case VariantType::TYPE_INT32:  
+				if(defaultValue)
+				{
+					currentProperties->SetInt32(name, defaultValue->AsInt32());
+				}
+				else
+				{
+					currentProperties->SetInt32(name, 0);
+				}
                 break;
-            case CreatePropertyControl::EPT_FLOAT:
-                currentProperties->SetFloat(name, 0.f);
-
+			case VariantType::TYPE_FLOAT:
+				if(defaultValue)
+				{
+					currentProperties->SetFloat(name, defaultValue->AsFloat());
+				}
+				else
+				{
+					currentProperties->SetFloat(name, 0.f);
+				}
                 break;
-            case CreatePropertyControl::EPT_BOOL:
-                currentProperties->SetBool(name, false);
-
+			case VariantType::TYPE_BOOLEAN:
+				if(defaultValue)
+				{
+					currentProperties->SetBool(name, defaultValue->AsBool());
+				}
+				else
+				{
+					currentProperties->SetBool(name, false);
+				}
                 break;
-
             default:
                 break;
         }
@@ -839,9 +859,8 @@ void NodesPropertyControl::SetSize(const Vector2 &newSize)
         
         btnPlus->SetPosition(Vector2(0, propertyRect.dy));
         btnMinus->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT, propertyRect.dy));
-		btnPlusCollision ->SetPosition(Vector2(ControlsFactory::BUTTON_HEIGHT << 1, propertyRect.dy));
 
-        propControl->SetPosition(Vector2(0, newSize.y - ControlsFactory::BUTTON_HEIGHT*4));
+        propControl->SetPosition(Vector2(0, newSize.y - ControlsFactory::BUTTON_HEIGHT*(PROP_CONTROL_ELEM_COUNT + 1)));
 
         listHolder->SetSize(propertyRect.GetSize());
         

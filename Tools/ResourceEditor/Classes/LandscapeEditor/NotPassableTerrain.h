@@ -23,56 +23,68 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=====================================================================================*/
 
-#ifndef __EDITOR_HEIGHTMAP_H__
-#define __EDITOR_HEIGHTMAP_H__
+    Revision History:
+        * Created by Vitaliy Borodovsky 
+=====================================================================================*/
+#ifndef __NOTPASSABLE_TERRAIN_H__
+#define __NOTPASSABLE_TERRAIN_H__
 
 #include "DAVAEngine.h"
 
-class EditorHeightmap: public DAVA::Heightmap
+//#define NOTPASSABLE_TERRAIN_ENABLED  
+
+class NotPassableTerrain: public DAVA::SceneNode
 {
     enum eConst
     {
-        MAX_EDITOR_HEIGHTMAP_SIZE = 513,
-        VALUE_NOT_CHANGED = 0,
-        VALUE_WAS_CHANGED = 1,
+        NOT_PASSABLE_ANGLE = 25,
+        HARD_PASSABLE_ANGLE = 20
     };
     
-public:
-
-    EditorHeightmap(DAVA::Heightmap *heightmap);
-	virtual ~EditorHeightmap();
+public:	
+	NotPassableTerrain(DAVA::LandscapeNode *land);
+	virtual ~NotPassableTerrain();
     
-    void HeghtWasChanged(const DAVA::Rect &changedRect);
-    
-    virtual void Save(const DAVA::String &filePathname);
-    virtual bool Load(const DAVA::String &filePathname);
-
-protected:
-    
-    void DownscaleOrClone();
-    void Downscale(DAVA::int32 newSize);
-    void Upscale();
-    void InitializeScalingTable(DAVA::int32 count);
-    
-    void InitializeTableOfChanges();
-    
-    bool IsPowerOf2(DAVA::int32 num);
-
-    DAVA::uint16 GetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
-    
-    void UpscaleValue(DAVA::int32 leftX, DAVA::int32 topY, DAVA::int32 muliplier);
+	virtual void Draw();
     
 protected:
 
-    Heightmap *savedHeightmap;
+    void BuildMapForLandscape();
     
-    DAVA::uint8 *tableOfChanges;
-    DAVA::float32 *scalingTable;
+    void InitializeRenderData();
+    void InitShader();
+    void RebuildVertexes();
+    void RebuildIndexes();
+
+    DAVA::Color GetColorForAngle(DAVA::float32 tanOfAngle);
+    
+    
+    void BindMaterial();
+    void UnbindMaterial();
+
+    DAVA::int32 uniformFogDensity;
+    DAVA::int32 uniformFogColor;
+    
+    DAVA::Shader * shader;
+    
+    DAVA::Vector<DAVA::LandscapeNode::LandscapeVertex> vertices;
+    DAVA::Vector<DAVA::uint32> indices;
+    DAVA::RenderDataObject * terrainRenderObject;
+
+    DAVA::LandscapeNode *landscape;
+    DAVA::Texture *notPassableMap;
+    
+    
+    DAVA::float32 notPassableAngleTan;
+    DAVA::float32 hardPassableAngleTan;
+    
 };
 
 
-#endif //__EDITOR_HEIGHTMAP_H__
+#endif // __NOTPASSABLE_TERRAIN_H__
+
+
+
+
+

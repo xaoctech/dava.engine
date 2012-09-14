@@ -3,6 +3,7 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
+#include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/SceneValidator.h"
 
 #include "../Qt/QtUtils.h"
@@ -38,6 +39,8 @@ void CommandOpenProject::Execute()
         EditorSettings::Instance()->SetProjectPath(projectPath);
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
 		EditorSettings::Instance()->Save();
+
+		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 
 		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
