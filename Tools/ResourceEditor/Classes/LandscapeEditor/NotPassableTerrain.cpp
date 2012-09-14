@@ -50,7 +50,6 @@ NotPassableTerrain::NotPassableTerrain(DAVA::LandscapeNode *land)
     DVASSERT(tex);
     
     notPassableMapSprite = Sprite::CreateAsRenderTarget(MAP_TEXTURE_SIZE, MAP_TEXTURE_SIZE, DAVA::FORMAT_RGBA8888);
-    Texture *notPassableMap = notPassableMapSprite->GetTexture();
     
     BuildMapForLandscape();
 }

@@ -29,14 +29,10 @@ public:
     float32 GetAreaScale();
     float32 GetSizeInMeters();
     
-    virtual void	Draw();
-    
     btCollisionObject *collisionObject;
 
     void UpdateHeightmapRect(const Rect &rect);
     
-    LandscapeCursor * cursor;
-
 protected:
     
     LandscapeNode *land;
@@ -54,13 +50,6 @@ protected:
     void SetValueToMap(int16 x, int16 y, float32 height, const AABBox3 &box);
     
     Vector<float32> hmap;
-
-    Heightmap *heightmap;
-    Texture *heightmapTexture;
-    Vector3 GetPoint(int16 x, int16 y, float32 height, const AABBox3 &transformedBox);
-    Vector<LandscapeNode::LandscapeVertex> debugVertices;
-    Vector<uint32> debugIndices;
-    RenderDataObject * renderDataObject;
     
     Vector3 size;
     
@@ -69,8 +58,8 @@ protected:
     
     float32 sizeInMeters;
     
+    Heightmap *heightmap;
     EditorScene *editorScene;
-
 };
 
 #endif
