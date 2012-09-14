@@ -1003,7 +1003,6 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
     UIButton *btn = (UIButton *)owner;
     int32 tag = btn->GetTag();
     
-    bool needToSwitchBody = false;
     Vector<BodyItem*>::iterator it = bodies.begin();
     for(int32 i = 0; i < (int32)bodies.size(); ++i, ++it)
     {
@@ -1016,7 +1015,6 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
 #endif //#if !defined (DAVA_QT)
 
                 RemoveControl(bodies[i]->bodyControl);
-                needToSwitchBody = true;
             }
             RemoveControl(bodies[i]->headerButton);
             
