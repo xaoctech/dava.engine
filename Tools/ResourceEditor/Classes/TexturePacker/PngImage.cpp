@@ -159,7 +159,7 @@ int read_png_file(const char *file, int32 *pwidth, int32 *pheight, uint8 **image
 		png_set_strip_16(png_ptr);
 	}
 #if defined(__DAVAENGINE_WIN32__)
-	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) png_set_gray_1_2_4_to_8(png_ptr);
+	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) png_set_expand_gray_1_2_4_to_8(png_ptr);
 #endif
     
 	if (color_type == PNG_COLOR_TYPE_GRAY ||
