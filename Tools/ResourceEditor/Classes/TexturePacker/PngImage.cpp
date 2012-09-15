@@ -202,7 +202,7 @@ int read_png_file(const char *file, int32 *pwidth, int32 *pheight, uint8 **image
 	
 	if (CommandLineParser::Instance()->GetVerbose())
 	{
-		printf("* Reading PNG file: %s format: %s bit_depth:%d bytes_per_pixel:%ld\n", 
+		printf("* Reading PNG file: %s format: %s bit_depth:%d bytes_per_pixel:%d\n", 
 		   file,
 		   string_format,
 		   bit_depth,
