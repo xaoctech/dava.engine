@@ -2401,9 +2401,9 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"./../../Libs/ImageMagick-6.6.9/include/ImageMagick",
-					"./../../Libs/ImageMagick-6.6.9/delegates/include",
-					"./../../Libs/ImageMagick-6.6.9/",
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 				);
@@ -2414,8 +2414,8 @@
 					../../Libs/libs/,
 					../../Libs/freetype/lib/,
 					../../Libs/oggvorbis/lib/,
-					"./../../Libs/ImageMagick-6.6.9/lib/",
-					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				OTHER_CFLAGS = (
 					"-pipe",
@@ -2504,9 +2504,9 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"./../../Libs/ImageMagick-6.6.9/include/ImageMagick",
-					"./../../Libs/ImageMagick-6.6.9/delegates/include",
-					"./../../Libs/ImageMagick-6.6.9/",
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 				);
@@ -2517,8 +2517,8 @@
 					../../Libs/libs/,
 					../../Libs/freetype/lib/,
 					../../Libs/oggvorbis/lib/,
-					"./../../Libs/ImageMagick-6.6.9/lib/",
-					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				OTHER_CFLAGS = (
 					"-pipe",
