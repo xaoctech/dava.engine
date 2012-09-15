@@ -294,6 +294,7 @@
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
+		CC00F9D91604C35A00C4D577 /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CC00F9D71604C35A00C4D577 /* SpritesPacker.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -961,6 +962,8 @@
 		C78621881602175100C96AA8 /* EditorConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorConfig.cpp; path = Classes/SceneEditor/EditorConfig.cpp; sourceTree = "<group>"; };
 		C78621891602175100C96AA8 /* EditorConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorConfig.h; path = Classes/SceneEditor/EditorConfig.h; sourceTree = "<group>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
+		CC00F9D71604C35A00C4D577 /* SpritesPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritesPacker.cpp; path = Classes/SpritesPacker.cpp; sourceTree = "<group>"; };
+		CC00F9D81604C35A00C4D577 /* SpritesPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritesPacker.h; path = Classes/SpritesPacker.h; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
@@ -1898,6 +1901,8 @@
 		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				CC00F9D71604C35A00C4D577 /* SpritesPacker.cpp */,
+				CC00F9D81604C35A00C4D577 /* SpritesPacker.h */,
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
 				5CDD9ABA15B893CF007CA99A /* Commands */,
 				5C2763A415B82BDF0030A8FD /* Qt */,
@@ -2339,6 +2344,7 @@
 				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
 				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
 				C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */,
+				CC00F9D91604C35A00C4D577 /* SpritesPacker.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
