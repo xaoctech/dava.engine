@@ -51,7 +51,8 @@ public:
         INVALID_DISTANCE = -1,
         INVALID_LOD_LAYER = -1,
         MIN_LOD_DISTANCE = 0,
-        MAX_LOD_DISTANCE = 500
+        MAX_LOD_DISTANCE = 500,
+		RECHECK_LOD_EVERY_FRAME = 3
     };
 
     struct LodDistance
@@ -171,7 +172,8 @@ protected:
     
 int32 LodNode::GetLodLayersCount()
 {
-    return GetChildrenCount();
+    //return GetChildrenCount();//ну это ваще полная ахинея. Как они могут быть равны мля?????
+	return (int32)lodLayers.size();
 }
 
 float32 LodNode::GetLodLayerDistance(int32 layerNum)
