@@ -86,6 +86,7 @@ void GriddableLandscape::HeihghtmapUpdated(const DAVA::Rect &forRect)
         }
     }
     
+    RenderManager::Instance()->ResetColor();
     RenderManager::Instance()->ClipPop();
 
     RenderManager::Instance()->RestoreRenderTarget();
