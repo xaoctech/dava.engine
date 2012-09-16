@@ -27,41 +27,32 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __NOTPASSABLE_TERRAIN_H__
-#define __NOTPASSABLE_TERRAIN_H__
+#ifndef __GRIDDABLE_LANDSCAPE_H__
+#define __GRIDDABLE_LANDSCAPE_H__
 
 #include "DAVAEngine.h"
 #include "EditorLandscapeNode.h"
 
-#define NOTPASSABLE_TERRAIN_ENABLED  
-
 class LandscapeRenderer;
-class NotPassableTerrain: public EditorLandscapeNode
+class GriddableLandscape: public EditorLandscapeNode
 {
-    enum eConst
-    {
-        NOT_PASSABLE_ANGLE = 25,
-    };
-
     
 public:	
-	NotPassableTerrain();
-	virtual ~NotPassableTerrain();
+	GriddableLandscape();
+	virtual ~GriddableLandscape();
     
     virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
 
 protected:
 
     virtual void SetDisplayedTexture();
+    void DrawFullTiledTexture();
 
-    void DrawFullTiledTexture(const DAVA::Rect &drawRect);
-
-    DAVA::Sprite *notPassableMapSprite;
-    DAVA::float32 notPassableAngleTan;
+    DAVA::Sprite *griddableSprite;
 };
 
 
-#endif // __NOTPASSABLE_TERRAIN_H__
+#endif // __GRIDDABLE_LANDSCAPE_H__
 
 
 

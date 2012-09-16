@@ -684,15 +684,6 @@ void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 	}
 }
 
-#include "../LandscapeEditor/NotPassableTerrain.h"
-
-#if defined (NOTPASSABLE_TERRAIN_ENABLED)
-#include "../LandscapeEditor/EditorHeightmap.h"
-NotPassableTerrain *terrain = NULL;
-LandscapeNode *savedLandscape = NULL;
-Heightmap *savedHeightmap = NULL;
-EditorHeightmap *terrainHeightmap = NULL;
-#endif //#if defined (NOTPASSABLE_TERRAIN_ENABLED)
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
 {    
@@ -756,44 +747,6 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 case DVKEY_B:
                     newCamera = scene->GetCamera(4);
                     break;
-
-#if defined (NOTPASSABLE_TERRAIN_ENABLED)
-                case DVKEY_SPACE:
-                {
-                    if(terrain)
-                    {
-                        scene->RemoveNode(terrain);
-                        SafeRelease(terrain);
-                        SafeRelease(terrainHeightmap);
-                        
-                        savedLandscape->SetHeightmap(savedHeightmap);
-                        scene->AddNode(savedLandscape);
-                        SafeRelease(savedLandscape);
-                        SafeRelease(savedHeightmap);
-                    }
-                    else
-                    {
-                        Vector<LandscapeNode *> landscapes;
-                        scene->GetChildNodes(landscapes);
-                        if(0 < landscapes.size())
-                        {
-                            savedLandscape = SafeRetain(landscapes[0]);
-                            savedHeightmap = SafeRetain(savedLandscape->GetHeightmap());
-                            
-                            
-                            terrainHeightmap = new EditorHeightmap(savedHeightmap);
-                            savedLandscape->SetHeightmap(terrainHeightmap);
-                            terrain = new NotPassableTerrain(savedLandscape);
-                            scene->AddNode(terrain);
-                            
-                            scene->RemoveNode(savedLandscape);
-                        }
-                    }
-
-                    break;
-                }
-                    
-#endif //#if defined (NOTPASSABLE_TERRAIN_ENABLED)
 
                 default:
                     break;

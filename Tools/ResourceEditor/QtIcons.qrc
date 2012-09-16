@@ -7,5 +7,9 @@
     <file>Data/QtIcons/savescene.png</file>
     <file>Data/QtIcons/materialeditor.png</file>
     <file>Data/QtIcons/reloadtextures.png</file>
+    <file>Data/QtIcons/griddablelandscape.png</file>
+    <file>Data/QtIcons/notpassableterrain.png</file>
+    <file>Data/QtIcons/heightmapeditor.png</file>
+    <file>Data/QtIcons/tilemapeditor.png</file>
 </qresource>
 </RCC>

@@ -27,27 +27,26 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#include "NotPassableTerrain.h"
+#include "GriddableLandscape.h"
 #include "LandscapeRenderer.h"
 
 using namespace DAVA;
 
-NotPassableTerrain::NotPassableTerrain()
+GriddableLandscape::GriddableLandscape()
     : EditorLandscapeNode()
 {
-    SetName(String("NotPassableTerrain"));
+    SetName(String("GriddableLandscape"));
 
-    notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));
-    notPassableMapSprite = Sprite::CreateAsRenderTarget(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
+    griddableSprite = Sprite::CreateAsRenderTarget(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);
 }
 
-NotPassableTerrain::~NotPassableTerrain()
+GriddableLandscape::~GriddableLandscape()
 {
-    SafeRelease(notPassableMapSprite);
+    SafeRelease(griddableSprite);
 }
 
 
-void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
+void GriddableLandscape::HeihghtmapUpdated(const DAVA::Rect &forRect)
 {
     EditorLandscapeNode::HeihghtmapUpdated(forRect);
     
@@ -55,81 +54,61 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
     AABBox3 transformedBox;
     landscape->GetBoundingBox().GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
-
-    float32 angleCellDistance = landSize.x / (float32)(heightmap->Size() - 1);
-    float32 angleHeightDelta = landSize.z / (float32)(Heightmap::MAX_VALUE - 1);
-    float32 tanCoef = angleHeightDelta / angleCellDistance;
- 
-    Texture *notPassableMap = notPassableMapSprite->GetTexture();
+    
+    Texture *notPassableMap = griddableSprite->GetTexture();
     float32 dx = (float32)notPassableMap->GetWidth() / (float32)(heightmap->Size() - 1);
     
-    Color red(1.0f, 0.0f, 0.0f, 1.0f);
-    
     RenderManager::Instance()->LockNonMain();
-    RenderManager::Instance()->SetRenderTarget(notPassableMapSprite);
-
+    RenderManager::Instance()->SetRenderTarget(griddableSprite);
+    
     RenderManager::Instance()->ClipPush();
     RenderManager::Instance()->ClipRect(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
 
-    DrawFullTiledTexture(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
+    DrawFullTiledTexture();
     
-    int32 lastY = (int32)(forRect.y + forRect.dy - 1);
-    int32 lastX = (int32)(forRect.x + forRect.dx - 1);
+    int32 lastY = (int32)(forRect.y + forRect.dy);
+    int32 lastX = (int32)(forRect.x + forRect.dx);
     for (int32 y = (int32)forRect.y; y < lastY; ++y)
     {
         int32 yOffset = y * heightmap->Size();
         for (int32 x = (int32)forRect.x; x < lastX; ++x)
         {
-            uint16 currentPoint = heightmap->Data()[yOffset + x];
-            uint16 rightPoint = heightmap->Data()[yOffset + x + 1];
-            uint16 bottomPoint = heightmap->Data()[yOffset + x + heightmap->Size()];
-            
-            uint16 deltaRight = (uint16)abs((int32)currentPoint - (int32)rightPoint);
-            uint16 deltaBottom = (uint16)abs((int32)currentPoint - (int32)bottomPoint);
-            
-            float32 tanRight = (float32)deltaRight * tanCoef;
-            float32 tanBottom = (float32)deltaBottom * tanCoef;
-            
             float32 ydx = y * dx;
             float32 xdx = x * dx;
 
-            
-            if(notPassableAngleTan <= tanRight)
-            {
-                RenderManager::Instance()->SetColor(red);
-                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
-                                                   Vector2((xdx + dx), ydx));
-            }
+            RenderManager::Instance()->SetColor(Color::White());
+            RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
+                                               Vector2((xdx + dx), ydx));
 
-            if(notPassableAngleTan <= tanBottom)
-            {
-                RenderManager::Instance()->SetColor(red);
-                RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
-                                                   Vector2(xdx, (ydx + dx)));
-            }
+            RenderManager::Instance()->SetColor(Color::White());
+            RenderHelper::Instance()->DrawLine(Vector2(xdx, ydx),
+                                               Vector2(xdx, (ydx + dx)));
         }
     }
-
-    RenderManager::Instance()->ClipPop();
     
+    RenderManager::Instance()->ClipPop();
+
     RenderManager::Instance()->RestoreRenderTarget();
     RenderManager::Instance()->UnlockNonMain();
 }
 
 
-void NotPassableTerrain::DrawFullTiledTexture(const DAVA::Rect &drawRect)
+void GriddableLandscape::DrawFullTiledTexture()
 {
-    Texture *notPassableMap = notPassableMapSprite->GetTexture();
+    Texture *notPassableMap = griddableSprite->GetTexture();
     Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
     Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, fullTiledTexture->GetWidth(), fullTiledTexture->GetHeight());
     background->SetPosition(0.f, 0.f);
-    background->SetScaleSize(notPassableMap->GetWidth(), notPassableMap->GetHeight());
+    background->SetScaleSize(griddableSprite->GetWidth(), griddableSprite->GetHeight());
     
     background->Draw();
 }
 
 
-void NotPassableTerrain::SetDisplayedTexture()
+void GriddableLandscape::SetDisplayedTexture()
 {
-    SetTexture(LandscapeNode::TEXTURE_TILE_FULL, notPassableMapSprite->GetTexture());
+    SetTexture(LandscapeNode::TEXTURE_TILE_FULL, griddableSprite->GetTexture());
 }
+
+  
+

@@ -270,7 +270,7 @@ public:
 	void SetCursorScale(float32 scale);
 
     Heightmap *GetHeightmap();
-    void SetHeightmap(Heightmap *height);
+    virtual void SetHeightmap(Heightmap *height);
     
     void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
