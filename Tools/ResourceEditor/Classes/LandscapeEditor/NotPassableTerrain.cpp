@@ -63,8 +63,6 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
     Texture *notPassableMap = notPassableMapSprite->GetTexture();
     float32 dx = (float32)notPassableMap->GetWidth() / (float32)(heightmap->Size() - 1);
     
-    Color red(1.0f, 0.0f, 0.0f, 1.0f);
-    
     RenderManager::Instance()->LockNonMain();
     RenderManager::Instance()->SetRenderTarget(notPassableMapSprite);
 
@@ -73,6 +71,7 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 
     DrawFullTiledTexture(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
     
+    Color red(1.0f, 0.0f, 0.0f, 1.0f);
     int32 lastY = (int32)(forRect.y + forRect.dy - 1);
     int32 lastX = (int32)(forRect.x + forRect.dx - 1);
     for (int32 y = (int32)forRect.y; y < lastY; ++y)
@@ -110,6 +109,8 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
         }
     }
 
+    RenderManager::Instance()->ResetColor();
+    
     RenderManager::Instance()->ClipPop();
     
     RenderManager::Instance()->RestoreRenderTarget();
