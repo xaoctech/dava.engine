@@ -50,9 +50,6 @@ class EditorBodyControl:
     };
     
 public:
-	
-    
-public:
     EditorBodyControl(const Rect & rect);
     virtual ~EditorBodyControl();
     

@@ -27,43 +27,49 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __NOTPASSABLE_TERRAIN_H__
-#define __NOTPASSABLE_TERRAIN_H__
+#ifndef __LANDSCAPE_RENDERER_H__
+#define __LANDSCAPE_RENDERER_H__
 
 #include "DAVAEngine.h"
-#include "EditorLandscapeNode.h"
 
-#define NOTPASSABLE_TERRAIN_ENABLED  
-
-class LandscapeRenderer;
-class NotPassableTerrain: public EditorLandscapeNode
+class LandscapeRenderer: public DAVA::BaseObject
 {
-    enum eConst
-    {
-        NOT_PASSABLE_ANGLE = 25,
-    };
 
-    
-public:	
-	NotPassableTerrain();
-	virtual ~NotPassableTerrain();
-    
-    virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
+public:
+	LandscapeRenderer(DAVA::Heightmap *heightmap, const DAVA::AABBox3 &box);
+	virtual ~LandscapeRenderer();
 
+    void RebuildVertexes(const DAVA::Rect &rebuildForRect);
+    
+    void BindMaterial(DAVA::Texture *materialTexture);
+    void UnbindMaterial();
+    
+    void DrawLandscape();
+    
+    
 protected:
 
-    virtual void SetDisplayedTexture();
-
-    void DrawFullTiledTexture(const DAVA::Rect &drawRect);
-
-    DAVA::Sprite *notPassableMapSprite;
-    DAVA::float32 notPassableAngleTan;
+    void InitShader();
+    void RebuildIndexes();
+    void SetHeightmap(DAVA::Heightmap *heightmap, const DAVA::AABBox3 &box);
+    void SetBoundingBox(const DAVA::AABBox3 &box);
+    DAVA::Vector3 GetPoint(DAVA::int16 x, DAVA::int16 y, DAVA::uint16 height);
+    
+    DAVA::int32 uniformFogDensity;
+    DAVA::int32 uniformFogColor;
+    DAVA::Shader * shader;
+    
+    DAVA::Vector<DAVA::LandscapeNode::LandscapeVertex> vertices;
+    DAVA::Vector<DAVA::uint32> indices;
+    DAVA::RenderDataObject * landscapeRenderObject;
+    
+    DAVA::Heightmap *heightmap;
+    DAVA::AABBox3 boundingBox;
+    
+    DAVA::Vector3 pointCoefficients;
 };
 
 
-#endif // __NOTPASSABLE_TERRAIN_H__
-
-
-
+#endif // __LANDSCAPE_RENDERER_H__
 
 

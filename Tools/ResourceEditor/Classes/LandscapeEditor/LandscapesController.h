@@ -23,47 +23,51 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Revision History:
-        * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __NOTPASSABLE_TERRAIN_H__
-#define __NOTPASSABLE_TERRAIN_H__
+
+#ifndef __LANDSCAPES_CONTROLLER_H__
+#define __LANDSCAPES_CONTROLLER_H__
 
 #include "DAVAEngine.h"
-#include "EditorLandscapeNode.h"
-
-#define NOTPASSABLE_TERRAIN_ENABLED  
 
 class LandscapeRenderer;
-class NotPassableTerrain: public EditorLandscapeNode
+class NotPassableTerrain;
+class EditorHeightmap;
+class GriddableLandscape;
+class EditorLandscapeNode;
+class LandscapesController: public DAVA::BaseObject
 {
-    enum eConst
-    {
-        NOT_PASSABLE_ANGLE = 25,
-    };
+public:
 
+    LandscapesController();
+	virtual ~LandscapesController();
+
+    void SetScene(DAVA::Scene *scene);
+    void SaveLandscape(DAVA::LandscapeNode *landscape);
     
-public:	
-	NotPassableTerrain();
-	virtual ~NotPassableTerrain();
-    
-    virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
+    void ToggleGriddableLandscape();
+    void ToggleNotPassableLandscape();
 
 protected:
 
-    virtual void SetDisplayedTexture();
-
-    void DrawFullTiledTexture(const DAVA::Rect &drawRect);
-
-    DAVA::Sprite *notPassableMapSprite;
-    DAVA::float32 notPassableAngleTan;
+    bool ShowEditorLandscape(EditorLandscapeNode *displayingLandscape);
+    void HideEditorLandscape(EditorLandscapeNode *hiddingLandscape);
+    
+    bool NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection);
+    
+    void ReleaseScene();
+    
+    
+    DAVA::Scene *scene;
+    
+    EditorHeightmap *renderedHeightmap;
+    NotPassableTerrain *notPassableTerrain;
+    GriddableLandscape *griddableLandscape;
+    LandscapeRenderer *landscapeRenderer;
+    
+    DAVA::LandscapeNode *savedLandscape;
+    DAVA::Heightmap *savedHeightmap;
 };
 
 
-#endif // __NOTPASSABLE_TERRAIN_H__
-
-
-
-
-
+#endif //__LANDSCAPES_CONTROLLER_H__
