@@ -948,8 +948,26 @@
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\SpritesPacker.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\EditorConfig.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\LandscapesController.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1816,8 +1834,26 @@
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\SpritesPacker.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EditorConfig.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\LandscapesController.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
+      <Filter>Sources\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

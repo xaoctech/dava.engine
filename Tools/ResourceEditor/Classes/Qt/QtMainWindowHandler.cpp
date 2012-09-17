@@ -9,6 +9,7 @@
 #include "../Commands/ViewCommands.h"
 #include "../Commands/CommandReloadTextures.h"
 #include "../Commands/ParticleEditorCommands.h"
+#include "../Commands/LandscapeOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -354,6 +355,12 @@ void QtMainWindowHandler::OpenParticleEditorSprite()
 {
 	Execute(new CommandOpenParticleEditorSprite());
 }
+
+void QtMainWindowHandler::ToggleNotPassableTerrain()
+{
+	Execute(new CommandNotPassableTerrain());
+}
+
 
 
 

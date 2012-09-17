@@ -23,56 +23,39 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=====================================================================================*/
 
-#ifndef __EDITOR_HEIGHTMAP_H__
-#define __EDITOR_HEIGHTMAP_H__
+    Revision History:
+        * Created by Vitaliy Borodovsky 
+=====================================================================================*/
+#ifndef __EDITOR_LANDSCAPE_NODE_H__
+#define __EDITOR_LANDSCAPE_NODE_H__
 
 #include "DAVAEngine.h"
 
-class EditorHeightmap: public DAVA::Heightmap
+class LandscapeRenderer;
+class EditorLandscapeNode : public DAVA::LandscapeNode
 {
-    enum eConst
-    {
-        MAX_EDITOR_HEIGHTMAP_SIZE = 513,
-        VALUE_NOT_CHANGED = 0,
-        VALUE_WAS_CHANGED = 1,
-    };
+public:	
+	EditorLandscapeNode();
+	virtual ~EditorLandscapeNode();
     
-public:
-
-    EditorHeightmap(DAVA::Heightmap *heightmap);
-	virtual ~EditorHeightmap();
+    void SetLandscape(DAVA::LandscapeNode *landscapeNode);
+    void SetRenderer(LandscapeRenderer *renderer);
     
-    void HeghtWasChanged(const DAVA::Rect &changedRect);
+	virtual void Draw();
+    virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
     
-    virtual void Save(const DAVA::String &filePathname);
-    virtual bool Load(const DAVA::String &filePathname);
+    DAVA::LandscapeNode *GetEditedLandscape();
+    virtual void SetHeightmap(DAVA::Heightmap *height);
 
 protected:
     
-    void DownscaleOrClone();
-    void Downscale(DAVA::int32 newSize);
-    void Upscale();
-    void InitializeScalingTable(DAVA::int32 count);
+    virtual void SetDisplayedTexture();
     
-    void InitializeTableOfChanges();
-    
-    bool IsPowerOf2(DAVA::int32 num);
-
-    DAVA::uint16 GetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
-    
-    void UpscaleValue(DAVA::int32 leftX, DAVA::int32 topY, DAVA::int32 muliplier);
-    
-protected:
-
-    Heightmap *savedHeightmap;
-    
-    DAVA::uint8 *tableOfChanges;
-    DAVA::float32 *scalingTable;
+    DAVA::LandscapeNode *landscape;
+    LandscapeRenderer *landscapeRenderer;
 };
 
+    
+#endif // __EDITOR_LANDSCAPE_NODE_H__
 
-#endif //__EDITOR_HEIGHTMAP_H__

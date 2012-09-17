@@ -112,9 +112,11 @@ CommandSaveScene::CommandSaveScene()
 
 void CommandSaveScene::Execute()
 {
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen && screen->SaveIsAvailable())
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    if(activeScene->CanSaveScene())
     {
+        SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+        
 		String currentPath;
 		if(0 < screen->CurrentScenePathname().length())
 		{

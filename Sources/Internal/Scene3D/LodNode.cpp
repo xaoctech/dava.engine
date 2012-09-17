@@ -330,7 +330,7 @@ void LodNode::Update(float32 timeElapsed)
     if (flags&SceneNode::NODE_VISIBLE)
     {
         lastLodUpdateFrame++;
-        if (lastLodUpdateFrame > 3)
+        if (lastLodUpdateFrame > RECHECK_LOD_EVERY_FRAME)
         {
             lastLodUpdateFrame = 0;
             LodData *oldLod = currentLod;
@@ -353,6 +353,10 @@ void LodNode::Update(float32 timeElapsed)
             }
         }
     }
+	else
+	{
+		lastLodUpdateFrame = RECHECK_LOD_EVERY_FRAME + 1;
+	}
     
     SceneNode::Update(timeElapsed);
     
@@ -547,7 +551,7 @@ void LodNode::SetLodLayerDistance(int32 layerNum, float32 distance)
             lodLayersArray[layerNum-1].SetFarDistance(farDistance);
         }
 
-        lodLayersArray[layerNum].SetDistance(distance);
+		lodLayersArray[layerNum].SetDistance(distance);
         lodLayersArray[layerNum].SetNearDistance(nearDistance);
     }
     else 
