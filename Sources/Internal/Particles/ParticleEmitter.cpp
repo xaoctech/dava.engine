@@ -475,8 +475,8 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 			{
 				layer = new ParticleLayer();
 			}
-			layer->LoadFromYaml(node);
 			AddLayer(layer);
+			layer->LoadFromYaml(configPath, node);
 			SafeRelease(layer);
 		}
 	}
