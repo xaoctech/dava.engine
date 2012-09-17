@@ -276,12 +276,12 @@ void AutotestingSystem::SaveTestToDB()
 				//find all test objects to set platform test results (if all tests passed for current platform)
 				if(isTestSuitePassed)
 				{
-					const Map<String, VariantType*> logArchiveData = logArchive->GetArchieveData();
+					const Map<String, VariantType*> &logArchiveData = logArchive->GetArchieveData();
 					for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
 					{
 						if((it->first != "_id") && it->second)
 						{
-							KeyedArchive* tmpTestArchive = it->second->AsKeyedArchive();
+							KeyedArchive *tmpTestArchive = it->second->AsKeyedArchive();
 							if(tmpTestArchive)
 							{
 								isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
