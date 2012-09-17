@@ -174,6 +174,7 @@ protected:
     
     MongodbClient *dbClient;
     bool isDB;
+	bool needClearDB;
 
     String testReportsFolder;
     File* reportFile;
