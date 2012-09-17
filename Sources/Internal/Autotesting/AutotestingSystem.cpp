@@ -27,6 +27,7 @@ AutotestingSystem::AutotestingSystem() : currentAction(NULL)
     , testReportsFolder("")
     , reportFile(NULL)
 	, parsingMultitouch(NULL)
+	, needClearDB(false)
 {
 }
 
@@ -109,6 +110,7 @@ void AutotestingSystem::OnAppStarted()
         {
             testIndex = 0;
             testsId = autotestingId;
+			needClearDB = true;
         }
         
         int32 indexInFileList = testIndex;
@@ -212,6 +214,7 @@ bool AutotestingSystem::ConnectToDB()
 void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
 {
     testResults.push_back(std::pair< String, bool >(text, isPassed));
+	SaveTestToDB();
 }
 
 void AutotestingSystem::SaveTestToDB()
@@ -260,9 +263,17 @@ void AutotestingSystem::SaveTestToDB()
     if(isFound)
     {
         //found database object
-        // find platform object
-        platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
-        
+
+		if(needClearDB)
+		{
+			needClearDB = false;
+		}
+		else
+		{
+			// find platform object
+			platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
+		}
+
         if(platformArchive)
         {
             // found platform object
