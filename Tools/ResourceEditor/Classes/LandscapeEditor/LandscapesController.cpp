@@ -111,8 +111,11 @@ void LandscapesController::ToggleNotPassableLandscape()
     
     if(notPassableTerrain)
     {
-        HideEditorLandscape(notPassableTerrain);
-        notPassableTerrain = NULL;
+        bool hidden = HideEditorLandscape(notPassableTerrain);
+        if(hidden)
+        {
+            notPassableTerrain = NULL;
+        }
     }
     else
     {
@@ -145,11 +148,10 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
     }
     else
     {
-        EditorHeightmap *heightmap = new EditorHeightmap(landscape->GetHeightmap());
-        displayingLandscape->SetHeightmap(heightmap);
+        renderedHeightmap = new EditorHeightmap(landscape->GetHeightmap());
+        displayingLandscape->SetHeightmap(renderedHeightmap);
 
-        landscapeRenderer = new LandscapeRenderer(heightmap, landscape->GetBoundingBox());
-        SafeRelease(heightmap);
+        landscapeRenderer = new LandscapeRenderer(renderedHeightmap, landscape->GetBoundingBox());
     }
     
     displayingLandscape->SetRenderer(landscapeRenderer);
@@ -161,7 +163,7 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
     return true;
 }
 
-void LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLandscape)
+bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLandscape)
 {
     SceneNode *parentNode = hiddingLandscape->GetParent();
     LandscapeNode *restoredLandscape = SafeRetain(hiddingLandscape->GetEditedLandscape());
@@ -174,11 +176,15 @@ void LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
     
     if(NeedToKillRenderer(restoredLandscape))
     {
+        SafeRelease(renderedHeightmap);
         SafeRelease(landscapeRenderer);
     }
     
     SafeRelease(hiddingLandscape);
     SafeRelease(restoredLandscape);
+    
+    
+    return true;
 }
 
 
@@ -188,6 +194,11 @@ bool LandscapesController::NeedToKillRenderer(DAVA::LandscapeNode *landscapeForD
     return (NULL == editorLandscape);
 }
 
+
+bool LandscapesController::EditorLandscapeIsActive()
+{
+    return (NULL != notPassableTerrain) || (NULL != landscapeRenderer) || (NULL != renderedHeightmap);
+}
 
 
 

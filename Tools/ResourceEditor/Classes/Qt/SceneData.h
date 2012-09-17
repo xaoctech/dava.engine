@@ -63,6 +63,8 @@ public:
     void ToggleNotPassableLandscape();
     
     
+    bool CanSaveScene();
+    
 protected:
     
     

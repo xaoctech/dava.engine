@@ -46,10 +46,12 @@ public:
     
     void ToggleNotPassableLandscape();
 
+    bool EditorLandscapeIsActive();
+    
 protected:
 
     bool ShowEditorLandscape(EditorLandscapeNode *displayingLandscape);
-    void HideEditorLandscape(EditorLandscapeNode *hiddingLandscape);
+    bool HideEditorLandscape(EditorLandscapeNode *hiddingLandscape);
     
     bool NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection);
     

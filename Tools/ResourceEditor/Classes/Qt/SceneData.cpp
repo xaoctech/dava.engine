@@ -675,3 +675,20 @@ void SceneData::ToggleNotPassableLandscape()
     landscapeController->ToggleNotPassableLandscape();
 }
 
+
+bool SceneData::CanSaveScene()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(!screen->SaveIsAvailable())
+    {
+        return false;
+    }
+    
+    if(landscapeController->EditorLandscapeIsActive())
+    {
+        return false;
+    }
+    
+    
+    return true;
+}
