@@ -63,6 +63,10 @@ public slots:
     void BakeScene();
     void Beast();
     
+    //ViewOptions
+    void ToggleNotPassableTerrain();
+    
+    
     //scene graph
     void RefreshSceneGraph();
 

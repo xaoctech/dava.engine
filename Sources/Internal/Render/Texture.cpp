@@ -1736,7 +1736,7 @@ Texture * Texture::GetPinkPlaceholder()
 		pinkPlaceholder = Texture::CreateFromData(FORMAT_RGBA8888, data, width, height);
 		SafeDelete(data);
 
-		return pinkPlaceholder;
+		return SafeRetain(pinkPlaceholder);
 	}
 }
 
