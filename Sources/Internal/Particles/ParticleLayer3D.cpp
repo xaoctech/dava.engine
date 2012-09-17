@@ -135,9 +135,9 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vec
 	}
 }
 
-void ParticleLayer3D::LoadFromYaml(YamlNode * node)
+void ParticleLayer3D::LoadFromYaml(const String & configPath, YamlNode * node)
 {
-	ParticleLayer::LoadFromYaml(node);
+	ParticleLayer::LoadFromYaml(configPath, node);
 
 	if(additive)
 	{
