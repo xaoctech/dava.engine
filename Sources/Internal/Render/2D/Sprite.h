@@ -270,6 +270,8 @@ public:
 	*/
 	void ConvertToVirtualSize();
 
+	const String & GetRelativePathname();
+
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
 	
