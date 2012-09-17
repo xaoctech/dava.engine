@@ -35,7 +35,7 @@ using namespace DAVA;
 NotPassableTerrain::NotPassableTerrain()
     : EditorLandscapeNode()
 {
-    SetName(String("NotPassableTerrain"));
+    SetName(String("Landscape_NotPassable"));
 
     notPassableAngleTan = (float32)tan(DegToRad((float32)NotPassableTerrain::NOT_PASSABLE_ANGLE));
     notPassableMapSprite = Sprite::CreateAsRenderTarget(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, DAVA::FORMAT_RGBA8888);

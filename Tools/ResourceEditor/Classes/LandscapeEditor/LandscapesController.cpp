@@ -157,8 +157,11 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
     displayingLandscape->SetRenderer(landscapeRenderer);
     
     SceneNode *parentNode = landscape->GetParent();
-    parentNode->RemoveNode(landscape);
-    parentNode->AddNode(displayingLandscape);
+    if(parentNode)
+    {
+        parentNode->RemoveNode(landscape);
+        parentNode->AddNode(displayingLandscape);
+    }
 
     return true;
 }
