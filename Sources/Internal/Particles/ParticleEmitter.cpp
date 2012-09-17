@@ -31,6 +31,7 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleLayer3D.h"
+#include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Animation/LinearAnimation.h"
@@ -464,12 +465,27 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	{
 		YamlNode * node = rootNode->Get(k);
 		YamlNode * typeNode = node->Get("type");
+		
+		YamlNode * longNode = node->Get("isLong");
+		bool isLong = false;
+		if(longNode && (longNode->AsBool() == true))
+		{
+			isLong = true;
+		}
+
 		if (typeNode && typeNode->AsString() == "layer")
 		{	
 			ParticleLayer * layer;
 			if(is3D)
 			{
-				layer = new ParticleLayer3D();
+				if(isLong)
+				{
+					layer = new ParticleLayerLong();
+				}
+				else
+				{
+					layer = new ParticleLayer3D();
+				}
 			}
 			else
 			{
