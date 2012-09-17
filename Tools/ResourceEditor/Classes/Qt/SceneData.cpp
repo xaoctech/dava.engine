@@ -673,6 +673,8 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
 void SceneData::ToggleNotPassableLandscape()
 {
     landscapeController->ToggleNotPassableLandscape();
+    
+    RebuildSceneGraph();
 }
 
 

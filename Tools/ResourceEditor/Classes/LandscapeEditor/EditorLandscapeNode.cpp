@@ -36,6 +36,8 @@ using namespace DAVA;
 EditorLandscapeNode::EditorLandscapeNode()
     : LandscapeNode()
 {
+    SetName(String("Landscape_EditorNode"));
+    
     landscapeRenderer = NULL;
     landscape = NULL;
 }
@@ -51,7 +53,8 @@ void EditorLandscapeNode::SetLandscape(DAVA::LandscapeNode *landscapeNode)
     SafeRelease(landscape);
     landscape = SafeRetain(landscapeNode);
     
-    SetName(landscape->GetName());
+//    SetName(landscape->GetName()); //Disabled for bebug. Need Enable after task will be done
+    
     heightmapPath = landscape->GetHeightmapPathname();
     SetDebugFlags(landscape->GetDebugFlags());
     
