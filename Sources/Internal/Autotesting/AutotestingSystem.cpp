@@ -970,6 +970,13 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 	{
 		reportFile->WriteLine(assertMsg);
 	}
+
+	if(!isPassed)
+	{
+		SaveTestToDB();
+		SafeRelease(reportFile);
+		ExitApp();
+	}
 }
 
 void AutotestingSystem::OnMessage(const String & logMessage)

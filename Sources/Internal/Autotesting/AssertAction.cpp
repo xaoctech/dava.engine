@@ -80,8 +80,8 @@ void AssertAction::Execute()
     {
         isPassed = (actual->Get() == expected->Get());
     }
+	Action::Execute();
     AutotestingSystem::Instance()->OnTestAssert(message, isPassed);
-    Action::Execute();
 }
 
 String AssertAction::Dump()
