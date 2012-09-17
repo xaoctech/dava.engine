@@ -580,7 +580,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     SafeRelease(textures[level]);
     textureNames[level] = String("");
     
-    Texture * texture = Texture::CreateFromFile(textureName); 
+    Texture * texture = CreateTexture(level, textureName);
     if (texture)
     {
         textureNames[level] = textureName;
@@ -596,6 +596,18 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 
     Image::EnableAlphaPremultiplication(true);
 }
+    
+Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textureName)
+{
+    if(TEXTURE_TILE_FULL == level)
+    {
+        //must not zero only for finalized maps
+        return Texture::PureCreate(textureName);
+    }
+
+    return Texture::CreateFromFile(textureName);
+}
+
 
 void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
 {

@@ -31,54 +31,33 @@
 #define __NOTPASSABLE_TERRAIN_H__
 
 #include "DAVAEngine.h"
+#include "EditorLandscapeNode.h"
 
-//#define NOTPASSABLE_TERRAIN_ENABLED  
+#define NOTPASSABLE_TERRAIN_ENABLED  
 
-class NotPassableTerrain: public DAVA::SceneNode
+class LandscapeRenderer;
+class NotPassableTerrain: public EditorLandscapeNode
 {
     enum eConst
     {
         NOT_PASSABLE_ANGLE = 25,
-        HARD_PASSABLE_ANGLE = 20
     };
+
     
 public:	
-	NotPassableTerrain(DAVA::LandscapeNode *land);
+	NotPassableTerrain();
 	virtual ~NotPassableTerrain();
     
-	virtual void Draw();
-    
+    virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
+
 protected:
 
-    void BuildMapForLandscape();
-    
-    void InitializeRenderData();
-    void InitShader();
-    void RebuildVertexes();
-    void RebuildIndexes();
+    virtual void SetDisplayedTexture();
 
-    DAVA::Color GetColorForAngle(DAVA::float32 tanOfAngle);
-    
-    
-    void BindMaterial();
-    void UnbindMaterial();
+    void DrawFullTiledTexture(const DAVA::Rect &drawRect);
 
-    DAVA::int32 uniformFogDensity;
-    DAVA::int32 uniformFogColor;
-    
-    DAVA::Shader * shader;
-    
-    DAVA::Vector<DAVA::LandscapeNode::LandscapeVertex> vertices;
-    DAVA::Vector<DAVA::uint32> indices;
-    DAVA::RenderDataObject * terrainRenderObject;
-
-    DAVA::LandscapeNode *landscape;
-    DAVA::Texture *notPassableMap;
-    
-    
+    DAVA::Sprite *notPassableMapSprite;
     DAVA::float32 notPassableAngleTan;
-    DAVA::float32 hardPassableAngleTan;
-    
 };
 
 

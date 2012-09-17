@@ -270,7 +270,7 @@ public:
 	void SetCursorScale(float32 scale);
 
     Heightmap *GetHeightmap();
-    void SetHeightmap(Heightmap *height);
+    virtual void SetHeightmap(Heightmap *height);
     
     void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
@@ -321,6 +321,8 @@ protected:
     void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
 
+    Texture * CreateTexture(eTextureLevel level, const String & textureName);
+    
     AABBox3     box;
     
     int16 AllocateRDOQuad(LandscapeQuad * quad);
