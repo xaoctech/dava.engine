@@ -1,46 +1,10 @@
 #include "LightmapsPacker.h"
-#include "ResourcePackerScreen.h"
-#include "../TexturePacker/CommandLineParser.h"
+
 #include "SceneEditor/PVRConverter.h"
-#include "Render/Texture.h"
 
 LightmapsPacker::LightmapsPacker()
 {
 	compressFormat = FORMAT_PVR4;
-}
-
-LightmapsPacker::~LightmapsPacker()
-{
-
-}
-
-void LightmapsPacker::SetInputDir(const String & _inputDir)
-{
-	inputDir = _inputDir;
-}
-
-void LightmapsPacker::SetOutputDir(const String & _outputDir)
-{
-	outputDir = _outputDir;
-}
-
-void LightmapsPacker::Pack()
-{
-	FileSystem::Instance()->CreateDirectory(outputDir, false);
-
-	ResourcePackerScreen * resourcePackerScreen = new ResourcePackerScreen();
-
-	CommandLineParser::Instance()->ClearFlags();
-
-	resourcePackerScreen->clearProcessDirectory = true;
-	resourcePackerScreen->inputGfxDirectory = inputDir;
-	resourcePackerScreen->outputGfxDirectory = outputDir;
-	resourcePackerScreen->excludeDirectory = inputDir + "/../";
-	resourcePackerScreen->isLightmapsPacking = true;
-
-	resourcePackerScreen->PackResources();
-
-	SafeRelease(resourcePackerScreen);
 }
 
 void LightmapsPacker::ParseSpriteDescriptors()

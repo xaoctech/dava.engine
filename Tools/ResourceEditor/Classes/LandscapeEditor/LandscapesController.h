@@ -25,54 +25,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __EDITOR_HEIGHTMAP_H__
-#define __EDITOR_HEIGHTMAP_H__
+#ifndef __LANDSCAPES_CONTROLLER_H__
+#define __LANDSCAPES_CONTROLLER_H__
 
 #include "DAVAEngine.h"
 
-class EditorHeightmap: public DAVA::Heightmap
+class LandscapeRenderer;
+class NotPassableTerrain;
+class EditorHeightmap;
+class EditorLandscapeNode;
+class LandscapesController: public DAVA::BaseObject
 {
-    enum eConst
-    {
-        MAX_EDITOR_HEIGHTMAP_SIZE = 513,
-        VALUE_NOT_CHANGED = 0,
-        VALUE_WAS_CHANGED = 1,
-    };
-    
 public:
 
-    EditorHeightmap(DAVA::Heightmap *heightmap);
-	virtual ~EditorHeightmap();
-    
-    void HeghtWasChanged(const DAVA::Rect &changedRect);
-    
-    virtual void Save(const DAVA::String &filePathname);
-    virtual bool Load(const DAVA::String &filePathname);
+    LandscapesController();
+	virtual ~LandscapesController();
 
-protected:
+    void SetScene(DAVA::Scene *scene);
+    void SaveLandscape(DAVA::LandscapeNode *landscape);
     
-    void DownscaleOrClone();
-    void Downscale(DAVA::int32 newSize);
-    void Upscale();
-    void InitializeScalingTable(DAVA::int32 count);
-    
-    void InitializeTableOfChanges();
-    
-    bool IsPowerOf2(DAVA::int32 num);
+    void ToggleNotPassableLandscape();
 
-    DAVA::uint16 GetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
-    
-    void UpscaleValue(DAVA::int32 leftX, DAVA::int32 topY, DAVA::int32 muliplier);
+    bool EditorLandscapeIsActive();
     
 protected:
 
-    Heightmap *savedHeightmap;
+    bool ShowEditorLandscape(EditorLandscapeNode *displayingLandscape);
+    bool HideEditorLandscape(EditorLandscapeNode *hiddingLandscape);
     
-    DAVA::uint8 *tableOfChanges;
-    DAVA::float32 *scalingTable;
+    bool NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection);
+    
+    void ReleaseScene();
+    
+    
+    DAVA::Scene *scene;
+    
+    EditorHeightmap *renderedHeightmap;
+    NotPassableTerrain *notPassableTerrain;
+    LandscapeRenderer *landscapeRenderer;
+    
+    DAVA::LandscapeNode *savedLandscape;
+    DAVA::Heightmap *savedHeightmap;
 };
 
 
-#endif //__EDITOR_HEIGHTMAP_H__
+#endif //__LANDSCAPES_CONTROLLER_H__

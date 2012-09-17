@@ -295,6 +295,7 @@
     <ClCompile Include="Classes\Commands\CommandsManager.cpp" />
     <ClCompile Include="Classes\Commands\CommandViewport.cpp" />
     <ClCompile Include="Classes\Commands\FileCommands.cpp" />
+    <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp" />
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp" />
     <ClCompile Include="Classes\Commands\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp" />
@@ -313,6 +314,10 @@
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\LandscapeEditor\EditorHeightmap.cpp" />
+    <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp" />
+    <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp" />
+    <ClCompile Include="Classes\LandscapeEditor\LandscapesController.cpp" />
+    <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp" />
     <ClCompile Include="Classes\LightmapsPacker.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ForcePreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
@@ -412,6 +417,7 @@
     <ClCompile Include="Classes\SceneEditor\UIZoomControl.cpp" />
     <ClCompile Include="Classes\SceneEditor\UNDOManager.cpp" />
     <ClCompile Include="Classes\SceneNodeUserData.cpp" />
+    <ClCompile Include="Classes\SpritesPacker.cpp" />
     <ClCompile Include="Classes\TexturePacker\CommandLineParser.cpp" />
     <ClCompile Include="Classes\TexturePacker\DefinitionFile.cpp" />
     <ClCompile Include="Classes\TexturePacker\ImagePacker.cpp" />
@@ -670,6 +676,7 @@
     <ClInclude Include="Classes\Commands\CommandsManager.h" />
     <ClInclude Include="Classes\Commands\CommandViewport.h" />
     <ClInclude Include="Classes\Commands\FileCommands.h" />
+    <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h" />
     <ClInclude Include="Classes\Commands\LibraryCommands.h" />
     <ClInclude Include="Classes\Commands\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h" />
@@ -683,6 +690,10 @@
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\LandscapeEditor\EditorHeightmap.h" />
+    <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h" />
+    <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h" />
+    <ClInclude Include="Classes\LandscapeEditor\LandscapesController.h" />
+    <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h" />
     <ClInclude Include="Classes\LightmapAtlasingData.h" />
     <ClInclude Include="Classes\LightmapsPacker.h" />
     <ClInclude Include="Classes\ParticlesEditor\ForcePreviewControl.h" />
@@ -785,6 +796,7 @@
     <ClInclude Include="Classes\SceneEditor\UIZoomControl.h" />
     <ClInclude Include="Classes\SceneEditor\UNDOManager.h" />
     <ClInclude Include="Classes\SceneNodeUserData.h" />
+    <ClInclude Include="Classes\SpritesPacker.h" />
     <ClInclude Include="Classes\TexturePacker\CommandLineParser.h" />
     <ClInclude Include="Classes\TexturePacker\DefinitionFile.h" />
     <ClInclude Include="Classes\TexturePacker\ImagePacker.h" />

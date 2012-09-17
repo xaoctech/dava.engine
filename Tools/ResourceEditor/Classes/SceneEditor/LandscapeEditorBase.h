@@ -121,11 +121,6 @@ protected:
     
 	Texture * cursorTexture;
 
-	struct CursorMode
-	{
-
-	};
-	CursorMode cursorMode;
     
     LandscapeNode::eTiledShaderMode savedShaderMode;
 };

@@ -111,13 +111,22 @@ public:
         \param[in] addInfo additional info
      */
 	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, const char * addInfo = 0);
-    /**
+    
+	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
-     
+		If file cannot be opened, returns "pink placeholder" texture.
         \param[in] pathName path to the png or pvr file
      */
 	static Texture * CreateFromFile(const String & pathName);
-    /**
+
+	/**
+        \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
+		If file cannot be opened, returns 0
+        \param[in] pathName path to the png or pvr file
+     */
+	static Texture * PureCreate(const String & pathName);
+    
+	/**
         \brief Create FBO from given width, height and format
         \param[in] width width of the fbo
         \param[in] height height of the fbo
@@ -184,6 +193,14 @@ public:
     inline const String & GetPathname() const;
     
     Image * CreateImageFromMemory();
+
+	static Texture * GetPinkPlaceholder();
+	static void ReleasePinkPlaceholder();
+
+	/**
+        \brief Check if texture was created by GetPinkPlaceholder()
+     */
+	bool IsPinkPlaceholder();
 
 public:							// properties for fast access
 
@@ -266,6 +283,8 @@ private:
 	virtual ~Texture();
     
     Image * ReadDataToImage();
+
+	static Texture * pinkPlaceholder;
 };
     
 // Implementation of inline functions

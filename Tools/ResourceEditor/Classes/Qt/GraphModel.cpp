@@ -241,17 +241,6 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     if (!data->hasFormat("application/tree.userdata") || (column > 0))
         return false;
     
-    int32 beginRow = 0;
-    if (row != -1)
-    {
-        beginRow = row;
-    }
-    else if(parent.isValid())
-    {
-        beginRow = rowCount(parent);
-    }
-    
-    
     QByteArray encodedData = data->data("application/tree.userdata");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
     while (!stream.atEnd())
