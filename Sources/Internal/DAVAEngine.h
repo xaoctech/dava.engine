@@ -182,6 +182,8 @@
 #include "Particles/ParticleLayer.h"
 #include "Particles/Particle.h"
 #include "Particles/ParticleEmitterObject.h"
+#include "Particles/ParticleLayer3D.h"
+#include "Particles/ParticleLayerLong.h"
 
 
 // 3D core classes

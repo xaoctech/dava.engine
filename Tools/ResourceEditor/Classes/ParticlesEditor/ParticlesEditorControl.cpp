@@ -3012,6 +3012,12 @@ void ParticlesEditorControl::SaveToYaml(const String &pathToFile)
 		file->WriteLine("    type: layer");
 
 		file->WriteLine(Format("    layerType: %s", emitter->GetLayers()[i]->type == ParticleLayer::TYPE_SINGLE_PARTICLE ? "single" : "particles"));
+		bool isLong = typeid(*(emitter->GetLayers()[i])) == typeid(ParticleLayerLong);
+		if(isLong)
+		{
+			file->WriteLine("    isLong: true");
+		}
+		
 		file->WriteLine(Format("    blend: %s", emitter->GetLayers()[i]->additive ? "add" : "alpha"));
 
 		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();
