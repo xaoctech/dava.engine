@@ -122,9 +122,9 @@ void NotPassableTerrain::DrawFullTiledTexture(const DAVA::Rect &drawRect)
 {
     Texture *notPassableMap = notPassableMapSprite->GetTexture();
     Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
-    Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, fullTiledTexture->GetWidth(), fullTiledTexture->GetHeight());
+    Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, (float32)fullTiledTexture->GetWidth(), (float32)fullTiledTexture->GetHeight());
     background->SetPosition(0.f, 0.f);
-    background->SetScaleSize(notPassableMap->GetWidth(), notPassableMap->GetHeight());
+    background->SetScaleSize((float32)notPassableMap->GetWidth(), (float32)notPassableMap->GetHeight());
     
     background->Draw();
 }

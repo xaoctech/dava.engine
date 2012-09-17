@@ -957,6 +957,18 @@
     <ClCompile Include="Classes\LandscapeEditor\NotPassableTerrain.cpp">
       <Filter>Sources\LandscapeEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\EditorLandscapeNode.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\LandscapeRenderer.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\LandscapesController.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
+      <Filter>Sources\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1830,6 +1842,18 @@
     </ClInclude>
     <ClInclude Include="Classes\LandscapeEditor\NotPassableTerrain.h">
       <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\EditorLandscapeNode.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\LandscapeRenderer.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\LandscapesController.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
+      <Filter>Sources\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
