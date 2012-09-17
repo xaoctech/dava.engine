@@ -10,6 +10,29 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\libpng\png.h" />
+    <ClInclude Include="..\..\include\libpng\pngconf.h" />
+    <ClInclude Include="..\..\include\libpng\pnglibconf.h" />
+    <ClInclude Include="..\..\include\libpng\pngpriv.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\png.c" />
+    <ClCompile Include="..\..\src\pngerror.c" />
+    <ClCompile Include="..\..\src\pngget.c" />
+    <ClCompile Include="..\..\src\pngmem.c" />
+    <ClCompile Include="..\..\src\pngpread.c" />
+    <ClCompile Include="..\..\src\pngread.c" />
+    <ClCompile Include="..\..\src\pngrio.c" />
+    <ClCompile Include="..\..\src\pngrtran.c" />
+    <ClCompile Include="..\..\src\pngrutil.c" />
+    <ClCompile Include="..\..\src\pngset.c" />
+    <ClCompile Include="..\..\src\pngtrans.c" />
+    <ClCompile Include="..\..\src\pngwio.c" />
+    <ClCompile Include="..\..\src\pngwrite.c" />
+    <ClCompile Include="..\..\src\pngwtran.c" />
+    <ClCompile Include="..\..\src\pngwutil.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{180DD3B4-7C9E-43F4-99EC-E8D3E8068E57}</ProjectGuid>
     <RootNamespace>pnglib_win</RootNamespace>
@@ -46,7 +69,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>./../../include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../include/libpng</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -64,7 +87,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>./../../include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../../include/libpng</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -77,32 +100,6 @@
       <AdditionalLibraryDirectories>./../../lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\png.c" />
-    <ClCompile Include="..\..\src\pngerror.c" />
-    <ClCompile Include="..\..\src\pnggccrd.c" />
-    <ClCompile Include="..\..\src\pngget.c" />
-    <ClCompile Include="..\..\src\pngmem.c" />
-    <ClCompile Include="..\..\src\pngpread.c" />
-    <ClCompile Include="..\..\src\pngread.c" />
-    <ClCompile Include="..\..\src\pngrio.c" />
-    <ClCompile Include="..\..\src\pngrtran.c" />
-    <ClCompile Include="..\..\src\pngrutil.c" />
-    <ClCompile Include="..\..\src\pngset.c" />
-    <ClCompile Include="..\..\src\pngtest.c" />
-    <ClCompile Include="..\..\src\pngtrans.c" />
-    <ClCompile Include="..\..\src\pngvcrd.c" />
-    <ClCompile Include="..\..\src\pngwio.c" />
-    <ClCompile Include="..\..\src\pngwrite.c" />
-    <ClCompile Include="..\..\src\pngwtran.c" />
-    <ClCompile Include="..\..\src\pngwutil.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\include\libpng\png.h" />
-    <ClInclude Include="..\..\include\libpng\pngconf.h" />
-    <ClInclude Include="..\..\include\libpng\zconf.h" />
-    <ClInclude Include="..\..\include\libpng\zlib.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

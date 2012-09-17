@@ -91,7 +91,7 @@ struct	PngImageRawData
 
 static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 {
-	PngImageRawData * self = (PngImageRawData*)pngPtr->io_ptr;
+	PngImageRawData * self = (PngImageRawData*)png_get_io_ptr(pngPtr);
 	self->file->Read(data, (uint32)size);
 }
 
@@ -167,7 +167,7 @@ int LibPngWrapper::ReadPngFile(const char *file, Image * image)
 
 	//1 bit images -> 8 bit
 	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) 
-		png_set_gray_1_2_4_to_8(png_ptr);
+		png_set_expand_gray_1_2_4_to_8(png_ptr);
 
 //	if(bit_depth > 8) 
 //	{
