@@ -1368,6 +1368,11 @@ void Sprite::ConvertToVirtualSize()
     texCoords[0][7] *= resourceToVirtualFactor;
 }
 
+const String & Sprite::GetRelativePathname()
+{
+	return relativePathname;
+}
+
 void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState)
 {
 	position.x = parentState.position.x + localState.position.x * parentState.scale.x;
