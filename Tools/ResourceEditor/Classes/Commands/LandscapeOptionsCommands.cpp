@@ -19,17 +19,3 @@ void CommandNotPassableTerrain::Execute()
     activeScene->ToggleNotPassableLandscape();
 }
 
-
-
-CommandGriddableLandscape::CommandGriddableLandscape()
-:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
-{
-}
-
-
-void CommandGriddableLandscape::Execute()
-{
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-    activeScene->ToggleGriddableLandscape();
-}
-

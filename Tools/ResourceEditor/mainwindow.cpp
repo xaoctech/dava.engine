@@ -155,7 +155,6 @@ void QtMainWindow::SetupMainMenu()
 
     //View Options
     connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
-    connect(ui->actionShowGrid, SIGNAL(triggered()), actionHandler, SLOT(ToggleGriddableLandscape()));
     
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
@@ -182,7 +181,6 @@ void QtMainWindow::SetupToolBar()
  	DecorateWithIcon(ui->actionHeightMapEditor, QString::fromUtf8(":/Data/QtIcons/heightmapeditor.png"));
     
  	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/Data/QtIcons/notpassableterrain.png"));
- 	DecorateWithIcon(ui->actionShowGrid, QString::fromUtf8(":/Data/QtIcons/griddablelandscape.png"));
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
@@ -200,7 +198,6 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addSeparator();
     
     ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
-    ui->mainToolBar->addAction(ui->actionShowGrid);
     
     ui->mainToolBar->addSeparator();
 }

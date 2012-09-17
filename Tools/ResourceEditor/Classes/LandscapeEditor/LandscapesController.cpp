@@ -29,7 +29,6 @@
 
 #include "EditorHeightmap.h"
 #include "NotPassableTerrain.h"
-#include "GriddableLandscape.h"
 #include "LandscapeRenderer.h"
 
 using namespace DAVA;
@@ -40,7 +39,6 @@ LandscapesController::LandscapesController()
     scene = NULL;
     renderedHeightmap = NULL;
     notPassableTerrain = NULL;
-    griddableLandscape = NULL;
     landscapeRenderer = NULL;
     
     savedLandscape = NULL;
@@ -79,13 +77,6 @@ void LandscapesController::ReleaseScene()
     SafeRelease(notPassableTerrain);
 
     
-    if(griddableLandscape && griddableLandscape->GetParent())
-    {
-        griddableLandscape->GetParent()->RemoveNode(griddableLandscape);
-    }
-    SafeRelease(griddableLandscape);
-    
-    
     SafeRelease(renderedHeightmap);
     SafeRelease(landscapeRenderer);
     
@@ -113,25 +104,6 @@ void LandscapesController::SaveLandscape(DAVA::LandscapeNode *landscape)
     }
 }
 
-void LandscapesController::ToggleGriddableLandscape()
-{
-    DVASSERT(scene && "Need set scene before");
-
-    if(griddableLandscape)
-    {
-        HideEditorLandscape(griddableLandscape);
-        griddableLandscape = NULL;
-    }
-    else
-    {
-        griddableLandscape = new GriddableLandscape();
-        bool showed = ShowEditorLandscape(griddableLandscape);
-        if(!showed)
-        {
-            SafeRelease(griddableLandscape);
-        }
-    }
-}
 
 void LandscapesController::ToggleNotPassableLandscape()
 {

@@ -361,10 +361,6 @@ void QtMainWindowHandler::ToggleNotPassableTerrain()
 	Execute(new CommandNotPassableTerrain());
 }
 
-void QtMainWindowHandler::ToggleGriddableLandscape()
-{
-	Execute(new CommandGriddableLandscape());
-}
 
 
 

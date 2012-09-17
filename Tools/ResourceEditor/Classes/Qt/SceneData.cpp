@@ -670,11 +670,6 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
 }
 
 
-void SceneData::ToggleGriddableLandscape()
-{
-    landscapeController->ToggleGriddableLandscape();
-}
-
 void SceneData::ToggleNotPassableLandscape()
 {
     landscapeController->ToggleNotPassableLandscape();

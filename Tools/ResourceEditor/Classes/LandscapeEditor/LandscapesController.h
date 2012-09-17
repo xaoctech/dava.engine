@@ -33,7 +33,6 @@
 class LandscapeRenderer;
 class NotPassableTerrain;
 class EditorHeightmap;
-class GriddableLandscape;
 class EditorLandscapeNode;
 class LandscapesController: public DAVA::BaseObject
 {
@@ -45,7 +44,6 @@ public:
     void SetScene(DAVA::Scene *scene);
     void SaveLandscape(DAVA::LandscapeNode *landscape);
     
-    void ToggleGriddableLandscape();
     void ToggleNotPassableLandscape();
 
 protected:
@@ -62,7 +60,6 @@ protected:
     
     EditorHeightmap *renderedHeightmap;
     NotPassableTerrain *notPassableTerrain;
-    GriddableLandscape *griddableLandscape;
     LandscapeRenderer *landscapeRenderer;
     
     DAVA::LandscapeNode *savedLandscape;

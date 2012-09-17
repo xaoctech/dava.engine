@@ -339,7 +339,6 @@
       <string>Landscape</string>
      </property>
      <addaction name="actionShowNotPassableLandscape"/>
-     <addaction name="actionShowGrid"/>
     </widget>
     <addaction name="menuLandscape"/>
    </widget>
@@ -538,14 +537,6 @@
    </property>
    <property name="text">
     <string>Show Not Passable Landscape</string>
-   </property>
-  </action>
-  <action name="actionShowGrid">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Show Grid</string>
    </property>
   </action>
  </widget>
