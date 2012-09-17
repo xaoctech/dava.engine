@@ -15,6 +15,7 @@ class SceneGraphModel;
 class LibraryModel;
 class Command;
 class QAction;
+class QMenu;
 class LandscapesController;
 class SceneData: public QObject
 {
@@ -98,6 +99,8 @@ protected slots:
     
 protected:
 
+    void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command);
+    
     
     
     

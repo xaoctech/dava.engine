@@ -421,20 +421,14 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
         String extension = FileSystem::Instance()->GetExtension(filePathname);
         if(0 == CompareStrings(String(".sc2"), extension))
         {
-            QAction *addAction = menu.addAction(QString("Add"));
-            QAction *editAction = menu.addAction(QString("Edit"));
-			QAction *referenceAction = menu.addAction(QString("Add reference"));
-            QAction *reloadAction = menu.addAction(QString("Reload"));
-            
-            addAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddScene(filePathname)));
-            editAction->setData(PointerHolder<Command *>::ToQVariant(new CommandEditScene(filePathname)));
-			referenceAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddReferenceScene(filePathname)));
-            reloadAction->setData(PointerHolder<Command *>::ToQVariant(new CommandReloadScene(filePathname)));
+            AddActionToMenu(&menu, QString("Add"), new CommandAddScene(filePathname));
+            AddActionToMenu(&menu, QString("Edit"), new CommandEditScene(filePathname));
+            AddActionToMenu(&menu, QString("Add reference"), new CommandAddReferenceScene(filePathname));
+            AddActionToMenu(&menu, QString("Reload"), new CommandReloadScene(filePathname));
         }
         else if(0 == CompareStrings(String(".dae"), extension))
         {
-            QAction *convert = menu.addAction(QString("Convert"));
-            convert->setData(PointerHolder<Command *>::ToQVariant(new CommandConvertScene(filePathname)));
+            AddActionToMenu(&menu, QString("Convert"), new CommandConvertScene(filePathname));
         }
 
         connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
@@ -648,21 +642,13 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
     
     QMenu menu;
     
-    QAction *actionRemoveRootNodes = menu.addAction(QString("Remove Root Nodes"));
-//    QAction *actionRefresh = menu.addAction(QString("Refresh"));
-    QAction *actionLookAtObject = menu.addAction(QString("Look at Object"));
-    QAction *actionRemoveObject = menu.addAction(QString("Remove Object"));
-    QAction *actionDebugFlags = menu.addAction(QString("Debug Flags"));
-    QAction *actionBakeMatrixes = menu.addAction(QString("Bake Matrixes"));
-    QAction *actionBuildQuadTree = menu.addAction(QString("Build Quad Tree"));
+    AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
+    AddActionToMenu(&menu, QString("Look at Objec"), new CommandLockAtObject());
+    AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
 
-    actionRemoveRootNodes->setData(PointerHolder<Command *>::ToQVariant(new CommandRemoveRootNodes()));
-//    actionRefresh->setData(PointerHolder<Command *>::ToQVariant(new CommandRefreshSceneGraph()));
-    actionLookAtObject->setData(PointerHolder<Command *>::ToQVariant(new CommandLockAtObject()));
-    actionRemoveObject->setData(PointerHolder<Command *>::ToQVariant(new CommandRemoveSceneNode()));
-    actionDebugFlags->setData(PointerHolder<Command *>::ToQVariant(new CommandDebugFlags()));
-    actionBakeMatrixes->setData(PointerHolder<Command *>::ToQVariant(new CommandBakeMatrixes()));
-    actionBuildQuadTree->setData(PointerHolder<Command *>::ToQVariant(new CommandBuildQuadTree()));
+    AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
+    AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
+    AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
     
 	SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
 	if(node)
@@ -670,18 +656,23 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
 		KeyedArchive *properties = node->GetCustomProperties();
 		if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
 		{
-			QAction *actionEditModel = menu.addAction(QString("Edit Model"));
-			QAction *actionReloadModel = menu.addAction(QString("Reload Model"));
-
+            
 			String filePathname = properties->GetString(String("editor.referenceToOwner"));
-			actionEditModel->setData(PointerHolder<Command *>::ToQVariant(new CommandEditScene(filePathname)));
-			actionReloadModel->setData(PointerHolder<Command *>::ToQVariant(new CommandReloadScene(filePathname)));
+            AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
+            AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
 		}
 	}
-
+    
     connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
     menu.exec(point);
 }
+
+void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command)
+{
+    QAction *action = menu->addAction(actionTitle);
+    action->setData(PointerHolder<Command *>::ToQVariant(command));
+}
+
 
 
 void SceneData::ToggleNotPassableLandscape()
