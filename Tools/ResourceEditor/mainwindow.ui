@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -323,18 +323,31 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>Views</string>
     </property>
     <addaction name="separator"/>
     <addaction name="actionRestoreViews"/>
     <addaction name="separator"/>
     <addaction name="actionSceneInfo"/>
    </widget>
+   <widget class="QMenu" name="menuViewOptions">
+    <property name="title">
+     <string>View Options</string>
+    </property>
+    <widget class="QMenu" name="menuLandscape">
+     <property name="title">
+      <string>Landscape</string>
+     </property>
+     <addaction name="actionShowNotPassableLandscape"/>
+    </widget>
+    <addaction name="menuLandscape"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuTools"/>
    <addaction name="menuViewPort"/>
+   <addaction name="menuViewOptions"/>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -443,11 +456,17 @@
    </property>
   </action>
   <action name="actionHeightMapEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Height Map Editor</string>
    </property>
   </action>
   <action name="actionTileMapEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Tile Map Editor</string>
    </property>
@@ -510,6 +529,14 @@
   <action name="actionSwitchNode">
    <property name="text">
     <string>Switch</string>
+   </property>
+  </action>
+  <action name="actionShowNotPassableLandscape">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Not Passable Landscape</string>
    </property>
   </action>
  </widget>

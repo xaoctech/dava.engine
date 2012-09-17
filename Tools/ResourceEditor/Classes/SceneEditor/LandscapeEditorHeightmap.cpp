@@ -261,11 +261,6 @@ void LandscapeEditorHeightmap::UpdateCursor()
 		landscapeDebugNode->SetBigTextureSize((float32)landscapeSize);
 		landscapeDebugNode->SetCursorPosition(pos);
 		landscapeDebugNode->SetCursorScale(scaleSize);
-        
-        heightmapNode->cursor->SetCursorTexture(cursorTexture);
-		heightmapNode->cursor->SetBigTextureSize((float32)landscapeSize);
-		heightmapNode->cursor->SetPosition(pos);
-		heightmapNode->cursor->SetScale(scaleSize);
 	}
 }
 
