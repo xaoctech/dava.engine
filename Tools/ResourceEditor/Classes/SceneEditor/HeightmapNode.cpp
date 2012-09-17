@@ -31,31 +31,6 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     heightScale = maxHeight / 65535.f;
     float32 minHeight = 0.0f;
     
-    heightmapTexture = NULL;
-    debugVertices.resize(heightmap->Size() * heightmap->Size());
-	debugIndices.resize(heightmap->Size() * heightmap->Size() * 6);
-
-    renderDataObject = new RenderDataObject();
-	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(LandscapeNode::LandscapeVertex), &debugVertices[0].position); 
-	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(LandscapeNode::LandscapeVertex), &debugVertices[0].texCoord); 
-
-	int32 step = 1;
-	int32 indexIndex = 0;
-	int32 quadWidth = heightmap->Size();
-	for(int32 y = 0; y < heightmap->Size() - 1; y += step)
-	{
-		for(int32 x = 0; x < heightmap->Size() - 1; x += step)
-		{
-			debugIndices[indexIndex++] = x + y * quadWidth;
-			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
-			debugIndices[indexIndex++] = x + (y + step) * quadWidth;
-            
-			debugIndices[indexIndex++] = (x + step) + y * quadWidth;
-			debugIndices[indexIndex++] = (x + step) + (y + step) * quadWidth;
-			debugIndices[indexIndex++] = x + (y + step) * quadWidth;     
-		}
-	}
-    
     
     uint16 *dt = heightmap->Data();
     size.x = (float32)heightmap->Size();
@@ -69,9 +44,6 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
             int32 index = x + (y) * heightmap->Size();
             float32 mapValue = dt[index] * heightScale;
             SetValueToMap(x, y, mapValue, transformedBox);
-            
-			debugVertices[index].texCoord = Vector2((float32)x / (float32)(heightmap->Size() - 1), 
-                                                    (float32)y / (float32)(heightmap->Size() - 1));           
 		}
 	}
 
@@ -108,25 +80,15 @@ HeightmapNode::HeightmapNode(EditorScene * _scene, LandscapeNode *_land)
     rbInfo.m_friction = 0.9f;
     body = new btRigidBody(rbInfo);
     
-//    btVector3 mn;
-//    btVector3 mx;
-//    body->getAabb(mn, mx);
-//    btVector3 sz = mx - mn;
-//    Logger::Debug("land size = %f, %f, %f", sz.getX(), sz.getY(), sz.getZ());
-
     collisionObject = new btCollisionObject();
     collisionObject->setWorldTransform(startTransform);
     collisionObject->setCollisionShape(colShape);
     editorScene->landCollisionWorld->addCollisionObject(collisionObject);
 	editorScene->landCollisionWorld->updateAabbs();
-    
-    cursor = new LandscapeCursor();
 }
 
 HeightmapNode::~HeightmapNode()
 {
-    SafeDelete(cursor);
-    
 	if(editorScene->landCollisionWorld)
 	{
         editorScene->landCollisionWorld->removeCollisionObject(collisionObject);
@@ -140,10 +102,6 @@ HeightmapNode::~HeightmapNode()
     SafeDelete(motionSate);
     
     SafeDelete(colShape);
-    
-//    SafeRelease(heightmapTexture);
-    
-    SafeRelease(renderDataObject);
 }
 
 
@@ -152,7 +110,6 @@ void HeightmapNode::SetValueToMap(int16 x, int16 y, float32 height, const AABBox
     int32 index = x + y * heightmap->Size();
 
     hmap[index] = height;
-    debugVertices[index].position = GetPoint(x, y, height, box);
 }
 
 void HeightmapNode::UpdateHeightmapRect(const Rect &rect)
@@ -176,16 +133,6 @@ void HeightmapNode::UpdateHeightmapRect(const Rect &rect)
 	}
 }
 
-
-Vector3 HeightmapNode::GetPoint(int16 x, int16 y, float32 height, const AABBox3 &box)
-{
-    Vector3 res;
-    res.x = (box.min.x + (float32)x / (float32)(heightmap->Size() - 1) * (box.max.x - box.min.x));
-    res.y = (box.min.y + (float32)y / (float32)(heightmap->Size() - 1) * (box.max.y - box.min.y));
-    res.z = (box.min.z + height);
-    return res;
-}
-
 float32 HeightmapNode::GetAreaScale()
 {
     return areaScale;
@@ -201,37 +148,3 @@ float32 HeightmapNode::GetSizeInMeters()
     return sizeInMeters;
 }
 
-
-void HeightmapNode::Draw()
-{
-	if (!GetVisible())return;
-   
-    SceneNode::Draw();
-
-    if(heightmapTexture)
-    {
-        RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-        RenderManager::Instance()->SetTexture(heightmapTexture, 0);
-
-        RenderManager::Instance()->SetRenderData(renderDataObject);
-        RenderManager::Instance()->FlushState();
-		RenderManager::Instance()->AttachRenderData();
-        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
-    }
-    
-    if(cursor)
-	{
-		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
-		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
-		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
-		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
-		cursor->Prepare();
-        
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, &debugIndices.front()); 
-        
-		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
-		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
-		RenderManager::Instance()->SetBlendMode(src, dst);
-	}
-}

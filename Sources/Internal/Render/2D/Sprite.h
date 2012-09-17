@@ -308,8 +308,6 @@ protected:
 //	float32 **originalVertices;
 
 	Polygon2 * clipPolygon;
-		
-	void PreparePurplePlaceholder();
 	
 	void PrepareForNewSize();
 	

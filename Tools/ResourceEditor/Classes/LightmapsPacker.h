@@ -5,16 +5,13 @@
 using namespace DAVA;
 
 #include "LightmapAtlasingData.h"
+#include "SpritesPacker.h"
 
-class LightmapsPacker
+class LightmapsPacker : public SpritesPacker
 {
 public:
 	LightmapsPacker();
-	~LightmapsPacker();
 
-	void SetInputDir(const String & inputDir);
-	void SetOutputDir(const String & outputDir);
-	void Pack();
 	void Compress();
 	void ParseSpriteDescriptors();
 	Vector<LightmapAtlasingData> * GetAtlasingData();

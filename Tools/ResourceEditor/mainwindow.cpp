@@ -138,6 +138,11 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionBeast, SIGNAL(triggered()), actionHandler, SLOT(Beast()));
 
     
+    //TODO: need enable flag in future
+    ui->actionHeightMapEditor->setCheckable(false);
+    ui->actionTileMapEditor->setCheckable(false);
+    //ENDOFTODO
+    
     
     //Viewport
     connect(ui->menuViewPort, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ViewportTriggered(QAction *)));
@@ -148,6 +153,9 @@ void QtMainWindow::SetupMainMenu()
                                            ui->actionDefault
                                        );
 
+    //View Options
+    connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), actionHandler, SLOT(ToggleNotPassableTerrain()));
+    
 	//Reference
 	connect(ui->applyReferenceSuffixButton, SIGNAL(clicked()), this, SLOT(ApplyReferenceNodeSuffix()));
  
@@ -169,16 +177,28 @@ void QtMainWindow::SetupToolBar()
  	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
 
  	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
+ 	DecorateWithIcon(ui->actionTileMapEditor, QString::fromUtf8(":/Data/QtIcons/tilemapeditor.png"));
+ 	DecorateWithIcon(ui->actionHeightMapEditor, QString::fromUtf8(":/Data/QtIcons/heightmapeditor.png"));
+    
+ 	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/Data/QtIcons/notpassableterrain.png"));
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
     ui->mainToolBar->addAction(ui->actionSaveScene);
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addAction(ui->actionMaterialEditor);
+
+    ui->mainToolBar->addAction(ui->actionHeightMapEditor);
+    ui->mainToolBar->addAction(ui->actionTileMapEditor);
+
     ui->mainToolBar->addSeparator();
     QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Reload Textures"));
     DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/Data/QtIcons/reloadtextures.png"));
     connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(ReloadTexturesFromFileSystem()));
+    ui->mainToolBar->addSeparator();
+    
+    ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
+    
     ui->mainToolBar->addSeparator();
 }
 
