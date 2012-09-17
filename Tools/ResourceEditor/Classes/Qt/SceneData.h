@@ -60,7 +60,6 @@ public:
     
     void BakeScene();
     
-    void ToggleGriddableLandscape();
     void ToggleNotPassableLandscape();
     
     

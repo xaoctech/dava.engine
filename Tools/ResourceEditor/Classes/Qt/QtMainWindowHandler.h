@@ -65,7 +65,6 @@ public slots:
     
     //ViewOptions
     void ToggleNotPassableTerrain();
-    void ToggleGriddableLandscape();
     
     
     //scene graph
