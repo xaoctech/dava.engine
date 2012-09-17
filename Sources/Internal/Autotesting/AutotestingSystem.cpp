@@ -214,7 +214,6 @@ bool AutotestingSystem::ConnectToDB()
 void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
 {
     testResults.push_back(std::pair< String, bool >(text, isPassed));
-	SaveTestToDB();
 }
 
 void AutotestingSystem::SaveTestToDB()
@@ -963,6 +962,7 @@ void AutotestingSystem::OnTestsSatrted()
 {
     Logger::Debug("AutotestingSystem::OnTestsStarted");
     AddTestResult("started", true);
+	SaveTestToDB();
 }
     
 void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
@@ -971,6 +971,7 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
     Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
     
     AddTestResult(text, isPassed);
+	SaveTestToDB();
     
 	if(reportFile)
 	{
@@ -979,7 +980,6 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 
 	if(!isPassed)
 	{
-		SaveTestToDB();
 		SafeRelease(reportFile);
 		ExitApp();
 	}
