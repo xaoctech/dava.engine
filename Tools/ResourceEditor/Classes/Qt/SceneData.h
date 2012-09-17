@@ -15,6 +15,7 @@ class SceneGraphModel;
 class LibraryModel;
 class Command;
 class QAction;
+class LandscapesController;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -58,6 +59,11 @@ public:
 	void ReloadLibrary();
     
     void BakeScene();
+    
+    void ToggleNotPassableLandscape();
+    
+    
+    bool CanSaveScene();
     
 protected:
     
@@ -120,6 +126,8 @@ protected:
 
 	QTreeView *sceneGraphView;
 	QTreeView *libraryView;
+    
+    LandscapesController *landscapeController;
 };
 
 #endif // __SCENE_DATA_H__
