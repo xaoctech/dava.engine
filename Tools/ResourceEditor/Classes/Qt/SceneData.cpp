@@ -444,11 +444,12 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
 
 void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
 {
+	SelectNode(NULL);
+
     scene->ReleaseRootNode(scenePathname);
     
     ReloadNode(scene, scenePathname);
     
-    scene->SetSelection(0);
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
@@ -466,6 +467,7 @@ void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
     }
     
     RebuildSceneGraph();
+	landscapeController->SetScene(scene);
 }
 
 void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
@@ -494,8 +496,6 @@ void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
         SceneNode * child = node->GetChild(ci);
         ReloadNode(child, nodePathname);
     }
-    
-    landscapeController->SetScene(scene);
 }
 
 void SceneData::ReloadLibrary()
@@ -664,7 +664,21 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
     actionBakeMatrixes->setData(PointerHolder<Command *>::ToQVariant(new CommandBakeMatrixes()));
     actionBuildQuadTree->setData(PointerHolder<Command *>::ToQVariant(new CommandBuildQuadTree()));
     
-    
+	SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
+	if(node)
+	{
+		KeyedArchive *properties = node->GetCustomProperties();
+		if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+		{
+			QAction *actionEditModel = menu.addAction(QString("Edit Model"));
+			QAction *actionReloadModel = menu.addAction(QString("Reload Model"));
+
+			String filePathname = properties->GetString(String("editor.referenceToOwner"));
+			actionEditModel->setData(PointerHolder<Command *>::ToQVariant(new CommandEditScene(filePathname)));
+			actionReloadModel->setData(PointerHolder<Command *>::ToQVariant(new CommandReloadScene(filePathname)));
+		}
+	}
+
     connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
     menu.exec(point);
 }
