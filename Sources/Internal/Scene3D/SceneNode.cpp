@@ -755,7 +755,6 @@ String SceneNode::GetPathID(SceneNode * root)
 	SceneNode * curr = this;
 	SceneNode * parent = NULL;
 	int32 sz, i;
-	char buff[10];
 
 	while (curr != root)
 	{

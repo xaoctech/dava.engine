@@ -28,10 +28,11 @@ void CommandOpenParticleEditorConfig::Execute()
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	DVASSERT(screen);
 
-	String currentPath = screen->GetParticlesEditor()->GetActiveConfigName();
-	if(currentPath.empty() || currentPath[0] == '~'/*default config is ~res:*/)
+	ParticlesEditorControl * editor = screen->GetParticlesEditor();
+	String currentPath = editor->GetActiveConfigName();
+	if(currentPath.empty())
 	{
-		currentPath = EditorSettings::Instance()->GetDataSourcePath();
+		currentPath = editor->GetConfigsPath();
 	}
 
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
@@ -58,10 +59,11 @@ void CommandSaveParticleEditorConfig::Execute()
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	DVASSERT(screen);
 
-	String currentPath = screen->GetParticlesEditor()->GetActiveConfigName();
-	if(currentPath.empty() || currentPath[0] == '~'/*default config is ~res:*/)
+	ParticlesEditorControl * editor = screen->GetParticlesEditor();
+	String currentPath = editor->GetActiveConfigName();
+	if(currentPath.empty())
 	{
-		currentPath = EditorSettings::Instance()->GetDataSourcePath();
+		currentPath = editor->GetConfigsPath();
 	}
 
 	QString filePath = QFileDialog::getSaveFileName(NULL, QString("Save particle effect"), QString(currentPath.c_str()), QString("Effect File (*.yaml)"));
@@ -85,10 +87,12 @@ void CommandOpenParticleEditorSprite::Execute()
 	SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	DVASSERT(screen);
 
-	String currentPath = screen->GetParticlesEditor()->GetActiveSpriteName();
-	if(currentPath.empty() || currentPath[0] == '~'/*default config is ~res:*/)
+	ParticlesEditorControl * editor = screen->GetParticlesEditor();
+	editor->PackSprites();
+	String currentPath = editor->GetActiveSpriteName();
+	if(currentPath.empty())
 	{
-		currentPath = EditorSettings::Instance()->GetProjectPath();
+		currentPath = editor->GetSpritesDataPath();
 	}
 
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString(currentPath.c_str()), QString("Sprite (*.txt)"));
@@ -100,7 +104,7 @@ void CommandOpenParticleEditorSprite::Execute()
 		uint32 pos = selectedPathname.find(".txt");
 		selectedPathname = selectedPathname.substr(0, pos);
 		String relativePath = "~res:/Data/" + FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath()+"Data/", selectedPathname);
-		FileSystem::Instance()->ReplaceBundleName(EditorSettings::Instance()->GetProjectPath());
+		FileSystem::Instance()->ReplaceBundleName(EditorSettings::Instance()->GetProjectPath()+"/Data/");
 		screen->GetParticlesEditor()->SetActiveSprite(relativePath);
 	}
 

@@ -23,56 +23,53 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=====================================================================================*/
 
-#ifndef __EDITOR_HEIGHTMAP_H__
-#define __EDITOR_HEIGHTMAP_H__
+    Revision History:
+        * Created by Vitaliy Borodovsky 
+=====================================================================================*/
+#ifndef __LANDSCAPE_RENDERER_H__
+#define __LANDSCAPE_RENDERER_H__
 
 #include "DAVAEngine.h"
 
-class EditorHeightmap: public DAVA::Heightmap
+class LandscapeRenderer: public DAVA::BaseObject
 {
-    enum eConst
-    {
-        MAX_EDITOR_HEIGHTMAP_SIZE = 513,
-        VALUE_NOT_CHANGED = 0,
-        VALUE_WAS_CHANGED = 1,
-    };
-    
+
 public:
+	LandscapeRenderer(DAVA::Heightmap *heightmap, const DAVA::AABBox3 &box);
+	virtual ~LandscapeRenderer();
 
-    EditorHeightmap(DAVA::Heightmap *heightmap);
-	virtual ~EditorHeightmap();
+    void RebuildVertexes(const DAVA::Rect &rebuildForRect);
     
-    void HeghtWasChanged(const DAVA::Rect &changedRect);
+    void BindMaterial(DAVA::Texture *materialTexture);
+    void UnbindMaterial();
     
-    virtual void Save(const DAVA::String &filePathname);
-    virtual bool Load(const DAVA::String &filePathname);
-
-protected:
+    void DrawLandscape();
     
-    void DownscaleOrClone();
-    void Downscale(DAVA::int32 newSize);
-    void Upscale();
-    void InitializeScalingTable(DAVA::int32 count);
-    
-    void InitializeTableOfChanges();
-    
-    bool IsPowerOf2(DAVA::int32 num);
-
-    DAVA::uint16 GetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
-    DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
-    
-    void UpscaleValue(DAVA::int32 leftX, DAVA::int32 topY, DAVA::int32 muliplier);
     
 protected:
 
-    Heightmap *savedHeightmap;
+    void InitShader();
+    void RebuildIndexes();
+    void SetHeightmap(DAVA::Heightmap *heightmap, const DAVA::AABBox3 &box);
+    void SetBoundingBox(const DAVA::AABBox3 &box);
+    DAVA::Vector3 GetPoint(DAVA::int16 x, DAVA::int16 y, DAVA::uint16 height);
     
-    DAVA::uint8 *tableOfChanges;
-    DAVA::float32 *scalingTable;
+    DAVA::int32 uniformFogDensity;
+    DAVA::int32 uniformFogColor;
+    DAVA::Shader * shader;
+    
+    DAVA::Vector<DAVA::LandscapeNode::LandscapeVertex> vertices;
+    DAVA::Vector<DAVA::uint32> indices;
+    DAVA::RenderDataObject * landscapeRenderObject;
+    
+    DAVA::Heightmap *heightmap;
+    DAVA::AABBox3 boundingBox;
+    
+    DAVA::Vector3 pointCoefficients;
 };
 
 
-#endif //__EDITOR_HEIGHTMAP_H__
+#endif // __LANDSCAPE_RENDERER_H__
+
+
