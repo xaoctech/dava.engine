@@ -214,7 +214,6 @@ bool AutotestingSystem::ConnectToDB()
 void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
 {
     testResults.push_back(std::pair< String, bool >(text, isPassed));
-	SaveTestToDB();
 }
 
 void AutotestingSystem::SaveTestToDB()
@@ -247,8 +246,9 @@ void AutotestingSystem::SaveTestToDB()
     String testResultsKey = "TestResults";
     KeyedArchive* testResultsArchive = NULL;
     
-    bool isTestPassed = true;
-    for(int32 i = 0; i < testResults.size(); ++i)
+	int32 testResultsCount = testResults.size();
+    bool isTestPassed = (1 < testResultsCount); // if only started should not count as success
+    for(int32 i = 0; i < testResultsCount; ++i)
     {
         if(!testResults[i].second)
         {
@@ -310,7 +310,6 @@ void AutotestingSystem::SaveTestToDB()
                     testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
                 }
             }
-            //isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
 			isTestSuitePassed &= isTestPassed;
         }
     }
@@ -337,15 +336,10 @@ void AutotestingSystem::SaveTestToDB()
     }
     
     //update test results
-	isTestPassed = true;
-    for(int32 i = 0; i < testResults.size(); ++i)
+    for(int32 i = 0; i < testResultsCount; ++i)
     {
 		bool testResultSuccess = testResults[i].second;
         testResultsArchive->SetInt32(testResults[i].first, (int32)testResultSuccess);
-		if(!testResultSuccess)
-		{
-			isTestPassed = false;
-		}
     }
   
     //update test object
@@ -968,6 +962,7 @@ void AutotestingSystem::OnTestsSatrted()
 {
     Logger::Debug("AutotestingSystem::OnTestsStarted");
     AddTestResult("started", true);
+	SaveTestToDB();
 }
     
 void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
@@ -976,6 +971,7 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
     Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
     
     AddTestResult(text, isPassed);
+	SaveTestToDB();
     
 	if(reportFile)
 	{
@@ -984,7 +980,6 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 
 	if(!isPassed)
 	{
-		SaveTestToDB();
 		SafeRelease(reportFile);
 		ExitApp();
 	}
