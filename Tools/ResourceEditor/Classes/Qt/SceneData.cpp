@@ -37,7 +37,7 @@ SceneData::SceneData()
     libraryView = NULL;
     sceneGraphView = NULL;
     
-    landscapeController = new LandscapesController();
+    landscapesController = new LandscapesController();
     
     sceneFilePathname = String("");
     sceneGraphModel = new SceneGraphModel();
@@ -57,7 +57,7 @@ SceneData::~SceneData()
 {
     SafeRelease(scene);
     
-    SafeRelease(landscapeController);
+    SafeRelease(landscapesController);
     
     SafeDelete(libraryModel);
     SafeDelete(sceneGraphModel);
@@ -72,7 +72,7 @@ void SceneData::SetScene(EditorScene *newScene)
     scene = SafeRetain(newScene);
     sceneGraphModel->SetScene(scene);
     cameraController->SetScene(scene);
-    landscapeController->SetScene(scene);
+    landscapesController->SetScene(scene);
 }
 
 void SceneData::RebuildSceneGraph()
@@ -92,7 +92,7 @@ void SceneData::AddSceneNode(DAVA::SceneNode *node)
     LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
     if(landscape)
     {
-        landscapeController->SaveLandscape(landscape);
+        landscapesController->SaveLandscape(landscape);
     }
     
     RebuildSceneGraph();
@@ -106,7 +106,7 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
         LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
         if(landscape)
         {
-            landscapeController->SaveLandscape(NULL);
+            landscapesController->SaveLandscape(NULL);
         }
         
         
@@ -181,7 +181,7 @@ void SceneData::ReleaseScene()
 {
     cameraController->SetScene(NULL);
     sceneGraphModel->SetScene(NULL);
-    landscapeController->SetScene(NULL);
+    landscapesController->SetScene(NULL);
     
     SafeRelease(scene);
 }
@@ -274,7 +274,7 @@ void SceneData::AddScene(const String &scenePathname)
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
 
-    landscapeController->SetScene(scene);
+    landscapesController->SetScene(scene);
     
     RebuildSceneGraph();
 }
@@ -309,7 +309,7 @@ void SceneData::EditScene(const String &scenePathname)
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
    
-    landscapeController->SetScene(scene);
+    landscapesController->SetScene(scene);
 
     RebuildSceneGraph();
 }
@@ -461,7 +461,7 @@ void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
     }
     
     RebuildSceneGraph();
-	landscapeController->SetScene(scene);
+	landscapesController->SetScene(scene);
 }
 
 void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
@@ -677,7 +677,7 @@ void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command
 
 void SceneData::ToggleNotPassableLandscape()
 {
-    landscapeController->ToggleNotPassableLandscape();
+    landscapesController->ToggleNotPassableLandscape();
     
     RebuildSceneGraph();
 }
@@ -691,7 +691,7 @@ bool SceneData::CanSaveScene()
         return false;
     }
     
-    if(landscapeController->EditorLandscapeIsActive())
+    if(landscapesController->EditorLandscapeIsActive())
     {
         return false;
     }
@@ -699,3 +699,13 @@ bool SceneData::CanSaveScene()
     
     return true;
 }
+
+
+LandscapesController * SceneData::GetLandscapesController()
+{
+    return landscapesController;
+}
+
+
+
+
