@@ -256,6 +256,7 @@
 		5CFB116B15AE0685008F64BB /* libvorbis_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116815AE0685008F64BB /* libvorbis_macos.a */; };
 		5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */; };
 		5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116D15AE0696008F64BB /* libtheora_macos.a */; };
+		CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -796,6 +797,8 @@
 		5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile_macos.a; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		5CFB116D15AE0696008F64BB /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = "<group>"; };
+		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
+		CC27F75516089C37004EF267 /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		D7BC194B5CC2DC4DBAFB72CD /* QtFramework.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = QtFramework.pro; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1175,6 +1178,8 @@
 		5C5D982315B0230D0058B43A /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */,
+				CC27F75516089C37004EF267 /* ParticleLayerLong.h */,
 				5C5D982415B0230D0058B43A /* Particle.cpp */,
 				5C5D982515B0230D0058B43A /* Particle.h */,
 				5C5D982615B0230D0058B43A /* ParticleEmitter.cpp */,
@@ -1906,6 +1911,7 @@
 				5C8A70A615DD41C20043B097 /* QtLayer.cpp in Build Sources */,
 				5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */,
 				5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */,
+				CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
