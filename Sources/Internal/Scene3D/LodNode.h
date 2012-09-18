@@ -172,7 +172,6 @@ protected:
     
 int32 LodNode::GetLodLayersCount()
 {
-    //return GetChildrenCount();//ну это ваще полная ахинея. Как они могут быть равны мля?????
 	return (int32)lodLayers.size();
 }
 
