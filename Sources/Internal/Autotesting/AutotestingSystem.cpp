@@ -27,6 +27,7 @@ AutotestingSystem::AutotestingSystem() : currentAction(NULL)
     , testReportsFolder("")
     , reportFile(NULL)
 	, parsingMultitouch(NULL)
+	, needClearDB(false)
 {
 }
 
@@ -109,6 +110,7 @@ void AutotestingSystem::OnAppStarted()
         {
             testIndex = 0;
             testsId = autotestingId;
+			needClearDB = true;
         }
         
         int32 indexInFileList = testIndex;
@@ -244,8 +246,9 @@ void AutotestingSystem::SaveTestToDB()
     String testResultsKey = "TestResults";
     KeyedArchive* testResultsArchive = NULL;
     
-    bool isTestPassed = true;
-    for(int32 i = 0; i < testResults.size(); ++i)
+	int32 testResultsCount = testResults.size();
+    bool isTestPassed = (1 < testResultsCount); // if only started should not count as success
+    for(int32 i = 0; i < testResultsCount; ++i)
     {
         if(!testResults[i].second)
         {
@@ -260,9 +263,17 @@ void AutotestingSystem::SaveTestToDB()
     if(isFound)
     {
         //found database object
-        // find platform object
-        platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
-        
+
+		if(needClearDB)
+		{
+			needClearDB = false;
+		}
+		else
+		{
+			// find platform object
+			platformArchive = SafeRetain(dbUpdateData->GetArchive(AUTOTESTING_PLATFORM_NAME, NULL));
+		}
+
         if(platformArchive)
         {
             // found platform object
@@ -276,12 +287,12 @@ void AutotestingSystem::SaveTestToDB()
 				//find all test objects to set platform test results (if all tests passed for current platform)
 				if(isTestSuitePassed)
 				{
-					const Map<String, VariantType*> logArchiveData = logArchive->GetArchieveData();
+					const Map<String, VariantType*> &logArchiveData = logArchive->GetArchieveData();
 					for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
 					{
 						if((it->first != "_id") && it->second)
 						{
-							KeyedArchive* tmpTestArchive = it->second->AsKeyedArchive();
+							KeyedArchive *tmpTestArchive = it->second->AsKeyedArchive();
 							if(tmpTestArchive)
 							{
 								isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
@@ -299,7 +310,6 @@ void AutotestingSystem::SaveTestToDB()
                     testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
                 }
             }
-            //isTestSuitePassed = (isTestPassed && (platformArchive->GetInt32("Success") == 1) );
 			isTestSuitePassed &= isTestPassed;
         }
     }
@@ -326,15 +336,10 @@ void AutotestingSystem::SaveTestToDB()
     }
     
     //update test results
-	isTestPassed = true;
-    for(int32 i = 0; i < testResults.size(); ++i)
+    for(int32 i = 0; i < testResultsCount; ++i)
     {
 		bool testResultSuccess = testResults[i].second;
         testResultsArchive->SetInt32(testResults[i].first, (int32)testResultSuccess);
-		if(!testResultSuccess)
-		{
-			isTestPassed = false;
-		}
     }
   
     //update test object
@@ -957,6 +962,7 @@ void AutotestingSystem::OnTestsSatrted()
 {
     Logger::Debug("AutotestingSystem::OnTestsStarted");
     AddTestResult("started", true);
+	SaveTestToDB();
 }
     
 void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
@@ -965,6 +971,7 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
     Logger::Debug("AutotestingSystem::OnTestAssert %s", assertMsg.c_str());
     
     AddTestResult(text, isPassed);
+	SaveTestToDB();
     
 	if(reportFile)
 	{
@@ -973,7 +980,6 @@ void AutotestingSystem::OnTestAssert(const String & text, bool isPassed)
 
 	if(!isPassed)
 	{
-		SaveTestToDB();
 		SafeRelease(reportFile);
 		ExitApp();
 	}

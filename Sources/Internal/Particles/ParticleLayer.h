@@ -116,7 +116,7 @@ public:
 		\brief Function to load layer from yaml node.
 		Normally this function is called from ParticleEmitter. 	 
 	 */
-	virtual void LoadFromYaml(YamlNode * node);
+	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
 
 	/**
 		\brief Get head(first) particle of the layer.
@@ -125,6 +125,8 @@ public:
 	Particle * GetHeadParticle();
 
     float32 GetLayerTime();
+
+	const String & GetRelativeSpriteName();
 
 protected:	
 	void GenerateNewParticle(int32 emitIndex);
@@ -153,6 +155,7 @@ protected:
 	ParticleEmitter * emitter;
 	// particle layer sprite
 	Sprite 			* sprite;
+	String			relativeSpriteName;
 
 public:		
 	Vector2			pivotPoint;

@@ -512,10 +512,10 @@ void NodesPropertyControl::OnBoolPropertyChanged(PropertyList *, const String &f
                 }
             }
         }
-		else if("CollisionFlag" == forKey)
-		{
-			currentSceneNode->PropagateBoolProperty("CollisionFlag", newValue);
-		}
+// 		else if("CollisionFlag" == forKey)
+// 		{
+// 			currentSceneNode->PropagateBoolProperty("CollisionFlag", newValue);
+// 		}
         
         if(!createNodeProperties)
         {
