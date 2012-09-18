@@ -24,6 +24,9 @@ public:
 
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
+    virtual bool SetScene(EditorScene *newScene);
+
+    
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
     virtual void TextureWillChanged(const String &forKey);
