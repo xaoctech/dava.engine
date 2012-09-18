@@ -39,46 +39,46 @@ EditorLandscapeNode::EditorLandscapeNode()
     SetName(String("Landscape_EditorNode"));
     
     landscapeRenderer = NULL;
-    landscape = NULL;
+    nestedLandscape = NULL;
+    parentLandscape = NULL;
 }
 
 EditorLandscapeNode::~EditorLandscapeNode()
 {
     SafeRelease(landscapeRenderer);
-    SafeRelease(landscape);
+    SafeRelease(nestedLandscape);
+    SafeRelease(parentLandscape);
 }
 
-void EditorLandscapeNode::SetLandscape(DAVA::LandscapeNode *landscapeNode)
+void EditorLandscapeNode::SetNestedLandscape(DAVA::LandscapeNode *landscapeNode)
 {
-    SafeRelease(landscape);
-    landscape = SafeRetain(landscapeNode);
+    SafeRelease(nestedLandscape);
+    nestedLandscape = SafeRetain(landscapeNode);
     
-//    SetName(landscape->GetName()); //Disabled for bebug. Need Enable after task will be done
-    
-    heightmapPath = landscape->GetHeightmapPathname();
-    SetDebugFlags(landscape->GetDebugFlags());
-    
-    SetTiledShaderMode(landscape->GetTiledShaderMode());
-    for(int32 iTex = 0; iTex < LandscapeNode::TEXTURE_COUNT; ++iTex)
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+    if(editorLandscape)
     {
-        SetTexture((LandscapeNode::eTextureLevel)iTex,
-                                       landscape->GetTexture((LandscapeNode::eTextureLevel)iTex));
-        
-        SetTextureTiling((LandscapeNode::eTextureLevel)iTex,
-                                             landscape->GetTextureTiling((LandscapeNode::eTextureLevel)iTex));
+        editorLandscape->SetParentLandscape(this);
     }
-
-    SetHeightmap(landscape->GetHeightmap());
     
-    box = landscape->GetBoundingBox();
+    SetDebugFlags(nestedLandscape->GetDebugFlags());
+    
+    SetHeightmap(nestedLandscape->GetHeightmap());
+    heightmapPath = nestedLandscape->GetHeightmapPathname();
 
+    SetTexture(TEXTURE_TILE_FULL, nestedLandscape->GetTexture(TEXTURE_TILE_FULL));
+    
+    box = nestedLandscape->GetBoundingBox();
+    CopyCursorData(nestedLandscape, this);
+    
     SetDisplayedTexture();
 }
 
 
 void EditorLandscapeNode::SetHeightmap(DAVA::Heightmap *height)
 {
-    LandscapeNode::SetHeightmap(height);
+    SafeRelease(heightmap);
+    heightmap = SafeRetain(height);
     
     EditorHeightmap *editorHeightmap = dynamic_cast<EditorHeightmap *>(height);
     if(editorHeightmap)
@@ -101,15 +101,49 @@ void EditorLandscapeNode::Draw()
     if(!landscapeRenderer) return;
     
     landscapeRenderer->BindMaterial(GetTexture(LandscapeNode::TEXTURE_TILE_FULL));
+    
     landscapeRenderer->DrawLandscape();
+
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    if (debugFlags & DEBUG_DRAW_GRID)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        RenderManager::Instance()->SetColor(1.0f, 1.f, 1.f, 1.f);
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->SetShader(0);
+        RenderManager::Instance()->FlushState();
+
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+    
+	if(cursor)
+	{
+		RenderManager::Instance()->AppendState(RenderStateBlock::STATE_BLEND);
+		eBlendMode src = RenderManager::Instance()->GetSrcBlend();
+		eBlendMode dst = RenderManager::Instance()->GetDestBlend();
+		RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
+		RenderManager::Instance()->SetDepthFunc(CMP_LEQUAL);
+		cursor->Prepare();
+        
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, (heightmap->Size() - 1) * (heightmap->Size() - 1) * 6, EIF_32, landscapeRenderer->Indicies());
+        
+		RenderManager::Instance()->SetDepthFunc(CMP_LESS);
+		RenderManager::Instance()->RemoveState(RenderStateBlock::STATE_BLEND);
+		RenderManager::Instance()->SetBlendMode(src, dst);
+	}
+
     landscapeRenderer->UnbindMaterial();
 }
     
 
-
 void EditorLandscapeNode::HeihghtmapUpdated(const DAVA::Rect &forRect)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(landscape);
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
     if(editorLandscape)
     {
         editorLandscape->HeihghtmapUpdated(forRect);
@@ -121,9 +155,69 @@ void EditorLandscapeNode::SetDisplayedTexture()
     
 }
 
-DAVA::LandscapeNode *EditorLandscapeNode::GetEditedLandscape()
+DAVA::LandscapeNode *EditorLandscapeNode::GetNestedLandscape()
 {
-    return landscape;
+    return nestedLandscape;
 }
+
+
+void EditorLandscapeNode::SetParentLandscape(EditorLandscapeNode *landscapeNode)
+{
+    SafeRelease(parentLandscape);
+    parentLandscape = SafeRetain(landscapeNode);
+}
+
+EditorLandscapeNode *EditorLandscapeNode::GetParentLandscape()
+{
+    return parentLandscape;
+}
+
+LandscapeRenderer *EditorLandscapeNode::GetRenderer()
+{
+    return landscapeRenderer;
+}
+
+void EditorLandscapeNode::CopyCursorData(DAVA::LandscapeNode *sourceLandscape, DAVA::LandscapeNode *destinationLandscape)
+{
+    if(!sourceLandscape || !destinationLandscape)
+        return;
+    
+    LandscapeCursor *sourceCursor = sourceLandscape->GetCursor();
+    LandscapeCursor *destinationCursor = destinationLandscape->GetCursor();
+    
+    if(!sourceCursor && destinationCursor)
+    {
+        destinationLandscape->CursorDisable();
+    }
+    else if(sourceCursor)
+    {
+        if(!destinationCursor)
+        {
+            destinationLandscape->CursorEnable();
+        }
+        
+        destinationLandscape->SetCursorTexture(sourceCursor->GetCursorTexture());
+        destinationLandscape->SetBigTextureSize(sourceCursor->GetBigTextureSize());
+		destinationLandscape->SetCursorPosition(sourceCursor->GetCursorPosition());
+		destinationLandscape->SetCursorScale(sourceCursor->GetCursorScale());
+    }
+}
+
+void EditorLandscapeNode::FlushChanges()
+{
+    if(parentLandscape)
+    {
+        parentLandscape->FlushChanges();
+    }
+    
+    if(nestedLandscape)
+    {
+        CopyCursorData(this, nestedLandscape);
+        nestedLandscape->SetDebugFlags(GetDebugFlags());
+    }
+}
+
+
+
 
 

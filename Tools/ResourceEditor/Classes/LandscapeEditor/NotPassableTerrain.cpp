@@ -53,7 +53,7 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
     
     Vector3 landSize;
     AABBox3 transformedBox;
-    landscape->GetBoundingBox().GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+    nestedLandscape->GetBoundingBox().GetTransformedBox(nestedLandscape->GetWorldTransform(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
 
     float32 angleCellDistance = landSize.x / (float32)(heightmap->Size() - 1);
@@ -121,7 +121,7 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 void NotPassableTerrain::DrawFullTiledTexture(const DAVA::Rect &drawRect)
 {
     Texture *notPassableMap = notPassableMapSprite->GetTexture();
-    Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+    Texture *fullTiledTexture = nestedLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
     Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, (float32)fullTiledTexture->GetWidth(), (float32)fullTiledTexture->GetHeight());
     background->SetPosition(0.f, 0.f);
     background->SetScaleSize((float32)notPassableMap->GetWidth(), (float32)notPassableMap->GetHeight());

@@ -187,3 +187,8 @@ void LandscapeRenderer::UnbindMaterial()
     RenderManager::Instance()->FlushState();
 }
 
+DAVA::uint32 * LandscapeRenderer::Indicies()
+{
+    return &indices.front();
+}
+

@@ -48,6 +48,19 @@ public:
 
     bool EditorLandscapeIsActive();
     
+    EditorLandscapeNode *CreateEditorLandscapeNode();
+    void ReleaseEditorLandscapeNode();
+
+    DAVA::LandscapeNode *GetCurrentLandscape();
+    DAVA::Heightmap *GetCurrentHeightmap();
+    
+    
+    void HeghtWasChanged(const DAVA::Rect &changedRect);
+
+    void CursorEnable();
+    void CursorDisable();
+    
+    
 protected:
 
     bool ShowEditorLandscape(EditorLandscapeNode *displayingLandscape);
@@ -63,6 +76,11 @@ protected:
     EditorHeightmap *renderedHeightmap;
     NotPassableTerrain *notPassableTerrain;
     LandscapeRenderer *landscapeRenderer;
+    EditorLandscapeNode *editorLandscape;
+    
+    
+    DAVA::LandscapeNode *currentLandscape;
+    
     
     DAVA::LandscapeNode *savedLandscape;
     DAVA::Heightmap *savedHeightmap;
