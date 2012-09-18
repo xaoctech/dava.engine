@@ -123,6 +123,7 @@ public:
     virtual bool LandscapeEditorActive();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
+    bool TileMaskEditorEnabled();
     
 #if defined (DAVA_QT)        
     void SetScene(EditorScene *newScene);
