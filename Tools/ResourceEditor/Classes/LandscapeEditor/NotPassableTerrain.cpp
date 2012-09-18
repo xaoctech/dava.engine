@@ -66,14 +66,15 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
     RenderManager::Instance()->LockNonMain();
     RenderManager::Instance()->SetRenderTarget(notPassableMapSprite);
 
+    Rect drawRect(forRect.x * dx, forRect.y * dx, (forRect.dx - 1)* dx, (forRect.dy - 1) * dx);
     RenderManager::Instance()->ClipPush();
-    RenderManager::Instance()->ClipRect(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
+    RenderManager::Instance()->ClipRect(drawRect);
 
-    DrawFullTiledTexture(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
+    DrawFullTiledTexture(drawRect);
     
     Color red(1.0f, 0.0f, 0.0f, 1.0f);
-    int32 lastY = (int32)(forRect.y + forRect.dy - 1);
-    int32 lastX = (int32)(forRect.x + forRect.dx - 1);
+    int32 lastY = (int32)(forRect.y + forRect.dy);
+    int32 lastX = (int32)(forRect.x + forRect.dx);
     for (int32 y = (int32)forRect.y; y < lastY; ++y)
     {
         int32 yOffset = y * heightmap->Size();
