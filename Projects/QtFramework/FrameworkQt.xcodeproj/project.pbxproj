@@ -1181,8 +1181,8 @@
 		5C5D982315B0230D0058B43A /* Particles */ = {
 			isa = PBXGroup;
 			children = (
-				5C2923CC1608C15D00CBE67C /* ParticleLayerLong.cpp */,
-				5C2923CD1608C15D00CBE67C /* ParticleLayerLong.h */,
+				CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */,
+				CC27F75516089C37004EF267 /* ParticleLayerLong.h */,
 				5C5D982415B0230D0058B43A /* Particle.cpp */,
 				5C5D982515B0230D0058B43A /* Particle.h */,
 				5C5D982615B0230D0058B43A /* ParticleEmitter.cpp */,
@@ -1914,7 +1914,7 @@
 				5C8A70A615DD41C20043B097 /* QtLayer.cpp in Build Sources */,
 				5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */,
 				5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */,
-				5C2923CE1608C15D00CBE67C /* ParticleLayerLong.cpp in Build Sources */,
+				CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
