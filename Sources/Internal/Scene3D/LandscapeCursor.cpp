@@ -86,5 +86,28 @@ void LandscapeCursor::SetBigTextureSize(float32 _bigSize)
 {
 	bigSize = _bigSize;
 }
+    
+    
+Texture * LandscapeCursor::GetCursorTexture()
+{
+    return cursorTexture;
+}
+
+float32 LandscapeCursor::GetBigTextureSize()
+{
+    return bigSize;
+}
+
+Vector2 LandscapeCursor::GetCursorPosition()
+{
+    return position;
+}
+
+float32 LandscapeCursor::GetCursorScale()
+{
+    return scale;
+}
+
+    
 
 };
