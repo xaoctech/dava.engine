@@ -1466,6 +1466,11 @@ bool EditorBodyControl::LandscapeEditorActive()
     return (currentLandscapeEditor && currentLandscapeEditor->IsActive());
 }
 
+bool EditorBodyControl::TileMaskEditorEnabled()
+{
+    return LandscapeEditorActive() && (currentLandscapeEditor == landscapeEditorColor);
+}
+
 NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)
 {
     return currentLandscapeEditor->GetPropertyControl(rect);

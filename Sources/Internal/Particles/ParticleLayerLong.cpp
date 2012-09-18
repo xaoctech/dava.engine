@@ -33,10 +33,13 @@ void ParticleLayerLong::Draw(const Vector3 & _up, const Vector3 & _left, const V
 		Vector3 vecLong = -current->velocity;
 		vecLong.Normalize();
 
-		Vector3 topRight = current->position + sprite->GetWidth()*vecShort;
-		Vector3 topLeft = current->position - sprite->GetWidth()*vecShort;
-		Vector3 botRight = topRight + vecLong;
-		Vector3 botLeft = topLeft + vecLong;
+		float32 widthDiv2 = sprite->GetWidth()*current->size.x*current->sizeOverLife;
+		float32 heightDiv2 = sprite->GetHeight()*current->size.y*current->sizeOverLife;
+
+		Vector3 topRight = current->position + widthDiv2*vecShort;
+		Vector3 topLeft = current->position - widthDiv2*vecShort;
+		Vector3 botRight = topRight + heightDiv2*vecLong;
+		Vector3 botLeft = topLeft + heightDiv2*vecLong;
 
 		verts.push_back(topLeft.x);//0
 		verts.push_back(topLeft.y);

@@ -236,6 +236,11 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
+        if(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i)
+        {
+            continue;
+        }
+        
         ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), errorsLog);
     }
     

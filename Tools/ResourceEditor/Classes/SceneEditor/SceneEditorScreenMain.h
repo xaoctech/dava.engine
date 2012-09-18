@@ -144,6 +144,7 @@ public:
     void HideScenePreview();
 
     bool LandscapeEditorModeEnabled();
+    bool TileMaskEditorEnabled();
 #endif //#if defined (DAVA_QT)
     
     void AddBodyItem(const WideString &text, bool isCloseable);
