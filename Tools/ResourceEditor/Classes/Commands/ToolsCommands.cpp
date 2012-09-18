@@ -82,8 +82,8 @@ void CommandTilemapEditor::Execute()
         GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
 
-    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
-    activeScene->RebuildSceneGraph();
+//    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+//    activeScene->RebuildSceneGraph();
 }
 
 //Show settings
