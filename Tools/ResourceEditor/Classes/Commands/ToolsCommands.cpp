@@ -59,6 +59,9 @@ void CommandHeightmapEditor::Execute()
         GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
         GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
+    
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RebuildSceneGraph();
 }
 
 
@@ -78,6 +81,9 @@ void CommandTilemapEditor::Execute()
         GUIState::Instance()->SetNeedUpdatedToolsMenu(true);
         GUIState::Instance()->SetNeedUpdatedToolbar(true);
     }
+
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RebuildSceneGraph();
 }
 
 //Show settings
