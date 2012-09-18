@@ -3369,8 +3369,19 @@ void ParticlesEditorControl::SetEmitter(ParticleEmitter * _emitter)
 	int32 layersSize = emitter->GetLayers().size();
 	for(int i = 0; i < layersSize; i++)
 	{
-		String spritePath = emitter->GetLayers()[i]->GetSprite()->GetName();
-		Layer * l = new Layer(layerProps, spritePath.substr(0, spritePath.size()-4), cellFont);
+		Sprite * sprite = emitter->GetLayers()[i]->GetSprite();
+		String spritePath;
+		Layer * l;
+		if(sprite->GetTexture()->IsPinkPlaceholder())
+		{
+			l = new Layer(layerProps, spritePath, cellFont);
+		}
+		else
+		{
+			spritePath = emitter->GetLayers()[i]->GetRelativeSpriteName();
+			l = new Layer(layerProps, spritePath.substr(0, spritePath.size()-4), cellFont);
+		}
+		
 		l->curLayerTime->SetRect(Rect(GetScreenWidth() - buttonW, cellH*(layers.size()), buttonW, cellH));
 		layers.push_back(l);
 		SafeAddControl(l->curLayerTime);
@@ -3433,7 +3444,7 @@ void ParticlesEditorControl::SetActiveSprite(const String & path)
 {
 	layers[selectedEmitterElement]->spritePath = path;
 
-	sprite = Sprite::Create(path);
+	sprite = Sprite::Create(GetActiveConfigFolder()+path);
 	SetLayerPropValue(LAYER_SPRITE);
 	GetLayerPropValue(LAYER_SPRITE);
 }
@@ -3464,4 +3475,13 @@ String ParticlesEditorControl::GetSpritesDataSourcePath()
 String ParticlesEditorControl::GetSpritesDataPath()
 {
 	return EditorSettings::Instance()->GetProjectPath()+"Data/Particles";
+}
+
+String ParticlesEditorControl::GetActiveConfigFolder()
+{
+	String & configPath = GetActiveConfigName();
+	String configFolder, configFileName;
+	FileSystem::SplitPath(configPath, configFolder, configFileName);
+
+	return configFolder;
 }

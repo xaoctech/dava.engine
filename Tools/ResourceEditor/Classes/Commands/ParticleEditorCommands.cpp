@@ -94,6 +94,10 @@ void CommandOpenParticleEditorSprite::Execute()
 	{
 		currentPath = editor->GetSpritesDataPath();
 	}
+	else
+	{
+		currentPath = editor->GetActiveConfigFolder()+currentPath;
+	}
 
 	QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString(currentPath.c_str()), QString("Sprite (*.txt)"));
 
@@ -103,8 +107,7 @@ void CommandOpenParticleEditorSprite::Execute()
 	{
 		uint32 pos = selectedPathname.find(".txt");
 		selectedPathname = selectedPathname.substr(0, pos);
-		String relativePath = "~res:/Data/" + FileSystem::Instance()->AbsoluteToRelativePath(EditorSettings::Instance()->GetProjectPath()+"Data/", selectedPathname);
-		FileSystem::Instance()->ReplaceBundleName(EditorSettings::Instance()->GetProjectPath()+"/Data/");
+		String relativePath = FileSystem::AbsoluteToRelativePath(editor->GetActiveConfigFolder(), selectedPathname);
 		screen->GetParticlesEditor()->SetActiveSprite(relativePath);
 	}
 

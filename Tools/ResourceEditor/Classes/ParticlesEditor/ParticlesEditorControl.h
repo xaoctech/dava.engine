@@ -196,6 +196,7 @@ public:
 	void LoadFromYaml(const String &pathToFile);
 	void SaveToYaml(const String &pathToFile);
 	String GetActiveConfigName();
+	String GetActiveConfigFolder();
 	void SetNode(ParticleEmitterNode * node);
 	void SetActiveSprite(const String & path);
 	String GetActiveSpriteName();

@@ -33,6 +33,7 @@
 #include "Utils/StringFormat.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -221,6 +222,12 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 	if(sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
+
+		String spritePath = FileSystem::NormalizePath(sprite->GetRelativePathname());
+		const String configPath = emitter->GetConfigPath();
+		String configFolder, configFile;
+		FileSystem::SplitPath(configPath, configFolder, configFile);
+		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
 	}
 }
 	
@@ -561,7 +568,7 @@ void ParticleLayer::Draw()
 }
 
 
-void ParticleLayer::LoadFromYaml(YamlNode * node)
+void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -607,7 +614,11 @@ void ParticleLayer::LoadFromYaml(YamlNode * node)
 	{
 		YamlNode * pivotPointNode = node->Get("pivotPoint");
 		
-		Sprite * _sprite = Sprite::Create(spriteNode->AsString());
+		const String relativePathName = spriteNode->AsString();
+		relativeSpriteName = relativePathName;
+		String configFolder, configFile;
+		FileSystem::SplitPath(configPath, configFolder, configFile);
+		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{
@@ -712,6 +723,11 @@ void ParticleLayer::LoadFromYaml(YamlNode * node)
 Particle * ParticleLayer::GetHeadParticle()
 {
 	return head;
+}
+
+const String & ParticleLayer::GetRelativeSpriteName()
+{
+	return relativeSpriteName;
 }
 
 }

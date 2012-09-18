@@ -36,4 +36,5 @@ void SwitchNodePropertyControl::OnComboIndexChanged(PropertyList *forList, const
 	{
 		switchNode->SetSwitchIndex(newItemIndex);
 	}
+	NodesPropertyControl::OnComboIndexChanged(forList, forKey, newItemIndex, newItemKey);
 }
