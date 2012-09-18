@@ -282,6 +282,7 @@ public:
     void SetFogColor(const Color & _fogColor);
     const Color & GetFogColor() const;
 
+    LandscapeCursor *GetCursor();
     
 protected:	
     

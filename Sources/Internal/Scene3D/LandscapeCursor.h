@@ -49,6 +49,12 @@ public:
 	void SetEditedTexture(Texture * texture);
 	void SetBigTextureSize(float32 bigSize);
 
+    
+    Texture * GetCursorTexture();
+    float32 GetBigTextureSize();
+    Vector2 GetCursorPosition();
+    float32 GetCursorScale();
+    
 private:
 
 	Shader * shader;

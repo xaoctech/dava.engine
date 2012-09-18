@@ -247,7 +247,9 @@ void AutotestingSystem::SaveTestToDB()
     KeyedArchive* testResultsArchive = NULL;
     
 	int32 testResultsCount = testResults.size();
-    bool isTestPassed = (1 < testResultsCount); // if only started should not count as success
+    bool isTestPassed = true; // if only started should not count as success
+	bool isStartLogged = false;
+	bool isFinishLogged = false;
     for(int32 i = 0; i < testResultsCount; ++i)
     {
         if(!testResults[i].second)
@@ -255,8 +257,22 @@ void AutotestingSystem::SaveTestToDB()
             isTestPassed = false;
             break;
         }
+
+		if(testResults[i].first == "started")
+		{
+			isStartLogged = true;
+		}
+		else if(testResults[i].first == "finished")
+		{
+			isFinishLogged = true;
+		}
     }
-    
+
+	if(isTestPassed)
+	{
+		isTestPassed = (isStartLogged && isFinishLogged);
+	}
+
     bool isTestSuitePassed = isTestPassed;
     
     // find platform object

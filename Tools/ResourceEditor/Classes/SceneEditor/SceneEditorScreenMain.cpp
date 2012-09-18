@@ -1560,6 +1560,12 @@ bool SceneEditorScreenMain::LandscapeEditorModeEnabled()
     return iBody->bodyControl->LandscapeEditorActive();
 }
 
+bool SceneEditorScreenMain::TileMaskEditorEnabled()
+{
+    BodyItem *iBody = FindCurrentBody();
+    return iBody->bodyControl->TileMaskEditorEnabled();
+}
+
 #endif //#if defined (DAVA_QT)
 
 
