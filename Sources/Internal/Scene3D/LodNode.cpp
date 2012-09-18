@@ -177,7 +177,10 @@ void LodNode::RegisterNodeInLayer(SceneNode * node, int32 layer)
 void LodNode::RegisterIndexInLayer(int32 nodeIndex, int32 layer)
 {
     LodData *ld = CreateNewLayer(layer);
-    ld->indexes.push_back(nodeIndex);
+	if (nodeIndex >= 0)
+	{
+		ld->indexes.push_back(nodeIndex);
+	}
 }
 
 void LodNode::RemoveNode(SceneNode * node)
@@ -466,11 +469,18 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         int32 layer = archive->GetInt32(Format("lod%d_layer", lodIdx), 0);
         size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);    //TODO: why size_t? int32?
-        for (size_t idx = 0; idx < size; ++idx)
-        {
-            int32 index  = archive->GetInt32(Format("l%d_%d_ni", lodIdx, idx), 0);
-            RegisterIndexInLayer(index, layer);
-        }
+		if (size > 0)
+		{
+			for (size_t idx = 0; idx < size; ++idx)
+			{
+				int32 index  = archive->GetInt32(Format("l%d_%d_ni", lodIdx, idx), 0);
+				RegisterIndexInLayer(index, layer);
+			}
+		}
+		else
+		{
+			RegisterIndexInLayer(-1, layer);
+		}
         
         float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
         if(INVALID_DISTANCE == distance)
