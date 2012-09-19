@@ -20,7 +20,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.28"
+#define VERSION     "0.0.29"
  
 //void EntityTest();
 
