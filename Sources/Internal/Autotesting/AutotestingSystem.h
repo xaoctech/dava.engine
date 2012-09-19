@@ -156,6 +156,8 @@ protected:
 
     bool isInit;
     bool isRunning;
+    bool needExitApp;
+    float32 timeBeforeExit;
 
 	MultitouchAction* parsingMultitouch;
 

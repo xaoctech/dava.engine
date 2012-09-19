@@ -45,8 +45,8 @@ namespace DAVA
 class Getter : public Action
 {
 public:
-    Getter() {};
-    Getter(const VariantType &_value) : Action(), value(_value) {};
+    Getter();
+    Getter(const VariantType &_value);
     virtual ~Getter() {};
 
     virtual const VariantType &Get() { return value; };
@@ -59,7 +59,7 @@ protected:
 class ControlGetter : public Getter
 {
 public:
-    ControlGetter(const Vector<String> &_controlPath) : Getter(), controlPath(_controlPath) {};
+    ControlGetter(const Vector<String> &_controlPath);
     virtual ~ControlGetter() {};
 
    virtual const VariantType &Get();
@@ -73,7 +73,7 @@ protected:
 class ControlTextGetter : public ControlGetter
 {
 public:
-    ControlTextGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
+    ControlTextGetter(const Vector<String> &_controlPath);
     virtual ~ControlTextGetter() {};
 
     virtual void Execute();
@@ -82,7 +82,7 @@ public:
 class ControlBoolGetter : public ControlGetter
 {
 public:
-    ControlBoolGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath) {};
+    ControlBoolGetter(const Vector<String> &_controlPath);
     virtual ~ControlBoolGetter() {};
 
     virtual void Execute();
