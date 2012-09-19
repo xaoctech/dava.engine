@@ -15,7 +15,7 @@ namespace DAVA
 
 Action::Action() : BaseObject()
     , isExecuted(false)
-	, name("")
+	, name("Action")
 {
 }
 Action::~Action()
@@ -151,7 +151,7 @@ UIControl* Action::FindControl(const Vector<String>& controlPath)
     {
         control = FindControl(UIScreenManager::Instance()->GetScreen(), controlPath[0]);
 
-        for(int32 i = 1; i < controlPath.size(); ++i)
+        for(uint32 i = 1; i < controlPath.size(); ++i)
         {
             if(!control) break;
             control = FindControl(control, controlPath[i]);
@@ -314,6 +314,7 @@ String Action::PathToString(const Vector<String>& controlPath)
 KeyPressAction::KeyPressAction(char16 _keyChar) : Action()
     , keyChar(_keyChar)
 {
+    SetName("KeyPressAction");
 }
 
 KeyPressAction::~KeyPressAction()
@@ -349,7 +350,7 @@ String KeyPressAction::Dump()
 WaitAction::WaitAction(float32 _waitTime) : Action()
     , waitTime(_waitTime)
 {
-
+    SetName("WaitAction");
 }
 
 WaitAction::~WaitAction()
@@ -384,6 +385,7 @@ String WaitAction::Dump()
 WaitForScreenAction::WaitForScreenAction(const String &_screenName, float32 timeout) : WaitAction(timeout)
 	, screenName(_screenName)
 {
+    SetName("WaitForScreenAction");
 }
 
 WaitForScreenAction::~WaitForScreenAction()
@@ -416,12 +418,14 @@ String WaitForScreenAction::Dump()
 
 WaitForUIAction::WaitForUIAction(const String &_controlName, float32 timeout) : WaitAction(timeout)
 {
+    SetName("WaitForUIAction");
     controlPath.push_back(_controlName);
 }
 
 WaitForUIAction::WaitForUIAction(const Vector<String> &_controlPath, float32 timeout) : WaitAction(timeout)
     , controlPath(_controlPath)
 {
+    SetName("WaitForUIAction");
 }
 
 WaitForUIAction::~WaitForUIAction()
@@ -456,6 +460,7 @@ SetTextAction::SetTextAction(const String& _controlName, const WideString &_text
     : Action()
     , text(_text)
 {
+    SetName("SetTextAction");
     controlPath.push_back(_controlName);
 }
 
@@ -464,6 +469,7 @@ SetTextAction::SetTextAction(const Vector<String>& _controlPath, const WideStrin
     , text(_text)
     , controlPath(_controlPath)
 {
+    SetName("SetTextAction");
 }
 
 SetTextAction::~SetTextAction()
