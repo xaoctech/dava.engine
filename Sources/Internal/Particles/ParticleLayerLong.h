@@ -5,12 +5,14 @@
 
 namespace DAVA
 {
+
+class Camera;
 class ParticleLayerLong : public ParticleLayer3D
 {
 public:
 	ParticleLayerLong();
 
-	virtual void Draw(const Vector3 & up, const Vector3 & left, const Vector3 & cameraPos);
+	virtual void Draw(Camera * camera);
 };
 
 };

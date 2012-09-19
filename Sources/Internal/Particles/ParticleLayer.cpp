@@ -403,7 +403,8 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	
 	Particle * particle = ParticleSystem::Instance()->NewParticle();
 	
-    particle->forces.clear();
+    particle->forcesDirections.clear();
+	particle->forcesValues.clear();
     particle->forcesOverLife.clear();
     
 	particle->next = 0;
@@ -473,20 +474,42 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 	
     int32 n = (int32)forces.size();
     for(int i = 0; i < n; i++)
+	{
         if(forces[i].Get())
-           particle->forces.push_back(forces[i]->GetValue(layerTime));
+		{
+			const Vector3 & force = forces[i]->GetValue(layerTime);
+			float32 forceValue = force.Length();
+			Vector3 forceDirection = force/forceValue;
+
+			particle->forcesDirections.push_back(forceDirection);
+			particle->forcesValues.push_back(forceValue);
+		}
+	}
     
-    n = Min((int32)particle->forces.size(), (int32)forcesVariation.size());
+    n = Min((int32)particle->forcesDirections.size(), (int32)forcesVariation.size());
     for(int i = 0; i < n; i++)
+	{
         if(forcesVariation[i].Get())
-            particle->forces[i] += forcesVariation[i]->GetValue(layerTime) * randCoeff;
+		{
+			const Vector3 & force = forcesVariation[i]->GetValue(layerTime) * randCoeff;
+			float32 forceValue = force.Length();
+			Vector3 forceDirection = force/forceValue;
+
+            particle->forcesDirections[i] += forceDirection;
+			particle->forcesValues[i] += forceValue;
+		}
+	}
     
     n = (int32)forcesOverLife.size();
     for(int i = 0; i < n; i++)
-        if(forcesOverLife[i].Get())
-            particle->forcesOverLife.push_back(forcesOverLife[i]->GetValue(layerTime));
+	{
+		if(forcesOverLife[i].Get())
+		{
+			particle->forcesOverLife.push_back(forcesOverLife[i]->GetValue(layerTime));
+		}
+	}
     
-	particle->frame = frameStart + (int)(randCoeff * (float32)(frameEnd - frameStart));
+	particle->frame = frameStart + (int32)(randCoeff * (float32)(frameEnd - frameStart));
 	
 	// process it to fill first life values
 	ProcessParticle(particle);

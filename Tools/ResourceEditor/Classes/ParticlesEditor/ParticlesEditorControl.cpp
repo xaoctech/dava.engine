@@ -44,6 +44,7 @@ ParticlesEditorControl::ParticlesEditorControl()
     layerProps.push_back("alignToMotion");
     layerProps.push_back("startTime");
     layerProps.push_back("endTime");
+	layerProps.push_back("isLong");
     
     emitterTypes.push_back("POINT");
     emitterTypes.push_back("LINE");
@@ -1662,7 +1663,10 @@ void ParticlesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
     if(id > 0)
     {
         SafeAddControl(valueBut);
-        SafeAddControl(KFBut);
+        if(id != LAYER_IS_LONG)
+		{
+			SafeAddControl(KFBut);
+		}
     }
     
     curColorProp = 0;
@@ -1935,6 +1939,19 @@ void ParticlesEditorControl::GetLayerPropValue(lProps id, bool getLimits)
             vSliders[0]->SetValue(emitter->GetLayers().at(selectedEmitterElement-1)->endTime);
             tfValue[0]->SetText(Format(L"%.2f", emitter->GetLayers().at(selectedEmitterElement-1)->endTime));
             break;
+
+		case LAYER_IS_LONG:
+			//selectedIsLong = emitter->GetLayers().at(selectedEmitterElement-1)->;
+
+			//SafeAddControl(emitterTypeList);
+			//SafeRemoveControl(valueBut);
+			//SafeRemoveControl(KFBut);
+
+			//if(getLimits && selectedEmitterTypeElement == 0)
+			//	layers[0]->props[EMITTER_TYPE]->isDefault = true;
+			//else
+			//	layers[0]->props[EMITTER_TYPE]->isDefault = false;
+			break;
             
         default:
             break;
