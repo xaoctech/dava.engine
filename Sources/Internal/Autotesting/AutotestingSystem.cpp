@@ -28,6 +28,8 @@ AutotestingSystem::AutotestingSystem() : currentAction(NULL)
     , reportFile(NULL)
 	, parsingMultitouch(NULL)
 	, needClearDB(false)
+    , needExitApp(false)
+    , timeBeforeExit(0.0f)
 {
 }
 
@@ -901,6 +903,17 @@ void AutotestingSystem::RunTests()
 void AutotestingSystem::Update(float32 timeElapsed)
 {
     if(!isInit) return;
+    
+    if(needExitApp)
+    {
+        timeBeforeExit -= timeElapsed;
+        if(timeBeforeExit <= 0.0f)
+        {
+            needExitApp = false;
+            Core::Instance()->Quit();
+        }
+        return;
+    }
 
     if(isRunning)
     {
@@ -1360,8 +1373,11 @@ bool AutotestingSystem::IsTouchDown(int32 id)
 
 void AutotestingSystem::ExitApp()
 {
-    //TODO: exit app on each platform
-    Core::Instance()->Quit();
+    if(!needExitApp)
+    {
+        needExitApp = true;
+        timeBeforeExit = 1.0f;
+    }
 }
 
 };
