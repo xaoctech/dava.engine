@@ -34,9 +34,13 @@ protected:
     
     void ExportMaterials(Scene *scene, Set<String> &errorLog);
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
+    void ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog);
     void ExportMeshLightmaps(Scene *scene, Set<String> &errorLog);
     bool ExportFileDirectly(const String &filePathname, Set<String> &errorLog);
     String ExportTexture(const String &texturePathname, Set<String> &errorLog);
+    
+    void PrepareFolderForCopy(const String &filePathname, Set<String> &errorLog);
+    
     
 protected:
     
