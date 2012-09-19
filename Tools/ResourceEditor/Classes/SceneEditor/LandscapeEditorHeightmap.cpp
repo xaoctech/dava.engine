@@ -6,7 +6,6 @@
 
 #include "../EditorScene.h"
 
-#include "ImageRasterizer.h"
 #include "HeightmapNode.h"
 
 #include "UNDOManager.h"
@@ -161,12 +160,14 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
     int32 scaleSize = toolImage->GetWidth();
     Vector2 pos = landscapePoint - Vector2((float32)scaleSize, (float32)scaleSize)/2.0f;
     {
-        Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
-
+        EditorHeightmap *heightmap = dynamic_cast<EditorHeightmap *>(landscapesController->GetCurrentHeightmap());
+        DVASSERT(heightmap);
+        
         if(currentTool->averageDrawing)
         {
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-            ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
+//            ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
+            heightmap->DrawAverageRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
         }
         else if(currentTool->relativeDrawing)
         {
@@ -175,7 +176,8 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             {
                 koef = -koef;
             }
-            ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
+//            ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
+            heightmap->DrawRelativeRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
         }
         else
         {
@@ -188,7 +190,8 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
             
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-            ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
+//            ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
+            heightmap->DrawAbsoluteRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
         }
         
         UpdateHeightmap(Rect(pos.x, pos.y, (float32)scaleSize, (float32)scaleSize));
@@ -211,8 +214,9 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
             
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
 
-            Heightmap *heightmap = landscapesController->GetCurrentHeightmap();
-            ImageRasterizer::DrawCopypasteRGBA(heightmap, toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
+            EditorHeightmap *heightmap = dynamic_cast<EditorHeightmap *>(landscapesController->GetCurrentHeightmap());
+            DVASSERT(heightmap);
+            heightmap->DrawCopypasteRGBA(toolImage, posFrom, posTo, scaleSize, scaleSize, koef);
             
             UpdateHeightmap(Rect(posTo.x, posTo.y, (float32)scaleSize, (float32)scaleSize));
         }
@@ -231,7 +235,7 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
                 Vector2 deltaPos = landscapePoint - copyToCenter;
                 Vector2 posFrom = (copyFromCenter + deltaPos) * multiplier - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
                 
-                ImageRasterizer::DrawCopypasteRGBA(tilemaskImage, tilemaskImage, toolImageTile, posFrom, posTo, scaleSize, scaleSize);
+                EditorHeightmap::DrawCopypasteRGBA(tilemaskImage, tilemaskImage, toolImageTile, posFrom, posTo, scaleSize, scaleSize);
                 
                 Texture *tex = tilemaskTexture;
                 if(tex)
