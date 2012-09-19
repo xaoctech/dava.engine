@@ -203,7 +203,6 @@
 		5C7F498015B44B7A0038AF3A /* HeightmapNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48FF15B44B7A0038AF3A /* HeightmapNode.cpp */; };
 		5C7F498115B44B7A0038AF3A /* HelpDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490115B44B7A0038AF3A /* HelpDialog.cpp */; };
 		5C7F498215B44B7A0038AF3A /* HintManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490315B44B7A0038AF3A /* HintManager.cpp */; };
-		5C7F498315B44B7A0038AF3A /* ImageRasterizer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490515B44B7A0038AF3A /* ImageRasterizer.cpp */; };
 		5C7F498415B44B7A0038AF3A /* LandscapeEditorBase.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490715B44B7A0038AF3A /* LandscapeEditorBase.cpp */; };
 		5C7F498515B44B7A0038AF3A /* LandscapeEditorColor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490915B44B7A0038AF3A /* LandscapeEditorColor.cpp */; };
 		5C7F498615B44B7A0038AF3A /* LandscapeEditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490B15B44B7A0038AF3A /* LandscapeEditorHeightmap.cpp */; };
@@ -792,8 +791,6 @@
 		5C7F490215B44B7A0038AF3A /* HelpDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelpDialog.h; path = Classes/SceneEditor/HelpDialog.h; sourceTree = "<group>"; };
 		5C7F490315B44B7A0038AF3A /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HintManager.cpp; path = Classes/SceneEditor/HintManager.cpp; sourceTree = "<group>"; };
 		5C7F490415B44B7A0038AF3A /* HintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HintManager.h; path = Classes/SceneEditor/HintManager.h; sourceTree = "<group>"; };
-		5C7F490515B44B7A0038AF3A /* ImageRasterizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageRasterizer.cpp; path = Classes/SceneEditor/ImageRasterizer.cpp; sourceTree = "<group>"; };
-		5C7F490615B44B7A0038AF3A /* ImageRasterizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageRasterizer.h; path = Classes/SceneEditor/ImageRasterizer.h; sourceTree = "<group>"; };
 		5C7F490715B44B7A0038AF3A /* LandscapeEditorBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorBase.cpp; path = Classes/SceneEditor/LandscapeEditorBase.cpp; sourceTree = "<group>"; };
 		5C7F490815B44B7A0038AF3A /* LandscapeEditorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorBase.h; path = Classes/SceneEditor/LandscapeEditorBase.h; sourceTree = "<group>"; };
 		5C7F490915B44B7A0038AF3A /* LandscapeEditorColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorColor.cpp; path = Classes/SceneEditor/LandscapeEditorColor.cpp; sourceTree = "<group>"; };
@@ -1688,8 +1685,6 @@
 				5C7F490215B44B7A0038AF3A /* HelpDialog.h */,
 				5C7F490315B44B7A0038AF3A /* HintManager.cpp */,
 				5C7F490415B44B7A0038AF3A /* HintManager.h */,
-				5C7F490515B44B7A0038AF3A /* ImageRasterizer.cpp */,
-				5C7F490615B44B7A0038AF3A /* ImageRasterizer.h */,
 				5C7F490715B44B7A0038AF3A /* LandscapeEditorBase.cpp */,
 				5C7F490815B44B7A0038AF3A /* LandscapeEditorBase.h */,
 				5C7F490915B44B7A0038AF3A /* LandscapeEditorColor.cpp */,
@@ -2146,7 +2141,6 @@
 				5C7F498015B44B7A0038AF3A /* HeightmapNode.cpp in Build Sources */,
 				5C7F498115B44B7A0038AF3A /* HelpDialog.cpp in Build Sources */,
 				5C7F498215B44B7A0038AF3A /* HintManager.cpp in Build Sources */,
-				5C7F498315B44B7A0038AF3A /* ImageRasterizer.cpp in Build Sources */,
 				5C7F498415B44B7A0038AF3A /* LandscapeEditorBase.cpp in Build Sources */,
 				5C7F498515B44B7A0038AF3A /* LandscapeEditorColor.cpp in Build Sources */,
 				5C7F498615B44B7A0038AF3A /* LandscapeEditorHeightmap.cpp in Build Sources */,
