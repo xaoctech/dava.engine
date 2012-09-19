@@ -12,6 +12,7 @@ namespace DAVA
 TouchAction::TouchAction(int32 _id) : Action()
     , id(_id)
 {
+    SetName("TouchAction");
 }
 
 TouchAction::~TouchAction()
@@ -197,6 +198,7 @@ String TouchAction::Dump()
 TouchDownAction::TouchDownAction(const Vector2 &_point, int32 _id) : TouchAction(_id)
     , point(_point)
 {
+    SetName("TouchDownAction");
 }
 
 TouchDownAction::~TouchDownAction()
@@ -249,6 +251,7 @@ String TouchDownControlAction::Dump()
 //----------------------------------------------------------------------
 TouchUpAction::TouchUpAction(int32 _id) : TouchAction(_id)
 {
+    SetName("TouchUpAction");
 }
 TouchUpAction::~TouchUpAction()
 {
@@ -266,6 +269,7 @@ TouchMoveAction::TouchMoveAction(const Vector2 &_point, float32 _moveTime, int32
     , point(_point)
     , moveTime(_moveTime)
 {
+    SetName("TouchMoveAction");
 }
 
 TouchMoveAction::~TouchMoveAction()
@@ -321,6 +325,7 @@ TouchMoveDirAction::TouchMoveDirAction(const Vector2 &_direction, float32 _speed
     , direction(_direction)
     , speed(_speed)
 {
+    SetName("TouchMoveDirAction");
 }
 
 void TouchMoveDirAction::Execute()
@@ -341,6 +346,7 @@ TouchMoveControlAction::TouchMoveControlAction(const String &_controlName, float
 	: TouchMoveAction(Vector2(), _moveTime, _id)
 	, touchOffset(offset)
 {
+    SetName("TouchMoveControlAction");
     controlPath.push_back(_controlName);
 }
 
@@ -376,6 +382,7 @@ ScrollControlAction::ScrollControlAction(const String &_controlName, int32 _id, 
 	, wasFound(false)
 	, touchOffset(offset)
 {
+    SetName("ScrollControlAction");
     controlPath.push_back(_controlName);
 }
 ScrollControlAction::ScrollControlAction(const Vector<String> &_controlPath, int32 _id, float32 timeout, const Vector2 &offset) : WaitAction(timeout)
@@ -386,6 +393,7 @@ ScrollControlAction::ScrollControlAction(const Vector<String> &_controlPath, int
 	, wasFound(false)
 	, touchOffset(offset)
 {
+    SetName("ScrollControlAction");
 }
 
 ScrollControlAction::~ScrollControlAction()
@@ -478,7 +486,7 @@ void ScrollControlAction::FindScrollPoints()
     if(controlPath.empty()) return;
 
     Vector<String> parentPath;
-    for(int32 i = 0; i < controlPath.size() - 1; ++i)
+    for(uint32 i = 0; i < controlPath.size() - 1; ++i)
     {
         parentPath.push_back(controlPath[i]);
     }
@@ -598,6 +606,7 @@ void ScrollControlAction::FindScrollPoints()
 
 MultitouchAction::MultitouchAction() : Action()
 {
+    SetName("MultitouchAction");
 }
 
 MultitouchAction::~MultitouchAction()

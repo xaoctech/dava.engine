@@ -50,7 +50,7 @@ public:
     Action();
     virtual ~Action();
 
-	void SetName(const String &actionName);
+    void SetName(const String &actionName);
 	const String &GetName() { return name; };
 
     virtual void Update(float32 timeElapsed);
