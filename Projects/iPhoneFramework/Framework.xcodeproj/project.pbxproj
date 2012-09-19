@@ -133,6 +133,8 @@
 		C7EFBC6A158B4D1000BF42E0 /* VisibilityAABBoxComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EFBC58158B4D1000BF42E0 /* VisibilityAABBoxComponent.h */; };
 		CCFF223615EE15B100363446 /* SwitchNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CCFF223415EE15B100363446 /* SwitchNode.cpp */; };
 		CCFF223715EE15B100363446 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFF223515EE15B100363446 /* SwitchNode.h */; };
+		E85D7A6B1609E37F00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */; };
+		E85D7A6C1609E37F00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */; };
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		EDA6D63314753FF0000898F8 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDA6D63114753FF0000898F8 /* TextGameObject.cpp */; };
 		EDA6D63414753FF0000898F8 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EDA6D63214753FF0000898F8 /* TextGameObject.h */; };
@@ -684,6 +686,8 @@
 		CCFF223415EE15B100363446 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
 		CCFF223515EE15B100363446 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
+		E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EDA6D63114753FF0000898F8 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
@@ -1525,6 +1529,8 @@
 		FECFB3BB12E5904400C71562 /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				E85D7A691609E37F00F3EBBE /* ParticleLayerLong.cpp */,
+				E85D7A6A1609E37F00F3EBBE /* ParticleLayerLong.h */,
 				5CD7155F15AC3B6300D08E8E /* ParticleEmitter3D.cpp */,
 				5CD7156015AC3B6300D08E8E /* ParticleEmitter3D.h */,
 				5CD7156115AC3B6300D08E8E /* ParticleLayer3D.cpp */,
@@ -2185,6 +2191,7 @@
 				5CBF71E015C6E46100CD1736 /* RenderOptions.h in Headers */,
 				C22651F615E3D7A900E25BF4 /* ReferenceNode.h in Headers */,
 				CCFF223715EE15B100363446 /* SwitchNode.h in Headers */,
+				E85D7A6C1609E37F00F3EBBE /* ParticleLayerLong.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2501,6 +2508,7 @@
 				5CBF71DF15C6E46100CD1736 /* RenderOptions.cpp in Sources */,
 				C22651F515E3D7A900E25BF4 /* ReferenceNode.cpp in Sources */,
 				CCFF223615EE15B100363446 /* SwitchNode.cpp in Sources */,
+				E85D7A6B1609E37F00F3EBBE /* ParticleLayerLong.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
