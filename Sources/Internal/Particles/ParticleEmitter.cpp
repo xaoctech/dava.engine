@@ -263,9 +263,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
                 particle->position += vel * radius->GetValue(time);
         }
         
-        vel *= velocity;
-        particle->velocity.x = vel.x;
-        particle->velocity.y = vel.y;
+        particle->direction.x = vel.x;
+        particle->direction.y = vel.y;
+		particle->speed = velocity;
         particle->angle = particleAngle;
 
     }    
@@ -348,7 +348,9 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
         
         Vector3 qvq1_v = qv_v.CrossProduct(q1_v) + qv_w*q1_v + q1_w*qv_v;
         
-        particle->velocity = qvq1_v * velocity;
+		Vector3 speed = qvq1_v * velocity;
+		particle->speed = speed.Length();
+        particle->direction = speed/particle->speed;
 
         if (type == EMITTER_ONCIRCLE)
         {
@@ -357,7 +359,7 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
                 particle->position += qvq1_v * radius->GetValue(time);
         }
        
-        particle->angle = atanf(particle->velocity.z/particle->velocity.x);
+        particle->angle = atanf(particle->direction.z/particle->direction.x);
     }
 }
 

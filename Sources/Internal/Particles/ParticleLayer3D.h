@@ -11,6 +11,7 @@ namespace DAVA
 
 class RenderDataObject;
 class Material;
+class Camera;
 class ParticleLayer3D : public ParticleLayer
 {
 public:
@@ -20,7 +21,7 @@ public:
 	virtual void LoadFromYaml(const String & configPath, YamlNode * node);
 	virtual ParticleLayer * Clone(ParticleLayer * dstLayer = 0);
 
-	virtual void Draw(const Vector3 & up, const Vector3 & left, const Vector3 & cameraPos);
+	virtual void Draw(Camera * camera);
 
 protected:
 	RenderDataObject * renderData;
