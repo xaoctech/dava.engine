@@ -30,6 +30,7 @@ using namespace DAVA;
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
 	,	menuResentScenes(NULL)
+    ,   resentAncorAction(NULL)
 	,	defaultFocusWidget(NULL)
 {
     new CommandsManager();
@@ -176,35 +177,40 @@ void QtMainWindowHandler::SetResentMenu(QMenu *menu)
     menuResentScenes = menu;
 }
 
+void QtMainWindowHandler::SetResentAncorAction(QAction *ancorAction)
+{
+    resentAncorAction = ancorAction;
+}
+
+
 void QtMainWindowHandler::MenuFileWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
     
     //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
+
+    for(DAVA::int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
+    {
+        if(resentSceneActions[i]->parentWidget())
+        {
+            menuResentScenes->removeAction(resentSceneActions[i]);
+        }
+    }
+
     
     int32 sceneCount = EditorSettings::Instance()->GetLastOpenedCount();
     if(0 < sceneCount)
     {
-        menuResentScenes->setEnabled(true);
-        
-        for(DAVA::int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
-        {
-            if(resentSceneActions[i]->parentWidget())
-            {
-                menuResentScenes->removeAction(resentSceneActions[i]);
-            }
-        }
-        
+        QList<QAction *> resentActions;
         for(int32 i = 0; i < sceneCount; ++i)
         {
             resentSceneActions[i]->setText(QString(EditorSettings::Instance()->GetLastOpenedFile(i).c_str()));
-            menuResentScenes->addAction(resentSceneActions[i]);
+            resentActions.push_back(resentSceneActions[i]);
         }
-    }
-    else 
-    {
-        menuResentScenes->setEnabled(false);
+        
+        menuResentScenes->insertActions(resentAncorAction, resentActions);
+        menuResentScenes->insertSeparator(resentAncorAction);
     }
  
     GUIState::Instance()->SetNeedUpdatedFileMenu(false);
@@ -226,7 +232,7 @@ void QtMainWindowHandler::MenuToolsWillShow()
 }
 
 
-void QtMainWindowHandler::ResentSceneTriggered(QAction *resentScene)
+void QtMainWindowHandler::FileMenuTriggered(QAction *resentScene)
 {
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
