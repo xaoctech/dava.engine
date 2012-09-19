@@ -166,7 +166,6 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
         if(currentTool->averageDrawing)
         {
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-//            ImageRasterizer::DrawAverageRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
             heightmap->DrawAverageRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
         }
         else if(currentTool->relativeDrawing)
@@ -176,7 +175,6 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             {
                 koef = -koef;
             }
-//            ImageRasterizer::DrawRelativeRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
             heightmap->DrawRelativeRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef);
         }
         else
@@ -190,7 +188,6 @@ void LandscapeEditorHeightmap::UpdateBrushTool(float32 timeElapsed)
             float32 height = currentTool->height / maxHeight * Heightmap::MAX_VALUE;
             
             float32 koef = (currentTool->averageStrength * timeElapsed) * 2.0f;
-//            ImageRasterizer::DrawAbsoluteRGBA(heightmap, toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
             heightmap->DrawAbsoluteRGBA(toolImage, (int32)pos.x, (int32)pos.y, scaleSize, scaleSize, koef, height);
         }
         
