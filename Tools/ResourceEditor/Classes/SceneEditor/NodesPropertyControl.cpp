@@ -126,6 +126,24 @@ void NodesPropertyControl::ReadFrom(SceneNode *sceneNode)
         propertyList->SetIntPropertyValue("property.scenenode.retaincount", sceneNode->GetRetainCount());
         propertyList->SetStringPropertyValue("property.scenenode.classname", sceneNode->GetClassName());
         propertyList->SetStringPropertyValue("property.scenenode.c++classname", typeid(*sceneNode).name());
+        
+        AABBox3 unitBox = sceneNode->GetWTMaximumBoundingBoxSlow();
+        if((-AABBOX_INFINITY != unitBox.max.x) && (AABBOX_INFINITY != unitBox.min.x))
+        {
+            propertyList->AddSubsection(String("Unit size"));
+
+            Vector3 size = unitBox.max - unitBox.min;
+            
+            propertyList->AddFloatProperty(String("X-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetFloatPropertyValue(String("X-Size"), size.x);
+            
+            propertyList->AddFloatProperty(String("Y-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetFloatPropertyValue(String("Y-Size"), size.y);
+
+            propertyList->AddFloatProperty(String("Z-Size"), PropertyList::PROPERTY_IS_EDITABLE);
+            propertyList->SetFloatPropertyValue(String("Z-Size"), size.z);
+            
+        }
     }
 
     propertyList->AddSection("property.scenenode.scenenode", GetHeaderState("property.scenenode.scenenode", true));
