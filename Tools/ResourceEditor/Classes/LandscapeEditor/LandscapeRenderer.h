@@ -46,6 +46,7 @@ public:
     
     void DrawLandscape();
     
+    DAVA::uint32 * Indicies();
     
 protected:
 

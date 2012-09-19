@@ -48,6 +48,22 @@ public:
     
     virtual void Save(const DAVA::String &filePathname);
     virtual bool Load(const DAVA::String &filePathname);
+    
+    
+    void DrawRelativeRGBA(DAVA::Image *src, DAVA::int32 x, DAVA::int32 y, DAVA::int32 width, DAVA::int32 height, DAVA::float32 k);
+    void DrawAverageRGBA(DAVA::Image *mask, DAVA::int32 x, DAVA::int32 y, DAVA::int32 width, DAVA::int32 height, DAVA::float32 k);
+    void DrawAbsoluteRGBA(DAVA::Image *mask, DAVA::int32 x, DAVA::int32 y, DAVA::int32 width, DAVA::int32 height, DAVA::float32 time, DAVA::float32 dstHeight);
+    void DrawCopypasteRGBA(DAVA::Image *mask, const DAVA::Vector2 &posFrom, const DAVA::Vector2 &posTo, DAVA::int32 width, DAVA::int32 height, DAVA::float32 koef);
+    
+    static void DrawCopypasteRGBA(DAVA::Image *src, DAVA::Image *dst, DAVA::Image *mask, const DAVA::Vector2 &posFrom, const DAVA::Vector2 &posTo, DAVA::int32 width, DAVA::int32 height);
+    
+    
+    static bool Clipping(DAVA::int32 & srcOffset, DAVA::int32 & dstOffset, DAVA::int32 & dstX, DAVA::int32 & dstY,
+                         DAVA::int32 dstWidth, DAVA::int32 dstHeight, DAVA::int32 & width, DAVA::int32 & height,
+                         DAVA::int32 & yAddSrc, DAVA::int32 & xAddDst, DAVA::int32 & yAddDst);
+
+    
+    
 
 protected:
     
