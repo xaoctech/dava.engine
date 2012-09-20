@@ -267,12 +267,14 @@ void NodesPropertyControl::AddChildLodSection()
         struct LodInfo
         {
             float32 distance;
+            int32 triangles;
             int32 count;
             
             LodInfo()
             {
                 count = 0;
                 distance = 0.0f;
+                triangles = 0;
             }
             
         }lodInfo[LodNode::MAX_LOD_LAYERS];
@@ -281,9 +283,19 @@ void NodesPropertyControl::AddChildLodSection()
         {
             float32 *distances = new float32[LodNode::MAX_LOD_LAYERS];
             
+            
+            List<LodNode::LodData*> lodLayers;
+            childLodNodes[i]->GetLodData(lodLayers);
+            List<LodNode::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
+            
             int32 iLod = 0;
             for(; iLod < childLodNodes[i]->GetLodLayersCount(); ++iLod)
             {
+                //TODO: calculate triangles
+                LodNode::LodData *layer = *lodLayerIt;
+                lodInfo[iLod].triangles += GetTrianglesForLodLayer(layer);
+                ++lodLayerIt;
+
                 distances[iLod] = childLodNodes[i]->GetLodLayerDistance(iLod);
                 
                 lodInfo[iLod].distance += childLodNodes[i]->GetLodLayerDistance(iLod);
@@ -300,22 +312,27 @@ void NodesPropertyControl::AddChildLodSection()
         
         propertyList->AddDistanceProperty("property.lodnode.distances");
         float32 *distances = new float32[LodNode::MAX_LOD_LAYERS];
+        int32 *triangles = new int32[LodNode::MAX_LOD_LAYERS];
         int32 count = 0;
         for(int32 iLod = 0; iLod < LodNode::MAX_LOD_LAYERS; ++iLod)
         {
             if(lodInfo[iLod].count)
             {
+                triangles[iLod] = lodInfo[iLod].triangles;
                 distances[iLod] = lodInfo[iLod].distance / lodInfo[iLod].count;
                 count = iLod + 1;
             }
             else 
             {
                 distances[iLod] = 0.0f;
+                triangles[iLod] = 0;
             }
             
         }
-        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, count);
+        
+        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, triangles, count);
         SafeDeleteArray(distances);
+        SafeDeleteArray(triangles);
         
         propertyList->AddMessageProperty("Set Distances", 
                                          Message(this, &NodesPropertyControl::OnSetDistancesForLodNodes));
@@ -890,4 +907,25 @@ void NodesPropertyControl::SetSize(const Vector2 &newSize)
     propertyList->SetSize(propertyRect.GetSize());
 }
 #endif //#if defined (DAVA_QT)
+
+
+int32 NodesPropertyControl::GetTrianglesForLodLayer(LodNode::LodData *lodData)
+{
+    int32 trianglesCount = 0;
+    for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
+    {
+        Vector<MeshInstanceNode *> meshes;
+        lodData->nodes[n]->GetChildNodes(meshes);
+        
+        for(int32 m = 0; m < (int32)meshes.size(); ++m)
+        {
+            Vector<PolygonGroupWithMaterial *> polygonGroups = meshes[m]->GetPolygonGroups();
+            for(int32 p = 0; p < (int32)polygonGroups.size(); ++p)
+            {
+                trianglesCount += polygonGroups[p]->GetPolygonGroup()->GetIndexCount() / 3;
+            }
+        }
+    }
+    return trianglesCount;
+}
 

@@ -81,7 +81,7 @@ public:
     void SetColorPropertyValue(const String &propertyName, const Color &newColor);
     void SetSliderPropertyValue(const String &propertyName, float32 newMinValue, float32 newMaxValue, float32 newValue);
     void SetTexturePreviewPropertyValue(const String &propertyName, bool newBoolValue, Texture *newTexture);
-    void SetDistancePropertyValue(const String &propertyName, float32 *distances, int32 count);
+    void SetDistancePropertyValue(const String &propertyName, float32 *distances, int32 *triangles, int32 count);
     
     const String &GetStringPropertyValue(const String &propertyName);
     int32 GetIntPropertyValue(const String &propertyName);

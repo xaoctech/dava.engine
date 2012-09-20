@@ -31,12 +31,28 @@ void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
     {
         propertyList->AddDistanceProperty("property.lodnode.distances");
         float32 *distances = new float32[lodNode->GetLodLayersCount()];
+        int32 *triangles = new int32[lodNode->GetLodLayersCount()];
+        
+        
+        List<LodNode::LodData*> lodLayers;
+        lodNode->GetLodData(lodLayers);
+        
+        List<LodNode::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
         for(int32 i = 0; i < lodNode->GetLodLayersCount(); ++i)
         {
             distances[i] = lodNode->GetLodLayerDistance(i);
+            
+            LodNode::LodData *layer = *lodLayerIt;
+            triangles[i] = GetTrianglesForLodLayer(layer);
+
+            ++lodLayerIt;
         }
-        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, lodNode->GetLodLayersCount());
+        
+        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, triangles, lodNode->GetLodLayersCount());
+        
+        
         SafeDeleteArray(distances);
+        SafeDeleteArray(triangles);
     }
 }
 

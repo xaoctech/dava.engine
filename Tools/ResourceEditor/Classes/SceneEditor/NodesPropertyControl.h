@@ -69,6 +69,9 @@ public:
     
 protected:
 
+    int32 GetTrianglesForLodLayer(LodNode::LodData *lodData);
+    
+    
     bool GetHeaderState(const String & headerName, bool defaultValue = true);
     void SetHeaderState(const String & headerName, bool newState);
     

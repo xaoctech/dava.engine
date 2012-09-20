@@ -22,7 +22,7 @@ public:
 
     virtual void WillDisappear();
     
-    void SetDistances(float32 *newDistances, int32 newCount);
+    void SetDistances(float32 *newDistances, int32 *newTriangles, int32 newCount);
     
     virtual void Input(UIEvent *currentInput);
     
@@ -42,6 +42,8 @@ private:
     
     int32 count;
     float32 distances[LodNode::MAX_LOD_DISTANCE];
+    int32 triangles[LodNode::MAX_LOD_DISTANCE];
+    
     float32 maxDistance;
 
     LodDistanceControlDelegate *delegate;
@@ -61,6 +63,10 @@ private:
     
     UIStaticText *distanceText[LodNode::MAX_LOD_LAYERS];
     UITextField *distanceTextValues[LodNode::MAX_LOD_LAYERS];
+
+    UIStaticText *trianglesText[LodNode::MAX_LOD_LAYERS];
+    UIStaticText *trianglesTextValues[LodNode::MAX_LOD_LAYERS];
+
     
     int32 activeLodIndex;
 };
