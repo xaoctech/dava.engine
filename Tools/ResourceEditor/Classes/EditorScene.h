@@ -59,6 +59,9 @@ public:
     
 protected:
 
+    
+    void SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags);
+    
     void SetForceLodLayerRecursive(SceneNode *node, int32 layer);
 
 	SceneNode * GetHighestProxy(SceneNode* curr);
@@ -74,6 +77,8 @@ protected:
 
 	SceneNode * selection;
 	SceneNode * proxy;
+    
+    MeshInstanceNode *selectedMeshInstance;
 	
 	SceneNode * FindSelected(SceneNode * curr, btCollisionObject * coll);
 	HeightmapNode * FindHeightmap(SceneNode * curr, btCollisionObject * coll);

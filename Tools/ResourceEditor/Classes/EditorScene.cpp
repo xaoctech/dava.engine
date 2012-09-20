@@ -22,7 +22,9 @@ REGISTER_CLASS_WITH_ALIAS(EditorScene, "Scene");
 
 EditorScene::EditorScene()
 :Scene()
-{ 
+{
+    selectedMeshInstance = NULL;
+    
 	selection = 0;
 	lastSelectedPhysics = 0;
 	proxy = 0;
@@ -39,18 +41,6 @@ EditorScene::EditorScene()
 	landBroadphase = new btAxisSweep3(worldMin,worldMax);
 	landCollisionWorld = new btCollisionWorld(landDispatcher, landBroadphase, landCollisionConfiguration);
 
-//    RegisterLodLayer(0, 15);
-//    RegisterLodLayer(12, 35);
-//    RegisterLodLayer(31, 1000);
-
-//    int32 lodCount = EditorSettings::Instance()->GetLodLayersCount();
-//    for(int32 iLod = 0; iLod < lodCount; ++iLod)
-//    {
-//        float32 nearDistance = EditorSettings::Instance()->GetLodLayerNear(iLod);
-//        float32 farDistance = EditorSettings::Instance()->GetLodLayerFar(iLod);
-//        RegisterLodLayer(nearDistance, farDistance);
-//    }
-    
     SetDrawGrid(true);
 }
 
@@ -316,10 +306,15 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 {
     if (selection)
     {
-		selection->SetDebugFlags(selection->GetDebugFlags() & (~SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+        uint32 flags = selection->GetDebugFlags();
+        uint32 newFlags = flags & ~SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        
+        SetNodeDebugFlags(selection, newFlags);
     }
     
 	selection = newSelection;
+    selectedMeshInstance = dynamic_cast<MeshInstanceNode *>(newSelection);
+    
 	if (selection)
 	{
 		SceneNode * solid = GetSolidParent(selection);
@@ -340,8 +335,23 @@ void EditorScene::SetSelection(SceneNode *newSelection)
 	}
 
 	if(selection)
-		selection->SetDebugFlags(selection->GetDebugFlags() | (SceneNode::DEBUG_DRAW_AABOX_CORNERS));
+    {
+        uint32 flags = selection->GetDebugFlags();
+        uint32 newFlags = flags | SceneNode::DEBUG_DRAW_AABOX_CORNERS;
+        
+        SetNodeDebugFlags(selection, newFlags);
+    }
 }
+
+void EditorScene::SetNodeDebugFlags(SceneNode *selectedNode, uint32 flags)
+{
+    selectedNode->SetDebugFlags(flags);
+    if(selectedMeshInstance && selectedMeshInstance != selectedNode)
+    {
+        selectedMeshInstance->SetDebugFlags(flags, false);
+    }
+}
+
 
 SceneNode * EditorScene::GetHighestProxy(SceneNode* curr)
 {
