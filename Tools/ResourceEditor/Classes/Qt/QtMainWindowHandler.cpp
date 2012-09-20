@@ -338,6 +338,7 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 	{
 		defaultFocusWidget->setEnabled(false);
 		defaultFocusWidget->setEnabled(true);
+        defaultFocusWidget->setFocus();
 	}
 }
 

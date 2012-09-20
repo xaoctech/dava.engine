@@ -93,6 +93,8 @@
     //RenderManager::Create(Core::RENDERER_OPENGL);
 	
     willQuit = false;
+    keyboardLocked = true;
+    
     
     windowOffset = Vector2(0.0f, 0.0f);
 
@@ -360,11 +362,15 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+    [super mouseDown:theEvent];
+    
 	[self process:DAVA::UIEvent::PHASE_BEGAN touch:theEvent];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
 {
+    [super mouseMoved:theEvent];
+    
 	[self process:DAVA::UIEvent::PHASE_MOVE touch:theEvent];
     
 //    NSLog(@"----- MOVE --------");
@@ -382,15 +388,21 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    [super mouseUp:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
+    [super mouseDragged:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)mouseEntered:(NSEvent *)theEvent
 {
+    [super mouseEntered:theEvent];
+
 	NSLog(@"mouse ENTERED");
     if(RenderManager::Instance()->GetCursor())
     {
@@ -403,74 +415,103 @@ void MoveTouchsToVector(NSEvent *curEvent, int touchPhase, Vector<UIEvent> *outT
 }
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	NSLog(@"mouse EXITED");
+    [super mouseExited:theEvent];
+
+	
+    NSLog(@"mouse EXITED");
     [NSCursor unhide];
 //	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)rightMouseDown:(NSEvent *)theEvent
 {
+    [super rightMouseDown:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)rightMouseDragged:(NSEvent *)theEvent
 {
+    [super rightMouseDragged:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)rightMouseUp:(NSEvent *)theEvent
 {
+    [super rightMouseUp:theEvent];
+    
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)otherMouseDown:(NSEvent *)theEvent
 {
+    [super otherMouseDown:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)otherMouseDragged:(NSEvent *)theEvent
 {
+    [super otherMouseDragged:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 - (void)otherMouseUp:(NSEvent *)theEvent
 {
+    [super otherMouseUp:theEvent];
+
 	[self process:DAVA::UIEvent::PHASE_ENDED touch:theEvent];
 }
 
 static int32 oldModifersFlags = 0;
 - (void) keyDown:(NSEvent *)event
 {
-	{
-//		Logger::Debug("glview keypress!");
-		unichar c = [[event characters] characterAtIndex:0];
-		
-		Vector<DAVA::UIEvent> touches;
-		Vector<DAVA::UIEvent> emptyTouches;
-
-		for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
-		{
-			touches.push_back(*it);
-		}
-		
-		DAVA::UIEvent ev;
-		ev.keyChar = c;
-		ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
-		ev.timestamp = event.timestamp;
-		ev.tapCount = 1;
-		ev.tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey([event keyCode]);
-        
-        touches.push_back(ev);
-		
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-        touches.pop_back();
-		UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
-	}
-	
-    InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed([event keyCode]);
-    if ([event modifierFlags]&NSCommandKeyMask)
+    if(keyboardLocked)
     {
-        InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
+        {
+            //		Logger::Debug("glview keypress!");
+            unichar c = [[event characters] characterAtIndex:0];
+            
+            Vector<DAVA::UIEvent> touches;
+            Vector<DAVA::UIEvent> emptyTouches;
+            
+            for(Vector<DAVA::UIEvent>::iterator it = activeTouches.begin(); it != activeTouches.end(); it++)
+            {
+                touches.push_back(*it);
+            }
+            
+            DAVA::UIEvent ev;
+            ev.keyChar = c;
+            ev.phase = DAVA::UIEvent::PHASE_KEYCHAR;
+            ev.timestamp = event.timestamp;
+            ev.tapCount = 1;
+            ev.tid = InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey([event keyCode]);
+            
+            touches.push_back(ev);
+            
+            UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+            touches.pop_back();
+            UIControlSystem::Instance()->OnInput(0, emptyTouches, touches);
+        }
+        
+        InputSystem::Instance()->GetKeyboard()->OnSystemKeyPressed([event keyCode]);
+        if ([event modifierFlags]&NSCommandKeyMask)
+        {
+            InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
+        }
     }
-}	
+    else
+    {
+        [super keyDown:event];
+    }
+}
 
 - (void) keyUp:(NSEvent *)event
 {
-    InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
+    if(keyboardLocked)
+    {
+        InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed([event keyCode]);
+    }
+    else
+    {
+        [super keyUp:event];
+    }
 }
 
 - (void) flagsChanged :(NSEvent *)event
@@ -497,6 +538,12 @@ static int32 oldModifersFlags = 0;
     
     oldModifersFlags = newModifers;
 }
+
+- (void) LockKeyboardInput:(bool) locked
+{
+    keyboardLocked = locked;
+}
+
 
 
 @end
