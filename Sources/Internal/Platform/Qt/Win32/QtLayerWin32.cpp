@@ -179,6 +179,12 @@ void QtLayerWin32::ProcessFrame()
     DAVA::RenderManager::Instance()->Unlock();   
 }
 
+void QtLayerWin32::LockKeyboardInput(bool locked)
+{
+	//do nothing
+}
+
+
 };
 
 

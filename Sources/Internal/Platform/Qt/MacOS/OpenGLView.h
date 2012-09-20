@@ -46,6 +46,8 @@ using namespace DAVA;
 //	DAVA::Cursor * activeCursor;
 	bool willQuit;
     
+    bool keyboardLocked;
+    
     Vector2 windowOffset;
 }
 
@@ -59,6 +61,8 @@ using namespace DAVA;
 - (void) setWindowOffset: (const Vector2 &) offset;
 
 - (void) MouseMoved:(int32)x y:(int32)y;
+
+- (void) LockKeyboardInput:(bool) locked;
 
 @end
 

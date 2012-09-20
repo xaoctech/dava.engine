@@ -10,6 +10,7 @@
 #include <QMoveEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QFocusEvent>
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -180,4 +181,21 @@ void DavaGLWidget::mouseMoveEvent(QMouseEvent *e)
     QWidget::mouseMoveEvent(e);
 }
 #endif //#if defined (Q_WS_MAC)
+
+void DavaGLWidget::focusInEvent(QFocusEvent *e)
+{
+    QWidget::focusInEvent(e);
+    
+    DAVA::QtLayer::Instance()->LockKeyboardInput(true);
+}
+
+void DavaGLWidget::focusOutEvent(QFocusEvent *e)
+{
+    QWidget::focusOutEvent(e);
+
+    DAVA::QtLayer::Instance()->LockKeyboardInput(false);
+}
+
+
+
 

@@ -58,6 +58,7 @@ public:
 
     virtual void ProcessFrame();
 
+    virtual void LockKeyboardInput(bool locked);
 
 	void SetWindow(HINSTANCE hInstance, HWND hWindow, int32 width, int32 height);
 };	
