@@ -1485,6 +1485,11 @@ void EditorBodyControl::SetScene(EditorScene *newScene)
     scene3dView->SetScene(scene);
 	sceneGraph->SetScene(scene);
     
+    if(sceneInfoControl)
+    {
+        sceneInfoControl->SetWorkingScene(newScene);
+    }
+    
     modificationPanel->SetScene(scene);
 }
 
