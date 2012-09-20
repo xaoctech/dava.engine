@@ -37,6 +37,20 @@ LodDistanceControl::LodDistanceControl(LodDistanceControlDelegate *newDelegate, 
         distanceTextValues[iDist]->SetFont(ControlsFactory::GetFontLight());
         distanceTextValues[iDist]->SetDelegate(this);
         distanceTextValues[iDist]->SetInputEnabled((0 != iDist), false);
+        
+        
+        trianglesText[iDist] = new UIStaticText(Rect(0, 0,
+                                                    rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
+        
+        trianglesText[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+        trianglesText[iDist]->SetFont(ControlsFactory::GetFontLight());
+        
+        trianglesTextValues[iDist] = new UIStaticText(Rect(rect.dx / 2.f, 0,
+                                                     rect.dx / 2.f, (float32)ControlsFactory::BUTTON_HEIGHT));
+        
+        trianglesTextValues[iDist]->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+        trianglesTextValues[iDist]->SetFont(ControlsFactory::GetFontLight());
+        
     }
 }
 
@@ -46,6 +60,9 @@ LodDistanceControl::~LodDistanceControl()
     {
         SafeRelease(distanceText[iDist]);
         SafeRelease(distanceTextValues[iDist]);
+        
+        SafeRelease(trianglesText[iDist]);
+        SafeRelease(trianglesTextValues[iDist]);
     }
     
     ReleaseControls();
@@ -84,10 +101,10 @@ void LodDistanceControl::ReleaseControls()
     activeLodIndex = -1;
 }
 
-void LodDistanceControl::SetDistances(float32 *newDistances, int32 newCount)
+void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles, int32 newCount)
 {
     Vector2 newSize = GetSize();
-    newSize.y = (float32)((newCount + 1) * ControlsFactory::BUTTON_HEIGHT);
+    newSize.y = (float32)((newCount*2 + 1) * ControlsFactory::BUTTON_HEIGHT);
     SetSize(newSize);
     
     ReleaseControls();
@@ -96,6 +113,7 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 newCount)
     {
         count = newCount;
         Memcpy(distances, newDistances, count * sizeof(float32));
+        Memcpy(triangles, newTriangles, count * sizeof(int32));
         
         zones = new UIControl*[count];
         
@@ -150,10 +168,13 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 newCount)
         }
     }
     
+    float32 x = GetRect().dx / 2.f;
     for(int32 iDist = 0; iDist < LodNode::MAX_LOD_LAYERS; ++iDist)
     {
         RemoveControl(distanceText[iDist]);
         RemoveControl(distanceTextValues[iDist]);
+        RemoveControl(trianglesText[iDist]);
+        RemoveControl(trianglesTextValues[iDist]);
         
         if(iDist < count)
         {
@@ -162,6 +183,16 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 newCount)
 
             AddControl(distanceTextValues[iDist]);
             distanceTextValues[iDist]->SetText(Format(L"%3.0f", distances[iDist]));
+            
+            
+            float32 y = (count + iDist + 1) * ControlsFactory::BUTTON_HEIGHT;
+            trianglesText[iDist]->SetPosition(Vector2(0, y));
+            AddControl(trianglesText[iDist]);
+            trianglesText[iDist]->SetText(Format(L"Triangles_%d:", iDist));
+            
+            trianglesTextValues[iDist]->SetPosition(Vector2(x, y));
+            AddControl(trianglesTextValues[iDist]);
+            trianglesTextValues[iDist]->SetText(Format(L"%d", triangles[iDist]));
         }
     }
 }

@@ -924,7 +924,7 @@ void PropertyDistanceCell::SetData(PropertyCellData *prop)
     {
         case PropertyCellData::PROP_VALUE_DISTANCE:
         {
-            distanceControl->SetDistances(prop->GetDistances(), prop->GetDistancesCount());
+            distanceControl->SetDistances(prop->GetDistances(), prop->GetTriangles(), prop->GetDistancesCount());
             break;
         }
             
@@ -935,7 +935,7 @@ void PropertyDistanceCell::SetData(PropertyCellData *prop)
 
 float32 PropertyDistanceCell::GetHeightForWidth(float32 , int32 count)
 {
-    return CELL_HEIGHT + (count + 1) * ControlsFactory::BUTTON_HEIGHT;
+    return CELL_HEIGHT + (count*2 + 1) * ControlsFactory::BUTTON_HEIGHT;
 }
 
 void PropertyDistanceCell::DistanceChanged(LodDistanceControl *, int32 index, float32 value)
