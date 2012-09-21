@@ -185,7 +185,7 @@ void LodDistanceControl::SetDistances(float32 *newDistances, int32 *newTriangles
             distanceTextValues[iDist]->SetText(Format(L"%3.0f", distances[iDist]));
             
             
-            float32 y = (count + iDist + 1) * ControlsFactory::BUTTON_HEIGHT;
+            float32 y = (float32)(count + iDist + 1) * (float32)ControlsFactory::BUTTON_HEIGHT;
             trianglesText[iDist]->SetPosition(Vector2(0, y));
             AddControl(trianglesText[iDist]);
             trianglesText[iDist]->SetText(Format(L"Triangles_%d:", iDist));
