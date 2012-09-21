@@ -48,6 +48,7 @@ SceneData::SceneData()
     
     cameraController = new WASDCameraController(EditorSettings::Instance()->GetCameraSpeed());
     
+    skipLibraryPreview = false;
     
     connect(sceneGraphModel, SIGNAL(SceneNodeSelected(DAVA::SceneNode *)), this, SLOT(SceneNodeSelected(DAVA::SceneNode *)));
     connect(libraryModel->GetSelectionModel(), SIGNAL(FileSelected(const QString &, bool)), this, SLOT(FileSelected(const QString &, bool)));
@@ -601,7 +602,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
 {
     //TODO: need best way to display scene preview
     SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen)
+    if(screen && !skipLibraryPreview)
     {
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
         if(0 == CompareStrings(extension, String(".sc2")) && isFile)
@@ -613,6 +614,8 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
             screen->HideScenePreview();
         }
     }
+    
+    skipLibraryPreview = false;
 }
 
 void SceneData::Execute(Command *command)
@@ -715,5 +718,12 @@ LandscapesController * SceneData::GetLandscapesController()
 }
 
 
+void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
+{
+    skipLibraryPreview = true;
 
+    const QModelIndex index = libraryModel->index(QString(filePathname.c_str()));
+    libraryView->setCurrentIndex(index);
+    libraryView->scrollTo(index);
+}
 
