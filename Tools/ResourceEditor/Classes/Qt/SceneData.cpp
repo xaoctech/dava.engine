@@ -721,14 +721,10 @@ LandscapesController * SceneData::GetLandscapesController()
 void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 {
     skipLibraryPreview = true;
-
-	QString filePathnameQt(filePathname.c_str());
-	QDir itemDir(filePathnameQt);
-	QString itemPath = itemDir.canonicalPath(); 
-
-
-    const QModelIndex index = libraryModel->index(itemPath);
-    libraryView->setCurrentIndex(index);
-    libraryView->scrollTo(index);
+	bool fileWillBeSelected = libraryModel->SelectFile(filePathname);
+	if(!fileWillBeSelected)
+	{
+		skipLibraryPreview = false;
+	}
 }
 
