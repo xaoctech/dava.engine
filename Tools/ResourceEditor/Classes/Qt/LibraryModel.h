@@ -2,7 +2,8 @@
 #define __LIBRARY_MODEL_H__
 
 #include <QFileSystemModel>
-
+#include <QString>
+#include "DAVAEngine.h"
 
 class QTreeView;
 class FileSelectionModel;
@@ -23,7 +24,11 @@ public:
     
     virtual QVariant data(const QModelIndex &index, int role) const;
     
+	bool SelectFile(const DAVA::String &pathname);
+
 protected:
+
+	QString QStylePathname(const DAVA::String &pathname);
 
     FileSelectionModel *fileSelectionModel;
     QTreeView *attachedTreeView;
