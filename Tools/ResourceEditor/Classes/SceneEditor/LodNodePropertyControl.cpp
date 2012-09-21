@@ -11,16 +11,6 @@ LodNodePropertyControl::~LodNodePropertyControl()
 
 }
 
-//void LodNodePropertyControl::WillDisappear()
-//{
-//    LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
-//    if(lodNode)
-//    {
-//        lodNode->SetForceLodLayerDistance(LodNode::INVALID_DISTANCE);
-//    }
-//    
-//    NodesPropertyControl::WillDisappear();
-//}
 
 void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
 {
@@ -41,57 +31,30 @@ void LodNodePropertyControl::ReadFrom(SceneNode * sceneNode)
     {
         propertyList->AddDistanceProperty("property.lodnode.distances");
         float32 *distances = new float32[lodNode->GetLodLayersCount()];
+        int32 *triangles = new int32[lodNode->GetLodLayersCount()];
+        
+        
+        List<LodNode::LodData*> lodLayers;
+        lodNode->GetLodData(lodLayers);
+        
+        List<LodNode::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
         for(int32 i = 0; i < lodNode->GetLodLayersCount(); ++i)
         {
             distances[i] = lodNode->GetLodLayerDistance(i);
+            
+            LodNode::LodData *layer = *lodLayerIt;
+            triangles[i] = GetTrianglesForLodLayer(layer);
+
+            ++lodLayerIt;
         }
-        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, lodNode->GetLodLayersCount());
+        
+        propertyList->SetDistancePropertyValue("property.lodnode.distances", distances, triangles, lodNode->GetLodLayersCount());
+        
+        
         SafeDeleteArray(distances);
+        SafeDeleteArray(triangles);
     }
 }
 
-//void LodNodePropertyControl::OnBoolPropertyChanged(PropertyList *forList, const String &forKey, bool newValue)
-//{
-//    if("property.lodnode.forcedistance" == forKey)
-//    {
-//        LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
-//        
-//        if(newValue)
-//        {
-//            lodNode->SetForceLodLayerDistance(propertyList->GetSliderPropertyValue("property.lodnode.distanceslider"));
-//        }
-//        else 
-//        {
-//            lodNode->SetForceLodLayerDistance(LodNode::INVALID_DISTANCE);
-//        }
-//    }
-//
-//    NodesPropertyControl::OnBoolPropertyChanged(forList, forKey, newValue);
-//}
 
-//void LodNodePropertyControl::OnDistancePropertyChanged(PropertyList *forList, const String &forKey, float32 newValue, int32 index)
-//{
-//    if("property.lodnode.distances" == forKey)
-//    {
-//        LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
-//        lodNode->SetLodLayerDistance(index, newValue);
-//    }
-//    
-//    NodesPropertyControl::OnDistancePropertyChanged(forList, forKey, newValue, index);
-//}
-
-
-//void LodNodePropertyControl::OnSliderPropertyChanged(PropertyList *forList, const String &forKey, float32 newValue)
-//{
-//    if("property.lodnode.distanceslider" == forKey)
-//    {
-//        if(propertyList->GetBoolPropertyValue("property.lodnode.forcedistance"))
-//        {
-//            LodNode *lodNode = dynamic_cast<LodNode *> (currentSceneNode);
-//            lodNode->SetForceLodLayerDistance(newValue);
-//        }
-//    }
-//
-//    NodesPropertyControl::OnSliderPropertyChanged(forList, forKey, newValue);
-//}
 

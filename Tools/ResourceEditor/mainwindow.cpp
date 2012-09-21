@@ -69,6 +69,7 @@ void QtMainWindow::SetupMainMenu()
     QtMainWindowHandler *actionHandler = QtMainWindowHandler::Instance();
     //File
     connect(ui->menuFile, SIGNAL(aboutToShow()), this, SLOT(MenuFileWillShow()));
+    connect(ui->menuFile, SIGNAL(triggered(QAction *)), actionHandler, SLOT(FileMenuTriggered(QAction *)));
     connect(ui->actionNewScene, SIGNAL(triggered()), actionHandler, SLOT(NewScene()));
     connect(ui->actionOpenScene, SIGNAL(triggered()), actionHandler, SLOT(OpenScene()));
     connect(ui->actionOpenProject, SIGNAL(triggered()), actionHandler, SLOT(OpenProject()));
@@ -77,9 +78,7 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionPVR, SIGNAL(triggered()), actionHandler, SLOT(ExportAsPVR()));
     connect(ui->actionDXT, SIGNAL(triggered()), actionHandler, SLOT(ExportAsDXT()));
 
-    //Resent files
-    connect(ui->menuResentScenes, SIGNAL(triggered(QAction *)), actionHandler, SLOT(ResentSceneTriggered(QAction *)));
-
+    
     //View
     connect(ui->actionSceneInfo, SIGNAL(triggered()), actionHandler, SLOT(ToggleSceneInfo()));
     connect(ui->actionRestoreViews, SIGNAL(triggered()), actionHandler, SLOT(RestoreViews()));
@@ -225,7 +224,8 @@ void QtMainWindow::SetupDockWidgets()
 
 void QtMainWindow::MenuFileWillShow()
 {
-    QtMainWindowHandler::Instance()->SetResentMenu(ui->menuResentScenes);
+    QtMainWindowHandler::Instance()->SetResentMenu(ui->menuFile);
+    QtMainWindowHandler::Instance()->SetResentAncorAction(ui->actionSaveScene);
     QtMainWindowHandler::Instance()->MenuFileWillShow();
 }
 

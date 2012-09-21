@@ -34,6 +34,9 @@ protected:
 
 	virtual void closeEvent(QCloseEvent *);
     
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
+    
 #if defined (Q_WS_MAC)
     virtual void mouseMoveEvent(QMouseEvent *);
 #endif //#if defined (Q_WS_MAC)

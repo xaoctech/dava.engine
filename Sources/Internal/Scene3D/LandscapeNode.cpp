@@ -1671,6 +1671,9 @@ const Color & LandscapeNode::GetFogColor() const
     return fogColor;
 }
 
-    
+LandscapeCursor * LandscapeNode::GetCursor()
+{
+    return cursor;
+}
     
 };

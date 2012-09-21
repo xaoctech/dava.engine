@@ -35,10 +35,8 @@ public:
 	
 private:
     
-#if defined (DAVA_QT)
     void ResizeScreens();
     DAVA::Vector2 virtualSize;
-#endif //#if defined (DAVA_QT)
     
 	ResourcePackerScreen * resourcePackerScreen;
     SceneEditorScreenMain * sceneEditorScreenMain;

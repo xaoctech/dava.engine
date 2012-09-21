@@ -40,6 +40,9 @@ LandscapesController::LandscapesController()
     renderedHeightmap = NULL;
     notPassableTerrain = NULL;
     landscapeRenderer = NULL;
+    editorLandscape = NULL;
+    
+    currentLandscape = NULL;
     
     savedLandscape = NULL;
     savedHeightmap = NULL;
@@ -76,6 +79,12 @@ void LandscapesController::ReleaseScene()
     }
     SafeRelease(notPassableTerrain);
 
+    if(editorLandscape && editorLandscape->GetParent())
+    {
+        editorLandscape->GetParent()->RemoveNode(editorLandscape);
+    }
+    SafeRelease(editorLandscape);
+
     
     SafeRelease(renderedHeightmap);
     SafeRelease(landscapeRenderer);
@@ -90,6 +99,8 @@ void LandscapesController::ReleaseScene()
     
     
     SafeRelease(scene);
+    
+    currentLandscape = NULL;
 }
 
 void LandscapesController::SaveLandscape(DAVA::LandscapeNode *landscape)
@@ -102,6 +113,8 @@ void LandscapesController::SaveLandscape(DAVA::LandscapeNode *landscape)
         savedLandscape = SafeRetain(landscape);
         savedHeightmap = SafeRetain(landscape->GetHeightmap());
     }
+    
+    currentLandscape = savedLandscape;
 }
 
 
@@ -140,20 +153,15 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
     }
 
     LandscapeNode *landscape = landscapes[0];
-    displayingLandscape->SetLandscape(landscape);
+    displayingLandscape->SetNestedLandscape(landscape);
     
-    if(landscapeRenderer)
-    {
-        displayingLandscape->SetHeightmap(landscape->GetHeightmap());
-    }
-    else
+    if(!landscapeRenderer)
     {
         renderedHeightmap = new EditorHeightmap(landscape->GetHeightmap());
-        displayingLandscape->SetHeightmap(renderedHeightmap);
-
         landscapeRenderer = new LandscapeRenderer(renderedHeightmap, landscape->GetBoundingBox());
+
+        displayingLandscape->SetHeightmap(renderedHeightmap);
     }
-    
     displayingLandscape->SetRenderer(landscapeRenderer);
     
     SceneNode *parentNode = landscape->GetParent();
@@ -163,30 +171,52 @@ bool LandscapesController::ShowEditorLandscape(EditorLandscapeNode *displayingLa
         parentNode->AddNode(displayingLandscape);
     }
 
+    currentLandscape = displayingLandscape;
     return true;
 }
 
 bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLandscape)
 {
-    SceneNode *parentNode = hiddingLandscape->GetParent();
-    LandscapeNode *restoredLandscape = SafeRetain(hiddingLandscape->GetEditedLandscape());
+    hiddingLandscape->FlushChanges();
     
-    if(parentNode)
+    EditorLandscapeNode *parentLandscape = hiddingLandscape->GetParentLandscape();
+    LandscapeNode *nestedLandscape = hiddingLandscape->GetNestedLandscape();
+    
+    if(parentLandscape)
     {
-        parentNode->RemoveNode(hiddingLandscape);
-        parentNode->AddNode(restoredLandscape);
+        Heightmap *hmap = SafeRetain(parentLandscape->GetHeightmap());
+        parentLandscape->SetNestedLandscape(nestedLandscape);
+        parentLandscape->SetHeightmap(hmap);
+        SafeRelease(hmap);
+
+        currentLandscape = parentLandscape;
+    }
+    else
+    {
+        EditorLandscapeNode *editorNestedLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+        if(editorNestedLandscape)
+        {
+            editorNestedLandscape->SetParentLandscape(NULL);
+        }
+        
+        SceneNode *parentNode = hiddingLandscape->GetParent();
+        if(parentNode)
+        {
+            parentNode->RemoveNode(hiddingLandscape);
+            parentNode->AddNode(nestedLandscape);
+        }
+        
+        if(NeedToKillRenderer(nestedLandscape))
+        {
+            SafeRelease(renderedHeightmap);
+            SafeRelease(landscapeRenderer);
+        }
+        
+        currentLandscape = nestedLandscape;
     }
     
-    if(NeedToKillRenderer(restoredLandscape))
-    {
-        SafeRelease(renderedHeightmap);
-        SafeRelease(landscapeRenderer);
-    }
-    
+
     SafeRelease(hiddingLandscape);
-    SafeRelease(restoredLandscape);
-    
-    
     return true;
 }
 
@@ -203,6 +233,65 @@ bool LandscapesController::EditorLandscapeIsActive()
     return (NULL != notPassableTerrain) || (NULL != landscapeRenderer) || (NULL != renderedHeightmap);
 }
 
+EditorLandscapeNode *LandscapesController::CreateEditorLandscapeNode()
+{
+    editorLandscape = new EditorLandscapeNode();
+    bool showed = ShowEditorLandscape(editorLandscape);
+    if(!showed)
+    {
+        SafeRelease(editorLandscape);
+    }
+    
+    return editorLandscape;
+}
+
+void LandscapesController::ReleaseEditorLandscapeNode()
+{
+    bool hidden = HideEditorLandscape(editorLandscape);
+    if(hidden)
+    {
+        editorLandscape = NULL;
+    }
+}
+
+DAVA::LandscapeNode * LandscapesController::GetCurrentLandscape()
+{
+    return currentLandscape;
+}
+
+DAVA::Heightmap * LandscapesController::GetCurrentHeightmap()
+{
+    if(currentLandscape)
+    {
+        return currentLandscape->GetHeightmap();
+    }
+    
+    return NULL;
+}
+
+
+void LandscapesController::HeghtWasChanged(const DAVA::Rect &changedRect)
+{
+    landscapeRenderer->RebuildVertexes(changedRect);
+    renderedHeightmap->HeghtWasChanged(changedRect);
+
+    EditorLandscapeNode *landscape = dynamic_cast<EditorLandscapeNode *>(currentLandscape);
+    if(landscape)
+    {
+        landscape->HeihghtmapUpdated(changedRect);
+    }
+}
+
+
+void LandscapesController::CursorEnable()
+{
+    currentLandscape->CursorEnable();
+}
+
+void LandscapesController::CursorDisable()
+{
+    currentLandscape->CursorDisable();
+}
 
 
 

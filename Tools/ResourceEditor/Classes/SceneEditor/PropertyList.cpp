@@ -630,13 +630,15 @@ void PropertyList::AddDistanceProperty(const String &propertyName, editableType 
     PropertyCellData *p = new PropertyCellData(PropertyCellData::PROP_VALUE_DISTANCE);
     p->cellType = PropertyCell::PROP_CELL_DISTANCE;
     p->SetDistances(NULL, 0);
+    p->SetTriangles(NULL, 0);
     AddProperty(p, propertyName, propEditType);
 }
 
-void PropertyList::SetDistancePropertyValue(const String &propertyName, float32 *distances, int32 count)
+void PropertyList::SetDistancePropertyValue(const String &propertyName, float32 *distances, int32 *triangles, int32 count)
 {
     PropertyCellData *p = PropertyByName(propertyName);
     p->SetDistances(distances, count);
+    p->SetTriangles(triangles, count);
     
     if (p->currentCell) 
     {
@@ -660,7 +662,6 @@ float32 PropertyList::GetDistancePropertyValue(const String &propertyName, int32
     return p->GetDistances()[index];   
 }
 
-#if defined (DAVA_QT)
 void PropertyList::SetSize(const Vector2 &newSize)
 {
     ControlsFactory::RemoveScrollbar(propsList);
@@ -673,6 +674,4 @@ void PropertyList::SetSize(const Vector2 &newSize)
     
     ControlsFactory::SetScrollbar(propsList);
 }
-#endif //#if defined (DAVA_QT)
-
 
