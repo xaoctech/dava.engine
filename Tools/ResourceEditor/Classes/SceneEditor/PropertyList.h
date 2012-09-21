@@ -112,9 +112,7 @@ public:
     
     const List<UIControl*> &GetVisibleCells();
 
-#if defined (DAVA_QT)
     virtual void SetSize(const Vector2 &newSize);
-#endif //#if defined (DAVA_QT)
 
 protected:
     

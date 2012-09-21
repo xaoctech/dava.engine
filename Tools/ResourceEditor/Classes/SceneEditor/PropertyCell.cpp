@@ -17,9 +17,7 @@
 #include "HintManager.h"
 #include "UIFilePreviewDialog.h"
 
-#if defined(DAVA_QT)
-    #include "../Qt/QtUtils.h"
-#endif //#if defined(DAVA_QT)
+#include "../Qt/QtUtils.h"
 
 
 
@@ -303,10 +301,6 @@ void PropertyBoolCell::ValueChanged(UICheckBox *, bool newValue)
 PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
-#if !defined(DAVA_QT)
-    dialog = NULL;
-#endif //#if !defined(DAVA_QT)
-    
     keyName->size.x = size.x;
     keyName->size.y = size.y/2;
     keyName->SetAlign(ALIGN_VCENTER|ALIGN_LEFT);
@@ -379,7 +373,6 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
-#if defined(DAVA_QT)
     String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
     
     String extension = FileSystem::GetExtension(pathToFile);
@@ -391,32 +384,8 @@ void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
     property->SetString(pathToFile);
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
-    
-#else //#if defined(DAVA_QT)
-    if(dialog)
-    {
-        return;
-    }
-    dialog = new UIFilePreviewDialog("~res:/Fonts/MyriadPro-Regular.otf");
-    dialog->SetOperationType(UIFileSystemDialog::OPERATION_LOAD);
-    dialog->SetDelegate(this);
-    dialog->SetTitle(keyName->GetText());
-    dialog->SetExtensionFilter(property->GetExtensionFilter());
-    if(property->GetString().length() > 0)
-    {
-        dialog->SetCurrentDir(property->GetString());
-    }
-    else 
-    {
-        dialog->SetCurrentDir(EditorSettings::Instance()->GetDataSourcePath());
-    }
-
-    
-    dialog->Show(UIScreenManager::Instance()->GetScreen());
-#endif //#if defined(DAVA_QT)
 }
 
-#if defined(DAVA_QT)
 String PropertyFilepathCell::GetPathname()
 {
     if(0 < property->GetString().length())
@@ -449,17 +418,8 @@ String PropertyFilepathCell::GetExtensionFilter()
     return qtFormattedFilter;
 }
 
-#endif //#if defined(DAVA_QT)
-
 void PropertyFilepathCell::OnClear(BaseObject * , void * , void * )
 {
-#if !defined(DAVA_QT)
-    if(dialog)
-    {
-        return;
-    }
-#endif //#if !defined(DAVA_QT)
-    
     property->SetString("");
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
@@ -492,30 +452,6 @@ void PropertyFilepathCell::OnHint(BaseObject * , void * , void * )
 {
     HintManager::Instance()->ShowHint(pathText->GetText(), this->GetRect(true));
 }
-
-#if !defined(DAVA_QT)
-void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
-{
-    String extension = FileSystem::GetExtension(pathToFile);
-    if(0 == CompareStrings(".pvr", extension))
-    {
-        PVRConverter::Instance()->ConvertPvrToPng(pathToFile);
-    }
-    
-    property->SetString(pathToFile);
-    SetData(property);
-    propertyDelegate->OnPropertyChanged(property);
-    
-    SafeRelease(dialog);
-}
-
-void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog)
-{
-    SafeRelease(dialog);
-}
-#endif //#if !defined(DAVA_QT)
-
-
 
 
 PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
@@ -941,7 +877,5 @@ float32 PropertyDistanceCell::GetHeightForWidth(float32 , int32 count)
 void PropertyDistanceCell::DistanceChanged(LodDistanceControl *, int32 index, float32 value)
 {
     property->SetDistance(value, index);
-    
-//    SetData(property);
     propertyDelegate->OnPropertyChanged(property);
 }

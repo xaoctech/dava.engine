@@ -3,10 +3,8 @@
 
 #include "EditorSettings.h"
 
-#if defined(DAVA_QT)
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
-#endif //#if defined(DAVA_QT)
 
 GraphBase::GraphBase(GraphBaseDelegate *newDelegate, const Rect &rect)
     :   delegate(newDelegate)
@@ -17,8 +15,6 @@ GraphBase::GraphBase(GraphBaseDelegate *newDelegate, const Rect &rect)
 
 GraphBase::~GraphBase()
 {
-    SafeRelease(refreshButton);
-    
     SafeRelease(workingScene);
 
     SafeRelease(graphPanel);
@@ -45,15 +41,7 @@ void GraphBase::CreatePropertyPanel(const Rect &rect)
     propertyPanelRect = Rect(rect.dx - rightSideWidth, 0, rightSideWidth, rect.dy);
     propertyPanel = ControlsFactory::CreatePanelControl(propertyPanelRect, false);
 
-    refreshButton = ControlsFactory::CreateButton(Rect(0, propertyPanelRect.dy - ControlsFactory::BUTTON_HEIGHT, 
-                                                                 propertyPanelRect.dx, ControlsFactory::BUTTON_HEIGHT), 
-                                                            LocalizedString(L"panel.refresh"));
-    refreshButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &GraphBase::OnRefreshPropertyControl));
-    
-    propertyPanel->AddControl(refreshButton);
-    
     propertyPanelRect.x = propertyPanelRect.y = 0;
-    propertyPanelRect.dy -= ControlsFactory::BUTTON_HEIGHT;
 }
 
 UIControl * GraphBase::GetGraphPanel()
@@ -66,23 +54,11 @@ UIControl * GraphBase::GetPropertyPanel()
     return propertyPanel;
 }
 
-void GraphBase::RefreshProperties()
-{
-#if !defined (DAVA_QT)
-    NodesPropertyChanged();
-#endif //#if !defined (DAVA_QT)
-}
-
 
 void GraphBase::SetScene(EditorScene *scene)
 {
     SafeRelease(workingScene);
     workingScene = SafeRetain(scene);
-}
-
-void GraphBase::OnRefreshPropertyControl(DAVA::BaseObject *, void *, void *)
-{
-    RefreshProperties();
 }
 
 bool GraphBase::GraphOnScreen()
@@ -166,12 +142,8 @@ void GraphBase::OnCellSelected(UIHierarchy *forHierarchy, UIHierarchyCell *selec
 
 void GraphBase::NodesPropertyChanged()
 {
-#if defined (DAVA_QT)
     SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
     activeScene->RebuildSceneGraph();
-#else //#if defined (DAVA_QT)
-    RefreshGraph();
-#endif //#if defined (DAVA_QT)
 }
 
 

@@ -21,12 +21,6 @@ using namespace DAVA;
 
 
 class SceneGraph;
-#if !defined (DAVA_QT)
-class DataGraph;
-class EntitiesGraph;
-class OutputPanelControl;
-#endif //#if !defined (DAVA_QT)
-
 class SceneInfoControl;
 class BeastManager;
 class LandscapeEditorColor;
@@ -58,28 +52,7 @@ public:
     virtual void Input(UIEvent * touch);
 	virtual void Draw(const UIGeometricData &geometricData);
 
-#if defined (DAVA_QT)
     virtual void SetSize(const Vector2 &newSize);
-#else //#if defined (DAVA_QT)
-    void OpenScene(const String &pathToFile, bool editScene);
-
-    void ShowProperties(bool show);
-    bool PropertiesAreShown();
-
-    void ToggleSceneGraph();
-    void ToggleDataGraph();
-	void ToggleEntities();
-    void UpdateLibraryState(bool isShown, int32 width);
-    
-    void CreateScene(bool withCameras);
-    void ReleaseScene();
-    
-    const String &GetFilePath();
-    void SetFilePath(const String &newFilePath);
-    
-    void BakeScene();
-
-#endif //#if defined (DAVA_QT)
 
     void ReloadRootScene(const String &pathToFile);
     void ReloadNode(SceneNode *node, const String &pathToFile);
@@ -93,8 +66,6 @@ public:
     void RemoveSelectedSGNode();
     SceneNode *GetSelectedSGNode(); //Scene Graph node
     
-    void RefreshProperties();
-
     void Refresh();
     
     
@@ -125,13 +96,11 @@ public:
     
     bool TileMaskEditorEnabled();
     
-#if defined (DAVA_QT)        
     void SetScene(EditorScene *newScene);
     void SetCameraController(CameraController *newCameraController);
     
     void SelectNodeQt(SceneNode *node);
     void OnReloadRootNodesQt();
-#endif //#if defined (DAVA_QT)        
     
     
 	SceneGraph * GetSceneGraph() { return sceneGraph; }
@@ -140,17 +109,6 @@ protected:
 
     void InitControls();
     void PropcessIsSolidChanging();
-    
-
-#if !defined (DAVA_QT)        
-    void ToggleGraph(GraphBase *graph);
-
-    void ResetSelection();
-    
-    void BakeNode(SceneNode *node);
-    void FindIdentityNodes(SceneNode *node);
-    void RemoveIdentityNodes(SceneNode *node);
-#endif //#if !defined (DAVA_QT)
     
 	void CreateModificationPanel();
     void ReleaseModificationPanel();
@@ -187,17 +145,6 @@ protected:
 	
 	float32 axisSign[3];
 	
-#if !defined (DAVA_QT)
-    //OutputPanelControl
-    OutputPanelControl *outputPanel;
-    DataGraph *dataGraph;
-	EntitiesGraph *entitiesGraph;
-    
-    void ChangeControlWidthRight(UIControl *c, float32 width);
-    void ChangeControlWidthLeft(UIControl *c, float32 width);
-
-#endif //#if !defined (DAVA_QT)
-	
 	float32 moveKf;
     
     String mainFilePath;
@@ -222,10 +169,6 @@ protected:
     };
     Vector<AddedNode> nodesToAdd;
 	
-	//	Vector3 res = GetIntersection(Vector3(0,0,10), Vector3(0,0,-1), Vector3(0,0,1), Vector3(0,0,1));
-	//
-	//	Logger::Debug("intersection result %f %f %f", res.x, res.y, res.z);
-
 	
     ResourceEditor::eViewportType currentViewportType;
     
