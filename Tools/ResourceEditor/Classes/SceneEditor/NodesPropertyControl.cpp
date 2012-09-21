@@ -881,7 +881,6 @@ void NodesPropertyControl::RestoreChildLodDistances()
     }
 }
 
-#if defined (DAVA_QT)
 void NodesPropertyControl::SetSize(const Vector2 &newSize)
 {
     UIControl::SetSize(newSize);
@@ -906,7 +905,6 @@ void NodesPropertyControl::SetSize(const Vector2 &newSize)
     
     propertyList->SetSize(propertyRect.GetSize());
 }
-#endif //#if defined (DAVA_QT)
 
 
 int32 NodesPropertyControl::GetTrianglesForLodLayer(LodNode::LodData *lodData)

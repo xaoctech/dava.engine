@@ -18,18 +18,6 @@ LibraryControl::LibraryControl(const Rect & rect)
     ControlsFactory::CustomizePanelControl(this);
     
     float32 panelHeight = ControlsFactory::PREVIEW_PANEL_HEIGHT;
-#if !defined(DAVA_QT)
-    fileTreeControl = new UIFileTree(Rect(0, ControlsFactory::BUTTON_HEIGHT, 
-                                          rect.dx, rect.dy - ControlsFactory::BUTTON_HEIGHT - panelHeight));
-    ControlsFactory::CusomizeListControl(fileTreeControl);
-    ControlsFactory::SetScrollbar(fileTreeControl);
-	fileTreeControl->SetDelegate(this);
-	fileTreeControl->SetFolderNavigation(false);
-    fileTreeControl->EnableRootFolderChange(false);
-    fileTreeControl->DisableRootFolderExpanding(true);
-	fileTreeControl->SetPath(folderPath, ".dae;.sc2");
-    AddControl(fileTreeControl);
-#endif //#if !defined(DAVA_QT)
     
     //button
     refreshButton = ControlsFactory::CreateButton(Rect(0, 0, rect.dx, ControlsFactory::BUTTON_HEIGHT), 
@@ -83,10 +71,6 @@ LibraryControl::~LibraryControl()
     SafeRelease(panelSCE);
     
     SafeRelease(refreshButton);
-    
-#if !defined(DAVA_QT)
-    SafeRelease(fileTreeControl);
-#endif //#if !defined(DAVA_QT)
 }
 
 
@@ -108,9 +92,6 @@ void LibraryControl::WillDisappear()
         preview->RecreateScene();
         
         RemoveControl(panelSCE);
-
-//        selectedFileName = "";
-//        selectedFileNameShort = "";
     }
 }
 
@@ -118,10 +99,6 @@ void LibraryControl::WillDisappear()
 void LibraryControl::SetPath(const String &path)
 {
     folderPath = path;
-    
-#if !defined(DAVA_QT)
-    fileTreeControl->SetPath(folderPath, ".dae;.sc2");
-#endif //#if !defined(DAVA_QT)
     
     if(GetParent())
     {
@@ -153,14 +130,7 @@ void LibraryControl::OnConvertPressed(DAVA::BaseObject *object, void *userData, 
     // load sce to scene object
     String path = FileSystem::Instance()->ReplaceExtension(selectedFileName, ".sce");
     Scene * scene = new Scene();
-//    scene->RegisterLodLayer(0, 1);
-//    scene->RegisterLodLayer(1, 2);
-//    scene->RegisterLodLayer(2, 3);
-//    scene->RegisterLodLayer(3, 4);
-//    scene->RegisterLodLayer(4, 5);
-//    scene->RegisterLodLayer(5, 6);
-//    scene->RegisterLodLayer(6, 7);
-//    scene->RegisterLodLayer(7, 8);
+
     SceneNode *rootNode = scene->GetRootNode(path);
     scene->AddNode(rootNode);
 
@@ -358,9 +328,6 @@ void LibraryControl::OnCellSelected(DAVA::UIFileTree *tree, DAVA::UIFileTreeCell
 
 void LibraryControl::RefreshTree()
 {
-#if !defined(DAVA_QT)
-    fileTreeControl->Refresh();
-#endif //#if !defined(DAVA_QT)
 }
 
 void LibraryControl::SetDelegate(LibraryControlDelegate *delegate)

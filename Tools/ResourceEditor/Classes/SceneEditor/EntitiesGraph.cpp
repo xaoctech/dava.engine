@@ -84,7 +84,6 @@ void EntitiesGraph::UpdatePropertyPanel()
 		{
 			propertyPanel->AddControl(propertyControl);
 		}
-		RefreshProperties();
 	}
 	else
 	{

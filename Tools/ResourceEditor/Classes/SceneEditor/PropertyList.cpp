@@ -662,7 +662,6 @@ float32 PropertyList::GetDistancePropertyValue(const String &propertyName, int32
     return p->GetDistances()[index];   
 }
 
-#if defined (DAVA_QT)
 void PropertyList::SetSize(const Vector2 &newSize)
 {
     ControlsFactory::RemoveScrollbar(propsList);
@@ -675,6 +674,4 @@ void PropertyList::SetSize(const Vector2 &newSize)
     
     ControlsFactory::SetScrollbar(propsList);
 }
-#endif //#if defined (DAVA_QT)
-
 

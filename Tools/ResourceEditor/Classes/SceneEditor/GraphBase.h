@@ -34,7 +34,6 @@ public:
     bool GraphOnScreen();
     bool PropertiesOnScreen();
     void UpdatePropertiesForCurrentNode();
-    void RefreshProperties();
     
     virtual void SelectNode(BaseObject *node) = 0;
     virtual void UpdatePropertyPanel() = 0;
@@ -68,8 +67,6 @@ protected:
     
     GraphBaseDelegate *delegate;
     EditorScene *workingScene;
-    
-    UIButton *refreshButton;
 };
 
 

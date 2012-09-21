@@ -115,9 +115,6 @@ protected:
 };
 
 class PropertyFilepathCell : public PropertyCell
-#if !defined(DAVA_QT)
-    , public UIFileSystemDialogDelegate
-#endif //#if !defined(DAVA_QT)
 {
 public:
     PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
@@ -125,11 +122,6 @@ public:
     
     static float32 GetHeightForWidth(float32 currentWidth);
     virtual void SetData(PropertyCellData *prop);
-    
-#if !defined(DAVA_QT)
-    virtual void OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile);
-    virtual void OnFileSytemDialogCanceled(UIFileSystemDialog *forDialog);
-#endif //#if !defined(DAVA_QT)
     
     void OnButton(BaseObject * object, void * userData, void * callerData);
     void OnClear(BaseObject * object, void * userData, void * callerData);
@@ -142,22 +134,15 @@ public:
     
 protected:    
 
-#if defined(DAVA_QT)
     String GetPathname();
     String GetExtensionFilter();
-#endif //#if defined(DAVA_QT)
     
     int32 moveCounter;
-//    float32 lastHintTime
     
     UIStaticText *pathText;
     UIControl *pathTextContainer;
     UIButton *browseButton;
     UIButton *clearButton;
-    
-#if !defined(DAVA_QT)
-    UIFileSystemDialog *dialog;
-#endif //#if !defined(DAVA_QT)
 };
 
 class PropertyComboboxCell: public PropertyCell, public ComboBoxDelegate
