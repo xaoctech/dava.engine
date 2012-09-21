@@ -17,9 +17,6 @@ public:
 	Vector<LightmapAtlasingData> * GetAtlasingData();
 
 private:
-	String inputDir;
-	String outputDir;
-
 	Vector<LightmapAtlasingData> atlasingData;
 
 	Vector2 GetTextureSize(const String & filePath);
