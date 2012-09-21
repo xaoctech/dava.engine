@@ -722,7 +722,12 @@ void SceneData::OpenLibraryForFile(const DAVA::String &filePathname)
 {
     skipLibraryPreview = true;
 
-    const QModelIndex index = libraryModel->index(QString(filePathname.c_str()));
+	QString filePathnameQt(filePathname.c_str());
+	QDir itemDir(filePathnameQt);
+	QString itemPath = itemDir.canonicalPath(); 
+
+
+    const QModelIndex index = libraryModel->index(itemPath);
     libraryView->setCurrentIndex(index);
     libraryView->scrollTo(index);
 }
