@@ -12,6 +12,7 @@ class Command;
 class QMenu;
 class QAction;
 class QTreeView;
+class QStatusBar;
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
@@ -32,6 +33,10 @@ public:
 
 	void SetDefaultFocusWidget(QWidget *widget);
 	void RestoreDefaultFocus();
+    
+    void RegisterStatusBar(QStatusBar *registeredSatusBar);
+    void ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime = 0);
+    
     
 public slots:
     //menu
@@ -103,6 +108,8 @@ private:
     QAction *resentAncorAction;
 
 	QWidget *defaultFocusWidget;
+    
+    QStatusBar *statusBar;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__

@@ -13,6 +13,8 @@
 
 #include "../LandscapeEditor/LandscapesController.h"
 
+#include "QtMainWindowHandler.h"
+
 
 #include "QtUtils.h"
 #include "PointerHolder.h"
@@ -395,6 +397,8 @@ void SceneData::Activate(QTreeView *graphview, QTreeView *_libraryView)
     
     connect(libraryView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(LibraryContextMenuRequested(const QPoint &)));
     connect(sceneGraphView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(SceneGraphContextMenuRequested(const QPoint &)));
+    
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(sceneFilePathname);
 }
 
 void SceneData::Deactivate()

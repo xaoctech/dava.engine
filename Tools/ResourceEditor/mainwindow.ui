@@ -344,6 +344,7 @@
    <addaction name="menuViewPort"/>
    <addaction name="menuViewOptions"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewScene">
    <property name="icon">
     <iconset>

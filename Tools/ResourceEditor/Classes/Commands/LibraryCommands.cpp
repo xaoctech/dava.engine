@@ -2,6 +2,7 @@
 
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
+#include "../Qt/QtMainWindowHandler.h"
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 
@@ -72,6 +73,8 @@ void CommandEditScene::Execute()
 
     SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
     sceneData->EditScene(filePathname);
+    
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(filePathname);
 }
 
 
