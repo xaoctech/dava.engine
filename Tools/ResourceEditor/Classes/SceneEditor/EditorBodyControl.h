@@ -139,6 +139,7 @@ public:
 protected:
 
     void InitControls();
+    void PropcessIsSolidChanging();
     
 
 #if !defined (DAVA_QT)        

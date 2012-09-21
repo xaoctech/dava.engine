@@ -748,6 +748,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     newCamera = scene->GetCamera(4);
                     break;
 
+                case DVKEY_X:
+                    PropcessIsSolidChanging();
+                    break;
+
+                    
                 default:
                     break;
             }
@@ -1523,3 +1528,30 @@ void EditorBodyControl::SetSize(const Vector2 &newSize)
 
 #endif //#if defined (DAVA_QT)
 
+
+void EditorBodyControl::PropcessIsSolidChanging()
+{
+    SceneNode *selectedNode = scene->GetSelection();
+    if(selectedNode)
+    {
+        KeyedArchive *customProperties = selectedNode->GetCustomProperties();
+        if(customProperties && customProperties->IsKeyExists(String("editor.isSolid")))
+        {
+            bool isSolid = selectedNode->GetSolid();
+            selectedNode->SetSolid(!isSolid);
+            
+            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            activeScene->RebuildSceneGraph();
+            
+            KeyedArchive *properties = selectedNode->GetCustomProperties();
+            if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+            {
+                String filePathname = properties->GetString(String("editor.referenceToOwner"));
+                activeScene->OpenLibraryForFile(filePathname);
+            }
+            
+            
+            sceneGraph->SelectNode(selectedNode);
+        }
+    }
+}
