@@ -675,7 +675,7 @@ void EditorBodyControl::BeastProcessScene()
 	//	return;
 	//}
 
-	String path = "lightmaps_temp/";
+	String path = EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/";
 	FileSystem::Instance()->CreateDirectory(path, false);
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
@@ -777,11 +777,10 @@ void EditorBodyControl::ToggleSceneInfo()
     }
 }
 
-
 void EditorBodyControl::PackLightmaps()
 {
 	LightmapsPacker packer;
-	packer.SetInputDir("lightmaps_temp/");
+	packer.SetInputDir(EditorSettings::Instance()->GetProjectPath()+"DataSource/lightmaps_temp/");
 
     SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
 	packer.SetOutputDir(sceneData->GetScenePathname() + "_lightmaps/");
@@ -813,8 +812,6 @@ void EditorBodyControl::RecreteFullTilingTexture()
         landscapes[i]->UpdateFullTiledTexture();
     }
 }
-
-
 
 void EditorBodyControl::CreateLandscapeEditor()
 {
