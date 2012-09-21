@@ -193,6 +193,12 @@ bool LandscapesController::HideEditorLandscape(EditorLandscapeNode *hiddingLands
     }
     else
     {
+        EditorLandscapeNode *editorNestedLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
+        if(editorNestedLandscape)
+        {
+            editorNestedLandscape->SetParentLandscape(NULL);
+        }
+        
         SceneNode *parentNode = hiddingLandscape->GetParent();
         if(parentNode)
         {
