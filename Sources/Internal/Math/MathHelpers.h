@@ -68,6 +68,22 @@ namespace DAVA
 		sine *= ((0.00761f * a2 - 0.16605f) * a2 + 1.0f);
 		cosine *= ((0.03705f * a2 - 0.49670f) * a2 + 1.0f);
 	}
+
+	inline float32 InvSqrtFast(float32 number) //only for IEEE 754 floating point format
+	{
+		int32 i;
+		float x2, y;
+		const float32 threehalfs = 1.5f;
+
+		x2 = number * 0.5f;
+		y = number;
+		i = *(int32*)&y;
+		i = 0x5f3759df - (i>>1);
+		y = *(float32*)&i;
+		y = y * (threehalfs - (x2*y*y));
+
+		return y;
+	}
 	
 	/*
 	 Function to conver euler angles to normalized axial vectors
