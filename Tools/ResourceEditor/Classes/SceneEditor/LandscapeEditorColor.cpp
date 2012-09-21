@@ -10,6 +10,7 @@
 #include "HeightmapNode.h"
 
 #include "../LandscapeEditor/EditorHeightmap.h"
+#include "../LandscapeEditor/EditorLandscapeNode.h"
 
 
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
@@ -410,3 +411,14 @@ void LandscapeEditorColor::RecreateHeightmapNode()
     workingScene->AddNode(heightmapNode);
 }
 
+bool LandscapeEditorColor::SetScene(EditorScene *newScene)
+{
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    if(editorLandscape)
+    {
+        ErrorNotifier::Instance()->ShowError("Cannot start tile mask editor. Remove EditorLandscapeNode from scene");
+        return false;
+    }
+    
+    return LandscapeEditorBase::SetScene(newScene);
+}

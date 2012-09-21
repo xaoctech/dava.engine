@@ -53,7 +53,7 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
     
     Vector3 landSize;
     AABBox3 transformedBox;
-    landscape->GetBoundingBox().GetTransformedBox(landscape->GetWorldTransform(), transformedBox);
+    nestedLandscape->GetBoundingBox().GetTransformedBox(nestedLandscape->GetWorldTransform(), transformedBox);
     landSize = transformedBox.max - transformedBox.min;
 
     float32 angleCellDistance = landSize.x / (float32)(heightmap->Size() - 1);
@@ -66,14 +66,15 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
     RenderManager::Instance()->LockNonMain();
     RenderManager::Instance()->SetRenderTarget(notPassableMapSprite);
 
+    Rect drawRect(forRect.x * dx, forRect.y * dx, (forRect.dx - 1)* dx, (forRect.dy - 1) * dx);
     RenderManager::Instance()->ClipPush();
-    RenderManager::Instance()->ClipRect(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
+    RenderManager::Instance()->ClipRect(drawRect);
 
-    DrawFullTiledTexture(Rect(forRect.x * dx, forRect.y * dx, forRect.dx * dx, forRect.dy * dx));
+    DrawFullTiledTexture(drawRect);
     
     Color red(1.0f, 0.0f, 0.0f, 1.0f);
-    int32 lastY = (int32)(forRect.y + forRect.dy - 1);
-    int32 lastX = (int32)(forRect.x + forRect.dx - 1);
+    int32 lastY = (int32)(forRect.y + forRect.dy);
+    int32 lastX = (int32)(forRect.x + forRect.dx);
     for (int32 y = (int32)forRect.y; y < lastY; ++y)
     {
         int32 yOffset = y * heightmap->Size();
@@ -121,7 +122,7 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 void NotPassableTerrain::DrawFullTiledTexture(const DAVA::Rect &drawRect)
 {
     Texture *notPassableMap = notPassableMapSprite->GetTexture();
-    Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+    Texture *fullTiledTexture = nestedLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
     Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, (float32)fullTiledTexture->GetWidth(), (float32)fullTiledTexture->GetHeight());
     background->SetPosition(0.f, 0.f);
     background->SetScaleSize((float32)notPassableMap->GetWidth(), (float32)notPassableMap->GetHeight());

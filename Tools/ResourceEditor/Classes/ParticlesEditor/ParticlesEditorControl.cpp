@@ -3502,7 +3502,7 @@ String ParticlesEditorControl::GetSpritesDataPath()
 
 String ParticlesEditorControl::GetActiveConfigFolder()
 {
-	String & configPath = GetActiveConfigName();
+	const String & configPath = GetActiveConfigName();
 	String configFolder, configFileName;
 	FileSystem::SplitPath(configPath, configFolder, configFileName);
 

@@ -39,20 +39,31 @@ public:
 	EditorLandscapeNode();
 	virtual ~EditorLandscapeNode();
     
-    void SetLandscape(DAVA::LandscapeNode *landscapeNode);
+    void SetNestedLandscape(DAVA::LandscapeNode *landscapeNode);
+    DAVA::LandscapeNode *GetNestedLandscape();
+
+    void SetParentLandscape(EditorLandscapeNode *landscapeNode);
+    EditorLandscapeNode *GetParentLandscape();
+
     void SetRenderer(LandscapeRenderer *renderer);
     
 	virtual void Draw();
     virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
     
-    DAVA::LandscapeNode *GetEditedLandscape();
     virtual void SetHeightmap(DAVA::Heightmap *height);
 
+    LandscapeRenderer *GetRenderer();
+    
+    void FlushChanges();
+    
 protected:
     
+    void CopyCursorData(DAVA::LandscapeNode *sourceLandscape, DAVA::LandscapeNode *destinationLandscape);
     virtual void SetDisplayedTexture();
+
+    DAVA::LandscapeNode *nestedLandscape;
+    EditorLandscapeNode *parentLandscape;
     
-    DAVA::LandscapeNode *landscape;
     LandscapeRenderer *landscapeRenderer;
 };
 

@@ -236,13 +236,8 @@ void LandscapeToolsPanel::UpdateRect()
         Vector2 panelSize = this->GetSize();
         Vector2 panelPosition = this->GetPosition();
 
-#if defined (DAVA_QT)
         this->SetSize(Vector2(screenSize.x - EditorSettings::Instance()->GetRightPanelWidth(), panelSize.y));
         this->SetPosition(Vector2(0, panelPosition.y));
-#else //#if defined (DAVA_QT)
-        this->SetSize(Vector2(screenSize.x - EditorSettings::Instance()->GetRightPanelWidth() - EditorSettings::Instance()->GetLeftPanelWidth(), panelSize.y));
-        this->SetPosition(Vector2(EditorSettings::Instance()->GetLeftPanelWidth(), panelPosition.y));
-#endif //#if defined (DAVA_QT)
     }
 }
 

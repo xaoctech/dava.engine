@@ -31,6 +31,7 @@ public:
     
     virtual void MoveItemToParent(GraphItem * movedItem, const QModelIndex &newParentIndex);
 
+    virtual QVariant data(const QModelIndex &index, int role) const;
     
 Q_SIGNALS:
     

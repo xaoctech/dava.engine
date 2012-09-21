@@ -56,7 +56,7 @@ public:
     virtual void Update(float32 timeElapsed);
     bool Input(UIEvent * touch);
 
-    bool SetScene(EditorScene *newScene);
+    virtual bool SetScene(EditorScene *newScene);
     void SetTool(LandscapeTool *newTool);
 
     void Toggle();

@@ -324,6 +324,21 @@ void SceneGraphModel::MoveItemToParent(GraphItem * movedItem, const QModelIndex 
     SafeRelease(movedNode);
 }
 
+QVariant SceneGraphModel::data(const QModelIndex &index, int role) const
+{
+    if(index.isValid() && (Qt::TextColorRole == role))
+    {
+        SceneNode *node = static_cast<SceneNode *>(ItemData(index));
+        if(node && (node->GetFlags() & SceneNode::NODE_INVALID))
+        {
+            return QColor(255, 0, 0);
+        }
+    }
+    
+    return GraphModel::data(index, role);
+}
+
+
 
 
 

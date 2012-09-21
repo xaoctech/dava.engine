@@ -19,9 +19,7 @@ public:
 
     virtual void RefreshGraph();
 
-#if defined (DAVA_QT)
     void SetSize(const Vector2 &newSize);
-#endif //#if defined (DAVA_QT)
 
 protected:
 

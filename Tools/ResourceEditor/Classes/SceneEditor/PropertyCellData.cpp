@@ -32,6 +32,7 @@ PropertyCellData::PropertyCellData(int _valueType)
     texture = NULL;
 
     distances = NULL;
+    triangles = NULL;
     distanceCount = 0;
 
     
@@ -41,6 +42,7 @@ PropertyCellData::PropertyCellData(int _valueType)
 PropertyCellData::~PropertyCellData()
 {
     SafeDeleteArray(distances);
+    SafeDeleteArray(triangles);
 }
 
 int32 PropertyCellData::GetValueType()
@@ -271,6 +273,24 @@ float32 *PropertyCellData::GetDistances()
     DVASSERT(valueType == PROP_VALUE_DISTANCE);
     return distances;
 }
+
+void PropertyCellData::SetTriangles(int32 *newTriangles, int32 count)
+{
+    DVASSERT(valueType == PROP_VALUE_DISTANCE);
+    
+    SafeDeleteArray(triangles);
+    triangles = new int32[count];
+    Memcpy(triangles, newTriangles, count * sizeof(float32));
+    
+    distanceCount = count;
+}
+
+int32 *PropertyCellData::GetTriangles()
+{
+    DVASSERT(valueType == PROP_VALUE_DISTANCE);
+    return triangles;
+}
+
 
 int32 PropertyCellData::GetDistancesCount()
 {

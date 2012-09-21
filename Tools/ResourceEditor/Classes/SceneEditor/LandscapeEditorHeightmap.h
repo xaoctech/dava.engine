@@ -4,13 +4,14 @@
 #include "DAVAEngine.h"
 #include "LandscapeEditorBase.h"
 #include "LandscapeToolsPanel.h"
-#include "Scene3D/LandscapeDebugNode.h"
 #include "LandscapeEditorPropertyControl.h"
 
 using namespace DAVA;
 
 class EditorScene;
 class EditorHeightmap;
+class EditorLandscapeNode;
+class LandscapesController;
 class LandscapeEditorHeightmap
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -64,8 +65,7 @@ protected:
     
 	bool wasTileMaskToolUpdate;
 
-    LandscapeDebugNode *landscapeDebugNode;
-    EditorHeightmap *heightmap;
+    LandscapesController *landscapesController;
     
     Image *toolImage;
     Image *toolImageTile;

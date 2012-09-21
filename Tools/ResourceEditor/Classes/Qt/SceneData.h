@@ -15,7 +15,9 @@ class SceneGraphModel;
 class LibraryModel;
 class Command;
 class QAction;
+class QMenu;
 class LandscapesController;
+class EditorLandscapeNode;
 class SceneData: public QObject
 {
     friend class SceneDataManager;
@@ -62,16 +64,17 @@ public:
     
     void ToggleNotPassableLandscape();
     
-    
     bool CanSaveScene();
     
-protected:
+    LandscapesController *GetLandscapesController();
     
+    void OpenLibraryForFile(const DAVA::String &filePathname);
+    
+protected:
     
     void BakeNode(DAVA::SceneNode *node);
     void FindIdentityNodes(DAVA::SceneNode *node);
     void RemoveIdentityNodes(DAVA::SceneNode *node);
-
     
     void ReloadNode(DAVA::SceneNode *node, const DAVA::String &nodePathname);
 
@@ -98,6 +101,8 @@ protected slots:
     
 protected:
 
+    void AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command);
+    
     
     
     
@@ -127,7 +132,10 @@ protected:
 	QTreeView *sceneGraphView;
 	QTreeView *libraryView;
     
-    LandscapesController *landscapeController;
+    LandscapesController *landscapesController;
+    
+    bool skipLibraryPreview;
+
 };
 
 #endif // __SCENE_DATA_H__

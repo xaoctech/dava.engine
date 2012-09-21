@@ -168,9 +168,6 @@
     <ClCompile Include="Classes\SceneEditor\HintManager.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\ImageRasterizer.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -1091,9 +1088,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\HintManager.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\ImageRasterizer.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h">
