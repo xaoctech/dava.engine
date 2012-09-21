@@ -52,6 +52,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupProjectPath();
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
+    QtMainWindowHandler::Instance()->RegisterStatusBar(ui->statusBar);
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
