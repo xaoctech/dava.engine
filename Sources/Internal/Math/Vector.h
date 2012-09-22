@@ -77,6 +77,9 @@ public:
 	inline float32 CrossProduct(const Vector2 & b) const;
 	inline float32 Angle() const; // Need to normalize vector before use function
 
+    inline bool IsZero() const { return x == 0.f && y == 0.f; }
+    inline void SetZero() { x = y = 0.f; } // = 0
+
 	//! On operations
 	inline const Vector2 & operator += (const Vector2 & _v);
 	inline const Vector2 & operator -= (const Vector2 & _v);
@@ -147,6 +150,9 @@ public:
 
     inline float32 Yaw() const { return atan2f(x, y); }
     inline float32 Pitch() const { return -atan2f(z, sqrtf(x*x + y*y)); }
+
+    inline bool IsZero() const { return x == 0.f && y == 0.f && z == 0.f; }
+    inline void Zerofy() { x = y = z = 0.f; } // = 0
 
 	//! On functions
 	inline float32 SquareLength()  const;

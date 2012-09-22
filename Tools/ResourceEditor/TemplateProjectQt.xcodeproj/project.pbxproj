@@ -10,18 +10,25 @@
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
 		2B093CA6F071B023A473CED0 /* main.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 118FCBAABA162BA17933C789 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 		462C0F34BBEF2375A9469BB5 /* mainwindow.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */; settings = {ATTRIBUTES = (); }; };
-		50A570E015F4F1EA0042C403 /* SwitchNodePropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A570DE15F4F1EA0042C403 /* SwitchNodePropertyControl.cpp */; };
 		5C03FA9215D4F6AD0048024E /* ViewCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */; };
 		5C03FAC015D530270048024E /* LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FABE15D530270048024E /* LibraryModel.cpp */; };
 		5C03FAC215D535230048024E /* moc_LibraryModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC115D535230048024E /* moc_LibraryModel.cpp */; };
 		5C03FAC515D5399D0048024E /* QtMainWindowHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC315D5399C0048024E /* QtMainWindowHandler.cpp */; };
 		5C03FAC715D53E8B0048024E /* moc_QtMainWindowHandler.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C03FAC615D53E8B0048024E /* moc_QtMainWindowHandler.cpp */; };
+		5C048FD816037725008631C2 /* LandscapeRenderer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C048FD716037725008631C2 /* LandscapeRenderer.cpp */; };
+		5C048FDB1603BF0D008631C2 /* EditorLandscapeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C048FD91603BF0D008631C2 /* EditorLandscapeNode.cpp */; };
 		5C190C9F15AEC6F9005731F8 /* Data in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C190C9E15AEC6F9005731F8 /* Data */; };
 		5C1DE96B15D8F10000C6948C /* PointerHolder.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C1DE96915D8F10000C6948C /* PointerHolder.cpp */; };
+		5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */; };
+		5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */; };
+		5C45EB9416060B70007EE300 /* LandscapeOptionsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */; };
+		5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C45EB951606483E007EE300 /* LandscapesController.cpp */; };
 		5C49A03D15CBBCB0005C40BF /* moc_GraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */; };
 		5C49A03F15CD0ACA005C40BF /* moc_SceneData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */; };
 		5C49A04115CD0C4B005C40BF /* moc_SceneGraphModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */; };
 		5C49A09915CFBCD8005C40BF /* QtUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C49A09815CFBCD7005C40BF /* QtUtils.cpp */; };
+		5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */; };
+		5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */; };
 		5C574E3915C9463C0015537A /* btAxisSweep3.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFC15C9463C0015537A /* btAxisSweep3.cpp */; };
 		5C574E3A15C9463C0015537A /* btBroadphaseProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574CFF15C9463C0015537A /* btBroadphaseProxy.cpp */; };
 		5C574E3B15C9463C0015537A /* btCollisionAlgorithm.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C574D0115C9463C0015537A /* btCollisionAlgorithm.cpp */; };
@@ -196,7 +203,6 @@
 		5C7F498015B44B7A0038AF3A /* HeightmapNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F48FF15B44B7A0038AF3A /* HeightmapNode.cpp */; };
 		5C7F498115B44B7A0038AF3A /* HelpDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490115B44B7A0038AF3A /* HelpDialog.cpp */; };
 		5C7F498215B44B7A0038AF3A /* HintManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490315B44B7A0038AF3A /* HintManager.cpp */; };
-		5C7F498315B44B7A0038AF3A /* ImageRasterizer.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490515B44B7A0038AF3A /* ImageRasterizer.cpp */; };
 		5C7F498415B44B7A0038AF3A /* LandscapeEditorBase.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490715B44B7A0038AF3A /* LandscapeEditorBase.cpp */; };
 		5C7F498515B44B7A0038AF3A /* LandscapeEditorColor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490915B44B7A0038AF3A /* LandscapeEditorColor.cpp */; };
 		5C7F498615B44B7A0038AF3A /* LandscapeEditorHeightmap.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F490B15B44B7A0038AF3A /* LandscapeEditorHeightmap.cpp */; };
@@ -272,6 +278,8 @@
 		5C8AD20E15BDEA9200BC3FD8 /* ToolsCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8AD20C15BDEA9200BC3FD8 /* ToolsCommands.cpp */; };
 		5C8B038E15D10CA300571D9F /* qrc_QtIcons.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */; };
 		5C8B039015D1113E00571D9F /* QtIcons.qrc in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 5C8B038F15D1113E00571D9F /* QtIcons.qrc */; };
+		5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */; };
+		5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */; };
 		5CCC0FF115B4516900DA83EB /* libFColladaS.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */; };
 		5CCC0FF215B4516D00DA83EB /* libFrameworkQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5C7F465315B449450038AF3A /* libFrameworkQt.a */; };
 		5CCC10B215B45FBB00DA83EB /* libz.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10B115B45FBB00DA83EB /* libz.dylib */; };
@@ -290,6 +298,7 @@
 		A9F72A8809110F713D328E52 /* OpenAL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 52F4216CE5F81A8073DE30C0 /* OpenAL.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
+		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -314,27 +323,6 @@
 			remoteGlobalIDString = C315DFDB097840EB005D77BE;
 			remoteInfo = FColladaS;
 		};
-		5C7F4A0115B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C3D608B40ADFD5FC00019D9C;
-			remoteInfo = FColladaSU;
-		};
-		5C7F4A0315B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09B10BA0B866F5500122B1F;
-			remoteInfo = FColladaTest;
-		};
-		5C7F4A0515B44F6E0038AF3A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09F2DB30BD9527300447337;
-			remoteInfo = FColladaU;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -344,8 +332,6 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
-		50A570DE15F4F1EA0042C403 /* SwitchNodePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchNodePropertyControl.cpp; path = Classes/SceneEditor/SwitchNodePropertyControl.cpp; sourceTree = "<group>"; };
-		50A570DF15F4F1EA0042C403 /* SwitchNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchNodePropertyControl.h; path = Classes/SceneEditor/SwitchNodePropertyControl.h; sourceTree = "<group>"; };
 		52F4216CE5F81A8073DE30C0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = /System/Library/Frameworks/OpenAL.framework; sourceTree = "<absolute>"; };
 		548C5E52292D4DA256C12EBD /* png_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = png_macos; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5B2DE73738F678B7C6177179 /* curl_ios_mac */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = curl_ios_mac; path = ../../Libs/libs/libcurl_ios_mac.a; sourceTree = "<group>"; };
@@ -357,16 +343,32 @@
 		5C03FAC315D5399C0048024E /* QtMainWindowHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtMainWindowHandler.cpp; path = Classes/Qt/QtMainWindowHandler.cpp; sourceTree = "<group>"; };
 		5C03FAC415D5399D0048024E /* QtMainWindowHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtMainWindowHandler.h; path = Classes/Qt/QtMainWindowHandler.h; sourceTree = "<group>"; };
 		5C03FAC615D53E8B0048024E /* moc_QtMainWindowHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_QtMainWindowHandler.cpp; path = QtBuildTool/moc_QtMainWindowHandler.cpp; sourceTree = "<group>"; };
+		5C048FD4160376FD008631C2 /* LandscapeRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeRenderer.h; path = Classes/LandscapeEditor/LandscapeRenderer.h; sourceTree = "<group>"; };
+		5C048FD716037725008631C2 /* LandscapeRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeRenderer.cpp; path = Classes/LandscapeEditor/LandscapeRenderer.cpp; sourceTree = "<group>"; };
+		5C048FD91603BF0D008631C2 /* EditorLandscapeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorLandscapeNode.cpp; path = Classes/LandscapeEditor/EditorLandscapeNode.cpp; sourceTree = "<group>"; };
+		5C048FDA1603BF0D008631C2 /* EditorLandscapeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorLandscapeNode.h; path = Classes/LandscapeEditor/EditorLandscapeNode.h; sourceTree = "<group>"; };
 		5C190C9515AEC58B005731F8 /* TemplateProjectQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemplateProjectQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C190C9E15AEC6F9005731F8 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		5C190CA015AEC704005731F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5C190CA215AEC95B005731F8 /* FrameworkQt.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkQt.xcodeproj; path = ../../Projects/QtFramework/FrameworkQt.xcodeproj; sourceTree = "<group>"; };
 		5C1DE96915D8F10000C6948C /* PointerHolder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointerHolder.cpp; path = Classes/Qt/PointerHolder.cpp; sourceTree = "<group>"; };
 		5C1DE96A15D8F10000C6948C /* PointerHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointerHolder.h; path = Classes/Qt/PointerHolder.h; sourceTree = "<group>"; };
+		5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SwitchNodePropertyControl.cpp; path = Classes/SceneEditor/SwitchNodePropertyControl.cpp; sourceTree = "<group>"; };
+		5C44DB4015F4BD6C00A42B52 /* SwitchNodePropertyControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwitchNodePropertyControl.h; path = Classes/SceneEditor/SwitchNodePropertyControl.h; sourceTree = "<group>"; };
+		5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandReloadTextures.cpp; path = Classes/Commands/CommandReloadTextures.cpp; sourceTree = "<group>"; };
+		5C44DB4315F4DA9800A42B52 /* CommandReloadTextures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandReloadTextures.h; path = Classes/Commands/CommandReloadTextures.h; sourceTree = "<group>"; };
+		5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeOptionsCommands.cpp; path = Classes/Commands/LandscapeOptionsCommands.cpp; sourceTree = "<group>"; };
+		5C45EB9316060B70007EE300 /* LandscapeOptionsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeOptionsCommands.h; path = Classes/Commands/LandscapeOptionsCommands.h; sourceTree = "<group>"; };
+		5C45EB951606483E007EE300 /* LandscapesController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapesController.cpp; path = Classes/LandscapeEditor/LandscapesController.cpp; sourceTree = "<group>"; };
+		5C45EB961606483E007EE300 /* LandscapesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapesController.h; path = Classes/LandscapeEditor/LandscapesController.h; sourceTree = "<group>"; };
 		5C49A03C15CBBCB0005C40BF /* moc_GraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_GraphModel.cpp; path = QtBuildTool/moc_GraphModel.cpp; sourceTree = "<group>"; };
 		5C49A03E15CD0ACA005C40BF /* moc_SceneData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneData.cpp; path = QtBuildTool/moc_SceneData.cpp; sourceTree = "<group>"; };
 		5C49A04015CD0C4B005C40BF /* moc_SceneGraphModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SceneGraphModel.cpp; path = QtBuildTool/moc_SceneGraphModel.cpp; sourceTree = "<group>"; };
 		5C49A09815CFBCD7005C40BF /* QtUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QtUtils.cpp; path = Classes/Qt/QtUtils.cpp; sourceTree = "<group>"; };
+		5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorHeightmap.cpp; path = Classes/LandscapeEditor/EditorHeightmap.cpp; sourceTree = "<group>"; };
+		5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorHeightmap.h; path = Classes/LandscapeEditor/EditorHeightmap.h; sourceTree = "<group>"; };
+		5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleEditorCommands.cpp; path = Classes/Commands/ParticleEditorCommands.cpp; sourceTree = "<group>"; };
+		5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleEditorCommands.h; path = Classes/Commands/ParticleEditorCommands.h; sourceTree = "<group>"; };
 		5C574CF715C9462D0015537A /* btBulletCollisionCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletCollisionCommon.h; path = Classes/bullet/btBulletCollisionCommon.h; sourceTree = "<group>"; };
 		5C574CF815C9462D0015537A /* btBulletDynamicsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = btBulletDynamicsCommon.h; path = Classes/bullet/btBulletDynamicsCommon.h; sourceTree = "<group>"; };
 		5C574CF915C9462D0015537A /* Bullet-C-Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bullet-C-Api.h"; path = "Classes/bullet/Bullet-C-Api.h"; sourceTree = "<group>"; };
@@ -789,8 +791,6 @@
 		5C7F490215B44B7A0038AF3A /* HelpDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelpDialog.h; path = Classes/SceneEditor/HelpDialog.h; sourceTree = "<group>"; };
 		5C7F490315B44B7A0038AF3A /* HintManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HintManager.cpp; path = Classes/SceneEditor/HintManager.cpp; sourceTree = "<group>"; };
 		5C7F490415B44B7A0038AF3A /* HintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HintManager.h; path = Classes/SceneEditor/HintManager.h; sourceTree = "<group>"; };
-		5C7F490515B44B7A0038AF3A /* ImageRasterizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageRasterizer.cpp; path = Classes/SceneEditor/ImageRasterizer.cpp; sourceTree = "<group>"; };
-		5C7F490615B44B7A0038AF3A /* ImageRasterizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageRasterizer.h; path = Classes/SceneEditor/ImageRasterizer.h; sourceTree = "<group>"; };
 		5C7F490715B44B7A0038AF3A /* LandscapeEditorBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorBase.cpp; path = Classes/SceneEditor/LandscapeEditorBase.cpp; sourceTree = "<group>"; };
 		5C7F490815B44B7A0038AF3A /* LandscapeEditorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LandscapeEditorBase.h; path = Classes/SceneEditor/LandscapeEditorBase.h; sourceTree = "<group>"; };
 		5C7F490915B44B7A0038AF3A /* LandscapeEditorColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LandscapeEditorColor.cpp; path = Classes/SceneEditor/LandscapeEditorColor.cpp; sourceTree = "<group>"; };
@@ -942,6 +942,10 @@
 		5C8AD20D15BDEA9200BC3FD8 /* ToolsCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToolsCommands.h; path = Classes/Commands/ToolsCommands.h; sourceTree = "<group>"; };
 		5C8B038D15D10CA300571D9F /* qrc_QtIcons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = qrc_QtIcons.cpp; path = QtBuildTool/qrc_QtIcons.cpp; sourceTree = "<group>"; };
 		5C8B038F15D1113E00571D9F /* QtIcons.qrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = QtIcons.qrc; sourceTree = "<group>"; };
+		5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NotPassableTerrain.cpp; path = Classes/LandscapeEditor/NotPassableTerrain.cpp; sourceTree = "<group>"; };
+		5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotPassableTerrain.h; path = Classes/LandscapeEditor/NotPassableTerrain.h; sourceTree = "<group>"; };
+		5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritesPacker.cpp; path = Classes/SpritesPacker.cpp; sourceTree = "<group>"; };
+		5C8DA28E160263C200BCE6DF /* SpritesPacker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpritesPacker.h; path = Classes/SpritesPacker.h; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		5CDD9ABB15B893E4007CA99A /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = Classes/Commands/Command.cpp; sourceTree = "<group>"; };
@@ -969,6 +973,8 @@
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		AB241F823D3821A41AAC4BDE /* mainwindow.ui */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = mainwindow.ui; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		C78621881602175100C96AA8 /* EditorConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditorConfig.cpp; path = Classes/SceneEditor/EditorConfig.cpp; sourceTree = "<group>"; };
+		C78621891602175100C96AA8 /* EditorConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditorConfig.h; path = Classes/SceneEditor/EditorConfig.h; sourceTree = "<group>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
@@ -1067,6 +1073,23 @@
 				5C7F49CB15B44BB70038AF3A /* davaglwidget.h */,
 			);
 			name = Qt;
+			sourceTree = "<group>";
+		};
+		5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */ = {
+			isa = PBXGroup;
+			children = (
+				5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */,
+				5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */,
+				5C45EB951606483E007EE300 /* LandscapesController.cpp */,
+				5C45EB961606483E007EE300 /* LandscapesController.h */,
+				5C048FD716037725008631C2 /* LandscapeRenderer.cpp */,
+				5C048FD4160376FD008631C2 /* LandscapeRenderer.h */,
+				5C048FD91603BF0D008631C2 /* EditorLandscapeNode.cpp */,
+				5C048FDA1603BF0D008631C2 /* EditorLandscapeNode.h */,
+				5C4A3F5C15FC910F005CABFE /* EditorHeightmap.cpp */,
+				5C4A3F5D15FC910F005CABFE /* EditorHeightmap.h */,
+			);
+			name = LandscapeEditor;
 			sourceTree = "<group>";
 		};
 		5C574CFA15C9463C0015537A /* BulletCollision */ = {
@@ -1601,8 +1624,10 @@
 		5C7F48CD15B44B6D0038AF3A /* SceneEditor */ = {
 			isa = PBXGroup;
 			children = (
-				50A570DE15F4F1EA0042C403 /* SwitchNodePropertyControl.cpp */,
-				50A570DF15F4F1EA0042C403 /* SwitchNodePropertyControl.h */,
+				C78621881602175100C96AA8 /* EditorConfig.cpp */,
+				C78621891602175100C96AA8 /* EditorConfig.h */,
+				5C44DB3F15F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp */,
+				5C44DB4015F4BD6C00A42B52 /* SwitchNodePropertyControl.h */,
 				5C81477B15B8150400E8D252 /* FuckingErrorDialog.cpp */,
 				5C81477C15B8150400E8D252 /* FuckingErrorDialog.h */,
 				5C7F48CE15B44B7A0038AF3A /* BoxPropertyControl.cpp */,
@@ -1660,8 +1685,6 @@
 				5C7F490215B44B7A0038AF3A /* HelpDialog.h */,
 				5C7F490315B44B7A0038AF3A /* HintManager.cpp */,
 				5C7F490415B44B7A0038AF3A /* HintManager.h */,
-				5C7F490515B44B7A0038AF3A /* ImageRasterizer.cpp */,
-				5C7F490615B44B7A0038AF3A /* ImageRasterizer.h */,
 				5C7F490715B44B7A0038AF3A /* LandscapeEditorBase.cpp */,
 				5C7F490815B44B7A0038AF3A /* LandscapeEditorBase.h */,
 				5C7F490915B44B7A0038AF3A /* LandscapeEditorColor.cpp */,
@@ -1783,9 +1806,6 @@
 			isa = PBXGroup;
 			children = (
 				5C7F4A0015B44F6E0038AF3A /* libFColladaS.a */,
-				5C7F4A0215B44F6E0038AF3A /* libFColladaSU.a */,
-				5C7F4A0415B44F6E0038AF3A /* FColladaTest */,
-				5C7F4A0615B44F6E0038AF3A /* libFColladaU.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1801,6 +1821,12 @@
 		5CDD9ABA15B893CF007CA99A /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				5C45EB9216060B70007EE300 /* LandscapeOptionsCommands.cpp */,
+				5C45EB9316060B70007EE300 /* LandscapeOptionsCommands.h */,
+				5C4F6D6F15F88CF900C5A222 /* ParticleEditorCommands.cpp */,
+				5C4F6D7015F88CF900C5A222 /* ParticleEditorCommands.h */,
+				5C44DB4215F4DA9800A42B52 /* CommandReloadTextures.cpp */,
+				5C44DB4315F4DA9800A42B52 /* CommandReloadTextures.h */,
 				5C03FA9015D4F6AD0048024E /* ViewCommands.cpp */,
 				5C03FA9115D4F6AD0048024E /* ViewCommands.h */,
 				5C6549C615D3CE2900C3AC3F /* LibraryCommands.cpp */,
@@ -1895,9 +1921,12 @@
 		FB61758D0F0FDA4BA867C3D5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				5C8DA28D160263C200BCE6DF /* SpritesPacker.cpp */,
+				5C8DA28E160263C200BCE6DF /* SpritesPacker.h */,
 				5CF17EC415B9385300A9FC33 /* Constants.h */,
 				5CDD9ABA15B893CF007CA99A /* Commands */,
 				5C2763A415B82BDF0030A8FD /* Qt */,
+				5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */,
 				5C7F49C415B44BB70038AF3A /* AppScreens.h */,
 				5C7F49C515B44BB70038AF3A /* BeastProxy.cpp */,
 				5C7F49C615B44BB70038AF3A /* BeastProxy.h */,
@@ -2011,27 +2040,6 @@
 			remoteRef = 5C7F49FF15B44F6E0038AF3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		5C7F4A0215B44F6E0038AF3A /* libFColladaSU.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFColladaSU.a;
-			remoteRef = 5C7F4A0115B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0415B44F6E0038AF3A /* FColladaTest */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = FColladaTest;
-			remoteRef = 5C7F4A0315B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5C7F4A0615B44F6E0038AF3A /* libFColladaU.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libFColladaU.dylib;
-			remoteRef = 5C7F4A0515B44F6E0038AF3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -2133,7 +2141,6 @@
 				5C7F498015B44B7A0038AF3A /* HeightmapNode.cpp in Build Sources */,
 				5C7F498115B44B7A0038AF3A /* HelpDialog.cpp in Build Sources */,
 				5C7F498215B44B7A0038AF3A /* HintManager.cpp in Build Sources */,
-				5C7F498315B44B7A0038AF3A /* ImageRasterizer.cpp in Build Sources */,
 				5C7F498415B44B7A0038AF3A /* LandscapeEditorBase.cpp in Build Sources */,
 				5C7F498515B44B7A0038AF3A /* LandscapeEditorColor.cpp in Build Sources */,
 				5C7F498615B44B7A0038AF3A /* LandscapeEditorHeightmap.cpp in Build Sources */,
@@ -2351,7 +2358,17 @@
 				5C03FAC515D5399D0048024E /* QtMainWindowHandler.cpp in Build Sources */,
 				5C03FAC715D53E8B0048024E /* moc_QtMainWindowHandler.cpp in Build Sources */,
 				5C1DE96B15D8F10000C6948C /* PointerHolder.cpp in Build Sources */,
-				50A570E015F4F1EA0042C403 /* SwitchNodePropertyControl.cpp in Build Sources */,
+				5C44DB4115F4BD6C00A42B52 /* SwitchNodePropertyControl.cpp in Build Sources */,
+				5C44DB4415F4DA9800A42B52 /* CommandReloadTextures.cpp in Build Sources */,
+				5C4F6D7115F88CF900C5A222 /* ParticleEditorCommands.cpp in Build Sources */,
+				5C4A3F5E15FC910F005CABFE /* EditorHeightmap.cpp in Build Sources */,
+				C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */,
+				5C8DA28C16024F4200BCE6DF /* NotPassableTerrain.cpp in Build Sources */,
+				5C8DA28F160263C200BCE6DF /* SpritesPacker.cpp in Build Sources */,
+				5C048FD816037725008631C2 /* LandscapeRenderer.cpp in Build Sources */,
+				5C048FDB1603BF0D008631C2 /* EditorLandscapeNode.cpp in Build Sources */,
+				5C45EB9416060B70007EE300 /* LandscapeOptionsCommands.cpp in Build Sources */,
+				5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2380,6 +2397,8 @@
 					DAVA_DEBUG,
 					DAVA_QT,
 				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2406,9 +2425,9 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"./../../Libs/ImageMagick-6.6.9/include/ImageMagick",
-					"./../../Libs/ImageMagick-6.6.9/delegates/include",
-					"./../../Libs/ImageMagick-6.6.9/",
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 				);
@@ -2419,14 +2438,12 @@
 					../../Libs/libs/,
 					../../Libs/freetype/lib/,
 					../../Libs/oggvorbis/lib/,
-					"./../../Libs/ImageMagick-6.6.9/lib/",
-					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2435,8 +2452,6 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2444,8 +2459,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
-					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",
@@ -2487,6 +2500,8 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = DAVA_QT;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = (
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/Headers",
 					"~/QtSDK/Desktop/Qt/4.8.1/gcc/include/QtCore",
@@ -2513,9 +2528,9 @@
 					.,
 					/usr/local/include,
 					/System/Library/Frameworks/CarbonCore.framework/Headers,
-					"./../../Libs/ImageMagick-6.6.9/include/ImageMagick",
-					"./../../Libs/ImageMagick-6.6.9/delegates/include",
-					"./../../Libs/ImageMagick-6.6.9/",
+					"./../../Libs/ImageMagick-6.7.4/include/ImageMagick",
+					"./../../Libs/ImageMagick-6.7.4/delegates/include",
+					"./../../Libs/ImageMagick-6.7.4/",
 					./../../Tools/ColladaConverter/Collada15/FCollada,
 					./../../Tools/ColladaConverter/Collada15/FCollada/LibXML/include,
 				);
@@ -2526,14 +2541,12 @@
 					../../Libs/libs/,
 					../../Libs/freetype/lib/,
 					../../Libs/oggvorbis/lib/,
-					"./../../Libs/ImageMagick-6.6.9/lib/",
-					"./../../Libs/ImageMagick-6.6.9/delegates/lib",
+					"./../../Libs/ImageMagick-6.7.4/lib/",
+					"./../../Libs/ImageMagick-6.7.4/delegates/lib",
 				);
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2542,8 +2555,6 @@
 				OTHER_CPLUSPLUSFLAGS = (
 					"-pipe",
 					"-g",
-					"-Wall",
-					"-W",
 					"-DQT_OPENGL_LIB",
 					"-DQT_GUI_LIB",
 					"-DQT_CORE_LIB",
@@ -2551,8 +2562,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"-headerpad_max_install_names",
-					"-L~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
-					"-F~/QtSDK/Desktop/Qt/4.8.1/gcc/lib",
 					"-lz",
 					"-L../../Libs/libs/",
 					"-L../../Libs/freetype/lib/",

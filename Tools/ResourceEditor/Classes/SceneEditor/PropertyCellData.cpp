@@ -157,7 +157,7 @@ void PropertyCellData::SetIsSectionOpened(bool isSectionOpened)
     boolValue = isSectionOpened;
 }
 
-int32 PropertyCellData::GetIsSectionOpened()
+bool PropertyCellData::GetIsSectionOpened()
 {
     DVASSERT(valueType == PROP_VALUE_SECTION);
     return boolValue;

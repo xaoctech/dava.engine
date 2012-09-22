@@ -133,6 +133,8 @@ public:
 	};
     
     void RecreteFullTilingTexture();
+
+	ParticlesEditorControl * GetParticlesEditor() { return particlesEditor; }
     
 #if defined (DAVA_QT)
     void SelectNodeQt(SceneNode *node);
@@ -140,10 +142,13 @@ public:
     
     void ShowScenePreview(const String scenePathname);
     void HideScenePreview();
-    
+
+    bool LandscapeEditorModeEnabled();
+    bool TileMaskEditorEnabled();
 #endif //#if defined (DAVA_QT)
     
     void AddBodyItem(const WideString &text, bool isCloseable);
+    
 
 private:
     

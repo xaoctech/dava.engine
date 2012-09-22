@@ -11,6 +11,9 @@
 #include "../Commands/LibraryCommands.h"
 #include "../Commands/CommandsManager.h"
 
+#include "../LandscapeEditor/LandscapesController.h"
+
+
 #include "QtUtils.h"
 #include "PointerHolder.h"
 
@@ -34,6 +37,7 @@ SceneData::SceneData()
     libraryView = NULL;
     sceneGraphView = NULL;
     
+    landscapesController = new LandscapesController();
     
     sceneFilePathname = String("");
     sceneGraphModel = new SceneGraphModel();
@@ -53,6 +57,8 @@ SceneData::~SceneData()
 {
     SafeRelease(scene);
     
+    SafeRelease(landscapesController);
+    
     SafeDelete(libraryModel);
     SafeDelete(sceneGraphModel);
     SafeRelease(cameraController);
@@ -66,6 +72,7 @@ void SceneData::SetScene(EditorScene *newScene)
     scene = SafeRetain(newScene);
     sceneGraphModel->SetScene(scene);
     cameraController->SetScene(scene);
+    landscapesController->SetScene(scene);
 }
 
 void SceneData::RebuildSceneGraph()
@@ -82,6 +89,12 @@ void SceneData::AddSceneNode(DAVA::SceneNode *node)
 {
     scene->AddNode(node);
     
+    LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
+    if(landscape)
+    {
+        landscapesController->SaveLandscape(landscape);
+    }
+    
     RebuildSceneGraph();
 }
 
@@ -90,6 +103,13 @@ void SceneData::RemoveSceneNode(DAVA::SceneNode *node)
     SceneNode * parent = node->GetParent();
     if (parent)
     {
+        LandscapeNode *landscape = dynamic_cast<LandscapeNode *>(node);
+        if(landscape)
+        {
+            landscapesController->SaveLandscape(NULL);
+        }
+        
+        
         scene->ReleaseUserData(node);
         
         sceneGraphModel->SelectNode(NULL);
@@ -161,6 +181,8 @@ void SceneData::ReleaseScene()
 {
     cameraController->SetScene(NULL);
     sceneGraphModel->SetScene(NULL);
+    landscapesController->SetScene(NULL);
+    
     SafeRelease(scene);
 }
 
@@ -249,9 +271,12 @@ void SceneData::AddScene(const String &scenePathname)
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
     
-    RebuildSceneGraph();
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
+
+    landscapesController->SetScene(scene);
+    
+    RebuildSceneGraph();
 }
 
 void SceneData::EditScene(const String &scenePathname)
@@ -263,10 +288,17 @@ void SceneData::EditScene(const String &scenePathname)
     if(rootNode)
     {
         SetScenePathname(scenePathname);
-        for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+		Vector<SceneNode*> tempV;
+		tempV.reserve(rootNode->GetChildrenCount());
+
+		for (int32 ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
+		{
+			tempV.push_back(rootNode->GetChild(ci));
+		}
+        for (int32 ci = 0; ci < (int32)tempV.size(); ++ci)
         {
             //рут нода это сама сцена в данном случае
-            scene->AddNode(rootNode->GetChild(ci));
+            scene->AddNode(tempV[ci]);
         }
     }
 
@@ -274,9 +306,12 @@ void SceneData::EditScene(const String &scenePathname)
     //TODO: need selection?
 //    SelectNode(scene->GetSelection());
     
-    RebuildSceneGraph();
     SceneValidator::Instance()->ValidateScene(scene);
     SceneValidator::Instance()->EnumerateSceneTextures();
+   
+    landscapesController->SetScene(scene);
+
+    RebuildSceneGraph();
 }
 
 void SceneData::AddReferenceScene(const DAVA::String &scenePathname)
@@ -386,20 +421,14 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
         String extension = FileSystem::Instance()->GetExtension(filePathname);
         if(0 == CompareStrings(String(".sc2"), extension))
         {
-            QAction *addAction = menu.addAction(QString("Add"));
-            QAction *editAction = menu.addAction(QString("Edit"));
-			QAction *referenceAction = menu.addAction(QString("Add reference"));
-            QAction *reloadAction = menu.addAction(QString("Reload"));
-            
-            addAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddScene(filePathname)));
-            editAction->setData(PointerHolder<Command *>::ToQVariant(new CommandEditScene(filePathname)));
-			referenceAction->setData(PointerHolder<Command *>::ToQVariant(new CommandAddReferenceScene(filePathname)));
-            reloadAction->setData(PointerHolder<Command *>::ToQVariant(new CommandReloadScene(filePathname)));
+            AddActionToMenu(&menu, QString("Add"), new CommandAddScene(filePathname));
+            AddActionToMenu(&menu, QString("Edit"), new CommandEditScene(filePathname));
+            AddActionToMenu(&menu, QString("Add reference"), new CommandAddReferenceScene(filePathname));
+            AddActionToMenu(&menu, QString("Reload"), new CommandReloadScene(filePathname));
         }
         else if(0 == CompareStrings(String(".dae"), extension))
         {
-            QAction *convert = menu.addAction(QString("Convert"));
-            convert->setData(PointerHolder<Command *>::ToQVariant(new CommandConvertScene(filePathname)));
+            AddActionToMenu(&menu, QString("Convert"), new CommandConvertScene(filePathname));
         }
 
         connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(LibraryMenuTriggered(QAction *)));
@@ -409,11 +438,12 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
 
 void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
 {
+	SelectNode(NULL);
+
     scene->ReleaseRootNode(scenePathname);
     
     ReloadNode(scene, scenePathname);
     
-    scene->SetSelection(0);
     for (int32 i = 0; i < (int32)nodesToAdd.size(); i++)
     {
         scene->ReleaseUserData(nodesToAdd[i].nodeToRemove);
@@ -431,6 +461,7 @@ void SceneData::ReloadRootNode(const DAVA::String &scenePathname)
     }
     
     RebuildSceneGraph();
+	landscapesController->SetScene(scene);
 }
 
 void SceneData::ReloadNode(SceneNode *node, const String &nodePathname)
@@ -494,10 +525,10 @@ void SceneData::RemoveIdentityNodes(DAVA::SceneNode *node)
            &&   (typeid(LodNode) != typeid(*node))
            &&   (removedChild->GetChildrenCount() == 1))
         {
-            SceneNode *child = SafeRetain(removedChild->GetChild(0));
-            removedChild->RemoveNode(child);
-            node->AddNode(child);
-            SafeRelease(child);
+            //SceneNode *child = SafeRetain(removedChild->GetChild(0));
+            //removedChild->RemoveNode(child);
+            node->AddNode(removedChild->GetChild(0));
+            //SafeRelease(child);
             
             node->RemoveNode(removedChild);
             
@@ -611,25 +642,78 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
     
     QMenu menu;
     
-    QAction *actionRemoveRootNodes = menu.addAction(QString("Remove Root Nodes"));
-//    QAction *actionRefresh = menu.addAction(QString("Refresh"));
-    QAction *actionLookAtObject = menu.addAction(QString("Look at Object"));
-    QAction *actionRemoveObject = menu.addAction(QString("Remove Object"));
-    QAction *actionDebugFlags = menu.addAction(QString("Debug Flags"));
-    QAction *actionBakeMatrixes = menu.addAction(QString("Bake Matrixes"));
-    QAction *actionBuildQuadTree = menu.addAction(QString("Build Quad Tree"));
+    AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
+    AddActionToMenu(&menu, QString("Look at Objec"), new CommandLockAtObject());
+    AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
 
-    actionRemoveRootNodes->setData(PointerHolder<Command *>::ToQVariant(new CommandRemoveRootNodes()));
-//    actionRefresh->setData(PointerHolder<Command *>::ToQVariant(new CommandRefreshSceneGraph()));
-    actionLookAtObject->setData(PointerHolder<Command *>::ToQVariant(new CommandLockAtObject()));
-    actionRemoveObject->setData(PointerHolder<Command *>::ToQVariant(new CommandRemoveSceneNode()));
-    actionDebugFlags->setData(PointerHolder<Command *>::ToQVariant(new CommandDebugFlags()));
-    actionBakeMatrixes->setData(PointerHolder<Command *>::ToQVariant(new CommandBakeMatrixes()));
-    actionBuildQuadTree->setData(PointerHolder<Command *>::ToQVariant(new CommandBuildQuadTree()));
+    AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
+    AddActionToMenu(&menu, QString("Bake Matrices"), new CommandBakeMatrixes());
+    AddActionToMenu(&menu, QString("Build Quad Tree"), new CommandBuildQuadTree());
     
+	SceneNode *node = static_cast<SceneNode *>(sceneGraphModel->ItemData(index));
+	if(node)
+	{
+		KeyedArchive *properties = node->GetCustomProperties();
+		if(properties && properties->IsKeyExists(String("editor.referenceToOwner")))
+		{
+            
+			String filePathname = properties->GetString(String("editor.referenceToOwner"));
+            AddActionToMenu(&menu, QString("Edit Model"), new CommandEditScene(filePathname));
+            AddActionToMenu(&menu, QString("Reload Model"), new CommandReloadScene(filePathname));
+		}
+	}
     
     connect(&menu, SIGNAL(triggered(QAction *)), this, SLOT(SceneGraphMenuTriggered(QAction *)));
     menu.exec(point);
 }
+
+void SceneData::AddActionToMenu(QMenu *menu, const QString &actionTitle, Command *command)
+{
+    QAction *action = menu->addAction(actionTitle);
+    action->setData(PointerHolder<Command *>::ToQVariant(command));
+}
+
+
+
+void SceneData::ToggleNotPassableLandscape()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        if(screen->TileMaskEditorEnabled())
+        {
+            return;
+        }
+    }
+    
+    landscapesController->ToggleNotPassableLandscape();
+    RebuildSceneGraph();
+}
+
+
+bool SceneData::CanSaveScene()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(!screen->SaveIsAvailable())
+    {
+        return false;
+    }
+    
+    if(landscapesController->EditorLandscapeIsActive())
+    {
+        return false;
+    }
+    
+    
+    return true;
+}
+
+
+LandscapesController * SceneData::GetLandscapesController()
+{
+    return landscapesController;
+}
+
+
 
 

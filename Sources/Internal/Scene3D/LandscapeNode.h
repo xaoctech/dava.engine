@@ -270,6 +270,7 @@ public:
 	void SetCursorScale(float32 scale);
 
     Heightmap *GetHeightmap();
+    virtual void SetHeightmap(Heightmap *height);
     
     void UpdateFullTiledTexture();
     String SaveFullTiledTexture();
@@ -281,6 +282,7 @@ public:
     void SetFogColor(const Color & _fogColor);
     const Color & GetFogColor() const;
 
+    LandscapeCursor *GetCursor();
     
 protected:	
     
@@ -298,7 +300,7 @@ protected:
         //int16   xbuf, ybuf;
         int16   size;
         int8    lod;
-        int8    rdoQuad;
+        int16   rdoQuad;
         AABBox3 bbox;
         uint32  frame;
     };
@@ -320,9 +322,11 @@ protected:
     void Draw(LandQuadTreeNode<LandscapeQuad> * currentNode);
     void DrawFans();
 
+    Texture * CreateTexture(eTextureLevel level, const String & textureName);
+    
     AABBox3     box;
     
-    int8 AllocateRDOQuad(LandscapeQuad * quad);
+    int16 AllocateRDOQuad(LandscapeQuad * quad);
     void ReleaseAllRDOQuads();
 
     Vector<LandscapeVertex *> landscapeVerticesArray;
@@ -366,7 +370,7 @@ protected:
 
 	LandscapeCursor * cursor;
         
-    int8 queueRdoQuad;
+    int16 queueRdoQuad;
     int32 queueRenderCount;
     uint16 * queueDrawIndices;
     
@@ -374,6 +378,7 @@ protected:
     void ClearQueue();
     
     bool BuildHeightmap();
+    void BuildLandscape();
     Heightmap *heightmap;
     String heightmapPath;
     

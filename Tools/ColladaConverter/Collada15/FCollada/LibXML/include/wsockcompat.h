@@ -18,6 +18,7 @@
 #define SOCKLEN_T int
 #endif
 
+#ifndef EWOULDBLOCK
 #define EWOULDBLOCK             WSAEWOULDBLOCK
 #define EINPROGRESS             WSAEINPROGRESS
 #define EALREADY                WSAEALREADY
@@ -53,6 +54,7 @@
 #define EDQUOT                  WSAEDQUOT
 #define ESTALE                  WSAESTALE
 #define EREMOTE                 WSAEREMOTE
+#endif //EWOULDBLOCK
 /* These cause conflicts with the codes from errno.h. Since they are 
    not used in the relevant code (nanoftp, nanohttp), we can leave 
    them disabled.

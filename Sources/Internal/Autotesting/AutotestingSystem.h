@@ -95,20 +95,20 @@ public:
 
     // API (high level)
     void Click(const Vector2 &point, int32 id = 1);
-    void Click(const String &controlName, int32 id = 1);
-    void Click(const Vector<String> &controlPath, int32 id = 1);
+    void Click(const String &controlName, const Vector2 &offset = Vector2(), int32 id = 1);
+    void Click(const Vector<String> &controlPath, const Vector2 &offset = Vector2(), int32 id = 1);
 
     void TouchDown(const Vector2 &point, int32 id = 1);
-    void TouchDown(const String &controlName, int32 id = 1);
-    void TouchDown(const Vector<String> &controlPath, int32 id = 1);
+    void TouchDown(const String &controlName, const Vector2 &offset = Vector2(), int32 id = 1);
+    void TouchDown(const Vector<String> &controlPath, const Vector2 &offset = Vector2(), int32 id = 1);
 
     void TouchUp(int32 id = 1);
 
 	void TouchMove(const Vector2 &direction, float32 speed, float32 time, int32 id = 1);
 
     void TouchMove(const Vector2 &point, float32 time, int32 id = 1);
-    void TouchMove(const String &controlName, float32 time, int32 id = 1);
-    void TouchMove(const Vector<String> &controlPath, float32 time, int32 id = 1);
+    void TouchMove(const String &controlName, float32 time, const Vector2 &offset = Vector2(), int32 id = 1);
+    void TouchMove(const Vector<String> &controlPath, float32 time, const Vector2 &offset = Vector2(), int32 id = 1);
 
 	void BeginMultitouch();
 	void EndMultitouch();
@@ -121,11 +121,13 @@ public:
     
     void Wait(float32 time);
 
+	void WaitForScreen(const String &screenName, float32 timeout = 10.0f);
+
     void WaitForUI(const String &controlName, float32 timeout = 10.0f);
     void WaitForUI(const Vector<String> &controlPath, float32 timeout = 10.0f);
 
-    void Scroll(const String &controlName, int32 id = 1, float32 timeout = 10.0f);
-    void Scroll(const Vector<String> &controlPath, int32 id = 1, float32 timeout = 10.0f);
+    void Scroll(const String &controlName, int32 id = 1, float32 timeout = 10.0f, const Vector2 &offset = Vector2());
+    void Scroll(const Vector<String> &controlPath, int32 id = 1, float32 timeout = 10.0f, const Vector2 &offset = Vector2());
 
     void AssertText(const WideString &expected, const Vector<String> &controlPath, const String &assertMessage = "");
     void AssertText(const Vector<String> &expectedControlPath, const Vector<String> &actualControlPath, const String &assertMessage = "");
@@ -154,6 +156,8 @@ protected:
 
     bool isInit;
     bool isRunning;
+    bool needExitApp;
+    float32 timeBeforeExit;
 
 	MultitouchAction* parsingMultitouch;
 
@@ -172,6 +176,7 @@ protected:
     
     MongodbClient *dbClient;
     bool isDB;
+	bool needClearDB;
 
     String testReportsFolder;
     File* reportFile;

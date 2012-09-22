@@ -18,30 +18,30 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 	modState = MOD_MOVE;
 	modAxis = AXIS_X;
 	
-	modificationPanel = ControlsFactory::CreatePanelControl(Rect(0, 5, 160, 45));
+	modificationPanel = ControlsFactory::CreatePanelControl(Rect(0.f, 5.f, 160.f, 45.f));
     modificationPanel->GetBackground()->SetColor(Color(1.0f, 1.0f, 1.0f, 0.2f));
 	
 	for (int32 i = 0; i < 3; ++i)
 	{
-		btnMod[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, 0, BUTTON_W, BUTTON_W), mods[i]);
+		btnMod[i] = ControlsFactory::CreateButton(Rect((float32)(BUTTON_W + BUTTON_B) * i, 0.f, (float32)BUTTON_W, (float32)BUTTON_W), mods[i]);
 		btnMod[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModificationPressed));
 		modificationPanel->AddControl(btnMod[i]);
         
-		btnAxis[i] = ControlsFactory::CreateButton(Rect((BUTTON_W + BUTTON_B) * i, BUTTON_W + BUTTON_B, BUTTON_W, BUTTON_W), axises[i]);
+		btnAxis[i] = ControlsFactory::CreateButton(Rect((float32)(BUTTON_W + BUTTON_B) * i, (float32)(BUTTON_W + BUTTON_B), (float32)BUTTON_W, (float32)BUTTON_W), axises[i]);
 		btnAxis[i]->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModificationPressed));
 		modificationPanel->AddControl(btnAxis[i]);
 	}
-	UIStaticText * st = new UIStaticText(Rect(55, 0, 70, BUTTON_W));
+	UIStaticText * st = new UIStaticText(Rect(55.f, 0, 70.f, (float32)BUTTON_W));
     st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"w, e, r");
     modificationPanel->AddControl(st);
     
-	st = new UIStaticText(Rect(55, BUTTON_W + BUTTON_B, 80, BUTTON_W));
+	st = new UIStaticText(Rect(55.f, (float32)(BUTTON_W + BUTTON_B), 80.f, (float32)BUTTON_W));
     st->SetFont(ControlsFactory::GetFontLight());
 	st->SetText(L"5, 6, 7, 8");
     modificationPanel->AddControl(st);
 	
-	btnPlaceOn = ControlsFactory::CreateButton(Rect(115, 0, BUTTON_W, BUTTON_W), L"P");
+	btnPlaceOn = ControlsFactory::CreateButton(Rect(115.f, 0, (float32)BUTTON_W, (float32)BUTTON_W), L"P");
 	btnPlaceOn->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModificationPressed));
 	modificationPanel->AddControl(btnPlaceOn);
     
@@ -49,21 +49,21 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 	btnLandscape->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnLandscapeRelative));
 	modificationPanel->AddControl(btnLandscape);
 	
-	btnPopUp = ControlsFactory::CreateButton(Rect(140, 0, BUTTON_W, BUTTON_W), L"#");
+	btnPopUp = ControlsFactory::CreateButton(Rect(140.f, 0, (float32)BUTTON_W, (float32)BUTTON_W), L"#");
 	btnPopUp->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModificationPopUpPressed));
 	modificationPanel->AddControl(btnPopUp);
 	
 	modificationPopUp = new ModificationPopUp();
 	
-	btnModeSelection = ControlsFactory::CreateButton(Rect(170, 5, BUTTON_W, BUTTON_W), L"S");
+	btnModeSelection = ControlsFactory::CreateButton(Rect(170.f, 5.f, (float32)BUTTON_W, (float32)BUTTON_W), L"S");
 	btnModeSelection->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModePressed));
 	AddControl(btnModeSelection);
     
-	btnModeModification = ControlsFactory::CreateButton(Rect(195, 5, BUTTON_W, BUTTON_W), L"M");
+	btnModeModification = ControlsFactory::CreateButton(Rect(195.f, 5.f, (float32)BUTTON_W, (float32)BUTTON_W), L"M");
 	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModePressed));
 	AddControl(btnModeModification);
 
-	btnModeCollision = ControlsFactory::CreateButton(Rect(220, 5, BUTTON_W, BUTTON_W), L"C");
+	btnModeCollision = ControlsFactory::CreateButton(Rect(220.f, 5.f, (float32)BUTTON_W, (float32)BUTTON_W), L"C");
 	btnModeCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnCollisionPressed));
 	AddControl(btnModeCollision);
 
@@ -152,7 +152,7 @@ void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
 	if (isModeCollision)
 	{
 		KeyedArchive * customProperties = node->GetCustomProperties();
-		if(customProperties && customProperties->IsKeyExists("CollisionFlag") && customProperties->GetBool("CollisionFlag", false))
+		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0))
 		{
 			node->SetDebugFlags(node->GetDebugFlags() | (SceneNode::DEBUG_DRAW_RED_AABBOX));
 			return;

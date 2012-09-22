@@ -249,7 +249,7 @@ void EditorBodyControl::OpenScene(const String &pathToFile, bool editScene)
             {
                 mainFilePath = pathToFile;
                 for (int ci = 0; ci < rootNode->GetChildrenCount(); ++ci)
-                {
+                {//TODO: Если этот код когда-либо будет раскомментирован, нужно будет исправить по примеру qt версии
                     //рут нода это сама сцена в данном случае
                     scene->AddNode(rootNode->GetChild(ci));
                 }
@@ -1352,7 +1352,6 @@ void EditorBodyControl::RecreteFullTilingTexture()
 
 
 
-#pragma mark --Landscape Editor
 void EditorBodyControl::CreateLandscapeEditor()
 {
     int32 leftSideWidth = EditorSettings::Instance()->GetLeftPanelWidth();
@@ -1420,7 +1419,6 @@ bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
     return true;
 }
 
-#pragma mark --LandscapeEditorDelegate
 void EditorBodyControl::LandscapeEditorStarted()
 {
     RemoveControl(sceneInfoControl);
@@ -1466,6 +1464,11 @@ void EditorBodyControl::OnPlaceOnLandscape()
 bool EditorBodyControl::LandscapeEditorActive()
 {
     return (currentLandscapeEditor && currentLandscapeEditor->IsActive());
+}
+
+bool EditorBodyControl::TileMaskEditorEnabled()
+{
+    return LandscapeEditorActive() && (currentLandscapeEditor == landscapeEditorColor);
 }
 
 NodesPropertyControl *EditorBodyControl::GetPropertyControl(const Rect &rect)

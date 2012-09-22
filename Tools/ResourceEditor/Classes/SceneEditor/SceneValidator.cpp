@@ -174,6 +174,11 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         sceneNode->GetDataNodes(dataNodeSet);
         if (dataNodeSet.size() == 0)
         {
+            if(NodeRemovingDisabled(sceneNode))
+            {
+                return;
+            }
+            
             SceneNode * parent = sceneNode->GetParent();
             if (parent)
             {
@@ -182,6 +187,13 @@ void SceneValidator::ValidateSceneNode(SceneNode *sceneNode, Set<String> &errors
         }
     }
 }
+
+bool SceneValidator::NodeRemovingDisabled(SceneNode *node)
+{
+    KeyedArchive *customProperties = node->GetCustomProperties();
+    return (customProperties && customProperties->IsKeyExists("editor.donotremove"));
+}
+
 
 void SceneValidator::ValidateTexture(Texture *texture)
 {
@@ -224,6 +236,11 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
     
     for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; ++i)
     {
+        if(LandscapeNode::TEXTURE_DETAIL == (LandscapeNode::eTextureLevel)i)
+        {
+            continue;
+        }
+        
         ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), errorsLog);
     }
     
@@ -254,7 +271,7 @@ void SceneValidator::ValidateMeshInstance(MeshInstanceNode *meshNode, Set<String
     
     const Vector<PolygonGroupWithMaterial*> & polygroups = meshNode->GetPolygonGroups();
     //Vector<Material *>materials = meshNode->GetMaterials();
-    for(int32 iMat = 0; iMat < polygroups.size(); ++iMat)
+    for(int32 iMat = 0; iMat < (int32)polygroups.size(); ++iMat)
     {
         Material * material = polygroups[iMat]->GetMaterial();
 
@@ -386,7 +403,7 @@ void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
     Vector<LodNode *> lodnodes;
     scene->GetChildNodes(lodnodes); 
     
-    for(int32 index = 0; index < lodnodes.size(); ++index)
+    for(int32 index = 0; index < (int32)lodnodes.size(); ++index)
     {
         LodNode *ln = lodnodes[index];
         

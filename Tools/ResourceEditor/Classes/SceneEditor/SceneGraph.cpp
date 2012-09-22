@@ -411,7 +411,7 @@ void SceneGraph::RemoveRootNodes()
 }
 
 
-#pragma mark --UIHierarchyDelegate
+
 bool SceneGraph::IsNodeExpandable(UIHierarchy *, void *forNode)
 {
     if (forNode) 
@@ -486,7 +486,7 @@ void SceneGraph::DragAndDrop(void *who, void *target, int32 mode)
                 if(!nd)
                 {
                     //drag
-                    whoNode->GetParent()->RemoveNode(whoNode);
+                    //whoNode->GetParent()->RemoveNode(whoNode);
                     newParent->AddNode(whoNode);
                 }
             }
@@ -495,7 +495,7 @@ void SceneGraph::DragAndDrop(void *who, void *target, int32 mode)
         {
             if(targetNode && whoNode->GetParent() == targetNode->GetParent())
             {
-                whoNode->GetParent()->RemoveNode(whoNode);
+                //whoNode->GetParent()->RemoveNode(whoNode);
                 targetNode->GetParent()->InsertBeforeNode(whoNode, targetNode);
             }
         }

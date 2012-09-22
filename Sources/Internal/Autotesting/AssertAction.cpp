@@ -6,6 +6,16 @@
 
 namespace DAVA
 {
+    
+Getter::Getter()
+{
+    SetName("Getter");
+}
+
+Getter::Getter(const VariantType &_value) : Action(), value(_value)
+{
+    SetName("Getter");
+}
 
 String Getter::Dump()
 {
@@ -15,6 +25,11 @@ String Getter::Dump()
 
 //-----------------------------------------------------------------
 
+ControlGetter::ControlGetter(const Vector<String> &_controlPath) : Getter(), controlPath(_controlPath)
+{
+    SetName("ControlGetter");
+}
+    
 const VariantType &ControlGetter::Get()
 {
     if(!isExecuted)
@@ -32,7 +47,11 @@ String ControlGetter::Dump()
 }
 
 //-----------------------------------------------------------------
-
+ControlTextGetter::ControlTextGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath)
+{
+    SetName("ControlTextGetter");
+}
+    
 void ControlTextGetter::Execute()
 {
     value.SetWideString(GetText(controlPath));
@@ -41,6 +60,11 @@ void ControlTextGetter::Execute()
 
 //-----------------------------------------------------------------
 
+ControlBoolGetter::ControlBoolGetter(const Vector<String> &_controlPath) : ControlGetter(_controlPath)
+{
+    SetName("ControlBoolGetter");
+};
+    
 void ControlBoolGetter::Execute()
 {
     value.SetBool(FindControl(controlPath) != NULL);
@@ -54,6 +78,7 @@ AssertAction::AssertAction(const String &_message) : Action()
     , actual(NULL)
     , message(_message)
 {
+    SetName("AssertAction");    
 }
 
 AssertAction::~AssertAction()
@@ -80,8 +105,8 @@ void AssertAction::Execute()
     {
         isPassed = (actual->Get() == expected->Get());
     }
+	Action::Execute();
     AutotestingSystem::Instance()->OnTestAssert(message, isPassed);
-    Action::Execute();
 }
 
 String AssertAction::Dump()
@@ -89,96 +114,6 @@ String AssertAction::Dump()
 	String baseStr = Action::Dump();
 	return Format("%s message=%s", baseStr.c_str(), message.c_str());
 }
-
-//-----------------------------------------------------------------
-
-// template <class T> const T& ControlGetter<T>::Get()
-// {
-//     if(!isExecuted)
-//     {
-//         Execute();
-//     }
-//     return Getter::Get();
-// }
-
-//-----------------------------------------------------------------
-
-// void ControlTextGetter::Execute()
-// {
-//     value = GetText(controlPath);
-//     ControlGetter::Execute();
-// }
-
-//-----------------------------------------------------------------
-
-// void ControlBoolGetter::Execute()
-// {
-//     value = (FindControl(controlPath) != NULL);
-//     ControlGetter::Execute();
-// }
-
-//-----------------------------------------------------------------
-
-// template <class T> AssertAction<T>::AssertAction() : Action()
-//     , expected(NULL)
-//     , actual(NULL)
-// {
-// }
-// 
-// template <class T> AssertAction<T>::~AssertAction()
-// {
-//     SafeRelease(expected); 
-//     SafeRelease(actual);
-// }
-// 
-// template <class T> void AssertAction<T>::Execute()
-// {
-//     bool isPassed = false;
-//     if(actual && expected)
-//     {
-//         isPassed = (actual->Get() == expected->Get());
-//     }
-//     AutotestingSystem::Instance()->OnTestAssert("AssertAction::Execute", isPassed);
-//     Action::Execute();
-// }
-
-//-----------------------------------------------------------------------------------
-// AssertTextAction::AssertTextAction(const WideString &_expected, const Vector<String> &_actualControlPath)
-// {
-//     // compare value with result of getter
-//     expected = new Getter<WideString>(_expected);
-//     actual = new ControlTextGetter(_actualControlPath);
-// }
-// 
-// AssertTextAction::AssertTextAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath)
-// {
-//     // compare results of getters
-//     expected = new ControlTextGetter(_expectedControlPath);
-//     actual = new ControlTextGetter(_actualControlPath);
-// }
-// 
-// AssertTextAction::~AssertTextAction()
-// {
-// }
-
-//-----------------------------------------------------------------------------------
-// AssertBoolAction::AssertBoolAction(bool _expected, const Vector<String> &_actualControlPath)
-// {
-//     // compare value with result of getter
-//     expected = new Getter<bool>(_expected);
-//     actual = new ControlBoolGetter(_actualControlPath);
-// }
-// 
-// AssertBoolAction::AssertBoolAction(const Vector<String> &_expectedControlPath, const Vector<String> &_actualControlPath)
-// {
-//     // compare results of getters
-//     expected = new ControlBoolGetter(_expectedControlPath);
-//     actual = new ControlBoolGetter(_actualControlPath);
-// }
-// 
-// AssertBoolAction::~AssertBoolAction()
-// {
-// }
 
 };
 

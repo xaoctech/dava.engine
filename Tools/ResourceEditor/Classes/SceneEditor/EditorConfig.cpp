@@ -1,0 +1,303 @@
+#include "EditorConfig.h"
+
+#include "ControlsFactory.h"
+#include "PropertyList.h"
+
+EditorConfig::EditorConfig()
+{
+
+}
+    
+EditorConfig::~EditorConfig()
+{
+
+}
+
+void EditorConfig::ClearConfig()
+{
+	propertyNames.clear();
+	Map<String, PropertyDescription*>::iterator it = properties.begin();
+	Map<String, PropertyDescription*>::iterator propEnd = properties.end();
+	for(; it != propEnd; ++it)
+	{
+		SafeRelease(it->second);
+	}
+	properties.clear();
+}
+
+int32 EditorConfig::ParseType(const String &typeStr)
+{
+	if(typeStr == "Bool")
+	{
+		return PT_BOOL;
+	}
+	if(typeStr == "Int")
+	{
+		return PT_INT;
+	}
+	if(typeStr == "Float")
+	{
+		return PT_FLOAT;
+	}
+
+	if(typeStr == "String")
+	{
+		return PT_STRING;
+	}
+	if(typeStr == "Combobox")
+	{
+		return PT_COMBOBOX;
+	}
+	return PT_NONE;
+}
+
+void EditorConfig::ParseConfig(const String &filePath)
+{
+	ClearConfig();
+
+    YamlParser *parser = YamlParser::Create(filePath);
+    if(parser)
+    {
+		YamlNode *rootNode = parser->GetRootNode();
+		if(rootNode)
+		{
+			Vector<YamlNode*> &yamlNodes = rootNode->AsVector();
+			int32 propertiesCount = yamlNodes.size();
+			for(int32 i = 0; i < propertiesCount; ++i)
+			{
+				YamlNode *propertyNode = yamlNodes[i];
+				if(propertyNode)
+				{
+					YamlNode *nameNode = propertyNode->Get("name");
+					YamlNode *typeNode = propertyNode->Get("type");
+					YamlNode *defaultNode = propertyNode->Get("default");
+					if(nameNode && typeNode)
+					{
+						String nameStr = nameNode->AsString();
+						String typeStr = typeNode->AsString();
+						int32 type = ParseType(typeStr);
+						if(type)
+						{
+							bool isOk = true;
+							for(uint32 n = 0; n < propertyNames.size(); ++n)
+							{
+								if(propertyNames[n] == nameStr)
+								{
+									isOk = false;
+									Logger::Error("EditorConfig::ParseConfig %s ERROR property %d property %s already exists", filePath.c_str(), i, nameStr.c_str());
+									break;
+								}
+							}
+
+							if(isOk)
+							{
+								properties[nameStr] = new PropertyDescription();
+								properties[nameStr]->name = nameStr;
+								properties[nameStr]->type = type;
+								switch(type)
+								{
+								case PT_BOOL:
+									{
+										bool defaultValue = false;
+										if(defaultNode)
+										{
+											defaultValue = defaultNode->AsBool();
+										}
+										properties[nameStr]->defaultValue.SetBool(defaultValue);
+									}
+									break;
+								case PT_INT:
+									{
+										int32 defaultValue = 0;
+										if(defaultNode)
+										{
+											defaultValue = defaultNode->AsInt();
+										}
+										properties[nameStr]->defaultValue.SetInt32(defaultValue);
+									}
+									break;
+								case PT_STRING:
+									{
+										String defaultValue;
+										if(defaultNode)
+										{
+											defaultValue = defaultNode->AsString();
+										}
+										properties[nameStr]->defaultValue.SetString(defaultValue);
+									}
+									break;
+								case PT_FLOAT:
+									{
+										float32 defaultValue = 0.0f;
+										if(defaultNode)
+										{
+											defaultValue = defaultNode->AsFloat();
+										}
+										properties[nameStr]->defaultValue.SetFloat(defaultValue);
+									}
+									break;
+								case PT_COMBOBOX:
+									{
+										int32 defaultValue = 0;
+										if(defaultNode)
+										{
+											defaultValue = defaultNode->AsInt();
+										}
+										properties[nameStr]->defaultValue.SetInt32(defaultValue);
+
+										YamlNode *comboNode = propertyNode->Get("list");
+										if(comboNode)
+										{
+											Vector<YamlNode*> comboValueNodes = comboNode->AsVector();
+											int32 comboValuesCount = comboValueNodes.size();
+											for(int32 i = 0; i < comboValuesCount; ++i)
+											{
+												properties[nameStr]->comboValues.push_back(comboValueNodes[i]->AsString());
+											}
+										}
+									}
+									break;
+								}
+								propertyNames.push_back(nameStr);
+							} //isOk
+						}
+						else
+						{
+							Logger::Error("EditorConfig::ParseConfig %s ERROR property %d unknown type %s", filePath.c_str(), i, typeStr.c_str());
+						}
+					}
+					else
+					{
+						Logger::Error("EditorConfig::ParseConfig %s ERROR property %d type or name is missing", filePath.c_str(), i);
+					}
+				}
+				else
+				{
+					Logger::Error("EditorConfig::ParseConfig %s ERROR property %d is missing", filePath.c_str(), i);
+				}
+			}
+		} 
+		// else file is empty - ok, no custom properties
+	}
+	// else file not found - ok, no custom properties
+}
+
+const Vector<String> &EditorConfig::GetProjectPropertyNames()
+{
+	return propertyNames;
+}
+
+PropertyDescription* EditorConfig::GetPropertyDescription(const String &propertyName)
+{
+	Map<String, PropertyDescription*>::iterator findIt = properties.find(propertyName);
+	if(findIt != properties.end())
+	{
+		return findIt->second;
+	}
+	return NULL;
+}
+
+bool EditorConfig::HasProperty(const String &propertyName)
+{
+	return (GetPropertyDescription(propertyName) != NULL);
+}
+
+int32 EditorConfig::GetValueTypeFromPropertyType(int32 propertyType)
+{
+	int32 type = VariantType::TYPE_NONE;
+	switch(propertyType)
+	{
+	case PT_BOOL:
+		type = VariantType::TYPE_BOOLEAN;
+		break;
+	case PT_INT:
+	case PT_COMBOBOX:
+		type = VariantType::TYPE_INT32;
+		break;
+	case PT_STRING:
+		type = VariantType::TYPE_STRING;
+		break;
+	case PT_FLOAT:
+		type = VariantType::TYPE_FLOAT;
+		break;
+	}
+	return type;
+}
+
+int32 EditorConfig::GetPropertyValueType(const String &propertyName)
+{
+	int32 type = VariantType::TYPE_NONE;
+	PropertyDescription *propertyDescription = GetPropertyDescription(propertyName);
+	if(propertyDescription)
+	{
+		type = GetValueTypeFromPropertyType(propertyDescription->type);
+	}
+	return type;
+}
+
+VariantType *EditorConfig::GetPropertyDefaultValue(const String &propertyName)
+{
+	VariantType *defaultValue = NULL;
+	PropertyDescription *propertyDescription = GetPropertyDescription(propertyName);
+	if(propertyDescription)
+	{
+		defaultValue = &propertyDescription->defaultValue;
+	}
+	return defaultValue;
+}
+
+void EditorConfig::AddPropertyEditor(PropertyList *propertyList, const String &propertyName, VariantType *propertyValue)
+{
+	Map<String, PropertyDescription*>::iterator findIt = properties.find(propertyName);
+	if(findIt != properties.end())
+	{
+		PropertyDescription *propertyDescription = findIt->second;
+		int32 propertyValueType = GetValueTypeFromPropertyType(propertyDescription->type);
+		if(propertyValue->type == propertyValueType)
+		{	
+			switch (propertyValue->type) 
+			{
+			case VariantType::TYPE_BOOLEAN:
+				{
+					propertyList->AddBoolProperty(propertyName, PropertyList::PROPERTY_IS_EDITABLE);
+					propertyList->SetBoolPropertyValue(propertyName, propertyValue->AsBool());
+				}
+				break;
+			case VariantType::TYPE_STRING:
+				{
+					propertyList->AddStringProperty(propertyName, PropertyList::PROPERTY_IS_EDITABLE);
+					propertyList->SetStringPropertyValue(propertyName, propertyValue->AsString());
+				}
+				break;
+
+			case VariantType::TYPE_INT32:
+				{
+					if(propertyDescription->type == PT_COMBOBOX)
+					{
+						propertyList->AddComboProperty(propertyName, propertyDescription->comboValues, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetComboPropertyIndex(propertyName, propertyValue->AsInt32());
+					}
+					else
+					{
+						propertyList->AddIntProperty(propertyName, PropertyList::PROPERTY_IS_EDITABLE);
+						propertyList->SetIntPropertyValue(propertyName, propertyValue->AsInt32());
+					}
+				}
+				break;
+
+			case VariantType::TYPE_FLOAT:
+				{
+					propertyList->AddFloatProperty(propertyName, PropertyList::PROPERTY_IS_EDITABLE);
+					propertyList->SetFloatPropertyValue(propertyName, propertyValue->AsFloat());
+				}
+                    
+			default:
+				break;
+			}
+		}
+		else
+		{
+			Logger::Error("EditorConfig::AddPropertyEditor ERROR: incorrect type %d property %s", propertyDescription->type, propertyName.c_str());
+		}
+	}
+}

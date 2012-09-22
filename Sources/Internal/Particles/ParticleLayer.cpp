@@ -33,6 +33,7 @@
 #include "Utils/StringFormat.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -93,38 +94,41 @@ ParticleLayer::~ParticleLayer()
 	// dynamic cache automatically delete all particles
 }
 
-ParticleLayer * ParticleLayer::Clone()
+ParticleLayer * ParticleLayer::Clone(ParticleLayer * dstLayer)
 {
-	ParticleLayer * layer = new ParticleLayer();
+	if(!dstLayer)
+	{
+		dstLayer = new ParticleLayer();
+	}
 	if (life)
-		layer->life.Set(life->Clone());
+		dstLayer->life.Set(life->Clone());
 	
 	if (lifeVariation)
-		layer->lifeVariation.Set(lifeVariation->Clone());
+		dstLayer->lifeVariation.Set(lifeVariation->Clone());
 
 	if (number)
-		layer->number.Set(number->Clone());
+		dstLayer->number.Set(number->Clone());
 	
 	if (numberVariation)
-		layer->numberVariation.Set(numberVariation->Clone());
+		dstLayer->numberVariation.Set(numberVariation->Clone());
 
 	if (size)
-		layer->size.Set(size->Clone());
+		dstLayer->size.Set(size->Clone());
 	
 	if (sizeVariation)
-		layer->sizeVariation.Set(sizeVariation->Clone());
+		dstLayer->sizeVariation.Set(sizeVariation->Clone());
 	
 	if (sizeOverLife)
-		layer->sizeOverLife.Set(sizeOverLife->Clone());
+		dstLayer->sizeOverLife.Set(sizeOverLife->Clone());
 	
 	if (velocity)
-		layer->velocity.Set(velocity->Clone());
+		dstLayer->velocity.Set(velocity->Clone());
 	
 	if (velocityVariation)
-		layer->velocityVariation.Set(velocityVariation->Clone());
+		dstLayer->velocityVariation.Set(velocityVariation->Clone());
 	
 	if (velocityOverLife)
-		layer->velocityOverLife.Set(velocityOverLife->Clone());
+		dstLayer->velocityOverLife.Set(velocityOverLife->Clone());
 	
 	for (int32 f = 0; f < (int32)forces.size(); ++f)
 	{
@@ -132,12 +136,12 @@ ParticleLayer * ParticleLayer::Clone()
 		RefPtr< PropertyLine<Vector3> > forceClone;
 		if (forces[f])
 			forceClone.Set(forces[f]->Clone());
-		layer->forces.push_back(forceClone);
+		dstLayer->forces.push_back(forceClone);
 
 		RefPtr< PropertyLine<float32> > forceOverLifeClone;
 		if (forcesOverLife[f])
 			forceOverLifeClone.Set(forcesOverLife[f]->Clone());
-		layer->forcesOverLife.push_back(forceOverLifeClone);
+		dstLayer->forcesOverLife.push_back(forceOverLifeClone);
 	}
 	
     for(int32 f = 0; f < (int32)forcesVariation.size(); ++f)
@@ -146,62 +150,62 @@ ParticleLayer * ParticleLayer::Clone()
 		RefPtr< PropertyLine<Vector3> > forceVariationClone;
 		if (forcesVariation[f])
 			forceVariationClone.Set(forcesVariation[f]->Clone());
-		layer->forcesVariation.push_back(forceVariationClone);        
+		dstLayer->forcesVariation.push_back(forceVariationClone);        
     }
     
 	if (spin)
-		layer->spin.Set(spin->Clone());
+		dstLayer->spin.Set(spin->Clone());
 	
 	if (spinVariation)
-		layer->spinVariation.Set(spinVariation->Clone());
+		dstLayer->spinVariation.Set(spinVariation->Clone());
 	
 	if (spinOverLife)
-		layer->spinOverLife.Set(spinOverLife->Clone());
+		dstLayer->spinOverLife.Set(spinOverLife->Clone());
 	
 	if (motionRandom)
-		layer->motionRandom.Set(motionRandom->Clone());
+		dstLayer->motionRandom.Set(motionRandom->Clone());
 	
 	if (motionRandomVariation)
-		layer->motionRandomVariation.Set(motionRandomVariation->Clone());
+		dstLayer->motionRandomVariation.Set(motionRandomVariation->Clone());
 	
 	if (motionRandomOverLife)
-		layer->motionRandomOverLife.Set(motionRandomOverLife->Clone());
+		dstLayer->motionRandomOverLife.Set(motionRandomOverLife->Clone());
 	
 	if (bounce)
-		layer->bounce.Set(bounce->Clone());
+		dstLayer->bounce.Set(bounce->Clone());
 	
 	if (bounceVariation)
-		layer->bounceVariation.Set(bounceVariation->Clone());
+		dstLayer->bounceVariation.Set(bounceVariation->Clone());
 	
 	if (bounceOverLife)
-		layer->bounceOverLife.Set(bounceOverLife->Clone());
+		dstLayer->bounceOverLife.Set(bounceOverLife->Clone());
 	
 	if (colorOverLife)
-		layer->colorOverLife.Set(colorOverLife->Clone());
+		dstLayer->colorOverLife.Set(colorOverLife->Clone());
 	
 	if (colorRandom)
-		layer->colorRandom.Set(colorRandom->Clone());
+		dstLayer->colorRandom.Set(colorRandom->Clone());
 	
 	if (alphaOverLife)
-		layer->alphaOverLife.Set(alphaOverLife->Clone());
+		dstLayer->alphaOverLife.Set(alphaOverLife->Clone());
 	
 	if (frameOverLife)
-		layer->frameOverLife.Set(frameOverLife->Clone());
+		dstLayer->frameOverLife.Set(frameOverLife->Clone());
 	
-	layer->alignToMotion = alignToMotion;
-	layer->additive = additive;
-	layer->startTime = startTime;
-	layer->endTime = endTime;
-	layer->type = type;
-	layer->sprite = SafeRetain(sprite);
-	layer->pivotPoint = pivotPoint;
+	dstLayer->alignToMotion = alignToMotion;
+	dstLayer->additive = additive;
+	dstLayer->startTime = startTime;
+	dstLayer->endTime = endTime;
+	dstLayer->type = type;
+	dstLayer->sprite = SafeRetain(sprite);
+	dstLayer->pivotPoint = pivotPoint;
 	
-	layer->frameStart = frameStart;
-	layer->frameEnd = frameEnd;
+	dstLayer->frameStart = frameStart;
+	dstLayer->frameEnd = frameEnd;
 	
-    layer->isDisabled = isDisabled;
+    dstLayer->isDisabled = isDisabled;
     
-	return layer;
+	return dstLayer;
 }
 	
 
@@ -218,6 +222,12 @@ void ParticleLayer::SetSprite(Sprite * _sprite)
 	if(sprite)
 	{
 		pivotPoint = Vector2(_sprite->GetWidth()/2.0f, _sprite->GetHeight()/2.0f);
+
+		String spritePath = FileSystem::NormalizePath(sprite->GetRelativePathname());
+		const String configPath = emitter->GetConfigPath();
+		String configFolder, configFile;
+		FileSystem::SplitPath(configPath, configFolder, configFile);
+		relativeSpriteName = FileSystem::AbsoluteToRelativePath(configFolder, spritePath);
 	}
 }
 	
@@ -558,7 +568,7 @@ void ParticleLayer::Draw()
 }
 
 
-void ParticleLayer::LoadFromYaml(YamlNode * node)
+void ParticleLayer::LoadFromYaml(const String & configPath, YamlNode * node)
 {
 // 	PropertyLine<float32> * life;				// in seconds
 // 	PropertyLine<float32> * lifeVariation;		// variation part of life that added to particle life during generation of the particle
@@ -604,7 +614,11 @@ void ParticleLayer::LoadFromYaml(YamlNode * node)
 	{
 		YamlNode * pivotPointNode = node->Get("pivotPoint");
 		
-		Sprite * _sprite = Sprite::Create(spriteNode->AsString());
+		const String relativePathName = spriteNode->AsString();
+		relativeSpriteName = relativePathName;
+		String configFolder, configFile;
+		FileSystem::SplitPath(configPath, configFolder, configFile);
+		Sprite * _sprite = Sprite::Create(configFolder+relativePathName);
 		Vector2 pivotPointTemp;
 		if(pivotPointNode)
 		{
@@ -709,6 +723,11 @@ void ParticleLayer::LoadFromYaml(YamlNode * node)
 Particle * ParticleLayer::GetHeadParticle()
 {
 	return head;
+}
+
+const String & ParticleLayer::GetRelativeSpriteName()
+{
+	return relativeSpriteName;
 }
 
 }

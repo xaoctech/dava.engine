@@ -8,6 +8,7 @@
 
 using namespace DAVA;
 
+class EditorHeightmap;
 class LandscapeEditorColor
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -22,6 +23,9 @@ public:
 	virtual void Draw(const UIGeometricData &geometricData);
 
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
+    
+    virtual bool SetScene(EditorScene *newScene);
+
     
     //LE property control delegate
     virtual void LandscapeEditorSettingsChanged(LandscapeEditorSettings *settings);
@@ -38,6 +42,8 @@ protected:
     virtual void UndoAction();
     virtual void RedoAction();
 
+    virtual void RecreateHeightmapNode();
+
     
     void CreateMaskTexture();
     void CreateMaskFromTexture(Texture *tex);
@@ -50,6 +56,10 @@ protected:
 	Sprite *toolSprite;
     
     Texture *savedTexture;
+    
+    EditorHeightmap *editedHeightmap;
+    Heightmap *savedHeightmap;
+
 
 	bool wasTileMaskToolUpdate;
     

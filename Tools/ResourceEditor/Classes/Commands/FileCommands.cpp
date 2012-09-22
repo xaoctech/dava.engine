@@ -3,6 +3,7 @@
 #include "DAVAEngine.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorSettings.h"
+#include "../SceneEditor/EditorConfig.h"
 #include "../SceneEditor/SceneValidator.h"
 
 #include "../Qt/QtUtils.h"
@@ -39,6 +40,8 @@ void CommandOpenProject::Execute()
         EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
 		EditorSettings::Instance()->Save();
 
+		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
+
 		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
@@ -65,11 +68,7 @@ void CommandOpenScene::Execute()
     if(0 == selectedScenePathname.length())
     {
         String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
-        QString filePath = QFileDialog::getOpenFileName(NULL, QString("Open Scene File"), QString(dataSourcePath.c_str()),
-                                                        QString("Scene File (*.sc2)")
-                                                        );
-  
-		selectedScenePathname = PathnameToDAVAStyle(filePath);
+        selectedScenePathname = GetOpenFileName(String("Open Scene File"), (dataSourcePath.c_str()), String("Scene File (*.sc2)"));
     }
     
     if(0 < selectedScenePathname.size())
@@ -85,8 +84,6 @@ void CommandOpenScene::Execute()
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
     }
-
-	QtMainWindowHandler::Instance()->RestoreDefaultFocus();
 }
 
 //New
@@ -115,9 +112,11 @@ CommandSaveScene::CommandSaveScene()
 
 void CommandSaveScene::Execute()
 {
-    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
-    if(screen && screen->SaveIsAvailable())
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    if(activeScene->CanSaveScene())
     {
+        SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+        
 		String currentPath;
 		if(0 < screen->CurrentScenePathname().length())
 		{

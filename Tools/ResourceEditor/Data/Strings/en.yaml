@@ -94,6 +94,7 @@ createnode.switchnode: "Create switch node"
 createnode.particleemitter: "Create particle emitter"
 
 #Create Property Dialog
+createproperty.preset: "Preset:"
 createproperty.type: "Type:"
 createproperty.name: "Name:"
 

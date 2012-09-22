@@ -43,6 +43,7 @@ class LandscapeEditorBase
     enum eConst
     {
         INVALID_TOUCH_ID = -1,
+		RAY_TRACING_DISTANCE = 1000
     };
     
     
@@ -55,7 +56,7 @@ public:
     virtual void Update(float32 timeElapsed);
     bool Input(UIEvent * touch);
 
-    bool SetScene(EditorScene *newScene);
+    virtual bool SetScene(EditorScene *newScene);
     void SetTool(LandscapeTool *newTool);
 
     void Toggle();
@@ -86,6 +87,8 @@ protected:
 	virtual void UpdateCursor() = 0;
     virtual void UndoAction() = 0;
     virtual void RedoAction() = 0;
+    
+    virtual void RecreateHeightmapNode() = 0;
     
     void Close();
     LandscapeEditorDelegate *delegate;
@@ -118,11 +121,6 @@ protected:
     
 	Texture * cursorTexture;
 
-	struct CursorMode
-	{
-
-	};
-	CursorMode cursorMode;
     
     LandscapeNode::eTiledShaderMode savedShaderMode;
 };

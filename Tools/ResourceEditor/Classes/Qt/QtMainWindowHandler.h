@@ -25,6 +25,7 @@ public:
     void RegisterDockActions(DAVA::int32 count, ...);
     
     void SetResentMenu(QMenu *menu);
+    void SetResentAncorAction(QAction *ancorAction);
 
     //MENU FILE
     void MenuFileWillShow();
@@ -38,7 +39,7 @@ public slots:
 
     void CreateNodeTriggered(QAction *nodeAction);
     void ViewportTriggered(QAction *viewportAction);
-    void ResentSceneTriggered(QAction *resentScene);
+    void FileMenuTriggered(QAction *resentScene);
 
     //File
     void NewScene();
@@ -63,9 +64,20 @@ public slots:
     void BakeScene();
     void Beast();
     
+    //ViewOptions
+    void ToggleNotPassableTerrain();
+    
+    
     //scene graph
     void RefreshSceneGraph();
 
+    //
+    void ReloadTexturesFromFileSystem();
+
+	//particles editor
+	void OpenParticleEditorConfig();
+	void SaveParticleEditorConfig();
+	void OpenParticleEditorSprite();
 	
     
 private:
@@ -88,6 +100,7 @@ private:
     QAction *hidablewidgetActions[ResourceEditor::HIDABLEWIDGET_COUNT];
 
     QMenu *menuResentScenes;
+    QAction *resentAncorAction;
 
 	QWidget *defaultFocusWidget;
 };

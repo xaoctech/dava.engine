@@ -2454,6 +2454,7 @@ namespace Magick
   template <class Container>
   void readImages( Container *sequence_,
        const std::string &imageSpec_ ) {
+#pragma warning( disable : 4996 )
     MagickCore::ImageInfo *imageInfo = MagickCore::CloneImageInfo(0);
     imageSpec_.copy( imageInfo->filename, MaxTextExtent-1 );
     imageInfo->filename[ imageSpec_.length() ] = 0;

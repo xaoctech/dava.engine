@@ -410,7 +410,7 @@ void UIZoomControl::Input(UIEvent * currentTouch)
 
 				// init scrolling speed parameters
 				scrollPixelsPerSecond = 0.0f;
-				scrollStartTime = SystemTimer::Instance()->FrameStampTimeMS();//to avoid cast from uint64 to float64 SystemTimer::Instance()->AbsoluteMS();
+				scrollStartTime = (float64)SystemTimer::Instance()->FrameStampTimeMS();//to avoid cast from uint64 to float64 SystemTimer::Instance()->AbsoluteMS();
 
 				touchStartTime = SystemTimer::Instance()->FrameStampTimeMS();
 				state = STATE_SCROLL;
@@ -425,7 +425,7 @@ void UIZoomControl::Input(UIEvent * currentTouch)
 					if(currentTouch->tid == scrollTouch.tid)
 					{
 						// scrolling speed get parameters
-						float64 scrollCurrentTime = SystemTimer::Instance()->FrameStampTimeMS();//SystemTimer::Instance()->AbsoluteMS();
+						float64 scrollCurrentTime = (float64)SystemTimer::Instance()->FrameStampTimeMS();//SystemTimer::Instance()->AbsoluteMS();
 						Vector2 scrollPrevPosition = scrollCurrentPosition;
 						
 						// perform scrolling
@@ -440,8 +440,7 @@ void UIZoomControl::Input(UIEvent * currentTouch)
 
                         float64 length = LineLength(Point2f(scrollCurrentPosition.x, scrollCurrentPosition.y), Point2f(scrollPrevPosition.x, scrollPrevPosition.y));
 
-						scrollPixelsPerSecond = length
-                                                / (tmp - scrollStartTime);
+						scrollPixelsPerSecond = (float32)(length / (tmp - scrollStartTime));
 						scrollStartTime = scrollCurrentTime;
 					}
 				}
@@ -651,8 +650,6 @@ bool UIZoomControl::IsScrolling()
     return (STATE_NONE != state);
 }
 
-
-#pragma mark - UIConrol child
 
 const List<UIControl*>& UIZoomControl::GetChildren()
 {

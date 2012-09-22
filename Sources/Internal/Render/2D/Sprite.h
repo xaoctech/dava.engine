@@ -270,6 +270,8 @@ public:
 	*/
 	void ConvertToVirtualSize();
 
+	const String & GetRelativePathname();
+
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
 	
@@ -308,8 +310,6 @@ protected:
 //	float32 **originalVertices;
 
 	Polygon2 * clipPolygon;
-		
-	void PreparePurplePlaceholder();
 	
 	void PrepareForNewSize();
 	

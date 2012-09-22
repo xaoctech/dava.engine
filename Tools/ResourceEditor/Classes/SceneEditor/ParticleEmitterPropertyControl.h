@@ -13,8 +13,6 @@ public:
 
 	virtual void ReadFrom(SceneNode * sceneNode);
 
-	virtual void OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue);
-
 protected:
 	void OnOpenEditor(BaseObject * object, void * userData, void * callerData);
 };

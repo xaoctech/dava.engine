@@ -12,6 +12,7 @@ namespace DAVA
 TouchAction::TouchAction(int32 _id) : Action()
     , id(_id)
 {
+    SetName("TouchAction");
 }
 
 TouchAction::~TouchAction()
@@ -32,9 +33,9 @@ void TouchAction::TouchDown(const Vector2 &point)
     ProcessInput(touchDown);
 }
 
-void TouchAction::TouchDown(const Vector<String> &controlPath)
+void TouchAction::TouchDown(const Vector<String> &controlPath, const Vector2 &offset)
 {
-    TouchDown(FindControlPosition(controlPath));
+    TouchDown(FindControlPosition(controlPath) + offset);
 }
 
 void TouchAction::TouchUp()
@@ -197,6 +198,7 @@ String TouchAction::Dump()
 TouchDownAction::TouchDownAction(const Vector2 &_point, int32 _id) : TouchAction(_id)
     , point(_point)
 {
+    SetName("TouchDownAction");
 }
 
 TouchDownAction::~TouchDownAction()
@@ -217,13 +219,15 @@ String TouchDownAction::Dump()
 }
 
 //----------------------------------------------------------------------
-TouchDownControlAction::TouchDownControlAction(const String &_controlName, int32 _id) : TouchAction(_id)
+TouchDownControlAction::TouchDownControlAction(const String &_controlName, const Vector2 &offset, int32 _id) : TouchAction(_id)
+	, touchOffset(offset)
 {
     controlPath.push_back(_controlName);
 }
 
-TouchDownControlAction::TouchDownControlAction(const Vector<String> &_controlPath, int32 _id) : TouchAction(_id)
+TouchDownControlAction::TouchDownControlAction(const Vector<String> &_controlPath, const Vector2 &offset, int32 _id) : TouchAction(_id)
     , controlPath(_controlPath)
+	, touchOffset(offset)
 {
 }
 
@@ -233,7 +237,7 @@ TouchDownControlAction::~TouchDownControlAction()
 
 void TouchDownControlAction::Execute()
 {
-    TouchDown(controlPath);
+    TouchDown(controlPath, touchOffset);
     Action::Execute();
 }
 
@@ -247,6 +251,7 @@ String TouchDownControlAction::Dump()
 //----------------------------------------------------------------------
 TouchUpAction::TouchUpAction(int32 _id) : TouchAction(_id)
 {
+    SetName("TouchUpAction");
 }
 TouchUpAction::~TouchUpAction()
 {
@@ -264,6 +269,7 @@ TouchMoveAction::TouchMoveAction(const Vector2 &_point, float32 _moveTime, int32
     , point(_point)
     , moveTime(_moveTime)
 {
+    SetName("TouchMoveAction");
 }
 
 TouchMoveAction::~TouchMoveAction()
@@ -319,6 +325,7 @@ TouchMoveDirAction::TouchMoveDirAction(const Vector2 &_direction, float32 _speed
     , direction(_direction)
     , speed(_speed)
 {
+    SetName("TouchMoveDirAction");
 }
 
 void TouchMoveDirAction::Execute()
@@ -335,13 +342,17 @@ String TouchMoveDirAction::Dump()
 
 //----------------------------------------------------------------------
 
-TouchMoveControlAction::TouchMoveControlAction(const String &_controlName, float32 _moveTime, int32 _id) : TouchMoveAction(Vector2(), _moveTime, _id)
+TouchMoveControlAction::TouchMoveControlAction(const String &_controlName, float32 _moveTime, const Vector2 &offset, int32 _id) 
+	: TouchMoveAction(Vector2(), _moveTime, _id)
+	, touchOffset(offset)
 {
+    SetName("TouchMoveControlAction");
     controlPath.push_back(_controlName);
 }
 
-TouchMoveControlAction::TouchMoveControlAction(const Vector<String> &_controlPath, float32 _moveTime, int32 _id) : TouchMoveAction(Vector2(), _moveTime, _id)
+TouchMoveControlAction::TouchMoveControlAction(const Vector<String> &_controlPath, float32 _moveTime, const Vector2 &offset, int32 _id) : TouchMoveAction(Vector2(), _moveTime, _id)
     , controlPath(_controlPath)
+	, touchOffset(offset)
 {
 
 }
@@ -352,7 +363,7 @@ TouchMoveControlAction::~TouchMoveControlAction()
 
 void TouchMoveControlAction::Execute()
 {
-    point = FindControlPosition(controlPath);
+    point = FindControlPosition(controlPath) + touchOffset;
     TouchMoveAction::Execute();
 }
 
@@ -364,18 +375,25 @@ String TouchMoveControlAction::Dump()
 }
 
 //----------------------------------------------------------------------
-ScrollControlAction::ScrollControlAction(const String &_controlName, int32 _id, float32 timeout) : WaitAction(timeout)
+ScrollControlAction::ScrollControlAction(const String &_controlName, int32 _id, float32 timeout, const Vector2 &offset) : WaitAction(timeout)
     , id(_id)
     , currentAction(NULL)
+	, isFound(false)
+	, wasFound(false)
+	, touchOffset(offset)
 {
+    SetName("ScrollControlAction");
     controlPath.push_back(_controlName);
 }
-ScrollControlAction::ScrollControlAction(const Vector<String> &_controlPath, int32 _id, float32 timeout) : WaitAction(timeout)
+ScrollControlAction::ScrollControlAction(const Vector<String> &_controlPath, int32 _id, float32 timeout, const Vector2 &offset) : WaitAction(timeout)
     , controlPath(_controlPath)
     , id(_id)
     , currentAction(NULL)
     , isFound(false)
+	, wasFound(false)
+	, touchOffset(offset)
 {
+    SetName("ScrollControlAction");
 }
 
 ScrollControlAction::~ScrollControlAction()
@@ -394,14 +412,18 @@ void ScrollControlAction::Update(float32 timeElapsed)
     {
         if(actions.empty())
         {
-            isFound = (FindControl(controlPath) != NULL);
-            if(!isFound)
+			if(!wasFound)
             {
                 //add: touch down, touch move, touch up
-                actions.push_back(new TouchDownAction(touchDownPoint, id));
-                actions.push_back(new TouchMoveAction(touchUpPoint, 0.2f, id));
+                actions.push_back(new TouchDownAction(touchDownPoint + touchOffset, id));
+                actions.push_back(new TouchMoveAction(touchUpPoint + touchOffset, 0.2f, id));
                 actions.push_back(new TouchUpAction(id));
             }
+			else
+			{
+				isFound = wasFound;
+			}
+			wasFound = (FindControl(controlPath) != NULL);
         }
         else
         {
@@ -464,12 +486,19 @@ void ScrollControlAction::FindScrollPoints()
     if(controlPath.empty()) return;
 
     Vector<String> parentPath;
-    for(int32 i = 0; i < controlPath.size() - 1; ++i)
+    for(uint32 i = 0; i < controlPath.size() - 1; ++i)
     {
         parentPath.push_back(controlPath[i]);
     }
     String indexStr = controlPath.back();
+
+	bool isNumber = true;
     int32 index = atoi(indexStr.c_str());
+    if((index == 0) && (Format("%d",index) != indexStr))
+    {
+		// not number
+		isNumber = false;
+	}
 
     UIControl* parent = NULL;
     if(parentPath.empty())
@@ -511,35 +540,57 @@ void ScrollControlAction::FindScrollPoints()
 
             if(parentList->GetOrientation() == UIList::ORIENTATION_HORIZONTAL)
             {
-                // horizontal
-                if(maxVisibleIndex < index)
-                {
-                    // touch up < down 
-                    touchDownPoint = Vector2(parentRect.x + 0.55f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
-                    touchUpPoint = Vector2(parentRect.x + 0.45f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
-                }
-                else
-                {
-                    // touch down < up
-                    touchDownPoint = Vector2(parentRect.x + 0.45f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
-                    touchUpPoint = Vector2(parentRect.x + 0.55f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
-                }
+				if(isNumber)
+				{
+					// horizontal
+					if(maxVisibleIndex < index)
+					{
+						// touch up < down  <-
+						touchDownPoint = Vector2(parentRect.x + 0.55f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
+						touchUpPoint = Vector2(parentRect.x + 0.45f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
+					}
+					else
+					{
+						// touch down < up ->
+						touchDownPoint = Vector2(parentRect.x + 0.45f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
+						touchUpPoint = Vector2(parentRect.x + 0.55f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
+					}
+				}
+				else
+				{
+					//TODO: smart search - first to the beginning of the list, then to the end
+					
+					// touch up < down  <-
+					touchDownPoint = Vector2(parentRect.x + 0.55f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
+					touchUpPoint = Vector2(parentRect.x + 0.45f*parentRect.dx, parentRect.y + 0.5f*parentRect.dy);
+				}
             }
             else
             {
-                // vertical
-                if(maxVisibleIndex < index)
-                {
-                    // touch up < down 
-                    touchDownPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.55f*parentRect.dy);
-                    touchUpPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.45f*parentRect.dy);
-                }
-                else
-                {
-                    // touch down < up
-                    touchDownPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.45f*parentRect.dy);
-                    touchUpPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.55f*parentRect.dy);
-                }
+				if(isNumber)
+				{
+					// vertical
+					if(maxVisibleIndex < index)
+					{
+						// touch up < down  ^
+						touchDownPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.55f*parentRect.dy);
+						touchUpPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.45f*parentRect.dy);
+					}
+					else
+					{
+						// touch down < up
+						touchDownPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.45f*parentRect.dy);
+						touchUpPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.55f*parentRect.dy);
+					}
+				}
+				else
+				{
+					//TODO: smart search -  first to the beginning of the list, then to the end
+					
+					// touch up < down  ^
+					touchDownPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.55f*parentRect.dy);
+					touchUpPoint = Vector2(parentRect.x + 0.5f*parentRect.dx, parentRect.y + 0.45f*parentRect.dy);
+				}
                 
             }
             Logger::Debug("ScrollControlAction::FindScrollPoints %s scroll from (%f, %f) to (%f, %f)", PathToString(controlPath).c_str(), touchDownPoint.x, touchDownPoint.y, touchUpPoint.x, touchUpPoint.y);
@@ -555,6 +606,7 @@ void ScrollControlAction::FindScrollPoints()
 
 MultitouchAction::MultitouchAction() : Action()
 {
+    SetName("MultitouchAction");
 }
 
 MultitouchAction::~MultitouchAction()

@@ -327,8 +327,7 @@ Sprite* Sprite::Create(const String &spriteName)
 	Sprite * spr = PureCreate(spriteName,NULL);
 	if (!spr)
 	{
-		spr = new Sprite();
-		spr->PreparePurplePlaceholder();
+		spr = CreateFromTexture(Vector2(16.f, 16.f), Texture::GetPinkPlaceholder(), Vector2(0.f, 0.f), Vector2(16.f, 16.f));
 	}
 	return spr;
 }
@@ -378,7 +377,7 @@ Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTex
 	DVASSERT(fromTexture);
 	Sprite *spr = new Sprite();
 	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
-	spr->InitFromTexture(fromTexture, textureRegionOffset.x, textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, spriteSize.x, spriteSize.y, false);
+	spr->InitFromTexture(fromTexture, (int32)textureRegionOffset.x, (int32)textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, (int32)spriteSize.x, (int32)spriteSize.y, false);
 	return spr;
 }
 
@@ -521,13 +520,6 @@ void Sprite::SetOffsetsForFrame(int frame, float32 xOff, float32 yOff)
 	frameVertices[frame][6] = xOff + rectsAndOffsets[frame][2];
 	frameVertices[frame][7] = yOff + rectsAndOffsets[frame][3];
 }
-
-	
-	
-void Sprite::PreparePurplePlaceholder()
-{
-	frameCount = 1;
-}	
 	
 int32 Sprite::Release()
 {
@@ -1374,6 +1366,11 @@ void Sprite::ConvertToVirtualSize()
     texCoords[0][5] *= resourceToVirtualFactor;
     texCoords[0][6] *= resourceToVirtualFactor;
     texCoords[0][7] *= resourceToVirtualFactor;
+}
+
+const String & Sprite::GetRelativePathname()
+{
+	return relativePathname;
 }
 
 void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState)

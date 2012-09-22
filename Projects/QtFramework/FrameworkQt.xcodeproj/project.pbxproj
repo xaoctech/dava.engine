@@ -3,12 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		50A570D915F4F1940042C403 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A570D715F4F1940042C403 /* SwitchNode.cpp */; };
-		50A570DD15F4F1B00042C403 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 50A570DB15F4F1B00042C403 /* ReferenceNode.cpp */; };
+		5C2923CE1608C15D00CBE67C /* ParticleLayerLong.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C2923CC1608C15D00CBE67C /* ParticleLayerLong.cpp */; };
+		5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */; };
+		5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */; };
 		5C5D999115B0230D0058B43A /* AnimatedObject.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973915B0230D0058B43A /* AnimatedObject.cpp */; };
 		5C5D999215B0230D0058B43A /* Animation.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973B15B0230D0058B43A /* Animation.cpp */; };
 		5C5D999315B0230D0058B43A /* AnimationManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C5D973D15B0230D0058B43A /* AnimationManager.cpp */; };
@@ -256,6 +257,7 @@
 		5CFB116B15AE0685008F64BB /* libvorbis_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116815AE0685008F64BB /* libvorbis_macos.a */; };
 		5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */; };
 		5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116D15AE0696008F64BB /* libtheora_macos.a */; };
+		CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -276,12 +278,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		50A570D715F4F1940042C403 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
-		50A570D815F4F1940042C403 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
-		50A570DB15F4F1B00042C403 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
-		50A570DC15F4F1B00042C403 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
-		50A5714015FA0AE80042C403 /* Parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
-		50A5714115FA0AE80042C403 /* Parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
+		5C2923CC1608C15D00CBE67C /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
+		5C2923CD1608C15D00CBE67C /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
+		5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
+		5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
+		5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchNode.cpp; sourceTree = "<group>"; };
+		5C44DB3B15F4BC9900A42B52 /* SwitchNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchNode.h; sourceTree = "<group>"; };
 		5C5D973915B0230D0058B43A /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		5C5D973A15B0230D0058B43A /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		5C5D973B15B0230D0058B43A /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -798,6 +800,8 @@
 		5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvorbisfile_macos.a; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		5CFB116D15AE0696008F64BB /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		5CFB116F15AE0749008F64BB /* Box2D_MacOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_MacOS.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_MacOS/Box2D_MacOS.xcodeproj; sourceTree = "<group>"; };
+		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
+		CC27F75516089C37004EF267 /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		D7BC194B5CC2DC4DBAFB72CD /* QtFramework.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = QtFramework.pro; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1090,8 +1094,6 @@
 				5C5D97DF15B0230D0058B43A /* YamlArchive.h */,
 				5C5D97E015B0230D0058B43A /* YamlParser.cpp */,
 				5C5D97E115B0230D0058B43A /* YamlParser.h */,
-				50A5714015FA0AE80042C403 /* Parser.cpp */,
-				50A5714115FA0AE80042C403 /* Parser.h */,
 			);
 			name = FileSystem;
 			path = ../../Sources/Internal/FileSystem;
@@ -1179,6 +1181,8 @@
 		5C5D982315B0230D0058B43A /* Particles */ = {
 			isa = PBXGroup;
 			children = (
+				CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */,
+				CC27F75516089C37004EF267 /* ParticleLayerLong.h */,
 				5C5D982415B0230D0058B43A /* Particle.cpp */,
 				5C5D982515B0230D0058B43A /* Particle.h */,
 				5C5D982615B0230D0058B43A /* ParticleEmitter.cpp */,
@@ -1389,10 +1393,10 @@
 		5C5D98DF15B0230D0058B43A /* Scene3D */ = {
 			isa = PBXGroup;
 			children = (
-				50A570DB15F4F1B00042C403 /* ReferenceNode.cpp */,
-				50A570DC15F4F1B00042C403 /* ReferenceNode.h */,
-				50A570D715F4F1940042C403 /* SwitchNode.cpp */,
-				50A570D815F4F1940042C403 /* SwitchNode.h */,
+				5C44DB3815F4BC9900A42B52 /* ReferenceNode.cpp */,
+				5C44DB3915F4BC9900A42B52 /* ReferenceNode.h */,
+				5C44DB3A15F4BC9900A42B52 /* SwitchNode.cpp */,
+				5C44DB3B15F4BC9900A42B52 /* SwitchNode.h */,
 				5C5D98E015B0230D0058B43A /* BillboardNode.cpp */,
 				5C5D98E115B0230D0058B43A /* BillboardNode.h */,
 				5C5D98E215B0230D0058B43A /* BoneNode.cpp */,
@@ -1634,8 +1638,11 @@
 /* Begin PBXProject section */
 		91B15E841AA80083484172DE /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0440;
+			};
 			buildConfigurationList = CC82A9286117DFED018F418F /* Build configuration list for PBXProject "FrameworkQt" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1905,8 +1912,9 @@
 				5C5D9A9A15B0230D0058B43A /* UtilsMacOS.mm in Build Sources */,
 				5CBF71B415C6DF5E00CD1736 /* RenderOptions.cpp in Build Sources */,
 				5C8A70A615DD41C20043B097 /* QtLayer.cpp in Build Sources */,
-				50A570D915F4F1940042C403 /* SwitchNode.cpp in Build Sources */,
-				50A570DD15F4F1B00042C403 /* ReferenceNode.cpp in Build Sources */,
+				5C44DB3C15F4BC9900A42B52 /* ReferenceNode.cpp in Build Sources */,
+				5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */,
+				CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1926,7 +1934,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ONLY_ACTIVE_ARCH_PRE_XCODE_3_1)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -1958,21 +1966,17 @@
 					./../../Libs/libs,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				ONLY_ACTIVE_ARCH_PRE_XCODE_3_1 = "$(NATIVE_ARCH_ACTUAL)";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-pipe",
 					"-g",
 					"-fPIC",
-					"-Wall",
-					"-W",
 					"-DQT_SHARED",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-fvisibility=hidden",
 					"-g",
 					"-fPIC",
-					"-Wall",
-					"-W",
 					"-DQT_SHARED",
 				);
 				PRODUCT_NAME = FrameworkQt;
@@ -1983,7 +1987,9 @@
 		8C7174830A1E4DCBA0332EC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				LIBRARY_STYLE = STATIC;
 				PRODUCT_NAME = FrameworkQt;
 			};
@@ -1992,8 +1998,10 @@
 		BEC09A62E69C3553534FF35E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				LIBRARY_STYLE = STATIC;
 				PRODUCT_NAME = FrameworkQt;
 			};
@@ -2003,8 +2011,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -2038,16 +2045,12 @@
 					"-pipe",
 					"-g",
 					"-fPIC",
-					"-Wall",
-					"-W",
 					"-DQT_SHARED",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"-fvisibility=hidden",
 					"-g",
 					"-fPIC",
-					"-Wall",
-					"-W",
 					"-DQT_SHARED",
 				);
 				PRODUCT_NAME = FrameworkQt;

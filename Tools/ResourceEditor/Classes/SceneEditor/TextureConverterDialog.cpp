@@ -43,15 +43,15 @@ TextureConverterDialog::TextureConverterDialog(const Rect &rect, bool rectInAbso
     
     
 
-    int32 x = rect.dx - ControlsFactory::BUTTON_WIDTH;
+    float32 x = rect.dx - ControlsFactory::BUTTON_WIDTH;
     convertButton = ControlsFactory::CreateButton(Vector2(x, 
-                                                          rect.dy - ControlsFactory::BUTTON_HEIGHT), 
+                                                          rect.dy - (float32)ControlsFactory::BUTTON_HEIGHT), 
                                                   LocalizedString(L"textureconverter.convert"));
     convertButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &TextureConverterDialog::OnConvert));
     
     AddControl(convertButton);
     
-    AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, 0, 1, rect.dy));
+    AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, 0, 1.f, rect.dy));
     
     
     dstPreview = new UIControl(Rect(0, 0, 100, 100));
@@ -61,38 +61,38 @@ TextureConverterDialog::TextureConverterDialog(const Rect &rect, bool rectInAbso
     srcPreview->SetInputEnabled(false);
     srcPreview->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_PROPORTIONAL);
 
-    int32 width = rect.dx - ControlsFactory::TEXTURE_PREVIEW_WIDTH;
-    int32 height = (rect.dy - ControlsFactory::BUTTON_HEIGHT*2);
+    float32 width = rect.dx - ControlsFactory::TEXTURE_PREVIEW_WIDTH;
+    float32 height = (rect.dy - ControlsFactory::BUTTON_HEIGHT*2.f);
     
     if(width < height)
     {
-        width = Min(width, height/2);
+        width = Min(width, height/2.f);
         --width;
 
-        Rect srcRect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT, width, width);
-        Rect dstRect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT + width + 1, width, width);
+        Rect srcRect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, (float32)ControlsFactory::BUTTON_HEIGHT, width, width);
+        Rect dstRect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, (float32)ControlsFactory::BUTTON_HEIGHT + width + 1.f, width, width);
         
         srcZoomPreview = new UIZoomControl(srcRect);
         dstZoomPreview = new UIZoomControl(dstRect);
         
-        AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH+width, ControlsFactory::BUTTON_HEIGHT, 1, width * 2));
-        AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT + width, width, 1));
-        AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT + width*2, width, 1));
+        AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH+width, (float32)ControlsFactory::BUTTON_HEIGHT, 1.f, width * 2.f));
+        AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, (float32)ControlsFactory::BUTTON_HEIGHT + width, width, 1.f));
+        AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, (float32)ControlsFactory::BUTTON_HEIGHT + width*2.f, width, 1.f));
     }
     else 
     {
-        height = Min(height, width/2);
+        height = Min(height, width/2.f);
         --height;
-        Rect srcRect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT, height, height);
-        Rect dstRect(ControlsFactory::TEXTURE_PREVIEW_WIDTH + height + 1, ControlsFactory::BUTTON_HEIGHT, height, height);
+        Rect srcRect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, (float32)ControlsFactory::BUTTON_HEIGHT, height, height);
+        Rect dstRect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH + height + 1.f,(float32) ControlsFactory::BUTTON_HEIGHT, height, height);
         
         srcZoomPreview = new UIZoomControl(srcRect);
         dstZoomPreview = new UIZoomControl(dstRect);
         
-        AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT + height, height*2, 1));
+        AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH, ControlsFactory::BUTTON_HEIGHT + height, height*2, 1));
         
-        AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH + height, ControlsFactory::BUTTON_HEIGHT, 1, height));
-        AddLine(Rect(ControlsFactory::TEXTURE_PREVIEW_WIDTH + height*2, ControlsFactory::BUTTON_HEIGHT, 1, height));
+        AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH + height, (float32)ControlsFactory::BUTTON_HEIGHT, 1.f, height));
+        AddLine(Rect((float32)ControlsFactory::TEXTURE_PREVIEW_WIDTH + height*2.f, (float32)ControlsFactory::BUTTON_HEIGHT, 1.f, height));
     }
     
     srcZoomPreview->AddControl(srcPreview);
@@ -221,7 +221,7 @@ void TextureConverterDialog::EnumerateTexturesFromMaterials()
     Vector<Material *> materials;
     workingScene->GetDataNodes(materials);
     
-    for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+    for(int32 iMat = 0; iMat < (int32)materials.size(); ++iMat)
     {
         for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
         {
@@ -282,7 +282,7 @@ void TextureConverterDialog::RestoreTexturesFromMaterials(Texture *t, const Stri
     Vector<Material *> materials;
     workingScene->GetDataNodes(materials);
     
-    for(int32 iMat = 0; iMat < materials.size(); ++iMat)
+    for(int32 iMat = 0; iMat < (int32)materials.size(); ++iMat)
     {
         for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
         {
@@ -513,9 +513,9 @@ void TextureConverterDialog::SetupZoomedPreview(Texture *tex, UIControl *preview
 {
     if(tex)
     {
-        Sprite *sprite = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->height);
+        Sprite *sprite = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
         preview->SetSprite(sprite, 0);
-        Vector2 texSize(tex->width, tex->height);
+        Vector2 texSize((float32)tex->width, (float32)tex->height);
         preview->SetSize(texSize);
         zoomControl->SetContentSize(texSize);
         zoomControl->SetOffset(Vector2(0, 0));

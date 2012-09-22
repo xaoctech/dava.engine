@@ -87,6 +87,7 @@ createnode.lodnode: "Создание lod node"
 createnode.usernode: "Создание user node"
 
 #Create Property Dialog
+createproperty.preset: "Предустановки:"
 createproperty.type: "Тип:"
 createproperty.name: "Имя:"
 
