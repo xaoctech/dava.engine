@@ -3,6 +3,8 @@
 #include "SceneEditorScreenMain.h"
 #include "../AppScreens.h"
 #include "EditorBodyControl.h"
+#include "Qt/SceneDataManager.h"
+#include "Qt/SceneData.h"
 
 MeshInstancePropertyControl::MeshInstancePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -233,7 +235,7 @@ int32 MeshInstancePropertyControl::GetIndexFromKey(const String &forKey)
 void MeshInstancePropertyControl::OnConvertToShadowVolume(BaseObject * object, void * userData, void * callerData)
 {
 	((MeshInstanceNode*)currentSceneNode)->ConvertToShadowVolume();
-	SceneEditorScreenMain * screen = (SceneEditorScreenMain *)UIScreenManager::Instance()->GetScreen(SCREEN_SCENE_EDITOR_MAIN);
-	SceneEditorScreenMain::BodyItem * body = screen->FindCurrentBody();
-	body->bodyControl->RemoveSelectedSGNode();//OnRemoveNodeButtonPressed(0, 0, 0);
+
+	SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+	activeScene->RemoveSceneNode(currentSceneNode);
 }

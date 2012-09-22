@@ -171,6 +171,7 @@ property.meshinstance.bboxmin: "BBox.min:"
 property.meshinstance.bboxmax: "BBox.max:"
 property.meshinstance.editmaterial: "Edit Material"
 property.meshinstance.showtriangles: "Show Triangles"
+property.meshinstance.dynamicshadow.converttovolume: "Convert to shadow volume"
 
 #SphereNode Section
 property.spherenode.sphere: "Sphere"
