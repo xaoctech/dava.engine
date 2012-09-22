@@ -22,19 +22,10 @@ void ParticleEmitterPropertyControl::ReadFrom(SceneNode * sceneNode)
 
 	propertyList->AddSection("Particles emitter");
 
-	propertyList->AddFilepathProperty("Yaml path", ".yaml");
-	propertyList->SetFilepathPropertyValue("Yaml path", emitter->GetYamlPath());
+	propertyList->AddStringProperty("Yaml path", PropertyList::PROPERTY_IS_READ_ONLY);
+	propertyList->SetStringPropertyValue("Yaml path", emitter->GetYamlPath());
 
 	propertyList->AddMessageProperty("Open editor", Message(this, &ParticleEmitterPropertyControl::OnOpenEditor));
-}
-
-void ParticleEmitterPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
-{
-	if("Yaml path" == forKey)
-	{
-		ParticleEmitterNode * emitter = dynamic_cast<ParticleEmitterNode *> (currentSceneNode);
-		emitter->LoadFromYaml(newValue);
-	}
 }
 
 void ParticleEmitterPropertyControl::OnOpenEditor(BaseObject * object, void * userData, void * callerData)

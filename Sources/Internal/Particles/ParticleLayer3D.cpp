@@ -25,7 +25,7 @@ ParticleLayer3D::~ParticleLayer3D()
 	SafeRelease(renderData);
 }
 
-void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
+void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left, const Vector3 & cameraPos)
 {
 	verts.clear();
 	textures.clear();
@@ -135,9 +135,9 @@ void ParticleLayer3D::Draw(const Vector3 & _up, const Vector3 & _left)
 	}
 }
 
-void ParticleLayer3D::LoadFromYaml(YamlNode * node)
+void ParticleLayer3D::LoadFromYaml(const String & configPath, YamlNode * node)
 {
-	ParticleLayer::LoadFromYaml(node);
+	ParticleLayer::LoadFromYaml(configPath, node);
 
 	if(additive)
 	{
@@ -149,6 +149,18 @@ void ParticleLayer3D::LoadFromYaml(YamlNode * node)
 		material->SetBlendSrc(BLEND_SRC_ALPHA);
 		material->SetBlendDest(BLEND_ONE_MINUS_SRC_ALPHA);
 	}
+}
+
+ParticleLayer * ParticleLayer3D::Clone(ParticleLayer * dstLayer /*= 0*/)
+{
+	if(!dstLayer)
+	{
+		dstLayer = new ParticleLayer3D();
+	}
+
+	ParticleLayer::Clone(dstLayer);
+
+	return dstLayer;
 }
 
 };

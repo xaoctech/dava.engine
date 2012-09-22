@@ -165,15 +165,15 @@ void ColladaDocument::GetAnimationTimeInfo(FCDocument * document, float32 & retT
 		timeMin = 10000000.0f;
 		timeMax = 0.0f;
 		
-		for (int channelIndex = 0; channelIndex < anim->GetChannelCount(); ++channelIndex)
+		for (int channelIndex = 0; channelIndex < (int)anim->GetChannelCount(); ++channelIndex)
 		{
 			FCDAnimationChannel * channel = anim->GetChannel(channelIndex);
 			// DAVA::Logger::Debug("- channel: %d curveCount: %d\n", channelIndex, channel->GetCurveCount());
-			for (int curveIndex = 0; curveIndex < channel->GetCurveCount(); ++curveIndex)
+			for (int curveIndex = 0; curveIndex < (int)channel->GetCurveCount(); ++curveIndex)
 			{
 				FCDAnimationCurve * curve = channel->GetCurve(curveIndex);
 				// DAVA::Logger::Debug("-- curve: %d target:%s\n", curveIndex, curve->GetTargetQualifier().c_str());
-				for (int keyIndex = 0; keyIndex < curve->GetKeyCount(); ++keyIndex)
+				for (int keyIndex = 0; keyIndex < (int)curve->GetKeyCount(); ++keyIndex)
 				{
 					FCDAnimationKey * key = curve->GetKey(keyIndex);
 					if (key->input < timeMin)timeMin = key->input;
@@ -446,7 +446,7 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
 	
 	DAVA::Logger::Debug("- static mesh: %s idx: %d groupCount: %d\n", mesh->name.c_str(), meshIndex, groupCount); 
 
-	for (int k = 0; k < groupCount; ++k)
+	for (int k = 0; k < (int)groupCount; ++k)
 	{
 		ColladaPolygonGroup * group = mesh->GetPolygonGroup(k);
 		std::vector<ColladaVertex> & vertices = group->GetVertices();
@@ -461,7 +461,7 @@ void ColladaDocument::WriteStaticMesh(ColladaMesh * mesh, int meshIndex)
 
 		DAVA::Logger::Debug("    group: %d vertexCount: %d indexCount:%d\n", k, vertexCount, indexCount); 
 			
-		for (int vi = 0; vi < vertexCount; ++vi)
+		for (int vi = 0; vi < (int)vertexCount; ++vi)
 		{
 //			ColladaVertex
 //			Vector3 position;	
@@ -568,7 +568,7 @@ void ColladaDocument::WriteAnimatedMesh(ColladaAnimatedMesh * animMesh, int mesh
 	
 	int32 boneCount = animMesh->joints.size();
 	fwrite(&boneCount, sizeof(int32), 1, sceneFP);
-	for (int jointIndex = 0; jointIndex < animMesh->joints.size(); ++jointIndex)
+	for (int jointIndex = 0; jointIndex < (int)animMesh->joints.size(); ++jointIndex)
 	{
 		ColladaSceneNode * node =  animMesh->joints[jointIndex].node; 
 		char name[512];
@@ -635,17 +635,17 @@ void ColladaDocument::WriteSceneNode(ColladaSceneNode * node, int &globalNodeId,
 	
 	if (node->meshInstances.size() != 0)
 	{
-		for (int i = 0; i < node->meshInstances.size(); ++i)
+		for (int i = 0; i < (int)node->meshInstances.size(); ++i)
 			WriteMeshNode(node->meshInstances[i], ++globalNodeId, nodeId, level + 1, i);	
 	}
 	
 	if (node->cameras.size() != 0)
 	{
-		for (int i = 0; i < node->cameras.size(); ++i)
+		for (int i = 0; i < (int)node->cameras.size(); ++i)
 			WriteCameraNode(node->cameras[i], ++globalNodeId, nodeId, level + 1);	
 	}
 	
-	for (int i = 0; i < node->childs.size(); ++i)
+	for (int i = 0; i < (int)node->childs.size(); ++i)
 	{
 		ColladaSceneNode * childNode = node->childs[i];
 		WriteSceneNode(childNode, ++globalNodeId, nodeId, level + 1);
@@ -804,7 +804,7 @@ void ColladaDocument::WriteCamera(ColladaCamera * cam, int32 i)
 	cd.znear = cam->camera->GetNearZ();
 	cd.zfar = cam->camera->GetFarZ();
 	
-	cd.ortho = cam->camera->IsOrthographic();
+	cd.ortho = cam->camera->GetProjectionType() == FCDCamera::ORTHOGRAPHIC;
 	fwrite(&cd, sizeof(SceneFile::CameraDef), 1, sceneFP);
 }
 	
@@ -849,6 +849,9 @@ void ColladaDocument::WriteLight(ColladaLight * light, int32 i)
 			ldef.position.Set(0, 0, 0.f, 1.f);
 			ldef.spotDirection.Set(0, 0, -1.f, 0);
 			break;
+            
+        default:
+            break;
 	}
 	
 	

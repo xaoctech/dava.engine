@@ -15,7 +15,7 @@ namespace DAVA
 
 Action::Action() : BaseObject()
     , isExecuted(false)
-	, name("")
+	, name("Action")
 {
 }
 Action::~Action()
@@ -144,12 +144,14 @@ void Action::ProcessInput(const UIEvent &input)
 
 UIControl* Action::FindControl(const Vector<String>& controlPath)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     UIControl* control = NULL;
     if(UIScreenManager::Instance()->GetScreen() && (!controlPath.empty()))
     {
         control = FindControl(UIScreenManager::Instance()->GetScreen(), controlPath[0]);
 
-        for(int32 i = 1; i < controlPath.size(); ++i)
+        for(uint32 i = 1; i < controlPath.size(); ++i)
         {
             if(!control) break;
             control = FindControl(control, controlPath[i]);
@@ -160,6 +162,8 @@ UIControl* Action::FindControl(const Vector<String>& controlPath)
 
 UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcControl)
     {
         int32 index = atoi(controlName.c_str());
@@ -187,13 +191,14 @@ UIControl* Action::FindControl(UIControl* srcControl, const String &controlName)
 
 UIControl* Action::FindControl(UIControl* srcControl, int32 index)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcControl)
     {
         const List<UIControl*> children = srcControl->GetChildren();
         int32 childIndex = 0;
-        for(List<UIControl*>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for(List<UIControl*>::const_iterator it = children.begin(); it != children.end(); ++it, ++childIndex)
         {
-            childIndex++;
             if(childIndex == index)
             {
                 return (*it);
@@ -205,6 +210,8 @@ UIControl* Action::FindControl(UIControl* srcControl, int32 index)
 
 UIControl* Action::FindControl(UIList* srcList, int32 index)
 {
+	if(UIControlSystem::Instance()->GetLockInputCounter() > 0) return NULL;
+
     if(srcList)
     {
         const List<UIControl*> &cells = srcList->GetVisibleCells();
@@ -242,9 +249,40 @@ bool Action::IsInside(UIControl* parent, UIControl* child)
     {
         Rect parentRect(parent->GetGeometricData().GetUnrotatedRect());
         Rect childRect(child->GetGeometricData().GetUnrotatedRect());
-        Vector2 childCenter(childRect.x + childRect.dx/2, childRect.y + childRect.dy/2);
-        isInside = ((parentRect.x <= childCenter.x) && (childCenter.x <= parentRect.x + parentRect.dx) &&
+
+		if(childRect.dx <= parentRect.dx && childRect.dy <= parentRect.dy)
+		{
+			// can be totally inside parent
+			float32 insidePartX = 1.0f;
+			float32 insidePartY = 1.0f;
+			
+			// for list and cell case we should scroll more on screen
+// 			if(2*childRect.dx <= parentRect.dx)
+// 			{
+// 				insidePartX *= 2;
+// 			}
+// 			if(2*childRect.dy <= parentRect.dy)
+// 			{
+// 				insidePartY *= 2;
+// 			}
+
+			float32 offsetPartX = (1.0f - insidePartX)*0.5f;
+			float32 offsetPartY = (1.0f - insidePartY)*0.5f;
+
+			Rect testInsideRect(childRect.x + offsetPartX*childRect.dx, childRect.y + offsetPartY*childRect.dy, insidePartX*childRect.dx, insidePartY*childRect.dy);
+
+			isInside = ((parentRect.x <= testInsideRect.x) && (testInsideRect.x + testInsideRect.dx <= parentRect.x + parentRect.dx) &&
+            (parentRect.y <= testInsideRect.y) && (testInsideRect.y + testInsideRect.dy <= parentRect.y + parentRect.dy));
+		}
+		else
+		{
+			// check if child center is inside parent rect
+			Vector2 childCenter(childRect.x + childRect.dx/2, childRect.y + childRect.dy/2);
+			isInside = ((parentRect.x <= childCenter.x) && (childCenter.x <= parentRect.x + parentRect.dx) &&
             (parentRect.y <= childCenter.y) && (childCenter.y <= parentRect.y + parentRect.dy));
+		}
+
+
         //isInside = ((parentRect.x <= childRect.x) && (childRect.x + childRect.dx <= parentRect.x + parentRect.dx) &&
         //    (parentRect.y <= childRect.y) && (childRect.y + childRect.dy <= parentRect.y + parentRect.dy));
     }
@@ -276,6 +314,7 @@ String Action::PathToString(const Vector<String>& controlPath)
 KeyPressAction::KeyPressAction(char16 _keyChar) : Action()
     , keyChar(_keyChar)
 {
+    SetName("KeyPressAction");
 }
 
 KeyPressAction::~KeyPressAction()
@@ -311,7 +350,7 @@ String KeyPressAction::Dump()
 WaitAction::WaitAction(float32 _waitTime) : Action()
     , waitTime(_waitTime)
 {
-
+    SetName("WaitAction");
 }
 
 WaitAction::~WaitAction()
@@ -343,14 +382,50 @@ String WaitAction::Dump()
 
 //----------------------------------------------------------------------
 
+WaitForScreenAction::WaitForScreenAction(const String &_screenName, float32 timeout) : WaitAction(timeout)
+	, screenName(_screenName)
+{
+    SetName("WaitForScreenAction");
+}
+
+WaitForScreenAction::~WaitForScreenAction()
+{
+}
+
+void WaitForScreenAction::Execute()
+{
+    WaitAction::Execute();
+}
+
+bool WaitForScreenAction::TestCondition()
+{
+    if(WaitAction::TestCondition())
+    {
+        AutotestingSystem::Instance()->OnError(Format("WaitForScreenAction %s timeout", screenName.c_str()));
+        return true;
+    }
+	return (UIControlSystem::Instance()->GetScreen()->GetName() == screenName);
+}
+
+String WaitForScreenAction::Dump()
+{
+	String baseStr = WaitAction::Dump();
+	return Format("%s screenName=%s", baseStr.c_str(), screenName.c_str());
+}
+
+
+//----------------------------------------------------------------------
+
 WaitForUIAction::WaitForUIAction(const String &_controlName, float32 timeout) : WaitAction(timeout)
 {
+    SetName("WaitForUIAction");
     controlPath.push_back(_controlName);
 }
 
 WaitForUIAction::WaitForUIAction(const Vector<String> &_controlPath, float32 timeout) : WaitAction(timeout)
     , controlPath(_controlPath)
 {
+    SetName("WaitForUIAction");
 }
 
 WaitForUIAction::~WaitForUIAction()
@@ -366,7 +441,7 @@ bool WaitForUIAction::TestCondition()
 {
     if(WaitAction::TestCondition())
     {
-        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", controlPath.back().c_str()));
+        AutotestingSystem::Instance()->OnError(Format("WaitForUIAction %s timeout", PathToString(controlPath).c_str()));
         return true;
     }
     return (FindControl(controlPath) != NULL);
@@ -385,6 +460,7 @@ SetTextAction::SetTextAction(const String& _controlName, const WideString &_text
     : Action()
     , text(_text)
 {
+    SetName("SetTextAction");
     controlPath.push_back(_controlName);
 }
 
@@ -393,6 +469,7 @@ SetTextAction::SetTextAction(const Vector<String>& _controlPath, const WideStrin
     , text(_text)
     , controlPath(_controlPath)
 {
+    SetName("SetTextAction");
 }
 
 SetTextAction::~SetTextAction()

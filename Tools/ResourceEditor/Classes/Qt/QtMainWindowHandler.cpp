@@ -7,6 +7,9 @@
 #include "../Commands/CommandViewport.h"
 #include "../Commands/SceneGraphCommands.h"
 #include "../Commands/ViewCommands.h"
+#include "../Commands/CommandReloadTextures.h"
+#include "../Commands/ParticleEditorCommands.h"
+#include "../Commands/LandscapeOptionsCommands.h"
 #include "../Constants.h"
 #include "../SceneEditor/EditorSettings.h"
 #include "../SceneEditor/SceneEditorScreenMain.h"
@@ -27,6 +30,7 @@ using namespace DAVA;
 QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
     :   QObject(parent)
 	,	menuResentScenes(NULL)
+    ,   resentAncorAction(NULL)
 	,	defaultFocusWidget(NULL)
 {
     new CommandsManager();
@@ -173,35 +177,40 @@ void QtMainWindowHandler::SetResentMenu(QMenu *menu)
     menuResentScenes = menu;
 }
 
+void QtMainWindowHandler::SetResentAncorAction(QAction *ancorAction)
+{
+    resentAncorAction = ancorAction;
+}
+
+
 void QtMainWindowHandler::MenuFileWillShow()
 {
     if(!GUIState::Instance()->GetNeedUpdatedFileMenu()) return;
     
     //TODO: what a bug?
     DVASSERT(menuResentScenes && "Call SetResentMenu() to setup resent menu");
+
+    for(DAVA::int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
+    {
+        if(resentSceneActions[i]->parentWidget())
+        {
+            menuResentScenes->removeAction(resentSceneActions[i]);
+        }
+    }
+
     
     int32 sceneCount = EditorSettings::Instance()->GetLastOpenedCount();
     if(0 < sceneCount)
     {
-        menuResentScenes->setEnabled(true);
-        
-        for(DAVA::int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
-        {
-            if(resentSceneActions[i]->parentWidget())
-            {
-                menuResentScenes->removeAction(resentSceneActions[i]);
-            }
-        }
-        
+        QList<QAction *> resentActions;
         for(int32 i = 0; i < sceneCount; ++i)
         {
             resentSceneActions[i]->setText(QString(EditorSettings::Instance()->GetLastOpenedFile(i).c_str()));
-            menuResentScenes->addAction(resentSceneActions[i]);
+            resentActions.push_back(resentSceneActions[i]);
         }
-    }
-    else 
-    {
-        menuResentScenes->setEnabled(false);
+        
+        menuResentScenes->insertActions(resentAncorAction, resentActions);
+        menuResentScenes->insertSeparator(resentAncorAction);
     }
  
     GUIState::Instance()->SetNeedUpdatedFileMenu(false);
@@ -223,7 +232,7 @@ void QtMainWindowHandler::MenuToolsWillShow()
 }
 
 
-void QtMainWindowHandler::ResentSceneTriggered(QAction *resentScene)
+void QtMainWindowHandler::FileMenuTriggered(QAction *resentScene)
 {
     for(int32 i = 0; i < EditorSettings::RESENT_FILES_COUNT; ++i)
     {
@@ -330,6 +339,32 @@ void QtMainWindowHandler::RestoreDefaultFocus()
 		defaultFocusWidget->setEnabled(false);
 		defaultFocusWidget->setEnabled(true);
 	}
+}
+
+
+void QtMainWindowHandler::ReloadTexturesFromFileSystem()
+{
+    Execute(new CommandReloadTextures());
+}
+
+void QtMainWindowHandler::OpenParticleEditorConfig()
+{
+	Execute(new CommandOpenParticleEditorConfig());
+}
+
+void QtMainWindowHandler::SaveParticleEditorConfig()
+{
+	Execute(new CommandSaveParticleEditorConfig());
+}
+
+void QtMainWindowHandler::OpenParticleEditorSprite()
+{
+	Execute(new CommandOpenParticleEditorSprite());
+}
+
+void QtMainWindowHandler::ToggleNotPassableTerrain()
+{
+	Execute(new CommandNotPassableTerrain());
 }
 
 

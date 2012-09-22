@@ -482,7 +482,7 @@ void Scene::Draw()
 
 	shadowVolumes.clear();
     
-    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+    //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
     //RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
     //glDepthMask(GL_TRUE);
     //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
@@ -704,6 +704,9 @@ LightNode * Scene::GetNearestDynamicLight(LightNode::eType type, Vector3 positio
     {
         case LightNode::TYPE_DIRECTIONAL:
             
+            break;
+            
+        default:
             break;
     };
     

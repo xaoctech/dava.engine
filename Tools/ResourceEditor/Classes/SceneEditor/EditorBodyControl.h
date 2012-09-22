@@ -50,9 +50,6 @@ class EditorBodyControl:
     };
     
 public:
-	
-    
-public:
     EditorBodyControl(const Rect & rect);
     virtual ~EditorBodyControl();
     
@@ -126,6 +123,7 @@ public:
     virtual bool LandscapeEditorActive();
     virtual NodesPropertyControl *GetPropertyControl(const Rect &rect);
     
+    bool TileMaskEditorEnabled();
     
 #if defined (DAVA_QT)        
     void SetScene(EditorScene *newScene);
@@ -136,6 +134,8 @@ public:
 #endif //#if defined (DAVA_QT)        
     
     
+	SceneGraph * GetSceneGraph() { return sceneGraph; }
+
 protected:
 
     void InitControls();

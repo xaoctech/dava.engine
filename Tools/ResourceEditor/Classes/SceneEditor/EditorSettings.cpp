@@ -45,7 +45,7 @@ void EditorSettings::SetProjectPath(const String &projectPath)
     settings->SetString(String("ProjectPath"), projectPath);
 }
 
-String EditorSettings::GetProjetcPath()
+String EditorSettings::GetProjectPath()
 {
     return settings->GetString(String("ProjectPath"), String(""));
 }
@@ -204,7 +204,7 @@ void EditorSettings::AddLastOpenedFile(const String & pathToFile)
     
     filesList.insert(filesList.begin(), pathToFile);
     count = 0;
-    for(;(count < filesList.size()) && (count < RESENT_FILES_COUNT); ++count)
+    for(;(count < (int32)filesList.size()) && (count < RESENT_FILES_COUNT); ++count)
     {
         settings->SetString(Format("LastOpenedFile_%d", count), filesList[count]);
     }

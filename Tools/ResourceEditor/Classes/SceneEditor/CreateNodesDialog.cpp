@@ -28,8 +28,8 @@ CreateNodesDialog::CreateNodesDialog(const Rect & rect)
     header->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     AddControl(header);
     
-    int32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
-    int32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2) / 2;
+    float32 buttonY = rect.dy - ControlsFactory::BUTTON_HEIGHT;
+    float32 buttonX = (rect.dx - ControlsFactory::BUTTON_WIDTH * 2) / 2;
     
     UIButton *btnCancel = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.cancel"));
     btnCancel->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &CreateNodesDialog::OnCancel));
@@ -157,7 +157,7 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 		{
 			SetHeader(LocalizedString(L"createnode.particleemitter"));
 			ParticleEmitterNode * node = new ParticleEmitterNode();
-			node->LoadFromYaml("~res:/Particles/sparkles.yaml");
+			node->LoadFromYaml("");
 
 			sceneNode = node;
 		}
@@ -170,9 +170,13 @@ void CreateNodesDialog::CreateNode(ResourceEditor::eNodeType nodeType)
 			break;
 
 		case ResourceEditor::NODE_SWITCH_NODE:
+		{
 			SetHeader(LocalizedString(L"createnode.switchnode"));
 			sceneNode = new SwitchNode();
 			sceneNode->SetName("SwitchNode");
+			KeyedArchive *customProperties = sceneNode->GetCustomProperties();
+			customProperties->SetBool("editor.isSolid", false);
+		}
 			break;
 
             

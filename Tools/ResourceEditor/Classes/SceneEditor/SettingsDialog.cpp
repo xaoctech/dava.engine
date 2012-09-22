@@ -28,8 +28,8 @@ SettingsDialog::SettingsDialog(const Rect & rect, SettingsDialogDelegate *newDel
     dialogPanel->AddControl(propertyList);
     
     
-    int32 buttonY = dialogRect.dy - ControlsFactory::BUTTON_HEIGHT;
-    int32 buttonX = (dialogRect.dx - ControlsFactory::BUTTON_WIDTH) / 2;
+    float32 buttonY = dialogRect.dy - ControlsFactory::BUTTON_HEIGHT;
+    float32 buttonX = (dialogRect.dx - ControlsFactory::BUTTON_WIDTH) / 2.f;
     UIButton *btnClose = ControlsFactory::CreateButton(Vector2(buttonX, buttonY), LocalizedString(L"dialog.close"));
     btnClose->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &SettingsDialog::OnClose));
     dialogPanel->AddControl(btnClose);

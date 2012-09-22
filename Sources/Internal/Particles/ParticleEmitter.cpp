@@ -31,6 +31,7 @@
 #include "Particles/Particle.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleLayer3D.h"
+#include "Particles/ParticleLayerLong.h"
 #include "Render/RenderManager.h"
 #include "Utils/Random.h"
 #include "Animation/LinearAnimation.h"
@@ -356,17 +357,24 @@ void ParticleEmitter::PrepareEmitterParameters(Particle * particle, float32 velo
                 particle->position += qvq1_v * radius->GetValue(time);
         }
        
-        particle->angle = 0.0f;
+        particle->angle = atanf(particle->velocity.z/particle->velocity.x);
     }
 }
 
 void ParticleEmitter::LoadFromYaml(const String & filename)
 {
+	YamlParser * parser = YamlParser::Create(filename);
+	if(!parser)
+	{
+		Logger::Error("ParticleEmitter::LoadFromYaml failed");
+		return;
+	}
+
+	configPath = filename;
 	time = 0.0f;
 	repeatCount = 0;
 	lifeTime = 1000000000.0f;
-	
-	YamlParser * parser = YamlParser::Create(filename);
+
 	YamlNode * rootNode = parser->GetRootNode();
 
 	YamlNode * emitterNode = rootNode->Get("emitter");
@@ -457,19 +465,34 @@ void ParticleEmitter::LoadFromYaml(const String & filename)
 	{
 		YamlNode * node = rootNode->Get(k);
 		YamlNode * typeNode = node->Get("type");
+		
+		YamlNode * longNode = node->Get("isLong");
+		bool isLong = false;
+		if(longNode && (longNode->AsBool() == true))
+		{
+			isLong = true;
+		}
+
 		if (typeNode && typeNode->AsString() == "layer")
 		{	
 			ParticleLayer * layer;
 			if(is3D)
 			{
-				layer = new ParticleLayer3D();
+				if(isLong)
+				{
+					layer = new ParticleLayerLong();
+				}
+				else
+				{
+					layer = new ParticleLayer3D();
+				}
 			}
 			else
 			{
 				layer = new ParticleLayer();
 			}
-			layer->LoadFromYaml(node);
 			AddLayer(layer);
+			layer->LoadFromYaml(configPath, node);
 			SafeRelease(layer);
 		}
 	}

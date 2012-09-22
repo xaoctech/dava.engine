@@ -40,7 +40,6 @@
 namespace DAVA 
 {
 
-#pragma mark  --LodDistance
 LodNode::LodDistance::LodDistance()
 {
     distance = nearDistance = nearDistanceSq = farDistance = farDistanceSq = (float32) INVALID_DISTANCE;
@@ -64,7 +63,6 @@ void LodNode::LodDistance::SetFarDistance(float32 newDistance)
 }
     
 
-#pragma mark  --LodNode
 REGISTER_CLASS(LodNode);
     
 
@@ -179,7 +177,10 @@ void LodNode::RegisterNodeInLayer(SceneNode * node, int32 layer)
 void LodNode::RegisterIndexInLayer(int32 nodeIndex, int32 layer)
 {
     LodData *ld = CreateNewLayer(layer);
-    ld->indexes.push_back(nodeIndex);
+	if (nodeIndex >= 0)
+	{
+		ld->indexes.push_back(nodeIndex);
+	}
 }
 
 void LodNode::RemoveNode(SceneNode * node)
@@ -332,7 +333,7 @@ void LodNode::Update(float32 timeElapsed)
     if (flags&SceneNode::NODE_VISIBLE)
     {
         lastLodUpdateFrame++;
-        if (lastLodUpdateFrame > 3)
+        if (lastLodUpdateFrame > RECHECK_LOD_EVERY_FRAME)
         {
             lastLodUpdateFrame = 0;
             LodData *oldLod = currentLod;
@@ -355,6 +356,10 @@ void LodNode::Update(float32 timeElapsed)
             }
         }
     }
+	else
+	{
+		lastLodUpdateFrame = RECHECK_LOD_EVERY_FRAME + 1;
+	}
     
     SceneNode::Update(timeElapsed);
     
@@ -464,11 +469,18 @@ void LodNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
     {
         int32 layer = archive->GetInt32(Format("lod%d_layer", lodIdx), 0);
         size_t size = archive->GetInt32(Format("lod%d_cnt", lodIdx), 0);    //TODO: why size_t? int32?
-        for (size_t idx = 0; idx < size; ++idx)
-        {
-            int32 index  = archive->GetInt32(Format("l%d_%d_ni", lodIdx, idx), 0);
-            RegisterIndexInLayer(index, layer);
-        }
+		if (size > 0)
+		{
+			for (size_t idx = 0; idx < size; ++idx)
+			{
+				int32 index  = archive->GetInt32(Format("l%d_%d_ni", lodIdx, idx), 0);
+				RegisterIndexInLayer(index, layer);
+			}
+		}
+		else
+		{
+			RegisterIndexInLayer(-1, layer);
+		}
         
         float32 distance = archive->GetFloat(Format("lod%d_dist", lodIdx), GetDefaultDistance(lodIdx));
         if(INVALID_DISTANCE == distance)
@@ -549,7 +561,7 @@ void LodNode::SetLodLayerDistance(int32 layerNum, float32 distance)
             lodLayersArray[layerNum-1].SetFarDistance(farDistance);
         }
 
-        lodLayersArray[layerNum].SetDistance(distance);
+		lodLayersArray[layerNum].SetDistance(distance);
         lodLayersArray[layerNum].SetNearDistance(nearDistance);
     }
     else 

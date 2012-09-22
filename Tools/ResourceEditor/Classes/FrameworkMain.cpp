@@ -12,6 +12,7 @@
 #include "TexturePacker/CommandLineParser.h"
 
 #include "SceneEditor/EditorSettings.h"
+#include "SceneEditor/EditorConfig.h"
 #include "SceneEditor/SceneValidator.h"
 
 #include "SceneEditor/CommandLineTool.h"
@@ -19,7 +20,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.19"
+#define VERSION     "0.0.28"
  
 //void EntityTest();
 
@@ -51,7 +52,6 @@ void PrintUsage()
     printf("-sceneexporter -clean /Users/User/Project/Data/3d/\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processdir Maps/objects/\n");
     printf("-sceneexporter -export -indir /Users/User/Project/DataSource/3d -outdir /Users/User/Project/Data/3d/ -processfile Maps/level.sc2 -force\n");
-    
 }
 
 
@@ -112,8 +112,9 @@ void FrameworkDidLaunched()
     new CommandLineTool();
     new SceneExporter();
     new EditorSettings();
+	new EditorConfig();
     new SceneValidator();
-    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
+    SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
     
 	if (Core::Instance()->IsConsoleMode())
 	{
@@ -158,8 +159,8 @@ void FrameworkDidLaunched()
 //    int32 height = 690;
         
     
-    int32 width = DAVA::Core::Instance()->GetVirtualScreenWidth();
-    int32 height = DAVA::Core::Instance()->GetVirtualScreenHeight();
+    int32 width = (int32)DAVA::Core::Instance()->GetVirtualScreenWidth();
+    int32 height = (int32)DAVA::Core::Instance()->GetVirtualScreenHeight();
     if(width <= 0 || height <= 0)
     {
         width = EditorSettings::Instance()->GetScreenWidth();
@@ -181,6 +182,12 @@ void FrameworkDidLaunched()
 	GameCore * core = new GameCore();
 	DAVA::Core::SetApplicationCore(core);
 	DAVA::Core::Instance()->SetOptions(appOptions);
+    
+    
+#if defined (DAVA_QT)
+    DAVA::Core::Instance()->EnableReloadResourceOnResize(false);
+#endif //#if defined (DAVA_QT)
+    
 }
 
 

@@ -50,7 +50,7 @@ public:
     Action();
     virtual ~Action();
 
-	void SetName(const String &actionName);
+    void SetName(const String &actionName);
 	const String &GetName() { return name; };
 
     virtual void Update(float32 timeElapsed);
@@ -112,6 +112,20 @@ protected:
 
     virtual bool TestCondition();
     float32 waitTime;
+};
+
+class WaitForScreenAction : public WaitAction
+{
+public:
+    WaitForScreenAction(const String& _controlName, float32 timeout);
+    virtual ~WaitForScreenAction();
+
+    virtual void Execute();
+protected:
+	virtual String Dump();
+
+    virtual bool TestCondition();
+    String screenName;
 };
 
 class WaitForUIAction : public WaitAction

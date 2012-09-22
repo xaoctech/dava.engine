@@ -314,6 +314,8 @@ public:
      \brief Get device familty
      */
     eDeviceFamily GetDeviceFamily();
+    
+    void EnableReloadResourceOnResize(bool enable);
 
 private:
 	int32 screenOrientation;
@@ -350,6 +352,9 @@ private:
     
     void CheckDataTypeSizes();
     template <class T> void CheckType(T t, int32 expectedSize, const char * typeString);
+    
+    
+    bool enabledReloadResourceOnResize;
 };
 
 float32 GetScreenWidth();

@@ -7,8 +7,12 @@
 #include "EditorScene.h"
 
 #include "UNDOManager.h"
+#include "HeightmapNode.h"
 
-#pragma mark --LandscapeEditorColor
+#include "../LandscapeEditor/EditorHeightmap.h"
+#include "../LandscapeEditor/EditorLandscapeNode.h"
+
+
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -23,6 +27,9 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 	toolSprite = NULL;
     savedTexture = NULL;
     settings = NULL;
+
+    editedHeightmap = NULL;
+    savedHeightmap = NULL;
     
     //init draw params
     srcBlendMode = BLEND_SRC_ALPHA;
@@ -36,6 +43,11 @@ LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate,
 
 LandscapeEditorColor::~LandscapeEditorColor()
 {
+
+    SafeRelease(editedHeightmap);
+    SafeRelease(savedHeightmap);
+    
+    
     SafeRelease(tileMaskEditorShader);
 
     SafeRelease(savedTexture);
@@ -85,10 +97,10 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
 	SafeRelease(oldMaskSprite);
     SafeRelease(toolSprite);
     
-    int32 texSize = settings->maskSize;
+    float32 texSize = (float32)settings->maskSize;
     if(tex)
     {
-        texSize = tex->width;
+        texSize = (float32)tex->width;
     }
     
     maskSprite = Sprite::CreateAsRenderTarget(texSize, texSize, FORMAT_RGBA8888);
@@ -99,7 +111,7 @@ void LandscapeEditorColor::CreateMaskFromTexture(Texture *tex)
     {
         RenderManager::Instance()->LockNonMain();
         
-        Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->height);
+        Sprite *oldMask = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
         
         RenderManager::Instance()->SetRenderTarget(oldMaskSprite);
         oldMask->SetPosition(0.f, 0.f);
@@ -208,7 +220,7 @@ void LandscapeEditorColor::UpdateCursor()
 		Vector2 pos = landscapePoint - Vector2(scaleSize, scaleSize)/2;
 
 		workingLandscape->SetCursorTexture(cursorTexture);
-		workingLandscape->SetBigTextureSize(workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
+		workingLandscape->SetBigTextureSize((float32)workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK)->GetWidth());
 		workingLandscape->SetCursorPosition(pos);
 		workingLandscape->SetCursorScale(scaleSize);
 	}
@@ -285,14 +297,22 @@ void LandscapeEditorColor::HideAction()
 	SafeRelease(toolSprite);
 
 	workingLandscape->CursorDisable();
+    
+    workingLandscape->SetHeightmap(savedHeightmap);
+    SafeRelease(editedHeightmap);
+    SafeRelease(savedHeightmap);
 }
 
 void LandscapeEditorColor::ShowAction()
 {
     CreateMaskTexture();
-    landscapeSize = maskSprite->GetWidth();
+    landscapeSize = (int32)maskSprite->GetWidth();
 
 	workingLandscape->CursorEnable();
+    
+    savedHeightmap = SafeRetain(workingLandscape->GetHeightmap());
+    editedHeightmap = new EditorHeightmap(savedHeightmap);
+    workingLandscape->SetHeightmap(editedHeightmap);
 }
 
 void LandscapeEditorColor::UndoAction()
@@ -359,7 +379,7 @@ NodesPropertyControl *LandscapeEditorColor::GetPropertyControl(const Rect &rect)
 }
 
 
-#pragma mark -- LandscapeEditorPropertyControlDelegate
+
 void LandscapeEditorColor::LandscapeEditorSettingsChanged(LandscapeEditorSettings *newSettings)
 {
     settings = newSettings;
@@ -382,4 +402,23 @@ void LandscapeEditorColor::TextureDidChanged(const String &forKey)
     {
         CreateMaskTexture();
     }
+}
+
+void LandscapeEditorColor::RecreateHeightmapNode()
+{
+    SafeRelease(heightmapNode);
+    heightmapNode = new HeightmapNode(workingScene, workingLandscape);
+    workingScene->AddNode(heightmapNode);
+}
+
+bool LandscapeEditorColor::SetScene(EditorScene *newScene)
+{
+    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(newScene->GetLandScape(newScene));
+    if(editorLandscape)
+    {
+        ErrorNotifier::Instance()->ShowError("Cannot start tile mask editor. Remove EditorLandscapeNode from scene");
+        return false;
+    }
+    
+    return LandscapeEditorBase::SetScene(newScene);
 }

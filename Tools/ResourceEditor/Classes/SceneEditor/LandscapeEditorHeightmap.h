@@ -4,13 +4,14 @@
 #include "DAVAEngine.h"
 #include "LandscapeEditorBase.h"
 #include "LandscapeToolsPanel.h"
-#include "Scene3D/LandscapeDebugNode.h"
-#include "Scene3D/Heightmap.h"
 #include "LandscapeEditorPropertyControl.h"
 
 using namespace DAVA;
 
 class EditorScene;
+class EditorHeightmap;
+class EditorLandscapeNode;
+class LandscapesController;
 class LandscapeEditorHeightmap
     :   public LandscapeEditorBase
     ,   public LandscapeEditorPropertyControlDelegate
@@ -46,6 +47,7 @@ protected:
     virtual void RedoAction();
 
     void CopyPasteBegin();
+    virtual void RecreateHeightmapNode();
 
     
 	void UpdateTileMaskTool(float32 timeElapsed);
@@ -56,12 +58,14 @@ protected:
     void UpdateToolImage();
     float32 GetDropperHeight();
     
+    void UpdateHeightmap(const Rect &updatedRect);
+    
+    
     bool editingIsEnabled;
     
 	bool wasTileMaskToolUpdate;
 
-    LandscapeDebugNode *landscapeDebugNode;
-    Heightmap *heightmap;
+    LandscapesController *landscapesController;
     
     Image *toolImage;
     Image *toolImageTile;

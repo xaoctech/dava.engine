@@ -119,8 +119,11 @@ void GameCore::OnResume()
 {
     ApplicationCore::OnResume();
     
+#if !defined (DAVA_QT)
     SceneValidator::Instance()->ReloadTextures();
     sceneEditorScreenMain->RecreteFullTilingTexture();
+#endif //#if defined (DAVA_QT)
+    
 }
 
 void GameCore::OnBackground()

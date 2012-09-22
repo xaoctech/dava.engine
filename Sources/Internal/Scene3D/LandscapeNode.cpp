@@ -176,7 +176,7 @@ void LandscapeNode::ReleaseShaders()
 }
 
 
-int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
+int16 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
 {
 //    Logger::Debug("AllocateRDOQuad: %d %d size: %d", quad->x, quad->y, quad->size);
     DVASSERT(quad->size == RENDER_QUAD_WIDTH - 1);
@@ -208,7 +208,7 @@ int8 LandscapeNode::AllocateRDOQuad(LandscapeQuad * quad)
     
 //    Logger::Debug("Allocated vertices: %d KB", sizeof(LandscapeVertex) * (quad->size + 1) * (quad->size + 1) / 1024);
     
-    return (int8)landscapeRDOArray.size() - 1;
+    return (int16)landscapeRDOArray.size() - 1;
 }
 
 void LandscapeNode::ReleaseAllRDOQuads()
@@ -241,29 +241,16 @@ void LandscapeNode::BuildLandscapeFromHeightmapImage(const String & heightmapPat
     
     ReleaseShaders(); // release previous shaders
     ReleaseAllRDOQuads();
+
+    SafeDeleteArray(indices); //TODO: need here or no?
+    
     InitShaders(); // init new shaders according to the selected rendering mode
     
     BuildHeightmap();
     
-    box = _box;    
-
-    quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
-    //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
-    quadTreeHead.data.size = heightmap->Size() - 1; 
-    quadTreeHead.data.rdoQuad = -1;
+    box = _box;
     
-    SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
-    
-    allocatedMemoryForQuads = 0;
-    RecursiveBuild(&quadTreeHead, 0, lodLevelsCount);
-    FindNeighbours(&quadTreeHead);
-    
-    indices = new uint16[INDEX_ARRAY_COUNT];
-    
-//    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
-//    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
-//    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
-//    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
+    BuildLandscape();
 }
 
 bool LandscapeNode::BuildHeightmap()
@@ -298,6 +285,28 @@ bool LandscapeNode::BuildHeightmap()
     }
 
     return retValue;
+}
+    
+void LandscapeNode::BuildLandscape()
+{
+    quadTreeHead.data.x = quadTreeHead.data.y = quadTreeHead.data.lod = 0;
+    //quadTreeHead.data.xbuf = quadTreeHead.data.ybuf = 0;
+    quadTreeHead.data.size = heightmap->Size() - 1;
+    quadTreeHead.data.rdoQuad = -1;
+    
+    SetLods(Vector4(60.0f, 120.0f, 240.0f, 480.0f));
+    
+    allocatedMemoryForQuads = 0;
+    RecursiveBuild(&quadTreeHead, 0, lodLevelsCount);
+    FindNeighbours(&quadTreeHead);
+    
+    indices = new uint16[INDEX_ARRAY_COUNT];
+    
+    
+//    Logger::Debug("Allocated indices: %d KB", RENDER_QUAD_WIDTH * RENDER_QUAD_WIDTH * 6 * 2 / 1024);
+//    Logger::Debug("Allocated memory for quads: %d KB", allocatedMemoryForQuads / 1024);
+//    Logger::Debug("sizeof(LandscapeQuad): %d bytes", sizeof(LandscapeQuad));
+//    Logger::Debug("sizeof(QuadTreeNode): %d bytes", sizeof(QuadTreeNode<LandscapeQuad>));
 }
     
 /*
@@ -513,9 +522,6 @@ LandQuadTreeNode<LandscapeNode::LandscapeQuad> * LandscapeNode::FindNodeWithXY(L
                     return result;
             } 
         }
-    } else
-    {
-        return 0;
     }
     
     return 0;
@@ -574,7 +580,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     SafeRelease(textures[level]);
     textureNames[level] = String("");
     
-    Texture * texture = Texture::CreateFromFile(textureName); 
+    Texture * texture = CreateTexture(level, textureName);
     if (texture)
     {
         textureNames[level] = textureName;
@@ -590,6 +596,18 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 
     Image::EnableAlphaPremultiplication(true);
 }
+    
+Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textureName)
+{
+    if(TEXTURE_TILE_FULL == level)
+    {
+        //must not zero only for finalized maps
+        return Texture::PureCreate(textureName);
+    }
+
+    return Texture::CreateFromFile(textureName);
+}
+
 
 void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
 {
@@ -1042,9 +1060,9 @@ void LandscapeNode::BindMaterial(int32 lodLayer)
         RenderManager::Instance()->SetShader(fullTiledShader);
         RenderManager::Instance()->FlushState();
         
-        if (uniformFogColor != -1)
+        if (uniformFogColorFT != -1)
             tileMaskShader->SetUniformValue(uniformFogColorFT, fogColor);
-        if (uniformFogDensity != -1)
+        if (uniformFogDensityFT != -1)
             tileMaskShader->SetUniformValue(uniformFogDensityFT, fogDensity);
     }
     
@@ -1446,6 +1464,22 @@ Heightmap * LandscapeNode::GetHeightmap()
     return heightmap;
 }
 
+void LandscapeNode::SetHeightmap(DAVA::Heightmap *height)
+{
+    SafeRelease(heightmap);
+    
+    ReleaseShaders(); // release previous shaders
+    ReleaseAllRDOQuads();
+    InitShaders(); // init new shaders according to the selected rendering mode
+    
+    SafeDeleteArray(indices);
+
+    
+    heightmap = SafeRetain(height);
+    BuildLandscape();
+}
+    
+    
 Texture * LandscapeNode::CreateFullTiledTexture()
 {
     Logger::Debug("[LN] CreateFullTiledTexture");
@@ -1637,6 +1671,9 @@ const Color & LandscapeNode::GetFogColor() const
     return fogColor;
 }
 
-    
+LandscapeCursor * LandscapeNode::GetCursor()
+{
+    return cursor;
+}
     
 };

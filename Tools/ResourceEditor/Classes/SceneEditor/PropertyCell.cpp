@@ -17,7 +17,13 @@
 #include "HintManager.h"
 #include "UIFilePreviewDialog.h"
 
-#pragma mark --PropertyCell 
+#if defined(DAVA_QT)
+    #include "../Qt/QtUtils.h"
+#endif //#if defined(DAVA_QT)
+
+
+
+
 PropertyCell::PropertyCell(PropertyCellDelegate *propDelegate, const Rect &rect, PropertyCellData *prop)
 :UIListCell(rect, GetTypeName(prop->cellType))
 {
@@ -51,7 +57,7 @@ String PropertyCell::GetTypeName(int cellType)
 }
 
 
-#pragma mark --PropertyTextCell 
+
 PropertyTextCell::PropertyTextCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -132,18 +138,18 @@ void PropertyTextCell::SetData(PropertyCellData *prop)
     
 }
 
-void PropertyTextCell::TextFieldShouldReturn(UITextField * textField)
+void PropertyTextCell::TextFieldShouldReturn(UITextField *)
 {
     editableText->ReleaseFocus();
 }
 
-void PropertyTextCell::TextFieldShouldCancel(UITextField * textField)
+void PropertyTextCell::TextFieldShouldCancel(UITextField *)
 {
     SetData(property);
     editableText->ReleaseFocus();
 }
 
-void PropertyTextCell::TextFieldLostFocus(UITextField * textField)
+void PropertyTextCell::TextFieldLostFocus(UITextField *)
 {
     switch (property->GetValueType())
     {
@@ -175,7 +181,7 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
         {
             WideString newText = textField->GetAppliedChanges(replacementLocation, replacementLength, replacementString);
             bool allOk;
-            for (int i = 0; i < newText.length(); i++) 
+            for (int32 i = 0; i < (int32)newText.length(); i++)
             {
                 allOk = false;
                 if (newText[i] == L'-' && i == 0)
@@ -199,7 +205,7 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
             WideString newText = textField->GetAppliedChanges(replacementLocation, replacementLength, replacementString);
             bool allOk;
             int pointsCount = 0;
-            for (int i = 0; i < newText.length(); i++) 
+            for (int32 i = 0; i < (int32)newText.length(); i++)
             {
                 allOk = false;
                 if (newText[i] == L'-' && i == 0)
@@ -227,12 +233,12 @@ bool PropertyTextCell::TextFieldKeyPressed(UITextField * textField, int32 replac
     return false;
 };
 
-float32 PropertyTextCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyTextCell::GetHeightForWidth(float32)
 {
     return CELL_HEIGHT;
 }
 
-void PropertyTextCell::OnHint(BaseObject * object, void * userData, void * callerData)
+void PropertyTextCell::OnHint(BaseObject *, void *, void *)
 {
     if(uneditableTextContainer->GetParent())
     {
@@ -245,7 +251,7 @@ void PropertyTextCell::OnHint(BaseObject * object, void * userData, void * calle
 }
 
 
-#pragma mark --PropertyBoolCell 
+
 PropertyBoolCell::PropertyBoolCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -280,12 +286,12 @@ void PropertyBoolCell::SetData(PropertyCellData *prop)
     }
 }
 
-float32 PropertyBoolCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyBoolCell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT;
 }
 
-void PropertyBoolCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+void PropertyBoolCell::ValueChanged(UICheckBox *, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
@@ -293,11 +299,13 @@ void PropertyBoolCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
 }
 
 
-#pragma mark --PropertyFilepathCell 
+
 PropertyFilepathCell::PropertyFilepathCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 : PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
+#if !defined(DAVA_QT)
     dialog = NULL;
+#endif //#if !defined(DAVA_QT)
     
     keyName->size.x = size.x;
     keyName->size.y = size.y/2;
@@ -346,7 +354,7 @@ PropertyFilepathCell::~PropertyFilepathCell()
     SafeRelease(pathTextContainer);
 }
 
-float32 PropertyFilepathCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyFilepathCell::GetHeightForWidth(float32)
 {
     return CELL_HEIGHT * 2;
 }
@@ -358,7 +366,7 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
     String fullpath = prop->GetString();
     String datasourcePath = EditorSettings::Instance()->GetDataSourcePath();
     int32 pos = fullpath.find(datasourcePath);
-    if(String::npos == pos)
+    if(String::npos == (String::size_type)pos)
     {
         pathText->SetText(StringToWString(prop->GetString()));
     }
@@ -369,9 +377,23 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
     }
 }
 
-void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void * callerData)
+void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
-    if(dialog) 
+#if defined(DAVA_QT)
+    String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
+    
+    String extension = FileSystem::GetExtension(pathToFile);
+    if(0 == CompareStrings(".pvr", extension))
+    {
+        PVRConverter::Instance()->ConvertPvrToPng(pathToFile);
+    }
+    
+    property->SetString(pathToFile);
+    SetData(property);
+    propertyDelegate->OnPropertyChanged(property);
+    
+#else //#if defined(DAVA_QT)
+    if(dialog)
     {
         return;
     }
@@ -391,15 +413,53 @@ void PropertyFilepathCell::OnButton(BaseObject * object, void * userData, void *
 
     
     dialog->Show(UIScreenManager::Instance()->GetScreen());
+#endif //#if defined(DAVA_QT)
 }
 
-void PropertyFilepathCell::OnClear(BaseObject * object, void * userData, void * callerData)
+#if defined(DAVA_QT)
+String PropertyFilepathCell::GetPathname()
 {
-    if(dialog) 
+    if(0 < property->GetString().length())
+    {
+        return property->GetString();
+    }
+
+    return EditorSettings::Instance()->GetDataSourcePath();
+}
+
+
+String PropertyFilepathCell::GetExtensionFilter()
+{
+    Vector<String> extensions;
+    Split(property->GetExtensionFilter(), String(";"), extensions);
+    
+    String qtFormattedFilter = String("");
+    if(0 < extensions.size())
+    {
+        qtFormattedFilter = String("Open file (");
+
+        int32 count = (int32)extensions.size() - 1;
+        for(int32 i = 0; i < count; ++i)
+        {
+            qtFormattedFilter += String(Format("*%s ", extensions[i].c_str()));
+        }
+        qtFormattedFilter += String(Format("*%s)", extensions[count].c_str()));
+    }
+    
+    return qtFormattedFilter;
+}
+
+#endif //#if defined(DAVA_QT)
+
+void PropertyFilepathCell::OnClear(BaseObject * , void * , void * )
+{
+#if !defined(DAVA_QT)
+    if(dialog)
     {
         return;
     }
-
+#endif //#if !defined(DAVA_QT)
+    
     property->SetString("");
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
@@ -428,11 +488,12 @@ void PropertyFilepathCell::Input(UIEvent *currentInput)
     UIListCell::Input(currentInput);
 }
 
-void PropertyFilepathCell::OnHint(BaseObject * object, void * userData, void * callerData)
+void PropertyFilepathCell::OnHint(BaseObject * , void * , void * )
 {
     HintManager::Instance()->ShowHint(pathText->GetText(), this->GetRect(true));
 }
 
+#if !defined(DAVA_QT)
 void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const String &pathToFile)
 {
     String extension = FileSystem::GetExtension(pathToFile);
@@ -444,6 +505,7 @@ void PropertyFilepathCell::OnFileSelected(UIFileSystemDialog *forDialog, const S
     property->SetString(pathToFile);
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
+    
     SafeRelease(dialog);
 }
 
@@ -451,14 +513,11 @@ void PropertyFilepathCell::OnFileSytemDialogCanceled(UIFileSystemDialog *forDial
 {
     SafeRelease(dialog);
 }
+#endif //#if !defined(DAVA_QT)
 
 
-//void PropertyFilepathCell::DidAppear()
-//{
-//}
 
 
-#pragma mark --PropertyComboboxCell 
 PropertyComboboxCell::PropertyComboboxCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -475,7 +534,7 @@ PropertyComboboxCell::~PropertyComboboxCell()
     SafeRelease(combo);
 }
 
-float32 PropertyComboboxCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyComboboxCell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT;
 }
@@ -488,14 +547,14 @@ void PropertyComboboxCell::SetData(PropertyCellData *prop)
     combo->SetSelectedIndex(prop->GetItemIndex(), false);
 }
 
-void PropertyComboboxCell::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
+void PropertyComboboxCell::OnItemSelected(ComboBox *, const String &, int itemIndex)
 {
     property->SetItemIndex(itemIndex);
     combo->SetSelectedIndex(property->GetItemIndex(), false);
     propertyDelegate->OnPropertyChanged(property);
 }
 
-#pragma mark --PropertyMatrix4Cell 
+
 PropertyMatrix4Cell::PropertyMatrix4Cell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :       PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -515,7 +574,7 @@ PropertyMatrix4Cell::~PropertyMatrix4Cell()
     SafeRelease(matrix);
 }
 
-float32 PropertyMatrix4Cell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyMatrix4Cell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT * 5;
 }
@@ -536,7 +595,7 @@ void PropertyMatrix4Cell::SetData(PropertyCellData *prop)
     }
 }
 
-void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void *userData, void *callerData)
+void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *, void *, void *)
 {
     property->SetMatrix4(matrix->GetMatrix());
     SetData(property);
@@ -544,7 +603,7 @@ void PropertyMatrix4Cell::OnLocalTransformChanged(DAVA::BaseObject *object, void
 }
 
 
-#pragma mark --PropertySectionCell 
+
 PropertySectionCell::PropertySectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -560,19 +619,19 @@ PropertySectionCell::~PropertySectionCell()
 {
 }
 
-float32 PropertySectionCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertySectionCell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT;
 }
 
-void PropertySectionCell::OnButton(BaseObject * object, void * userData, void * callerData)
+void PropertySectionCell::OnButton(BaseObject * , void * , void * )
 {
     property->SetIsSectionOpened(!property->GetIsSectionOpened());
     propertyDelegate->OnPropertyChanged(property);
 }
 
 
-#pragma mark --PropertyButtonCell 
+
 PropertyButtonCell::PropertyButtonCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -588,7 +647,7 @@ PropertyButtonCell::~PropertyButtonCell()
 {
 }
 
-float32 PropertyButtonCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyButtonCell::GetHeightForWidth(float32 )
 {
     return ControlsFactory::BUTTON_HEIGHT;
 }
@@ -604,7 +663,7 @@ void PropertyButtonCell::SetData(PropertyCellData *prop)
     AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, buttonEvent);
 }
 
-#pragma mark --PropertyColorCell 
+
 PropertyColorCell::PropertyColorCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -633,7 +692,7 @@ PropertyColorCell::~PropertyColorCell()
     SafeRelease(colorPreview);
 }
 
-float32 PropertyColorCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyColorCell::GetHeightForWidth(float32 )
 {
     return ControlsFactory::BUTTON_HEIGHT;
 }
@@ -645,7 +704,7 @@ void PropertyColorCell::SetData(PropertyCellData *prop)
     colorPreview->GetBackground()->SetColor(Color(c.r, c.g, c.b, 1.0f));
 }
 
-void PropertyColorCell::OnButtonPressed(BaseObject * owner, void * userData, void * callerData)
+void PropertyColorCell::OnButtonPressed(BaseObject * , void * , void * )
 {
     colorPicker->SetColor(property->GetColor());
     colorPicker->Show();
@@ -659,7 +718,7 @@ void PropertyColorCell::ColorPickerDone(const Color &newColor)
 }
 
 
-#pragma mark --PropertySubsectionCell 
+
 PropertySubsectionCell::PropertySubsectionCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -673,13 +732,13 @@ PropertySubsectionCell::~PropertySubsectionCell()
 {
 }
 
-float32 PropertySubsectionCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertySubsectionCell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT;
 }
 
 
-#pragma mark --PropertySliderCell 
+
 PropertySliderCell::PropertySliderCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -730,12 +789,12 @@ PropertySliderCell::~PropertySliderCell()
     SafeRelease(slider);
 }
 
-float32 PropertySliderCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertySliderCell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT * 2;
 }
 
-void PropertySliderCell::OnValueChanged(DAVA::BaseObject *owner, void *userData, void *callerData)
+void PropertySliderCell::OnValueChanged(DAVA::BaseObject *, void *, void *)
 {
     property->SetSliderValue(slider->GetValue());
     SetData(property);
@@ -761,7 +820,7 @@ void PropertySliderCell::SetData(PropertyCellData *prop)
 }
 
 
-#pragma mark --PropertyTexturePreviewCell 
+
 PropertyTexturePreviewCell::PropertyTexturePreviewCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
     :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width)), prop)
 {
@@ -819,12 +878,12 @@ void PropertyTexturePreviewCell::SetData(PropertyCellData *prop)
     }
 }
 
-float32 PropertyTexturePreviewCell::GetHeightForWidth(float32 currentWidth)
+float32 PropertyTexturePreviewCell::GetHeightForWidth(float32 )
 {
     return CELL_HEIGHT * 2;
 }
 
-void PropertyTexturePreviewCell::ValueChanged(UICheckBox *forCheckbox, bool newValue)
+void PropertyTexturePreviewCell::ValueChanged(UICheckBox *, bool newValue)
 {
     property->SetBool(newValue);
     SetData(property);
@@ -832,31 +891,12 @@ void PropertyTexturePreviewCell::ValueChanged(UICheckBox *forCheckbox, bool newV
 }
 
 
-void PropertyTexturePreviewCell::OnClick(DAVA::BaseObject *owner, void *userData, void *callerData)
+void PropertyTexturePreviewCell::OnClick(DAVA::BaseObject *, void *, void *)
 {
     bool checked = checkBox->Checked();
     checkBox->SetChecked(!checked, true);
 }
 
-#pragma mark  --PropertyDistanceCell
-//class PropertyDistanceCell: public PropertyCell, public LodDistanceControlDelegate
-//{
-//public:
-//    
-//    PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width);
-//    virtual ~PropertyDistanceCell();
-//    
-//    static float32 GetHeightForWidth(float32 currentWidth);
-//    virtual void SetData(PropertyCellData *prop);
-//    
-//    virtual void DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value) = 0;
-//    
-//private:
-//    
-//    void OnClick(BaseObject * owner, void * userData, void * callerData);
-//    
-//    LodDistanceControl *distanceControl;
-//};
 
 PropertyDistanceCell::PropertyDistanceCell(PropertyCellDelegate *propDelegate, PropertyCellData *prop, float32 width)   
 :   PropertyCell(propDelegate, Rect(0, 0, width, GetHeightForWidth(width, 0)), prop)
@@ -893,12 +933,12 @@ void PropertyDistanceCell::SetData(PropertyCellData *prop)
     }
 }
 
-float32 PropertyDistanceCell::GetHeightForWidth(float32 currentWidth, int32 count)
+float32 PropertyDistanceCell::GetHeightForWidth(float32 , int32 count)
 {
     return CELL_HEIGHT + (count + 1) * ControlsFactory::BUTTON_HEIGHT;
 }
 
-void PropertyDistanceCell::DistanceChanged(LodDistanceControl *forControl, int32 index, float32 value)
+void PropertyDistanceCell::DistanceChanged(LodDistanceControl *, int32 index, float32 value)
 {
     property->SetDistance(value, index);
     

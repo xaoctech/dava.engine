@@ -59,11 +59,16 @@ void SceneExporter::ExportFile(const String &fileName, Set<String> &errorLog)
     if(rootNode)
     {
         int32 count = rootNode->GetChildrenCount();
+		Vector<SceneNode*> tempV;
+		tempV.reserve((count));
         for(int32 i = 0; i < count; ++i)
         {
-            SceneNode *node = rootNode->GetChild(i);
-            scene->AddNode(node);
+			tempV.push_back(rootNode->GetChild(i));
         }
+		for(int32 i = 0; i < count; ++i)
+		{
+			scene->AddNode(tempV[i]);
+		}
     }
     
     ExportScene(scene, fileName, errorLog);
@@ -227,25 +232,66 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
         LandscapeNode *landscape = landscapes[0];
         ExportFileDirectly(landscape->GetHeightmapPathname(), errorLog);
         
-        String fullTiledTexture = landscape->SaveFullTiledTexture();
-        landscape->SetTexture(LandscapeNode::TEXTURE_TILE_FULL, fullTiledTexture);
-        
-        for(int i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
+        for(int32 i = 0; i < LandscapeNode::TEXTURE_COUNT; i++)
         {
-            Texture *t = landscape->GetTexture((LandscapeNode::eTextureLevel)i);
-            if(t) 
+            if(LandscapeNode::TEXTURE_DETAIL == i)
             {
-                landscape->SetTextureName((LandscapeNode::eTextureLevel)i, 
-                                            ExportTexture(landscape->GetTextureName((LandscapeNode::eTextureLevel)i), errorLog));
+                continue;
             }
-            else 
+            else if(LandscapeNode::TEXTURE_TILE_FULL == i)
             {
-                if(LandscapeNode::TEXTURE_DETAIL != i)
+                ExportLandscapeFullTiledTexture(landscape, errorLog);
+            }
+            else
+            {
+                Texture *t = landscape->GetTexture((LandscapeNode::eTextureLevel)i);
+                if(t)
+                {
+                    landscape->SetTextureName((LandscapeNode::eTextureLevel)i,
+                                              ExportTexture(landscape->GetTextureName((LandscapeNode::eTextureLevel)i), errorLog));
+                }
+                else
+                {
                     errorLog.insert(String(Format("There is no landscape texture for index %d", i)));
+                }
             }
         }
     }
 }
+
+void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Set<String> &errorLog)
+{
+    String textureName = landscape->GetTextureName(LandscapeNode::TEXTURE_TILE_FULL);
+    if(0 < textureName.length())
+    {
+        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, ExportTexture(textureName, errorLog));
+    }
+    else
+    {
+        String colorTextureMame = landscape->GetTextureName(LandscapeNode::TEXTURE_COLOR);
+        String filename, pathname;
+        FileSystem::Instance()->SplitPath(colorTextureMame, pathname, filename);
+        
+        String fullTiledPathname = pathname + FileSystem::Instance()->ReplaceExtension(filename, ".thumbnail.png");
+        String workingPathname = RemoveFolderFromPath(fullTiledPathname, dataSourceFolder);
+        PrepareFolderForCopy(workingPathname, errorLog);
+        
+        Texture *fullTiledTexture = landscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
+        Image *image = fullTiledTexture->CreateImageFromMemory();
+        if(image)
+        {
+            image->Save(dataFolder + workingPathname);
+            SafeRelease(image);
+        }
+        else
+        {
+            errorLog.insert(String(Format("Can't create image for fullTiled Texture for file %s", workingPathname.c_str())));
+        }
+        
+        landscape->SetTextureName(LandscapeNode::TEXTURE_TILE_FULL, workingPathname);
+    }
+}
+
 
 void SceneExporter::ExportMeshLightmaps(Scene *scene, Set<String> &errorLog)
 {
@@ -270,24 +316,10 @@ void SceneExporter::ExportMeshLightmaps(Scene *scene, Set<String> &errorLog)
 
 bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &errorLog)
 {
-		//    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
+    //    Logger::Debug("[ExportFileDirectly] %s", filePathname.c_str());
 
     String workingPathname = RemoveFolderFromPath(filePathname, dataSourceFolder);
-    
-    String folder, file;
-    FileSystem::SplitPath(workingPathname, folder, file);
-    
-    String newFolderPath = dataFolder + folder;
-    if(!FileSystem::Instance()->IsDirectory(newFolderPath))
-    {
-        FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);
-        if(FileSystem::DIRECTORY_CANT_CREATE == retCreate)
-        {
-            errorLog.insert(String(Format("Can't create folder %s",newFolderPath.c_str())));
-        }
-    }
-    
-    FileSystem::Instance()->DeleteFile(dataFolder + workingPathname);
+    PrepareFolderForCopy(workingPathname, errorLog);
     
     bool retCopy = FileSystem::Instance()->CopyFile(dataSourceFolder + workingPathname, dataFolder + workingPathname);
     if(!retCopy)
@@ -297,6 +329,25 @@ bool SceneExporter::ExportFileDirectly(const String &filePathname, Set<String> &
     
     return retCopy;
 }
+
+void SceneExporter::PrepareFolderForCopy(const String &filePathname, Set<String> &errorLog)
+{
+    String folder, file;
+    FileSystem::SplitPath(filePathname, folder, file);
+    
+    String newFolderPath = dataFolder + folder;
+    if(!FileSystem::Instance()->IsDirectory(newFolderPath))
+    {
+        FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);
+        if(FileSystem::DIRECTORY_CANT_CREATE == retCreate)
+        {
+            errorLog.insert(String(Format("Can't create folder %s", newFolderPath.c_str())));
+        }
+    }
+    
+    FileSystem::Instance()->DeleteFile(dataFolder + filePathname);
+}
+
 
 
 String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
@@ -330,21 +381,8 @@ String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &
                 
                 //Save new texture
                 String workingPathname = RemoveFolderFromPath(texturePathname, dataSourceFolder);
-                
-                String folder, file;
-                FileSystem::SplitPath(workingPathname, folder, file);
-                
-                String newFolderPath = dataFolder + folder;
-                if(!FileSystem::Instance()->IsDirectory(newFolderPath))
-                {
-                    FileSystem::eCreateDirectoryResult retCreate = FileSystem::Instance()->CreateDirectory(newFolderPath, true);
-                    if(FileSystem::DIRECTORY_CANT_CREATE == retCreate)
-                    {
-                        errorLog.insert(String(Format("Can't create folder %s",newFolderPath.c_str())));
-                    }
-                }
+                PrepareFolderForCopy(workingPathname, errorLog);
                 exportedPathname = dataFolder + workingPathname;
-                FileSystem::Instance()->DeleteFile(exportedPathname);
                 
                 Image *image = fbo->GetTexture()->CreateImageFromMemory();
                 if(image)

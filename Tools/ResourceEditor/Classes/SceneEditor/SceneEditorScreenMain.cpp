@@ -356,7 +356,7 @@ void SceneEditorScreenMain::OnFileSelected(UIFileSystemDialog *forDialog, const 
             keyedArchieve->SetString("3dDataSourcePath", projectPath + "DataSource/3d/");
             EditorSettings::Instance()->Save();
             
-            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjetcPath());
+            SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
             libraryControl->SetPath(EditorSettings::Instance()->GetDataSourcePath());
             break;
         }
@@ -1003,7 +1003,6 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
     UIButton *btn = (UIButton *)owner;
     int32 tag = btn->GetTag();
     
-    bool needToSwitchBody = false;
     Vector<BodyItem*>::iterator it = bodies.begin();
     for(int32 i = 0; i < (int32)bodies.size(); ++i, ++it)
     {
@@ -1016,7 +1015,6 @@ void SceneEditorScreenMain::OnCloseBody(BaseObject * owner, void *, void *)
 #endif //#if !defined (DAVA_QT)
 
                 RemoveControl(bodies[i]->bodyControl);
-                needToSwitchBody = true;
             }
             RemoveControl(bodies[i]->headerButton);
             
@@ -1281,6 +1279,10 @@ void SceneEditorScreenMain::EditParticleEmitter(ParticleEmitterNode * emitter)
 	//BodyItem *iBody = FindCurrentBody();
 	if (!particlesEditor->GetParent())
 	{
+		SafeRelease(particlesEditor);
+		particlesEditor = new ParticlesEditorControl();
+
+		particlesEditor->SetNode(emitter);
 		particlesEditor->SetEmitter(emitter->GetEmitter());
 		AddControl(particlesEditor);
 	}
@@ -1552,6 +1554,18 @@ void SceneEditorScreenMain::HideScenePreview()
     }
 }
 
+bool SceneEditorScreenMain::LandscapeEditorModeEnabled()
+{
+    BodyItem *iBody = FindCurrentBody();
+    return iBody->bodyControl->LandscapeEditorActive();
+}
+
+bool SceneEditorScreenMain::TileMaskEditorEnabled()
+{
+    BodyItem *iBody = FindCurrentBody();
+    return iBody->bodyControl->TileMaskEditorEnabled();
+}
+
 #endif //#if defined (DAVA_QT)
 
 
@@ -1603,11 +1617,11 @@ void SceneEditorScreenMain::SetSize(const Vector2 &newSize)
         bodies[i]->bodyControl->SetSize(bodySize);
     }
 
-    if(particlesEditor && !particlesEditor->GetParent())
-    {
-        SafeRelease(particlesEditor);
-        particlesEditor = new ParticlesEditorControl();
-    }
+//     if(particlesEditor && !particlesEditor->GetParent())
+//     {
+//         SafeRelease(particlesEditor);
+//         particlesEditor = new ParticlesEditorControl();
+//     }
     
 }
 #endif //#if defined (DAVA_QT)

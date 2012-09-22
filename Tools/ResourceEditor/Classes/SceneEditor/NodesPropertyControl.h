@@ -53,7 +53,7 @@ public:
     
     void SetDelegate(NodesPropertyDelegate *delegate);
     
-    virtual void NodeCreated(bool success);
+    virtual void NodeCreated(bool success, const String &name, int32 type, VariantType *defaultValue = NULL);
     
     
     virtual int32 ElementsCount(UIList * list);
@@ -87,7 +87,6 @@ protected:
     bool createNodeProperties;
     
     UIButton *btnPlus;
-	UIButton *btnPlusCollision;
     UIButton *btnMinus;
 
     void OnSetDistancesForLodNodes(BaseObject * object, void * userData, void * callerData);
@@ -95,8 +94,8 @@ protected:
     
     void OnPlus(BaseObject * object, void * userData, void * callerData);
     void OnMinus(BaseObject * object, void * userData, void * callerData);
-	void OnPlusCollision(BaseObject * object, void * userData, void * callerData);
-    
+
+	static const int32 PROP_CONTROL_ELEM_COUNT = 10;
     CreatePropertyControl *propControl;
     SceneNode *currentSceneNode;
     DataNode *currentDataNode;

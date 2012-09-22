@@ -223,7 +223,6 @@ QMimeData *GraphModel::mimeData(const QModelIndexList &indexes) const
         if (index.isValid())
         {
             GraphItem *item = static_cast<GraphItem *>(index.internalPointer());
-//            QVariant uData = QVariant::fromValue(item);
             QVariant uData = PointerHolder<GraphItem *>::ToQVariant(item);
             stream << uData;
         }
@@ -242,17 +241,6 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     if (!data->hasFormat("application/tree.userdata") || (column > 0))
         return false;
     
-    int32 beginRow = 0;
-    if (row != -1)
-    {
-        beginRow = row;
-    }
-    else if(parent.isValid())
-    {
-        beginRow = rowCount(parent);
-    }
-    
-    
     QByteArray encodedData = data->data("application/tree.userdata");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
     while (!stream.atEnd())
@@ -262,25 +250,6 @@ bool GraphModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 
         GraphItem *movedItem = PointerHolder<GraphItem *>::ToPointer(uData);
         MoveItemToParent(movedItem, parent);
-
-        
-        
-//        bool inserted = insertRows(beginRow, 1, parent);
-//        if(inserted)
-//        {
-//            QModelIndex idx = index(beginRow, 0, parent);
-//            bool dataSet = setData(idx, uData);
-//            if(!dataSet)
-//            {
-//                return false;
-//            }
-//            
-//            ++beginRow;
-//        }
-//        else
-//        {
-//            return false;
-//        }
     }
     
     reset();
