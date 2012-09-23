@@ -19,7 +19,7 @@
 
 using namespace DAVA;
 
-
+class RulerTool;
 class SceneGraph;
 class SceneInfoControl;
 class BeastManager;
@@ -49,7 +49,7 @@ public:
     
     virtual void WillAppear();
 	virtual void Update(float32 timeElapsed);
-    virtual void Input(UIEvent * touch);
+    virtual void Input(UIEvent * event);
 	virtual void Draw(const UIGeometricData &geometricData);
 
     virtual void SetSize(const Vector2 &newSize);
@@ -105,6 +105,10 @@ public:
     
 	SceneGraph * GetSceneGraph() { return sceneGraph; }
 
+
+    bool RulerToolIsActive();
+    bool RulerToolTriggered();
+    
 protected:
 
     void InitControls();
@@ -120,6 +124,10 @@ protected:
 	Vector3 GetIntersection(const Vector3 & start, const Vector3 & dir, const Vector3 & planeN, const Vector3 & planePos);
 	void InitMoving(const Vector2 & point);
 	
+    bool LandscapeEditorInput(UIEvent *event);
+    bool RulerToolInput(UIEvent *event);
+    bool ProcessKeyboard(UIEvent *event);
+    bool ProcessMsouse(UIEvent *event);
 	
     //scene controls
     EditorScene * scene;
@@ -190,6 +198,8 @@ protected:
     SceneGraph *sceneGraph;
     GraphBase *currentGraph;
     ePropertyShowState propertyShowState;
+    
+    RulerTool *landscapeRulerTool;
 };
 
 

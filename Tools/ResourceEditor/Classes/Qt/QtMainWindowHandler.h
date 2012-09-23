@@ -37,6 +37,7 @@ public:
     void RegisterStatusBar(QStatusBar *registeredSatusBar);
     void ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime = 0);
     
+    void SetWaitingCursorEnabled(bool enabled);
     
 public slots:
     //menu
@@ -65,6 +66,7 @@ public slots:
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void RulerTool();
     void ShowSettings();
     void BakeScene();
     void Beast();

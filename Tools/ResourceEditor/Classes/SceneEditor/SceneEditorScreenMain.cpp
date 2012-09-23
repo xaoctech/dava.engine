@@ -760,3 +760,8 @@ void SceneEditorScreenMain::ReleaseResizedControl(UIControl *control)
     SafeRelease(control);
 }
 
+void SceneEditorScreenMain::RulerToolTriggered()
+{
+    BodyItem *iBody = FindCurrentBody();
+    iBody->bodyControl->RulerToolTriggered();
+}
