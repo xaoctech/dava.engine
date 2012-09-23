@@ -132,6 +132,7 @@ void QtMainWindow::SetupMainMenu()
     connect(ui->actionTextureConverter, SIGNAL(triggered()), actionHandler, SLOT(ConvertTextures()));
     connect(ui->actionHeightMapEditor, SIGNAL(triggered()), actionHandler, SLOT(HeightmapEditor()));
     connect(ui->actionTileMapEditor, SIGNAL(triggered()), actionHandler, SLOT(TilemapEditor()));
+    connect(ui->actionRulerTool, SIGNAL(triggered()), actionHandler, SLOT(RulerTool()));
     
     connect(ui->actionShowSettings, SIGNAL(triggered()), actionHandler, SLOT(ShowSettings()));
     connect(ui->actionBakeScene, SIGNAL(triggered()), actionHandler, SLOT(BakeScene()));
@@ -179,6 +180,7 @@ void QtMainWindow::SetupToolBar()
  	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
  	DecorateWithIcon(ui->actionTileMapEditor, QString::fromUtf8(":/Data/QtIcons/tilemapeditor.png"));
  	DecorateWithIcon(ui->actionHeightMapEditor, QString::fromUtf8(":/Data/QtIcons/heightmapeditor.png"));
+ 	DecorateWithIcon(ui->actionRulerTool, QString::fromUtf8(":/Data/QtIcons/rulertool.png"));
     
  	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/Data/QtIcons/notpassableterrain.png"));
     
@@ -190,6 +192,7 @@ void QtMainWindow::SetupToolBar()
 
     ui->mainToolBar->addAction(ui->actionHeightMapEditor);
     ui->mainToolBar->addAction(ui->actionTileMapEditor);
+    ui->mainToolBar->addAction(ui->actionRulerTool);
 
     ui->mainToolBar->addSeparator();
     QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Reload Textures"));
@@ -198,7 +201,6 @@ void QtMainWindow::SetupToolBar()
     ui->mainToolBar->addSeparator();
     
     ui->mainToolBar->addAction(ui->actionShowNotPassableLandscape);
-    
     ui->mainToolBar->addSeparator();
 }
 

@@ -383,3 +383,25 @@ void QtMainWindowHandler::ShowStatusBarMessage(const DAVA::String &message, DAVA
     }
 }
 
+
+void QtMainWindowHandler::SetWaitingCursorEnabled(bool enabled)
+{
+    QMainWindow *window = dynamic_cast<QMainWindow *>(parent());
+    
+    if(window)
+    {
+        if(enabled)
+        {
+            window->setCursor(QCursor(Qt::WaitCursor));
+        }
+        else
+        {
+            window->setCursor(QCursor(Qt::ArrowCursor));
+        }
+    }
+}
+
+void QtMainWindowHandler::RulerTool()
+{
+    Execute(new CommandRulerTool());
+}
