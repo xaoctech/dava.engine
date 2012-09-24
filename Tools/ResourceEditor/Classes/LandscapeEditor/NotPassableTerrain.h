@@ -33,8 +33,6 @@
 #include "DAVAEngine.h"
 #include "EditorLandscapeNode.h"
 
-#define NOTPASSABLE_TERRAIN_ENABLED  
-
 class LandscapeRenderer;
 class NotPassableTerrain: public EditorLandscapeNode
 {
@@ -53,8 +51,6 @@ public:
 protected:
 
     virtual void SetDisplayedTexture();
-
-    void DrawFullTiledTexture(const DAVA::Rect &drawRect);
 
     DAVA::Sprite *notPassableMapSprite;
     DAVA::float32 notPassableAngleTan;

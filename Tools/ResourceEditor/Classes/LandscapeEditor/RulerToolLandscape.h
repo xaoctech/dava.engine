@@ -23,62 +23,38 @@
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=====================================================================================*/
 
-#ifndef __RULER_TOOL_H__
-#define __RULER_TOOL_H__
+    Revision History:
+        * Created by Vitaliy Borodovsky 
+=====================================================================================*/
+#ifndef __RULER_TOOL_LANDSCAPE_H__
+#define __RULER_TOOL_LANDSCAPE_H__
 
 #include "DAVAEngine.h"
+#include "EditorLandscapeNode.h"
 
-class LandscapesController;
-class RulerToolLandscape;
-class HeightmapNode;
-class EditorBodyControl;
-class EditorScene;
-class RulerTool: public DAVA::BaseObject
+class LandscapeRenderer;
+class RulerToolLandscape: public EditorLandscapeNode
 {
-    enum eConst
-    {
-        PREDEFINED_SIZE = 10,
-        APPROXIMATION_COUNT = 10,
-        RAY_TRACING_DISTANCE = 1000
-    };
     
-public:
-
-    RulerTool(EditorBodyControl *parent);
-	virtual ~RulerTool();
+public:	
+	RulerToolLandscape();
+	virtual ~RulerToolLandscape();
     
-    bool EnableTool(EditorScene *scene);
-    void DisableTool();
+    void SetPoints(const DAVA::List<DAVA::Vector3> &points);
     
-    bool Input(DAVA::UIEvent * touch);
-
 protected:
 
-    bool GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape);
-    bool GetLandscapePoint(const DAVA::Vector2 &touchPoint, DAVA::Vector2 &landscapePoint);
-    
-    void SetStartPoint(const DAVA::Vector3 &point);
-    void AddPoint(const DAVA::Vector3 &point);
+    virtual void SetDisplayedTexture();
 
-    
-    DAVA::Vector3 LandscapePoint(const DAVA::Vector3 &point);
-    
-    DAVA::float32 GetLength(const DAVA::Vector3 &startPoint, const DAVA::Vector3 &endPoint);
-    
-    DAVA::List<DAVA::Vector3> linePoints;
-    DAVA::float32 length;
-    
-    EditorScene *editorScene;
-    DAVA::LandscapeNode *landscape;
-    DAVA::int32 landscapeSize;
-    
-    EditorBodyControl *parentControl;
-    HeightmapNode *heightmapNode;
-    RulerToolLandscape *rulerToolLandscape;
-    LandscapesController *landscapesController;
+
+    DAVA::Sprite *rulerSprite;
 };
 
 
-#endif //__RULER_TOOL_H__
+#endif // __RULER_TOOL_LANDSCAPE_H__
+
+
+
+
+
