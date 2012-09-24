@@ -30,7 +30,7 @@
 #include "EditorHeightmap.h"
 #include "NotPassableTerrain.h"
 #include "LandscapeRenderer.h"
-#include "RulerToolLandscape.h";
+#include "RulerToolLandscape.h"
 
 using namespace DAVA;
 
