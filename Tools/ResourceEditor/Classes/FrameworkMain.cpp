@@ -20,7 +20,7 @@
 
 using namespace DAVA;
 
-#define VERSION     "0.0.32"
+#define VERSION     "0.0.33"
  
 void PrintUsage()
 {
