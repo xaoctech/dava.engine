@@ -58,15 +58,7 @@
 {
     if (!glView)
     {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        {
-            glView = [[EAGLView alloc] initWithFrame:CGRectMake(0, 0, 768, 1024)];
-        }
-        else
-        {
-            // The device is an iPhone or iPod touch.
-            glView = [[EAGLView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
-        } 
+       glView = [[EAGLView alloc] initWithFrame:[[::UIScreen mainScreen] bounds]];
     }    
 }
 
