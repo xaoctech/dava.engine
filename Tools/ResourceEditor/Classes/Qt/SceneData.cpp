@@ -650,7 +650,7 @@ void SceneData::ShowSceneGraphMenu(const QModelIndex &index, const QPoint &point
     QMenu menu;
     
     AddActionToMenu(&menu, QString("Remove Root Nodes"), new CommandRemoveRootNodes());
-    AddActionToMenu(&menu, QString("Look at Objec"), new CommandLockAtObject());
+    AddActionToMenu(&menu, QString("Look at Object"), new CommandLockAtObject());
     AddActionToMenu(&menu, QString("Remove Object"), new CommandRemoveSceneNode());
 
     AddActionToMenu(&menu, QString("Debug Flags"), new CommandDebugFlags());
