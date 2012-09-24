@@ -57,7 +57,6 @@ public:
 protected:
 
     bool GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape);
-    bool GetLandscapePoint(const DAVA::Vector2 &touchPoint, DAVA::Vector2 &landscapePoint);
     
     void SetStartPoint(const DAVA::Vector3 &point);
     void AddPoint(const DAVA::Vector3 &point);
@@ -71,7 +70,7 @@ protected:
     DAVA::float32 length;
     
     EditorScene *editorScene;
-    DAVA::LandscapeNode *landscape;
+//    DAVA::LandscapeNode *landscape;
     DAVA::int32 landscapeSize;
     
     EditorBodyControl *parentControl;

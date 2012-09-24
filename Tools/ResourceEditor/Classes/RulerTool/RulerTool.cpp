@@ -46,7 +46,6 @@ RulerTool::RulerTool(EditorBodyControl *parent)
     :   BaseObject()
 {
     editorScene = NULL;
-    landscape = NULL;
     heightmapNode = NULL;
     landscapesController = NULL;
     rulerToolLandscape = NULL;
@@ -78,23 +77,23 @@ bool RulerTool::EnableTool(EditorScene *scene)
         
         if(0 < landscapes.size())
         {
-            landscape = SafeRetain(landscapes[0]);
-            Heightmap *heightmap = landscape->GetHeightmap();
-            
-            DVASSERT(heightmap && "Need Heightmap at landscape");
-            landscapeSize = heightmap->Size();
-            
-            heightmapNode = new HeightmapNode(editorScene, landscape);
-            editorScene->AddNode(heightmapNode);
-            
             SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
             landscapesController = SafeRetain(activeScene->GetLandscapesController());
             rulerToolLandscape = SafeRetain(landscapesController->CreateRulerToolLandscape());
             rulerToolLandscape->SetPoints(linePoints);
+
+            Heightmap *heightmap = rulerToolLandscape->GetHeightmap();
+            
+            DVASSERT(heightmap && "Need Heightmap at landscape");
+            landscapeSize = heightmap->Size();
+            
+            heightmapNode = new HeightmapNode(editorScene, rulerToolLandscape);
+            editorScene->AddNode(heightmapNode);
+            
         }
     }
     
-    return (NULL != landscape);
+    return (NULL != rulerToolLandscape);
 }
 
 void RulerTool::DisableTool()
@@ -111,7 +110,6 @@ void RulerTool::DisableTool()
     
     SafeRelease(landscapesController);
     SafeRelease(rulerToolLandscape);
-    SafeRelease(landscape);
     SafeRelease(editorScene);
     SafeRelease(heightmapNode);
 }
@@ -155,24 +153,6 @@ bool RulerTool::GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vect
     bool isIntersect = editorScene->LandscapeIntersection(from, to, pointOnLandscape);
     return isIntersect;
 }
-
-bool RulerTool::GetLandscapePoint(const Vector2 &touchPoint, Vector2 &landscapePoint)
-{
-    Vector3 point;
-    bool isIntersect = GetIntersectionPoint(touchPoint, point);
-    if(isIntersect)
-    {
-        AABBox3 box = landscape->GetBoundingBox();
-        
-        //TODO: use
-        landscapePoint.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
-        landscapePoint.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
-    }
-    
-    return isIntersect;
-}
-
-
 
 void RulerTool::SetStartPoint(const DAVA::Vector3 &point)
 {
@@ -223,7 +203,7 @@ DAVA::float32 RulerTool::GetLength(const DAVA::Vector3 &startPoint, const DAVA::
 DAVA::Vector3 RulerTool::LandscapePoint(const DAVA::Vector3 &point)
 {
     Vector3 landscapePoint;
-    bool res = landscape->PlacePoint(point, landscapePoint);
+    bool res = rulerToolLandscape->PlacePoint(point, landscapePoint);
     return landscapePoint;
 }
 

@@ -51,9 +51,8 @@ void NotPassableTerrain::HeihghtmapUpdated(const DAVA::Rect &forRect)
 {
     EditorLandscapeNode::HeihghtmapUpdated(forRect);
     
-    AABBox3 transformedBox;
-    nestedLandscape->GetBoundingBox().GetTransformedBox(nestedLandscape->GetWorldTransform(), transformedBox);
-    Vector3 landSize = transformedBox.max - transformedBox.min;
+    AABBox3 boundingBox = nestedLandscape->GetBoundingBox();
+    Vector3 landSize = boundingBox.max - boundingBox.min;
 
     float32 angleCellDistance = landSize.x / (float32)(heightmap->Size() - 1);
     float32 angleHeightDelta = landSize.z / (float32)(Heightmap::MAX_VALUE - 1);

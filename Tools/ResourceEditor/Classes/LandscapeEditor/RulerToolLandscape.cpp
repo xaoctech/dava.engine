@@ -58,7 +58,6 @@ void RulerToolLandscape::SetPoints(const DAVA::List<DAVA::Vector3> &points)
 
     
     Texture *targetTexture = rulerSprite->GetTexture();
-    float32 dx = (float32)targetTexture->GetWidth() / (float32)(heightmap->Size() - 1);
     
     RenderManager::Instance()->LockNonMain();
     RenderManager::Instance()->SetRenderTarget(rulerSprite);
@@ -69,15 +68,14 @@ void RulerToolLandscape::SetPoints(const DAVA::List<DAVA::Vector3> &points)
 
     DrawFullTiledTexture(targetTexture, drawRect);
     
-    if(0 < points.size())
+    if(1 < points.size())
     {
         Color red(1.0f, 0.0f, 0.0f, 1.0f);
         RenderManager::Instance()->SetColor(red);
-     
-        AABBox3 transformedBox;
-        nestedLandscape->GetBoundingBox().GetTransformedBox(nestedLandscape->GetWorldTransform(), transformedBox);
-        Vector3 landSize = transformedBox.max - transformedBox.min;
-        Vector3 offsetPoint = transformedBox.min;
+
+        AABBox3 boundingBox = nestedLandscape->GetBoundingBox();
+        Vector3 landSize = boundingBox.max - boundingBox.min;
+        Vector3 offsetPoint = boundingBox.min;
         
         float32 koef = (float32)targetTexture->GetWidth() / landSize.x;
         
@@ -97,6 +95,7 @@ void RulerToolLandscape::SetPoints(const DAVA::List<DAVA::Vector3> &points)
             
             startPoint = endPoint;
         }
+        
 
         RenderManager::Instance()->ResetColor();
     }
