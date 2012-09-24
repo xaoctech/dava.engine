@@ -300,6 +300,7 @@
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		C786218A1602175100C96AA8 /* EditorConfig.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C78621881602175100C96AA8 /* EditorConfig.cpp */; };
 		E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EE7E57160DBCA000645405 /* RulerTool.cpp */; };
+		E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8F020C916103E84000969AF /* RulerToolLandscape.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -980,6 +981,8 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E8EE7E57160DBCA000645405 /* RulerTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerTool.cpp; path = Classes/RulerTool/RulerTool.cpp; sourceTree = "<group>"; };
 		E8EE7E58160DBCA000645405 /* RulerTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerTool.h; path = Classes/RulerTool/RulerTool.h; sourceTree = "<group>"; };
+		E8F020C916103E84000969AF /* RulerToolLandscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerToolLandscape.cpp; path = Classes/LandscapeEditor/RulerToolLandscape.cpp; sourceTree = "<group>"; };
+		E8F020CA16103E84000969AF /* RulerToolLandscape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RulerToolLandscape.h; path = Classes/LandscapeEditor/RulerToolLandscape.h; sourceTree = "<group>"; };
 		EA177DE95BF7D3EF58EE43F7 /* mainwindow.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mainwindow.cpp; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 		FAC1F4E071D49CE850E70770 /* Data/ */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data/; sourceTree = "<group>"; };
@@ -1081,6 +1084,8 @@
 		5C4A3F5B15FC90E6005CABFE /* LandscapeEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E8F020C916103E84000969AF /* RulerToolLandscape.cpp */,
+				E8F020CA16103E84000969AF /* RulerToolLandscape.h */,
 				5C8DA28A16024F4200BCE6DF /* NotPassableTerrain.cpp */,
 				5C8DA28B16024F4200BCE6DF /* NotPassableTerrain.h */,
 				5C45EB951606483E007EE300 /* LandscapesController.cpp */,
@@ -2383,6 +2388,7 @@
 				5C45EB9416060B70007EE300 /* LandscapeOptionsCommands.cpp in Build Sources */,
 				5C45EB971606483E007EE300 /* LandscapesController.cpp in Build Sources */,
 				E8EE7E59160DBCA000645405 /* RulerTool.cpp in Build Sources */,
+				E8F020CB16103E84000969AF /* RulerToolLandscape.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;

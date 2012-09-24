@@ -34,6 +34,7 @@ class LandscapeRenderer;
 class NotPassableTerrain;
 class EditorHeightmap;
 class EditorLandscapeNode;
+class RulerToolLandscape;
 class LandscapesController: public DAVA::BaseObject
 {
 public:
@@ -51,6 +52,11 @@ public:
     EditorLandscapeNode *CreateEditorLandscapeNode();
     void ReleaseEditorLandscapeNode();
 
+    RulerToolLandscape *CreateRulerToolLandscape();
+    void ReleaseRulerToolLandscape();
+
+    
+    
     DAVA::LandscapeNode *GetCurrentLandscape();
     DAVA::Heightmap *GetCurrentHeightmap();
     
@@ -70,6 +76,8 @@ protected:
     
     void ReleaseScene();
     
+    void ReleaseLandscape(EditorLandscapeNode *landscapeNode);
+    
     
     DAVA::Scene *scene;
     
@@ -77,7 +85,7 @@ protected:
     NotPassableTerrain *notPassableTerrain;
     LandscapeRenderer *landscapeRenderer;
     EditorLandscapeNode *editorLandscape;
-    
+    RulerToolLandscape *rulerToolLandscape;
     
     DAVA::LandscapeNode *currentLandscape;
     

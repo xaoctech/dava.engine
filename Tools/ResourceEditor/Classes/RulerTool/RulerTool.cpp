@@ -32,6 +32,12 @@
 
 #include "../Qt/QtMainWindowHandler.h"
 #include "../SceneEditor/HeightmapNode.h"
+#include "../LandscapeEditor/RulerToolLandscape.h"
+#include "../LandscapeEditor/LandscapesController.h"
+
+
+#include "../Qt/SceneData.h"
+#include "../Qt/SceneDataManager.h"
 
 using namespace DAVA;
 
@@ -42,6 +48,8 @@ RulerTool::RulerTool(EditorBodyControl *parent)
     editorScene = NULL;
     landscape = NULL;
     heightmapNode = NULL;
+    landscapesController = NULL;
+    rulerToolLandscape = NULL;
     
     parentControl = parent;
     
@@ -60,6 +68,7 @@ bool RulerTool::EnableTool(EditorScene *scene)
     
     length = 0;
     landscapeSize = 0;
+    linePoints.clear();
     
     editorScene = SafeRetain(scene);
     if(scene)
@@ -77,6 +86,11 @@ bool RulerTool::EnableTool(EditorScene *scene)
             
             heightmapNode = new HeightmapNode(editorScene, landscape);
             editorScene->AddNode(heightmapNode);
+            
+            SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+            landscapesController = SafeRetain(activeScene->GetLandscapesController());
+            rulerToolLandscape = SafeRetain(landscapesController->CreateRulerToolLandscape());
+            rulerToolLandscape->SetPoints(linePoints);
         }
     }
     
@@ -85,11 +99,18 @@ bool RulerTool::EnableTool(EditorScene *scene)
 
 void RulerTool::DisableTool()
 {
+    if(landscapesController)
+    {
+        landscapesController->ReleaseRulerToolLandscape();
+    }
+    
     if(heightmapNode && editorScene)
     {
         editorScene->RemoveNode(heightmapNode);
     }
     
+    SafeRelease(landscapesController);
+    SafeRelease(rulerToolLandscape);
     SafeRelease(landscape);
     SafeRelease(editorScene);
     SafeRelease(heightmapNode);
@@ -114,12 +135,13 @@ bool RulerTool::Input(DAVA::UIEvent *touch)
                 {
                     AddPoint(point);
                 }
+                rulerToolLandscape->SetPoints(linePoints);
             }
-            
+            return true;
         }
     }
     
-    return true;
+    return false;
 }
 
 bool RulerTool::GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape)
@@ -175,10 +197,6 @@ void RulerTool::AddPoint(const DAVA::Vector3 &point)
     }
 }
 
-DAVA::float32 RulerTool::GetLength() const
-{
-    return length;
-}
 
 DAVA::float32 RulerTool::GetLength(const DAVA::Vector3 &startPoint, const DAVA::Vector3 &endPoint)
 {
@@ -204,8 +222,9 @@ DAVA::float32 RulerTool::GetLength(const DAVA::Vector3 &startPoint, const DAVA::
 
 DAVA::Vector3 RulerTool::LandscapePoint(const DAVA::Vector3 &point)
 {
-    //TODO: need real code
-    return point;
+    Vector3 landscapePoint;
+    bool res = landscape->PlacePoint(point, landscapePoint);
+    return landscapePoint;
 }
 
 
