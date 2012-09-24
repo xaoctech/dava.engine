@@ -111,11 +111,11 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == materialType)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType))
     {
-        propertyList->AddColorProperty("materialeditor.ambientcolor");
-        propertyList->SetColorPropertyValue("materialeditor.ambientcolor", material->GetAmbientColor());
+        propertyList->AddColorProperty("property.material.ambientcolor");
+        propertyList->SetColorPropertyValue("property.material.ambientcolor", material->GetAmbientColor());
         
-        propertyList->AddColorProperty("materialeditor.diffusecolor");
-        propertyList->SetColorPropertyValue("materialeditor.diffusecolor", material->GetDiffuseColor());
+        propertyList->AddColorProperty("property.material.diffusecolor");
+        propertyList->SetColorPropertyValue("property.material.diffusecolor", material->GetDiffuseColor());
     }
     
     if (    (Material::MATERIAL_VERTEX_LIT_TEXTURE == materialType)
