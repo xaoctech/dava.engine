@@ -12,6 +12,7 @@ class Command;
 class QMenu;
 class QAction;
 class QTreeView;
+class QStatusBar;
 class QtMainWindowHandler: public QObject, public DAVA::Singleton<QtMainWindowHandler>
 {
     Q_OBJECT
@@ -32,6 +33,11 @@ public:
 
 	void SetDefaultFocusWidget(QWidget *widget);
 	void RestoreDefaultFocus();
+    
+    void RegisterStatusBar(QStatusBar *registeredSatusBar);
+    void ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime = 0);
+    
+    void SetWaitingCursorEnabled(bool enabled);
     
 public slots:
     //menu
@@ -60,6 +66,7 @@ public slots:
     void ConvertTextures();
     void HeightmapEditor();
     void TilemapEditor();
+    void RulerTool();
     void ShowSettings();
     void BakeScene();
     void Beast();
@@ -103,6 +110,8 @@ private:
     QAction *resentAncorAction;
 
 	QWidget *defaultFocusWidget;
+    
+    QStatusBar *statusBar;
 };
 
 #endif // __QT_MAIN_WINDOW_HANDLER_H__

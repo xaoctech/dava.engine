@@ -301,6 +301,7 @@
     <addaction name="separator"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
+    <addaction name="actionRulerTool"/>
     <addaction name="separator"/>
     <addaction name="actionBakeScene"/>
     <addaction name="actionBeast"/>
@@ -344,6 +345,7 @@
    <addaction name="menuViewPort"/>
    <addaction name="menuViewOptions"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNewScene">
    <property name="icon">
     <iconset>
@@ -538,6 +540,11 @@
    </property>
    <property name="text">
     <string>Show Not Passable Landscape</string>
+   </property>
+  </action>
+  <action name="actionRulerTool">
+   <property name="text">
+    <string>Ruler Tool</string>
    </property>
   </action>
  </widget>

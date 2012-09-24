@@ -58,6 +58,8 @@ public:
     
 protected:
     
+    void DrawFullTiledTexture(DAVA::Texture *renderTarget, const DAVA::Rect &drawRect);
+
     void CopyCursorData(DAVA::LandscapeNode *sourceLandscape, DAVA::LandscapeNode *destinationLandscape);
     virtual void SetDisplayedTexture();
 

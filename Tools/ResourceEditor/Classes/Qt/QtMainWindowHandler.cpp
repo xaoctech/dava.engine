@@ -24,6 +24,7 @@
 #include <QAction>
 #include <QCursor>
 #include <QWidget>
+#include <QStatusBar>
 
 using namespace DAVA;
 
@@ -32,6 +33,7 @@ QtMainWindowHandler::QtMainWindowHandler(QObject *parent)
 	,	menuResentScenes(NULL)
     ,   resentAncorAction(NULL)
 	,	defaultFocusWidget(NULL)
+    ,   statusBar(NULL)
 {
     new CommandsManager();
     
@@ -368,6 +370,38 @@ void QtMainWindowHandler::ToggleNotPassableTerrain()
 	Execute(new CommandNotPassableTerrain());
 }
 
+void QtMainWindowHandler::RegisterStatusBar(QStatusBar *registeredSatusBar)
+{
+    statusBar = registeredSatusBar;
+}
+
+void QtMainWindowHandler::ShowStatusBarMessage(const DAVA::String &message, DAVA::int32 displayTime)
+{
+    if(statusBar)
+    {
+        statusBar->showMessage(QString(message.c_str()), displayTime);
+    }
+}
 
 
+void QtMainWindowHandler::SetWaitingCursorEnabled(bool enabled)
+{
+    QMainWindow *window = dynamic_cast<QMainWindow *>(parent());
+    
+    if(window)
+    {
+        if(enabled)
+        {
+            window->setCursor(QCursor(Qt::WaitCursor));
+        }
+        else
+        {
+            window->setCursor(QCursor(Qt::ArrowCursor));
+        }
+    }
+}
 
+void QtMainWindowHandler::RulerTool()
+{
+    Execute(new CommandRulerTool());
+}

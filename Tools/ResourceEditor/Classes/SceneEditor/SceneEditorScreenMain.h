@@ -189,6 +189,7 @@ public: //For Qt integration
     void TextureConverterTriggered();
     void HeightmapTriggered();
     void TilemapTriggered();
+    void RulerToolTriggered();
     
     void ToggleSceneInfo();
     void ShowSettings();

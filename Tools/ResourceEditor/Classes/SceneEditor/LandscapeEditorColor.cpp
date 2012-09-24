@@ -406,6 +406,11 @@ void LandscapeEditorColor::TextureDidChanged(const String &forKey)
 
 void LandscapeEditorColor::RecreateHeightmapNode()
 {
+    if(workingScene && heightmapNode)
+    {
+        workingScene->RemoveNode(heightmapNode);
+    }
+        
     SafeRelease(heightmapNode);
     heightmapNode = new HeightmapNode(workingScene, workingLandscape);
     workingScene->AddNode(heightmapNode);

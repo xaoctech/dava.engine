@@ -82,6 +82,9 @@
     <Filter Include="Sources\LandscapeEditor">
       <UniqueIdentifier>{93b7e12d-cd91-46fd-944b-c75263b81dd9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\RulerTool">
+      <UniqueIdentifier>{d7e9840a-7693-4b3e-b72b-59a53c6e835d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -966,6 +969,12 @@
     <ClCompile Include="Classes\Commands\LandscapeOptionsCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\LandscapeEditor\RulerToolLandscape.cpp">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\RulerTool\RulerTool.cpp">
+      <Filter>Sources\RulerTool</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Classes\davaglwidget.ui">
@@ -1848,6 +1857,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands\LandscapeOptionsCommands.h">
       <Filter>Sources\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\LandscapeEditor\RulerToolLandscape.h">
+      <Filter>Sources\LandscapeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\RulerTool\RulerTool.h">
+      <Filter>Sources\RulerTool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,7 @@
 
 #include "../Qt/SceneDataManager.h"
 #include "../Qt/SceneData.h"
+#include "../RulerTool/RulerTool.h"
 
 EditorBodyControl::EditorBodyControl(const Rect & rect)
     :   UIControl(rect)
@@ -34,6 +35,8 @@ EditorBodyControl::EditorBodyControl(const Rect & rect)
     currentViewportType = ResourceEditor::VIEWPORT_DEFAULT;
     
     scene = NULL;
+    
+    landscapeRulerTool = NULL;
 	
     ControlsFactory::CusomizeBottomLevelControl(this);
 
@@ -76,6 +79,8 @@ void EditorBodyControl::InitControls()
 
 EditorBodyControl::~EditorBodyControl()
 {
+    SafeRelease(landscapeRulerTool);
+    
     SafeRelease(sceneGraph);
     currentGraph = NULL;
     
@@ -168,22 +173,7 @@ void EditorBodyControl::PlaceOnLandscape()
 	SceneNode * selection = scene->GetProxy();
 	if (selection && modificationPanel->IsModificationMode())
 	{
-		Vector3 result;
-		LandscapeNode * ls = scene->GetLandScape(scene);
-		if (ls)
-		{
-			const Matrix4 & itemWT = selection->GetWorldTransform();
-			Vector3 p = Vector3(0,0,0) * itemWT;
-			bool res = ls->PlacePoint(p, result);
-			if (res)
-			{
-				Vector3 offs = result - p;
-				Matrix4 invItem;
-				Matrix4 mod;
-				mod.CreateTranslation(offs);
-				selection->SetLocalTransform(selection->GetLocalTransform() * mod);
-			}						
-		}
+        PlaceOnLandscape(selection);
 	}
 }
 
@@ -212,7 +202,24 @@ void EditorBodyControl::PlaceOnLandscape(SceneNode *node)
 
 
 void EditorBodyControl::Input(DAVA::UIEvent *event)
-{    
+{
+    bool inputDone = LandscapeEditorInput(event);
+    if(!inputDone)
+    {
+        inputDone = RulerToolInput(event);
+    }
+    
+    if(!inputDone)
+    {
+        ProcessKeyboard(event);
+        ProcessMouse(event);
+    }
+    
+    UIControl::Input(event);
+}
+
+bool EditorBodyControl::LandscapeEditorInput(UIEvent *event)
+{
     if(LandscapeEditorActive())
     {
         bool processed = currentLandscapeEditor->Input(event);
@@ -220,11 +227,29 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         {
             cameraController->Input(event);
         }
-        UIControl::Input(event);
-        return;
+        return true;
     }
     
-    
+    return false;
+}
+
+bool EditorBodyControl::RulerToolInput(UIEvent *event)
+{
+    if(RulerToolIsActive())
+    {
+        bool processed = landscapeRulerTool->Input(event);
+        if(!processed)
+        {
+            cameraController->Input(event);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
+{
     if (event->phase == UIEvent::PHASE_KEYCHAR)
     {
         UITextField *tf = dynamic_cast<UITextField *>(UIControlSystem::Instance()->GetFocusedControl());
@@ -253,27 +278,31 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                     if(cmdIsPressed)
                     {
                         sceneGraph->RemoveWorkingNode();
+                        
+                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+                        activeScene->SelectNode(NULL);
+                        activeScene->RebuildSceneGraph();
                     }
                     break;
                 }
 					
-
+                    
                 case DVKEY_C:
                     newCamera = scene->GetCamera(2);
                     break;
-
+                    
                 case DVKEY_V:
                     newCamera = scene->GetCamera(3);
                     break;
-
+                    
                 case DVKEY_B:
                     newCamera = scene->GetCamera(4);
                     break;
-
+                    
                 case DVKEY_X:
                     PropcessIsSolidChanging();
                     break;
-
+                    
                     
                 default:
                     break;
@@ -287,9 +316,14 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         }
 	}
 	
-	SceneNode * selection = scene->GetProxy();
-	//selection with second mouse button 
+    return true;
+}
 
+bool EditorBodyControl::ProcessMouse(UIEvent *event)
+{
+	SceneNode * selection = scene->GetProxy();
+	//selection with second mouse button
+    
 	if (event->tid == UIEvent::BUTTON_1)
 	{
 		if (event->phase == UIEvent::PHASE_BEGAN)
@@ -320,10 +354,10 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 					{
 						scene->SetBulletUpdate(selection, false);
 						
-						inTouch = true;	
+						inTouch = true;
 						touchStart = event->point;
 						
-						startTransform = selection->GetLocalTransform();			
+						startTransform = selection->GetLocalTransform();
 						
 						InitMoving(event->point);
 						
@@ -336,11 +370,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
 						const Matrix4 & wt = selection->GetWorldTransform();
 						Vector3 objPos = Vector3(0,0,0) * wt;
 						Vector3 dir = objPos - camPos;
-						moveKf = (dir.Length() - cam->GetZNear()) * 0.003;					
+						moveKf = (dir.Length() - cam->GetZNear()) * 0.003;
 					}
 				}
 			}
-			else 
+			else
 			{
 				if (selection && modificationPanel->IsModificationMode())
 				{
@@ -364,14 +398,14 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
                 }
                 
 				if (selection)
-					scene->SetBulletUpdate(selection, true);				
+					scene->SetBulletUpdate(selection, true);
 			}
 			else
 			{
 				Vector3 from, dir;
 				GetCursorVectors(&from, &dir, event->point);
 				Vector3 to = from + dir * 1000.0f;
-				scene->TrySelection(from, to);				
+				scene->TrySelection(from, to);
 				selection = scene->GetProxy();
 				SelectNodeAtTree(selection);
 			}
@@ -393,10 +427,11 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
         {
             cameraController->Input(event);
         }
-        
 	}
-	UIControl::Input(event);
+    return true;
 }
+
+
 
 void EditorBodyControl::InitMoving(const Vector2 & point)
 {
@@ -844,6 +879,9 @@ void EditorBodyControl::ReleaseLandscapeEditor()
 
 bool EditorBodyControl::ToggleLandscapeEditor(int32 landscapeEditorMode)
 {
+    if(RulerToolIsActive())
+        return false;
+    
     LandscapeEditorBase *requestedEditor = NULL;
     if(SceneEditorScreenMain::ELEMID_COLOR_MAP == landscapeEditorMode)
     {
@@ -1008,4 +1046,34 @@ void EditorBodyControl::PropcessIsSolidChanging()
             sceneGraph->SelectNode(selectedNode);
         }
     }
+}
+
+
+bool EditorBodyControl::RulerToolTriggered()
+{
+    if(landscapeRulerTool)
+    {
+        landscapeRulerTool->DisableTool();
+        SafeRelease(landscapeRulerTool);
+    }
+    else
+    {
+        if(!LandscapeEditorActive())
+        {
+            landscapeRulerTool = new RulerTool(this);
+            bool enabled = landscapeRulerTool->EnableTool(scene);
+            if(!enabled)
+            {
+                SafeRelease(landscapeRulerTool);
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+bool EditorBodyControl::RulerToolIsActive()
+{
+    return (NULL != landscapeRulerTool);
 }

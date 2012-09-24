@@ -83,6 +83,8 @@ void CommandOpenScene::Execute()
             
             GUIState::Instance()->SetNeedUpdatedFileMenu(true);
         }
+        
+        QtMainWindowHandler::Instance()->ShowStatusBarMessage(selectedScenePathname);
     }
 }
 

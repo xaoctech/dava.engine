@@ -30,6 +30,7 @@
 #include "EditorHeightmap.h"
 #include "NotPassableTerrain.h"
 #include "LandscapeRenderer.h"
+#include "RulerToolLandscape.h"
 
 using namespace DAVA;
 
@@ -41,6 +42,7 @@ LandscapesController::LandscapesController()
     notPassableTerrain = NULL;
     landscapeRenderer = NULL;
     editorLandscape = NULL;
+    rulerToolLandscape = NULL;
     
     currentLandscape = NULL;
     
@@ -73,17 +75,16 @@ void LandscapesController::SetScene(DAVA::Scene *scene)
 
 void LandscapesController::ReleaseScene()
 {
-    if(notPassableTerrain && notPassableTerrain->GetParent())
-    {
-        notPassableTerrain->GetParent()->RemoveNode(notPassableTerrain);
-    }
-    SafeRelease(notPassableTerrain);
+    ReleaseLandscape(notPassableTerrain);
+    notPassableTerrain = NULL;
+    
 
-    if(editorLandscape && editorLandscape->GetParent())
-    {
-        editorLandscape->GetParent()->RemoveNode(editorLandscape);
-    }
-    SafeRelease(editorLandscape);
+    ReleaseLandscape(editorLandscape);
+    editorLandscape = NULL;
+
+
+    ReleaseLandscape(rulerToolLandscape);
+    rulerToolLandscape = NULL;
 
     
     SafeRelease(renderedHeightmap);
@@ -102,6 +103,16 @@ void LandscapesController::ReleaseScene()
     
     currentLandscape = NULL;
 }
+
+void LandscapesController::ReleaseLandscape(EditorLandscapeNode *landscapeNode)
+{
+    if(landscapeNode && landscapeNode->GetParent())
+    {
+        landscapeNode->GetParent()->RemoveNode(landscapeNode);
+    }
+    SafeRelease(landscapeNode);
+}
+
 
 void LandscapesController::SaveLandscape(DAVA::LandscapeNode *landscape)
 {
@@ -230,7 +241,7 @@ bool LandscapesController::NeedToKillRenderer(DAVA::LandscapeNode *landscapeForD
 
 bool LandscapesController::EditorLandscapeIsActive()
 {
-    return (NULL != notPassableTerrain) || (NULL != landscapeRenderer) || (NULL != renderedHeightmap);
+    return (NULL != notPassableTerrain) || (NULL != landscapeRenderer) || (NULL != renderedHeightmap) || (NULL != rulerToolLandscape);
 }
 
 EditorLandscapeNode *LandscapesController::CreateEditorLandscapeNode()
@@ -293,5 +304,25 @@ void LandscapesController::CursorDisable()
     currentLandscape->CursorDisable();
 }
 
+RulerToolLandscape *LandscapesController::CreateRulerToolLandscape()
+{
+    rulerToolLandscape = new RulerToolLandscape();
+    bool showed = ShowEditorLandscape(rulerToolLandscape);
+    if(!showed)
+    {
+        SafeRelease(rulerToolLandscape);
+    }
+    
+    return rulerToolLandscape;
+}
+
+void LandscapesController::ReleaseRulerToolLandscape()
+{
+    bool hidden = HideEditorLandscape(rulerToolLandscape);
+    if(hidden)
+    {
+        rulerToolLandscape = NULL;
+    }
+}
 
 
