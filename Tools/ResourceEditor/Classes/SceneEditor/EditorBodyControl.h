@@ -127,7 +127,7 @@ protected:
     bool LandscapeEditorInput(UIEvent *event);
     bool RulerToolInput(UIEvent *event);
     bool ProcessKeyboard(UIEvent *event);
-    bool ProcessMsouse(UIEvent *event);
+    bool ProcessMouse(UIEvent *event);
 	
     //scene controls
     EditorScene * scene;

@@ -212,7 +212,7 @@ void EditorBodyControl::Input(DAVA::UIEvent *event)
     if(!inputDone)
     {
         ProcessKeyboard(event);
-        ProcessMsouse(event);
+        ProcessMouse(event);
     }
     
     UIControl::Input(event);
@@ -278,6 +278,10 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
                     if(cmdIsPressed)
                     {
                         sceneGraph->RemoveWorkingNode();
+                        
+                        SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+                        activeScene->SelectNode(NULL);
+                        activeScene->RebuildSceneGraph();
                     }
                     break;
                 }
@@ -315,7 +319,7 @@ bool EditorBodyControl::ProcessKeyboard(UIEvent *event)
     return true;
 }
 
-bool EditorBodyControl::ProcessMsouse(UIEvent *event)
+bool EditorBodyControl::ProcessMouse(UIEvent *event)
 {
 	SceneNode * selection = scene->GetProxy();
 	//selection with second mouse button
