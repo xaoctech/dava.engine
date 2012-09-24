@@ -27,37 +27,32 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __NOTPASSABLE_TERRAIN_H__
-#define __NOTPASSABLE_TERRAIN_H__
+#ifndef __RULER_TOOL_LANDSCAPE_H__
+#define __RULER_TOOL_LANDSCAPE_H__
 
 #include "DAVAEngine.h"
 #include "EditorLandscapeNode.h"
 
 class LandscapeRenderer;
-class NotPassableTerrain: public EditorLandscapeNode
+class RulerToolLandscape: public EditorLandscapeNode
 {
-    enum eConst
-    {
-        NOT_PASSABLE_ANGLE = 25,
-    };
-
     
 public:	
-	NotPassableTerrain();
-	virtual ~NotPassableTerrain();
+	RulerToolLandscape();
+	virtual ~RulerToolLandscape();
     
-    virtual void HeihghtmapUpdated(const DAVA::Rect &forRect);
-
+    void SetPoints(const DAVA::List<DAVA::Vector3> &points);
+    
 protected:
 
     virtual void SetDisplayedTexture();
 
-    DAVA::Sprite *notPassableMapSprite;
-    DAVA::float32 notPassableAngleTan;
+
+    DAVA::Sprite *rulerSprite;
 };
 
 
-#endif // __NOTPASSABLE_TERRAIN_H__
+#endif // __RULER_TOOL_LANDSCAPE_H__
 
 
 

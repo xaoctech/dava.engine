@@ -6,6 +6,7 @@
 #include "../Qt/GUIState.h"
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
+#include "../Qt/QtMainWindowHandler.h"
 
 
 using namespace DAVA;
@@ -137,5 +138,26 @@ void CommandBeast::Execute()
     }
 }
 
+
+//Ruler Tool
+CommandRulerTool::CommandRulerTool()
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+}
+
+
+void CommandRulerTool::Execute()
+{
+    SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+    if(screen)
+    {
+        screen->RulerToolTriggered();
+    }
+    
+    SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
+    activeScene->RebuildSceneGraph();
+    
+    QtMainWindowHandler::Instance()->ShowStatusBarMessage(activeScene->GetScenePathname());
+}
 
 

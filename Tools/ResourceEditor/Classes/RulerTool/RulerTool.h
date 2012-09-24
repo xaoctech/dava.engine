@@ -25,74 +25,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __LANDSCAPES_CONTROLLER_H__
-#define __LANDSCAPES_CONTROLLER_H__
+#ifndef __RULER_TOOL_H__
+#define __RULER_TOOL_H__
 
 #include "DAVAEngine.h"
 
-class LandscapeRenderer;
-class NotPassableTerrain;
-class EditorHeightmap;
-class EditorLandscapeNode;
+class LandscapesController;
 class RulerToolLandscape;
-class LandscapesController: public DAVA::BaseObject
+class HeightmapNode;
+class EditorBodyControl;
+class EditorScene;
+class RulerTool: public DAVA::BaseObject
 {
+    enum eConst
+    {
+        PREDEFINED_SIZE = 10,
+        APPROXIMATION_COUNT = 10,
+        RAY_TRACING_DISTANCE = 1000
+    };
+    
 public:
 
-    LandscapesController();
-	virtual ~LandscapesController();
+    RulerTool(EditorBodyControl *parent);
+	virtual ~RulerTool();
+    
+    bool EnableTool(EditorScene *scene);
+    void DisableTool();
+    
+    bool Input(DAVA::UIEvent * touch);
 
-    void SetScene(DAVA::Scene *scene);
-    void SaveLandscape(DAVA::LandscapeNode *landscape);
-    
-    void ToggleNotPassableLandscape();
-
-    bool EditorLandscapeIsActive();
-    
-    EditorLandscapeNode *CreateEditorLandscapeNode();
-    void ReleaseEditorLandscapeNode();
-
-    RulerToolLandscape *CreateRulerToolLandscape();
-    void ReleaseRulerToolLandscape();
-
-    
-    
-    DAVA::LandscapeNode *GetCurrentLandscape();
-    DAVA::Heightmap *GetCurrentHeightmap();
-    
-    
-    void HeghtWasChanged(const DAVA::Rect &changedRect);
-
-    void CursorEnable();
-    void CursorDisable();
-    
-    
 protected:
 
-    bool ShowEditorLandscape(EditorLandscapeNode *displayingLandscape);
-    bool HideEditorLandscape(EditorLandscapeNode *hiddingLandscape);
+    bool GetIntersectionPoint(const DAVA::Vector2 &touchPoint, DAVA::Vector3 &pointOnLandscape);
     
-    bool NeedToKillRenderer(DAVA::LandscapeNode *landscapeForDetection);
+    void SetStartPoint(const DAVA::Vector3 &point);
+    void AddPoint(const DAVA::Vector3 &point);
+
     
-    void ReleaseScene();
+    DAVA::Vector3 LandscapePoint(const DAVA::Vector3 &point);
     
-    void ReleaseLandscape(EditorLandscapeNode *landscapeNode);
+    DAVA::float32 GetLength(const DAVA::Vector3 &startPoint, const DAVA::Vector3 &endPoint);
     
+    DAVA::List<DAVA::Vector3> linePoints;
+    DAVA::float32 length;
     
-    DAVA::Scene *scene;
+    EditorScene *editorScene;
+//    DAVA::LandscapeNode *landscape;
+    DAVA::int32 landscapeSize;
     
-    EditorHeightmap *renderedHeightmap;
-    NotPassableTerrain *notPassableTerrain;
-    LandscapeRenderer *landscapeRenderer;
-    EditorLandscapeNode *editorLandscape;
+    EditorBodyControl *parentControl;
+    HeightmapNode *heightmapNode;
     RulerToolLandscape *rulerToolLandscape;
-    
-    DAVA::LandscapeNode *currentLandscape;
-    
-    
-    DAVA::LandscapeNode *savedLandscape;
-    DAVA::Heightmap *savedHeightmap;
+    LandscapesController *landscapesController;
 };
 
 
-#endif //__LANDSCAPES_CONTROLLER_H__
+#endif //__RULER_TOOL_H__

@@ -78,5 +78,15 @@ protected:
     virtual void Execute();
 };
 
+class CommandRulerTool: public Command
+{
+public:
+	CommandRulerTool();
+    
+protected:
+    
+    virtual void Execute();
+};
+
 
 #endif // #ifndef __TOOLS_COMMANDS_H__
