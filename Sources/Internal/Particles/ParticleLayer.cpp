@@ -479,7 +479,11 @@ void ParticleLayer::GenerateNewParticle(int32 emitIndex)
 		{
 			const Vector3 & force = forces[i]->GetValue(layerTime);
 			float32 forceValue = force.Length();
-			Vector3 forceDirection = force/forceValue;
+			Vector3 forceDirection;
+			if(forceValue)
+			{
+				forceDirection = force/forceValue;
+			}
 
 			particle->forcesDirections.push_back(forceDirection);
 			particle->forcesValues.push_back(forceValue);

@@ -55,10 +55,16 @@ bool Particle::Update(float32 timeElapsed)
 	position += direction * speed * timeElapsed * velocityOverLife;
 	angle += spin * timeElapsed * spinOverLife;
     int32 n = (int32)forcesDirections.size();
-    for(int i = 0; i < n; i++)
+	if(n > 0)
 	{
-        //direction += forcesDirections[i] * forcesValues[i] * forcesOverLife[i] * timeElapsed;
-		//speed += forcesValues[i]
+		Vector3 veclocity = direction*speed;
+		for(int i = 0; i < n; i++)
+		{
+			veclocity += forcesDirections[i] * forcesValues[i] * forcesOverLife[i] * timeElapsed;
+		}
+		float32 invSqrt = InvSqrtFast(veclocity.SquareLength());
+		speed = 1.f/invSqrt;
+		direction = veclocity*invSqrt;
 	}
 	return true;
 }
