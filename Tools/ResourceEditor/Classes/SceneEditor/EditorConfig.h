@@ -39,7 +39,8 @@ public:
 
     void ParseConfig(const String &filePath);
 
-	const Vector<String> &GetProjectPropertyNames();
+	const Vector<String> & GetProjectPropertyNames();
+	const Vector<String> & GetComboPropertyValues(const String & nameStr);
 
 	bool HasProperty(const String &propertyName);
 	int32 GetPropertyValueType(const String &propertyName);
@@ -57,6 +58,7 @@ protected:
 
 	Vector<String> propertyNames;
 	Map<String, PropertyDescription*> properties;
+	Vector<String> empty;
 };
 
 

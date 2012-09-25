@@ -270,27 +270,6 @@
 			remoteGlobalIDString = C315DFDB097840EB005D77BE;
 			remoteInfo = FColladaS;
 		};
-		FEDDC9C6142A3E310004BF1A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C3D608B40ADFD5FC00019D9C;
-			remoteInfo = FColladaSU;
-		};
-		FEDDC9C8142A3E310004BF1A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09B10BA0B866F5500122B1F;
-			remoteInfo = FColladaTest;
-		};
-		FEDDC9CA142A3E310004BF1A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D09F2DB30BD9527300447337;
-			remoteInfo = FColladaU;
-		};
 		FEDDC9DA142A48220004BF1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FEDDC9BA142A3E300004BF1A /* FCollada.xcodeproj */;
@@ -1767,9 +1746,6 @@
 			isa = PBXGroup;
 			children = (
 				FEDDC9C5142A3E310004BF1A /* libFColladaS.a */,
-				FEDDC9C7142A3E310004BF1A /* libFColladaSU.a */,
-				FEDDC9C9142A3E310004BF1A /* FColladaTest */,
-				FEDDC9CB142A3E310004BF1A /* libFColladaU.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1863,27 +1839,6 @@
 			fileType = archive.ar;
 			path = libFColladaS.a;
 			remoteRef = FEDDC9C4142A3E310004BF1A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FEDDC9C7142A3E310004BF1A /* libFColladaSU.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFColladaSU.a;
-			remoteRef = FEDDC9C6142A3E310004BF1A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FEDDC9C9142A3E310004BF1A /* FColladaTest */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = FColladaTest;
-			remoteRef = FEDDC9C8142A3E310004BF1A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FEDDC9CB142A3E310004BF1A /* libFColladaU.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libFColladaU.dylib;
-			remoteRef = FEDDC9CA142A3E310004BF1A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

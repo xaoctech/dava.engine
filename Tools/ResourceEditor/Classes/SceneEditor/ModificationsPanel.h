@@ -2,6 +2,7 @@
 #define __MODIFICATIONS_PANEL_H__
 
 #include "DAVAEngine.h"
+#include "ComboBox.h"
 
 using namespace DAVA;
 
@@ -15,7 +16,7 @@ public:
 
 class ModificationPopUp;
 class EditorScene;
-class ModificationsPanel: public UIControl
+class ModificationsPanel: public UIControl, public ComboBoxDelegate
 {
     enum eConst
     {
@@ -68,8 +69,9 @@ public:
     void IsLandscapeRelative(bool value);
 
 	void OnReloadScene();
+	void OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex);
 
-    
+    void UpdateCollisionTypes(void);
 protected:
     
     void PlaceOnLandscape();
@@ -77,7 +79,6 @@ protected:
 	void OnModificationPressed(BaseObject * object, void * userData, void * callerData);
     void OnModificationPopUpPressed(BaseObject * object, void * userData, void * callerData);
 	void OnModePressed(BaseObject * object, void * userData, void * callerData);
-	void OnCollisionPressed(BaseObject * object, void * userData, void * callerData);
 	
 	void OnLandscapeRelative(BaseObject * object, void * userData, void * callerData);
 
@@ -90,7 +91,7 @@ protected:
 	UIButton *btnPopUp;
 	UIButton *btnModeSelection;
 	UIButton *btnModeModification;
-	UIButton *btnModeCollision;
+	ComboBox *btnModeCollision;
 	UIButton *btnPlaceOn;
 	UIButton *btnLandscape;
 	
@@ -99,7 +100,7 @@ protected:
 
 	bool isModeModification;
 	bool isLandscapeRelative;
-	bool isModeCollision;
+	int32 modeCollision;
 
     UIControl * modificationPanel;
 	ModificationPopUp * modificationPopUp;
