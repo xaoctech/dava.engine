@@ -64,6 +64,13 @@ protected:
     
 };
 
+class CommandSaveToFolderWithChilds: public Command
+{
+public:
+	CommandSaveToFolderWithChilds();
+protected:
+        virtual void Execute();
+};
 
 
 
