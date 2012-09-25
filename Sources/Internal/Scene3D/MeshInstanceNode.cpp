@@ -671,6 +671,11 @@ void MeshInstanceNode::RegisterNearestLight(LightNode * node)
     materialState->SetLight(0, node);
 }
 
+bool MeshInstanceNode::HasLightmaps()
+{
+	return lightmaps.size() > 0;
+}
+
 
 //String MeshInstanceNode::GetDebugDescription()
 //{
