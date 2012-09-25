@@ -109,6 +109,7 @@ void QtMainWindowHandler::ExportAsPNG()
 {
     Execute(new CommandExport(ResourceEditor::FORMAT_PNG));
 }
+
 void QtMainWindowHandler::ExportAsPVR()
 {
     Execute(new CommandExport(ResourceEditor::FORMAT_PVR));
@@ -117,6 +118,11 @@ void QtMainWindowHandler::ExportAsPVR()
 void QtMainWindowHandler::ExportAsDXT()
 {
     Execute(new CommandExport(ResourceEditor::FORMAT_DXT));
+}
+
+void QtMainWindowHandler::SaveToFolderWithChilds()
+{
+    Execute(new CommandSaveToFolderWithChilds());
 }
 
 void QtMainWindowHandler::CreateNode(ResourceEditor::eNodeType type)

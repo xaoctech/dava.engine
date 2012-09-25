@@ -163,3 +163,30 @@ void CommandExport::Execute()
     }
 }
 
+
+//Save to folder with childs
+CommandSaveToFolderWithChilds::CommandSaveToFolderWithChilds()
+:   Command(Command::COMMAND_WITHOUT_UNDO_EFFECT)
+{
+}
+
+
+void CommandSaveToFolderWithChilds::Execute()
+{
+	QString path = QFileDialog::getExistingDirectory(NULL, QString("Open Folder"), QString("/"));
+	
+    if(0 < path.size())
+    {
+		String folderPath = PathnameToDAVAStyle(path);
+		if('/' != folderPath[folderPath.length() - 1])
+        {
+            folderPath += '/';
+        }
+
+		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+		if(screen)
+		{
+			screen->SaveToFolder(folderPath);
+		}
+	}
+}
