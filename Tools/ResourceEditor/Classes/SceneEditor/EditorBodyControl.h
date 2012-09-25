@@ -109,6 +109,8 @@ public:
     bool RulerToolIsActive();
     bool RulerToolTriggered();
     
+	void UpdateModificationPanel(void);
+
 protected:
 
     void InitControls();

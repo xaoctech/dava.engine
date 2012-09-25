@@ -45,6 +45,7 @@ class SceneEditorScreenMain:
         DIALOG_OPERATION_MENU_SAVE,
         DIALOG_OPERATION_MENU_PROJECT,
         DIALOG_OPERATION_MENU_EXPORT,
+        DIALOG_OPERATION_MENU_EXPORT_TO_FOLDER,
     };
     
     enum eMenuIDS
@@ -126,7 +127,8 @@ public:
     bool TileMaskEditorEnabled();
     
     void AddBodyItem(const WideString &text, bool isCloseable);
-    
+
+    void UpdateModificationPanel(void);
 
 private:
     
@@ -170,6 +172,15 @@ private:
     HelpDialog *helpDialog;
     
     void ReleaseResizedControl(UIControl *control);
+
+	//for save to folder with Childs
+	//////////////////////////////
+	void CopyFile(const String & file);
+	void CheckNodes(SceneNode * node);
+	String inputFolder;
+	String outputFolder;
+	//////////////////////////////
+	
     
 public: //For Qt integration
     void OpenFileAtScene(const String &pathToFile);
@@ -181,7 +192,9 @@ public: //For Qt integration
    
 
     void ExportAs(ResourceEditor::eExportFormat format);
-    
+
+	void SaveToFolder(const String & folder);
+	
     void CreateNode(ResourceEditor::eNodeType nodeType);
     void SetViewport(ResourceEditor::eViewportType viewportType);
     

@@ -27,6 +27,7 @@
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
 #include "../Qt/ScenePreviewDialog.h"
+#include "FileSystem/FileSystem.h"
 
 SceneEditorScreenMain::SceneEditorScreenMain()
 	:	UIScreen()
@@ -530,6 +531,103 @@ void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
     Logger::Info("[SAVE SCENE TIME] %d ms", (endTime - startTime));
     
     iBody->bodyControl->PopDebugCamera();			
+}
+
+void SceneEditorScreenMain::UpdateModificationPanel(void)
+{
+	for (int i = 0; i < bodies.size(); i++)
+	{
+		bodies[i]->bodyControl->UpdateModificationPanel();
+	}
+}
+
+void SceneEditorScreenMain::CopyFile(const String & file)
+{
+	FileSystem * inst = FileSystem::Instance();
+
+	String fileName = outputFolder + file;
+	
+	String path, name;
+	inst->SplitPath(fileName, path, name);
+	inst->CreateDirectory(path, true);
+	inst->DeleteFile(fileName);
+	if (!inst->CopyFile(inputFolder + file, fileName))
+	{
+		Logger::Error("Referenced file %s is not found!", file.c_str());
+	}
+}
+
+void SceneEditorScreenMain::CheckNodes(SceneNode * node)
+{
+    KeyedArchive *customProperties = node->GetCustomProperties();
+	if(customProperties && customProperties->IsKeyExists("editor.referenceToOwner"))
+    {
+        String path = customProperties->GetString("editor.referenceToOwner");
+				
+		String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+		String::size_type pos = path.find(dataSourcePath);
+		if(String::npos != pos)
+		{
+			path = path.replace(pos, dataSourcePath.length(), "");
+		}
+		
+		CopyFile(path);
+    }
+	for (int i = 0; i < node->GetChildrenCount(); i++)
+	{
+		CheckNodes(node->GetChild(i));
+	}
+}
+
+void SceneEditorScreenMain::SaveToFolder(const String & folder)
+{
+	String formatStr = String("png");
+    
+    BodyItem *iBody = FindCurrentBody();
+	iBody->bodyControl->PushDebugCamera();
+    
+    SceneData *sceneData = SceneDataManager::Instance()->GetActiveScene();
+    String filePath = sceneData->GetScenePathname();
+    String dataSourcePath = EditorSettings::Instance()->GetDataSourcePath();
+    String::size_type pos = filePath.find(dataSourcePath);
+    if(String::npos != pos)
+    {
+        filePath = filePath.replace(pos, dataSourcePath.length(), "");
+    }
+    else
+    {
+        DVASSERT(0);
+    }
+    
+		// Get project path
+    KeyedArchive *keyedArchieve = EditorSettings::Instance()->GetSettings();
+    String projectPath = keyedArchieve->GetString(String("ProjectPath"));
+    
+    if(!SceneExporter::Instance()) new SceneExporter();
+    
+    String inFolder = projectPath + String("DataSource/3d/");
+    SceneExporter::Instance()->SetInFolder(inFolder);
+    SceneExporter::Instance()->SetOutFolder(folder);
+    
+	inputFolder = inFolder;
+	outputFolder = folder;
+    
+	SceneExporter::Instance()->SetExportingFormat(formatStr);
+    
+    Set<String> errorsLog;
+    SceneExporter::Instance()->ExportScene(iBody->bodyControl->GetScene(), filePath, errorsLog);
+    
+	iBody->bodyControl->PopDebugCamera();
+    
+    if(0 < errorsLog.size())
+    {
+        ErrorNotifier::Instance()->ShowError(errorsLog);
+    }
+
+	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
+	CopyFile(filePath);
+	FileSystem::Instance()->CopyDirectory(inputFolder + filePath + "_lightmaps", outputFolder + filePath + "_lightmaps");
+	CheckNodes(iBody->bodyControl->GetScene());
 }
 
 void SceneEditorScreenMain::ExportAs(ResourceEditor::eExportFormat format)

@@ -97,6 +97,11 @@ EditorBodyControl::~EditorBodyControl()
     SafeRelease(scene3dView);
 }
 
+void EditorBodyControl::UpdateModificationPanel(void)
+{
+	modificationPanel->UpdateCollisionTypes();
+}
+
 
 void RemoveDeepCamera(SceneNode * curr)
 {

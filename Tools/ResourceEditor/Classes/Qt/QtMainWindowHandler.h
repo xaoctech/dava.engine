@@ -56,7 +56,8 @@ public slots:
     void ExportAsPNG();
     void ExportAsPVR();
     void ExportAsDXT();
-    
+    void SaveToFolderWithChilds();
+
     //View
     void RestoreViews();
     void ToggleSceneInfo();
