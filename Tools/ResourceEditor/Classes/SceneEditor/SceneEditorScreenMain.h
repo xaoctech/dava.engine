@@ -192,7 +192,7 @@ public: //For Qt integration
 
     void ExportAs(ResourceEditor::eExportFormat format);
 
-	void SaveToFolder(String folder);
+	void SaveToFolder(const String & folder);
 	
     void CreateNode(ResourceEditor::eNodeType nodeType);
     void SetViewport(ResourceEditor::eViewportType viewportType);
