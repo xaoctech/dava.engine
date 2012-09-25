@@ -572,7 +572,7 @@ void SceneEditorScreenMain::CheckNodes(SceneNode * node)
 	}
 }
 
-void SceneEditorScreenMain::SaveToFolder(String folder)
+void SceneEditorScreenMain::SaveToFolder(const String & folder)
 {
 	String formatStr = String("png");
     
@@ -619,6 +619,7 @@ void SceneEditorScreenMain::SaveToFolder(String folder)
 
 	FileSystem::Instance()->DeleteFile(outputFolder + filePath);
 	CopyFile(filePath);
+	FileSystem::Instance()->CopyDirectory(inputFolder + filePath + "_lightmaps", outputFolder + filePath + "_lightmaps");
 	CheckNodes(iBody->bodyControl->GetScene());
 }
 
