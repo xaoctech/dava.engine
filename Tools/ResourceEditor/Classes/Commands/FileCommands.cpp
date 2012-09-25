@@ -41,7 +41,13 @@ void CommandOpenProject::Execute()
 		EditorSettings::Instance()->Save();
 
 		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
-
+		
+		SceneEditorScreenMain *screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
+        if(screen)
+        {
+            screen->UpdateModificationPanel();
+		}
+		
 		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();

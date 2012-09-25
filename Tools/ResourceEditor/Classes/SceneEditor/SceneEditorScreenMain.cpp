@@ -533,6 +533,13 @@ void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
     iBody->bodyControl->PopDebugCamera();			
 }
 
+void SceneEditorScreenMain::UpdateModificationPanel(void)
+{
+	for (int i = 0; i < bodies.size(); i++)
+	{
+		bodies[i]->bodyControl->UpdateModificationPanel();
+	}
+}
 
 void SceneEditorScreenMain::CopyFile(const String & file)
 {

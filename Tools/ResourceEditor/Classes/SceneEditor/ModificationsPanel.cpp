@@ -3,6 +3,7 @@
 
 #include "ModificationPopUp.h"
 #include "../EditorScene.h"
+#include "EditorConfig.h"
 
 static const WideString mods[3] = { L"M", L"R", L"S"};
 static const WideString axises[3] = { L"X", L"Y", L"Z"};
@@ -63,12 +64,13 @@ ModificationsPanel::ModificationsPanel(ModificationsPanelDelegate *newDelegate, 
 	btnModeModification->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnModePressed));
 	AddControl(btnModeModification);
 
-	btnModeCollision = ControlsFactory::CreateButton(Rect(220.f, 5.f, (float32)BUTTON_W, (float32)BUTTON_W), L"C");
-	btnModeCollision->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ModificationsPanel::OnCollisionPressed));
+	btnModeCollision = new ComboBox(Rect(220.f, 5.f, 80.0f, (float32)BUTTON_W), this,
+									EditorConfig::Instance()->GetComboPropertyValues("CollisionType"));
+	btnModeCollision->SetMaxVisibleItemsCount(20);
 	AddControl(btnModeCollision);
 
     isLandscapeRelative = false;
-	isModeCollision = false;
+	modeCollision = 0;
     
 	UpdateModState();
 	OnModePressed(btnModeSelection, 0, 0);
@@ -116,20 +118,19 @@ void ModificationsPanel::OnModePressed(BaseObject * object, void *, void *)
 	}
 }
 
-void ModificationsPanel::OnCollisionPressed(BaseObject *, void *, void *)
+void ModificationsPanel::OnItemSelected(ComboBox *forComboBox, const String &itemKey, int itemIndex)
 {
-	isModeCollision = !isModeCollision;
-	if (isModeCollision)
+	if (modeCollision != itemIndex)
 	{
-		btnModeCollision->SetState(UIControl::STATE_SELECTED);
+		modeCollision = itemIndex;
+		ChangeCollisionModeShow(workingScene);
 	}
-	else
-	{
-		btnModeCollision->SetState(UIControl::STATE_NORMAL);
-	}
-	ChangeCollisionModeShow(workingScene);
 }
 
+void ModificationsPanel::UpdateCollisionTypes(void)
+{
+	btnModeCollision->SetNewItemsSet(EditorConfig::Instance()->GetComboPropertyValues("CollisionType"));
+}
 
 void ModificationsPanel::OnLandscapeRelative(BaseObject *, void *, void *)
 {
@@ -149,10 +150,10 @@ void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
 	if (!node)
 		return;
 
-	if (isModeCollision)
+	if (modeCollision)
 	{
 		KeyedArchive * customProperties = node->GetCustomProperties();
-		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0))
+		if(customProperties && customProperties->IsKeyExists("CollisionType") && customProperties->GetInt32("CollisionType", 0) == modeCollision)
 		{
 			node->SetDebugFlags(node->GetDebugFlags() | (SceneNode::DEBUG_DRAW_RED_AABBOX));
 			return;
@@ -170,12 +171,12 @@ void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
 
 void ModificationsPanel::OnReloadScene()
 {
-	bool val = isModeCollision;
-	isModeCollision = false;
+	bool val = modeCollision;
+	modeCollision = 0;
 	ChangeCollisionModeShow(workingScene);
 	if (val)
 	{
-		isModeCollision = true;
+		modeCollision = true;
 		ChangeCollisionModeShow(workingScene);
 	}
 }

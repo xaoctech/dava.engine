@@ -5,7 +5,7 @@
 
 EditorConfig::EditorConfig()
 {
-
+	empty.push_back("none");
 }
     
 EditorConfig::~EditorConfig()
@@ -185,6 +185,16 @@ void EditorConfig::ParseConfig(const String &filePath)
 const Vector<String> &EditorConfig::GetProjectPropertyNames()
 {
 	return propertyNames;
+}
+
+const Vector<String> & EditorConfig::GetComboPropertyValues(const String & nameStr)
+{
+	if (properties.find(nameStr) != properties.end())
+		return properties[nameStr]->comboValues;
+	else
+	{
+		return empty;
+	}
 }
 
 PropertyDescription* EditorConfig::GetPropertyDescription(const String &propertyName)

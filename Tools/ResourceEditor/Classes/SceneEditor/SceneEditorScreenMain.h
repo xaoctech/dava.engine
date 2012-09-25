@@ -127,7 +127,8 @@ public:
     bool TileMaskEditorEnabled();
     
     void AddBodyItem(const WideString &text, bool isCloseable);
-    
+
+    void UpdateModificationPanel(void);
 
 private:
     
