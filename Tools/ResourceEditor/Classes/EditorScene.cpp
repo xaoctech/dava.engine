@@ -122,17 +122,17 @@ void EditorScene::ReleaseUserData(SceneNode * curr)
 
 SceneNode * GetSolidParent(SceneNode* curr)
 {
-	if (curr->GetSolid())
+	if (curr == 0)
+		return 0;
+	
+	SceneNode * parentResult = GetSolidParent(curr->GetParent());
+	
+	if (curr->GetSolid() && parentResult == 0)
 	{
 		return curr;
 	}
-	else 
-	{
-		SceneNode * parent = curr->GetParent();
-		if (parent == 0)
-			return 0;
-		return GetSolidParent(parent);
-	}
+	else
+		return parentResult;
 }
 
 SceneNode * GetLodParent(SceneNode * curr)
@@ -186,7 +186,7 @@ void EditorScene::TrySelection(Vector3 from, Vector3 direction)
 				findedIndex = findedIndex % cb.m_collisionObjects.size();
 			}
 		}
-		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
+			//		Logger::Debug("size:%d selIndex:%d", cb.m_collisionObjects.size(), findedIndex);
 		
 		if (findedIndex == -1)
 			findedIndex = cb.m_collisionObjects.size() - 1;
