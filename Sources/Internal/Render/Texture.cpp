@@ -40,7 +40,6 @@
 #include "Render/D3D9Helpers.h"
 #include "Render/ImageConvert.h"
 #include "FileSystem/FileSystem.h"
-//#include "LibPngHelpers.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
 #include <CoreGraphics/CoreGraphics.h>
@@ -677,307 +676,6 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 }		
 
 
-    
-//#if defined(__DAVAENGINE_IPHONE__)
-//Texture * Texture::CreateFromPVR(const String & pathName)
-//{
-//	uint64_t timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
-//
-//	Texture * texture = Texture::Get(pathName);
-//	if (texture)return texture;
-//	
-//	File * fp = File::Create(pathName, File::OPEN|File::READ);
-//	if (!fp)
-//	{
-//		Logger::Error("Failed to open PVR texture: %s", pathName.c_str());
-//		return 0;
-//	}
-//	uint32 fileSize = fp->GetSize();
-//	uint8 * bytes = new uint8[fileSize];
-//	uint32 dataRead = fp->Read(bytes, fileSize);
-//
-//	if (dataRead != fileSize)
-//	{
-//		Logger::Error("Failed to read data from PVR texture file: %s", pathName.c_str());
-//		return 0;
-//	}
-//	Texture * newTexture = UnpackPVRData(bytes, fileSize);
-//	if (!newTexture)
-//	{
-//		Logger::Error("Failed to parse PVR texture: %s", pathName.c_str());
-//	}
-//	SafeDeleteArray(bytes);
-//	SafeRelease(fp);
-//
-//	if (newTexture)
-//	{
-//		newTexture->relativePathname = pathName;
-//		textureMap[newTexture->relativePathname] = newTexture;
-//	}
-//	timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS() - timeCreateFromPVR;
-//	Logger::Debug("TexturePVR: t: %lld", timeCreateFromPVR);
-//
-//	return newTexture;
-//}
-//	
-//#define PVR_TEXTURE_FLAG_TYPE_MASK	0xff
-//	
-//static char gPVRTexIdentifier[5] = "PVR!";
-//	
-//enum
-//{
-//	kPVRTextureFlagTypePVRTC_2 = 24,
-//	kPVRTextureFlagTypePVRTC_4
-//};
-//	
-//
-//typedef struct _PVRTexHeader
-//{
-//	uint32_t headerLength;
-//	uint32_t height;
-//	uint32_t width;
-//	uint32_t numMipmaps;
-//	uint32_t flags;
-//	uint32_t dataLength;
-//	uint32_t bpp;
-//	uint32_t bitmaskRed;
-//	uint32_t bitmaskGreen;
-//	uint32_t bitmaskBlue;
-//	uint32_t bitmaskAlpha;
-//	uint32_t pvrTag;
-//	uint32_t numSurfs;
-//} PVRTexHeader;
-//
-//	
-//struct TextureFrame
-//{
-//	uint8* data;
-//	uint32 size;
-//};
-//
-//static const uint32 PVRTC2_MIN_TEXWIDTH		= 16;
-//static const uint32 PVRTC2_MIN_TEXHEIGHT		= 8;
-//static const uint32 PVRTC4_MIN_TEXWIDTH		= 8;
-//static const uint32 PVRTC4_MIN_TEXHEIGHT		= 8;
-//static const uint32 ETC_MIN_TEXWIDTH			= 4;
-//static const uint32 ETC_MIN_TEXHEIGHT		= 4;
-//	
-//	
-//Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
-//{
-//	bool success = false;
-//	PVRTexHeader *header = NULL;
-//	uint32 flags, pvrTag;
-//	uint32 dataLength = 0, dataOffset = 0, dataSize = 0;
-////	uint32 blockSize = 0, widthBlocks = 0, heightBlocks = 0;
-//	int32 origWidth = 0, origHeight = 0, width = 0, height = 0;// bpp = 4;
-//	uint8 *bytes = 0;
-//	uint32_t formatFlags;
-//	
-//	header = (PVRTexHeader *)data;
-//	
-//	pvrTag = CFSwapInt32LittleToHost(header->pvrTag);
-//	
-//	if ((uint8)(gPVRTexIdentifier[0]) != ((pvrTag >>  0) & 0xff) ||
-//		(uint8)gPVRTexIdentifier[1] != ((pvrTag >>  8) & 0xff) ||
-//		(uint8)gPVRTexIdentifier[2] != ((pvrTag >> 16) & 0xff) ||
-//		(uint8)gPVRTexIdentifier[3] != ((pvrTag >> 24) & 0xff))
-//	{
-//		return FALSE;
-//	}
-//	
-//	flags = CFSwapInt32LittleToHost(header->flags);
-//	formatFlags = flags & PVR_TEXTURE_FLAG_TYPE_MASK;
-//	
-//	List<TextureFrame> imageList;
-//	
-//	GLenum	internalFormat = 0;
-//	bool hasAlpha;
-//	
-//	if (formatFlags == kPVRTextureFlagTypePVRTC_4 || formatFlags == kPVRTextureFlagTypePVRTC_2)
-//	{
-//		if (formatFlags == kPVRTextureFlagTypePVRTC_4)internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-//		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
-//				
-//		origWidth = width = CFSwapInt32LittleToHost(header->width);
-//		origHeight = height = CFSwapInt32LittleToHost(header->height);
-//				
-//		if (CFSwapInt32LittleToHost(header->bitmaskAlpha))
-//		{
-//			hasAlpha = true;
-//		}
-//		else
-//		{
-//			hasAlpha = false;
-//#if 1
-//			if (formatFlags == kPVRTextureFlagTypePVRTC_4)
-//			{
-//				internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-//			}
-//			else
-//			if (formatFlags == kPVRTextureFlagTypePVRTC_2)
-//			{
-//				internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-//			}
-//#endif
-//		}
-//		
-//		
-//						
-//		dataLength = CFSwapInt32LittleToHost(header->dataLength);
-//						
-//		bytes = ((uint8 *)data) + header->headerLength;//sizeof(PVRTexHeader);
-//						
-//		// Calculate the data size for each texture level and respect the minimum number of blocks
-//		while (dataOffset < dataLength)
-//		{
-//#if 0
-//			if (formatFlags == kPVRTextureFlagTypePVRTC_4)
-//			{
-//				blockSize = 4 * 4; // Pixel by pixel block size for 4bpp
-//				widthBlocks = width / 4;
-//				heightBlocks = height / 4;
-//				bpp = 4;
-//			}
-//			else
-//			{
-//				blockSize = 8 * 4; // Pixel by pixel block size for 2bpp
-//				widthBlocks = width / 8;
-//				heightBlocks = height / 4;
-//				bpp = 2;
-//			}
-//			
-//			// Clamp to minimum number of blocks
-//			if (widthBlocks < 2)widthBlocks = 2;
-//			if (heightBlocks < 2)heightBlocks = 2;
-//					
-//			dataSize = widthBlocks * heightBlocks * ((blockSize  * bpp) / 8);
-//#else
-//			if (formatFlags == kPVRTextureFlagTypePVRTC_4)
-//			{
-//				dataSize = (Max(width, (int32)PVRTC4_MIN_TEXWIDTH) * Max(height, (int32)PVRTC4_MIN_TEXHEIGHT) * header->bpp) / 8;
-//			}
-//			else 
-//			if (formatFlags == kPVRTextureFlagTypePVRTC_2)
-//			{
-//				dataSize = (Max(width, (int32)PVRTC2_MIN_TEXWIDTH) * Max(height, (int32)PVRTC2_MIN_TEXHEIGHT) * header->bpp) / 8;
-//			}
-//
-//			
-//#endif
-//			
-//			//[_imageData addObject:[NSData dataWithBytes:bytes+dataOffset length:dataSize]];
-//			TextureFrame frame;
-//			frame.data = bytes + dataOffset;
-//			frame.size = dataSize;
-//			imageList.push_back(frame);
-//			
-//			dataOffset += dataSize;
-//			
-//			width = Max(width >> 1, 1);
-//			height = Max(height >> 1, 1);
-//		}
-//		
-//		success = TRUE;
-//	}
-//	
-//	Texture * texture = 0;
-//	
-//	if (success)
-//	{
-//		texture = new Texture();
-//		if (!texture)return 0;
-//	
-//		width = origWidth;
-//		height = origHeight;
-//
-//		texture->width = width;
-//		texture->height = height;
-//		if (formatFlags == kPVRTextureFlagTypePVRTC_4)texture->format = FORMAT_PVR4;
-//		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)texture->format = FORMAT_PVR2;
-//		
-//		RENDER_VERIFY(glGenTextures(1, &texture->id));
-//		
-//		int savedId = GetSavedTextureID();
-//		BindTexture(texture->id);
-//		
-//		int32 i = 0;
-//		for (List<TextureFrame>::iterator it = imageList.begin(); it != imageList.end(); ++it)
-//		{
-//			TextureFrame & frame = *it;
-//			RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, i++, internalFormat, width, height, 0, frame.size, frame.data));
-//			width = Max(width >> 1, 1);
-//			height = Max(height >> 1, 1);
-//		}
-//		
-//        GLint minFilter = GL_LINEAR;
-//        if(i > 0) //has mipmaps
-//        {
-//            minFilter = GL_LINEAR_MIPMAP_LINEAR;
-//        }
-//        
-//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter));
-//		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-//		
-//		if (0 != savedId)
-//		{
-//			BindTexture(savedId);
-//		}
-//	}
-//	return texture;
-//}
-//#endif
-	
-/*- (bool)createGLTexture
-{
-	int width = _width;
-	int height = _height;
-	NSData *data;
-	GLenum err;
-	
-	if ([_imageData count] > 0)
-	{
-		if (_name != 0)
-			glDeleteTextures(1, &_name);
-			
-		glGenTextures(1, &_name);
-		glBindTexture(GL_TEXTURE_2D, _name);
-		}
-	
-	for (int i=0; i < [_imageData count]; i++)
-	{
-		data = [_imageData objectAtIndex:i];
-		glCompressedTexImage2D(GL_TEXTURE_2D, i, _internalFormat, width, height, 0, [data length], [data bytes]);
-		
-		err = glGetError();
-		if (err != GL_NO_ERROR)
-		{
-			NSLog(@"Error uploading compressed texture level: %d. glError: 0x%04X", i, err);
-			return FALSE;
-		}
-		
-		int allocSize = 0;
-		if (_internalFormat == GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG)
-			allocSize = width * height / 2;
-			if (_internalFormat == GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
-				allocSize = width * height / 4;
-				_memoryUsage += allocSize;
-				
-				width = MAX(width >> 1, 1);
-				height = MAX(height >> 1, 1);
-				
-				
-				}
-	
-	texMemoryUsageInfo.AllocPVRTexture(_memoryUsage);
-	
-	[_imageData removeAllObjects];
-	
-	return TRUE;
-}*/
-	
-
-
 Texture * Texture::CreateFromFile(const String & pathName)
 {
 	Texture * texture = PureCreate(pathName);
@@ -998,11 +696,7 @@ Texture * Texture::PureCreate(const String & pathName)
 		return CreateFromPNG(pathName);
 	else if (extension == String(".pvr"))
 	{
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_WIN32__)
 		return CreateFromPVR(pathName);
-#elif defined(__DAVAENGINE_WIN32__) 
-//		return CreateFromPNG(pathName + ".png");
-#endif
 	}
 	return 0;
 }
@@ -1480,17 +1174,8 @@ Image * Texture::ReadDataToImage()
     
     RenderManager::Instance()->LockNonMain();
     
-//    int saveFBO = 0;
-//#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
-//#else //Non ES platforms
-//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO));
-//#endif //PLATFORMS
     int32 saveFBO = GetSavedFBO();
 
-//    int32 saveId = 0;
-//    RENDER_VERIFY(glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId));
-//    RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, id))
     int32 saveId = GetSavedTextureID();
     BindTexture(id);
     
@@ -1503,16 +1188,10 @@ Image * Texture::ReadDataToImage()
         RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)imageData));
     }
 
-//#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-//    RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, saveFBO));	// Unbind the FBO for now
-//#else //Non ES platforms
-//    RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, saveFBO));	// Unbind the FBO for now
-//#endif //PLATFORMS
     BindFBO(saveFBO);
     
     if (saveId != 0)
     {
-//        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, saveId))
         BindTexture(saveId);
     }
     
@@ -1539,7 +1218,6 @@ Image * Texture::CreateImageFromMemory()
     }
     else
     {
-//        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
         Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
