@@ -144,6 +144,8 @@ enum PixelFormat
     FORMAT_A16,
     FORMAT_PVR4,
     FORMAT_PVR2,
+    
+    FORMAT_RGBA16161616,
 
     FORMAT_COUNT,
     FORMAT_CLOSEST = 256

@@ -218,7 +218,7 @@ void RenderManager::MakeGLScreenShot()
     // picture is rotated (framebuffer coordinates start from bottom left)
     Image *image = NULL;
 #if defined(__DAVAENGINE_IPHONE__)    
-    image = Image::Create(height, width, formatDescriptor.format);
+    image = Image::Create(height, width, formatDescriptor.formatID);
 #else
     image = Image::Create(width, height, formatDescriptor.formatID);
 #endif
