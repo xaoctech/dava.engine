@@ -78,11 +78,15 @@ public:
 
 	// Main constructurs
 	
+    static void InitializePixelFormatDescriptors();
+
+    
 	/**
         \brief Return size of pixel format in bits 
         \returns size in bits, for example for FORMAT_RGBA8888 function will return 32.
      */
-	static int32 GetPixelFormatSize(PixelFormat format);
+	static int32 GetPixelFormatSizeInBytes(PixelFormat format);
+	static int32 GetPixelFormatSizeInBits(PixelFormat format);
 	/**
         \brief Return string representation of pixel format
         \returns string value describing pixel format
@@ -201,6 +205,9 @@ public:
         \brief Check if texture was created by GetPinkPlaceholder()
      */
 	bool IsPinkPlaceholder();
+    
+    
+    static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
 public:							// properties for fast access
 
@@ -285,6 +292,9 @@ private:
     Image * ReadDataToImage();
 
 	static Texture * pinkPlaceholder;
+    
+    static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
+    static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
 };
     
 // Implementation of inline functions
