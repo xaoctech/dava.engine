@@ -157,7 +157,7 @@ public:
 	//! On functions
 	inline float32 SquareLength()  const;
 	inline float32 Length() const;
-	inline void Normalize();
+    inline float32 Normalize();
 	inline void Clamp(float32 min, float32 max);
 
 	//! On operations
@@ -553,12 +553,13 @@ inline float32 Vector3::Length() const
 {
 	return sqrtf(SquareLength());
 }
-inline void Vector3::Normalize()
+inline float32 Vector3::Normalize()
 {
-	float32 len = Length();
+	const float32 len = Length();
 	x /= len;
 	y /= len;
 	z /= len;
+    return len;
 }
 
 inline void Vector3::Lerp(const Vector3 & _v1, const Vector3 & _v2, float32 t)
