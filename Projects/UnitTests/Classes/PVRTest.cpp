@@ -84,6 +84,12 @@ void PVRTest::ReloadSprites()
         L"RGB 888",
         L"RGB 565",
         L"A8",
+        L"",
+        L"",
+        L"",
+        L"",
+        L"",
+        L"",
         L""
     };
     
@@ -121,7 +127,7 @@ void PVRTest::TestFunction(PerfFuncData * data)
 #if defined (__DAVAENGINE_IPHONE__)
     int32 COUNTER = 1000;
 #else //#if defined (__DAVAENGINE_IPHONE__)
-    int32 COUNTER = 15000;
+    int32 COUNTER = 5000;
 #endif //#if defined (__DAVAENGINE_IPHONE__)
     
     for(int32 i = 0; i < COUNTER; ++i)
