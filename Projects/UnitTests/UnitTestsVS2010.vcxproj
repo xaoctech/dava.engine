@@ -18,6 +18,7 @@
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\HashMapTest.h" />
     <ClInclude Include="Classes\MemoryAllocatorsTest.h" />
+    <ClInclude Include="Classes\PVRTest.h" />
     <ClInclude Include="Classes\SampleTest.h" />
     <ClInclude Include="Classes\SoundTest.h" />
     <ClInclude Include="Classes\SplitTest.h" />
@@ -30,6 +31,7 @@
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\HashMapTest.cpp" />
     <ClCompile Include="Classes\MemoryAllocatorsTest.cpp" />
+    <ClCompile Include="Classes\PVRTest.cpp" />
     <ClCompile Include="Classes\SampleTest.cpp" />
     <ClCompile Include="Classes\SoundTest.cpp" />
     <ClCompile Include="Classes\SplitTest.cpp" />

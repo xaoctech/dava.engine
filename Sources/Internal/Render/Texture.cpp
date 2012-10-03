@@ -998,10 +998,10 @@ Texture * Texture::PureCreate(const String & pathName)
 		return CreateFromPNG(pathName);
 	else if (extension == String(".pvr"))
 	{
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_WIN32__)
 		return CreateFromPVR(pathName);
 #elif defined(__DAVAENGINE_WIN32__) 
-		return CreateFromPNG(pathName + ".png");
+//		return CreateFromPNG(pathName + ".png");
 #endif
 	}
 	return 0;
