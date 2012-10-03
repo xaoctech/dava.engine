@@ -68,12 +68,12 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
     new PVRTest();
-//    new SampleTest();
-//	new EntityTest(); 
-//    new MemoryAllocatorsTest();
-//    new HashMapTest();
-//    new SoundTest();
-//    new SplitTest();
+	new SampleTest();
+	new EntityTest();	
+	new MemoryAllocatorsTest();
+	new HashMapTest();
+	new SoundTest();
+	new SplitTest();
     
     errors.reserve(TestCount());
 

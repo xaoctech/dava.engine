@@ -37,7 +37,7 @@ namespace DAVA
 
 Texture * Texture::CreateFromPVR(const String & pathName)
 {
-	uint64_t timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
+	uint64 timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
     
 	Texture * texture = Texture::Get(pathName);
 	if (texture)return texture;
