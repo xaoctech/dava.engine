@@ -41,7 +41,7 @@ class PVRTest : public TestTemplate<PVRTest>
     enum eConst
     {
         FIRST_TEST = 0,
-        TESTS_COUNT = 8
+        TESTS_COUNT = 9
     };
     
 public:
