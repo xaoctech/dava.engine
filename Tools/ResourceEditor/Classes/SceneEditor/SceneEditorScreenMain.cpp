@@ -535,7 +535,7 @@ void SceneEditorScreenMain::SaveSceneToFile(const String &pathToFile)
 
 void SceneEditorScreenMain::UpdateModificationPanel(void)
 {
-	for (int i = 0; i < bodies.size(); i++)
+	for (int32 i = 0; i < (int32)bodies.size(); i++)
 	{
 		bodies[i]->bodyControl->UpdateModificationPanel();
 	}
