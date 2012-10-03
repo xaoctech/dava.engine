@@ -75,6 +75,9 @@ public:
     
 	virtual void Save(KeyedArchive * archive, SceneFileV2 * sceneFile);
 	virtual void Load(KeyedArchive * archive, SceneFileV2 * sceneFile);
+
+	bool IsDynamic();
+	void SetDynamic(bool isDynamic);
     
 protected:
     Vector3 position;
@@ -84,6 +87,8 @@ protected:
     Color diffuseColor;
     Color specularColor;
     float32 intensity;
+
+	bool isDynamic;
 };
 
 };
