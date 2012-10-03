@@ -40,6 +40,8 @@
 #include "HashMapTest.h"
 #include "SoundTest.h"
 #include "SplitTest.h"
+#include "PVRTest.h"
+
 
 using namespace DAVA;
 
@@ -65,12 +67,13 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new SampleTest();
-	new EntityTest(); 
-    new MemoryAllocatorsTest();
-    new HashMapTest();
-    new SoundTest();
-    new SplitTest();
+    new PVRTest();
+//    new SampleTest();
+//	new EntityTest(); 
+//    new MemoryAllocatorsTest();
+//    new HashMapTest();
+//    new SoundTest();
+//    new SplitTest();
     
     errors.reserve(TestCount());
 
@@ -177,7 +180,7 @@ void GameCore::RunTests()
     }
     else 
     {
-        logFile->WriteLine(String("There are no tests."));
+        LogMessage(String("There are no tests."));
         Core::Instance()->Quit();
     }
 }
