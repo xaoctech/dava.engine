@@ -40,6 +40,7 @@
 #include "Render/D3D9Helpers.h"
 #include "Render/ImageConvert.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/OGLHelpers.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
 #include <CoreGraphics/CoreGraphics.h>
@@ -1305,6 +1306,8 @@ void Texture::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_A16, String("FORMAT_A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
     SetPixelDescription(FORMAT_PVR4, String("FORMAT_PVR4"), 4, 0, 0, 0);
     SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, 0, 0, 0);
+
+    SetPixelDescription(FORMAT_RGBA16161616, String("FORMAT_RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
 }
 
 void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)

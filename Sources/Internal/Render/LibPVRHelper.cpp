@@ -47,7 +47,7 @@ namespace DAVA
 {
     
 #if defined (__DAVAENGINE_IPHONE__)
-    #define GL_HALF_FLOAT                                               0x140B
+//    #define GL_HALF_FLOAT                                               0x140B
     
     /* GL_OES_compressed_ETC1_RGB8_texture */
     #ifndef GL_OES_compressed_ETC1_RGB8_texture
@@ -1644,6 +1644,7 @@ bool LibPVRHelper::IsGLExtensionSupported(const char * const extension)
         return 0;
     
     extensions = glGetString(GL_EXTENSIONS);
+//    Logger::Warning("[EXT] %s", extensions);
     
     /* It takes a bit of care to be fool-proof about parsing the
      OpenGL extensions string. Don't be fooled by sub-strings, etc. */
@@ -1666,6 +1667,7 @@ bool LibPVRHelper::IsGLExtensionSupported(const char * const extension)
 const PixelFormatDescriptor LibPVRHelper::GetCompressedFormat(const uint64 PixelFormat)
 {
     PixelFormatDescriptor formatDescriptor;
+
     switch (PixelFormat)
     {
         case ePVRTPF_PVRTCI_2bpp_RGB:
@@ -1717,7 +1719,8 @@ const PixelFormatDescriptor LibPVRHelper::GetFloatTypeFormat(const uint64 PixelF
             formatDescriptor.type=GL_HALF_FLOAT;
             formatDescriptor.format = GL_RGBA;
             formatDescriptor.internalformat=GL_RGBA;
-            formatDescriptor.formatID = FORMAT_INVALID;
+//            formatDescriptor.formatID = FORMAT_INVALID;
+            formatDescriptor.formatID = FORMAT_RGBA16161616;
             break;
         }
         case PVRTGENPIXELID3('r','g','b',16,16,16):
@@ -2000,14 +2003,20 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     
     //Check supported texture formats.
 	bool bIsPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
-#if !defined (__DAVAENGINE_IPHONE__)
+#if defined (__DAVAENGINE_IPHONE__)
+	bool bIsBGRA8888Supported  = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
+    
+    bool bIsFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
+	bool bIsFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+
+#else //#if defined (__DAVAENGINE_IPHONE__)
 	bool bIsBGRA8888Supported  = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
 	bool bIsETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
-#else //#if !defined (__DAVAENGINE_IPHONE__)
-	bool bIsBGRA8888Supported  = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
+    
+    bool bIsFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
+	bool bIsFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
 #endif //#if !defined (__DAVAENGINE_IPHONE__)
-	bool bIsFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
-	bool bIsFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+    
     
     //Check for compressed formats
     if (0 == formatDescriptor.format && 0 == formatDescriptor.type && 0 != formatDescriptor.internalformat)
