@@ -53,10 +53,13 @@ ImposterNode::ImposterNode()
 
 ImposterNode::~ImposterNode()
 {
-	SharedFBO * fbo = manager->GetFBO();
-	if(block && fbo)
+	if(manager)
 	{
-		fbo->ReleaseBlock(block);
+		SharedFBO * fbo = manager->GetFBO();
+		if(block && fbo)
+		{
+			fbo->ReleaseBlock(block);
+		}
 	}
 	block = 0;
 	SafeRelease(renderData);
