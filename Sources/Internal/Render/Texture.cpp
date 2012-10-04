@@ -1308,6 +1308,7 @@ void Texture::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, 0, 0, 0);
 
     SetPixelDescription(FORMAT_RGBA16161616, String("FORMAT_RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA32323232, String("FORMAT_RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
 }
 
 void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)
