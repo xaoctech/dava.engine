@@ -35,12 +35,12 @@ using namespace DAVA;
 
 #include "GameCore.h"
 
-#define TEST_VERIFY(command) \
+#define TEST_VERIFY(command, testData) \
 {\
     bool passed = command;\
     if (!passed)\
     {\
-        GameCore::Instance()->RegisterError(#command, __FILE__, __LINE__); \
+        GameCore::Instance()->RegisterError(#command, __FILE__, __LINE__, testData); \
     }\
 }
 
