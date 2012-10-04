@@ -3,7 +3,9 @@
 #include "PropertyList.h"
 #include "EditorSettings.h"
 #include "SceneValidator.h"
-#include "PVRUtils.h"
+
+#include "../Qt/QtUtils.h"
+
 
 SceneInfoControl::SceneInfoControl(const Rect &rect)
     :   UIControl(rect)
@@ -83,7 +85,7 @@ void SceneInfoControl::InvalidateTexturesInfo(int32 count, int32 size)
 {
     SetIntInfoValue("Text.Count", count);
 //    SetIntInfoValue("Text.Memory", size);
-    SetStringInfoValue("Text.Memory", PVRUtils::SizeInBytesToString((float32)size));
+    SetStringInfoValue("Text.Memory", SizeInBytesToString((float32)size));
 
     if(workingScene)
     {

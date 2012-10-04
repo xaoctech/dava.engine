@@ -107,6 +107,10 @@ public:
     static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
     static bool FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture);
     
+    static PixelFormat GetPixelFormat(const String &filePathname);
+    static uint32 GetDataLength(const String &filePathname);
+
+    
 protected:
     static uint32 GetBitsPerPixel(uint64 pixelFormat);
     static void GetFormatMinDims(uint64 pixelFormat, uint32 &minX, uint32 &minY, uint32 &minZ);
@@ -121,6 +125,9 @@ protected:
     static const PixelFormatDescriptor GetUnsignedShortFormat(const uint64 PixelFormat);
     
     static const PixelFormatDescriptor GetTextureFormat(const PVRHeaderV3& textureHeader);
+    
+    static PVRHeaderV3 GetHeaderForFile(const String &filePathname);
+    static PVRHeaderV3 GetHeaderForData(const uint8* pvrData, const int32 pvrDataSize);
 };
     
 };
