@@ -18,6 +18,7 @@
 #include "SceneData.h"
 #include "QtUtils.h"
 #include "mainwindow.h"
+#include "converttexturesdialog.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -147,7 +148,11 @@ void QtMainWindowHandler::TilemapEditor()
 
 void QtMainWindowHandler::ConvertTextures()
 {
-    Execute(new CommandTextureConverter());
+    //Execute(new CommandTextureConverter());
+
+	ConvertTexturesDialog ctd;
+	ctd.setWindowFlags(Qt::Window);
+	ctd.exec();
 }
 
 void QtMainWindowHandler::SetViewport(ResourceEditor::eViewportType type)

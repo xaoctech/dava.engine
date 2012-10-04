@@ -17,22 +17,16 @@ INCLUDEPATH += ../dava.framework/Libs/oggvorbis/include
 INCLUDEPATH += ../dava.framework/Sources/Libs/include
 INCLUDEPATH += Classes
 
-SOURCES += main.cpp \
-        mainwindow.cpp \
-        Classes/FrameworkMain.cpp \
-        Classes/GameCore.cpp \
-        Classes/TestScreen.cpp \
-        Classes/davaglwidget.cpp
+SOURCES += Classes/FrameworkMain.cpp \
+        Classes/GameCore.cpp
 
-HEADERS  += mainwindow.h  \
-        Classes/AppScreens.h  \
+HEADERS  += Classes/AppScreens.h  \
         Classes/FrameworkMain.h  \
-        Classes/GameCore.h  \
-        Classes/TestScreen.h  \
-        Classes/davaglwidget.h
+        Classes/GameCore.h
 
-FORMS    += mainwindow.ui \
-        Classes/davaglwidget.ui
+FORMS    += DataQt/mainwindow.ui \
+    DataQt/converttexturesdialog.ui \
+    DataQt/davaglwidget.ui
 
 
 #debug dependent
@@ -142,3 +136,9 @@ LIBS += -L$$quote("C:/Program Files (x86)/OpenAL 1.1 SDK/libs/win32") -lOpenAL32
 
 
 DEPENDPATH += INCLUDEPATH
+
+RESOURCES += \
+    DataQt/Icons/QtIcons.qrc \
+    DataQt/QtIcons.qrc
+
+OTHER_FILES +=
