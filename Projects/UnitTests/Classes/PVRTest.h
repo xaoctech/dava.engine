@@ -41,7 +41,14 @@ class PVRTest : public TestTemplate<PVRTest>
     enum eConst
     {
         FIRST_TEST = 0,
-        TESTS_COUNT = 9
+        TESTS_COUNT = 10,
+        ACCETABLE_DELTA_IN_PERSENTS = 2
+    };
+    
+    struct CompareResult
+    {
+        int32 differenceCount;
+        int32 bytesCount;
     };
     
 public:
@@ -61,13 +68,17 @@ private:
     
     void ReloadSprites();
     
+    
     Sprite *CreateSpriteFromTexture(const String &texturePathname);
+    CompareResult CompareSprites(Sprite *first, Sprite *second);
+    Image * CreateImageAsRGBA8888(Sprite *sprite);
     
     
-    UIStaticText *format;
+    UIStaticText *compareResultText;
     
     Sprite *pngSprite;
     Sprite *pvrSprite;
+    Sprite *decompressedPNGSprite;
 };
 
 

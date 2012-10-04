@@ -30,71 +30,53 @@
 
 #include "PVRTest.h"
 
+static const PixelFormat formats[] =
+{
+    FORMAT_PVR2,
+    FORMAT_PVR4,
+    FORMAT_RGBA8888,
+    FORMAT_RGBA4444,
+    FORMAT_RGBA5551,
+    FORMAT_RGB888,
+    FORMAT_RGB565,
+    FORMAT_A8,
+    FORMAT_RGBA16161616,
+    FORMAT_RGBA32323232
+};
+
+
 PVRTest::PVRTest()
 : TestTemplate<PVRTest>("PVRTest")
 {
     pngSprite = NULL;
     pvrSprite = NULL;
+    decompressedPNGSprite = NULL;
 
     currentTest = FIRST_TEST;
-    for(int32 i = 0; i < TESTS_COUNT + 1; ++i)
+    for(int32 i = 0; i < TESTS_COUNT; ++i)
     {
-        RegisterFunction(this, &PVRTest::TestFunction, Format("PVRTest::TestFunction [%d]", i), NULL);
+        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[i]);
+        RegisterFunction(this, &PVRTest::TestFunction, Format("PVRTest of %s", formatDescriptor.name.c_str()), NULL);
     }
-    
 }
 
 void PVRTest::LoadResources()
 {
     GetBackground()->SetColor(Color(0.0f, 1.0f, 0.0f, 1.0f));
-    
-    format = new UIStaticText(Rect(0, 256, 512, 30));
-    format->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-    
+
     Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
     font->SetSize(20);
-    font->SetColor(Color::Black());
-    format->SetFont(font);
+    font->SetColor(Color::White());
+
+    compareResultText = new UIStaticText(Rect(0, 256, 512, 200));
+    compareResultText->SetAlign(ALIGN_LEFT | ALIGN_VCENTER);
+    compareResultText->SetMultiline(true);
+    compareResultText->SetFont(font);
+    AddControl(compareResultText);
+
     SafeRelease(font);
-        
-    AddControl(format);
 }
 
-void PVRTest::ReloadSprites()
-{
-    Logger::Debug("Test numer: %d", currentTest);
-    
-    SafeRelease(pngSprite);
-    SafeRelease(pvrSprite);
-    
-    Image::EnableAlphaPremultiplication(false);
-
-    pngSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PNG/number_%d.png", currentTest)));
-    pvrSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PVR/number_%d.pvr", currentTest)));
-    
-    Image::EnableAlphaPremultiplication(true);
-    
-    static const WideString formats[] =
-    {
-        L"PVR 2",
-        L"PVR 4",
-        L"RGBA 8888",
-        L"RGBA 4444",
-        L"RGBA 5551",
-        L"RGB 888",
-        L"RGB 565",
-        L"A8",
-        L"",
-        L"",
-        L"",
-        L"",
-        L"",
-        L"",
-        L""
-    };
-    
-    format->SetText(formats[currentTest]);
-}
 
 Sprite * PVRTest::CreateSpriteFromTexture(const String &texturePathname)
 {
@@ -116,40 +98,57 @@ void PVRTest::UnloadResources()
 {
     RemoveAllControls();
     
-    SafeRelease(format);
+    SafeRelease(compareResultText);
     
     SafeRelease(pngSprite);
     SafeRelease(pvrSprite);
+    SafeRelease(decompressedPNGSprite);
 }
 
 void PVRTest::TestFunction(PerfFuncData * data)
 {
-#if defined (__DAVAENGINE_IPHONE__)
-    int32 COUNTER = 1000;
-#else //#if defined (__DAVAENGINE_IPHONE__)
-    int32 COUNTER = 5000;
-#endif //#if defined (__DAVAENGINE_IPHONE__)
+    DVASSERT(currentTest < TESTS_COUNT);
     
-    for(int32 i = 0; i < COUNTER; ++i)
-    {
-        double c = 0;
-        for(int32 j = 0; j < 60000; ++j)
-        {
-            c = i * 10 + 5;
-        }
-        int32 a = c;
-    }
-
     ReloadSprites();
+    
+    CompareResult result = CompareSprites(decompressedPNGSprite, pvrSprite);
+    float32 differencePersentage = (float32)result.differenceCount / (float32)result.bytesCount * 100.f;
+    
+    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
+    String resultString = Format("\nFormat: %s\nAll Bytes: %d\nDifferent Bytes: %d\nDifference: %f%%\nCoincidence: %f%%",
+                                 formatDescriptor.name.c_str(), result.bytesCount, result.differenceCount,
+                                 differencePersentage, 100.f - differencePersentage);
+    
+    compareResultText->SetText(StringToWString(resultString));
+    Logger::Debug(resultString.c_str());
+
+    
+    TEST_VERIFY((differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS), &data->testData);
+    
     ++currentTest;
+}
+
+void PVRTest::ReloadSprites()
+{
+    SafeRelease(pngSprite);
+    SafeRelease(pvrSprite);
+    SafeRelease(decompressedPNGSprite);
+    
+    Image::EnableAlphaPremultiplication(false);
+    
+    pngSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PNG/number_%d.png", currentTest)));
+    pvrSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PVR/number_%d.pvr", currentTest)));
+    decompressedPNGSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/DecompressedPNG/number_%d.png", currentTest)));
+    
+    Image::EnableAlphaPremultiplication(true);
 }
 
 void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
 {
-    RenderManager::Instance()->ClearWithColor(0.f, 0.7f, 0.f, 1.f);
+    RenderManager::Instance()->ClearWithColor(0.f, 0.0f, 0.f, 1.f);
     
     RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-    
+
     if(pngSprite)
     {
         pngSprite->SetPosition(0, 0);
@@ -166,3 +165,62 @@ void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
     
     TestTemplate<PVRTest>::Draw(geometricData);
 }
+
+PVRTest::CompareResult PVRTest::CompareSprites(Sprite *first, Sprite *second)
+{
+    DVASSERT(first->GetHeight() == second->GetHeight());
+    DVASSERT(first->GetWidth() == second->GetWidth());
+    
+    Image *firstComparer = CreateImageAsRGBA8888(first);
+    Image *secondComparer = CreateImageAsRGBA8888(second);
+
+    CompareResult compareResult = {0};
+
+    
+    int32 imageSizeInBytes = first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(firstComparer->format);
+
+    int32 step = 1;
+    int32 startIndex = 0;
+    
+    if(FORMAT_A8 == formats[currentTest])
+    {
+        compareResult.bytesCount = first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8);
+        step = 4;
+        startIndex = 3;
+    }
+    else
+    {
+        compareResult.bytesCount = imageSizeInBytes;
+    }
+
+    for(int32 i = startIndex; i < imageSizeInBytes; i += step)
+    {
+        if(firstComparer->GetData()[i] != secondComparer->GetData()[i])
+        {
+            ++compareResult.differenceCount;
+        }
+    }
+    
+    SafeRelease(firstComparer);
+    SafeRelease(secondComparer);
+    return compareResult;
+}
+
+Image * PVRTest::CreateImageAsRGBA8888(Sprite *sprite)
+{
+    Sprite *renderTarget = Sprite::CreateAsRenderTarget(sprite->GetWidth(), sprite->GetHeight(), FORMAT_RGBA8888);
+    RenderManager::Instance()->SetRenderTarget(renderTarget);
+    
+    sprite->SetPosition(0, 0);
+    sprite->Draw();
+    
+    RenderManager::Instance()->RestoreRenderTarget();
+    
+    Texture *renderTargetTexture = renderTarget->GetTexture();
+    Image *resultImage = renderTargetTexture->CreateImageFromMemory();
+    
+    SafeRelease(renderTarget);
+    return resultImage;
+}
+
+

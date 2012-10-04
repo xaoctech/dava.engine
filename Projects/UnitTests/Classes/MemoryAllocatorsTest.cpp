@@ -64,7 +64,7 @@ void MemoryAllocatorsTest::PoolAllocatorTest(PerfFuncData * data)
     for (uint32 k = 1; k < 128; ++k)
     {
         if (k != 64)
-            TEST_VERIFY(pointers[k] == pointers[k - 1] + 32);
+            TEST_VERIFY((pointers[k] == pointers[k - 1] + 32), &data->testData);
 //        if (k != 64)
 //        if (pointers[k] != pointers[k - 1] + 32)
 //            Logger::Debug("Allocator error");
