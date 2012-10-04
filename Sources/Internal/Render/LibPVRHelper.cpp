@@ -1761,7 +1761,7 @@ const PixelFormatDescriptor LibPVRHelper::GetFloatTypeFormat(const uint64 PixelF
             formatDescriptor.type=GL_FLOAT;
             formatDescriptor.format = GL_RGBA;
             formatDescriptor.internalformat=GL_RGBA;
-            formatDescriptor.formatID = FORMAT_INVALID;
+            formatDescriptor.formatID = FORMAT_RGBA32323232;
             break;
         }
         case PVRTGENPIXELID3('r','g','b',32,32,32):
