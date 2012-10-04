@@ -92,6 +92,9 @@
 		5CFA5D50156E3EBF00EDB730 /* UserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CFA5D4E156E3EBF00EDB730 /* UserNode.h */; };
 		C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */; };
 		C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */ = {isa = PBXBuildFile; fileRef = C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */; };
+		C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F0A51D161DEAEE003A2006 /* Observable.cpp */; };
+		C2F0A521161DEAEE003A2006 /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51E161DEAEE003A2006 /* Observable.h */; };
+		C2F0A522161DEAEE003A2006 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51F161DEAEE003A2006 /* Observer.h */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -672,6 +675,9 @@
 		5CFA5D4E156E3EBF00EDB730 /* UserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNode.h; sourceTree = "<group>"; };
 		C22651CC15E3D6D500E25BF4 /* ReferenceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReferenceNode.cpp; sourceTree = "<group>"; };
 		C22651CD15E3D6D500E25BF4 /* ReferenceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReferenceNode.h; sourceTree = "<group>"; };
+		C2F0A51D161DEAEE003A2006 /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
+		C2F0A51E161DEAEE003A2006 /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
+		C2F0A51F161DEAEE003A2006 /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C784403A158204A000F75358 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -1436,6 +1442,9 @@
 		FECFC0B612E87E3000C71562 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				C2F0A51D161DEAEE003A2006 /* Observable.cpp */,
+				C2F0A51E161DEAEE003A2006 /* Observable.h */,
+				C2F0A51F161DEAEE003A2006 /* Observer.h */,
 				FEA8F70015A0A11900EED3DC /* TemplateHelpers.h */,
 				FECFC0B712E87E3000C71562 /* BaseMath.cpp */,
 				FECFC0B812E87E3000C71562 /* BaseMath.h */,
@@ -2310,6 +2319,8 @@
 				C22651CF15E3D6D500E25BF4 /* ReferenceNode.h in Headers */,
 				CCFF221415EE10E400363446 /* SwitchNode.h in Headers */,
 				E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */,
+				C2F0A521161DEAEE003A2006 /* Observable.h in Headers */,
+				C2F0A522161DEAEE003A2006 /* Observer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2637,6 +2648,7 @@
 				C22651CE15E3D6D500E25BF4 /* ReferenceNode.cpp in Sources */,
 				CCFF221315EE10E400363446 /* SwitchNode.cpp in Sources */,
 				E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */,
+				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
