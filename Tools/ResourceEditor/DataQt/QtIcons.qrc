@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>QtIcons/newscene.png</file>
+        <file>QtIcons/openproject.png</file>
+        <file>QtIcons/openscene.png</file>
+        <file>QtIcons/savescene.png</file>
+        <file>QtIcons/materialeditor.png</file>
+        <file>QtIcons/reloadtextures.png</file>
+        <file>QtIcons/notpassableterrain.png</file>
+        <file>QtIcons/heightmapeditor.png</file>
+        <file>QtIcons/tilemapeditor.png</file>
+        <file>QtIcons/rulertool.png</file>
+    </qresource>
+</RCC>

@@ -19,5 +19,5 @@ int main(int argc, char *argv[])
     QtMainWindow w;
     w.show();
 
-    return a.exec();
+	return a.exec();
 }

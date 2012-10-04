@@ -173,17 +173,17 @@ void QtMainWindow::DecorateWithIcon(QAction *decoratedAction, const QString &ico
 
 void QtMainWindow::SetupToolBar()
 {
- 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/Data/QtIcons/newscene.png"));
- 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/Data/QtIcons/openscene.png"));
- 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/Data/QtIcons/openproject.png"));
- 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/Data/QtIcons/savescene.png"));
+ 	DecorateWithIcon(ui->actionNewScene, QString::fromUtf8(":/QtIcons/newscene.png"));
+ 	DecorateWithIcon(ui->actionOpenScene, QString::fromUtf8(":/QtIcons/openscene.png"));
+ 	DecorateWithIcon(ui->actionOpenProject, QString::fromUtf8(":/QtIcons/openproject.png"));
+ 	DecorateWithIcon(ui->actionSaveScene, QString::fromUtf8(":/QtIcons/savescene.png"));
 
- 	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/Data/QtIcons/materialeditor.png"));
- 	DecorateWithIcon(ui->actionTileMapEditor, QString::fromUtf8(":/Data/QtIcons/tilemapeditor.png"));
- 	DecorateWithIcon(ui->actionHeightMapEditor, QString::fromUtf8(":/Data/QtIcons/heightmapeditor.png"));
- 	DecorateWithIcon(ui->actionRulerTool, QString::fromUtf8(":/Data/QtIcons/rulertool.png"));
+ 	DecorateWithIcon(ui->actionMaterialEditor, QString::fromUtf8(":/QtIcons/materialeditor.png"));
+ 	DecorateWithIcon(ui->actionTileMapEditor, QString::fromUtf8(":/QtIcons/tilemapeditor.png"));
+ 	DecorateWithIcon(ui->actionHeightMapEditor, QString::fromUtf8(":/QtIcons/heightmapeditor.png"));
+ 	DecorateWithIcon(ui->actionRulerTool, QString::fromUtf8(":/QtIcons/rulertool.png"));
     
- 	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/Data/QtIcons/notpassableterrain.png"));
+ 	DecorateWithIcon(ui->actionShowNotPassableLandscape, QString::fromUtf8(":/QtIcons/notpassableterrain.png"));
     
 	ui->mainToolBar->addAction(ui->actionNewScene);
     ui->mainToolBar->addAction(ui->actionOpenScene);
@@ -197,7 +197,7 @@ void QtMainWindow::SetupToolBar()
 
     ui->mainToolBar->addSeparator();
     QAction *reloadTexturesAction = ui->mainToolBar->addAction(QString("Reload Textures"));
-    DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/Data/QtIcons/reloadtextures.png"));
+    DecorateWithIcon(reloadTexturesAction, QString::fromUtf8(":/QtIcons/reloadtextures.png"));
     connect(reloadTexturesAction, SIGNAL(triggered()), QtMainWindowHandler::Instance(), SLOT(ReloadTexturesFromFileSystem()));
     ui->mainToolBar->addSeparator();
     

@@ -253,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -275,7 +275,7 @@
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionSaveScene"/>
-	<addaction name="actionSaveToFolder"/>
+    <addaction name="actionSaveToFolder"/>
     <addaction name="menuExport"/>
    </widget>
    <widget class="QMenu" name="menuCreateNode">
@@ -371,7 +371,6 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  
   <action name="actionSaveScene">
    <property name="icon">
     <iconset>
@@ -384,13 +383,11 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-
   <action name="actionSaveToFolder">
-		 <property name="text">
-			 <string>Save To Folder with Childs</string>
-		 </property>
+   <property name="text">
+    <string>Save To Folder with Childs</string>
+   </property>
   </action>
-	 
   <action name="actionOpenProject">
    <property name="icon">
     <iconset>
@@ -457,8 +454,8 @@
   </action>
   <action name="actionMaterialEditor">
    <property name="icon">
-    <iconset>
-     <normaloff>Data/QtIcons/materialeditor.png</normaloff>Data/QtIcons/materialeditor.png</iconset>
+    <iconset resource="Icons/QtIcons.qrc">
+     <normaloff>:/materialeditor.png</normaloff>:/materialeditor.png</iconset>
    </property>
    <property name="text">
     <string>Material Editor</string>
@@ -566,6 +563,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Icons/QtIcons.qrc"/>
+ </resources>
  <connections/>
 </ui>

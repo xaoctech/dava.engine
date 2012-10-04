@@ -14,10 +14,8 @@ $process/
 .DS_Store
 *.pbxuser
 #doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
-Debug/*
-Debug/
-Release/*
-Release/
+Debug*
+Release*
 *.vcxproj.user
 *.suo
 *.sdf
