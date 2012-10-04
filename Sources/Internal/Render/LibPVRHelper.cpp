@@ -2584,7 +2584,69 @@ bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
     return true;
 }
 
+PixelFormat LibPVRHelper::GetPixelFormat(const String &filePathname)
+{
+    PVRHeaderV3 header = GetHeaderForFile(filePathname);
+    PixelFormatDescriptor formatDescriptor = GetTextureFormat(header);
+    return formatDescriptor.formatID;
+}
     
-	
+uint32 LibPVRHelper::GetDataLength(const String &filePathname)
+{
+    PVRHeaderV3 header = GetHeaderForFile(filePathname);
+    return GetTextureDataSize(header);
+}
+
+PVRHeaderV3 LibPVRHelper::GetHeaderForFile(const String &filePathname)
+{
+    File *file = File::Create(filePathname, File::READ | File::OPEN);
+    if(!file)
+    {
+        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot open file %s", filePathname.c_str());
+        return PVRHeaderV3();
+    }
+    
+    uint32 fileSize = file->GetSize();
+    uint8 *fileData = new uint8[fileSize];
+    if(!fileData)
+    {
+        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot allocate memory for file data");
+        SafeRelease(file);
+        return PVRHeaderV3();
+    }
+
+    file->Read(fileData, fileSize);
+
+    PVRHeaderV3 header = GetHeaderForData(fileData, fileSize);
+    
+    SafeDeleteArray(fileData);
+    SafeRelease(file);
+    
+    return header;
+}
+
+PVRHeaderV3 LibPVRHelper::GetHeaderForData(const uint8* pvrData, const int32 pvrDataSize)
+{
+    bool dataPrepared = PreparePVRData((const char *)pvrData, pvrDataSize);
+    if(dataPrepared)
+    {
+        PVRHeaderV3 header;
+        //Check if it's an old header format
+        if((*(uint32*)pvrData)!=PVRTEX3_IDENT)
+        {
+            ConvertOldTextureHeaderToV3((PVRHeaderV2 *)pvrData, header);
+        }
+        else
+        {
+            //Get the header from the main pointer.
+            header = *(PVRHeaderV3*)pvrData;
+        }
+        return header;
+    }
+    
+    return PVRHeaderV3();
+}
+    
+    
 };
 

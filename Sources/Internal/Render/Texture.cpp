@@ -649,13 +649,6 @@ void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
 
 Texture * Texture::CreateFromPNG(const String & pathName)
 {
-	Texture * texture = Texture::Get(pathName);
-	if (texture)
-	{
-		//Logger::Debug("[Texture] Texture from cache: %s", pathName.c_str());
-		return texture;
-	}
-	
 	Image * image = Image::CreateFromFile(pathName);
 	if (!image)
 	{
@@ -664,7 +657,7 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	}
 	
 	RenderManager::Instance()->LockNonMain();
-	texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+	Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
 	texture->relativePathname = pathName;
     texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
@@ -690,6 +683,10 @@ Texture * Texture::CreateFromFile(const String & pathName)
 
 Texture * Texture::PureCreate(const String & pathName)
 {
+    Texture * texture = Texture::Get(pathName);
+	if (texture)return texture;
+
+    
 	// TODO: add check that pathName 
 	String extension = FileSystem::GetExtension(pathName);
 

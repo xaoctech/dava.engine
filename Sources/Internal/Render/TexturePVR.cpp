@@ -39,9 +39,6 @@ Texture * Texture::CreateFromPVR(const String & pathName)
 {
 	uint64 timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
     
-	Texture * texture = Texture::Get(pathName);
-	if (texture)return texture;
-	
 	File * fp = File::Create(pathName, File::OPEN|File::READ);
 	if (!fp)
 	{
