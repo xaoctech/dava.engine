@@ -33,30 +33,49 @@ namespace DAVA
 {
 
 ImposterManager::ImposterManager(Scene * _scene)
-:	scene(_scene)
+:	scene(_scene),
+	sharedFBO(0)
 {
-	SharedFBO::Setup setup;
-	setup.size = Vector2(2048, 1024);
-	setup.pixelFormat = FORMAT_RGBA4444;
-	setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-	setup.blocks.push_back(std::pair<int32, Vector2>(16, Vector2(256.f, 256.f)));
-	setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
-	setup.blocks.push_back(std::pair<int32, Vector2>(112, Vector2(64.f, 64.f)));
-    setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(32.f, 32.f)));
-    	//setup.size = Vector2(512, 512);
-    	//setup.pixelFormat = FORMAT_RGBA4444;
-        //setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
-    	//setup.blocks.push_back(std::pair<int32, Vector2>(16, Vector2(256.f, 256.f)));
-    	//setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
-    	//setup.blocks.push_back(std::pair<int32, Vector2>(112, Vector2(64.f, 64.f)));
-        //setup.blocks.push_back(std::pair<int32, Vector2>(256, Vector2(8.f, 8.f)));
+	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::IMPOSTERS_ENABLE))
+	{
+		CreateFBO();
+	}
+	RenderManager::Instance()->GetOptions()->AddObserver(this);
+}
 
-	sharedFBO = new SharedFBO(&setup);
+void ImposterManager::CreateFBO()
+{
+	if(!sharedFBO)
+	{
+		SharedFBO::Setup setup;
+		setup.size = Vector2(2048, 1024);
+		setup.pixelFormat = FORMAT_RGBA4444;
+		setup.depthFormat = Texture::DEPTH_RENDERBUFFER;
+		setup.blocks.push_back(std::pair<int32, Vector2>(16, Vector2(256.f, 256.f)));
+		setup.blocks.push_back(std::pair<int32, Vector2>(32, Vector2(128.f, 128.f)));
+		setup.blocks.push_back(std::pair<int32, Vector2>(112, Vector2(64.f, 64.f)));
+		setup.blocks.push_back(std::pair<int32, Vector2>(64, Vector2(32.f, 32.f)));
+
+		sharedFBO = new SharedFBO(&setup);
+	}
+}
+
+void ImposterManager::ReleaseFBO()
+{
+	SafeRelease(sharedFBO);
+	queue.clear();
+	List<ImposterNode*>::iterator end = imposters.end();
+	for(List<ImposterNode*>::iterator iter = imposters.begin(); iter != end; ++iter)
+	{
+		ImposterNode * node = *iter;
+		node->ZeroOutBlock();
+	}
 }
 
 ImposterManager::~ImposterManager()
 {
-	SafeRelease(sharedFBO);
+	RenderManager::Instance()->GetOptions()->RemoveObserver(this);
+	ReleaseFBO();
 }
 
 bool ImposterManager::IsEmpty()
@@ -122,7 +141,6 @@ void ImposterManager::Add(ImposterNode * node)
 	if(imposters.end() == iter)
 	{
 		node->SetManager(this);
-		node->SetSharedFBO(sharedFBO);
 		imposters.push_back(node);
 	}
 }
@@ -137,7 +155,6 @@ void ImposterManager::Remove(ImposterNode * node)
 	else
 	{
 		node->SetManager(0);
-		node->SetSharedFBO(0);
 		imposters.erase(iter);
 	}
 }
@@ -182,6 +199,26 @@ void ImposterManager::RemoveFromQueue(ImposterNode * node)
 	}
 }
 
+void ImposterManager::HandleEvent(Observable * observable)
+{
+	RenderOptions * renderOptions = dynamic_cast<RenderOptions*>(observable);
+	if(renderOptions)
+	{
+		bool areImpostersEnabled = renderOptions->IsOptionEnabled(RenderOptions::IMPOSTERS_ENABLE);
+		if(areImpostersEnabled)
+		{
+			CreateFBO();
+		}
+		else
+		{
+			ReleaseFBO();
+		}
+	}
+}
 
+SharedFBO * ImposterManager::GetFBO()
+{
+	return sharedFBO;
+}
 
 };
