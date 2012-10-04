@@ -25,56 +25,20 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_IMPOSTER_MANAGER_H__
-#define __DAVAENGINE_IMPOSTER_MANAGER_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Base/Observer.h"
-#include "Scene3D/ImposterNode.h"
+#ifndef __DAVAENGINE_OBSERVER_H__
+#define __DAVAENGINE_OBSERVER_H__
 
 namespace DAVA
 {
 
-class SharedFBO;
-class Scene;
-
-class ImposterManager : public BaseObject, public Observer //Dizz: I know you hate multiple inheritance
+class Observable;
+class Observer
 {
 public:
-	static const int32 MAX_UPDATES_PER_FRAME = 3;
-
-	ImposterManager(Scene * scene);
-	virtual ~ImposterManager();
-
-	bool IsEmpty();
-	void Add(ImposterNode * node);
-	void Remove(ImposterNode * node);
-
-	void Update(float32 frameTime);
-	void Draw();
-
-	void AddToQueue(ImposterNode * node);
-	void RemoveFromQueue(ImposterNode * node);
-	void UpdateQueue(ImposterNode * node);
-    void ProcessQueue();
-
-	void CreateFBO();
-	void ReleaseFBO();
-	SharedFBO * GetFBO();
-
-	virtual void HandleEvent(Observable * observable);
-
-private:
-	List<ImposterNode*> imposters;
-	List<ImposterNode*> queue;
-
-	void AddToPrioritizedPosition(ImposterNode * node);
-
-	SharedFBO * sharedFBO;
-	Scene * scene;
+	virtual void HandleEvent(Observable * observable) = 0;
+	virtual ~Observer() {};
 };
 
 };
 
-#endif //__DAVAENGINE_IMPOSTER_MANAGER_H__
+#endif //__DAVAENGINE_OBSERVER_H__

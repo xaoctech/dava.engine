@@ -732,23 +732,6 @@ bool SceneNode::IsLodMain(SceneNode *childToCheck)
     return parent->IsLodMain(this);
 }
 
-void SceneNode::RecursiveEnableImposters(bool enable)
-{
-	if(enable)
-	{
-		RemoveFlag(NODE_DISABLE_IMPOSTER);
-	}
-	else
-	{
-		AddFlag(NODE_DISABLE_IMPOSTER);
-	}
-	uint32 size = (uint32)children.size();
-	for (uint32 c = 0; c < size; ++c)
-	{
-		children[c]->RecursiveEnableImposters(enable); 
-	}
-}
-
 String SceneNode::GetPathID(SceneNode * root)
 {
 	String result;
