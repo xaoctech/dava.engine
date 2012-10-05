@@ -257,6 +257,7 @@
 		5CFB116C15AE0685008F64BB /* libvorbisfile_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116915AE0685008F64BB /* libvorbisfile_macos.a */; };
 		5CFB116E15AE0696008F64BB /* libtheora_macos.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CFB116D15AE0696008F64BB /* libtheora_macos.a */; };
 		CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */; };
+		E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86DF3A1161F10AE00A5400A /* Observable.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
 		E89E9629161C49A500F156A2 /* TexturePVR.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9627161C49A500F156A2 /* TexturePVR.cpp */; };
@@ -803,6 +804,9 @@
 		CC27F75416089C37004EF267 /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		CC27F75516089C37004EF267 /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		D7BC194B5CC2DC4DBAFB72CD /* QtFramework.pro */ = {isa = PBXFileReference; lastKnownFileType = text; path = QtFramework.pro; sourceTree = "<group>"; };
+		E86DF3A1161F10AE00A5400A /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
+		E86DF3A2161F10AF00A5400A /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
+		E86DF3A3161F10AF00A5400A /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
 		E879FCE5161DD6F00038D271 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
@@ -939,6 +943,9 @@
 		5C5D975415B0230D0058B43A /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				E86DF3A1161F10AE00A5400A /* Observable.cpp */,
+				E86DF3A2161F10AF00A5400A /* Observable.h */,
+				E86DF3A3161F10AF00A5400A /* Observer.h */,
 				5C5D975515B0230D0058B43A /* BaseMath.cpp */,
 				5C5D975615B0230D0058B43A /* BaseMath.h */,
 				5C5D975715B0230D0058B43A /* BaseObject.cpp */,
@@ -1928,6 +1935,7 @@
 				CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */,
 				E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */,
 				E89E9629161C49A500F156A2 /* TexturePVR.cpp in Build Sources */,
+				E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */,
 			);
 			name = "Build Sources";
 			runOnlyForDeploymentPostprocessing = 0;
