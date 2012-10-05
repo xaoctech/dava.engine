@@ -201,6 +201,11 @@ PVRTest::CompareResult PVRTest::CompareSprites(Sprite *first, Sprite *second)
         }
     }
     
+    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
+    firstComparer->Save(documentsPath + Format("src_number_%d.png", currentTest));
+    secondComparer->Save(documentsPath + Format("dst_number_%d.png", currentTest));
+    
+    
     SafeRelease(firstComparer);
     SafeRelease(secondComparer);
     return compareResult;
