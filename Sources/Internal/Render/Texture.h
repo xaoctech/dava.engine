@@ -224,8 +224,6 @@ public:							// properties for fast access
 	void InvalidateFromFile();
 	void InvalidateFromSavedData();
 
-	static int32 FormatMultiplier(PixelFormat format);
-
     void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
     void SaveData(uint8 * data, int32 dataSize);
     

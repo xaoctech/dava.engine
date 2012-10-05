@@ -123,7 +123,7 @@ int32 Texture::GetPixelFormatSizeInBytes(PixelFormat format)
     
 const char * Texture::GetPixelFormatString(PixelFormat format)
 {
-    DVASSERT((0 < format) && (format < FORMAT_COUNT));
+    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     return pixelDescriptors[format].name.c_str();
 }
 
@@ -871,7 +871,7 @@ void Texture::DumpTextures()
         DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
         if(FORMAT_INVALID != t->format)
         {
-            allocSize += t->width * t->height * pixelDescriptors[t->format].pixelSize / 8; //size in Bytes
+            allocSize += t->width * t->height * GetPixelFormatSizeInBytes(t->format);
         }
 	}
 	Logger::Info("      Total allocated textures %d    memory size %d", cnt, allocSize);
@@ -900,7 +900,7 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 void Texture::SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height)
 {
-    int32 textureSize = width * height * FormatMultiplier(format);
+    int32 textureSize = width * height * GetPixelFormatSizeInBytes(format);
     SaveData(data, textureSize);
 }
 
@@ -919,12 +919,6 @@ void Texture::SaveData(uint8 * data, int32 dataSize)
     }
 }
 
-
-int32 Texture::FormatMultiplier(PixelFormat format)
-{
-    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
-    return pixelDescriptors[format].pixelSize / 8;
-}
 
 void Texture::SaveToSystemMemory()
 {
@@ -945,7 +939,7 @@ void Texture::SaveToSystemMemory()
                 return;
 
             
-			int32 textureSize = width * height * FormatMultiplier(format);
+			int32 textureSize = width * height * GetPixelFormatSizeInBytes(format);
 			if(savedDataSize != textureSize)
 			{
 				SafeDeleteArray(savedData);
@@ -1243,7 +1237,7 @@ int32 Texture::GetDataSize()
 {
     DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     
-    int32 allocSize = width * height * pixelDescriptors[format].pixelSize / 8;
+    int32 allocSize = width * height * GetPixelFormatSizeInBytes(format);
     return allocSize;
 }
 
