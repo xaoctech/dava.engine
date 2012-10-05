@@ -55,9 +55,6 @@
     <Filter Include="Sources\SceneEditor\Properties">
       <UniqueIdentifier>{e8644841-40dc-4366-b508-ef7290418d10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\SceneEditor\Light">
-      <UniqueIdentifier>{d4f37c8c-9002-42d9-ae59-46d5152c9aa8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Commands">
       <UniqueIdentifier>{aecaa59c-a106-4de5-8161-f49909abd316}</UniqueIdentifier>
     </Filter>
@@ -84,6 +81,9 @@
     </Filter>
     <Filter Include="Sources\RulerTool">
       <UniqueIdentifier>{d7e9840a-7693-4b3e-b72b-59a53c6e835d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\SceneEditor\Properties\Light">
+      <UniqueIdentifier>{d4f37c8c-9002-42d9-ae59-46d5152c9aa8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -178,9 +178,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp">
@@ -397,10 +394,10 @@
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
-      <Filter>Sources\SceneEditor\Light</Filter>
+      <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\EditorLightNode.h">
-      <Filter>Sources\SceneEditor\Light</Filter>
+      <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PropertyList.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
@@ -1106,9 +1103,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\PVRUtils.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h">
@@ -1996,10 +1990,10 @@
       <Filter>Sources\SceneEditor\Landscape</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
-      <Filter>Sources\SceneEditor\Light</Filter>
+      <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\EditorLightNode.cpp">
-      <Filter>Sources\SceneEditor\Light</Filter>
+      <Filter>Sources\SceneEditor\Properties\Light</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\PropertyCell.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
