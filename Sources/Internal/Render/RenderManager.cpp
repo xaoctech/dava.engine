@@ -57,6 +57,8 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	Logger::Debug("[RenderManager] created");
     renderer = _renderer;
 
+    Texture::InitializePixelFormatDescriptors();
+    
 //  RENDERSTATE
 //	oldColor = Color::Clear();
 //    newColor = Color::Clear();

@@ -70,8 +70,6 @@ public:
 	inline PixelFormat GetPixelFormat();
 	inline bool  IsAlphaPremultiplied();
 
-	static uint32 GetFormatSize(PixelFormat format); 
-
 	void ConvertToFormat(PixelFormat format, bool isAlphaPremultiplied = true);
 	
 	void Save(const String & filename);

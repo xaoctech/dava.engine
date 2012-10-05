@@ -1,7 +1,8 @@
 #include "TextureConverterCell.h"
 #include "ControlsFactory.h"
 
-#include "PVRUtils.h"
+#include "Render/LibPVRHelper.h"
+#include "../Qt/QtUtils.h"
 
 TextureConverterCell::TextureConverterCell(const Rect &rect, const String &cellIdentifier)
 :   UIListCell(Rect(rect.x, rect.y, rect.dx, (float32)GetCellHeight()), cellIdentifier)
@@ -56,11 +57,6 @@ TextureConverterCell::~TextureConverterCell()
 void TextureConverterCell::SetTexture(const String &texturePath)
 {
     String textureWorkingPath = texturePath;
-    String::size_type pos = textureWorkingPath.find(".pvr.png");
-    if(String::npos != pos)
-    {
-        textureWorkingPath = FileSystem::ReplaceExtension(textureWorkingPath, "");
-    }
     
     String path, filename;
     FileSystem::SplitPath(textureWorkingPath, path, filename);
@@ -82,15 +78,13 @@ void TextureConverterCell::SetTexture(const String &texturePath)
         Texture *pvrTex = Texture::CreateFromFile(pvrPath);
         if(pvrTex)
         {
-            PVRUtils::PVRHeader pvrHeader = {0};
-            PVRUtils::Instance()->GetPVRHeader(&pvrHeader, pvrPath);
-
-            PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
+            PixelFormat format = LibPVRHelper::GetPixelFormat(pvrPath);
+            uint32 pvrDataSize = LibPVRHelper::GetDataLength(pvrPath);
 
             String pvrFormat = Texture::GetPixelFormatString(format);
             textureFormat->SetText(StringToWString(pngFormat + "/" + pvrFormat));
             
-            textureSize->SetText(PVRUtils::SizeInBytesToWideString((float32)pvrHeader.dataLength));
+            textureSize->SetText(SizeInBytesToWideString(pvrDataSize));
             
             SafeRelease(pvrTex);
         }
@@ -101,12 +95,11 @@ void TextureConverterCell::SetTexture(const String &texturePath)
     }
     else if(".pvr" == ext)
     {
-        PVRUtils::PVRHeader pvrHeader = {0};
-        PVRUtils::Instance()->GetPVRHeader(&pvrHeader, textureWorkingPath);
+        PixelFormat format = LibPVRHelper::GetPixelFormat(textureWorkingPath);
+        uint32 pvrDataSize = LibPVRHelper::GetDataLength(textureWorkingPath);
 
-        PixelFormat format = PVRUtils::Instance()->GetPVRFormat(pvrHeader.flags);
         String pvrFormat = Texture::GetPixelFormatString(format);
-        textureSize->SetText(PVRUtils::SizeInBytesToWideString((float32)pvrHeader.dataLength));
+        textureSize->SetText(SizeInBytesToWideString(pvrDataSize));
 
         String pngPath = FileSystem::ReplaceExtension(textureWorkingPath, ".pvr");
         Texture *pngTex = Texture::CreateFromFile(pngPath);

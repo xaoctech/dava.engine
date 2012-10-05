@@ -210,20 +210,21 @@ void RenderManager::MakeGLScreenShot()
 
     int32 width = frameBufferWidth;
     int32 height = frameBufferHeight;
-    PixelFormat format = FORMAT_RGBA8888;
+    
+    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     
     Logger::Debug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
     
     // picture is rotated (framebuffer coordinates start from bottom left)
     Image *image = NULL;
 #if defined(__DAVAENGINE_IPHONE__)    
-    image = Image::Create(height, width, format);
+    image = Image::Create(height, width, formatDescriptor.formatID);
 #else
-    image = Image::Create(width, height, format);
+    image = Image::Create(width, height, formatDescriptor.formatID);
 #endif
     uint8 *imageData = image->GetData();
     
-    int32 formatSize = Image::GetFormatSize(format);
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(formatDescriptor.formatID);
     uint8 *tempData;
     
     uint32 imageDataSize = width * height * formatSize;
@@ -237,26 +238,7 @@ void RenderManager::MakeGLScreenShot()
 #endif
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-    switch(format)
-    {
-        case FORMAT_RGBA8888:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
-            break;
-        case FORMAT_RGB565:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)tempData));
-            break;
-        case FORMAT_A8:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)tempData));
-            break;
-        case FORMAT_RGBA4444:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)tempData));
-            break;
-        case FORMAT_A16:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)tempData));
-            break;
-        default:
-            break;
-    }
+    RENDER_VERIFY(glReadPixels(0, 0, width, height, formatDescriptor.format, formatDescriptor.type, (GLvoid *)tempData));
     UnlockNonMain();
     
     //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)

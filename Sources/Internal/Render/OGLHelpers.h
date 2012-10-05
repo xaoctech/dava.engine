@@ -88,7 +88,10 @@ namespace DAVA
 #define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
     
 #endif
-    
+
+#if defined (__DAVAENGINE_IPHONE__)
+#define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+#endif //#if defined (__DAVAENGINE_IPHONE__)    
     
     
 };

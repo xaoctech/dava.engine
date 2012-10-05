@@ -35,6 +35,7 @@
 
 using namespace DAVA;
 
+class TestData;
 class BaseScreen;
 class GameCore : public ApplicationCore
 {
@@ -43,6 +44,7 @@ class GameCore : public ApplicationCore
         int32 line;
         String command;
         String filename;
+        String testName;
     };
     
     
@@ -68,7 +70,7 @@ public:
 
     void RegisterScreen(BaseScreen *screen);
     
-    void RegisterError(const String &command, const String &fileName, int32 line);
+    void RegisterError(const String &command, const String &fileName, int32 line, TestData *testData);
 
     void LogMessage(const String &message);
     
