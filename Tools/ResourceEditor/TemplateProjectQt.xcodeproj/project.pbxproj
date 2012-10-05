@@ -233,7 +233,6 @@
 		5C7F499F15B44B7A0038AF3A /* PropertyControlCreator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F493D15B44B7A0038AF3A /* PropertyControlCreator.cpp */; };
 		5C7F49A015B44B7A0038AF3A /* PropertyList.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F493F15B44B7A0038AF3A /* PropertyList.cpp */; };
 		5C7F49A115B44B7A0038AF3A /* PVRConverter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494115B44B7A0038AF3A /* PVRConverter.cpp */; };
-		5C7F49A215B44B7A0038AF3A /* PVRUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494315B44B7A0038AF3A /* PVRUtils.cpp */; };
 		5C7F49A315B44B7A0038AF3A /* SceneEditorScreenMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494515B44B7A0038AF3A /* SceneEditorScreenMain.cpp */; };
 		5C7F49A415B44B7A0038AF3A /* SceneExporter.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494715B44B7A0038AF3A /* SceneExporter.cpp */; };
 		5C7F49A515B44B7A0038AF3A /* SceneGraph.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 5C7F494915B44B7A0038AF3A /* SceneGraph.cpp */; };
@@ -853,8 +852,6 @@
 		5C7F494015B44B7A0038AF3A /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyList.h; path = Classes/SceneEditor/PropertyList.h; sourceTree = "<group>"; };
 		5C7F494115B44B7A0038AF3A /* PVRConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRConverter.cpp; path = Classes/SceneEditor/PVRConverter.cpp; sourceTree = "<group>"; };
 		5C7F494215B44B7A0038AF3A /* PVRConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRConverter.h; path = Classes/SceneEditor/PVRConverter.h; sourceTree = "<group>"; };
-		5C7F494315B44B7A0038AF3A /* PVRUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRUtils.cpp; path = Classes/SceneEditor/PVRUtils.cpp; sourceTree = "<group>"; };
-		5C7F494415B44B7A0038AF3A /* PVRUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRUtils.h; path = Classes/SceneEditor/PVRUtils.h; sourceTree = "<group>"; };
 		5C7F494515B44B7A0038AF3A /* SceneEditorScreenMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneEditorScreenMain.cpp; path = Classes/SceneEditor/SceneEditorScreenMain.cpp; sourceTree = "<group>"; };
 		5C7F494615B44B7A0038AF3A /* SceneEditorScreenMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneEditorScreenMain.h; path = Classes/SceneEditor/SceneEditorScreenMain.h; sourceTree = "<group>"; };
 		5C7F494715B44B7A0038AF3A /* SceneExporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneExporter.cpp; path = Classes/SceneEditor/SceneExporter.cpp; sourceTree = "<group>"; };
@@ -1753,8 +1750,6 @@
 				5C7F494015B44B7A0038AF3A /* PropertyList.h */,
 				5C7F494115B44B7A0038AF3A /* PVRConverter.cpp */,
 				5C7F494215B44B7A0038AF3A /* PVRConverter.h */,
-				5C7F494315B44B7A0038AF3A /* PVRUtils.cpp */,
-				5C7F494415B44B7A0038AF3A /* PVRUtils.h */,
 				5C7F494515B44B7A0038AF3A /* SceneEditorScreenMain.cpp */,
 				5C7F494615B44B7A0038AF3A /* SceneEditorScreenMain.h */,
 				5C7F494715B44B7A0038AF3A /* SceneExporter.cpp */,
@@ -2189,7 +2184,6 @@
 				5C7F499F15B44B7A0038AF3A /* PropertyControlCreator.cpp in Build Sources */,
 				5C7F49A015B44B7A0038AF3A /* PropertyList.cpp in Build Sources */,
 				5C7F49A115B44B7A0038AF3A /* PVRConverter.cpp in Build Sources */,
-				5C7F49A215B44B7A0038AF3A /* PVRUtils.cpp in Build Sources */,
 				5C7F49A315B44B7A0038AF3A /* SceneEditorScreenMain.cpp in Build Sources */,
 				5C7F49A415B44B7A0038AF3A /* SceneExporter.cpp in Build Sources */,
 				5C7F49A515B44B7A0038AF3A /* SceneGraph.cpp in Build Sources */,

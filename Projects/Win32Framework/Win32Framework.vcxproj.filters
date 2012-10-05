@@ -1121,6 +1121,11 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h">
       <Filter>Internal\Base</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h">
+      <Filter>Internal\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1933,6 +1938,11 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp">
       <Filter>Internal\Base</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\TexturePVR.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -40,7 +40,7 @@
 #include "Render/D3D9Helpers.h"
 #include "Render/ImageConvert.h"
 #include "FileSystem/FileSystem.h"
-//#include "LibPngHelpers.h"
+#include "Render/OGLHelpers.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
 #include <CoreGraphics/CoreGraphics.h>
@@ -108,52 +108,23 @@ Texture * Texture::pinkPlaceholder = 0;
 static int32 textureFboCounter = 0;
 
 // Main constructurs
-int32 Texture::GetPixelFormatSize(PixelFormat format)
+int32 Texture::GetPixelFormatSizeInBits(PixelFormat format)
 {
-	switch(format)
-	{
-	case FORMAT_RGBA8888:
-		return 32;
-	case FORMAT_RGB565:
-		return 16;
-	case FORMAT_RGBA4444:
-		return 16;
-	case FORMAT_A8:
-		return 8;
-	case FORMAT_PVR4:
-		return 4;
-	case FORMAT_PVR2:
-		return 2;
-    case FORMAT_A16:
-        return 16;
-	default:
-		return 0;
-	};
-	return 0;
+    DVASSERT((0 < format) && (format < FORMAT_COUNT));
+    return pixelDescriptors[format].pixelSize;
 }
+
+int32 Texture::GetPixelFormatSizeInBytes(PixelFormat format)
+{
+    return GetPixelFormatSizeInBits(format) / 8;
+}
+
+    
     
 const char * Texture::GetPixelFormatString(PixelFormat format)
 {
-    switch(format)
-	{
-        case FORMAT_RGBA8888:
-            return "FORMAT_RGBA8888";
-        case FORMAT_RGB565:
-            return "FORMAT_RGB565";
-        case FORMAT_RGBA4444:
-            return "FORMAT_RGBA4444";
-        case FORMAT_A8:
-            return "FORMAT_A8";
-        case FORMAT_PVR4:
-            return "FORMAT_PVR4";
-        case FORMAT_PVR2:
-            return "FORMAT_PVR2";
-        case FORMAT_A16:
-            return "FORMAT_A16";
-        default:
-            return "WRONG FORMAT";
-	};
-    return "WRONG FORMAT";
+    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    return pixelDescriptors[format].name.c_str();
 }
 
 Texture * Texture::Get(const String & pathName)
@@ -288,27 +259,26 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 
 	int saveId = GetSavedTextureID();
 	BindTexture(id);
-	
-	switch(format) 
-	{
-		case FORMAT_RGBA8888:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _data));
-			break;
-		case FORMAT_RGB565:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, _data));
-			break;
-		case FORMAT_A8:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, _data));
-			break;
-		case FORMAT_RGBA4444:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
-			break;
-		case FORMAT_A16:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, _data));
-			break;
-		default:
-			return;
-	}
+
+
+	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    if(FORMAT_INVALID != format)
+    {
+#if defined (__DAVAENGINE_IPHONE__)
+        RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
+#else //#if defined (__DAVAENGINE_IPHONE__)
+        if(FORMAT_PVR2 == format || FORMAT_PVR4 == format)
+        {
+            RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[FORMAT_RGBA8888].internalformat,
+                                       width, height, 0, pixelDescriptors[FORMAT_RGBA8888].format, pixelDescriptors[FORMAT_RGBA8888].type, _data));
+        }
+        else
+        {
+            RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
+        }
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+        
+    }
 	
 	if(0 != saveId)
 	{
@@ -405,27 +375,14 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	BindTexture(texture->id);
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 		
-	switch(texture->format) 
-	{
-		case FORMAT_RGBA8888:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _data));
-			break;
-		case FORMAT_RGB565:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture->width, texture->height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, _data));
-			break;
-		case FORMAT_A8:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, texture->width, texture->height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, _data));
-			break;
-		case FORMAT_RGBA4444:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, _data));
-			break;
-		case FORMAT_A16:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, texture->width, texture->height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, _data));
-			break;
-		default:
-			SafeRelease(texture);
-			return 0;
-	}
+    
+    if(FORMAT_INVALID != texture->format)
+    {
+        RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, pixelDescriptors[texture->format].internalformat,
+                                   texture->width, texture->height, 0,
+                                   pixelDescriptors[texture->format].format, pixelDescriptors[texture->format].type, _data));
+    }
+    
 
 /*	const int width = 16;
 	const int height = 16;
@@ -449,17 +406,13 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 #else //Non ES platforms
 	wrapMode = GL_CLAMP;
 #endif //PLATFORMS
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
 	if (isMipmapGenerationEnabled)
 	{
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
 		texture->GenerateMipmaps();
 	}else
 	{
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 	}
@@ -696,13 +649,6 @@ void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
 
 Texture * Texture::CreateFromPNG(const String & pathName)
 {
-	Texture * texture = Texture::Get(pathName);
-	if (texture)
-	{
-		//Logger::Debug("[Texture] Texture from cache: %s", pathName.c_str());
-		return texture;
-	}
-	
 	Image * image = Image::CreateFromFile(pathName);
 	if (!image)
 	{
@@ -711,7 +657,7 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	}
 	
 	RenderManager::Instance()->LockNonMain();
-	texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+	Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
 	texture->relativePathname = pathName;
     texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
@@ -722,305 +668,6 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	
 	return texture;
 }		
-
-#if defined(__DAVAENGINE_IPHONE__)
-Texture * Texture::CreateFromPVR(const String & pathName)
-{
-	uint64_t timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
-
-	Texture * texture = Texture::Get(pathName);
-	if (texture)return texture;
-	
-	File * fp = File::Create(pathName, File::OPEN|File::READ);
-	if (!fp)
-	{
-		Logger::Error("Failed to open PVR texture: %s", pathName.c_str());
-		return 0;
-	}
-	uint32 fileSize = fp->GetSize();
-	uint8 * bytes = new uint8[fileSize];
-	uint32 dataRead = fp->Read(bytes, fileSize);
-
-	if (dataRead != fileSize)
-	{
-		Logger::Error("Failed to read data from PVR texture file: %s", pathName.c_str());
-		return 0;
-	}
-	Texture * newTexture = UnpackPVRData(bytes, fileSize);
-	if (!newTexture)
-	{
-		Logger::Error("Failed to parse PVR texture: %s", pathName.c_str());
-	}
-	SafeDeleteArray(bytes);
-	SafeRelease(fp);
-
-	if (newTexture)
-	{
-		newTexture->relativePathname = pathName;
-		textureMap[newTexture->relativePathname] = newTexture;
-	}
-	timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS() - timeCreateFromPVR;
-	Logger::Debug("TexturePVR: t: %lld", timeCreateFromPVR);
-
-	return newTexture;
-}
-	
-#define PVR_TEXTURE_FLAG_TYPE_MASK	0xff
-	
-static char gPVRTexIdentifier[5] = "PVR!";
-	
-enum
-{
-	kPVRTextureFlagTypePVRTC_2 = 24,
-	kPVRTextureFlagTypePVRTC_4
-};
-	
-
-typedef struct _PVRTexHeader
-{
-	uint32_t headerLength;
-	uint32_t height;
-	uint32_t width;
-	uint32_t numMipmaps;
-	uint32_t flags;
-	uint32_t dataLength;
-	uint32_t bpp;
-	uint32_t bitmaskRed;
-	uint32_t bitmaskGreen;
-	uint32_t bitmaskBlue;
-	uint32_t bitmaskAlpha;
-	uint32_t pvrTag;
-	uint32_t numSurfs;
-} PVRTexHeader;
-
-	
-struct TextureFrame
-{
-	uint8* data;
-	uint32 size;
-};
-
-static const uint32 PVRTC2_MIN_TEXWIDTH		= 16;
-static const uint32 PVRTC2_MIN_TEXHEIGHT		= 8;
-static const uint32 PVRTC4_MIN_TEXWIDTH		= 8;
-static const uint32 PVRTC4_MIN_TEXHEIGHT		= 8;
-static const uint32 ETC_MIN_TEXWIDTH			= 4;
-static const uint32 ETC_MIN_TEXHEIGHT		= 4;
-	
-	
-Texture * Texture::UnpackPVRData(uint8 * data, uint32 fileDataSize)
-{
-	bool success = false;
-	PVRTexHeader *header = NULL;
-	uint32 flags, pvrTag;
-	uint32 dataLength = 0, dataOffset = 0, dataSize = 0;
-//	uint32 blockSize = 0, widthBlocks = 0, heightBlocks = 0;
-	int32 origWidth = 0, origHeight = 0, width = 0, height = 0;// bpp = 4;
-	uint8 *bytes = 0;
-	uint32_t formatFlags;
-	
-	header = (PVRTexHeader *)data;
-	
-	pvrTag = CFSwapInt32LittleToHost(header->pvrTag);
-	
-	if ((uint8)(gPVRTexIdentifier[0]) != ((pvrTag >>  0) & 0xff) ||
-		(uint8)gPVRTexIdentifier[1] != ((pvrTag >>  8) & 0xff) ||
-		(uint8)gPVRTexIdentifier[2] != ((pvrTag >> 16) & 0xff) ||
-		(uint8)gPVRTexIdentifier[3] != ((pvrTag >> 24) & 0xff))
-	{
-		return FALSE;
-	}
-	
-	flags = CFSwapInt32LittleToHost(header->flags);
-	formatFlags = flags & PVR_TEXTURE_FLAG_TYPE_MASK;
-	
-	List<TextureFrame> imageList;
-	
-	GLenum	internalFormat = 0;
-	bool hasAlpha;
-	
-	if (formatFlags == kPVRTextureFlagTypePVRTC_4 || formatFlags == kPVRTextureFlagTypePVRTC_2)
-	{
-		if (formatFlags == kPVRTextureFlagTypePVRTC_4)internalFormat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)internalFormat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
-				
-		origWidth = width = CFSwapInt32LittleToHost(header->width);
-		origHeight = height = CFSwapInt32LittleToHost(header->height);
-				
-		if (CFSwapInt32LittleToHost(header->bitmaskAlpha))
-		{
-			hasAlpha = true;
-		}
-		else
-		{
-			hasAlpha = false;
-#if 1
-			if (formatFlags == kPVRTextureFlagTypePVRTC_4)
-			{
-				internalFormat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-			}
-			else
-			if (formatFlags == kPVRTextureFlagTypePVRTC_2)
-			{
-				internalFormat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-			}
-#endif
-		}
-		
-		
-						
-		dataLength = CFSwapInt32LittleToHost(header->dataLength);
-						
-		bytes = ((uint8 *)data) + header->headerLength;//sizeof(PVRTexHeader);
-						
-		// Calculate the data size for each texture level and respect the minimum number of blocks
-		while (dataOffset < dataLength)
-		{
-#if 0
-			if (formatFlags == kPVRTextureFlagTypePVRTC_4)
-			{
-				blockSize = 4 * 4; // Pixel by pixel block size for 4bpp
-				widthBlocks = width / 4;
-				heightBlocks = height / 4;
-				bpp = 4;
-			}
-			else
-			{
-				blockSize = 8 * 4; // Pixel by pixel block size for 2bpp
-				widthBlocks = width / 8;
-				heightBlocks = height / 4;
-				bpp = 2;
-			}
-			
-			// Clamp to minimum number of blocks
-			if (widthBlocks < 2)widthBlocks = 2;
-			if (heightBlocks < 2)heightBlocks = 2;
-					
-			dataSize = widthBlocks * heightBlocks * ((blockSize  * bpp) / 8);
-#else
-			if (formatFlags == kPVRTextureFlagTypePVRTC_4)
-			{
-				dataSize = (Max(width, (int32)PVRTC4_MIN_TEXWIDTH) * Max(height, (int32)PVRTC4_MIN_TEXHEIGHT) * header->bpp) / 8;
-			}
-			else 
-			if (formatFlags == kPVRTextureFlagTypePVRTC_2)
-			{
-				dataSize = (Max(width, (int32)PVRTC2_MIN_TEXWIDTH) * Max(height, (int32)PVRTC2_MIN_TEXHEIGHT) * header->bpp) / 8;
-			}
-
-			
-#endif
-			
-			//[_imageData addObject:[NSData dataWithBytes:bytes+dataOffset length:dataSize]];
-			TextureFrame frame;
-			frame.data = bytes + dataOffset;
-			frame.size = dataSize;
-			imageList.push_back(frame);
-			
-			dataOffset += dataSize;
-			
-			width = Max(width >> 1, 1);
-			height = Max(height >> 1, 1);
-		}
-		
-		success = TRUE;
-	}
-	
-	Texture * texture = 0;
-	
-	if (success)
-	{
-		texture = new Texture();
-		if (!texture)return 0;
-	
-		width = origWidth;
-		height = origHeight;
-
-		texture->width = width;
-		texture->height = height;
-		if (formatFlags == kPVRTextureFlagTypePVRTC_4)texture->format = FORMAT_PVR4;
-		else if (formatFlags == kPVRTextureFlagTypePVRTC_2)texture->format = FORMAT_PVR2;
-		
-		RENDER_VERIFY(glGenTextures(1, &texture->id));
-		
-		int savedId = GetSavedTextureID();
-		BindTexture(texture->id);
-		
-		int32 i = 0;
-		for (List<TextureFrame>::iterator it = imageList.begin(); it != imageList.end(); ++it)
-		{
-			TextureFrame & frame = *it;
-			RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, i++, internalFormat, width, height, 0, frame.size, frame.data));
-			width = Max(width >> 1, 1);
-			height = Max(height >> 1, 1);
-		}
-		
-        GLint minFilter = GL_LINEAR;
-        if(i > 0) //has mipmaps
-        {
-            minFilter = GL_LINEAR_MIPMAP_LINEAR;
-        }
-        
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		
-		if (0 != savedId)
-		{
-			BindTexture(savedId);
-		}
-	}
-	return texture;
-}
-#endif
-	
-/*- (bool)createGLTexture
-{
-	int width = _width;
-	int height = _height;
-	NSData *data;
-	GLenum err;
-	
-	if ([_imageData count] > 0)
-	{
-		if (_name != 0)
-			glDeleteTextures(1, &_name);
-			
-		glGenTextures(1, &_name);
-		glBindTexture(GL_TEXTURE_2D, _name);
-		}
-	
-	for (int i=0; i < [_imageData count]; i++)
-	{
-		data = [_imageData objectAtIndex:i];
-		glCompressedTexImage2D(GL_TEXTURE_2D, i, _internalFormat, width, height, 0, [data length], [data bytes]);
-		
-		err = glGetError();
-		if (err != GL_NO_ERROR)
-		{
-			NSLog(@"Error uploading compressed texture level: %d. glError: 0x%04X", i, err);
-			return FALSE;
-		}
-		
-		int allocSize = 0;
-		if (_internalFormat == GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG)
-			allocSize = width * height / 2;
-			if (_internalFormat == GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
-				allocSize = width * height / 4;
-				_memoryUsage += allocSize;
-				
-				width = MAX(width >> 1, 1);
-				height = MAX(height >> 1, 1);
-				
-				
-				}
-	
-	texMemoryUsageInfo.AllocPVRTexture(_memoryUsage);
-	
-	[_imageData removeAllObjects];
-	
-	return TRUE;
-}*/
-	
 
 
 Texture * Texture::CreateFromFile(const String & pathName)
@@ -1036,6 +683,10 @@ Texture * Texture::CreateFromFile(const String & pathName)
 
 Texture * Texture::PureCreate(const String & pathName)
 {
+    Texture * texture = Texture::Get(pathName);
+	if (texture)return texture;
+
+    
 	// TODO: add check that pathName 
 	String extension = FileSystem::GetExtension(pathName);
 
@@ -1043,11 +694,7 @@ Texture * Texture::PureCreate(const String & pathName)
 		return CreateFromPNG(pathName);
 	else if (extension == String(".pvr"))
 	{
-#if defined(__DAVAENGINE_IPHONE__)
 		return CreateFromPVR(pathName);
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__) 
-		return CreateFromPNG(pathName + ".png");
-#endif
 	}
 	return 0;
 }
@@ -1220,26 +867,12 @@ void Texture::DumpTextures()
 		Texture *t = it->second;
 		Logger::Info("%s with id %d (%dx%d) retainCount: %d debug: %s format: %s", t->relativePathname.c_str(), t->id, t->width, t->height, t->GetRetainCount(), t->debugInfo.c_str(), GetPixelFormatString(t->format));
 		cnt++;
-		switch (t->format) 
-		{
-			case FORMAT_RGBA8888:
-				allocSize += t->width * t->height * 4;
-				break;
-			case FORMAT_RGBA4444:
-				allocSize += t->width * t->height * 2;
-				break;
-			case FORMAT_RGB565:
-				allocSize += t->width * t->height * 2;
-				break;
-			case FORMAT_A8:
-				allocSize += t->width * t->height;
-				break;
-			case FORMAT_A16:
-				allocSize += t->width * t->height * 2;
-				break;
-			default:
-				break;
-		}
+        
+        DVASSERT((0 <= t->format) && (t->format < FORMAT_COUNT));
+        if(FORMAT_INVALID != t->format)
+        {
+            allocSize += t->width * t->height * GetPixelFormatSizeInBytes(t->format);
+        }
 	}
 	Logger::Info("      Total allocated textures %d    memory size %d", cnt, allocSize);
 	Logger::Info("============================================================");
@@ -1267,7 +900,7 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 void Texture::SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height)
 {
-    int32 textureSize = width * height * FormatMultiplier(format);
+    int32 textureSize = width * height * GetPixelFormatSizeInBytes(format);
     SaveData(data, textureSize);
 }
 
@@ -1286,28 +919,6 @@ void Texture::SaveData(uint8 * data, int32 dataSize)
     }
 }
 
-
-int32 Texture::FormatMultiplier(PixelFormat format)
-{
-	switch(format)
-	{
-	case FORMAT_RGBA8888:
-		return 4;
-	case FORMAT_RGB565: 
-		return 2;
-	case FORMAT_RGBA4444:
-		return 2;
-    case FORMAT_A16:
-        return 2;
-    case FORMAT_A8:
-        return 1;
-
-    default:
-        break;
-	}
-
-	return 4;
-}
 
 void Texture::SaveToSystemMemory()
 {
@@ -1328,7 +939,7 @@ void Texture::SaveToSystemMemory()
                 return;
 
             
-			int32 textureSize = width * height * FormatMultiplier(format);
+			int32 textureSize = width * height * GetPixelFormatSizeInBytes(format);
 			if(savedDataSize != textureSize)
 			{
 				SafeDeleteArray(savedData);
@@ -1345,28 +956,13 @@ void Texture::SaveToSystemMemory()
 				BindTexture(id);
 
 				RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-				switch(format) 
-				{
-				case FORMAT_RGBA8888:
-					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
-					break;
-				case FORMAT_RGB565:
-					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)savedData));
-					break;
-				case FORMAT_A8:
-					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
-					break;
-				case FORMAT_RGBA4444:
-					RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
-					break;
-                case FORMAT_A16:
-                    RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
-                    break;
-
-                default:
-                    break;
-				}
-
+                
+                DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+                if(FORMAT_INVALID != format)
+                {
+                    RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)savedData));
+                }
+                
 				BindFBO(saveFBO);
 
 				if (saveId != 0)
@@ -1511,29 +1107,15 @@ void Texture::InvalidateFromSavedData()
 	BindTexture(id);
 
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-	switch(format) 
-	{
-		case FORMAT_RGBA8888:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
-			break;
-		case FORMAT_RGB565:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)savedData));
-			break;
-		case FORMAT_A8:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, (GLvoid *)savedData));
-			break;
-		case FORMAT_RGBA4444:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)savedData));
-			break;
-		case FORMAT_A16:
-			RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_SHORT, (GLvoid *)savedData));
-			break;
-        default:
-            break;
-	}
     
-
-
+    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    if(FORMAT_INVALID != format)
+    {
+        RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, 0, pixelDescriptors[format].internalformat,
+                                   width, height, 0, pixelDescriptors[format].format,
+                                   pixelDescriptors[format].type, (GLvoid *)savedData));
+    }
+    
 	GLint wrapMode = GL_CLAMP_TO_EDGE;
 	if (isMimMapTexture)
 	{
@@ -1584,52 +1166,24 @@ Image * Texture::ReadDataToImage()
     
     RenderManager::Instance()->LockNonMain();
     
-//    int saveFBO = 0;
-//#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
-//#else //Non ES platforms
-//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO));
-//#endif //PLATFORMS
     int32 saveFBO = GetSavedFBO();
 
-//    int32 saveId = 0;
-//    RENDER_VERIFY(glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId));
-//    RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, id))
     int32 saveId = GetSavedTextureID();
     BindTexture(id);
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-    switch(format) 
-    {
-        case FORMAT_RGBA8888:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
-            break;
-        case FORMAT_RGB565:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_5_6_5, (GLvoid *)imageData));
-            break;
-        case FORMAT_A8:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)imageData));
-            break;
-        case FORMAT_RGBA4444:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, (GLvoid *)imageData));
-            break;
-        case FORMAT_A16:
-            RENDER_VERIFY(glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_SHORT, (GLvoid *)imageData));
-            break;
-        default:
-            break;
-    }
     
-//#if defined(__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-//    RENDER_VERIFY(glBindFramebufferOES(GL_FRAMEBUFFER_OES, saveFBO));	// Unbind the FBO for now
-//#else //Non ES platforms
-//    RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, saveFBO));	// Unbind the FBO for now
-//#endif //PLATFORMS
+    
+    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    if(FORMAT_INVALID != format)
+    {
+        RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)imageData));
+    }
+
     BindFBO(saveFBO);
     
     if (saveId != 0)
     {
-//        RENDER_VERIFY(glBindTexture(GL_TEXTURE_2D, saveId))
         BindTexture(saveId);
     }
     
@@ -1656,7 +1210,6 @@ Image * Texture::CreateImageFromMemory()
     }
     else
     {
-//        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
         Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
@@ -1682,28 +1235,9 @@ const Map<String, Texture*> & Texture::GetTextureMap()
 
 int32 Texture::GetDataSize()
 {
-    int32 allocSize = 0;
-    switch (format) 
-    {
-        case FORMAT_RGBA8888:
-            allocSize = width * height * 4;
-            break;
-        case FORMAT_RGBA4444:
-            allocSize = width * height * 2;
-            break;
-        case FORMAT_RGB565:
-            allocSize = width * height * 2;
-            break;
-        case FORMAT_A8:
-            allocSize = width * height;
-            break;
-        case FORMAT_A16:
-            allocSize = width * height * 2;
-            break;
-        default:
-            break;
-    }
+    DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     
+    int32 allocSize = width * height * GetPixelFormatSizeInBytes(format);
     return allocSize;
 }
 
@@ -1750,7 +1284,42 @@ bool Texture::IsPinkPlaceholder()
 	return ((pinkPlaceholder != 0) && (pinkPlaceholder == this));
 }
 
+PixelFormatDescriptor Texture::pixelDescriptors[FORMAT_COUNT];
+void Texture::InitializePixelFormatDescriptors()
+{
+    SetPixelDescription(FORMAT_INVALID, String("WRONG FORMAT"), 0, 0, 0, 0);
+    SetPixelDescription(FORMAT_RGBA8888, String("FORMAT_RGBA8888"), 32, GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA5551, String("FORMAT_RGBA5551"), 16, GL_UNSIGNED_SHORT_5_5_5_1, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA4444, String("FORMAT_RGBA4444"), 16, GL_UNSIGNED_SHORT_4_4_4_4, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGB888, String("FORMAT_RGB888"), 24, GL_UNSIGNED_BYTE, GL_RGB, GL_RGB);
+    SetPixelDescription(FORMAT_RGB565, String("FORMAT_RGB565"), 16, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, GL_RGB);
+    SetPixelDescription(FORMAT_A8, String("FORMAT_A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA);
+    SetPixelDescription(FORMAT_A16, String("FORMAT_A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
+    SetPixelDescription(FORMAT_PVR4, String("FORMAT_PVR4"), 4, 0, 0, 0);
+    SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, 0, 0, 0);
 
+    SetPixelDescription(FORMAT_RGBA16161616, String("FORMAT_RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
+    SetPixelDescription(FORMAT_RGBA32323232, String("FORMAT_RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
+}
 
+void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)
+{
+    DVASSERT((0 <= index) && (index < FORMAT_COUNT));
+    
+    pixelDescriptors[index].formatID = index;
+    pixelDescriptors[index].name = name;
+    pixelDescriptors[index].pixelSize = size;
+    pixelDescriptors[index].format = format;
+    pixelDescriptors[index].internalformat = internalFormat;
+    pixelDescriptors[index].type = type;
+}
+
+PixelFormatDescriptor Texture::GetPixelFormatDescriptor(PixelFormat formatID)
+{
+    DVASSERT((0 <= formatID) && (formatID < FORMAT_COUNT));
+    return pixelDescriptors[formatID];
+}
+
+    
 
 };

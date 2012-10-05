@@ -135,18 +135,40 @@ static const String BlendModeNames[] =
 enum PixelFormat
 {
     FORMAT_INVALID = 0,
-    FORMAT_RGBA8888 = 1,		
-    FORMAT_RGB565,				 
-    FORMAT_RGBA4444,			
+    FORMAT_RGBA8888 = 1,
+    FORMAT_RGBA5551,
+    FORMAT_RGBA4444,
+    FORMAT_RGB888,
+    FORMAT_RGB565,
     FORMAT_A8,
+    FORMAT_A16,
     FORMAT_PVR4,
     FORMAT_PVR2,
-    FORMAT_A16,
     
+    FORMAT_RGBA16161616,
+    FORMAT_RGBA32323232,
+
+    FORMAT_COUNT,
     FORMAT_CLOSEST = 256
 };
 
+struct PixelFormatDescriptor
+{
+    GLenum format;
+    GLenum internalformat;
+    GLenum type;
     
+    String name;
+    int32 pixelSize;
+    PixelFormat formatID;
+    
+    PixelFormatDescriptor()
+    :   format(0), internalformat(0), type(0), pixelSize(0), formatID(FORMAT_INVALID)
+    {
+        
+    }
+};
+
 #if defined(__DAVAENGINE_OPENGL__)
 static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
 {
