@@ -2078,6 +2078,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                         uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
                     }
                 }
+                formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
             }
         }
 #if !defined(__DAVAENGINE_IPHONE__)
@@ -2229,20 +2230,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
 
     
 #if defined (__DAVAENGINE_OPENGL__)
-    
-    //PVR files are never row aligned.
-    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 
-    //Generate a texture
-    RENDER_VERIFY(glGenTextures(1, &texture->id));
-    
-    //Initialise a texture target.
-    GLint eTarget=GL_TEXTURE_2D;
-    
-    if(sTextureHeader.u32NumFaces>1)
-    {
-        eTarget=GL_TEXTURE_CUBE_MAP;
-    }
+    texture->GenerateID();
     
     //Check if this is a texture array.
     if(sTextureHeader.u32NumSurfaces>1)
@@ -2252,18 +2241,12 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
         return false;
     }
     
-    //Bind the 2D texture
-    int32 savedTexture = RenderManager::Instance()->HWglGetLastTextureID();
-    RenderManager::Instance()->HWglBindTexture(texture->id);
-    
     //Initialise the current MIP size.
     uint32 uiCurrentMIPSize=0;
     
-    //Loop through the faces
     //Check if this is a cube map.
     if(sTextureHeader.u32NumFaces>1)
     {
-        eTarget=GL_TEXTURE_CUBE_MAP_POSITIVE_X;
         Logger::Warning("PVRTTextureLoadFromPointer warning: GL_TEXTURE_CUBE_MAP_POSITIVE_X");
     }
     
@@ -2288,9 +2271,6 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     //Loop through all MIP levels.
     if (bIsLegacyPVR)
     {
-        //Temporary texture target.
-        GLint eTextureTarget=eTarget;
-        
         //Loop through all the faces.
         for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
         {
@@ -2303,7 +2283,9 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                 //Upload the texture
                 if (bIsCompressedFormat && bIsCompressedFormatSupported)
                 {
-                    RENDER_VERIFY(glCompressedTexImage2D(eTextureTarget,uiMIPLevel,formatDescriptor.internalformat,u32MIPWidth, u32MIPHeight, 0, uiCurrentMIPSize, pTempData));
+#if defined (__DAVAENGINE_IPHONE__)
+                    texture->TexCompressedImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, uiCurrentMIPSize, pTempData);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
                 }
                 else
                 {
@@ -2317,8 +2299,6 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                 u32MIPHeight=PVRT_MAX(1,u32MIPHeight>>1);
             }
             
-            //Increase the texture target.
-            eTextureTarget++;
             
             //Reset the current MIP dimensions.
             u32MIPWidth=psTempHeader->u32Width;
@@ -2332,21 +2312,20 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             //Get the current MIP size.
             uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
 
-            GLint eTextureTarget=eTarget;
             for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
             {
                 //Upload the texture
                 if (bIsCompressedFormat && bIsCompressedFormatSupported)
                 {
-                    RENDER_VERIFY(glCompressedTexImage2D(eTextureTarget,uiMIPLevel,formatDescriptor.internalformat,u32MIPWidth, u32MIPHeight, 0, uiCurrentMIPSize, pTempData));
+#if defined (__DAVAENGINE_IPHONE__)
+                    texture->TexCompressedImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, uiCurrentMIPSize, pTempData);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
                 }
                 else
                 {
                     texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData);
-//                    glTexImage2D(eTextureTarget,uiMIPLevel,eTextureInternalFormat, u32MIPWidth, u32MIPHeight, 0, eTextureFormat, eTextureType, pTempData);
                 }
                 pTempData+=uiCurrentMIPSize;
-                eTextureTarget++;
             }
             
             //Reduce the MIP Size.
@@ -2390,14 +2369,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
 //        }
 //    }
     
-    RenderManager::Instance()->HWglBindTexture(savedTexture);
     
-    
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     texture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
-#else //Non ES platforms
-    texture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
-#endif //PLATFORMS
 
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     

@@ -166,14 +166,8 @@ Texture::Texture()
     isMimMapTexture = false;
 	isAlphaPremultiplied = false;
     
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    wrapModeS = WRAP_CLAMP_TO_EDGE; 
+    wrapModeS = WRAP_CLAMP_TO_EDGE;
     wrapModeT = WRAP_CLAMP_TO_EDGE;
-#else //Non ES platforms
-    wrapModeS = WRAP_CLAMP; 
-    wrapModeT = WRAP_CLAMP;
-#endif //PLATFORMS
-
 
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	savedData = NULL;
@@ -260,24 +254,13 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(id);
 
+    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
+
 
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     if(FORMAT_INVALID != format)
     {
-#if defined (__DAVAENGINE_IPHONE__)
         RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
-#else //#if defined (__DAVAENGINE_IPHONE__)
-        if(FORMAT_PVR2 == format || FORMAT_PVR4 == format)
-        {
-            RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[FORMAT_RGBA8888].internalformat,
-                                       width, height, 0, pixelDescriptors[FORMAT_RGBA8888].format, pixelDescriptors[FORMAT_RGBA8888].type, _data));
-        }
-        else
-        {
-            RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
-        }
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-        
     }
 	
 	if(0 != saveId)
@@ -348,6 +331,28 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 	id->UnlockRect(level);
 #endif 
 }
+    
+#if defined (__DAVAENGINE_IPHONE__)
+void Texture::TexCompressedImage(int32 level, uint32 width, uint32 height, uint32 mipMapSize, const void * _data)
+{
+    int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
+    
+    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
+
+	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
+    if(FORMAT_INVALID != format)
+    {
+        RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, mipMapSize, _data));
+    }
+	
+	if(0 != saveId)
+	{
+		RenderManager::Instance()->HWglBindTexture(saveId);
+	}
+}
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+ 
 
 Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint32 _width, uint32 _height)
 {
@@ -360,17 +365,9 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	texture->format = _format;
 
 #if defined(__DAVAENGINE_OPENGL__)
-	for (int i = 0; i < 10; i++) 
-	{
-		RENDER_VERIFY(glGenTextures(1, &texture->id));
-		if(texture->id != 0)
-		{
-			break;
-		}
-		Logger::Error("TEXTURE %d GENERATE ERROR: %d", i, glGetError());
-	}	
-
-
+    
+    texture->GenerateID();
+	
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(texture->id);
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
@@ -400,14 +397,9 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,  data);
 */
-	GLint wrapMode = 0;
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	wrapMode = GL_CLAMP_TO_EDGE;
-#else //Non ES platforms
-	wrapMode = GL_CLAMP;
-#endif //PLATFORMS
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
+
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	if (isMipmapGenerationEnabled)
 	{
 		texture->GenerateMipmaps();
@@ -477,9 +469,6 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	case WRAP_CLAMP_TO_EDGE:
 		glWrapS = GL_CLAMP_TO_EDGE;
 		break;
-	case WRAP_CLAMP:
-		glWrapS = GL_CLAMP_TO_EDGE;
-		break;
 	case WRAP_REPEAT:
 		glWrapS = GL_REPEAT;
 		break;
@@ -490,9 +479,6 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	switch(wrapT)
 	{
 		case WRAP_CLAMP_TO_EDGE:
-			glWrapT = GL_CLAMP_TO_EDGE;
-			break;
-		case WRAP_CLAMP:
 			glWrapT = GL_CLAMP_TO_EDGE;
 			break;
 		case WRAP_REPEAT:
@@ -1093,15 +1079,7 @@ void Texture::Invalidate()
 
 void Texture::InvalidateFromSavedData()
 {
-	for (int i = 0; i < 10; i++) 
-	{
-		RENDER_VERIFY(glGenTextures(1, &id));
-		if(id != 0)
-		{
-			break;
-		}
-		Logger::Error("TEXTURE %d GENERATE ERROR: %d", i, glGetError());
-	}
+    GenerateID();
 
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(id);
@@ -1116,17 +1094,14 @@ void Texture::InvalidateFromSavedData()
                                    pixelDescriptors[format].type, (GLvoid *)savedData));
     }
     
-	GLint wrapMode = GL_CLAMP_TO_EDGE;
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	if (isMimMapTexture)
 	{
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
 		GenerateMipmaps();
 	}
 	else
 	{
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 	}
@@ -1295,9 +1270,15 @@ void Texture::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_RGB565, String("FORMAT_RGB565"), 16, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, GL_RGB);
     SetPixelDescription(FORMAT_A8, String("FORMAT_A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA);
     SetPixelDescription(FORMAT_A16, String("FORMAT_A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA);
+    
+#if defined (__DAVAENGINE_IPHONE__)
+    SetPixelDescription(FORMAT_PVR4, String("FORMAT_PVR4"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG);
+    SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
+#else //#if defined (__DAVAENGINE_IPHONE__)
     SetPixelDescription(FORMAT_PVR4, String("FORMAT_PVR4"), 4, 0, 0, 0);
     SetPixelDescription(FORMAT_PVR2, String("FORMAT_PVR2"), 2, 0, 0, 0);
-
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+    
     SetPixelDescription(FORMAT_RGBA16161616, String("FORMAT_RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA);
     SetPixelDescription(FORMAT_RGBA32323232, String("FORMAT_RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA);
 }
@@ -1320,6 +1301,21 @@ PixelFormatDescriptor Texture::GetPixelFormatDescriptor(PixelFormat formatID)
     return pixelDescriptors[formatID];
 }
 
-    
+void Texture::GenerateID()
+{
+#if defined(__DAVAENGINE_OPENGL__)
+	for (int32 i = 0; i < 10; i++)
+	{
+		glGenTextures(1, &id);
+		if(0 != id)
+		{
+			break;
+		}
+		Logger::Error("TEXTURE %d GENERATE ERROR: %d", i, glGetError());
+	}
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+
+}
+
 
 };
