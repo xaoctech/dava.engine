@@ -65,10 +65,10 @@ public:
 	bool IsQueued();
 
 	void SetManager(ImposterManager * manager);
-	void SetSharedFBO(SharedFBO * fbo);
 
 	float32 GetPriority();
 	
+	void ZeroOutBlock();
 
 private:
 	void AskForRedraw();
@@ -93,7 +93,6 @@ private:
 
 	ImposterManager * manager;
 
-	SharedFBO * fbo;
 	SharedFBO::Block * block;
 
 	void RecreateFbo(const Vector2 & size);

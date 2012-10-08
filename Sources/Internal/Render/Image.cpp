@@ -34,6 +34,7 @@
 #include "Render/LibPngHelpers.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/Texture.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
 #include <CoreGraphics/CoreGraphics.h>
@@ -54,28 +55,6 @@ bool Image::IsAlphaPremultiplicationEnabled()
 void Image::EnableAlphaPremultiplication(bool isEnabled)
 {
     isAlphaPremultiplicationEnabled = isEnabled;
-}
-
-
-uint32 Image::GetFormatSize(PixelFormat format)
-{
-	switch(format)
-	{
-	case FORMAT_RGBA8888:
-		return 4;
-	case FORMAT_RGB565: 
-		return 2;
-	case FORMAT_RGBA4444:
-		return 2;
-	case FORMAT_A8:
-		return 1;
-    case FORMAT_A16:
-        return 2;
-	default:
-		Logger::Error("Image::Create trying to retrieve size of wrong format");
-		return 0;
-	}
-	return 0;
 }
 
 Image::Image()
@@ -99,7 +78,7 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 	image->height = height;
 	image->format = format;
     
-    int32 formatSize = GetFormatSize(format);
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
     if(formatSize)
     {
         image->data = new uint8[width * height * formatSize];
@@ -109,310 +88,11 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
         Logger::Error("Image::Create trying to create image with wrong format");
     }
     
-//	switch(format)
-//	{
-//		case FORMAT_RGBA8888:
-//			image->data = new uint8[width * height * 4];
-//			break;
-//		case FORMAT_RGB565: 
-//			image->data = new uint8[width * height * 2];
-//			break;
-//		case FORMAT_RGBA4444:
-//			image->data = new uint8[width * height * 2];
-//			break;
-//        case FORMAT_A8:
-//			image->data = new uint8[width * height];
-//			break;
-//        case FORMAT_A16:
-//			image->data = new uint8[width * height * 2];
-//			break;
-//		default:
-//			Logger::Error("Image::Create trying to create image with wrong format");
-//			break;
-//	}
 	return image;
 }
 
-#if 0
-Vector2 Image::GetImageSize(const String & pathName)
-{
-	
-	CGImageRef image;
-    CGDataProviderRef provider;
-	
-	File *inFile = File::Create(pathName, File::READ|File::OPEN);
-	uint32 fileSize = inFile->GetSize();
-	uint8 * bytes = new uint8[fileSize];
-	uint32 dataRead = inFile->Read(bytes, fileSize);
-	SafeRelease(inFile);
-	if(dataRead != fileSize)
-	{
-		return Vector2();
-	}
-	
-	
-	provider = CGDataProviderCreateWithData(NULL, bytes, fileSize, NULL);
-    image = CGImageCreateWithPNGDataProvider (provider, NULL, false, kCGRenderingIntentDefault);
-	if (!image)
-	{
-		image = CGImageCreateWithJPEGDataProvider (provider, NULL, false, kCGRenderingIntentDefault);
-	}
-	CGDataProviderRelease (provider);
-	
-	if(image == 0) 
-	{
-		SafeDeleteArray(bytes);
-		
-		return Vector2();
-	}
-	
-	Vector2 size = Vector2((float32)CGImageGetWidth(image), (float32) CGImageGetHeight(image));
-	CGImageRelease (image);
-	SafeDeleteArray(bytes);
-	return size;
-}
 
-
-Image * Image::CreateFromFile(const String & pathName)
-{
-	int32					width, height;
-	CGContextRef			context = 0;
-	uint8*					data = 0;
-	CGColorSpaceRef			colorSpace;
-	uint8*					tempData;
-	unsigned int*			inPixel32;
-	unsigned short*			outPixel16;
-	bool					hasAlpha;
-	CGImageAlphaInfo		info;
-	CGAffineTransform		transform;
-	CGSize					imageSize;
-	PixelFormat		pixelFormat;
-//	bool					sizeToFit = false;
-	
-	CGImageRef image;
-    CGDataProviderRef provider;
-	
-//	Logger::Debug("				Loading Image: %s", pathName.c_str());
-	File *inFile = File::Create(pathName, File::READ|File::OPEN);
-	if (!inFile)return 0;
-	
-	
-	uint32 fileSize = inFile->GetSize();
-	uint8 * bytes = new uint8[fileSize];
-	uint32 dataRead = inFile->Read(bytes, fileSize);
-	SafeRelease(inFile);
-	if(dataRead != fileSize)
-	{
-		return 0;
-	}
-	
-	
-	provider = CGDataProviderCreateWithData(NULL, bytes, fileSize, NULL);
-    image = CGImageCreateWithPNGDataProvider (provider, NULL, false, kCGRenderingIntentDefault);
-	if (!image)
-	{
-		image = CGImageCreateWithJPEGDataProvider (provider, NULL, false, kCGRenderingIntentDefault);
-	}
-	CGDataProviderRelease (provider);
-	
-	if(image == 0) 
-	{
-		SafeDeleteArray(bytes);
-
-		return 0;
-	}
-	
-	info = CGImageGetAlphaInfo(image);
-	hasAlpha = ((info == kCGImageAlphaPremultipliedLast) || (info == kCGImageAlphaPremultipliedFirst) || (info == kCGImageAlphaLast) || (info == kCGImageAlphaFirst) ? true : false);
-	
-    CGColorSpaceRef imageColorSpace = CGImageGetColorSpace(image);
     
-    if(CGColorSpaceGetNumberOfComponents(imageColorSpace) >= 3) 
-	{
-		if(hasAlpha)pixelFormat = FORMAT_RGBA8888;
-		else pixelFormat = FORMAT_RGB565;
-	} else 
-		pixelFormat = FORMAT_A8;
-	
-	imageSize = CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image));
-	transform = CGAffineTransformIdentity;
-//	Logger::Debug("				Image size: %f x %f", imageSize.width, imageSize.height);
-
-	width = imageSize.width;
-//	int i;	
-//	if((width != 1) && (width & (width - 1))) 
-//	{
-//		i = 1;
-//		while((sizeToFit ? 2 * i : i) < width)
-//			i *= 2;
-//		width = i;
-//	}
-	height = imageSize.height;
-//	if((height != 1) && (height & (height - 1))) 
-//	{
-//		i = 1;
-//		while((sizeToFit ? 2 * i : i) < height)
-//			i *= 2;
-//		height = i;
-//	}
-//	while((width > MAX_WIDTH) || (height > MAX_HEIGHT)) 
-//	{
-//		width /= 2;
-//		height /= 2;
-//		transform = CGAffineTransformScale(transform, 0.5, 0.5);
-//		imageSize.width *= 0.5;
-//		imageSize.height *= 0.5;
-//	}
-	switch(pixelFormat) 
-	{		
-		case FORMAT_RGBA8888:
-		case FORMAT_RGBA4444:
-			colorSpace = CGColorSpaceCreateDeviceRGB();
-			data = new uint8[height * width * 4];
-			context = CGBitmapContextCreate(data, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
-			CGColorSpaceRelease(colorSpace);
-			break;
-		case FORMAT_RGB565:
-			colorSpace = CGColorSpaceCreateDeviceRGB();
-			data = new uint8[height * width * 4];
-			context = CGBitmapContextCreate(data, width, height, 8, 4 * width, colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big);
-			CGColorSpaceRelease(colorSpace);
-			break;
-			
-		case FORMAT_A8:
-			colorSpace = CGColorSpaceCreateDeviceRGB();
-			data = new uint8[height * width * 4];
-			context = CGBitmapContextCreate(data, width, height, 8, 4 * width, colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big);
-			CGColorSpaceRelease(colorSpace);
-
-			//data = new uint8[height * width * 4];
-			//context = CGBitmapContextCreate(data, width, height, 8, width, NULL, kCGImageAlphaOnly);
-			break;		
-            
-        case FORMAT_A16:
-            DVASSERT(false && "Need to realize.")
-            return 0;
-            
-		default:
-			return 0;
-	}
-	
-	
-	CGContextClearRect(context, CGRectMake(0, 0, width, height));
-	CGContextTranslateCTM(context, 0, height - imageSize.height);
-	
-	if(!CGAffineTransformIsIdentity(transform))
-		CGContextConcatCTM(context, transform);
-	
-	CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image)), image);
-	
-	//Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGGBBBBB"
-	if(pixelFormat == FORMAT_RGB565) 
-	{
-		tempData = new uint8[height * width * 2];
-		inPixel32 = (unsigned int*)data;
-		outPixel16 = (unsigned short*)tempData;
-		for(int32 i = 0; i < width * height; ++i, ++inPixel32)
-			*outPixel16++ = ((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | ((((*inPixel32 >> 8) & 0xFF) >> 2) << 5) | ((((*inPixel32 >> 16) & 0xFF) >> 3) << 0);
-		SafeDeleteArray(data);
-		data = tempData;
-	}
-    
-    if(pixelFormat == FORMAT_A8) 
-	{
-		tempData = new uint8[height * width];
-		inPixel32 = (unsigned int*)data;
-		uint8 * outPixel8 = (uint8*)tempData;
-		
-        for(int32 i = 0; i < width * height; ++i, ++inPixel32)
-			*outPixel8++ = *inPixel32;
-        
-		SafeDeleteArray(data);
-		data = tempData;
-	}
-	
-	/*if(pixelFormat == FORMAT_RGBA8888) 
-	 {
-	 //		unsigned char * inAlphaData = (unsigned char *)alphaData;
-	 unsigned int * inOutPixel32 = (unsigned int*)data;
-	 for(i = 0; i < width * height; ++i)
-	 {
-	 unsigned int pixel = *inOutPixel32;
-	 //pixel = pixel & (0xFFFFFFFF);
-	 
-	 unsigned int a = (pixel >> 24) & 0xFF;
-	 unsigned int r = (pixel >> 16) & 0xFF;
-	 unsigned int g = (pixel >> 8) & 0xFF;
-	 unsigned int b = pixel & 0xFF;
-	 
-	 if (a != 0)
-	 {
-	 r = r * 255 / a;
-	 g = g * 255 / a;
-	 b = b * 255 / a;
-	 }
-	 *inOutPixel32 = ((a) << 24) | (r << 16) | (g << 8) | b;
-	 inOutPixel32++;
-	 //	*inOutPixel32 = ((*inAlphaData) << 24) | pixel;
-	 //	unsigned int a = *inAlphaData;
-	 //	inAlphaData++;
-	 }
-	 }*/
-	
-	if(pixelFormat == FORMAT_RGBA4444) 
-	{
-		tempData = new uint8[height * width * 2];
-		inPixel32 = (unsigned int*)data;
-		outPixel16 = (unsigned short*)tempData;
-		
-		/*for(i = 0; i < width * height; ++i, ++inPixel32)
-		 *outPixel16++ = ((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | ((((*inPixel32 >> 8) & 0xFF) >> 2) << 5) | ((((*inPixel32 >> 16) & 0xFF) >> 3) << 0);
-		 */
-		
-		for(int32 i = 0; i < width * height; ++i)
-		{
-			uint32 pixel = *inPixel32;
-			//pixel = pixel & (0xFFFFFFFF);
-			
-			uint32 a = (pixel >> 24) & 0xFF;
-			uint32 r = (pixel >> 16) & 0xFF;
-			uint32 g = (pixel >> 8) & 0xFF;
-			uint32 b = pixel & 0xFF;
-			
-			/* disable premultiplication
-			 if (a != 0)
-			 {
-			 r = r * 255 / a;
-			 g = g * 255 / a;
-			 b = b * 255 / a;
-			 }*/
-			r >>= 4;
-			g >>= 4;
-			b >>= 4;
-			a >>= 4;
-			
-			*outPixel16 = ((b) << 12) | (g << 8) | (r << 4) | a;
-			outPixel16 ++;
-			inPixel32++;
-		}
-		
-		SafeDeleteArray(data);
-		data = tempData;
-	}
-
-	CGContextRelease(context);
-	CGImageRelease (image);
-
-	SafeDeleteArray(bytes);
-
-	Image * davaImage = new Image();
-	davaImage->width = width;
-	davaImage->height = height;
-	davaImage->data = (uint8*)data;
-	davaImage->format = pixelFormat;
-	return davaImage;
-}
-#endif 
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
 
@@ -465,7 +145,7 @@ void Image::Resize(int32 newWidth, int32 newHeight)
     if(newWidth>0 && newHeight>0)
     {
         uint8 * newData = NULL;
-        uint8 formatSize = GetFormatSize(format);
+        uint8 formatSize = Texture::GetPixelFormatSizeInBytes(format);
         
         if(formatSize>0)
         {
