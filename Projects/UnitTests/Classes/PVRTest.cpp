@@ -86,7 +86,7 @@ Sprite * PVRTest::CreateSpriteFromTexture(const String &texturePathname)
     Texture *texture = Texture::CreateFromFile(texturePathname);
     if(texture)
     {
-        createdSprite = Sprite::CreateFromTexture(texture, 0, 0, texture->GetWidth(), texture->GetHeight());
+        createdSprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->GetWidth(), (float32)texture->GetHeight());
         texture->Release();
     }
     
@@ -177,14 +177,14 @@ PVRTest::CompareResult PVRTest::CompareSprites(Sprite *first, Sprite *second)
     CompareResult compareResult = {0};
 
     
-    int32 imageSizeInBytes = first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(firstComparer->format);
+    int32 imageSizeInBytes = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(firstComparer->format));
 
     int32 step = 1;
     int32 startIndex = 0;
     
     if(FORMAT_A8 == formats[currentTest])
     {
-        compareResult.bytesCount = first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8);
+        compareResult.bytesCount = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8));
         step = 4;
         startIndex = 3;
     }
