@@ -129,7 +129,9 @@ void ImposterManager::ProcessQueue()
 			node->UpdateImposter();
 		}
 
-		BindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
+#if defined(__DAVAENGINE_OPENGL__)
+		RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 		camera->Set();
 	}
 }

@@ -790,7 +790,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //#else //Non ES platforms
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboViewFramebuffer));
 //#endif //PLATFORMS
-        BindFBO(fboViewFramebuffer);
+        HWglBindFBO(fboViewFramebuffer);
 
         SetViewport(Rect(0, 0, -1, -1), true);
 
@@ -807,7 +807,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //#else //Non ES platforms
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, renderTarget->GetTexture()->fboID));
 //#endif //PLATFORMS
-		BindFBO(renderTarget->GetTexture()->fboID);
+		HWglBindFBO(renderTarget->GetTexture()->fboID);
 #if defined(__DAVAENGINE_ANDROID__)
         renderTarget->GetTexture()->renderTargetModified = true;
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -846,7 +846,7 @@ void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
 	//IdentityModelMatrix();
 	//IdentityMappingMatrix();
-	BindFBO(renderTarget->fboID);
+	HWglBindFBO(renderTarget->fboID);
 	RemoveClip();
 }
 
@@ -1072,7 +1072,79 @@ void RenderManager::AttachRenderData()
 //}
 //
 
+    
+    
+int32 RenderManager::HWglGetLastTextureID()
+{
+    return lastBindedTexture;
 
+    
+//#if defined(__DAVAENGINE_ANDROID__)
+//    return lastBindedTexture;
+//#else //#if defined(__DAVAENGINE_ANDROID__)
+//    int32 saveId = 0;
+//    glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
+//    //    GLenum err = glGetError();
+//    //    if (err != GL_NO_ERROR)
+//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
+//    return saveId;
+//#endif //#if defined(__DAVAENGINE_ANDROID__)
+}
+
+void RenderManager::HWglBindTexture(int32 tId)
+{
+    if(0 != tId)
+    {
+        glBindTexture(GL_TEXTURE_2D, tId);
+        
+        //		GLenum err = glGetError();
+        //		if (err != GL_NO_ERROR)
+        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+        
+        lastBindedTexture = tId;
+    }
+}
+
+int32 RenderManager::HWglGetLastFBO()
+{
+    return lastBindedFBO;
+//    int32 saveFBO = 0;
+//#if defined(__DAVAENGINE_IPHONE__)
+//    RENDER_VERIFY(glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &saveFBO));
+//#elif defined(__DAVAENGINE_ANDROID__)
+//    saveFBO = lastBindedFBO;
+//#else //Non ES platforms
+//    glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO);
+//    
+//    //    GLenum err = glGetError();
+//    //    if (err != GL_NO_ERROR)
+//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
+//    
+//#endif //PLATFORMS
+//    
+//    return saveFBO;
+}
+
+void RenderManager::HWglBindFBO(const int32 fbo)
+{
+    //	if(0 != fbo)
+    {
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+        glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);	// Unbind the FBO for now
+#else //Non ES platforms
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);	// Unbind the FBO for now
+#endif //PLATFORMS
+        
+        //		GLenum err = glGetError();
+        //		if (err != GL_NO_ERROR)
+        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
+        
+        
+        lastBindedFBO = fbo;
+    }
+}
+
+    
 
 
 };

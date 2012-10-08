@@ -2303,8 +2303,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     }
     
     //Bind the 2D texture
-    int32 savedTexture = GetSavedTextureID();
-    BindTexture(texture->id);
+    int32 savedTexture = RenderManager::Instance()->HWglGetLastTextureID();
+    RenderManager::Instance()->HWglBindTexture(texture->id);
     
     //Initialise the current MIP size.
     uint32 uiCurrentMIPSize=0;
@@ -2449,7 +2449,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
     RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
 	
-    BindTexture(savedTexture);
+    RenderManager::Instance()->HWglBindTexture(savedTexture);
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     return true;
