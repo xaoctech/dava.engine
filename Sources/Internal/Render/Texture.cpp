@@ -257,8 +257,8 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 {
 #if defined(__DAVAENGINE_OPENGL__)
 
-	int saveId = GetSavedTextureID();
-	BindTexture(id);
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
 
 
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
@@ -282,7 +282,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 	
 	if(0 != saveId)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -371,8 +371,8 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	}	
 
 
-	int saveId = GetSavedTextureID();
-	BindTexture(texture->id);
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(texture->id);
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
 		
     
@@ -419,7 +419,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	
 	if (saveId != 0)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 	
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -468,8 +468,8 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
     
     RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
-	int saveId = GetSavedTextureID();
-	BindTexture(id);
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
 	
 	GLint glWrapS = 0;
 	switch(wrapS)
@@ -503,7 +503,7 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 
 	if (saveId != 0)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 #elif defined(__DAVAENGINE_DIRECTX9____)
 	
@@ -536,8 +536,8 @@ void Texture::GenerateMipmaps()
 
 #if defined(__DAVAENGINE_OPENGL__)
 
-	int saveId = GetSavedTextureID();
-	BindTexture(id);
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
 	
 #if defined(__DAVAENGINE_IPHONE__)
 	// definitelly works for the iPhone
@@ -557,7 +557,7 @@ void Texture::GenerateMipmaps()
 
 	if (saveId != 0)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 	
 	
@@ -575,8 +575,8 @@ void Texture::GeneratePixelesation()
     
 #if defined(__DAVAENGINE_OPENGL__)
     
-	int saveId = GetSavedTextureID();
-	BindTexture(id);
+	int saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
 	
 #if defined(__DAVAENGINE_IPHONE__)
 	// definitelly works for the iPhone
@@ -596,7 +596,7 @@ void Texture::GeneratePixelesation()
     
 	if (saveId != 0)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 	
 	
@@ -610,8 +610,8 @@ void Texture::UsePvrMipmaps()
 {
 	RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
-	int saveId = GetSavedTextureID();
-	BindTexture(id);
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
 
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE));
 	
@@ -620,7 +620,7 @@ void Texture::UsePvrMipmaps()
 	
 	if (saveId != 0)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -740,8 +740,8 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	
 #if defined(__DAVAENGINE_OPENGL__)
 
-	GLint saveFBO = GetSavedFBO();
-	GLint saveTexture = GetSavedTextureID();
+	GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
+	GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
 
 	Texture *tx = Texture::CreateFromData(format, NULL, dx, dy);
 	DVASSERT(tx);
@@ -749,7 +749,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 	tx->depthFormat = _depthFormat;
 	 
 	// Now setup a texture to render to
-	BindTexture(tx->id);
+	RenderManager::Instance()->HWglBindTexture(tx->id);
 
 	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
@@ -759,7 +759,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 		// Setup our FBO
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 	RENDER_VERIFY(glGenFramebuffers(1, &tx->fboID));
-	BindFBO(tx->fboID);
+	RenderManager::Instance()->HWglBindFBO(tx->fboID);
     
     if(DEPTH_RENDERBUFFER == _depthFormat)
     {
@@ -798,7 +798,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 		RENDER_VERIFY(glGenFramebuffersEXT(1, &tx->fboID));
 //		RENDER_VERIFY(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, tx->fboID));
-        BindFBO(tx->fboID);
+        RenderManager::Instance()->HWglBindFBO(tx->fboID);
 
 		// And attach it to the FBO so we can render to it
 		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tx->id, 0));
@@ -823,11 +823,11 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 #endif //PLATFORMS
 				
 
-	BindFBO(saveFBO);
+	RenderManager::Instance()->HWglBindFBO(saveFBO);
 				
 	if(saveTexture)
 	{
-		BindTexture(saveTexture);
+		RenderManager::Instance()->HWglBindTexture(saveTexture);
 	}
 #elif defined(__DAVAENGINE_DIRECTX9__)
 	
@@ -949,11 +949,11 @@ void Texture::SaveToSystemMemory()
 
 			if(savedData)
 			{
-				int saveFBO = GetSavedFBO();
-				BindFBO(fboID);
+				int32 saveFBO = RenderManager::Instance()->HWglGetLastFBO();
+				RenderManager::Instance()->HWglBindFBO(fboID);
 
-				int saveId = GetSavedTextureID();
-				BindTexture(id);
+				int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+				RenderManager::Instance()->HWglBindTexture(id);
 
 				RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
                 
@@ -963,11 +963,11 @@ void Texture::SaveToSystemMemory()
                     RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)savedData));
                 }
                 
-				BindFBO(saveFBO);
+				RenderManager::Instance()->HWglBindFBO(saveFBO);
 
 				if (saveId != 0)
 				{
-					BindTexture(saveId);
+					RenderManager::Instance()->HWglBindTexture(saveId);
 				}
 			}
             
@@ -1028,11 +1028,11 @@ void Texture::Invalidate()
 		InvalidateFromSavedData();
 		//////////////////////////////////////////////////////////////////////////
 
-		GLint saveFBO = GetSavedFBO();
-		GLint saveTexture = GetSavedTextureID();
+		GLint saveFBO = RenderManager::Instance()->HWglGetLastFBO();
+		GLint saveTexture = RenderManager::Instance()->HWglGetLastTextureID();
 
 		// Now setup a texture to render to
-		BindTexture(id);
+		RenderManager::Instance()->HWglBindTexture(id);
 
 		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
@@ -1054,7 +1054,7 @@ void Texture::Invalidate()
 		}
 #elif defined(__DAVAENGINE_MACOS__)
         RENDER_VERIFY(glGenFramebuffersEXT(1, &fboID));
-        BindFBO(fboID);
+        RenderManager::Instance()->HWglBindFBO(fboID);
         
 		// And attach it to the FBO so we can render to it
 		RENDER_VERIFY(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, id, 0));
@@ -1066,11 +1066,11 @@ void Texture::Invalidate()
 		}
 #endif 
 
-		BindFBO(saveFBO);
+		RenderManager::Instance()->HWglBindFBO(saveFBO);
 
 		if(saveTexture)
 		{
-			BindTexture(saveTexture);
+			RenderManager::Instance()->HWglBindTexture(saveTexture);
 		}
 	}
 	else if(savedData)
@@ -1103,8 +1103,8 @@ void Texture::InvalidateFromSavedData()
 		Logger::Error("TEXTURE %d GENERATE ERROR: %d", i, glGetError());
 	}
 
-	int saveId = GetSavedTextureID();
-	BindTexture(id);
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(id);
 
 	RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     
@@ -1133,7 +1133,7 @@ void Texture::InvalidateFromSavedData()
 
 	if (saveId != 0)
 	{
-		BindTexture(saveId);
+		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
 }
 
@@ -1166,10 +1166,10 @@ Image * Texture::ReadDataToImage()
     
     RenderManager::Instance()->LockNonMain();
     
-    int32 saveFBO = GetSavedFBO();
+    int32 saveFBO = RenderManager::Instance()->HWglGetLastFBO();
 
-    int32 saveId = GetSavedTextureID();
-    BindTexture(id);
+    int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+    RenderManager::Instance()->HWglBindTexture(id);
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     
@@ -1180,11 +1180,11 @@ Image * Texture::ReadDataToImage()
         RENDER_VERIFY(glReadPixels(0, 0, width, height, pixelDescriptors[format].format, pixelDescriptors[format].type, (GLvoid *)imageData));
     }
 
-    BindFBO(saveFBO);
+    RenderManager::Instance()->HWglBindFBO(saveFBO);
     
     if (saveId != 0)
     {
-        BindTexture(saveId);
+        RenderManager::Instance()->HWglBindTexture(saveId);
     }
     
     RenderManager::Instance()->UnlockNonMain();
