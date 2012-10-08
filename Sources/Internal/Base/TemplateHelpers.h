@@ -54,7 +54,11 @@ C DynamicTypeCheck(O* pObject)
 {
 #ifdef DAVA_DEBUG
 	C c = dynamic_cast<C>(pObject);
-	DVASSERT(c);
+	if (!c)
+	{//assert emulation )
+		int i = 0;
+		*((int*)i) = 0;
+	}
 	return c;
 #else
 	return static_cast<C>(pObject);
