@@ -506,7 +506,7 @@ public:
     
     int32 HWglGetLastFBO();
     void HWglBindFBO(const int32 fbo);
-    int32 lastBindedFBO = 0;
+    int32 lastBindedFBO;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     void RequestGLScreenShot() { needGLScreenShot = true; };
