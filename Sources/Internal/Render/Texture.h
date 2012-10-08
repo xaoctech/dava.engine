@@ -54,7 +54,6 @@ public:
 	enum TextureWrap
 	{
 		WRAP_CLAMP_TO_EDGE = 0,
-		WRAP_CLAMP,
 		WRAP_REPEAT,
 	};
 
@@ -176,7 +175,10 @@ public:
 	void GeneratePixelesation();
 	
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
-
+#if defined (__DAVAENGINE_IPHONE__)
+    void TexCompressedImage(int32 level, uint32 width, uint32 height, uint32 mipMapSize, const void * _data);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+    
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
 	void UsePvrMipmaps();
@@ -272,6 +274,9 @@ public:							// properties for fast access
     int32 GetDataSize();
     
     void ReleaseTextureData();
+
+    void GenerateID();
+    
     
 private:
 	static Map<String, Texture*> textureMap;	
