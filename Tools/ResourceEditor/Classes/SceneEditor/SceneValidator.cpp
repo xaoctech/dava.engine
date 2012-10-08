@@ -331,7 +331,7 @@ void SceneValidator::EnumerateSceneTextures()
         {
             String::size_type pvrPos = t->relativePathname.find(".pvr");
             if(String::npos != pvrPos)
-            {
+            {   //We need real info about textures size. In Editor on desktop pvr textures are decompressed to RGBA8888, so they have not real size.
                 sceneTextureMemory += LibPVRHelper::GetDataLength(t->relativePathname);
             }
             else 
