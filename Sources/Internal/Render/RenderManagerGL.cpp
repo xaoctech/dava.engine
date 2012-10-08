@@ -116,12 +116,61 @@ void RenderManager::Release()
 
 #endif //#if defined(__DAVAENGINE_WIN32__)
 
+    
+    
+bool IsGLExtensionSupported(const char * const extension)
+{
+    // The recommended technique for querying OpenGL extensions;
+    // from http://opengl.org/resources/features/OGLextensions/
+    const GLubyte *extensions = NULL;
+    const GLubyte *start;
+    GLubyte *where, *terminator;
+    
+    /* Extension names should not have spaces. */
+    where = (GLubyte *) strchr(extension, ' ');
+    if (where || *extension == '\0')
+        return 0;
+    
+    extensions = glGetString(GL_EXTENSIONS);
+    //    Logger::Warning("[EXT] %s", extensions);
+    
+    /* It takes a bit of care to be fool-proof about parsing the
+     OpenGL extensions string. Don't be fooled by sub-strings, etc. */
+    start = extensions;
+    for (;;) {
+        where = (GLubyte *) strstr((const char *) start, extension);
+        if (!where)
+            break;
+        terminator = where + strlen(extension);
+        if (where == start || *(where - 1) == ' ')
+            if (*terminator == ' ' || *terminator == '\0')
+                return true;
+        start = terminator;
+    }
+    
+    return false;
+}
+    
 void RenderManager::DetectRenderingCapabilities()
 {
 #if defined(__DAVAENGINE_MACOS__)
 	caps.isHardwareCursorSupported = true;
-#else
+#elif defined (__DAVAENGINE_IPHONE__)
 	caps.isHardwareCursorSupported = false;
+#endif
+
+#if defined(__DAVAENGINE_IPHONE__)
+    caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
+    caps.isETCSupported = false;
+    caps.isBGRA8888Supported = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
+#elif defined (__DAVAENGINE_MACOS__)
+    caps.isPVRTCSupported = false;
+    caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
+    caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
+    caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
+    caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
 #endif
 }
 

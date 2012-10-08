@@ -69,7 +69,12 @@ public:
     struct Caps
 	{
         Core::eRenderer renderer;
-		bool            isHardwareCursorSupported;
+		bool isHardwareCursorSupported;
+        bool isPVRTCSupported;
+        bool isETCSupported;
+        bool isBGRA8888Supported;
+        bool isFloat16Supported;
+        bool isFloat32Supported;
 	};
     
     struct Stats
