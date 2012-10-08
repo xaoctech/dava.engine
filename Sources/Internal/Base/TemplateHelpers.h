@@ -41,6 +41,25 @@
 namespace DAVA
 {
 
+template<class C, class O>
+C DynamicTypeCheck(O* pObject)
+{
+#ifdef DAVA_DEBUG
+	C c = dynamic_cast<C>(pObject);
+	DVASSERT(c);
+#else
+	return static_cast<C>(pObject);
+#endif
+}
+
+template<class C, class O>
+C IsPointerToExactClass(const O* pObject)
+{
+	COMPILER_ASSERT(!TypeTraits<C>::isPointer);//You should not use pointers for this method
+	return &typeid(*pObject) == &typeid(C);
+}
+
+
 template <int v>
 class Int2Type
 {
