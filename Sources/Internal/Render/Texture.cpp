@@ -260,7 +260,17 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     if(FORMAT_INVALID != format)
     {
-        RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
+        if(FORMAT_PVR2 == format || FORMAT_PVR4 == format)
+        {
+            int32 mipMapSize = height * width * pixelDescriptors[format].pixelSize / 8; //in bytes
+            if(mipMapSize < 32) mipMapSize = 32;
+                
+            RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, mipMapSize, _data));
+        }
+        else
+        {
+            RENDER_VERIFY(glTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, pixelDescriptors[format].format, pixelDescriptors[format].type, _data));
+        }
     }
 	
 	if(0 != saveId)
@@ -332,28 +342,6 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
 #endif 
 }
     
-#if defined (__DAVAENGINE_IPHONE__)
-void Texture::TexCompressedImage(int32 level, uint32 width, uint32 height, uint32 mipMapSize, const void * _data)
-{
-    int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-	RenderManager::Instance()->HWglBindTexture(id);
-    
-    RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
-
-	DVASSERT((0 <= format) && (format < FORMAT_COUNT));
-    if(FORMAT_INVALID != format)
-    {
-        RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, mipMapSize, _data));
-    }
-	
-	if(0 != saveId)
-	{
-		RenderManager::Instance()->HWglBindTexture(saveId);
-	}
-}
-#endif //#if defined (__DAVAENGINE_IPHONE__)
- 
-
 Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint32 _width, uint32 _height)
 {
     RenderManager::Instance()->LockNonMain();

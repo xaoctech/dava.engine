@@ -119,15 +119,17 @@ protected:
     static void ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, PVRHeaderV3& NewHeader);
     static bool IsGLExtensionSupported(const char * const extension);
 
-    static const PixelFormatDescriptor GetCompressedFormat(const uint64 PixelFormat);
-    static const PixelFormatDescriptor GetFloatTypeFormat(const uint64 PixelFormat);
-    static const PixelFormatDescriptor GetUnsignedByteFormat(const uint64 PixelFormat);
-    static const PixelFormatDescriptor GetUnsignedShortFormat(const uint64 PixelFormat);
+    static const PixelFormat GetCompressedFormat(const uint64 PixelFormat);
+    static const PixelFormat GetFloatTypeFormat(const uint64 PixelFormat);
+    static const PixelFormat GetUnsignedByteFormat(const uint64 PixelFormat);
+    static const PixelFormat GetUnsignedShortFormat(const uint64 PixelFormat);
     
-    static const PixelFormatDescriptor GetTextureFormat(const PVRHeaderV3& textureHeader);
+    static const PixelFormat GetTextureFormat(const PVRHeaderV3& textureHeader);
     
     static PVRHeaderV3 GetHeaderForFile(const String &filePathname);
     static PVRHeaderV3 GetHeaderForData(const uint8* pvrData, const int32 pvrDataSize);
+    
+    static bool IsFormatSupported(const PixelFormatDescriptor &format);
 };
     
 };
