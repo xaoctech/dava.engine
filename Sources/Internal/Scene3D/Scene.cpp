@@ -73,7 +73,6 @@ Scene::Scene()
 //    ,   forceLodLayer(-1)
 	,	shadowRect(0)
 	,	imposterManager(0)
-	,	enableImposters(true)
 	,	entityManager(0)
 	,	referenceNodeSuffixChanged(false)
 {   
@@ -747,7 +746,6 @@ void Scene::RegisterImposter(ImposterNode * imposter)
 	}
 	
 	imposterManager->Add(imposter);
-	imposter->RecursiveEnableImposters(enableImposters);
 }
 
 void Scene::UnregisterImposter(ImposterNode * imposter)
@@ -758,20 +756,6 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 	{
 		SafeRelease(imposterManager);
 	}
-}
-
-void Scene::EnableImposters(bool enable)
-{
-	if(enable != enableImposters)
-	{
-		enableImposters = enable;
-		RecursiveEnableImposters(enableImposters);
-	}
-}
-
-bool Scene::IsImposterEnabled()
-{
-	return enableImposters;
 }
 
 void Scene::SetReferenceNodeSuffix(const String & suffix)

@@ -200,7 +200,8 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
 			{
 				if (!m->GetTexture(Material::TEXTURE_DIFFUSE)->relativePathname.empty())
 				{
-                    m->SetTexture(Material::TEXTURE_DIFFUSE, ExportTexture(m->GetTextureName(Material::TEXTURE_DIFFUSE), errorLog));
+//                    m->SetTexture(Material::TEXTURE_DIFFUSE, ExportTexture(m->GetTextureName(Material::TEXTURE_DIFFUSE), errorLog));
+                    m->SetTexture(Material::TEXTURE_DIFFUSE, ExportTexture(m->GetTexture(Material::TEXTURE_DIFFUSE)->relativePathname, errorLog));
 				}
 			}
             
@@ -208,7 +209,8 @@ void SceneExporter::ExportMaterials(Scene *scene, Set<String> &errorLog)
 			{
 				if (!m->GetTexture(Material::TEXTURE_DECAL)->relativePathname.empty())
 				{
-                    m->SetTexture(Material::TEXTURE_DECAL, ExportTexture(m->GetTextureName(Material::TEXTURE_DECAL), errorLog));
+//                    m->SetTexture(Material::TEXTURE_DECAL, ExportTexture(m->GetTextureName(Material::TEXTURE_DECAL), errorLog));
+                    m->SetTexture(Material::TEXTURE_DECAL, ExportTexture(m->GetTexture(Material::TEXTURE_DECAL)->relativePathname, errorLog));
 				}
 			}
         }

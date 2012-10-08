@@ -22,7 +22,6 @@
 #include "SceneEditor/EditorSettings.h"
 #include "SceneEditor/SceneValidator.h"
 #include "SceneEditor/PVRConverter.h"
-#include "SceneEditor/PVRUtils.h"
 
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/ExporterScreen.h"
@@ -63,7 +62,6 @@ void GameCore::OnAppStarted()
 	
     new OutputManager();
 	new PVRConverter();
-    new PVRUtils();
     new SceneDataManager();
         
     
@@ -90,7 +88,6 @@ void GameCore::OnAppStarted()
 void GameCore::OnAppFinished()
 {
     SceneDataManager::Instance()->Release();
-    PVRUtils::Instance()->Release();
 	PVRConverter::Instance()->Release();
     OutputManager::Instance()->Release();
     SceneValidator::Instance()->Release();

@@ -669,7 +669,7 @@ void EditorHeightmap::DrawCopypasteRGBA(Image *src, Image *dst, Image *mask, con
     DVASSERT(src->height == dst->height);
     DVASSERT(src->format == dst->format);
     
-    int32 formatSize = Image::GetFormatSize(dst->format);
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(dst->format);
     
     //copy-paste
     uint8 *srcData = src->data;

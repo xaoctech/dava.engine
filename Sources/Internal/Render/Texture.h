@@ -54,7 +54,6 @@ public:
 	enum TextureWrap
 	{
 		WRAP_CLAMP_TO_EDGE = 0,
-		WRAP_CLAMP,
 		WRAP_REPEAT,
 	};
 
@@ -78,11 +77,15 @@ public:
 
 	// Main constructurs
 	
+    static void InitializePixelFormatDescriptors();
+
+    
 	/**
         \brief Return size of pixel format in bits 
         \returns size in bits, for example for FORMAT_RGBA8888 function will return 32.
      */
-	static int32 GetPixelFormatSize(PixelFormat format);
+	static int32 GetPixelFormatSizeInBytes(PixelFormat format);
+	static int32 GetPixelFormatSizeInBits(PixelFormat format);
 	/**
         \brief Return string representation of pixel format
         \returns string value describing pixel format
@@ -172,7 +175,10 @@ public:
 	void GeneratePixelesation();
 	
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
-
+#if defined (__DAVAENGINE_IPHONE__)
+    void TexCompressedImage(int32 level, uint32 width, uint32 height, uint32 mipMapSize, const void * _data);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+    
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
 	void UsePvrMipmaps();
@@ -201,6 +207,9 @@ public:
         \brief Check if texture was created by GetPinkPlaceholder()
      */
 	bool IsPinkPlaceholder();
+    
+    
+    static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
 public:							// properties for fast access
 
@@ -216,8 +225,6 @@ public:							// properties for fast access
 	virtual void Invalidate();
 	void InvalidateFromFile();
 	void InvalidateFromSavedData();
-
-	static int32 FormatMultiplier(PixelFormat format);
 
     void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
     void SaveData(uint8 * data, int32 dataSize);
@@ -267,6 +274,9 @@ public:							// properties for fast access
     int32 GetDataSize();
     
     void ReleaseTextureData();
+
+    void GenerateID();
+    
     
 private:
 	static Map<String, Texture*> textureMap;	
@@ -285,6 +295,9 @@ private:
     Image * ReadDataToImage();
 
 	static Texture * pinkPlaceholder;
+    
+    static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
+    static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
 };
     
 // Implementation of inline functions

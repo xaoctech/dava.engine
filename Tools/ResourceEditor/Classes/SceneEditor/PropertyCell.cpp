@@ -374,13 +374,6 @@ void PropertyFilepathCell::SetData(PropertyCellData *prop)
 void PropertyFilepathCell::OnButton(BaseObject * , void * , void * )
 {
     String pathToFile = GetOpenFileName(WStringToString(keyName->GetText()), GetPathname(), GetExtensionFilter());
-    
-    String extension = FileSystem::GetExtension(pathToFile);
-    if(0 == CompareStrings(".pvr", extension))
-    {
-        PVRConverter::Instance()->ConvertPvrToPng(pathToFile);
-    }
-    
     property->SetString(pathToFile);
     SetData(property);
     propertyDelegate->OnPropertyChanged(property);
