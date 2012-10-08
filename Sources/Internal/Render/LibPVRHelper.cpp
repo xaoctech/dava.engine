@@ -1630,39 +1630,6 @@ void LibPVRHelper::ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, 
 }
 
     
-bool LibPVRHelper::IsGLExtensionSupported(const char * const extension)
-{
-    // The recommended technique for querying OpenGL extensions;
-    // from http://opengl.org/resources/features/OGLextensions/
-    const GLubyte *extensions = NULL;
-    const GLubyte *start;
-    GLubyte *where, *terminator;
-    
-    /* Extension names should not have spaces. */
-    where = (GLubyte *) strchr(extension, ' ');
-    if (where || *extension == '\0')
-        return 0;
-    
-    extensions = glGetString(GL_EXTENSIONS);
-//    Logger::Warning("[EXT] %s", extensions);
-    
-    /* It takes a bit of care to be fool-proof about parsing the
-     OpenGL extensions string. Don't be fooled by sub-strings, etc. */
-    start = extensions;
-    for (;;) {
-        where = (GLubyte *) strstr((const char *) start, extension);
-        if (!where)
-            break;
-        terminator = where + strlen(extension);
-        if (where == start || *(where - 1) == ' ')
-            if (*terminator == ' ' || *terminator == '\0')
-                return true;
-        start = terminator;
-    }
-    
-    return false;
-}
-
 
 const PixelFormatDescriptor LibPVRHelper::GetCompressedFormat(const uint64 PixelFormat)
 {
@@ -1719,7 +1686,6 @@ const PixelFormatDescriptor LibPVRHelper::GetFloatTypeFormat(const uint64 PixelF
             formatDescriptor.type=GL_HALF_FLOAT;
             formatDescriptor.format = GL_RGBA;
             formatDescriptor.internalformat=GL_RGBA;
-//            formatDescriptor.formatID = FORMAT_INVALID;
             formatDescriptor.formatID = FORMAT_RGBA16161616;
             break;
         }
@@ -2000,23 +1966,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     
     //Get the OGLES format values.
     PixelFormatDescriptor formatDescriptor = GetTextureFormat(sTextureHeader);
-    
-    //Check supported texture formats.
-	bool bIsPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
-#if defined (__DAVAENGINE_IPHONE__)
-	bool bIsBGRA8888Supported  = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
-    
-    bool bIsFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
-	bool bIsFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
-
-#else //#if defined (__DAVAENGINE_IPHONE__)
-	bool bIsBGRA8888Supported  = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
-	bool bIsETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
-    
-    bool bIsFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
-	bool bIsFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
-#endif //#if !defined (__DAVAENGINE_IPHONE__)
-    
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
     
     //Check for compressed formats
     if (0 == formatDescriptor.format && 0 == formatDescriptor.type && 0 != formatDescriptor.internalformat)
@@ -2024,7 +1974,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
         if (formatDescriptor.internalformat>=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG && formatDescriptor.internalformat<=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
         {
             //Check for PVRTCI support.
-            if(bIsPVRTCSupported)
+            if(deviceCaps.isPVRTCSupported)
             {
                 bIsCompressedFormatSupported = bIsCompressedFormat = true;
             }
@@ -2133,7 +2083,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
 #if !defined(__DAVAENGINE_IPHONE__)
         else if (formatDescriptor.internalformat==GL_ETC1_RGB8_OES)
         {
-            if(bIsETCSupported)
+            if(deviceCaps.isETCSupported)
             {
                 bIsCompressedFormatSupported = bIsCompressedFormat = true;
             }
@@ -2238,7 +2188,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
         formatDescriptor.internalformat = GL_RGBA;
 #endif //#if defined (__DAVAENGINE_IPHONE__)
         
-		if(!bIsBGRA8888Supported)
+		if(!deviceCaps.isBGRA8888Supported)
 		{
 #if defined (__DAVAENGINE_IPHONE__)
 			Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_BGRA texture as extension GL_APPLE_texture_format_BGRA8888 is unsupported.\n");
@@ -2252,14 +2202,14 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     //Check for floating point textures
     if (formatDescriptor.type==GL_HALF_FLOAT)
     {
-        if(!bIsFloat16Supported)
+        if(!deviceCaps.isFloat16Supported)
         {
             Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_HALF_FLOAT_OES texture as extension GL_OES_texture_half_float is unsupported.\n");
         }
     }
     if (formatDescriptor.type==GL_FLOAT)
     {
-        if(!bIsFloat32Supported)
+        if(!deviceCaps.isFloat32Supported)
         {
             Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_FLOAT texture as extension GL_OES_texture_float is unsupported.\n");
         }
@@ -2440,16 +2390,15 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
 //        }
 //    }
     
+    RenderManager::Instance()->HWglBindTexture(savedTexture);
+    
+    
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    GLint wrapMode = GL_CLAMP_TO_EDGE;
+    texture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 #else //Non ES platforms
-    GLint wrapMode = GL_CLAMP;
+    texture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
 #endif //PLATFORMS
 
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
-	
-    RenderManager::Instance()->HWglBindTexture(savedTexture);
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     return true;
