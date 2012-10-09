@@ -237,7 +237,7 @@ void LandscapeEditorHeightmap::UpdateCopypasteTool(float32 timeElapsed)
                 Texture *tex = tilemaskTexture;
                 if(tex)
                 {
-                    tex->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), tilemaskImage->GetData());
+                    tex->TexImage(0, tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), tilemaskImage->GetData(), 0);
                     tex->GenerateMipmaps();
                     tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
                 }
