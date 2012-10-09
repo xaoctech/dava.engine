@@ -42,6 +42,7 @@
 #include "Scene3D/DataNode.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/TextureDescriptor.h"
 
 namespace DAVA
 {
@@ -259,7 +260,7 @@ bool SceneFile::ReadTexture()
 			texture->UsePvrMipmaps();
 		}
 
-		texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+		texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
 	}else
 	{
 		Logger::Debug("*** error reading texture: %s\n", textureDef.name);
@@ -374,7 +375,7 @@ bool SceneFile::ReadMaterial()
     for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
     {
         if (mat->GetTexture((Material::eTextureLevel)k))
-            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
     }
     
 	mat->indexOfRefraction = materialDef.indexOfRefraction;

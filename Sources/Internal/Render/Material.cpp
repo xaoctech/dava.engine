@@ -39,6 +39,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/LightNode.h"
+#include "Render/TextureDescriptor.h"
 
 namespace DAVA 
 {
@@ -411,7 +412,7 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
             textures[k] = Texture::CreateFromFile(names[k]);
             if (textures[k])
             {
-                textures[k]->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+                textures[k]->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
             }
         }
         
@@ -770,7 +771,7 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
     Texture *t = Texture::CreateFromFile(textureName);
     if(t)
     {
-		t->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+		t->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
         textures[level] = t;
         names[level] = textureName;
     }

@@ -33,6 +33,7 @@
 #include "Render/OGLHelpers.h"
 #include "FileSystem/Logger.h"
 #include "Utils/Utils.h"
+#include "Render/TextureDescriptor.h"
 
 #if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
 #include "libpvr/PVRTError.h"
@@ -2158,8 +2159,6 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     
     FREE(pDecompressedData);
     
-    texture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
-
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
     return true;

@@ -112,6 +112,8 @@
 		CCFF221415EE10E400363446 /* SwitchNode.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFF221215EE10E400363446 /* SwitchNode.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E82366CD16148EF9007B40D0 /* libPVRTexLib.a */; };
+		E856CF11162420420065E32B /* TextureDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E856CF0F162420420065E32B /* TextureDescriptor.cpp */; };
+		E856CF12162420420065E32B /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E856CF10162420420065E32B /* TextureDescriptor.h */; };
 		E85D7A4D1609C3EC00F3EBBE /* ParticleLayerLong.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */; };
 		E85D7A4E1609C3EC00F3EBBE /* ParticleLayerLong.h in Headers */ = {isa = PBXBuildFile; fileRef = E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */; };
 		E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F98C80161B171800B50BDA /* TexturePVR.cpp */; };
@@ -703,6 +705,8 @@
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
+		E856CF0F162420420065E32B /* TextureDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureDescriptor.cpp; sourceTree = "<group>"; };
+		E856CF10162420420065E32B /* TextureDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureDescriptor.h; sourceTree = "<group>"; };
 		E85D7A4B1609C3EC00F3EBBE /* ParticleLayerLong.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleLayerLong.cpp; sourceTree = "<group>"; };
 		E85D7A4C1609C3EC00F3EBBE /* ParticleLayerLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleLayerLong.h; sourceTree = "<group>"; };
 		E8F98C80161B171800B50BDA /* TexturePVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePVR.cpp; sourceTree = "<group>"; };
@@ -1744,6 +1748,8 @@
 				E8F98C95161B418100B50BDA /* LibPVRHelper.cpp */,
 				E8F98C96161B418100B50BDA /* LibPVRHelper.h */,
 				E8F98C97161B418100B50BDA /* PVRDefines.h */,
+				E856CF0F162420420065E32B /* TextureDescriptor.cpp */,
+				E856CF10162420420065E32B /* TextureDescriptor.h */,
 				E8F98C80161B171800B50BDA /* TexturePVR.cpp */,
 				FECFC19112E87E3000C71562 /* Texture.cpp */,
 				FECFC19212E87E3000C71562 /* Texture.h */,
@@ -2339,6 +2345,7 @@
 				C2F0A522161DEAEE003A2006 /* Observer.h in Headers */,
 				E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */,
 				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
+				E856CF12162420420065E32B /* TextureDescriptor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2669,6 +2676,7 @@
 				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
 				E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */,
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
+				E856CF11162420420065E32B /* TextureDescriptor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
