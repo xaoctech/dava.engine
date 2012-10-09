@@ -112,17 +112,16 @@ void PVRTest::TestFunction(PerfFuncData * data)
     ReloadSprites();
     
     CompareResult result = CompareSprites(decompressedPNGSprite, pvrSprite);
-    float32 differencePersentage = (float32)result.differenceCount / (float32)result.bytesCount * 100.f;
+    float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
     
     PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
-    data->testData.message = Format("\nFormat: %s\nAll Bytes: %d\nDifferent Bytes: %d\nDifference: %f%%\nCoincidence: %f%%",
-                                 formatDescriptor.name.c_str(), result.bytesCount, result.differenceCount,
-                                 differencePersentage, 100.f - differencePersentage);
+    data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
+                                 result.difference, differencePersentage, 100.f - differencePersentage);
     
     compareResultText->SetText(StringToWString(data->testData.message));
     Logger::Debug(data->testData.message.c_str());
     
-    TEST_VERIFY((differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS), &data->testData);
+    TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
     
     ++currentTest;
 }
@@ -194,10 +193,7 @@ PVRTest::CompareResult PVRTest::CompareSprites(Sprite *first, Sprite *second)
 
     for(int32 i = startIndex; i < imageSizeInBytes; i += step)
     {
-        if(firstComparer->GetData()[i] != secondComparer->GetData()[i])
-        {
-            ++compareResult.differenceCount;
-        }
+        compareResult.difference += abs(firstComparer->GetData()[i] - secondComparer->GetData()[i]);
     }
     
     String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
