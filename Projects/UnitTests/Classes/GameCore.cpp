@@ -255,10 +255,10 @@ void GameCore::FlushTestResults()
         return;
     }
 
-//    //TODO: test
-//    dbClient->DropCollection();
-//    dbClient->DropDatabase();
-//    //end of test
+    //TODO: test
+    dbClient->DropCollection();
+    dbClient->DropDatabase();
+    //end of test
     
     
     time_t logStartTime = time(0);
@@ -316,10 +316,12 @@ void GameCore::RegisterError(const String &command, const String &fileName, int3
         if(testData)
         {
             newError->testName = testData->name;
+            newError->testMessage = testData->message;
         }
         else
         {
             newError->testName = String("");
+            newError->testMessage = String("");
         }
         
         errors.push_back(newError);
@@ -374,9 +376,14 @@ MongodbObject * GameCore::CreateLogObject(const String &logName, const String &r
                 String errorString = String(Format("command: %s at file: %s at line: %d",
                                                    error->command.c_str(), error->filename.c_str(), error->line));
                 
-                if(0 < error->testName.length())
+                if(!error->testName.empty())
                 {
                     errorString += String(Format(", test: %s", error->testName.c_str()));
+                }
+                
+                if(!error->testMessage.empty())
+                {
+                    errorString += String(Format(", message: %s", error->testMessage.c_str()));
                 }
                 
                 

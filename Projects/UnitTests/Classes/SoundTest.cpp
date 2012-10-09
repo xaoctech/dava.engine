@@ -66,27 +66,27 @@ void SoundTest::CreateInvalidSounds(PerfFuncData * data)
 {
     Sound * sound = 0;
     sound = Sound::Create("", (Sound::eType)1111);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     sound = Sound::Create("?InvalidPath", Sound::TYPE_STATIC);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     
     sound = Sound::CreateFX("", Sound::TYPE_STATIC);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     sound = Sound::CreateFX("//InvalidPath", (Sound::eType)333);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     
     sound = Sound::CreateMusic("", (Sound::eType)222);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     sound = Sound::CreateMusic(":\\InvalidPath", Sound::TYPE_STREAMED);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     
 #ifdef __DAVAENGINE_IPHONE__
 	sound = Sound::CreateMusic("~res:/Sounds/null.caf", Sound::TYPE_STREAMED);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     SafeRelease(sound);
 #else
 	sound = Sound::CreateMusic("~res:/Sounds/null.ogg", Sound::TYPE_STREAMED);
-    TEST_VERIFY((sound == 0), &data->testData);
+    TEST_VERIFY(sound == 0);
     SafeRelease(sound);
 #endif
 }
@@ -96,16 +96,16 @@ void SoundTest::CreateValidSounds(PerfFuncData * data)
     Sound * sound = 0;
     
     sound = Sound::CreateFX("~res:/Sounds/click.wav", Sound::TYPE_STATIC);
-    TEST_VERIFY((sound != 0), &data->testData);
+    TEST_VERIFY(sound != 0);
     SafeRelease(sound);
     
 #ifdef __DAVAENGINE_IPHONE__
 	sound = Sound::CreateMusic("~res:/Sounds/map.caf", Sound::TYPE_STREAMED);
-    TEST_VERIFY((sound != 0), &data->testData);
+    TEST_VERIFY(sound != 0);
     SafeRelease(sound);
 #else
 	sound = Sound::CreateMusic("~res:/Sounds/map.ogg", Sound::TYPE_STREAMED);
-    TEST_VERIFY((sound != 0), &data->testData);
+    TEST_VERIFY(sound != 0);
     SafeRelease(sound);
 #endif
     
@@ -114,19 +114,19 @@ void SoundTest::CreateValidSounds(PerfFuncData * data)
 void SoundTest::PlayStopEffect(PerfFuncData * data)
 {
     SoundInstance * clickInst = sndClick->Play();
-    TEST_VERIFY((clickInst->GetState() == SoundInstance::STATE_PLAYING), &data->testData);
+    TEST_VERIFY(clickInst->GetState() == SoundInstance::STATE_PLAYING);
     
     sndClick->Stop();
-    TEST_VERIFY((clickInst->GetState() == SoundInstance::STATE_FORCED_STOPPED), &data->testData);
+    TEST_VERIFY(clickInst->GetState() == SoundInstance::STATE_FORCED_STOPPED);
 }
 
 void SoundTest::PlayStopMusic(PerfFuncData * data)
 {
     SoundInstance * musicInst = music->Play();
-    TEST_VERIFY((musicInst->GetState() == SoundInstance::STATE_PLAYING), &data->testData);
+    TEST_VERIFY(musicInst->GetState() == SoundInstance::STATE_PLAYING);
     
     music->Stop();
-    TEST_VERIFY((musicInst->GetState() == SoundInstance::STATE_FORCED_STOPPED), &data->testData);
+    TEST_VERIFY(musicInst->GetState() == SoundInstance::STATE_FORCED_STOPPED);
 }
 
 void SoundTest::PlayEffect(PerfFuncData * data)
@@ -143,7 +143,9 @@ void SoundTest::Update(float32 timeElapsed)
             return;
         else
         {
-            TEST_VERIFY((effectIns->GetState() == SoundInstance::STATE_COMPLETED), NULL);
+            PerfFuncData * data = new PerfFuncData();
+            TEST_VERIFY(effectIns->GetState() == SoundInstance::STATE_COMPLETED);
+            SafeDelete(data);
         }
     }
 

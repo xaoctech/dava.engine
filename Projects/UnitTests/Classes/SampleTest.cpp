@@ -53,11 +53,11 @@ void SampleTest::SampleTestFnction(PerfFuncData * data)
     FileSystem::Instance()->DeleteFile(path);
 
     File *f = File::Create(path, File::CREATE | File::WRITE);
-    TEST_VERIFY((NULL != f), &data->testData);
+    TEST_VERIFY(NULL != f);
     
     SafeRelease(f);
     
-    TEST_VERIFY((FileSystem::Instance()->DeleteFile(path)), &data->testData);
+    TEST_VERIFY(FileSystem::Instance()->DeleteFile(path));
 }
 
 

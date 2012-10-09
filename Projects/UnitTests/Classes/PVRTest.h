@@ -47,8 +47,8 @@ class PVRTest : public TestTemplate<PVRTest>
     
     struct CompareResult
     {
-        int32 differenceCount;
-        int32 bytesCount;
+        uint32 difference;
+        uint32 bytesCount;
     };
     
 public:
