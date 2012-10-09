@@ -46,29 +46,7 @@
 namespace DAVA 
 {
     
-#if defined (__DAVAENGINE_IPHONE__)
-//    #define GL_HALF_FLOAT                                               0x140B
-    
-    /* GL_OES_compressed_ETC1_RGB8_texture */
-    #ifndef GL_OES_compressed_ETC1_RGB8_texture
-        #define GL_ETC1_RGB8_OES                                        0x8D64
-    #endif
-
-#else //#if defined (__DAVAENGINE_IPHONE__)
-    /* GL_IMG_texture_compression_pvrtc */
-    #ifndef GL_IMG_texture_compression_pvrtc
-        #define GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG                      0x8C00
-        #define GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG                      0x8C01
-        #define GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG                     0x8C02
-        #define GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG                     0x8C03
-    #endif
-    
-    /* GL_OES_compressed_ETC1_RGB8_texture */
-    #ifndef GL_OES_compressed_ETC1_RGB8_texture
-        #define GL_ETC1_RGB8_OES                                        0x8D64
-    #endif
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-    
+#define FORMAT_ETC_WILL_BE_ENABLED_LATER 0x0D0A
 
     
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
@@ -1631,236 +1609,157 @@ void LibPVRHelper::ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, 
 
     
 
-const PixelFormatDescriptor LibPVRHelper::GetCompressedFormat(const uint64 PixelFormat)
+const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
 {
-    PixelFormatDescriptor formatDescriptor;
-
-    switch (PixelFormat)
+    switch (pixelFormat)
     {
         case ePVRTPF_PVRTCI_2bpp_RGB:
         {
-            formatDescriptor.internalformat = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-            formatDescriptor.formatID = FORMAT_PVR2;
-            break;
+            return FORMAT_PVR2;
         }
         case ePVRTPF_PVRTCI_2bpp_RGBA:
         {
-            formatDescriptor.internalformat = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
-            formatDescriptor.formatID = FORMAT_PVR2;
+            return FORMAT_PVR2;
             break;
         }
         case ePVRTPF_PVRTCI_4bpp_RGB:
         {
-            formatDescriptor.internalformat = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-            formatDescriptor.formatID = FORMAT_PVR4;
-            break;
+            return FORMAT_PVR4;
         }
         case ePVRTPF_PVRTCI_4bpp_RGBA:
         {
-            formatDescriptor.internalformat = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-            formatDescriptor.formatID = FORMAT_PVR4;
-            break;
+            return FORMAT_PVR4;
         }
         case ePVRTPF_ETC1:
         {
-            formatDescriptor.internalformat = GL_ETC1_RGB8_OES;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+//            return FORMAT_ETC_WILL_BE_ENABLED_LATER;
+            return FORMAT_INVALID;
         }
             
         default:
             break;
     }
     
-    return formatDescriptor;
+    return FORMAT_INVALID;
 }
     
-const PixelFormatDescriptor LibPVRHelper::GetFloatTypeFormat(const uint64 PixelFormat)
+const PixelFormat LibPVRHelper::GetFloatTypeFormat(const uint64 pixelFormat)
 {
-    PixelFormatDescriptor formatDescriptor;
-    switch (PixelFormat)
+    switch (pixelFormat)
     {
-            //HALF_FLOAT_OES
         case PVRTGENPIXELID4('r','g','b','a',16,16,16,16):
         {
-            formatDescriptor.type=GL_HALF_FLOAT;
-            formatDescriptor.format = GL_RGBA;
-            formatDescriptor.internalformat=GL_RGBA;
-            formatDescriptor.formatID = FORMAT_RGBA16161616;
-            break;
+            return FORMAT_RGBA16161616;
         }
         case PVRTGENPIXELID3('r','g','b',16,16,16):
         {
-            formatDescriptor.type=GL_HALF_FLOAT;
-            formatDescriptor.format = GL_RGB;
-            formatDescriptor.internalformat=GL_RGB;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID2('l','a',16,16):
         {
-            formatDescriptor.type=GL_HALF_FLOAT;
-            formatDescriptor.format = GL_LUMINANCE_ALPHA;
-            formatDescriptor.internalformat=GL_LUMINANCE_ALPHA;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID1('l',16):
         {
-            formatDescriptor.type=GL_HALF_FLOAT;
-            formatDescriptor.format = GL_LUMINANCE;
-            formatDescriptor.internalformat=GL_LUMINANCE;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID1('a',16):
         {
-            formatDescriptor.type=GL_HALF_FLOAT;
-            formatDescriptor.format = GL_ALPHA;
-            formatDescriptor.internalformat=GL_ALPHA;
-            formatDescriptor.formatID = FORMAT_A16;
-            break;
+            return FORMAT_A16;
         }
-            //FLOAT (OES)
         case PVRTGENPIXELID4('r','g','b','a',32,32,32,32):
         {
-            formatDescriptor.type=GL_FLOAT;
-            formatDescriptor.format = GL_RGBA;
-            formatDescriptor.internalformat=GL_RGBA;
-            formatDescriptor.formatID = FORMAT_RGBA32323232;
-            break;
+            return FORMAT_RGBA32323232;
         }
         case PVRTGENPIXELID3('r','g','b',32,32,32):
         {
-            formatDescriptor.type=GL_FLOAT;
-            formatDescriptor.format = GL_RGB;
-            formatDescriptor.internalformat=GL_RGB;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID2('l','a',32,32):
         {
-            formatDescriptor.type=GL_FLOAT;
-            formatDescriptor.format = GL_LUMINANCE_ALPHA;
-            formatDescriptor.internalformat=GL_LUMINANCE_ALPHA;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID1('l',32):
         {
-            formatDescriptor.type=GL_FLOAT;
-            formatDescriptor.format = GL_LUMINANCE;
-            formatDescriptor.internalformat=GL_LUMINANCE;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID1('a',32):
         {
-            formatDescriptor.type=GL_FLOAT;
-            formatDescriptor.format = GL_ALPHA;
-            formatDescriptor.internalformat=GL_ALPHA;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
     }
     
-    return formatDescriptor;
+    return FORMAT_INVALID;
 }
 
-const PixelFormatDescriptor LibPVRHelper::GetUnsignedByteFormat(const uint64 PixelFormat)
+const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
 {
-    PixelFormatDescriptor formatDescriptor;
-    formatDescriptor.type = GL_UNSIGNED_BYTE;
-    
-    switch (PixelFormat)
+    switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',8,8,8,8):
         {
-            formatDescriptor.format = formatDescriptor.internalformat = GL_RGBA;
-            formatDescriptor.formatID = FORMAT_RGBA8888;
-            break;
+            return FORMAT_RGBA8888;
         }
         case PVRTGENPIXELID3('r','g','b',8,8,8):
         {
-            formatDescriptor.format = formatDescriptor.internalformat = GL_RGB;
-            formatDescriptor.formatID = FORMAT_RGB888;
-            break;
+            return FORMAT_RGB888;
         }
         case PVRTGENPIXELID2('l','a',8,8):
         {
-            formatDescriptor.format = formatDescriptor.internalformat = GL_LUMINANCE_ALPHA;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID1('l',8):
         {
-            formatDescriptor.format = formatDescriptor.internalformat = GL_LUMINANCE;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
         case PVRTGENPIXELID1('a',8):
         {
-            formatDescriptor.format = formatDescriptor.internalformat = GL_ALPHA;
-            formatDescriptor.formatID = FORMAT_A8;
-            break;
+            return FORMAT_A8;
         }
         case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
         {
-            formatDescriptor.format = formatDescriptor.internalformat = GL_BGRA;
-            formatDescriptor.formatID = FORMAT_INVALID;
-            break;
+            return FORMAT_INVALID;
         }
     }
 
-    return formatDescriptor;
+    return FORMAT_INVALID;
 }
     
-const PixelFormatDescriptor LibPVRHelper::GetUnsignedShortFormat(const uint64 PixelFormat)
+const PixelFormat LibPVRHelper::GetUnsignedShortFormat(const uint64 pixelFormat)
 {
-    PixelFormatDescriptor formatDescriptor;
-
-    switch (PixelFormat)
+    switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
         {
-            formatDescriptor.type = GL_UNSIGNED_SHORT_4_4_4_4;
-            formatDescriptor.format = formatDescriptor.internalformat = GL_RGBA;
-            formatDescriptor.formatID = FORMAT_RGBA4444;
-            break;
+            return FORMAT_RGBA4444;
         }
         case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
         {
-            formatDescriptor.type = GL_UNSIGNED_SHORT_5_5_5_1;
-            formatDescriptor.format = formatDescriptor.internalformat = GL_RGBA;
-            formatDescriptor.formatID = FORMAT_RGBA5551;
-            break;
+            return FORMAT_RGBA5551;
         }
         case PVRTGENPIXELID3('r','g','b',5,6,5):
         {
-            formatDescriptor.type = GL_UNSIGNED_SHORT_5_6_5;
-            formatDescriptor.format = formatDescriptor.internalformat = GL_RGB;
-            formatDescriptor.formatID = FORMAT_RGB565;
-            break;
+            return FORMAT_RGB565;
         }
     }
     
-    return formatDescriptor;
+    return FORMAT_INVALID;
 }
     
-const PixelFormatDescriptor LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeader)
+const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeader)
 {
-    uint64 PixelFormat = textureHeader.u64PixelFormat;
+    uint64 pixelFormat = textureHeader.u64PixelFormat;
     EPVRTVariableType ChannelType = (EPVRTVariableType)textureHeader.u32ChannelType;
     
     //Get the last 32 bits of the pixel format.
-    uint64 PixelFormatPartHigh = PixelFormat&PVRTEX_PFHIGHMASK;
+    uint64 PixelFormatPartHigh = pixelFormat&PVRTEX_PFHIGHMASK;
     
     //Check for a compressed format (The first 8 bytes will be 0, so the whole thing will be equal to the last 32 bits).
     PixelFormatDescriptor formatDescriptor;
     if (PixelFormatPartHigh==0)
     {
         //Format and type == 0 for compressed textures.
-        formatDescriptor = GetCompressedFormat(PixelFormat);
+        return GetCompressedFormat(pixelFormat);
     }
     else
     {
@@ -1868,24 +1767,22 @@ const PixelFormatDescriptor LibPVRHelper::GetTextureFormat(const PVRHeaderV3& te
         {
             case ePVRTVarTypeFloat:
             {
-                formatDescriptor = GetFloatTypeFormat(PixelFormat);
-                break;
+                return GetFloatTypeFormat(pixelFormat);
             }
             case ePVRTVarTypeUnsignedByteNorm:
             {
-                formatDescriptor = GetUnsignedByteFormat(PixelFormat);
-                break;
+                return GetUnsignedByteFormat(pixelFormat);
             }
             case ePVRTVarTypeUnsignedShortNorm:
             {
-                formatDescriptor = GetUnsignedShortFormat(PixelFormat);
+                return GetUnsignedShortFormat(pixelFormat);
             }
             default:
                 break;
         }
     }
     
-    return formatDescriptor;
+    return FORMAT_INVALID;
 }
 
 bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture)
@@ -1965,264 +1862,209 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     }
     
     //Get the OGLES format values.
-    PixelFormatDescriptor formatDescriptor = GetTextureFormat(sTextureHeader);
     RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    
-    //Check for compressed formats
-    if (0 == formatDescriptor.format && 0 == formatDescriptor.type && 0 != formatDescriptor.internalformat)
+    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(sTextureHeader));
+    if(!IsFormatSupported(formatDescriptor))
     {
-        if (formatDescriptor.internalformat>=GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG && formatDescriptor.internalformat<=GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
-        {
-            //Check for PVRTCI support.
-            if(deviceCaps.isPVRTCSupported)
-            {
-                bIsCompressedFormatSupported = bIsCompressedFormat = true;
-            }
-            else
-            {
-                //Output a warning.
-                Logger::Warning("PVRTTextureLoadFromPointer warning: PVRTC not supported. Converting to RGBA8888 instead.\n");
-                
-                //Modify boolean values.
-                bIsCompressedFormatSupported = false;
-                bIsCompressedFormat = true;
-                
-                //Check if it's 2bpp.
-                bool bIs2bppPVRTC = (formatDescriptor.internalformat==GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG || formatDescriptor.internalformat==GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
-                
-                //Change texture format.
-                formatDescriptor.format = formatDescriptor.internalformat = GL_RGBA;
-                formatDescriptor.type = GL_UNSIGNED_BYTE;
-                
-                //Create a near-identical texture header for the decompressed header.
-                sTextureHeaderDecomp = sTextureHeader;
-                sTextureHeaderDecomp.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
-                sTextureHeaderDecomp.u32ColourSpace=ePVRTCSpacelRGB;
-                sTextureHeaderDecomp.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
-                
-                //Allocate enough memory for the decompressed data. OGLES2, so only decompress one surface/face.
-                pDecompressedData = malloc(GetTextureDataSize(sTextureHeaderDecomp, PVRTEX_ALLMIPLEVELS, false, true) );
-                
-                //Check the malloc.
-                if (!pDecompressedData)
-                {
-                    Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
-                    return false;
-                }
-                
-                //Get the dimensions for the current MIP level.
-                uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width;
-                uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height;
-                
-                //Setup temporary variables.
-                uint8* pTempDecompData = (uint8*)pDecompressedData;
-                uint8* pTempCompData = (uint8*)pTextureData;
-                
-                if (bIsLegacyPVR)
-                {
-                    //Decompress all the MIP levels.
-                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                    {
-                        for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                        {
-                            //Get the face offset. Varies per MIP level.
-                            uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                            uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-
-#if defined (__DAVAENGINE_IPHONE__)
-                            DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                            //Decompress the texture data.
-                            PVRTDecompressPVRTC(pTempCompData,bIs2bppPVRTC?1:0,uiMIPWidth,uiMIPHeight,pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                            
-                            //Move forward through the pointers.
-                            pTempDecompData+=decompressedFaceOffset;
-                            pTempCompData+=compressedFaceOffset;
-                            
-                            //Work out the current MIP dimensions.
-                            uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                            uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                        }
-                        
-                        //Reset the dims.
-                        uiMIPWidth=sTextureHeader.u32Width;
-                        uiMIPHeight=sTextureHeader.u32Height;
-                    }
-                }
-                else
-                {
-                    //Decompress all the MIP levels.
-                    for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                    {
-                        //Get the face offset. Varies per MIP level.
-                        uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-                        
-                        for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                        {
-#if defined (__DAVAENGINE_IPHONE__)
-                            DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                            //Decompress the texture data.
-                            PVRTDecompressPVRTC(pTempCompData,bIs2bppPVRTC?1:0,uiMIPWidth,uiMIPHeight,pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                            
-                            //Move forward through the pointers.
-                            pTempDecompData+=decompressedFaceOffset;
-                            pTempCompData+=compressedFaceOffset;
-                        }
-                        
-                        //Work out the current MIP dimensions.
-                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                    }
-                }
-                formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
-            }
-        }
-#if !defined(__DAVAENGINE_IPHONE__)
-        else if (formatDescriptor.internalformat==GL_ETC1_RGB8_OES)
-        {
-            if(deviceCaps.isETCSupported)
-            {
-                bIsCompressedFormatSupported = bIsCompressedFormat = true;
-            }
-            else
-            {
-                //Output a warning.
-                Logger::Warning("PVRTTextureLoadFromPointer warning: ETC not supported. Converting to RGBA8888 instead.\n");
-                
-                //Modify boolean values.
-                bIsCompressedFormatSupported = false;
-                bIsCompressedFormat = true;
-                
-                //Change texture format.
-                formatDescriptor.format = formatDescriptor.internalformat = GL_RGBA;
-                formatDescriptor.type = GL_UNSIGNED_BYTE;
-                
-                //Create a near-identical texture header for the decompressed header.
-                sTextureHeaderDecomp = sTextureHeader;
-                sTextureHeaderDecomp.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
-                sTextureHeaderDecomp.u32ColourSpace=ePVRTCSpacelRGB;
-                sTextureHeaderDecomp.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
-
-                //Allocate enough memory for the decompressed data. OGLES1, so only decompress one surface/face.
-                pDecompressedData = malloc(GetTextureDataSize(sTextureHeaderDecomp, PVRTEX_ALLMIPLEVELS, false, true) );
-                
-                //Check the malloc.
-                if (!pDecompressedData)
-                {
-                    Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
-                    return false;
-                }
-                
-                //Get the dimensions for the current MIP level.
-                uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width;
-                uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height;
-                
-                //Setup temporary variables.
-                uint8* pTempDecompData = (uint8*)pDecompressedData;
-                uint8* pTempCompData = (uint8*)pTextureData;
-                
-                if (bIsLegacyPVR)
-                {
-                    //Decompress all the MIP levels.
-                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                    {
-                        for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                        {
-                            //Get the face offset. Varies per MIP level.
-                            uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                            uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-
-                            //Decompress the texture data.
-                            PVRTDecompressETC(pTempCompData,uiMIPWidth,uiMIPHeight,pTempDecompData,0);
-                            
-                            //Move forward through the pointers.
-                            pTempDecompData+=decompressedFaceOffset;
-                            pTempCompData+=compressedFaceOffset;
-                            
-                            //Work out the current MIP dimensions.
-                            uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                            uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                        }
-                        
-                        //Reset the dims.
-                        uiMIPWidth=sTextureHeader.u32Width;
-                        uiMIPHeight=sTextureHeader.u32Height;
-                    }
-                }
-                else
-                {
-                    //Decompress all the MIP levels.
-                    for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                    {
-                        //Get the face offset. Varies per MIP level.
-                        uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-
-                        for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                        {
-                            //Decompress the texture data.
-                            PVRTDecompressETC(pTempCompData,uiMIPWidth,uiMIPHeight,pTempDecompData,0);
-                            
-                            //Move forward through the pointers.
-                            pTempDecompData+=decompressedFaceOffset;
-                            pTempCompData+=compressedFaceOffset;
-                        }
-                        
-                        //Work out the current MIP dimensions.
-                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                    }
-                }
-            }
-        }
-#endif //#if !defined(__DAVAENGINE_IPHONE__)
-    }
-    
-    //Check for BGRA support.
-    if(formatDescriptor.format==GL_BGRA)
-    {
-#if defined (__DAVAENGINE_IPHONE__)
-        formatDescriptor.internalformat = GL_RGBA;
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-        
-		if(!deviceCaps.isBGRA8888Supported)
-		{
-#if defined (__DAVAENGINE_IPHONE__)
-			Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_BGRA texture as extension GL_APPLE_texture_format_BGRA8888 is unsupported.\n");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-			Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_BGRA texture as extension GL_IMG_texture_format_BGRA8888 is unsupported.\n");
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-            return false;
-        }
-    }
-    
-    //Check for floating point textures
-    if (formatDescriptor.type==GL_HALF_FLOAT)
-    {
-        if(!deviceCaps.isFloat16Supported)
-        {
-            Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_HALF_FLOAT_OES texture as extension GL_OES_texture_half_float is unsupported.\n");
-        }
-    }
-    if (formatDescriptor.type==GL_FLOAT)
-    {
-        if(!deviceCaps.isFloat32Supported)
-        {
-            Logger::Error("PVRTTextureLoadFromPointer failed: Unable to load GL_FLOAT texture as extension GL_OES_texture_float is unsupported.\n");
-        }
-    }
-    
-    //Deal with unsupported texture formats
-    if (formatDescriptor.internalformat==0)
-    {
-        Logger::Error("PVRTTextureLoadFromPointer failed: pixel type not supported.\n");
+        Logger::Error("[LibPVRHelper::FillTextureWithPVRData] Unsupported format");
         return false;
     }
+    
+    
+    
+    //Check for compressed formats
+    if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
+    {
+        bIsCompressedFormat = true;
+        bIsCompressedFormatSupported = deviceCaps.isPVRTCSupported;
+        
+        //Check for PVRTCI support.
+        if(!deviceCaps.isPVRTCSupported)
+        {
+            //Output a warning.
+            Logger::Warning("PVRTTextureLoadFromPointer warning: PVRTC not supported. Converting to RGBA8888 instead.\n");
+            
+            //Check if it's 2bpp.
+            bool bIs2bppPVRTC = (FORMAT_PVR2 == formatDescriptor.formatID);
+            
+            //Create a near-identical texture header for the decompressed header.
+            sTextureHeaderDecomp = sTextureHeader;
+            sTextureHeaderDecomp.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
+            sTextureHeaderDecomp.u32ColourSpace=ePVRTCSpacelRGB;
+            sTextureHeaderDecomp.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
+            
+            //Allocate enough memory for the decompressed data. OGLES2, so only decompress one surface/face.
+            pDecompressedData = malloc(GetTextureDataSize(sTextureHeaderDecomp, PVRTEX_ALLMIPLEVELS, false, true) );
+            
+            //Check the malloc.
+            if (!pDecompressedData)
+            {
+                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
+                return false;
+            }
+            
+            //Get the dimensions for the current MIP level.
+            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width;
+            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height;
+            
+            //Setup temporary variables.
+            uint8* pTempDecompData = (uint8*)pDecompressedData;
+            uint8* pTempCompData = (uint8*)pTextureData;
+            
+            if (bIsLegacyPVR)
+            {
+                //Decompress all the MIP levels.
+                for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
+                {
+                    for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                    {
+                        //Get the face offset. Varies per MIP level.
+                        uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
+                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
 
+#if defined (__DAVAENGINE_IPHONE__)
+                        DVASSERT(false && "Can be hardware supported");
+#else //#if defined (__DAVAENGINE_IPHONE__)
+                        //Decompress the texture data.
+                        PVRTDecompressPVRTC(pTempCompData,bIs2bppPVRTC?1:0,uiMIPWidth,uiMIPHeight,pTempDecompData);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+                        
+                        //Move forward through the pointers.
+                        pTempDecompData+=decompressedFaceOffset;
+                        pTempCompData+=compressedFaceOffset;
+                        
+                        //Work out the current MIP dimensions.
+                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
+                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
+                    }
+                    
+                    //Reset the dims.
+                    uiMIPWidth=sTextureHeader.u32Width;
+                    uiMIPHeight=sTextureHeader.u32Height;
+                }
+            }
+            else
+            {
+                //Decompress all the MIP levels.
+                for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                {
+                    //Get the face offset. Varies per MIP level.
+                    uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
+                    uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
+                    
+                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
+                    {
+#if defined (__DAVAENGINE_IPHONE__)
+                        DVASSERT(false && "Can be hardware supported");
+#else //#if defined (__DAVAENGINE_IPHONE__)
+                        //Decompress the texture data.
+                        PVRTDecompressPVRTC(pTempCompData,bIs2bppPVRTC?1:0,uiMIPWidth,uiMIPHeight,pTempDecompData);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
+                        
+                        //Move forward through the pointers.
+                        pTempDecompData+=decompressedFaceOffset;
+                        pTempCompData+=compressedFaceOffset;
+                    }
+                    
+                    //Work out the current MIP dimensions.
+                    uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
+                    uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
+                }
+            }
+            formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+        }
+    }
+#if !defined(__DAVAENGINE_IPHONE__)
+    else if (FORMAT_ETC_WILL_BE_ENABLED_LATER == formatDescriptor.formatID)
+    {
+        bIsCompressedFormat = true;
+        bIsCompressedFormatSupported = deviceCaps.isETCSupported;
+
+        if(!deviceCaps.isETCSupported)
+        {
+            //Output a warning.
+            Logger::Warning("PVRTTextureLoadFromPointer warning: ETC not supported. Converting to RGBA8888 instead.\n");
+            
+            //Create a near-identical texture header for the decompressed header.
+            sTextureHeaderDecomp = sTextureHeader;
+            sTextureHeaderDecomp.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
+            sTextureHeaderDecomp.u32ColourSpace=ePVRTCSpacelRGB;
+            sTextureHeaderDecomp.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
+
+            //Allocate enough memory for the decompressed data. OGLES1, so only decompress one surface/face.
+            pDecompressedData = malloc(GetTextureDataSize(sTextureHeaderDecomp, PVRTEX_ALLMIPLEVELS, false, true) );
+            
+            //Check the malloc.
+            if (!pDecompressedData)
+            {
+                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
+                return false;
+            }
+            
+            //Get the dimensions for the current MIP level.
+            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width;
+            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height;
+            
+            //Setup temporary variables.
+            uint8* pTempDecompData = (uint8*)pDecompressedData;
+            uint8* pTempCompData = (uint8*)pTextureData;
+            
+            if (bIsLegacyPVR)
+            {
+                //Decompress all the MIP levels.
+                for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
+                {
+                    for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                    {
+                        //Get the face offset. Varies per MIP level.
+                        uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
+                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
+
+                        //Decompress the texture data.
+                        PVRTDecompressETC(pTempCompData,uiMIPWidth,uiMIPHeight,pTempDecompData,0);
+                        
+                        //Move forward through the pointers.
+                        pTempDecompData+=decompressedFaceOffset;
+                        pTempCompData+=compressedFaceOffset;
+                        
+                        //Work out the current MIP dimensions.
+                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
+                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
+                    }
+                    
+                    //Reset the dims.
+                    uiMIPWidth=sTextureHeader.u32Width;
+                    uiMIPHeight=sTextureHeader.u32Height;
+                }
+            }
+            else
+            {
+                //Decompress all the MIP levels.
+                for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                {
+                    //Get the face offset. Varies per MIP level.
+                    uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
+                    uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
+
+                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
+                    {
+                        //Decompress the texture data.
+                        PVRTDecompressETC(pTempCompData,uiMIPWidth,uiMIPHeight,pTempDecompData,0);
+                        
+                        //Move forward through the pointers.
+                        pTempDecompData+=decompressedFaceOffset;
+                        pTempCompData+=compressedFaceOffset;
+                    }
+                    
+                    //Work out the current MIP dimensions.
+                    uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
+                    uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
+                }
+            }
+        }
+    }
+#endif //#if !defined(__DAVAENGINE_IPHONE__)
+    
 
     texture->width = sTextureHeader.u32Width;
     texture->height = sTextureHeader.u32Height;
@@ -2281,17 +2123,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                 uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
                 
                 //Upload the texture
-                if (bIsCompressedFormat && bIsCompressedFormatSupported)
-                {
-#if defined (__DAVAENGINE_IPHONE__)
-                    texture->TexCompressedImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, uiCurrentMIPSize, pTempData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                }
-                else
-                {
-                    texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData);
-//                    glTexImage2D(eTextureTarget,uiMIPLevel,eTextureInternalFormat, u32MIPWidth, u32MIPHeight, 0, eTextureFormat, eTextureType, pTempData);
-                }
+                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
                 pTempData+=uiCurrentMIPSize;
                 
                 //Reduce the MIP Size.
@@ -2311,20 +2143,10 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
         {
             //Get the current MIP size.
             uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
-
             for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
             {
                 //Upload the texture
-                if (bIsCompressedFormat && bIsCompressedFormatSupported)
-                {
-#if defined (__DAVAENGINE_IPHONE__)
-                    texture->TexCompressedImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, uiCurrentMIPSize, pTempData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                }
-                else
-                {
-                    texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData);
-                }
+                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
                 pTempData+=uiCurrentMIPSize;
             }
             
@@ -2335,40 +2157,6 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     }
     
     FREE(pDecompressedData);
-    
-//    if (eTarget!=GL_TEXTURE_2D)
-//    {
-//        eTarget=GL_TEXTURE_CUBE_MAP;
-//    }
-    
-//    //Set Minification and Magnification filters according to whether MIP maps are present.
-//    if(formatDescriptor.type==GL_FLOAT || formatDescriptor.type==GL_HALF_FLOAT)
-//    {
-//        if(sTextureHeader.u32MIPMapCount==1)
-//        {	// Texture filter modes are limited to these for float textures
-//            glTexParameteri(eTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//            glTexParameteri(eTarget, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//        }
-//        else
-//        {
-//            glTexParameteri(eTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-//            glTexParameteri(eTarget, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//        }
-//    }
-//    else
-//    {
-//        if(sTextureHeader.u32MIPMapCount==1)
-//        {
-//            glTexParameteri(eTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//            glTexParameteri(eTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        }
-//        else
-//        {
-//            glTexParameteri(eTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-//            glTexParameteri(eTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        }
-//    }
-    
     
     texture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 
@@ -2509,8 +2297,7 @@ bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
 PixelFormat LibPVRHelper::GetPixelFormat(const String &filePathname)
 {
     PVRHeaderV3 header = GetHeaderForFile(filePathname);
-    PixelFormatDescriptor formatDescriptor = GetTextureFormat(header);
-    return formatDescriptor.formatID;
+    return GetTextureFormat(header);
 }
     
 uint32 LibPVRHelper::GetDataLength(const String &filePathname)
@@ -2568,7 +2355,31 @@ PVRHeaderV3 LibPVRHelper::GetHeaderForData(const uint8* pvrData, const int32 pvr
     
     return PVRHeaderV3();
 }
+
+bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
+{
+    if(FORMAT_INVALID == format.formatID)
+    {
+        Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_INVALID");
+        return false;
+    }
     
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    if ((FORMAT_RGBA16161616 == format.formatID) && !deviceCaps.isFloat16Supported)
+    {
+        Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_RGBA16161616 is unsupported");
+        return false;
+    }
+    
+    if ((FORMAT_RGBA32323232 == format.formatID) && !deviceCaps.isFloat32Supported)
+    {
+        Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_RGBA32323232 is unsupported");
+        return false;
+    }
+    
+    return true;
+}
+
     
 };
 

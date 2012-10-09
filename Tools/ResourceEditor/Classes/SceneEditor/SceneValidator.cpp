@@ -381,7 +381,7 @@ void SceneValidator::ReloadTextures()
         Image *image = Image::CreateFromFile(texture->relativePathname);
         if(image)
         {
-            texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData());
+            texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
             if(texture->isMimMapTexture)
             {
                 texture->GenerateMipmaps();

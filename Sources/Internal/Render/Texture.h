@@ -174,10 +174,7 @@ public:
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
-	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
-#if defined (__DAVAENGINE_IPHONE__)
-    void TexCompressedImage(int32 level, uint32 width, uint32 height, uint32 mipMapSize, const void * _data);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
+	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
