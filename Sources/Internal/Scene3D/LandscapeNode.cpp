@@ -40,8 +40,10 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/Heightmap.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/TextureDescriptor.h"
 
 #include "Debug/Stats.h"
+
 
 namespace DAVA
 {
@@ -585,7 +587,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     {
         textureNames[level] = textureName;
         texture->GenerateMipmaps();
-        texture->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
+        texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
     }
     textures[level] = texture;
     

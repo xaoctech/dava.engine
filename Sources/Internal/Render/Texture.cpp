@@ -126,6 +126,20 @@ const char * Texture::GetPixelFormatString(PixelFormat format)
     DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     return pixelDescriptors[format].name.c_str();
 }
+    
+PixelFormat Texture::GetPixelFormatByName(const String &formatName)
+{
+    for(int32 i = 0; i < FORMAT_COUNT; ++i)
+    {
+        if(!CompareStrings(formatName, pixelDescriptors[i].name))
+        {
+            return pixelDescriptors[i].formatID;
+        }
+    }
+    
+    return FORMAT_INVALID;
+}
+
 
 Texture * Texture::Get(const String & pathName)
 {
@@ -163,11 +177,8 @@ Texture::Texture()
 #endif
 
     
-    isMimMapTexture = false;
-	isAlphaPremultiplied = false;
+    descriptor = new TextureDescriptor();
     
-    wrapModeS = WRAP_CLAMP_TO_EDGE;
-    wrapModeT = WRAP_CLAMP_TO_EDGE;
 
 #if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 	savedData = NULL;
@@ -180,6 +191,7 @@ Texture::Texture()
 Texture::~Texture()
 {
     ReleaseTextureData();
+    SafeRelease(descriptor);
 }
     
 void Texture::ReleaseTextureData()
@@ -383,8 +395,8 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,  data);
 */
 
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	if (isMipmapGenerationEnabled)
 	{
 		texture->GenerateMipmaps();
@@ -398,6 +410,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	{
 		RenderManager::Instance()->HWglBindTexture(saveId);
 	}
+    
 	
 #elif defined(__DAVAENGINE_DIRECTX9__)
 
@@ -435,13 +448,14 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     RenderManager::Instance()->UnlockNonMain();
+    
 	return texture;
 }		
 	
-void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
+void Texture::SetWrapMode(TextureDescriptor::TextureWrap wrapS, TextureDescriptor::TextureWrap wrapT)
 {
-    wrapModeS = wrapS; 
-    wrapModeT = wrapT;
+    descriptor->wrapModeS = wrapS;
+    descriptor->wrapModeT = wrapT;
     
     RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
@@ -451,10 +465,10 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	GLint glWrapS = 0;
 	switch(wrapS)
 	{
-	case WRAP_CLAMP_TO_EDGE:
+	case TextureDescriptor::WRAP_CLAMP_TO_EDGE:
 		glWrapS = GL_CLAMP_TO_EDGE;
 		break;
-	case WRAP_REPEAT:
+	case TextureDescriptor::WRAP_REPEAT:
 		glWrapS = GL_REPEAT;
 		break;
 	};
@@ -463,10 +477,10 @@ void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 	GLint glWrapT = 0;
 	switch(wrapT)
 	{
-		case WRAP_CLAMP_TO_EDGE:
+		case TextureDescriptor::WRAP_CLAMP_TO_EDGE:
 			glWrapT = GL_CLAMP_TO_EDGE;
 			break;
-		case WRAP_REPEAT:
+		case TextureDescriptor::WRAP_REPEAT:
 			glWrapT = GL_REPEAT;
 			break;
 	};
@@ -503,28 +517,17 @@ void Texture::GenerateMipmaps()
     
 	RenderManager::Instance()->LockNonMain();
     
-    isMimMapTexture = true;
+    //TODO: need be stored in descriptor. Can't be changed this way
+    descriptor->isMipMapTexture = true;
 
 #if defined(__DAVAENGINE_OPENGL__)
 
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(id);
 	
-#if defined(__DAVAENGINE_IPHONE__)
-	// definitelly works for the iPhone
-	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-#elif defined (__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-#else //Non-ES platforms
-	RENDER_VERIFY(glGenerateMipmapEXT(GL_TEXTURE_2D));
-
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-#endif //PLATFORMS
 
 	if (saveId != 0)
 	{
@@ -542,28 +545,16 @@ void Texture::GeneratePixelesation()
 {
 	RenderManager::Instance()->LockNonMain();
     
-    isMimMapTexture = false;
-    
+    //TODO: need be stored in descriptor. Can't be changed this way
+    descriptor->isMipMapTexture = false;
+
 #if defined(__DAVAENGINE_OPENGL__)
     
 	int saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(id);
 	
-#if defined(__DAVAENGINE_IPHONE__)
-	// definitelly works for the iPhone
-//	RENDER_VERIFY(glGenerateMipmapOES(GL_TEXTURE_2D));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-#elif defined (__DAVAENGINE_ANDROID__)
-//    RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-#else //Non-ES platforms
-//	RENDER_VERIFY(glGenerateMipmapEXT(GL_TEXTURE_2D));
-    
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-#endif //PLATFORMS
     
 	if (saveId != 0)
 	{
@@ -576,6 +567,34 @@ void Texture::GeneratePixelesation()
 #endif // #if defined(__DAVAENGINE_OPENGL__)
 	RenderManager::Instance()->UnlockNonMain();
 }
+    
+void Texture::GenerateLinearFilters()
+{
+    if((FORMAT_PVR2 == format) || (FORMAT_PVR4 == format))
+        return;
+    
+    RenderManager::Instance()->LockNonMain();
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    
+    int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+    RenderManager::Instance()->HWglBindTexture(id);
+    
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    
+    if (saveId != 0)
+    {
+        RenderManager::Instance()->HWglBindTexture(saveId);
+    }
+    
+    
+#elif defined(__DAVAENGINE_DIRECTX9__)
+    
+#endif // #if defined(__DAVAENGINE_OPENGL__)
+    RenderManager::Instance()->UnlockNonMain();
+}
+
     
 void Texture::UsePvrMipmaps()
 {
@@ -630,11 +649,7 @@ Texture * Texture::CreateFromPNG(const String & pathName)
 	RenderManager::Instance()->LockNonMain();
 	Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
 	RenderManager::Instance()->UnlockNonMain();
-	texture->relativePathname = pathName;
-    texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
 	
-	if (texture)
-		textureMap[texture->relativePathname] = texture;
 	SafeRelease(image);
 	
 	return texture;
@@ -662,14 +677,43 @@ Texture * Texture::PureCreate(const String & pathName)
 	String extension = FileSystem::GetExtension(pathName);
 
 	if (extension == String(".png"))
-		return CreateFromPNG(pathName);
+    {
+		texture = CreateFromPNG(pathName);
+    }
 	else if (extension == String(".pvr"))
 	{
-		return CreateFromPVR(pathName);
+		texture = CreateFromPVR(pathName);
 	}
-	return 0;
+    
+    if(texture)
+    {
+        texture->relativePathname = pathName;
+        textureMap[texture->relativePathname] = texture;
+
+        texture->LoadDescriptor(pathName);
+        
+        texture->SetWrapMode(texture->descriptor->wrapModeS, texture->descriptor->wrapModeT);
+        
+        if(texture->descriptor->isMipMapTexture)
+        {
+            texture->GenerateMipmaps();
+        }
+        else
+        {
+            texture->GenerateLinearFilters();
+        }
+    }
+    
+	return texture;
 }
 	
+void Texture::LoadDescriptor(const String &texturePathname)
+{
+    String descriptorPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".txt");    
+    descriptor->Load(descriptorPathname);
+}
+    
+    
 int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
@@ -991,7 +1035,7 @@ void Texture::Invalidate()
 
     bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
     
-    Image::EnableAlphaPremultiplication(isAlphaPremultiplied);
+    Image::EnableAlphaPremultiplication(descriptor->isAlphaPremultiplied);
     
 	if(isRenderTarget)
 	{
@@ -1081,7 +1125,7 @@ void Texture::InvalidateFromSavedData()
     
     RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-	if (isMimMapTexture)
+	if (descriptor->isMipMapTexture)
 	{
 		GenerateMipmaps();
 	}
@@ -1107,7 +1151,8 @@ void Texture::InvalidateFromFile()
 		Logger::Error("[Texture::InvalidateFromFile] Failed to load image from: %s", relativePathname.c_str());
 		return;
 	}
-    isAlphaPremultiplied = image->isAlphaPremultiplied;
+    //TODO::
+    descriptor->isAlphaPremultiplied = image->isAlphaPremultiplied;
 
 
 	savedData = image->GetData();

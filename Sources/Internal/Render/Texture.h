@@ -36,6 +36,7 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
+#include "Render/TextureDescriptor.h"
 
 
 namespace DAVA
@@ -51,12 +52,6 @@ class Texture : public RenderResource
 {
 public:
 	
-	enum TextureWrap
-	{
-		WRAP_CLAMP_TO_EDGE = 0,
-		WRAP_REPEAT,
-	};
-
 	enum DepthFormat
 	{
 		DEPTH_NONE = 0,
@@ -91,6 +86,7 @@ public:
         \returns string value describing pixel format
      */
     static const char * GetPixelFormatString(PixelFormat format);
+    static PixelFormat GetPixelFormatByName(const String &formatName);
     
     /**
         \brief Create texture from data arrray
@@ -171,12 +167,14 @@ public:
 	static void EnableMipmapGeneration();
 	static void DisableMipmapGeneration();
     static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
+
 	void GenerateMipmaps();
 	void GeneratePixelesation();
+    void GenerateLinearFilters();
 	
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
     
-	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
+	void SetWrapMode(TextureDescriptor::TextureWrap wrapS, TextureDescriptor::TextureWrap wrapT);
 	
 	void UsePvrMipmaps();
         
@@ -258,12 +256,6 @@ public:							// properties for fast access
 	DepthFormat depthFormat;
 	bool		isRenderTarget;
 
-    bool isMimMapTexture;
-	bool isAlphaPremultiplied;
-
-    TextureWrap wrapModeS; 
-    TextureWrap wrapModeT;
-
 	void SetDebugInfo(const String & _debugInfo);
 
 	static const Map<String, Texture*> & GetTextureMap();
@@ -274,6 +266,7 @@ public:							// properties for fast access
 
     void GenerateID();
     
+    void LoadDescriptor(const String &texturePathname);
     
 private:
 	static Map<String, Texture*> textureMap;	
@@ -295,6 +288,8 @@ private:
     
     static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
+    
+    TextureDescriptor *descriptor;
 };
     
 // Implementation of inline functions

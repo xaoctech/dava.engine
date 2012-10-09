@@ -56,13 +56,8 @@ Texture * Texture::CreateFromPVR(const String & pathName)
 	}
 
 	Texture * newTexture = UnpackPVRData(bytes, fileSize);
-	if (newTexture)
+	if (!newTexture)
 	{
-		newTexture->relativePathname = pathName;
-		textureMap[newTexture->relativePathname] = newTexture;
-	}
-    else
-    {
 		Logger::Error("Failed to parse PVR texture: %s", pathName.c_str());
     }
 
