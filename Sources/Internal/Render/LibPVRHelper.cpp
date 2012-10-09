@@ -1952,9 +1952,6 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                     uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
                     uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
                     
-                    Logger::Debug("[compressed] %d, w = %d", compressedFaceOffset, uiMIPWidth);
-                    
-                    
                     for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
                     {
 #if defined (__DAVAENGINE_IPHONE__)
