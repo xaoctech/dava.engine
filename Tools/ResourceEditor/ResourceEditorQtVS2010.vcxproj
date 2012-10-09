@@ -188,7 +188,9 @@
     <ClCompile Include=".GeneratedQt\moc_SceneGraphItem.cpp" />
     <ClCompile Include=".GeneratedQt\moc_SceneGraphModel.cpp" />
     <ClCompile Include=".GeneratedQt\moc_ScenePreviewDialog.cpp" />
+    <ClCompile Include=".GeneratedQt\moc_TextureListDelegate.cpp" />
     <ClCompile Include=".GeneratedQt\moc_TextureListModel.cpp" />
+    <ClCompile Include=".GeneratedQt\moc_TextureScrollArea.cpp" />
     <ClCompile Include=".GeneratedQt\qrc_QtIcons.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp" />
     <ClCompile Include="Classes\BulletObject.cpp" />
@@ -369,7 +371,9 @@
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureListDelegate.cpp" />
     <ClCompile Include="Classes\Qt\TextureListModel.cpp" />
+    <ClCompile Include="Classes\Qt\TextureScrollArea.cpp" />
     <ClCompile Include="Classes\ResourcePackerScreen.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
@@ -477,6 +481,7 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
     <ClInclude Include=".GeneratedQt\ui_converttexturesdialog.h" />
+    <ClInclude Include=".GeneratedQt\ui_davaglwidget.h" />
     <ClInclude Include=".GeneratedQt\ui_mainwindow.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h" />
@@ -734,7 +739,9 @@
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureListDelegate.h" />
     <ClInclude Include="Classes\Qt\TextureListModel.h" />
+    <ClInclude Include="Classes\Qt\TextureScrollArea.h" />
     <ClInclude Include="Classes\ResourcePackerScreen.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />

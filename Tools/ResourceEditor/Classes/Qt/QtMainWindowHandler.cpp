@@ -151,7 +151,6 @@ void QtMainWindowHandler::ConvertTextures()
     //Execute(new CommandTextureConverter());
 
 	ConvertTexturesDialog ctd;
-	ctd.setWindowFlags(Qt::Window);
 	ctd.exec();
 }
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>755</width>
-    <height>560</height>
+    <width>1023</width>
+    <height>803</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,25 +22,99 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>3</number>
-   </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
    <property name="margin">
     <number>3</number>
    </property>
    <item>
-    <widget class="QSplitter" name="splitterV">
+    <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QListView" name="listViewTextures">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMinimumSize</enum>
+         </property>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Filter:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="textureFilterEdit">
+           <property name="toolTip">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="minimumSize">
+            <size>
+             <width>24</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>24</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>X</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QListView" name="listViewTextures">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolBar" name="textureListToolbar">
+         <addaction name="actionViewImagesList"/>
+         <addaction name="actionViewTextList"/>
+         <addaction name="separator"/>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QSplitter" name="splitterH">
       <property name="sizePolicy">
@@ -74,7 +148,7 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="spacing">
          <number>3</number>
         </property>
@@ -82,43 +156,58 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="QScrollArea" name="scrollAreaOriginal">
+         <widget class="QToolBar" name="textureToolbar">
+          <addaction name="actionColorR"/>
+          <addaction name="actionColorG"/>
+          <addaction name="actionColorB"/>
+          <addaction name="actionColorA"/>
+          <addaction name="separator"/>
+          <addaction name="actionZoomIn"/>
+          <addaction name="actionZoomOut"/>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_2">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
+           <enum>QFrame::Raised</enum>
           </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaOriginalContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>236</width>
-             <height>330</height>
-            </rect>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="spacing">
+            <number>5</number>
            </property>
-          </widget>
-         </widget>
-        </item>
-        <item>
-         <widget class="QScrollArea" name="scrollAreaCompressed">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaCompressedContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>235</width>
-             <height>330</height>
-            </rect>
+           <property name="margin">
+            <number>0</number>
            </property>
-          </widget>
+           <item>
+            <widget class="TextureScrollArea" name="scrollAreaCompressed">
+             <property name="cursor" stdset="0">
+              <cursorShape>OpenHandCursor</cursorShape>
+             </property>
+             <property name="widgetResizable" stdset="0">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="TextureScrollArea" name="scrollAreaOriginal">
+             <property name="cursor" stdset="0">
+              <cursorShape>OpenHandCursor</cursorShape>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="widgetResizable" stdset="0">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -166,7 +255,85 @@
     </widget>
    </item>
   </layout>
+  <action name="actionColorR">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>colorR</string>
+   </property>
+  </action>
+  <action name="actionColorG">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>colorG</string>
+   </property>
+  </action>
+  <action name="actionColorB">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>colorB</string>
+   </property>
+  </action>
+  <action name="actionColorA">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>colorA</string>
+   </property>
+  </action>
+  <action name="actionZoomIn">
+   <property name="text">
+    <string>zoomIn</string>
+   </property>
+  </action>
+  <action name="actionZoomOut">
+   <property name="text">
+    <string>zoomOut</string>
+   </property>
+  </action>
+  <action name="actionViewImagesList">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>viewImagesList</string>
+   </property>
+  </action>
+  <action name="actionViewTextList">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>viewTextList</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TextureScrollArea</class>
+   <extends>QGraphicsView</extends>
+   <header>texturescrollarea.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

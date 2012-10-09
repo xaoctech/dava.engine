@@ -221,7 +221,6 @@ void QtMainWindow::SetupDockWidgets()
     ui->sceneGraphTree->setDragEnabled(true);
     ui->sceneGraphTree->setAcceptDrops(true);
     ui->sceneGraphTree->setDropIndicatorShown(true);
-
     
     connect(ui->btnRefresh, SIGNAL(clicked()), QtMainWindowHandler::Instance(), SLOT(RefreshSceneGraph()));
 }
