@@ -174,7 +174,7 @@ public:
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
-	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
+	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
     
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	

@@ -2126,7 +2126,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                 uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
                 
                 //Upload the texture
-                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData);
+                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
                 pTempData+=uiCurrentMIPSize;
                 
                 //Reduce the MIP Size.
@@ -2146,13 +2146,10 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
         {
             //Get the current MIP size.
             uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
-            
-//            Logger::Debug("[format %d], size = %d, width = %d, height = %d", formatDescriptor.formatID, uiCurrentMIPSize, u32MIPWidth, u32MIPHeight);
-            
             for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
             {
                 //Upload the texture
-                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData);
+                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
                 pTempData+=uiCurrentMIPSize;
             }
             
