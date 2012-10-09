@@ -20,24 +20,11 @@ public:
 
 private:
 	DAVA::Scene *scene;
-};
+	DAVA::Vector<DAVA::Texture *> textures;
 
-
-#include <QAbstractItemDelegate>
-
-class QAbstractItemModel;
-class QPainter;
-
-class TextureListDelegate : public QAbstractItemDelegate
-{
-	Q_OBJECT
-
-public:
-	TextureListDelegate(QObject *parent = 0);
-
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index ) const;
-
+	void searchTexturesInMaterial(DAVA::Material *material);
+	void searchTexturesInNodes(DAVA::SceneNode *parentNode);
+	void addTexture(DAVA::Texture *texture);
 };
 
 #endif // __TEXTURE_LIST_MODEL_H__

@@ -454,7 +454,7 @@
   </action>
   <action name="actionMaterialEditor">
    <property name="icon">
-    <iconset resource="Icons/QtIcons.qrc">
+    <iconset>
      <normaloff>:/materialeditor.png</normaloff>:/materialeditor.png</iconset>
    </property>
    <property name="text">
@@ -564,7 +564,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="Icons/QtIcons.qrc"/>
+  <include location="QtIcons.qrc"/>
  </resources>
  <connections/>
 </ui>

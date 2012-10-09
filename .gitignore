@@ -14,6 +14,9 @@ $process/
 .DS_Store
 *.pbxuser
 #doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
+Documentation/doxygen/*
+.Debug*
+.Generated*
 Debug*
 Release*
 *.vcxproj.user
