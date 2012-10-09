@@ -247,7 +247,7 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 	return tx;
 }
 	
-void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _data)
+void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize)
 {
 #if defined(__DAVAENGINE_OPENGL__)
 
@@ -262,10 +262,7 @@ void Texture::TexImage(int32 level, uint32 width, uint32 height, const void * _d
     {
         if(FORMAT_PVR2 == format || FORMAT_PVR4 == format)
         {
-            int32 mipMapSize = height * width * pixelDescriptors[format].pixelSize / 8; //in bytes
-            if(mipMapSize < 32) mipMapSize = 32;
-                
-            RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, mipMapSize, _data));
+            RENDER_VERIFY(glCompressedTexImage2D(GL_TEXTURE_2D, level, pixelDescriptors[format].internalformat, width, height, 0, dataSize, _data));
         }
         else
         {
@@ -616,7 +613,7 @@ void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
 		SafeRelease(image);
 		return;
 	}
-	TexImage(level, image->GetWidth(), image->GetHeight(), image->GetData());
+	TexImage(level, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
 	SafeRelease(image);
 }
 	
