@@ -115,13 +115,12 @@ void PVRTest::TestFunction(PerfFuncData * data)
     float32 differencePersentage = (float32)result.differenceCount / (float32)result.bytesCount * 100.f;
     
     PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
-    String resultString = Format("\nFormat: %s\nAll Bytes: %d\nDifferent Bytes: %d\nDifference: %f%%\nCoincidence: %f%%",
+    data->testData.message = Format("\nFormat: %s\nAll Bytes: %d\nDifferent Bytes: %d\nDifference: %f%%\nCoincidence: %f%%",
                                  formatDescriptor.name.c_str(), result.bytesCount, result.differenceCount,
                                  differencePersentage, 100.f - differencePersentage);
     
-    compareResultText->SetText(StringToWString(resultString));
-    Logger::Debug(resultString.c_str());
-
+    compareResultText->SetText(StringToWString(data->testData.message));
+    Logger::Debug(data->testData.message.c_str());
     
     TEST_VERIFY((differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS), &data->testData);
     

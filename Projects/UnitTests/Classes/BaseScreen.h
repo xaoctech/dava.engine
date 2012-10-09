@@ -52,10 +52,12 @@ public:
     TestData()
     {
         name = String("");
+        message = String("");
         userData = NULL;
     }
 
     String name;
+    String message;
     void * userData;
 };
 
