@@ -188,6 +188,7 @@
     <ClCompile Include=".GeneratedQt\moc_SceneGraphItem.cpp" />
     <ClCompile Include=".GeneratedQt\moc_SceneGraphModel.cpp" />
     <ClCompile Include=".GeneratedQt\moc_ScenePreviewDialog.cpp" />
+    <ClCompile Include=".GeneratedQt\moc_TextureList.cpp" />
     <ClCompile Include=".GeneratedQt\moc_TextureListDelegate.cpp" />
     <ClCompile Include=".GeneratedQt\moc_TextureListModel.cpp" />
     <ClCompile Include=".GeneratedQt\moc_TextureScrollArea.cpp" />
@@ -371,6 +372,7 @@
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureList.cpp" />
     <ClCompile Include="Classes\Qt\TextureListDelegate.cpp" />
     <ClCompile Include="Classes\Qt\TextureListModel.cpp" />
     <ClCompile Include="Classes\Qt\TextureScrollArea.cpp" />
@@ -739,6 +741,7 @@
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureList.h" />
     <ClInclude Include="Classes\Qt\TextureListDelegate.h" />
     <ClInclude Include="Classes\Qt\TextureListModel.h" />
     <ClInclude Include="Classes\Qt\TextureScrollArea.h" />
