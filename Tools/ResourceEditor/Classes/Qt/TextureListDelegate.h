@@ -2,6 +2,8 @@
 #define __TEXTURE_LIST_DELEGATE_H__
 
 #include <QAbstractItemDelegate>
+#include <QFont>
+#include <QFontMetrics>
 
 class QPainter;
 
@@ -16,6 +18,8 @@ public:
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index ) const;
 
 private:
+	QFont nameFont;
+	QFontMetrics nameFontMetrics;
 	mutable QMap<QString, QImage> cachedImages;
 
 	QImage getImage(const QString path) const;

@@ -2,6 +2,7 @@
 #define CONVERTTEXTURESDIALOG_H
 
 #include <QDialog>
+#include <QMap>
 #include "DAVAEngine.h"
 
 class QModelIndex;
@@ -28,6 +29,7 @@ private:
 	TextureListModel *textureListModel;
 	TextureListDelegate *textureListImagesDelegate;
 	QAbstractItemDelegate *textureListDefaultDelegate;
+	QMap<QString, int> textureListSortModes;
 
 	void setupTextureListToolbar();
 	void setupTextureToolbar();
@@ -39,6 +41,7 @@ private slots:
 	void textureListViewImages(bool checked);
 	void textureListViewText(bool checked);
 	void textureListFilterChanged(const QString &text);
+	void textureListSortChanged(const QString &text);
 	void texturePressed(const QModelIndex & index);
 };
 
