@@ -48,15 +48,21 @@ TextureDescriptor::~TextureDescriptor()
 
 void TextureDescriptor::SetDefaultValues()
 {
+    Memset(crc, 0, MD5_BUFFER_SIZE * sizeof(uint8));
+
     wrapModeS = WRAP_CLAMP_TO_EDGE;
     wrapModeT = WRAP_CLAMP_TO_EDGE;
     
-    isMipMapTexture = false;
+    generateMipMaps = false;
 	isAlphaPremultiplied = false;
     
-    Memset(crc, 0, MD5_BUFFER_SIZE * sizeof(uint8));
+    pvrCompression.format = FORMAT_PVR4;
+    pvrCompression.flipVertically = false;
+    pvrCompression.generateMipMaps = true;
     
-    pvrCompressionFormat = FORMAT_PVR4;
+    dxtCompression.format = FORMAT_INVALID;
+    dxtCompression.flipVertically = false;
+    dxtCompression.generateMipMaps = true;
 }
     
     
@@ -69,66 +75,35 @@ void TextureDescriptor::Load(const String &filePathname)
         return;
     }
     
-    uint32 fileDataSize = file->GetSize();
-    char8 *lineData = new char8[fileDataSize];
-    
-    if(!lineData)
-    {
-        Logger::Error("[TextureDescriptor::Load] Can't allocate memory to read file: %s", filePathname.c_str());
-        SafeRelease(file);
-        return;
-    }
+    //crc
+    char8 readableCrc[MD5_STRING_SIZE];
+    ReadChar8String(file, readableCrc, MD5_STRING_SIZE);
+    CrcFromReadableFormat(readableCrc);
 
     //Read WrapModes
-    uint32 lineSize = file->ReadLine(lineData, fileDataSize);
-    if(lineSize)
-    {
-        int32 wrapS, wrapT;
-        sscanf(lineData, "%d %d", &wrapS, &wrapT);
-        wrapModeS = (TextureWrap)wrapS;
-        wrapModeT = (TextureWrap)wrapT;
-    }
+    int32 wrapS = 0;
+    ReadInt32(file, wrapS);
+    wrapModeS = (TextureWrap)wrapS;
+
+    int32 wrapT = 0;
+    ReadInt32(file, wrapT);
+    wrapModeT = (TextureWrap)wrapT;
     
 
     //Read isMipMapTexture
-    lineSize = file->ReadLine(lineData, fileDataSize);
-    if(lineSize)
-    {
-        int32 mipmap = 0;
-        sscanf(lineData, "%d", &mipmap);
-        isMipMapTexture = (0 != mipmap);
-    }
+    int32 mipmap = 0;
+    ReadInt32(file, mipmap);
+    generateMipMaps = (0 != mipmap);
 
     //Read isAlphaPremultiplied
-    lineSize = file->ReadLine(lineData, fileDataSize);
-    if(lineSize)
-    {
-        int32 alpha = 0;
-        sscanf(lineData, "%d", &alpha);
-        isAlphaPremultiplied = (0 != alpha);
-    }
+    int32 alpha = 0;
+    ReadInt32(file, alpha);
+    isAlphaPremultiplied = (0 != alpha);
 
-    //crc
-    lineSize = file->ReadLine(lineData, fileDataSize);
-    if(lineSize)
-    {
-        char8 readCrc[MD5_STRING_SIZE];
-        sscanf(lineData, "%s", readCrc);
-        CrcFromReadableFormat(readCrc);
-    }
+    //Compression
+    ReadCompression(file, pvrCompression);
+    ReadCompression(file, dxtCompression);
     
-    //PVRCompression
-    lineSize = file->ReadLine(lineData, fileDataSize);
-    if(lineSize)
-    {
-        char8 formatName[MD5_STRING_SIZE];
-        sscanf(lineData, "%s", formatName);
-        pvrCompressionFormat = Texture::GetPixelFormatByName(String(formatName));
-    }
-
-    
-    
-    SafeDeleteArray(lineData);
     SafeRelease(file);
 }
 
@@ -141,41 +116,83 @@ void TextureDescriptor::Save(const String &filePathname)
         return;
     }
     
-    uint32 lineDataSize = 1024;
-    char8 *lineData = new char8[lineDataSize];
-    
-    if(!lineData)
-    {
-        Logger::Error("[TextureDescriptor::Save] Can't allocate memory to write file: %s", filePathname.c_str());
-        SafeRelease(file);
-        return;
-    }
-    
-    //Write WrapModes
-    sprintf(lineData, "%d %d", (int32)wrapModeS, (int32)wrapModeT);
-    file->WriteLine(lineData);
-    
-    //write isMipMapTexture
-    sprintf(lineData, "%d", (isMipMapTexture) ? 1: 0);
-    file->WriteLine(lineData);
-    
-
-    //write isAlphaPremultiplied
-    sprintf(lineData, "%d", (isAlphaPremultiplied) ? 1: 0);
-    file->WriteLine(lineData);
-    
     //crc
-    CrcToReadableFormat(lineData, lineDataSize);
-    file->WriteLine(lineData);
+    char8 readableCrc[MD5_STRING_SIZE];
+    CrcToReadableFormat(readableCrc, MD5_STRING_SIZE);
+    WriteChar8String(file, readableCrc);
+
+    WriteInt32(file, (int32)wrapModeS);
+    WriteInt32(file, (int32)wrapModeT);
+
+    WriteInt32(file, (generateMipMaps) ? 1: 0);
+    WriteInt32(file, (isAlphaPremultiplied) ? 1: 0);
+
+    //Compression
+    WriteCompression(file, pvrCompression);
+    WriteCompression(file, dxtCompression);
     
-    
-    //PVRCompression
-    sprintf(lineData, "%s", Texture::GetPixelFormatString(pvrCompressionFormat));
-    file->WriteLine(lineData);
-    
-    
-    SafeDeleteArray(lineData);
     SafeRelease(file);
+}
+    
+void TextureDescriptor::ReadCompression(File *file, Compression &compression)
+{
+    char8 formatName[MD5_STRING_SIZE];
+    ReadChar8String(file, formatName, MD5_STRING_SIZE);
+    compression.format = Texture::GetPixelFormatByName(String(formatName));
+    
+    int32 mipmap = 0;
+    ReadInt32(file, mipmap);
+    compression.generateMipMaps = (0 != mipmap);
+    
+    int32 flip = 0;
+    ReadInt32(file, flip);
+    compression.flipVertically = (0 != flip);
+}
+
+void TextureDescriptor::WriteCompression(File *file, const Compression &compression)
+{
+    WriteChar8String(file, Texture::GetPixelFormatString(compression.format));
+    WriteInt32(file, (compression.generateMipMaps) ? 1: 0);
+    WriteInt32(file, (compression.flipVertically) ? 1: 0);
+}
+
+    
+void TextureDescriptor::ReadInt32(DAVA::File *file, int32 &value)
+{
+    char8 lineData[LINE_SIZE];
+    uint32 lineSize = file->ReadLine(lineData, LINE_SIZE);
+    if(lineSize)
+    {
+        sscanf(lineData, "%d", &value);
+    }
+}
+    
+void TextureDescriptor::WriteInt32(DAVA::File *file, const int32 value)
+{
+    char8 lineData[LINE_SIZE];
+    sprintf(lineData, "%d", value);
+    file->WriteLine(lineData);
+}
+    
+void TextureDescriptor::ReadChar8String(File *file, char8 *buffer, uint32 bufferSize)
+{
+    char8 lineData[LINE_SIZE];
+    uint32 lineSize = file->ReadLine(lineData, Min((uint32)LINE_SIZE, bufferSize - 1));
+    if(lineSize)
+    {
+        sscanf(lineData, "%s", buffer);
+    }
+    else
+    {
+        buffer[0] = 0;
+    }
+}
+    
+void TextureDescriptor::WriteChar8String(File *file, const char8 *buffer)
+{
+    char8 lineData[LINE_SIZE];
+    sprintf(lineData, "%s", buffer);
+    file->WriteLine(lineData);
 }
 
 void TextureDescriptor::CrcFromReadableFormat(const char8 *readCrc)
