@@ -1,4 +1,5 @@
 #include "TextureListDelegate.h"
+#include "TextureListModel.h"
 #include <QPainter>
 
 #define TEXTURE_PREVIEW_SIZE 100
@@ -6,16 +7,25 @@
 #define BORDER_COLOR QColor(0, 0, 0, 25)
 #define SELECTION_BORDER_COLOR QColor(0, 0, 0, 50)
 #define SELECTION_COLOR_ALPHA 100
+#define INFO_TEXT_COLOR QColor(0, 0, 0, 100)
 
 TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	: QAbstractItemDelegate(parent)
+	, nameFont("Arial", 10, QFont::Bold)
+	, nameFontMetrics(nameFont)
 {
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	QVariant path = index.model()->data(index);
-	QImage img = getImage(path.toString());
+	const QAbstractItemModel *curModel = index.model();
+
+	QVariant texturePath = curModel->data(index, TextureListModel::TexturePath);
+	QVariant textureName = curModel->data(index, TextureListModel::TextureName);
+	QVariant textureDimension = curModel->data(index, TextureListModel::TextureDimension);
+	QVariant textureDataSize = curModel->data(index, TextureListModel::TextureDataSize);
+
+	QImage img = getImage(texturePath.toString());
 
 	painter->save();
 	painter->setClipRect(option.rect);
@@ -37,9 +47,29 @@ void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 	}
 
 	// draw text info
-	QRectF textRect = option.rect;
-	textRect.adjust(TEXTURE_PREVIEW_SIZE, 0, option.decorationSize.height() / 2, 0);
-	painter->drawText(textRect, "test text\nline 2\nline 3");
+	{
+		QRectF textRect = option.rect;
+		textRect.adjust(TEXTURE_PREVIEW_SIZE, option.decorationSize.height() / 2, 0, 0);
+
+		QFont origFont = painter->font();
+		painter->setFont(nameFont);
+		painter->drawText(textRect, textureName.toString());
+
+		painter->setFont(origFont);
+		painter->setPen(INFO_TEXT_COLOR);
+		textRect.adjust(0, nameFontMetrics.height(), 0, 0);
+
+		QString infoText;
+		char dimen[32];
+
+		sprintf(dimen, "%dx%d", textureDimension.toSize().width(), textureDimension.toSize().height());
+		//infoText += "Dimension: ";
+		infoText += dimen;
+		infoText += "\nData size: ";
+		infoText += textureDataSize.toString();
+
+		painter->drawText(textRect, infoText);
+	}
 
 	// draw selected item
 	if(option.state & QStyle::State_Selected)

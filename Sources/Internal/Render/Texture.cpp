@@ -1680,7 +1680,7 @@ const Map<String, Texture*> & Texture::GetTextureMap()
     return textureMap;
 }
 
-int32 Texture::GetDataSize()
+int32 Texture::GetDataSize() const
 {
     int32 allocSize = 0;
     switch (format) 
