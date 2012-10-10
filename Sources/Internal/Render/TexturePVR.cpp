@@ -31,6 +31,7 @@
 #include "Render/LibPVRHelper.h"
 #include "Platform/SystemTimer.h"
 #include "FileSystem/File.h"
+#include "Render/RenderManager.h"
 
 namespace DAVA
 {
@@ -63,6 +64,44 @@ Texture * Texture::CreateFromPVR(const String & pathName)
 
 	SafeDeleteArray(bytes);
 	SafeRelease(fp);
+    
+    TextureDescriptor *descriptor = CreateDescriptorForTexture(pathName);
+    
+    RenderManager::Instance()->LockNonMain();
+#if defined(__DAVAENGINE_OPENGL__)
+	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+	RenderManager::Instance()->HWglBindTexture(newTexture->id);
+    
+	GLint glWrapS = TextureDescriptor::HWglConvertWrapMode(descriptor->wrapModeS);
+	GLint glWrapT = TextureDescriptor::HWglConvertWrapMode(descriptor->wrapModeT);
+    
+    
+	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapS));
+	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapT));
+	if (descriptor->generateMipMaps)
+	{
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	}
+    else
+	{
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	}
+	
+	if (saveId != 0)
+	{
+		RenderManager::Instance()->HWglBindTexture(saveId);
+	}
+
+    
+#endif //#if defined(__DAVAENGINE_OPENGL__)
+    RenderManager::Instance()->UnlockNonMain();
+
+    
+    SafeRelease(descriptor);
+
+    
     
 	timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS() - timeCreateFromPVR;
 	Logger::Debug("TexturePVR: creation time: %lld", timeCreateFromPVR);
