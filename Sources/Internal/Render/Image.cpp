@@ -46,23 +46,23 @@
 namespace DAVA 
 {
     
-bool Image::isAlphaPremultiplicationEnabled = true;
-bool Image::IsAlphaPremultiplicationEnabled()
-{
-    return isAlphaPremultiplicationEnabled; 
-}
-
-void Image::EnableAlphaPremultiplication(bool isEnabled)
-{
-    isAlphaPremultiplicationEnabled = isEnabled;
-}
+//bool Image::isAlphaPremultiplicationEnabled = true;
+//bool Image::IsAlphaPremultiplicationEnabled()
+//{
+//    return isAlphaPremultiplicationEnabled; 
+//}
+//
+//void Image::EnableAlphaPremultiplication(bool isEnabled)
+//{
+//    isAlphaPremultiplicationEnabled = isEnabled;
+//}
 
 Image::Image()
 :	data(0)
 ,	width(0)
 ,	height(0)
 ,	format(FORMAT_RGB565)
-,	isAlphaPremultiplied(false)
+//,	isAlphaPremultiplied(false)
 {
 }
 
@@ -96,7 +96,7 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 
 
-Image * Image::CreateFromFile(const String & pathName)
+Image * Image::CreateFromFile(const String & pathName, bool isAlphaPremultiplied)
 {
 	Image * davaImage = new Image();
 	if (1 != LibPngWrapper::ReadPngFile(pathName.c_str(), davaImage))
@@ -104,7 +104,7 @@ Image * Image::CreateFromFile(const String & pathName)
 		SafeRelease(davaImage);
 		return 0;
 	}
-    if (isAlphaPremultiplicationEnabled)
+    if (isAlphaPremultiplied)
     {
         if(davaImage->format == FORMAT_RGBA8888) 
         {
@@ -130,7 +130,7 @@ Image * Image::CreateFromFile(const String & pathName)
                 //	unsigned int a = *inAlphaData;
                 //	inAlphaData++;
             }
-            davaImage->isAlphaPremultiplied = true;
+//            davaImage->isAlphaPremultiplied = true;
         }
     }
 	return davaImage;

@@ -56,12 +56,12 @@ public:
 	Image();
 	virtual ~Image();
 	
-    static bool IsAlphaPremultiplicationEnabled(); 
-    static void EnableAlphaPremultiplication(bool isEnabled); 
+//    static bool IsAlphaPremultiplicationEnabled(); 
+//    static void EnableAlphaPremultiplication(bool isEnabled); 
     
 	static Image * Create(int32 width, int32 height, PixelFormat format);
     // \todo Change function name to Image::Create for consistency
-	static Image * CreateFromFile(const String & pathName);
+	static Image * CreateFromFile(const String & pathName, bool isAlphaPremultiplied);
 	static Vector2 GetImageSize(const String & pathName);
 	
 	inline int32 GetWidth();
@@ -95,9 +95,9 @@ public:
 	int32	width;
 	int32	height;
 	PixelFormat format;
-	bool	isAlphaPremultiplied;
+//	bool	isAlphaPremultiplied;
 private:
-    static bool    isAlphaPremultiplicationEnabled;
+//    static bool    isAlphaPremultiplicationEnabled;
 };
 	
 // Implementation of inline functions
@@ -118,10 +118,10 @@ PixelFormat Image::GetPixelFormat()
 	return format;
 }
 
-bool  Image::IsAlphaPremultiplied()
-{
-	return isAlphaPremultiplied;
-}
+//bool  Image::IsAlphaPremultiplied()
+//{
+//	return isAlphaPremultiplied;
+//}
 	
 	
 };
