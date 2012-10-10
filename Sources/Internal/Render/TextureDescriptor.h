@@ -37,12 +37,14 @@
 namespace DAVA
 {
 
+class File;
 class TextureDescriptor: public BaseObject
 {
     enum eConst
     {
         MD5_BUFFER_SIZE = 16,
-        MD5_STRING_SIZE = MD5_BUFFER_SIZE * 2 + 1
+        MD5_STRING_SIZE = MD5_BUFFER_SIZE * 2 + 1,
+        LINE_SIZE = 256
     };
     
 public:
@@ -51,6 +53,14 @@ public:
 		WRAP_CLAMP_TO_EDGE = 0,
 		WRAP_REPEAT,
 	};
+    
+    struct Compression
+    {
+        PixelFormat format;
+        bool generateMipMaps;
+        bool flipVertically;
+    };
+
 
 public:
     TextureDescriptor();
@@ -58,8 +68,8 @@ public:
     
     void Load(const String &filePathname);
     void Save(const String &filePathname);
-public:
-
+    
+protected:
     void SetDefaultValues();
     void CrcFromReadableFormat(const char8 *readCrc);
     void CrcToReadableFormat(char8 *readCrc, int32 crcSize);
@@ -67,17 +77,27 @@ public:
     uint8 GetNumberFromCharacter(char8 character);
     char8 GetCharacterFromNumber(uint8 number);
     
+    void ReadInt32(File *file, int32 &value);
+    void WriteInt32(File *file, const int32 value);
+
+    void ReadChar8String(File *file, char8 *buffer, uint32 bufferSize);
+    void WriteChar8String(File *file, const char8 *buffer);
     
-    TextureWrap wrapModeS;
-    TextureWrap wrapModeT;
-
-    bool isMipMapTexture;
-	bool isAlphaPremultiplied;
-
+    void ReadCompression(File *file, Compression &compression);
+    void WriteCompression(File *file, const Compression &compression);
+    
+public:
+    
     uint8 crc[MD5_BUFFER_SIZE];
 
-    PixelFormat pvrCompressionFormat;
+    TextureWrap wrapModeS;
+    TextureWrap wrapModeT;
     
+    bool generateMipMaps;
+	bool isAlphaPremultiplied;
+    
+    Compression pvrCompression;
+    Compression dxtCompression;
 };
     
 };
