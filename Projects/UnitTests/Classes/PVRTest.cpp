@@ -109,22 +109,43 @@ void PVRTest::TestFunction(PerfFuncData * data)
 {
     DVASSERT(currentTest < TESTS_COUNT);
     
-    ReloadSprites();
-    
-    CompareResult result = CompareSprites(decompressedPNGSprite, pvrSprite);
-    float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
-    
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
-    data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
-                                 result.difference, differencePersentage, 100.f - differencePersentage);
-    
-    compareResultText->SetText(StringToWString(data->testData.message));
-    Logger::Debug(data->testData.message.c_str());
-    
-    TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
+    if(IsCurrentTestAccepted())
+    {
+        ReloadSprites();
+        
+        CompareResult result = CompareSprites(decompressedPNGSprite, pvrSprite);
+        float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
+        
+        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
+        data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
+                                        result.difference, differencePersentage, 100.f - differencePersentage);
+        
+        compareResultText->SetText(StringToWString(data->testData.message));
+        Logger::Debug(data->testData.message.c_str());
+        
+        TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
+    }
     
     ++currentTest;
 }
+
+bool PVRTest::IsCurrentTestAccepted()
+{
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    
+    if((formats[currentTest] == FORMAT_RGBA16161616) && !deviceCaps.isFloat16Supported)
+    {
+        return false;
+    }
+    
+    if((formats[currentTest] == FORMAT_RGBA32323232) && !deviceCaps.isFloat32Supported)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 
 void PVRTest::ReloadSprites()
 {

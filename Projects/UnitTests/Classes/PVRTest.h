@@ -67,6 +67,7 @@ private:
     int32 currentTest;
     
     void ReloadSprites();
+    bool IsCurrentTestAccepted();
     
     
     Sprite *CreateSpriteFromTexture(const String &texturePathname);
