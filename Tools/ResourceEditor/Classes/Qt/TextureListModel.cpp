@@ -9,7 +9,7 @@ TextureListModel::TextureListModel(QObject *parent /* = 0 */)
 
 int TextureListModel::rowCount(const QModelIndex & /* parent */) const
 {
-	return textures.size();
+	return texturesFiltred.size();
 }
 
 QVariant TextureListModel::data(const QModelIndex &index, int role) const
@@ -17,14 +17,35 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid() || role != Qt::DisplayRole)
 		return QVariant();
 
-	return QVariant(textures[index.row()]->GetPathname().c_str());
+	return QVariant(texturesFiltred[index.row()]->GetPathname().c_str());
+}
+
+void TextureListModel::setFilter(QString filter)
+{
+	beginResetModel();
+
+	texturesFiltred.clear();
+
+	for(int i = 0; i < (int) texturesAll.size(); ++i)
+	{
+		if(filter.isEmpty() || DAVA::String::npos != texturesAll[i]->GetPathname().find(filter.toStdString()))
+		{
+			texturesFiltred.push_back(texturesAll[i]);
+		}
+		else
+		{
+			QString s(texturesAll[i]->GetPathname().c_str());
+		}
+	}
+
+	endResetModel();
 }
 
 void TextureListModel::setScene(DAVA::Scene *scene)
 {
-	layoutAboutToBeChanged();
+	beginResetModel();
 
-	textures.clear();
+	texturesAll.clear();
 
 	if(NULL != scene)
 	{
@@ -42,7 +63,9 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 		searchTexturesInNodes(scene);
 	}
 
-	layoutChanged();
+	texturesFiltred = texturesAll;
+
+	endResetModel();
 }
 
 void TextureListModel::searchTexturesInMaterial(DAVA::Material *material)
@@ -83,6 +106,6 @@ void TextureListModel::addTexture(DAVA::Texture *texture)
 {
 	if(NULL != texture /*&& texture->isRenderTarget*/)
 	{
-		textures.push_back(texture);
+		texturesAll.push_back(texture);
 	}
 }

@@ -9,9 +9,17 @@ class TextureListModel : public QAbstractListModel
 	Q_OBJECT
 
 public:
+	enum TextureListSortMode
+	{
+		SORT_BY_NAME,
+		SORT_BY_SIZE
+	};
+
 	TextureListModel(QObject *parent = 0);
 
 	void setScene(DAVA::Scene *scene);
+	void setFilter(QString filter);
+	void setSortMode(TextureListModel::TextureListSortMode sortMode);
 
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
@@ -20,7 +28,8 @@ public:
 
 private:
 	DAVA::Scene *scene;
-	DAVA::Vector<DAVA::Texture *> textures;
+	DAVA::Vector<DAVA::Texture *> texturesAll;
+	DAVA::Vector<DAVA::Texture *> texturesFiltred;
 
 	void searchTexturesInMaterial(DAVA::Material *material);
 	void searchTexturesInNodes(DAVA::SceneNode *parentNode);

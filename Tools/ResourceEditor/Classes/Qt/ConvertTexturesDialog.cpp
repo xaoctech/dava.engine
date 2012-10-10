@@ -13,6 +13,10 @@ ConvertTexturesDialog::ConvertTexturesDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConvertTexturesDialog)
 {
+
+	textureListModel = new TextureListModel();
+	textureListImagesDelegate = new TextureListDelegate();
+
     ui->setupUi(this);
 	setWindowFlags(Qt::Window);
 
@@ -20,31 +24,29 @@ ConvertTexturesDialog::ConvertTexturesDialog(QWidget *parent) :
 	setupImagesScrollAreas();
 	setupTextureListToolbar();
 	setupTextureToolbar();
+	setupTextureListFilter();
+
+	ui->actionViewImagesList->trigger();
 }
 
 ConvertTexturesDialog::~ConvertTexturesDialog()
 {
+	delete textureListImagesDelegate;
+	delete textureListModel;
     delete ui;
 }
 
 void ConvertTexturesDialog::setupTexturesList()
 {
-	TextureListModel* textureListModel = new TextureListModel();
-	TextureListDelegate *textureListDelegate = new TextureListDelegate();
-
-	ui->listViewTextures->setModel(textureListModel);
-	//ui->listViewTextures->setViewMode(QListView::IconMode);
-	ui->listViewTextures->setItemDelegate(textureListDelegate);
+	textureListDefaultDelegate = ui->listViewTextures->itemDelegate();
 
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	DAVA::Scene* mainScreenScene = screen->FindCurrentBody()->bodyControl->GetScene();
 
+	ui->listViewTextures->setModel(textureListModel);
 	textureListModel->setScene(mainScreenScene);
 
 	QObject::connect(ui->listViewTextures, SIGNAL(pressed(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
-
-	textureListModel->deleteLater();
-	textureListDelegate->deleteLater();
 }
 
 void ConvertTexturesDialog::setupImagesScrollAreas()
@@ -89,6 +91,14 @@ void ConvertTexturesDialog::setupTextureListToolbar()
 	textureZoomCombo->addItem("1000%");
 
 	ui->textureToolbar->addWidget(textureZoomCombo);
+
+	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
+	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
+}
+
+void ConvertTexturesDialog::setupTextureListFilter()
+{
+	QObject::connect(ui->textureFilterEdit, SIGNAL(textChanged(const QString &)), this, SLOT(textureListFilterChanged(const QString&)));
 }
 
 void ConvertTexturesDialog::texturePressed(const QModelIndex & index)
@@ -98,4 +108,27 @@ void ConvertTexturesDialog::texturePressed(const QModelIndex & index)
 
 	ui->scrollAreaOriginal->setImage(image);
 	ui->scrollAreaCompressed->setImage(image);
+}
+
+void ConvertTexturesDialog::textureListViewText(bool checked)
+{
+	ui->actionViewImagesList->setChecked(false);
+	ui->actionViewTextList->setChecked(true);
+
+	ui->listViewTextures->setItemDelegate(textureListDefaultDelegate);
+	ui->listViewTextures->reset();
+}
+
+void ConvertTexturesDialog::textureListViewImages(bool checked)
+{
+	ui->actionViewTextList->setChecked(false);
+	ui->actionViewImagesList->setChecked(true);
+
+	ui->listViewTextures->setItemDelegate(textureListImagesDelegate);
+	ui->listViewTextures->reset();
+}
+
+void ConvertTexturesDialog::textureListFilterChanged(const QString &text)
+{
+	textureListModel->setFilter(text);
 }
