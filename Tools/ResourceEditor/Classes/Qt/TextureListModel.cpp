@@ -1,43 +1,63 @@
 #include "TextureListModel.h"
 #include <QPainter>
+#include <QFileInfo>
 
 TextureListModel::TextureListModel(QObject *parent /* = 0 */) 
 	: QAbstractListModel(parent)
-{
-
-}
+	, curSortMode(TextureListModel::SortByName)
+{ }
 
 int TextureListModel::rowCount(const QModelIndex & /* parent */) const
 {
-	return texturesFiltred.size();
+	return texturesFiltredSorted.size();
 }
 
 QVariant TextureListModel::data(const QModelIndex &index, int role) const
 {
-	if (!index.isValid() || role != Qt::DisplayRole)
-		return QVariant();
+	if(index.isValid())
+	{
+		DAVA::Texture *curTexture = texturesFiltredSorted[index.row()];
 
-	return QVariant(texturesFiltred[index.row()]->GetPathname().c_str());
+		switch(role)
+		{
+		case Qt::DisplayRole:
+		case TextureName:
+			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).completeBaseName());
+			break;
+
+		case TexturePath:
+			return QVariant(curTexture->GetPathname().c_str());
+			break;
+
+		case TextureDimension:
+			return QVariant(QSize(curTexture->GetWidth(), curTexture->GetHeight()));
+			break;
+
+		case TextureDataSize:
+			return QVariant(curTexture->GetDataSize());
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return QVariant();
 }
 
 void TextureListModel::setFilter(QString filter)
 {
 	beginResetModel();
+	curFilter = filter;
+	applyFilterAndSort();
+	endResetModel();
+}
 
-	texturesFiltred.clear();
-
-	for(int i = 0; i < (int) texturesAll.size(); ++i)
-	{
-		if(filter.isEmpty() || DAVA::String::npos != texturesAll[i]->GetPathname().find(filter.toStdString()))
-		{
-			texturesFiltred.push_back(texturesAll[i]);
-		}
-		else
-		{
-			QString s(texturesAll[i]->GetPathname().c_str());
-		}
-	}
-
+void TextureListModel::setSortMode(TextureListModel::TextureListSortMode sortMode)
+{
+	beginResetModel();
+	curSortMode = sortMode;
+	applyFilterAndSort();
 	endResetModel();
 }
 
@@ -46,6 +66,7 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 	beginResetModel();
 
 	texturesAll.clear();
+	texturesFiltredSorted.clear();
 
 	if(NULL != scene)
 	{
@@ -63,7 +84,7 @@ void TextureListModel::setScene(DAVA::Scene *scene)
 		searchTexturesInNodes(scene);
 	}
 
-	texturesFiltred = texturesAll;
+	applyFilterAndSort();
 
 	endResetModel();
 }
@@ -104,8 +125,47 @@ void TextureListModel::searchTexturesInNodes(DAVA::SceneNode *parentNode)
 
 void TextureListModel::addTexture(DAVA::Texture *texture)
 {
-	if(NULL != texture /*&& texture->isRenderTarget*/)
+	if(NULL != texture && !texture->isRenderTarget && !texture->GetPathname().empty())
 	{
 		texturesAll.push_back(texture);
 	}
+}
+
+void TextureListModel::applyFilterAndSort()
+{
+	texturesFiltredSorted.clear();
+
+	for(int i = 0; i < (int) texturesAll.size(); ++i)
+	{
+		if(curFilter.isEmpty() || DAVA::String::npos != texturesAll[i]->GetPathname().find(curFilter.toStdString()))
+		{
+			texturesFiltredSorted.push_back(texturesAll[i]);
+		}
+		else
+		{
+			QString s(texturesAll[i]->GetPathname().c_str());
+		}
+	}
+
+	switch(curSortMode)
+	{
+	case SortByName:
+		std::sort(texturesFiltredSorted.begin(), texturesFiltredSorted.end(), TextureListModel::sortFnByName);
+		break;
+	case SortBySize:
+		std::sort(texturesFiltredSorted.begin(), texturesFiltredSorted.end(), TextureListModel::sortFnBySize);
+		break;
+	default:
+		break;
+	}
+}
+
+bool TextureListModel::sortFnByName(const DAVA::Texture* t1, const DAVA::Texture* t2)
+{
+	return QFileInfo(t1->GetPathname().c_str()).completeBaseName() < QFileInfo(t2->GetPathname().c_str()).completeBaseName();
+}
+
+bool TextureListModel::sortFnBySize(const DAVA::Texture* t1, const DAVA::Texture* t2)
+{
+	return (t1->GetDataSize() < t2->GetDataSize());
 }

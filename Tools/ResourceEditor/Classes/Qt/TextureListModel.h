@@ -11,8 +11,16 @@ class TextureListModel : public QAbstractListModel
 public:
 	enum TextureListSortMode
 	{
-		SORT_BY_NAME,
-		SORT_BY_SIZE
+		SortByName,
+		SortBySize
+	};
+
+	enum DisplayRore 
+	{
+		TexturePath = Qt::UserRole,
+		TextureName,
+		TextureDimension,
+		TextureDataSize
 	};
 
 	TextureListModel(QObject *parent = 0);
@@ -29,11 +37,19 @@ public:
 private:
 	DAVA::Scene *scene;
 	DAVA::Vector<DAVA::Texture *> texturesAll;
-	DAVA::Vector<DAVA::Texture *> texturesFiltred;
+	DAVA::Vector<DAVA::Texture *> texturesFiltredSorted;
+
+	TextureListSortMode curSortMode;
+	QString	curFilter;
+
+	void applyFilterAndSort();
 
 	void searchTexturesInMaterial(DAVA::Material *material);
 	void searchTexturesInNodes(DAVA::SceneNode *parentNode);
 	void addTexture(DAVA::Texture *texture);
+
+	static bool sortFnByName(const DAVA::Texture* t1, const DAVA::Texture* t2);
+	static bool sortFnBySize(const DAVA::Texture* t1, const DAVA::Texture* t2);
 };
 
 #endif // __TEXTURE_LIST_MODEL_H__

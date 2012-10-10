@@ -13,9 +13,11 @@ ConvertTexturesDialog::ConvertTexturesDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConvertTexturesDialog)
 {
-
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
+
+	textureListSortModes["Name"] = TextureListModel::SortByName;
+	textureListSortModes["Size"] = TextureListModel::SortBySize;
 
     ui->setupUi(this);
 	setWindowFlags(Qt::Window);
@@ -68,13 +70,19 @@ void ConvertTexturesDialog::setupTextureToolbar()
 	QComboBox *texturesSortCombo = new QComboBox();
 	QLabel *texturesSortComboLabel = new QLabel();
 
-	texturesSortCombo->addItem("Name");
-	texturesSortCombo->addItem("Size");
+	QMapIterator<QString, int> i(textureListSortModes);
+	while(i.hasNext())
+	{
+		i.next();
+		texturesSortCombo->addItem(i.key());
+	}
 
-	texturesSortComboLabel->setText("Sort:");
+	texturesSortComboLabel->setText("Sort: ");
 
 	ui->textureListToolbar->addWidget(texturesSortComboLabel);
 	ui->textureListToolbar->addWidget(texturesSortCombo);
+
+	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
 }
 
 void ConvertTexturesDialog::setupTextureListToolbar()
@@ -103,8 +111,7 @@ void ConvertTexturesDialog::setupTextureListFilter()
 
 void ConvertTexturesDialog::texturePressed(const QModelIndex & index)
 {
-	QVariant val = index.data();
-	QImage image(index.data().toString());
+	QImage image(index.data(TextureListModel::TexturePath).toString());
 
 	ui->scrollAreaOriginal->setImage(image);
 	ui->scrollAreaCompressed->setImage(image);
@@ -131,4 +138,9 @@ void ConvertTexturesDialog::textureListViewImages(bool checked)
 void ConvertTexturesDialog::textureListFilterChanged(const QString &text)
 {
 	textureListModel->setFilter(text);
+}
+
+void ConvertTexturesDialog::textureListSortChanged(const QString &text)
+{
+	textureListModel->setSortMode((TextureListModel::TextureListSortMode) textureListSortModes[text]);
 }
