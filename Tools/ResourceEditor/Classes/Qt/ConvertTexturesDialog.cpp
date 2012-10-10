@@ -46,7 +46,7 @@ void ConvertTexturesDialog::setupTexturesList()
 	ui->listViewTextures->setModel(textureListModel);
 	textureListModel->setScene(mainScreenScene);
 
-	QObject::connect(ui->listViewTextures, SIGNAL(pressed(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
+	QObject::connect(ui->listViewTextures, SIGNAL(selected(const QModelIndex &)), this, SLOT(texturePressed(const QModelIndex &)));
 }
 
 void ConvertTexturesDialog::setupImagesScrollAreas()

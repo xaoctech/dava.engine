@@ -1005,6 +1005,12 @@
     <ClCompile Include=".GeneratedQt\moc_TextureScrollArea.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureList.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\moc_TextureList.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -1872,6 +1878,9 @@
       <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureScrollArea.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureList.h">
       <Filter>Sources\Qt</Filter>
     </ClInclude>
   </ItemGroup>
