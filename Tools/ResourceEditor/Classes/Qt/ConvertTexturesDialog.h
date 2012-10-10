@@ -5,6 +5,9 @@
 #include "DAVAEngine.h"
 
 class QModelIndex;
+class TextureListDelegate;
+class TextureListModel;
+class QAbstractItemDelegate;
 
 namespace Ui {
 class ConvertTexturesDialog;
@@ -22,13 +25,20 @@ public:
 
 private:
     Ui::ConvertTexturesDialog *ui;
+	TextureListModel *textureListModel;
+	TextureListDelegate *textureListImagesDelegate;
+	QAbstractItemDelegate *textureListDefaultDelegate;
 
 	void setupTextureListToolbar();
 	void setupTextureToolbar();
 	void setupTexturesList();
 	void setupImagesScrollAreas();
+	void setupTextureListFilter();
 
 private slots:
+	void textureListViewImages(bool checked);
+	void textureListViewText(bool checked);
+	void textureListFilterChanged(const QString &text);
 	void texturePressed(const QModelIndex & index);
 };
 
