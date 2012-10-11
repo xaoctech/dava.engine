@@ -2,6 +2,7 @@
 %module AutotestingSystem
 %import Base/Singleton.h
 %import Base/BaseTypes.h
+%import Config.h
 
 %{
 #include "AutotestingSystemLua.h"

@@ -95,6 +95,11 @@
 		C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F0A51D161DEAEE003A2006 /* Observable.cpp */; };
 		C2F0A521161DEAEE003A2006 /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51E161DEAEE003A2006 /* Observable.h */; };
 		C2F0A522161DEAEE003A2006 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51F161DEAEE003A2006 /* Observer.h */; };
+		C750B1A5162706B200FCE6C8 /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750B19E162706B200FCE6C8 /* AutotestingSystemLua.cpp */; };
+		C750B1A6162706B200FCE6C8 /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C750B19F162706B200FCE6C8 /* AutotestingSystemLua.h */; };
+		C750B1A7162706B200FCE6C8 /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750B1A0162706B200FCE6C8 /* AutotestingSystemYaml.cpp */; };
+		C750B1A8162706B200FCE6C8 /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C750B1A1162706B200FCE6C8 /* AutotestingSystemYaml.h */; };
+		C750B1AB16271CAC00FCE6C8 /* liblua_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C750B1AA16271CAC00FCE6C8 /* liblua_macos.a */; };
 		C7783B9014DA998F00877862 /* TextGameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7783B8E14DA998F00877862 /* TextGameObject.cpp */; };
 		C7783B9114DA998F00877862 /* TextGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C7783B8F14DA998F00877862 /* TextGameObject.h */; };
 		C7AB370F1473F31E00D52251 /* NSFullScreenWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AB370D1473F31E00D52251 /* NSFullScreenWindow.h */; };
@@ -683,6 +688,11 @@
 		C2F0A51D161DEAEE003A2006 /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
 		C2F0A51E161DEAEE003A2006 /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
 		C2F0A51F161DEAEE003A2006 /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
+		C750B19E162706B200FCE6C8 /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
+		C750B19F162706B200FCE6C8 /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
+		C750B1A0162706B200FCE6C8 /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
+		C750B1A1162706B200FCE6C8 /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
+		C750B1AA16271CAC00FCE6C8 /* liblua_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_macos.a; path = ../../Libs/libs/liblua_macos.a; sourceTree = "<group>"; };
 		C7783B8E14DA998F00877862 /* TextGameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextGameObject.cpp; sourceTree = "<group>"; };
 		C7783B8F14DA998F00877862 /* TextGameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextGameObject.h; sourceTree = "<group>"; };
 		C784403A158204A000F75358 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -1168,6 +1178,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C750B1AB16271CAC00FCE6C8 /* liblua_macos.a in Frameworks */,
 				E82366CE16148EF9007B40D0 /* libPVRTexLib.a in Frameworks */,
 				0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */,
 				5C50EA1A15761947005ABED7 /* libmongodb_macos.a in Frameworks */,
@@ -1200,6 +1211,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				C750B1AA16271CAC00FCE6C8 /* liblua_macos.a */,
 				E82366CD16148EF9007B40D0 /* libPVRTexLib.a */,
 				0224B6FF15989F7400CDEF9E /* libtheora_macos.a */,
 				5C50EA1915761947005ABED7 /* libmongodb_macos.a */,
@@ -1280,6 +1292,10 @@
 		C7DE596A157F8CA10045CA41 /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C750B19E162706B200FCE6C8 /* AutotestingSystemLua.cpp */,
+				C750B19F162706B200FCE6C8 /* AutotestingSystemLua.h */,
+				C750B1A0162706B200FCE6C8 /* AutotestingSystemYaml.cpp */,
+				C750B1A1162706B200FCE6C8 /* AutotestingSystemYaml.h */,
 				C7DE596B157F8CA10045CA41 /* Action.cpp */,
 				C7DE596C157F8CA10045CA41 /* Action.h */,
 				C7DE596D157F8CA10045CA41 /* AssertAction.cpp */,
@@ -2339,6 +2355,8 @@
 				C2F0A522161DEAEE003A2006 /* Observer.h in Headers */,
 				E8F98C99161B418100B50BDA /* LibPVRHelper.h in Headers */,
 				E8F98C9A161B418100B50BDA /* PVRDefines.h in Headers */,
+				C750B1A6162706B200FCE6C8 /* AutotestingSystemLua.h in Headers */,
+				C750B1A8162706B200FCE6C8 /* AutotestingSystemYaml.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2669,6 +2687,8 @@
 				C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */,
 				E8F98C81161B171800B50BDA /* TexturePVR.cpp in Sources */,
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
+				C750B1A5162706B200FCE6C8 /* AutotestingSystemLua.cpp in Sources */,
+				C750B1A7162706B200FCE6C8 /* AutotestingSystemYaml.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2704,6 +2724,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/lua/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -2736,6 +2757,7 @@
 					./../../Libs/freetype/include,
 					./../../Libs/include/,
 					./../../Libs/oggvorbis/include,
+					./../../Libs/lua/include,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -2769,6 +2791,7 @@
 					./../../Sources/External/Freetype,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
@@ -2804,6 +2827,7 @@
 					./../../Sources/External/Freetype,
 					./../../Libs/oggvorbis/include,
 					./../../Libs/include,
+					./../../Libs/lua/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,

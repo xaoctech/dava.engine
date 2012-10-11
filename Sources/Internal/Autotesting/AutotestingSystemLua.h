@@ -37,13 +37,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Singleton.h"
 
-#ifndef SWIG
-extern "C"{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-};
-#endif
+struct lua_State;
 
 namespace DAVA
 {
