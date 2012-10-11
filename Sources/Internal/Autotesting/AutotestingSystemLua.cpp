@@ -6,17 +6,21 @@
 
 #include "Utils/Utils.h"
 
-#include "Autotesting.h"
+extern "C"{
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+};
+
+// directly include wrapped module here to compile only if __DAVAENGINE_AUTOTESTING__ is defined
+#include "AutotestingSystem_wrap.cxx"
+//extern "C" int luaopen_AutotestingSystem(lua_State *l); // declare the wrapped module
 
 namespace DAVA
 {
     
-//extern "C" int luaopen_Autotesting(lua_State *l); // declare the wrapped module
-extern "C" int luaopen_AutotestingSystem(lua_State *l); // declare the wrapped module
-    
 AutotestingSystemLua::AutotestingSystemLua() : luaState(NULL), delegate(NULL)
 {
-    new Autotesting();
 }
 
 AutotestingSystemLua::~AutotestingSystemLua()
@@ -25,11 +29,6 @@ AutotestingSystemLua::~AutotestingSystemLua()
     {
         lua_close(luaState);
         luaState = NULL;
-    }
-    
-    if(Autotesting::Instance())
-    {
-        Autotesting::Instance()->Release();
     }
 }
 
