@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1023</width>
-    <height>803</height>
+    <width>1033</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,10 +22,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
-   <property name="margin">
-    <number>3</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -282,6 +279,7 @@
        </layout>
       </widget>
      </widget>
+     <widget class="QtTreePropertyBrowser" name="widget" native="true"/>
     </widget>
    </item>
   </layout>
@@ -367,6 +365,12 @@
    <class>TextureList</class>
    <extends>QListView</extends>
    <header>texturelist.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtTreePropertyBrowser</class>
+   <extends>QWidget</extends>
+   <header>QPropertyBrowser/qttreepropertybrowser.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
