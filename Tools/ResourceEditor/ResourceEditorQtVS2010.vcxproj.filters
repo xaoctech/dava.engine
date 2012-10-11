@@ -70,7 +70,7 @@
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
     </Filter>
-    <Filter Include="Sources\Qt\QPropertyBrowser">
+    <Filter Include="Sources\Qt\QtPropertyBrowser">
       <UniqueIdentifier>{d1d39e29-1b06-4a84-a2fe-17cfb8b61690}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -951,30 +951,6 @@
     <ClCompile Include="Classes\Qt\TextureList.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtbuttonpropertybrowser.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qteditorfactory.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtgroupboxpropertybrowser.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtpropertybrowser.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtpropertybrowserutils.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtpropertymanager.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qttreepropertybrowser.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtvariantproperty.cpp">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClCompile>
     <ClCompile Include=".GeneratedQt\ConvertTexturesDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1037,6 +1013,30 @@
     </ClCompile>
     <ClCompile Include=".GeneratedQt\TextureScrollArea_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1901,30 +1901,6 @@
     <ClInclude Include="Classes\Qt\TextureList.h">
       <Filter>Sources\Qt</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtbuttonpropertybrowser.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qteditorfactory.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtgroupboxpropertybrowser.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtpropertybrowser.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtpropertybrowserutils_p.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtpropertymanager.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qttreepropertybrowser.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtvariantproperty.h">
-      <Filter>Sources\Qt\QPropertyBrowser</Filter>
-    </ClInclude>
     <ClInclude Include=".GeneratedQt\ui_converttexturesdialog.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
@@ -1933,6 +1909,30 @@
     </ClInclude>
     <ClInclude Include=".GeneratedQt\ui_mainwindow.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils_p.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
