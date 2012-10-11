@@ -70,6 +70,9 @@
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
     </Filter>
+    <Filter Include="Sources\Qt\QPropertyBrowser">
+      <UniqueIdentifier>{d1d39e29-1b06-4a84-a2fe-17cfb8b61690}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -939,76 +942,100 @@
     <ClCompile Include="Classes\Qt\davaglwidget.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_ConvertTexturesDialog.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_davaglwidget.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_FileSelectionModel.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_GraphItem.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_GraphModel.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_GUIState.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_LibraryModel.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_mainwindow.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_PointerHolder.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_QtMainWindowHandler.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_QtUtils.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_SceneData.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_SceneDataManager.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_SceneGraphItem.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_SceneGraphModel.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_ScenePreviewDialog.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_TextureListModel.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\qrc_QtIcons.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\TextureListDelegate.cpp">
       <Filter>Sources\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_TextureListDelegate.cpp">
-      <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\TextureScrollArea.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_TextureScrollArea.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\TextureList.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include=".GeneratedQt\moc_TextureList.cpp">
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtbuttonpropertybrowser.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qteditorfactory.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtgroupboxpropertybrowser.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtpropertybrowser.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtpropertybrowserutils.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtpropertymanager.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qttreepropertybrowser.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QPropertyBrowser\qtvariantproperty.cpp">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\ConvertTexturesDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\davaglwidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\FileSelectionModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\GraphItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\GraphModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\GUIState_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\LibraryModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\mainwindow_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\PointerHolder_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\QtIcons_qrc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\QtMainWindowHandler_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\QtUtils_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\SceneData_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\SceneDataManager_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\SceneGraphItem_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\SceneGraphModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\ScenePreviewDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureList_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureListDelegate_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureListModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureScrollArea_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1865,23 +1892,47 @@
     <ClInclude Include="Classes\Qt\davaglwidget.h">
       <Filter>Sources\Qt</Filter>
     </ClInclude>
-    <ClInclude Include=".GeneratedQt\ui_converttexturesdialog.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include=".GeneratedQt\ui_mainwindow.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\TextureListDelegate.h">
       <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include=".GeneratedQt\ui_davaglwidget.h">
-      <Filter>QtGenerated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureScrollArea.h">
       <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureList.h">
       <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtbuttonpropertybrowser.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qteditorfactory.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtgroupboxpropertybrowser.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtpropertybrowser.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtpropertybrowserutils_p.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtpropertymanager.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qttreepropertybrowser.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QPropertyBrowser\qtvariantproperty.h">
+      <Filter>Sources\Qt\QPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include=".GeneratedQt\ui_converttexturesdialog.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include=".GeneratedQt\ui_davaglwidget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include=".GeneratedQt\ui_mainwindow.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
