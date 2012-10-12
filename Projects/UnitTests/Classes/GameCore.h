@@ -45,6 +45,7 @@ class GameCore : public ApplicationCore
         String command;
         String filename;
         String testName;
+        String testMessage;
     };
     
     
