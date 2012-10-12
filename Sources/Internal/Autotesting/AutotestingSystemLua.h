@@ -42,11 +42,13 @@ struct lua_State;
 namespace DAVA
 {
     
+#ifndef SWIG
 class AutotestingSystemLuaDelegate
 {
 public:
     virtual void LoadWrappedLuaObjects() = 0;
 };
+#endif
 
 class AutotestingSystemLua : public Singleton<AutotestingSystemLua>
 {
