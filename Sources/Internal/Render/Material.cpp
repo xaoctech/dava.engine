@@ -388,8 +388,8 @@ void Material::Save(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 
 void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 {
-    Image::EnableAlphaPremultiplication(false);
-    Texture::EnableMipmapGeneration();
+//    Image::EnableAlphaPremultiplication(false);
+//    Texture::EnableMipmapGeneration();
 
     DataNode::Load(keyedArchive, sceneFile);
 
@@ -410,10 +410,10 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
                 Logger::Debug("--- load material texture: %s abs:%s", relativePathname.c_str(), names[k].c_str());
             
             textures[k] = Texture::CreateFromFile(names[k]);
-            if (textures[k])
-            {
-                textures[k]->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
-            }
+//            if (textures[k])
+//            {
+//                textures[k]->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
+//            }
         }
         
 //        if (names[k].size())
@@ -421,8 +421,8 @@ void Material::Load(KeyedArchive * keyedArchive, SceneFileV2 * sceneFile)
 //            Logger::Debug("- texture: %s index:%d", names[k].c_str(), index);
 //        } 
     }
-    Texture::DisableMipmapGeneration();
-    Image::EnableAlphaPremultiplication(true);
+//    Texture::DisableMipmapGeneration();
+//    Image::EnableAlphaPremultiplication(true);
     
     
     diffuseColor = keyedArchive->GetByteArrayAsType("mat.diffuse", diffuseColor);
@@ -765,19 +765,19 @@ void Material::SetTexture(eTextureLevel level, const String & textureName)
     SafeRelease(textures[level]);
     names[level] = "";
  
-    Image::EnableAlphaPremultiplication(false);
-    Texture::EnableMipmapGeneration();
+//    Image::EnableAlphaPremultiplication(false);
+//    Texture::EnableMipmapGeneration();
 
     Texture *t = Texture::CreateFromFile(textureName);
     if(t)
     {
-		t->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
+//		t->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
         textures[level] = t;
         names[level] = textureName;
     }
 
-    Texture::DisableMipmapGeneration();
-    Image::EnableAlphaPremultiplication(true);
+//    Texture::DisableMipmapGeneration();
+//    Image::EnableAlphaPremultiplication(true);
 }
 
 void Material::SetAlphablend(bool _isAlphablend)
