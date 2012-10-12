@@ -105,10 +105,6 @@
 		C2F0A4FD161DEA8C003A2006 /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A4FA161DEA8C003A2006 /* Observable.h */; };
 		C2F0A4FE161DEA8C003A2006 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A4FB161DEA8C003A2006 /* Observer.h */; };
 		C74366661625916600AEDD0F /* liblua_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C74366651625916600AEDD0F /* liblua_ios.a */; };
-		C750B1391626DAB900FCE6C8 /* Autotesting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750B1381626DAB900FCE6C8 /* Autotesting.cpp */; };
-		C750B13B1626DCB900FCE6C8 /* Autotesting_wrap.cxx in Sources */ = {isa = PBXBuildFile; fileRef = C750B13A1626DCB800FCE6C8 /* Autotesting_wrap.cxx */; };
-		C750B1401626F7BC00FCE6C8 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750B13E1626F7BC00FCE6C8 /* TestTemplate.cpp */; };
-		C750B1411626F7BC00FCE6C8 /* TestTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = C750B13F1626F7BC00FCE6C8 /* TestTemplate.h */; };
 		C756A273162599A900FBBA91 /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C756A271162599A900FBBA91 /* AutotestingSystemYaml.cpp */; };
 		C756A274162599A900FBBA91 /* AutotestingSystemYaml.h in Headers */ = {isa = PBXBuildFile; fileRef = C756A272162599A900FBBA91 /* AutotestingSystemYaml.h */; };
 		C756A2781625B5F100FBBA91 /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C756A2761625B5F100FBBA91 /* AutotestingSystemLua.cpp */; };
@@ -673,11 +669,6 @@
 		C2F0A4FA161DEA8C003A2006 /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
 		C2F0A4FB161DEA8C003A2006 /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
 		C74366651625916600AEDD0F /* liblua_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua_ios.a; path = ../../Libs/libs/liblua_ios.a; sourceTree = "<group>"; };
-		C750B1371626D9EA00FCE6C8 /* Autotesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Autotesting.h; sourceTree = "<group>"; };
-		C750B1381626DAB900FCE6C8 /* Autotesting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Autotesting.cpp; sourceTree = "<group>"; };
-		C750B13A1626DCB800FCE6C8 /* Autotesting_wrap.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Autotesting_wrap.cxx; sourceTree = "<group>"; };
-		C750B13E1626F7BC00FCE6C8 /* TestTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestTemplate.cpp; sourceTree = "<group>"; };
-		C750B13F1626F7BC00FCE6C8 /* TestTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestTemplate.h; sourceTree = "<group>"; };
 		C756A271162599A900FBBA91 /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
 		C756A272162599A900FBBA91 /* AutotestingSystemYaml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemYaml.h; sourceTree = "<group>"; };
 		C756A2761625B5F100FBBA91 /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
@@ -1211,7 +1202,6 @@
 		C7E895CD157FA00C00B0E00A /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
-				C750B13A1626DCB800FCE6C8 /* Autotesting_wrap.cxx */,
 				C756A2761625B5F100FBBA91 /* AutotestingSystemLua.cpp */,
 				C756A2771625B5F100FBBA91 /* AutotestingSystemLua.h */,
 				C756A271162599A900FBBA91 /* AutotestingSystemYaml.cpp */,
@@ -1227,10 +1217,6 @@
 				C7E895D3157FA00C00B0E00A /* AutotestingSystem.h */,
 				C7E895D6157FA00C00B0E00A /* TouchAction.cpp */,
 				C7E895D7157FA00C00B0E00A /* TouchAction.h */,
-				C750B1371626D9EA00FCE6C8 /* Autotesting.h */,
-				C750B1381626DAB900FCE6C8 /* Autotesting.cpp */,
-				C750B13E1626F7BC00FCE6C8 /* TestTemplate.cpp */,
-				C750B13F1626F7BC00FCE6C8 /* TestTemplate.h */,
 			);
 			path = Autotesting;
 			sourceTree = "<group>";
@@ -2249,7 +2235,6 @@
 				E8F98C87161B326200B50BDA /* PVRDefines.h in Headers */,
 				C756A274162599A900FBBA91 /* AutotestingSystemYaml.h in Headers */,
 				C756A2791625B5F100FBBA91 /* AutotestingSystemLua.h in Headers */,
-				C750B1411626F7BC00FCE6C8 /* TestTemplate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2572,9 +2557,6 @@
 				E8F98C84161B301E00B50BDA /* LibPVRHelper.cpp in Sources */,
 				C756A273162599A900FBBA91 /* AutotestingSystemYaml.cpp in Sources */,
 				C756A2781625B5F100FBBA91 /* AutotestingSystemLua.cpp in Sources */,
-				C750B1391626DAB900FCE6C8 /* Autotesting.cpp in Sources */,
-				C750B13B1626DCB900FCE6C8 /* Autotesting_wrap.cxx in Sources */,
-				C750B1401626F7BC00FCE6C8 /* TestTemplate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
