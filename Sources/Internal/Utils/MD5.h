@@ -68,6 +68,12 @@ void MD5Final (MD5_CTX *mdContext);
 class MD5
 {
 public:
+    
+    enum eConst
+    {
+        DIGEST_SIZE = 16
+    };
+    
 	static void ForFile(const String & pathName, uint8 * buffer);
 	static void ForDirectory(const String & pathName, uint8 * buffer, bool isRecursive);
 
@@ -82,7 +88,7 @@ private:
 	uint32 i[2];                   /* number of _bits_ handled mod 2^64 */
 	uint32 buf[4];                                    /* scratch buffer */
 	uint8 in[64];                              /* input buffer */
-	uint8 digest[16];     /* actual digest after MD5Final call */
+	uint8 digest[DIGEST_SIZE];     /* actual digest after MD5Final call */
 };
 
 
