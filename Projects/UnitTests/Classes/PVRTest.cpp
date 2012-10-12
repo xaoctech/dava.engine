@@ -153,13 +153,13 @@ void PVRTest::ReloadSprites()
     SafeRelease(pvrSprite);
     SafeRelease(decompressedPNGSprite);
     
-    Image::EnableAlphaPremultiplication(false);
+//    Image::EnableAlphaPremultiplication(false);
     
     pngSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PNG/number_%d.png", currentTest)));
     pvrSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PVR/number_%d.pvr", currentTest)));
     decompressedPNGSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/DecompressedPNG/number_%d.png", currentTest)));
     
-    Image::EnableAlphaPremultiplication(true);
+//    Image::EnableAlphaPremultiplication(true);
 }
 
 void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
