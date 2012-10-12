@@ -19,23 +19,22 @@ print "copy_tests"
 
 arguments = sys.argv[1:]
 
-index_Project = 0
-index_AutotestingDestPath = 1
-
 if 0 == len(arguments) or 2 != len(arguments):
-	print 'Usage: ./copy_tests.py [ProjectName] [AutotestingDestPath]'
+	print 'Usage: ./copy_tests.py [TestsSrcFolder] [AutotestingDestPath]'
 	exit(1)
 
 def ignored_svn_files(adir,filenames):
     return [filename for filename in filenames if filename.endswith(".svn")]
 
+testsSrcFolder = arguments[0]
+autotestingDestFolder = arguments[1]
+
 autotestingSrcFolder = os.getcwd()
-autotestingDestFolder = arguments[index_AutotestingDestPath]
 
 autotestingActionsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Actions")
 autotestingActionsDestFolder = os.path.realpath(autotestingDestFolder + "/Actions")
 
-autotestingTestsSrcFolder = os.path.realpath(autotestingSrcFolder + "/Tests")
+autotestingTestsSrcFolder = os.path.realpath(autotestingSrcFolder + testsSrcFolder)
 autotestingTestsDestFolder = os.path.realpath(autotestingDestFolder + "/Tests")
 
 if os.path.exists(autotestingActionsDestFolder):   
@@ -57,5 +56,6 @@ shutil.copytree(autotestingActionsSrcFolder, autotestingActionsDestFolder, ignor
 
 print "copy " + autotestingTestsSrcFolder + " to " + autotestingTestsDestFolder
 shutil.copytree(autotestingTestsSrcFolder, autotestingTestsDestFolder, ignore=ignored_svn_files)
+
 
 print "copy_tests done" 
