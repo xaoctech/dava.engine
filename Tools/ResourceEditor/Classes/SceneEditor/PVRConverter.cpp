@@ -19,7 +19,7 @@ PVRConverter::~PVRConverter()
 }
 
 
-String PVRConverter::ConvertPngToPvr(const String & fileToConvert, int32 format, bool generateMimpaps)
+String PVRConverter::ConvertPngToPvr(const String & fileToConvert, PixelFormat format, bool generateMimpaps)
 {
     String filePath, pngFileName;
     FileSystem::SplitPath(fileToConvert, filePath, pngFileName);

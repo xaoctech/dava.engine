@@ -229,8 +229,8 @@ bool SceneFile::SaveScene(const char * filename)
 	
 bool SceneFile::ReadTexture()
 {
-    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
-    Texture::EnableMipmapGeneration();
+//    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
+//    Texture::EnableMipmapGeneration();
     
 	SceneFile::TextureDef textureDef;
 	sceneFP->ReadString(textureDef.name, 512);
@@ -260,35 +260,22 @@ bool SceneFile::ReadTexture()
 			texture->UsePvrMipmaps();
 		}
 
-		texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
-	}else
-	{
-		Logger::Debug("*** error reading texture: %s\n", textureDef.name);
-        uint8 * textureData = new uint8[8 * 8 * 4]; 
-        for (int32 k = 0; k < 8 * 8 * 4; k += 4)
-        {
-            textureData[k + 0] = 0xFF; 
-            textureData[k + 1] = 0x00; 
-            textureData[k + 2] = 0xFF; 
-            textureData[k + 3] = 0xFF; 
-        }
-        texture = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
-        texture->GenerateMipmaps();
-        SafeDeleteArray(textureData);
+//		texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
 	}
 	
 	if (debugLogEnabled)Logger::Debug("- Texture: %s hasOpacity: %s %s\n", textureDef.name, (hasOpacity) ? ("yes") : ("no"), Texture::GetPixelFormatString(texture->format));
     
-    if (!mipMapsEnabled)
-        Texture::DisableMipmapGeneration();
+//    if (!mipMapsEnabled)
+//        Texture::DisableMipmapGeneration();
+
     SafeRelease(texture);
 	return true;
 }
 	
 bool SceneFile::ReadMaterial()
 {
-    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
-    Texture::EnableMipmapGeneration();
+//    bool mipMapsEnabled = Texture::IsMipmapGenerationEnabled();
+//    Texture::EnableMipmapGeneration();
 
 	SceneFile::MaterialDef materialDef; 
 	sceneFP->ReadString(materialDef.name, 512);
@@ -349,20 +336,7 @@ bool SceneFile::ReadMaterial()
     
     if (!mat->GetTexture(Material::TEXTURE_DIFFUSE))
     {
-        //Logger::Debug("*** error reading texture: %s\n", textureDef.name);
-        uint8 * textureData = new uint8[8 * 8 * 4]; 
-        for (int32 k = 0; k < 8 * 8 * 4; k += 4)
-        {
-            textureData[k + 0] = 0xFF; 
-            textureData[k + 1] = 0x00; 
-            textureData[k + 2] = 0xFF; 
-            textureData[k + 3] = 0xFF; 
-        }
-        Texture * texture = Texture::CreateFromData(FORMAT_RGBA8888, textureData, 8, 8);
-        texture->GenerateMipmaps();
-        mat->SetTexture(Material::TEXTURE_DIFFUSE, texture);
-        
-        SafeDeleteArray(textureData);
+        mat->SetTexture(Material::TEXTURE_DIFFUSE, Texture::GetPinkPlaceholder());
     }
 
     if (strlen(materialDef.lightmapTexture))
@@ -372,11 +346,11 @@ bool SceneFile::ReadMaterial()
 	if (debugLogEnabled)Logger::Debug("- Material: %s diffuseTexture: %s hasOpacity: %s\n", materialDef.name, diffuseTextureName.c_str(), (materialDef.hasOpacity) ? ("yes") : ("no"));
 	
 
-    for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
-    {
-        if (mat->GetTexture((Material::eTextureLevel)k))
-            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
-    }
+//    for (int k = 0; k < Material::TEXTURE_COUNT; ++k)
+//    {
+//        if (mat->GetTexture((Material::eTextureLevel)k))
+//            mat->GetTexture((Material::eTextureLevel)k)->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
+//    }
     
 	mat->indexOfRefraction = materialDef.indexOfRefraction;
 	mat->SetName(materialDef.name);
@@ -391,8 +365,8 @@ bool SceneFile::ReadMaterial()
     
 	SafeRelease(mat);
     
-    if (!mipMapsEnabled)
-        Texture::DisableMipmapGeneration();
+//    if (!mipMapsEnabled)
+//        Texture::DisableMipmapGeneration();
 
 	return true;
 }

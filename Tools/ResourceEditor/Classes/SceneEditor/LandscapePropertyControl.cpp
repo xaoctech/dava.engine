@@ -251,11 +251,11 @@ void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, 
 
 void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname)
 {
-    Texture::EnableMipmapGeneration();
+//    Texture::EnableMipmapGeneration();
     LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
     landscape->SetTexture(level, texturePathname);
     SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(level));
-    Texture::DisableMipmapGeneration();
+//    Texture::DisableMipmapGeneration();
 
     if(LandscapeNode::TEXTURE_TILE_FULL != level)
     {
@@ -279,8 +279,8 @@ void LandscapePropertyControl::OnComboIndexChanged(
 
 void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, const String &alphamaskPath)
 {
-    Image *lightMap = Image::CreateFromFile(lightmapPath);
-    Image *alphaMask = Image::CreateFromFile(alphamaskPath);
+    Image *lightMap = Image::CreateFromFile(lightmapPath, false);
+    Image *alphaMask = Image::CreateFromFile(alphamaskPath, false);
     
     if(lightMap && alphaMask)
     {
@@ -314,10 +314,10 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
                 if(landscape)
                 {
-                    Texture::EnableMipmapGeneration();
+//                    Texture::EnableMipmapGeneration();
                     landscape->SetTexture(LandscapeNode::TEXTURE_COLOR, resultPath);
                     SceneValidator::Instance()->ValidateTexture(landscape->GetTexture(LandscapeNode::TEXTURE_COLOR));
-                    Texture::DisableMipmapGeneration();
+//                    Texture::DisableMipmapGeneration();
                 }
             }
         }

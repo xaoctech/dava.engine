@@ -71,7 +71,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 	texturePathName =  nstring;
     
     String fileName = nstring;
-    Image * image = Image::CreateFromFile(fileName);
+    Image * image = Image::CreateFromFile(fileName, false);
     if (image)
     {
         bool opacityFound = false;

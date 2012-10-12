@@ -363,7 +363,7 @@ void TextureConverterDialog::OnConvert(DAVA::BaseObject *owner, void *userData, 
     }
 }
 
-void TextureConverterDialog::OnFormatSelected(int32 newFormat, bool generateMimpaps)
+void TextureConverterDialog::OnFormatSelected(PixelFormat newFormat, bool generateMimpaps)
 {
     Texture *t = GetTextureForIndex(selectedItem);
     
@@ -442,11 +442,11 @@ void TextureConverterDialog::SetupTexturePreview()
     Texture *workingTexture = GetTextureForIndex(selectedItem);
     String workingTexturePath = workingTexture->relativePathname;
 
-    bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
-    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
-
-    Image::EnableAlphaPremultiplication(false);
-    Texture::DisableMipmapGeneration();   
+//    bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
+//    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
+//
+//    Image::EnableAlphaPremultiplication(false);
+//    Texture::DisableMipmapGeneration();   
 
     if(FileSystem::GetExtension(workingTexturePath) == ".png")
     {
@@ -473,11 +473,11 @@ void TextureConverterDialog::SetupTexturePreview()
         dstTexture->GeneratePixelesation();
     }
     
-    if(isMipmaps)
-    {
-        Texture::EnableMipmapGeneration();
-    }
-    Image::EnableAlphaPremultiplication(isEnabled);
+//    if(isMipmaps)
+//    {
+//        Texture::EnableMipmapGeneration();
+//    }
+//    Image::EnableAlphaPremultiplication(isEnabled);
     
     
     SetupZoomedPreview(srcTexture, srcPreview, srcZoomPreview);

@@ -17,7 +17,6 @@
 #include "../Qt/SceneDataManager.h"
 #include "../LandscapeEditor/LandscapesController.h"
 
-
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -111,7 +110,7 @@ Image *LandscapeEditorHeightmap::CreateToolImage(int32 sideSize)
     Image *image = currentTool->image;
     Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)sideSize, (float32)sideSize, FORMAT_RGBA8888);
     Texture *srcTex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), 
-                                              image->GetWidth(), image->GetHeight());
+                                              image->GetWidth(), image->GetHeight(), false);
     Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)image->GetWidth(), (float32)image->GetHeight());
     
     RenderManager::Instance()->SetRenderTarget(dstSprite);
@@ -426,14 +425,14 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     Texture *mask = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
     if(mask)
     {
-        Image::EnableAlphaPremultiplication(false);
+//        Image::EnableAlphaPremultiplication(false);
         
         tilemaskPathname = mask->GetPathname();
-        tilemaskImage = Image::CreateFromFile(tilemaskPathname);
+        tilemaskImage = Image::CreateFromFile(tilemaskPathname, false);
         
-        tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight());
+        tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
         
-        Image::EnableAlphaPremultiplication(true);
+//        Image::EnableAlphaPremultiplication(true);
     }
     
     LandscapeNode *landscape = landscapesController->GetCurrentLandscape();

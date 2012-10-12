@@ -33,6 +33,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Utils/MD5.h"
 
 namespace DAVA
 {
@@ -40,25 +41,29 @@ namespace DAVA
 class File;
 class TextureDescriptor: public BaseObject
 {
+    enum eFileType
+    {
+        TYPE_TEXT = 0,
+        TYPE_BINARY
+    };
+        
     enum eConst
     {
-        MD5_BUFFER_SIZE = 16,
-        MD5_STRING_SIZE = MD5_BUFFER_SIZE * 2 + 1,
+        OPTION_DISABLED = 0,
+        OPTION_ENABLED = 1,
+        
+        TEXT_SIGNATURE = 0x006E6962,
+        BINARY_SIGNATURE = 0x00747874,
+        
+        DATE_BUFFER_SIZE = 20,
         LINE_SIZE = 256
     };
     
 public:
-	enum TextureWrap
-	{
-		WRAP_CLAMP_TO_EDGE = 0,
-		WRAP_REPEAT,
-	};
-    
     struct Compression
     {
         PixelFormat format;
-        bool generateMipMaps;
-        bool flipVertically;
+        int32 flipVertically;
     };
 
 
@@ -66,10 +71,23 @@ public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    void Load(const String &filePathname);
-    void Save(const String &filePathname);
+    void SetFileInfo(const String &filePathname);
+
+    bool Load(const String &filePathname);
+    void SaveAsText(const String &filePathname);
+    void SaveAsBinary(const String &filePathname);
+
+    bool GenerateMipMaps();
+
+    static String GetDefaultExtension();
     
 protected:
+    
+    eFileType DetectFileType(File *file);
+    
+    void LoadAsText(File *file);
+    void LoadAsBinary(File *file);
+    
     void SetDefaultValues();
     void CrcFromReadableFormat(const char8 *readCrc);
     void CrcToReadableFormat(char8 *readCrc, int32 crcSize);
@@ -83,18 +101,26 @@ protected:
     void ReadChar8String(File *file, char8 *buffer, uint32 bufferSize);
     void WriteChar8String(File *file, const char8 *buffer);
     
-    void ReadCompression(File *file, Compression &compression);
-    void WriteCompression(File *file, const Compression &compression);
+    void ReadCompressionAsText(File *file, Compression &compression);
+    void ReadCompressionAsBinary(File *file, Compression &compression);
+    void WriteCompressionAsText(File *file, const Compression &compression);
+    void WriteCompressionAsBinary(File *file, const Compression &compression);
+    
+    void WriteSignature(File *file, int32 signature);
     
 public:
     
-    uint8 crc[MD5_BUFFER_SIZE];
-
-    TextureWrap wrapModeS;
-    TextureWrap wrapModeT;
+    eFileType fileType;
     
-    bool generateMipMaps;
-	bool isAlphaPremultiplied;
+    
+    
+    char8 modificationDate[DATE_BUFFER_SIZE];
+    uint8 crc[MD5::DIGEST_SIZE];
+
+    int32 wrapModeS;
+    int32 wrapModeT;
+    
+    int32 generateMipMaps;
     
     Compression pvrCompression;
     Compression dxtCompression;

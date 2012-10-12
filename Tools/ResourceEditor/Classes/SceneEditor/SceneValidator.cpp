@@ -4,6 +4,7 @@
 #include "SceneInfoControl.h"
 
 #include "Render/LibPVRHelper.h"
+#include "Render/TextureDescriptor.h"
 
 
 SceneValidator::SceneValidator()
@@ -220,6 +221,13 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
         errorsLog.insert("Wrong size of " + path);
     }
+    
+    String extension = FileSystem::Instance()->GetExtension(texture->GetPathname());
+    if(4 < extension.length()) //".png", ".pvr"
+    {
+        String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
+        errorsLog.insert("Wrong extension of " + path);
+    }
 }
 
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape)
@@ -365,37 +373,40 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
 
 void SceneValidator::ReloadTextures()
 {
-    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
-    bool isMipmapsEnabled = Texture::IsMipmapGenerationEnabled();
+//    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
+//    bool isMipmapsEnabled = Texture::IsMipmapGenerationEnabled();
 
     const Map<String, Texture*> textureMap = Texture::GetTextureMap();
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *texture = it->second;
         
-        Image::EnableAlphaPremultiplication(texture->isAlphaPremultiplied);
-        
-        if(texture->isMimMapTexture) Texture::EnableMipmapGeneration();
-        else Texture::DisableMipmapGeneration();
-
-        Image *image = Image::CreateFromFile(texture->relativePathname);
-        if(image)
+        if(!texture->isRenderTarget &&  IsTextureChanged(texture->relativePathname))
         {
-            texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
-            if(texture->isMimMapTexture)
+//            Image::EnableAlphaPremultiplication(texture->isAlphaPremultiplied);
+            
+//            if(texture->isMimMapTexture) Texture::EnableMipmapGeneration();
+//            else Texture::DisableMipmapGeneration();
+            
+            Image *image = Image::CreateFromFile(texture->relativePathname, false);
+            if(image)
             {
-                texture->GenerateMipmaps();
-            }
-            texture->SetWrapMode(texture->wrapModeS, texture->wrapModeT);
+                texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
+//                if(texture->isMimMapTexture)
+//                {
+//                    texture->GenerateMipmaps();
+//                }
+//                texture->SetWrapMode(texture->wrapModeS, texture->wrapModeT);
                 
-            SafeRelease(image);
+                SafeRelease(image);
+            }
         }
 	}
     
-    if(isMipmapsEnabled) Texture::EnableMipmapGeneration();
-    else Texture::DisableMipmapGeneration();
-    
-    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
+//    if(isMipmapsEnabled) Texture::EnableMipmapGeneration();
+//    else Texture::DisableMipmapGeneration();
+//    
+//    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
 }
 
 void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
@@ -504,3 +515,28 @@ int32 SceneValidator::EnumerateSceneNodes(DAVA::SceneNode *node)
     
     return nodesCount;
 }
+
+
+bool SceneValidator::IsTextureChanged(const String &texturePathname)
+{
+    TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
+    if(descriptor)
+    {
+        String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
+        const char8 *modificationDate = File::GetModificationDate(sourceTexturePathname);
+        
+        if(modificationDate && (0 != CompareStrings(String(modificationDate), String(descriptor->modificationDate))))
+        {
+            uint8 crc[MD5::DIGEST_SIZE];
+            MD5::ForFile(sourceTexturePathname, crc);
+            
+            int32 cmpResult = Memcmp(crc, descriptor->crc, MD5::DIGEST_SIZE * sizeof(uint8));
+            SafeRelease(descriptor);
+            return (0 != cmpResult);
+        }
+            
+        SafeRelease(descriptor);
+    }
+    return false;
+}
+

@@ -261,7 +261,7 @@ bool LandscapeNode::BuildHeightmap()
     String extension = FileSystem::Instance()->GetExtension(heightmapPath);
     if(".png" == extension)
     {
-        Image *image = Image::CreateFromFile(heightmapPath);
+        Image *image = Image::CreateFromFile(heightmapPath, false);
         if(image)
         {
             if ((image->GetPixelFormat() != FORMAT_A8) && (image->GetPixelFormat() != FORMAT_A16))
@@ -577,7 +577,7 @@ const Vector2 & LandscapeNode::GetTextureTiling(eTextureLevel level)
     
 void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
 {
-    Image::EnableAlphaPremultiplication(false);
+//    Image::EnableAlphaPremultiplication(false);
 
     SafeRelease(textures[level]);
     textureNames[level] = String("");
@@ -586,8 +586,8 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
     if (texture)
     {
         textureNames[level] = textureName;
-        texture->GenerateMipmaps();
-        texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
+//        texture->GenerateMipmaps();
+//        texture->SetWrapMode(TextureDescriptor::WRAP_REPEAT, TextureDescriptor::WRAP_REPEAT);
     }
     textures[level] = texture;
     
@@ -596,7 +596,7 @@ void LandscapeNode::SetTexture(eTextureLevel level, const String & textureName)
         UpdateFullTiledTexture();
     }
 
-    Image::EnableAlphaPremultiplication(true);
+//    Image::EnableAlphaPremultiplication(true);
 }
     
 Texture * LandscapeNode::CreateTexture(eTextureLevel level, const String & textureName)
@@ -1358,6 +1358,8 @@ void LandscapeNode::Save(KeyedArchive * archive, SceneFileV2 * sceneFile)
     archive->SetByteArrayAsType("bbox", box);
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
+        if(TEXTURE_DETAIL == k) continue;
+
         String path = textureNames[k];
         String relPath  = sceneFile->AbsoluteToRelative(path);
         
@@ -1393,6 +1395,8 @@ void LandscapeNode::Load(KeyedArchive * archive, SceneFileV2 * sceneFile)
         
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
+        if(TEXTURE_DETAIL == k) continue;
+        
         String textureName = archive->GetString(Format("tex_%d", k));
         String absPath = sceneFile->RelativeToAbsolute(textureName);
         if(sceneFile->DebugLogEnabled())

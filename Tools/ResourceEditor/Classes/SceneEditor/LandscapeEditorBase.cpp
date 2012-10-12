@@ -6,7 +6,6 @@
 #include "ErrorNotifier.h"
 #include "EditorBodyControl.h"
 
-
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
     :   delegate(newDelegate)
     ,   state(ELE_NONE)

@@ -1,7 +1,6 @@
 #include "UNDOManager.h"
 #include "Scene3D/Heightmap.h"
 
-
 UNDOAction::UNDOAction()
 {
     type = ACTION_NONE;
@@ -148,9 +147,10 @@ Texture * UNDOManager::UndoTilemask()
 
         RenderManager::Instance()->LockNonMain();
         Image *image = (Image *)((*it)->actionData);
-        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
         RenderManager::Instance()->UnlockNonMain();
-        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
+        
+//        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
     }
     return tex;
 }
@@ -164,9 +164,9 @@ Texture * UNDOManager::RedoTilemask()
 
         RenderManager::Instance()->LockNonMain();
         Image *image = (Image *)((*it)->actionData);
-        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
+        tex = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
         RenderManager::Instance()->UnlockNonMain();
-        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
+//        tex->isAlphaPremultiplied = image->isAlphaPremultiplied;
         
         actionsHistoryUNDO.push_back(*it);
         actionsHistoryREDO.erase(it);
