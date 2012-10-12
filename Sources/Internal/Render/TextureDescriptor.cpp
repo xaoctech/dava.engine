@@ -30,7 +30,6 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/Logger.h"
 #include "FileSystem/File.h"
-#include "Utils/MD5.h"
 #include "Render/Texture.h"
 
 namespace DAVA
@@ -43,71 +42,72 @@ TextureDescriptor::TextureDescriptor()
 
 TextureDescriptor::~TextureDescriptor()
 {
-    
 }
 
 void TextureDescriptor::SetDefaultValues()
 {
-    Memset(crc, 0, MD5_BUFFER_SIZE * sizeof(uint8));
-
-    wrapModeS = WRAP_CLAMP_TO_EDGE;
-    wrapModeT = WRAP_CLAMP_TO_EDGE;
+    fileType = TYPE_TEXT;
     
-    generateMipMaps = false;
-	isAlphaPremultiplied = false;
+    
+    Memset(modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
+    Memset(crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
+
+    wrapModeS = Texture::WRAP_REPEAT;
+    wrapModeT = Texture::WRAP_REPEAT;
+    
+    generateMipMaps = OPTION_ENABLED;
     
     pvrCompression.format = FORMAT_PVR4;
-    pvrCompression.flipVertically = false;
-    pvrCompression.generateMipMaps = true;
+    pvrCompression.flipVertically = OPTION_DISABLED;
     
     dxtCompression.format = FORMAT_INVALID;
-    dxtCompression.flipVertically = false;
-    dxtCompression.generateMipMaps = true;
+    dxtCompression.flipVertically = OPTION_DISABLED;
 }
     
+void TextureDescriptor::SetFileInfo(const String &filePathname)
+{
+    const char8 *date = File::GetModificationDate(filePathname);
+    if(date)
+    {
+        strncpy(modificationDate, date, DATE_BUFFER_SIZE-1);
+        modificationDate[DATE_BUFFER_SIZE-1] = 0;
+        
+        MD5::ForFile(filePathname, crc);
+    }
+    else
+    {
+        Memset(modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
+        Memset(crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
+    }
+}
+
     
-void TextureDescriptor::Load(const String &filePathname)
+bool TextureDescriptor::Load(const String &filePathname)
 {
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
         Logger::Error("[TextureDescriptor::Load] Can't open file: %s", filePathname.c_str());
-        return;
+        return false;
     }
     
-    //crc
-    char8 readableCrc[MD5_STRING_SIZE];
-    ReadChar8String(file, readableCrc, MD5_STRING_SIZE);
-    CrcFromReadableFormat(readableCrc);
-
-    //Read WrapModes
-    int32 wrapS = 0;
-    ReadInt32(file, wrapS);
-    wrapModeS = (TextureWrap)wrapS;
-
-    int32 wrapT = 0;
-    ReadInt32(file, wrapT);
-    wrapModeT = (TextureWrap)wrapT;
-    
-
-    //Read isMipMapTexture
-    int32 mipmap = 0;
-    ReadInt32(file, mipmap);
-    generateMipMaps = (0 != mipmap);
-
-    //Read isAlphaPremultiplied
-    int32 alpha = 0;
-    ReadInt32(file, alpha);
-    isAlphaPremultiplied = (0 != alpha);
-
-    //Compression
-    ReadCompression(file, pvrCompression);
-    ReadCompression(file, dxtCompression);
+    fileType = DetectFileType(file);
+    if(TYPE_BINARY == fileType)
+    {
+        LoadAsBinary(file);
+    }
+    else
+    {
+        LoadAsText(file);
+    }
     
     SafeRelease(file);
+    
+    return true;
 }
 
-void TextureDescriptor::Save(const String &filePathname)
+    
+void TextureDescriptor::SaveAsText(const String &filePathname)
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
@@ -116,46 +116,137 @@ void TextureDescriptor::Save(const String &filePathname)
         return;
     }
     
+    WriteSignature(file, TEXT_SIGNATURE);
+    
+    //date
+    WriteChar8String(file, modificationDate);
+    
+    
     //crc
-    char8 readableCrc[MD5_STRING_SIZE];
-    CrcToReadableFormat(readableCrc, MD5_STRING_SIZE);
+    char8 readableCrc[MD5::DIGEST_SIZE*2 + 1];
+    CrcToReadableFormat(readableCrc, MD5::DIGEST_SIZE*2 + 1);
     WriteChar8String(file, readableCrc);
 
-    WriteInt32(file, (int32)wrapModeS);
-    WriteInt32(file, (int32)wrapModeT);
+    WriteInt32(file, wrapModeS);
+    WriteInt32(file, wrapModeT);
 
-    WriteInt32(file, (generateMipMaps) ? 1: 0);
-    WriteInt32(file, (isAlphaPremultiplied) ? 1: 0);
+    WriteInt32(file, generateMipMaps);
 
     //Compression
-    WriteCompression(file, pvrCompression);
-    WriteCompression(file, dxtCompression);
+    WriteCompressionAsText(file, pvrCompression);
+    WriteCompressionAsText(file, dxtCompression);
     
     SafeRelease(file);
 }
     
-void TextureDescriptor::ReadCompression(File *file, Compression &compression)
+void TextureDescriptor::SaveAsBinary(const String &filePathname)
 {
-    char8 formatName[MD5_STRING_SIZE];
-    ReadChar8String(file, formatName, MD5_STRING_SIZE);
+    File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
+    if(!file)
+    {
+        Logger::Error("[TextureDescriptor::Save] Can't open file: %s", filePathname.c_str());
+        return;
+    }
+
+    WriteSignature(file, BINARY_SIGNATURE);
+    
+//    file->Write(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
+//    file->Write(crc, MD5::DIGEST_SIZE * sizeof(uint8));
+    file->Write(&wrapModeS, sizeof(int32));
+    file->Write(&wrapModeT, sizeof(int32));
+    file->Write(&generateMipMaps, sizeof(int32));
+    
+    //TODO: we need to save image format
+//    WriteCompressionAsBinary(file, pvrCompression);
+//    WriteCompressionAsBinary(file, dxtCompression);
+    
+    SafeRelease(file);
+}
+
+    
+    
+TextureDescriptor::eFileType TextureDescriptor::DetectFileType(DAVA::File *file)
+{
+    char8 lineData[LINE_SIZE];
+    uint32 lineSize = file->ReadLine(lineData, LINE_SIZE);
+    if(lineSize)
+    {
+        int32 signature = lineData[0] | (lineData[1] << 8) | (lineData[2] << 16) | (lineData[3] << 24);
+        if(BINARY_SIGNATURE == signature)
+        {
+            return TYPE_BINARY;
+        }
+    }
+
+    return TYPE_TEXT;
+}
+    
+    
+void TextureDescriptor::LoadAsText(File *file)
+{
+    ReadChar8String(file, modificationDate, DATE_BUFFER_SIZE);
+    
+    char8 readableCrc[MD5::DIGEST_SIZE*2 + 1];
+    ReadChar8String(file, readableCrc, MD5::DIGEST_SIZE*2 + 1);
+    CrcFromReadableFormat(readableCrc);
+    
+    ReadInt32(file, wrapModeS);
+    ReadInt32(file, wrapModeT);
+    ReadInt32(file, generateMipMaps);
+    
+    ReadCompressionAsText(file, pvrCompression);
+    ReadCompressionAsText(file, dxtCompression);
+}
+    
+void TextureDescriptor::LoadAsBinary(File *file)
+{
+//    file->Read(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
+//    file->Read(crc, MD5::DIGEST_SIZE * sizeof(uint8));
+    file->Read(&wrapModeS, sizeof(int32));
+    file->Read(&wrapModeT, sizeof(int32));
+    file->Read(&generateMipMaps, sizeof(int32));
+    
+    //TODO: we need to load image format
+//    ReadCompressionAsBinary(file, pvrCompression);
+//    ReadCompressionAsBinary(file, dxtCompression);
+}
+
+void TextureDescriptor::WriteSignature(File *file, int32 signature)
+{
+    file->Write(&signature, sizeof(int32));
+}
+
+    
+void TextureDescriptor::ReadCompressionAsText(File *file, Compression &compression)
+{
+    char8 formatName[DATE_BUFFER_SIZE];
+    ReadChar8String(file, formatName, DATE_BUFFER_SIZE);
     compression.format = Texture::GetPixelFormatByName(String(formatName));
     
-    int32 mipmap = 0;
-    ReadInt32(file, mipmap);
-    compression.generateMipMaps = (0 != mipmap);
-    
-    int32 flip = 0;
-    ReadInt32(file, flip);
-    compression.flipVertically = (0 != flip);
+    ReadInt32(file, compression.flipVertically);
 }
 
-void TextureDescriptor::WriteCompression(File *file, const Compression &compression)
+void TextureDescriptor::ReadCompressionAsBinary(File *file, Compression &compression)
+{
+    int32 format = FORMAT_INVALID;
+    file->Read(&format, sizeof(int32));
+    compression.format = (PixelFormat)format;
+    
+    file->Read(&compression.flipVertically, sizeof(int32));
+}
+
+void TextureDescriptor::WriteCompressionAsText(File *file, const Compression &compression)
 {
     WriteChar8String(file, Texture::GetPixelFormatString(compression.format));
-    WriteInt32(file, (compression.generateMipMaps) ? 1: 0);
-    WriteInt32(file, (compression.flipVertically) ? 1: 0);
+    WriteInt32(file, compression.flipVertically);
 }
 
+void TextureDescriptor::WriteCompressionAsBinary(File *file, const Compression &compression)
+{
+    int32 format = compression.format;
+    file->Write(&format, sizeof(int32));
+    file->Write(&compression.flipVertically, sizeof(int32));
+}
     
 void TextureDescriptor::ReadInt32(DAVA::File *file, int32 &value)
 {
@@ -180,12 +271,14 @@ void TextureDescriptor::ReadChar8String(File *file, char8 *buffer, uint32 buffer
     uint32 lineSize = file->ReadLine(lineData, Min((uint32)LINE_SIZE, bufferSize - 1));
     if(lineSize)
     {
-        sscanf(lineData, "%s", buffer);
+        snprintf(buffer, bufferSize, "%s", lineData);
+        buffer[bufferSize-1] = 0;
     }
     else
     {
         buffer[0] = 0;
     }
+    
 }
     
 void TextureDescriptor::WriteChar8String(File *file, const char8 *buffer)
@@ -198,13 +291,13 @@ void TextureDescriptor::WriteChar8String(File *file, const char8 *buffer)
 void TextureDescriptor::CrcFromReadableFormat(const char8 *readCrc)
 {
     int32 crcSize = strlen(readCrc);
-    if((MD5_BUFFER_SIZE * 2) != crcSize)
+    if((MD5::DIGEST_SIZE * 2) != crcSize)
     {
         Logger::Error("[TextureDescriptor::CrcFromReadableFormat] crc has wrong size (%d). Must be 32 characters", crcSize);
         return;
     }
     
-    for(int32 i = 0; i < MD5_BUFFER_SIZE; ++i)
+    for(int32 i = 0; i < MD5::DIGEST_SIZE; ++i)
     {
         uint8 low = GetNumberFromCharacter(readCrc[2*i]);
         uint8 high = GetNumberFromCharacter(readCrc[2*i + 1]);
@@ -215,15 +308,15 @@ void TextureDescriptor::CrcFromReadableFormat(const char8 *readCrc)
 
 void TextureDescriptor::CrcToReadableFormat(char8 *readCrc, int32 crcSize)
 {
-    DVASSERT((MD5_STRING_SIZE <= crcSize) && "To small buffer. Must be enought to put 32 characters of crc and \0");
+    DVASSERT(((MD5::DIGEST_SIZE*2 + 1) <= crcSize) && "To small buffer. Must be enought to put 32 characters of crc and \0");
 
-    for(int32 i = 0; i < MD5_BUFFER_SIZE; ++i)
+    for(int32 i = 0; i < MD5::DIGEST_SIZE; ++i)
     {
         readCrc[2*i] = GetCharacterFromNumber(crc[i] & 0x0F);
         readCrc[2*i + 1] = GetCharacterFromNumber( (crc[i] & 0xF0) >> 4 );
     }
     
-    readCrc[2 * MD5_BUFFER_SIZE] = 0;
+    readCrc[2 * MD5::DIGEST_SIZE] = 0;
 }
     
     uint8 TextureDescriptor::GetNumberFromCharacter(char8 character)
@@ -234,11 +327,11 @@ void TextureDescriptor::CrcToReadableFormat(char8 *readCrc, int32 crcSize)
         }
         else if('a' <= character && character <= 'f')
         {
-            return (character - 'a');
+            return (character - 'a' + 10);
         }
         else if('A' <= character && character <= 'F')
         {
-            return (character - 'A');
+            return (character - 'A' + 10);
         }
         
         Logger::Error("[TextureDescriptor::CrcFromReadableFormat] crc has wrong symbol (%c).", character);
@@ -252,7 +345,18 @@ char8 TextureDescriptor::GetCharacterFromNumber(uint8 number)
         return (number + '0');
     }
 
-    return (number + 'A');
+    return (number + 'A' - 10);
+}
+    
+bool TextureDescriptor::GenerateMipMaps()
+{
+    return (OPTION_DISABLED != generateMipMaps);
+}
+    
+
+String TextureDescriptor::GetDefaultExtension()
+{
+    return String(".tde");
 }
 
     

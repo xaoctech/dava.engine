@@ -120,6 +120,9 @@ public:
 
     void ReloadTextures();
     
+    static bool IsTextureChanged(const String &texturePathname);
+    
+    
 protected:
     
     int32 EnumerateSceneNodes(SceneNode *node);

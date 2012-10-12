@@ -10,7 +10,7 @@ public:
 	PVRConverter();
 	virtual ~PVRConverter();
 
-    DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, DAVA::int32 format, bool generateMimpaps);
+    DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, DAVA::PixelFormat format, bool generateMimpaps);
 
 protected:
 

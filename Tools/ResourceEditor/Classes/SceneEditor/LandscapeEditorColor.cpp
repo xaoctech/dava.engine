@@ -12,7 +12,6 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 
-
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -320,11 +319,11 @@ void LandscapeEditorColor::UndoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetLastUNDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-        Image::EnableAlphaPremultiplication(false);
+//        Image::EnableAlphaPremultiplication(false);
         
         Texture *tex = UNDOManager::Instance()->UndoTilemask();
         
-        Image::EnableAlphaPremultiplication(true);
+//        Image::EnableAlphaPremultiplication(true);
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
 
@@ -337,11 +336,11 @@ void LandscapeEditorColor::RedoAction()
     UNDOAction::eActionType type = UNDOManager::Instance()->GetFirstREDOAction();
     if(UNDOAction::ACTION_TILEMASK == type)
     {
-        Image::EnableAlphaPremultiplication(false);
+//        Image::EnableAlphaPremultiplication(false);
         
         Texture *tex = UNDOManager::Instance()->RedoTilemask();
         
-        Image::EnableAlphaPremultiplication(true);
+//        Image::EnableAlphaPremultiplication(true);
         tex->GenerateMipmaps();
         tex->SetWrapMode(Texture::WRAP_REPEAT, Texture::WRAP_REPEAT);
 

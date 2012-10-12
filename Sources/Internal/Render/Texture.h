@@ -36,8 +36,6 @@
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
-#include "Render/TextureDescriptor.h"
-
 
 namespace DAVA
 {
@@ -48,9 +46,16 @@ namespace DAVA
 	For iOS it also support compressed PVR formats. (PVR2 and PVR4)
  */
 class Image;
+class TextureDescriptor;
 class Texture : public RenderResource
 {
 public:
+    
+    enum TextureWrap
+	{
+		WRAP_CLAMP_TO_EDGE = 0,
+		WRAP_REPEAT,
+	};
 	
 	enum DepthFormat
 	{
@@ -97,7 +102,7 @@ public:
         \param[in] width width of new texture
         \param[in] height height of new texture
      */
-	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height);
+	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height, bool generateMipMaps);
 
     /**
         \brief Create text texture from data arrray
@@ -109,7 +114,7 @@ public:
         \param[in] height height of new texture
         \param[in] addInfo additional info
      */
-	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, const char * addInfo = 0);
+	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, bool generateMipMaps, const char * addInfo = 0);
     
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -164,17 +169,16 @@ public:
 	inline int32 GetWidth() { return width; }
 	inline int32 GetHeight() { return height; }
 	
-	static void EnableMipmapGeneration();
-	static void DisableMipmapGeneration();
-    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
+//	static void EnableMipmapGeneration();
+//	static void DisableMipmapGeneration();
+//    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
 
 	void GenerateMipmaps();
 	void GeneratePixelesation();
-    void GenerateLinearFilters();
 	
 	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
     
-	void SetWrapMode(TextureDescriptor::TextureWrap wrapS, TextureDescriptor::TextureWrap wrapT);
+	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
 	void UsePvrMipmaps();
         
@@ -206,12 +210,14 @@ public:
     
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
+    static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
+
 public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_ANDROID__)
 	bool		 renderTargetModified;
     bool         renderTargetAutosave;
 
@@ -266,19 +272,18 @@ public:							// properties for fast access
 
     void GenerateID();
     
-    void LoadDescriptor(const String &texturePathname);
     
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
-	static Texture * CreateFromPNG(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
-	static Texture * CreateFromPVR(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
+	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
+	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
 
 	
 	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize);
 
 	static PixelFormat defaultRGBAFormat;
-	static bool	isMipmapGenerationEnabled;
+//	static bool	isMipmapGenerationEnabled;
 	Texture();
 	virtual ~Texture();
     
@@ -289,7 +294,9 @@ private:
     static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     
-    TextureDescriptor *descriptor;
+#if defined(__DAVAENGINE_OPENGL__)
+    static GLint HWglConvertWrapMode(TextureWrap wrap);
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 };
     
 // Implementation of inline functions
