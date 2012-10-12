@@ -35,12 +35,12 @@ using namespace DAVA;
 
 #include "GameCore.h"
 
-#define TEST_VERIFY(command, testData) \
+#define TEST_VERIFY(command) \
 {\
     bool passed = command;\
     if (!passed)\
     {\
-        GameCore::Instance()->RegisterError(#command, __FILE__, __LINE__, testData); \
+        GameCore::Instance()->RegisterError(#command, __FILE__, __LINE__, &data->testData); \
     }\
 }
 
@@ -52,10 +52,12 @@ public:
     TestData()
     {
         name = String("");
+        message = String("");
         userData = NULL;
     }
 
     String name;
+    String message;
     void * userData;
 };
 

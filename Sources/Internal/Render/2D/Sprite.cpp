@@ -796,7 +796,7 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
         
     if(flags & EST_MODIFICATION)
 	{
-		if((modification & (ESM_HFLIP | ESM_VFLIP)) == (ESM_HFLIP | ESM_VFLIP))
+		if((state->flags & (ESM_HFLIP | ESM_VFLIP)) == (ESM_HFLIP | ESM_VFLIP))
 		{
 			if(flags & EST_SCALE)
 			{
@@ -827,7 +827,7 @@ inline void Sprite::PrepareSpriteRenderData(Sprite::DrawState * state)
 		}
 		else 
 		{
-			if(modification & ESM_HFLIP)
+			if(state->flags & ESM_HFLIP)
 			{
 				if(flags & EST_SCALE)
 				{
