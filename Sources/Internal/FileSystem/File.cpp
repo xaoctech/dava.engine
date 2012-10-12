@@ -32,6 +32,7 @@
 #include "FileSystem/ResourceArchive.h"
 #include "FileSystem/DynamicMemoryFile.h"
 
+#include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
@@ -255,4 +256,25 @@ bool File::WriteLine(const String & string)
 
 }
 
+#include <sys/stat.h>
+#include <time.h>    
+const char8 * File::GetModificationDate(const String & filePathname)
+{
+    String realPathname = FileSystem::Instance()->SystemPathForFrameworkPath(filePathname);
+    
+    struct stat fileInfo = {0};
+    int32 ret = stat(realPathname.c_str(), &fileInfo);
+    if(0 == ret)
+    {
+        tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
+
+        return Format("%04d.%02d.%02d %02d:%02d:%02d",
+                       utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,
+                       utcTime->tm_hour, utcTime->tm_min, utcTime->tm_sec);
+    }
+    return NULL;
+}
+
+    
+    
 }
