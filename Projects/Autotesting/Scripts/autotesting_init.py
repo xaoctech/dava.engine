@@ -17,24 +17,26 @@ import subprocess;
 
 arguments = sys.argv[1:]
 
-index_OS = 0
-index_Project = 1
-
-if 0 == len(arguments):
-	print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName]'
+if len(arguments) < 2 or 3 < len(arguments):
+	print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName] [TestsGroupName]'
 	exit(1)
 
 print "*** DAVA Initializing autotesting"
+platformName = arguments[0]
+projectName = arguments[1]
+testsSrcFolder = "/Tests"
+if 3 == len(arguments):
+    testsSrcFolder = testsSrcFolder + "/" + arguments[2]
 
 print "platform.system: " + platform.system()
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + arguments[index_Project])
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
-if 2 == len(arguments):
+if 2 <= len(arguments):
     autotestingConfigSrcPath = os.path.realpath(currentDir + "/../Data/Config.h")
     autotestingConfigDestPath = os.path.realpath(frameworkDir + "/Sources/Internal/Autotesting/Config.h")
     if os.path.exists(autotestingConfigDestPath):    
@@ -49,7 +51,7 @@ autotestingDestFolder = os.path.realpath(projectDir + "/Data/Autotesting")
 scripts = ["/generate_id.py", "/copy_tests.py"]
 
 if (platform.system() == "Darwin"):
-    if (arguments[index_OS] == "iOS"):
+    if (platformName == "iOS"):
         scripts.append("/runOnDevice.sh")
         scripts.append("/floatsign.sh")
         scripts.append("/packipa.sh")
@@ -59,8 +61,8 @@ if (platform.system() == "Darwin"):
 autotestingReportsFolder = os.path.realpath(autotestingSrcFolder + "/Reports")      
 
 if os.path.exists(autotestingReportsFolder):   
-    print "remove previous report for " + arguments[index_OS]       
-    autotestingReportPath = os.path.realpath(autotestingReportsFolder + "/report_" + arguments[index_OS] + ".html") 
+    print "remove previous report for " + platformName       
+    autotestingReportPath = os.path.realpath(autotestingReportsFolder + "/report_" + platformName + ".html") 
     if os.path.exists(autotestingReportPath): 
         os.remove(autotestingReportPath)
 else:
@@ -82,13 +84,25 @@ if os.path.exists(autotestingDestFolder):
 
 os.mkdir(autotestingDestFolder)
 
+luaScriptDestFolder = os.path.realpath(autotestingDestFolder + "/Scripts")
+os.mkdir(luaScriptDestFolder)
+
+luaScriptName = "/autotesting_api.lua"
+luaScriptSrcPath = os.path.realpath(currentDir + luaScriptName)
+luaScriptDestPath = os.path.realpath(luaScriptDestFolder + luaScriptName)
+if os.path.exists(luaScriptDestPath):
+    print "delete " + luaScriptDestPath
+    os.remove(luaScriptDestPath)
+print "copy " + luaScriptSrcPath + " to " + luaScriptDestPath
+shutil.copy(luaScriptSrcPath, luaScriptDestPath)
+
 os.chdir(autotestingSrcFolder)
 
-params = ["python", "./copy_tests.py", arguments[index_Project], autotestingDestFolder]
+params = ["python", "./copy_tests.py", testsSrcFolder, autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
-params = ["python", "./generate_id.py", arguments[index_Project], autotestingDestFolder]
+params = ["python", "./generate_id.py", projectName, autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
