@@ -271,7 +271,7 @@ void TextureDescriptor::ReadChar8String(File *file, char8 *buffer, uint32 buffer
     uint32 lineSize = file->ReadLine(lineData, Min((uint32)LINE_SIZE, bufferSize - 1));
     if(lineSize)
     {
-        snprintf(buffer, bufferSize, "%s", lineData);
+        Snprinf(buffer, bufferSize, "%s", lineData);
         buffer[bufferSize-1] = 0;
     }
     else
