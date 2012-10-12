@@ -93,6 +93,7 @@ void AutotestingSystem::OnAppStarted()
                 sscanf(tempBuf, "%s", projectCharName);
                 SetProjectName(projectCharName);
             }
+            isDB = true;
         }
 		else
 		{
