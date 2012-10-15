@@ -71,7 +71,7 @@ public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    void SetFileInfo(const String &filePathname);
+    void SaveDateAndCrc(const String &filePathname);
 
     bool Load(const String &filePathname);
     void SaveAsText(const String &filePathname);
