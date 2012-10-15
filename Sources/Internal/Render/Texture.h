@@ -279,6 +279,7 @@ private:
 	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
 	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
 
+	static Texture * CreateFromDescriptor(TextureDescriptor *descriptor);
 	
 	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel);
 
