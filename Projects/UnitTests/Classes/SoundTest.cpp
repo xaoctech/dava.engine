@@ -142,7 +142,11 @@ void SoundTest::Update(float32 timeElapsed)
         if(effectIns->GetState() == SoundInstance::STATE_PLAYING)
             return;
         else
+        {
+            PerfFuncData * data = new PerfFuncData();
             TEST_VERIFY(effectIns->GetState() == SoundInstance::STATE_COMPLETED);
+            SafeDelete(data);
+        }
     }
 
     TestTemplate<SoundTest>::Update(timeElapsed);

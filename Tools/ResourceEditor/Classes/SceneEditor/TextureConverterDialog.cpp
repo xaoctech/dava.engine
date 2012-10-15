@@ -155,7 +155,7 @@ UIListCell *TextureConverterDialog::CellAtIndex(UIList *list, int32 index)
     }
     
     c->SetSelected(selectedItem == index, false);
-    c->SetTexture(GetWorkingTexturePath(GetTextureForIndex(index)->relativePathname));
+    c->SetTexture(GetTextureForIndex(index)->relativePathname);
     return c;
 }
 
@@ -363,15 +363,14 @@ void TextureConverterDialog::OnConvert(DAVA::BaseObject *owner, void *userData, 
     }
 }
 
-void TextureConverterDialog::OnFormatSelected(int32 newFormat, bool generateMimpaps)
+void TextureConverterDialog::OnFormatSelected(PixelFormat newFormat, bool generateMimpaps)
 {
     Texture *t = GetTextureForIndex(selectedItem);
     
     String newName = PVRConverter::Instance()->ConvertPngToPvr(GetSrcTexturePath(t->relativePathname), newFormat, generateMimpaps);
     RestoreTextures(t, newName);
     
-    selectedTextureName = GetWorkingTexturePath(newName);
-    selectedTextureName = FileSystem::ReplaceExtension(selectedTextureName, "");
+    selectedTextureName = FileSystem::ReplaceExtension(newName, "");
 
     selectedTextureName = NormalizePath(selectedTextureName);
 
@@ -386,8 +385,7 @@ void TextureConverterDialog::OnFormatSelected(int32 newFormat, bool generateMimp
     {
         Texture *t = (*it);
         
-        String textureName = GetWorkingTexturePath(t->relativePathname);
-        textureName = FileSystem::ReplaceExtension(textureName, "");
+        String textureName = FileSystem::ReplaceExtension(t->relativePathname, "");
         textureName = NormalizePath(textureName);
         
         if(textureName == selectedTextureName)
@@ -442,28 +440,27 @@ void TextureConverterDialog::SetupTexturePreview()
     Texture *dstTexture = NULL;
     
     Texture *workingTexture = GetTextureForIndex(selectedItem);
-    String workingTexturePath = GetWorkingTexturePath(workingTexture->relativePathname);
+    String workingTexturePath = workingTexture->relativePathname;
 
-    bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
-    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
-
-    Image::EnableAlphaPremultiplication(false);
-    Texture::DisableMipmapGeneration();   
+//    bool isEnabled = Image::IsAlphaPremultiplicationEnabled();
+//    bool isMipmaps = Texture::IsMipmapGenerationEnabled();
+//
+//    Image::EnableAlphaPremultiplication(false);
+//    Texture::DisableMipmapGeneration();   
 
     if(FileSystem::GetExtension(workingTexturePath) == ".png")
     {
-        srcTexture = CreateFromImage(workingTexturePath);
+        srcTexture = Texture::CreateFromFile(workingTexturePath);
         
-        String dstPath = FileSystem::ReplaceExtension(workingTexturePath, ".pvr.png");
-        dstTexture = CreateFromImage(dstPath);
+        String dstPath = FileSystem::ReplaceExtension(workingTexturePath, ".pvr");
+        dstTexture = Texture::CreateFromFile(dstPath);
     }
-    else 
+    else if(FileSystem::GetExtension(workingTexturePath) == ".pvr")
     {
         String srcPath = FileSystem::ReplaceExtension(workingTexturePath, ".png");
-        srcTexture = CreateFromImage(srcPath);
+        srcTexture = Texture::CreateFromFile(srcPath);
         
-        String dstPath = FileSystem::ReplaceExtension(workingTexturePath, ".pvr.png");
-        dstTexture = CreateFromImage(dstPath);
+        dstTexture = Texture::CreateFromFile(workingTexturePath);
     }
     
     if(srcTexture)
@@ -476,11 +473,11 @@ void TextureConverterDialog::SetupTexturePreview()
         dstTexture->GeneratePixelesation();
     }
     
-    if(isMipmaps)
-    {
-        Texture::EnableMipmapGeneration();
-    }
-    Image::EnableAlphaPremultiplication(isEnabled);
+//    if(isMipmaps)
+//    {
+//        Texture::EnableMipmapGeneration();
+//    }
+//    Image::EnableAlphaPremultiplication(isEnabled);
     
     
     SetupZoomedPreview(srcTexture, srcPreview, srcZoomPreview);
@@ -490,24 +487,7 @@ void TextureConverterDialog::SetupTexturePreview()
     SafeRelease(dstTexture);
 }
 
-Texture * TextureConverterDialog::CreateFromImage(const String &fileName)
-{
-	Image * image = Image::CreateFromFile(fileName);
-	if (!image)
-	{
-		return 0;
-	}
-	
-	RenderManager::Instance()->LockNonMain();
-	Texture * texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight());
-	RenderManager::Instance()->UnlockNonMain();
-	texture->relativePathname = fileName;
-//    texture->isAlphaPremultiplied = image->isAlphaPremultiplied;
-	
-	SafeRelease(image);
-	
-	return texture;
-}
+
 
 void TextureConverterDialog::SetupZoomedPreview(Texture *tex, UIControl *preview, UIZoomControl *zoomControl)
 {
@@ -610,18 +590,6 @@ void TextureConverterDialog::Update(float32 timeElapsed)
 }
 
 
-String TextureConverterDialog::GetWorkingTexturePath(const String &relativeTexturePath)
-{
-    String textureWorkingPath = relativeTexturePath;
-    String::size_type pos = textureWorkingPath.find(".pvr.png");
-    if(String::npos != pos)
-    {
-        textureWorkingPath = FileSystem::ReplaceExtension(textureWorkingPath, "");
-    }
-
-    return textureWorkingPath;
-}
-
 String TextureConverterDialog::GetSrcTexturePath(const String &relativeTexturePath)
 {
     String ext = FileSystem::GetExtension(relativeTexturePath);
@@ -629,16 +597,6 @@ String TextureConverterDialog::GetSrcTexturePath(const String &relativeTexturePa
     {   // use src png file
         String textureWorkingPath = FileSystem::ReplaceExtension(relativeTexturePath, ".png");
         return textureWorkingPath;
-    }
-    else if(".png" == ext) 
-    {
-        String::size_type pos = relativeTexturePath.find(".pvr.png");
-        if(String::npos != pos)
-        {   // use png file before conversion
-            String textureWorkingPath = relativeTexturePath;
-            textureWorkingPath.replace(textureWorkingPath.find(".pvr.png"), strlen(".pvr.png"), ".png");
-            return textureWorkingPath;
-        }
     }
 
     return relativeTexturePath;

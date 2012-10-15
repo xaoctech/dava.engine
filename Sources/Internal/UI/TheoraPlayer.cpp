@@ -333,7 +333,8 @@ void TheoraPlayer::Update(float32 timeElapsed)
     
         if(!ret)
         {
-            Texture * tex = Texture::CreateFromData(FORMAT_RGBA8888, frameBuffer, frameBufferW, frameBufferH);
+            Texture * tex = Texture::CreateFromData(FORMAT_RGBA8888, frameBuffer, frameBufferW, frameBufferH, false);
+            
             Sprite * spr = Sprite::CreateFromTexture(tex, 0, 0, (float32)tex->width, (float32)tex->height);
             spr->ConvertToVirtualSize();
 

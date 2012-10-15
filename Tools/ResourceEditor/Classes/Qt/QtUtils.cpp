@@ -34,3 +34,29 @@ DAVA::String GetOpenFileName(const DAVA::String &title, const DAVA::String &path
 
     return PathnameToDAVAStyle(filePath);
 }
+
+
+DAVA::String SizeInBytesToString(DAVA::float32 size)
+{
+    DAVA::String retString = "";
+    
+    if(1000000 < size)
+    {
+        retString = Format("%0.2f MB", size / (1024 * 1024) );
+    }
+    else if(1000 < size)
+    {
+        retString = Format("%0.2f KB", size / 1024);
+    }
+    else
+    {
+        retString = Format("%d B", (int32)size);
+    }
+    
+    return  retString;
+}
+
+DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
+{
+    return StringToWString(SizeInBytesToString(size));
+}

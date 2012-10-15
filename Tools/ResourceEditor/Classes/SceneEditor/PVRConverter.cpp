@@ -18,32 +18,8 @@ PVRConverter::~PVRConverter()
 
 }
 
-void PVRConverter::ConvertPvrToPng(const String & fileToConvert)
-{
-    String filePath, pvrFileName;
-    FileSystem::SplitPath(fileToConvert, filePath, pvrFileName);
-    String pngFileName = pvrFileName+".png";
-    
-	String cwd = FileSystem::Instance()->GetCurrentWorkingDirectory();
-	FileSystem::Instance()->SetCurrentWorkingDirectory(filePath);
 
-    String command = "";
-#if defined (__DAVAENGINE_MACOS__)
-    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/PVRTexTool");
-    command = Format("%s -d -f8888 -i%s -o%s", converterPath.c_str(), pvrFileName.c_str(), pngFileName.c_str());
-#elif defined (__DAVAENGINE_WIN32__)
-	String converterPath = FileSystem::Instance()->AbsoluteToRelativePath(filePath, dataFolderPath);
-	converterPath += "/Data/PVRTexTool.exe";
-    command = Format("\"\"%s\" -d -f8888 -i%s -o%s\"", converterPath.c_str(), pvrFileName.c_str(), pngFileName.c_str());
-#endif    
-    
-	Logger::Info(command.c_str());
-	FileSystem::Instance()->Spawn(command);
- 
-	FileSystem::Instance()->SetCurrentWorkingDirectory(cwd);
-}
-
-String PVRConverter::ConvertPngToPvr(const String & fileToConvert, int32 format, bool generateMimpaps)
+String PVRConverter::ConvertPngToPvr(const String & fileToConvert, PixelFormat format, bool generateMimpaps)
 {
     String filePath, pngFileName;
     FileSystem::SplitPath(fileToConvert, filePath, pngFileName);
@@ -114,7 +90,5 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, int32 format,
 	FileSystem::Instance()->SetCurrentWorkingDirectory(cwd);
     
     String retPvrName = filePath + pvrFileName;
-    PVRConverter::ConvertPvrToPng(retPvrName);
-    
     return retPvrName;
 }

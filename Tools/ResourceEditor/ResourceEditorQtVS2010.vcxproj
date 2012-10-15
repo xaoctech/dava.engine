@@ -447,7 +447,6 @@
     <ClCompile Include="Classes\SceneEditor\PropertyControlCreator.cpp" />
     <ClCompile Include="Classes\SceneEditor\PropertyList.cpp" />
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp" />
-    <ClCompile Include="Classes\SceneEditor\PVRUtils.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneEditorScreenMain.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneExporter.cpp" />
     <ClCompile Include="Classes\SceneEditor\SceneGraph.cpp" />
@@ -826,7 +825,6 @@
     <ClInclude Include="Classes\SceneEditor\PropertyControlCreator.h" />
     <ClInclude Include="Classes\SceneEditor\PropertyList.h" />
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h" />
-    <ClInclude Include="Classes\SceneEditor\PVRUtils.h" />
     <ClInclude Include="Classes\SceneEditor\SceneEditorScreenMain.h" />
     <ClInclude Include="Classes\SceneEditor\SceneExporter.h" />
     <ClInclude Include="Classes\SceneEditor\SceneGraph.h" />

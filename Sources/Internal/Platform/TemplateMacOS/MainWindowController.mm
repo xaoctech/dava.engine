@@ -188,6 +188,8 @@ namespace DAVA
 	[openGLView setFrame: rect];
 	
 	core = Core::GetApplicationCore();
+    RenderManager::Instance()->DetectRenderingCapabilities();
+
 
 	// start animation
 	isAnimating = NO;
