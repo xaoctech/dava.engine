@@ -37,7 +37,6 @@
 #include "Base/BaseObject.h"
 #include "Render/RenderResource.h"
 
-
 namespace DAVA
 {
 /**
@@ -47,17 +46,17 @@ namespace DAVA
 	For iOS it also support compressed PVR formats. (PVR2 and PVR4)
  */
 class Image;
+class TextureDescriptor;
 class Texture : public RenderResource
 {
 public:
-	
-	enum TextureWrap
+    
+    enum TextureWrap
 	{
 		WRAP_CLAMP_TO_EDGE = 0,
-		WRAP_CLAMP,
 		WRAP_REPEAT,
 	};
-
+	
 	enum DepthFormat
 	{
 		DEPTH_NONE = 0,
@@ -78,16 +77,21 @@ public:
 
 	// Main constructurs
 	
+    static void InitializePixelFormatDescriptors();
+
+    
 	/**
         \brief Return size of pixel format in bits 
         \returns size in bits, for example for FORMAT_RGBA8888 function will return 32.
      */
-	static int32 GetPixelFormatSize(PixelFormat format);
+	static int32 GetPixelFormatSizeInBytes(PixelFormat format);
+	static int32 GetPixelFormatSizeInBits(PixelFormat format);
 	/**
         \brief Return string representation of pixel format
         \returns string value describing pixel format
      */
     static const char * GetPixelFormatString(PixelFormat format);
+    static PixelFormat GetPixelFormatByName(const String &formatName);
     
     /**
         \brief Create texture from data arrray
@@ -98,7 +102,7 @@ public:
         \param[in] width width of new texture
         \param[in] height height of new texture
      */
-	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height);
+	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height, bool generateMipMaps);
 
     /**
         \brief Create text texture from data arrray
@@ -110,7 +114,7 @@ public:
         \param[in] height height of new texture
         \param[in] addInfo additional info
      */
-	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, const char * addInfo = 0);
+	static Texture * CreateTextFromData(PixelFormat format, uint8 * data, uint32 width, uint32 height, bool generateMipMaps, const char * addInfo = 0);
     
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
@@ -165,14 +169,15 @@ public:
 	inline int32 GetWidth() { return width; }
 	inline int32 GetHeight() { return height; }
 	
-	static void EnableMipmapGeneration();
-	static void DisableMipmapGeneration();
-    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
+//	static void EnableMipmapGeneration();
+//	static void DisableMipmapGeneration();
+//    static bool IsMipmapGenerationEnabled() { return isMipmapGenerationEnabled; };
+
 	void GenerateMipmaps();
 	void GeneratePixelesation();
 	
-	void TexImage(int32 level, uint32 width, uint32 height, const void * _data);
-
+	void TexImage(int32 level, uint32 width, uint32 height, const void * _data, uint32 dataSize);
+    
 	void SetWrapMode(TextureWrap wrapS, TextureWrap wrapT);
 	
 	void UsePvrMipmaps();
@@ -201,13 +206,18 @@ public:
         \brief Check if texture was created by GetPinkPlaceholder()
      */
 	bool IsPinkPlaceholder();
+    
+    
+    static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
+
+    static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
 
 public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 
-#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_ANDROID__)
 	bool		 renderTargetModified;
     bool         renderTargetAutosave;
 
@@ -216,8 +226,6 @@ public:							// properties for fast access
 	virtual void Invalidate();
 	void InvalidateFromFile();
 	void InvalidateFromSavedData();
-
-	static int32 FormatMultiplier(PixelFormat format);
 
     void SaveData(PixelFormat format, uint8 * data, uint32 width, uint32 height);
     void SaveData(uint8 * data, int32 dataSize);
@@ -254,12 +262,6 @@ public:							// properties for fast access
 	DepthFormat depthFormat;
 	bool		isRenderTarget;
 
-    bool isMimMapTexture;
-	bool isAlphaPremultiplied;
-
-    TextureWrap wrapModeS; 
-    TextureWrap wrapModeT;
-
 	void SetDebugInfo(const String & _debugInfo);
 
 	static const Map<String, Texture*> & GetTextureMap();
@@ -267,24 +269,34 @@ public:							// properties for fast access
     int32 GetDataSize() const;
     
     void ReleaseTextureData();
+
+    void GenerateID();
+    
     
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
-	static Texture * CreateFromPNG(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
-	static Texture * CreateFromPVR(const String & pathName);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
+	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
+	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
 
 	
 	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize);
 
 	static PixelFormat defaultRGBAFormat;
-	static bool	isMipmapGenerationEnabled;
+//	static bool	isMipmapGenerationEnabled;
 	Texture();
 	virtual ~Texture();
     
     Image * ReadDataToImage();
 
 	static Texture * pinkPlaceholder;
+    
+    static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
+    static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
+    
+#if defined(__DAVAENGINE_OPENGL__)
+    static GLint HWglConvertWrapMode(TextureWrap wrap);
+#endif //#if defined(__DAVAENGINE_OPENGL__)
 };
     
 // Implementation of inline functions

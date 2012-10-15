@@ -60,7 +60,7 @@ void MD5::ForFile(const String & pathName, unsigned char * digest)
 	SafeRelease(f);
 	md5.Final();
 
-	memcpy(digest, md5.GetDigest(), 16);
+	memcpy(digest, md5.GetDigest(), DIGEST_SIZE);
 }
 
 void MD5::ForDirectory(const String & pathName, uint8 * digest, bool isRecursive)
@@ -70,7 +70,7 @@ void MD5::ForDirectory(const String & pathName, uint8 * digest, bool isRecursive
 	MD5::RecursiveDirectoryMD5(pathName, md5, isRecursive);
 	md5.Final();
 
-	memcpy(digest, md5.GetDigest(), 16);
+	memcpy(digest, md5.GetDigest(), DIGEST_SIZE);
 }
 
 void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecursive)
@@ -96,9 +96,9 @@ void MD5::RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecur
 			// update MD5 according to the file
 			md5.Update((uint8*)fileList->GetPathname(i).c_str(), (uint32)fileList->GetPathname(i).size());
 			
-			uint8 fileDigest[16];
+			uint8 fileDigest[DIGEST_SIZE];
 			MD5::ForFile(fileList->GetPathname(i), fileDigest);
-			md5.Update(fileDigest, 16);
+			md5.Update(fileDigest, DIGEST_SIZE);
 
 			//bool success = DeleteFile(fileList->GetPathname(i));
 			//Logger::Debug("- delete file: %s / %s- %d", fileList->GetPathname(i).c_str(), fileList->GetFilename(i).c_str(), success ? (1): (0));

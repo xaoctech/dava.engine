@@ -6,7 +6,6 @@
 #include "ErrorNotifier.h"
 #include "EditorBodyControl.h"
 
-
 LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, EditorBodyControl *parentControl)
     :   delegate(newDelegate)
     ,   state(ELE_NONE)
@@ -38,7 +37,7 @@ LandscapeEditorBase::LandscapeEditorBase(LandscapeEditorDelegate *newDelegate, E
     landscapeSize = 0;
 
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.png");
-	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP, Texture::WRAP_CLAMP);
+	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     
     savedShaderMode = LandscapeNode::TILED_MODE_MIXED;
 }

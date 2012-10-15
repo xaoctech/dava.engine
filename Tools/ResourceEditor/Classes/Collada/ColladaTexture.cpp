@@ -71,29 +71,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 	texturePathName =  nstring;
     
     String fileName = nstring;
-
-    //convert pvr to png
-    String extension = FileSystem::GetExtension(fileName);
-    if(0 == CompareStrings(extension, ".pvr"))
-    {
-        PVRConverter::Instance()->ConvertPvrToPng(fileName);
-    }
-    else if(0 == CompareStrings(extension, ".png"))
-    {
-        String pvrFileName = FileSystem::ReplaceExtension(fileName, ".pvr");
-        File *f = File::Create(pvrFileName, File::READ|File::OPEN);
-        if(f)
-        {
-            SafeRelease(f);
-            PVRConverter::Instance()->ConvertPvrToPng(pvrFileName);
-            
-            texturePathName = FUStringConversion::ToFString(pvrFileName.c_str());
-            fileName = pvrFileName + ".png";
-        }
-    }
-    
-    
-    Image * image = Image::CreateFromFile(fileName);
+    Image * image = Image::CreateFromFile(fileName, false);
     if (image)
     {
         bool opacityFound = false;

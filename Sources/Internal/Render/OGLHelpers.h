@@ -76,19 +76,32 @@ namespace DAVA
 // REDEFINED OPENGL FUNCTIONS
     
 #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-#define glBindBuffer glBindBufferARB
-#define glGenBuffers glGenBuffersARB
-#define glDeleteBuffers glDeleteBuffersARB
-#define glBufferData glBufferDataARB
+    #define glBindBuffer glBindBufferARB
+    #define glGenBuffers glGenBuffersARB
+    #define glDeleteBuffers glDeleteBuffersARB
+    #define glBufferData glBufferDataARB
 
-#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
-#define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
-#define GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
-#define GL_STATIC_DRAW GL_STATIC_DRAW_ARB
-#define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
-    
-#endif
-    
+    #define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+    #define GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+    #define GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
+    #define GL_STATIC_DRAW GL_STATIC_DRAW_ARB
+    #define GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
+#endif //#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+
+
+#if defined (__DAVAENGINE_IPHONE__)
+    #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+    #define glDeleteFramebuffers glDeleteFramebuffersOES
+    #define glDeleteRenderbuffers glDeleteRenderbuffersOES
+    #define glGenerateMipmap glGenerateMipmapOES
+#elif defined(__DAVAENGINE_ANDROID__)
+    #define glDeleteFramebuffers glDeleteFramebuffersOES
+    #define glDeleteRenderbuffers glDeleteRenderbuffersOES
+#elif defined(__DAVAENGINE_MACOS__) 
+    #define glDeleteFramebuffers glDeleteFramebuffersEXT
+    #define glDeleteRenderbuffers glDeleteRenderbuffersEXT
+    #define glGenerateMipmap glGenerateMipmapEXT
+#endif //#if defined (__DAVAENGINE_IPHONE__)
     
     
 };

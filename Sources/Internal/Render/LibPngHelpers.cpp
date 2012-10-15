@@ -486,15 +486,9 @@ bool PngImage::CreateFromFBOSprite(Sprite * fboSprite)
 	Texture * texture = fboSprite->GetTexture();
 	if (texture->format == FORMAT_RGBA8888)
 	{
-		//glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
-		//glBindTexture(GL_TEXTURE_2D, texture->id);
-		//glGetTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		
 		RenderManager::Instance()->SetRenderTarget(fboSprite);
 		glReadPixels(0, 0, texture->width, texture->height, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		RenderManager::Instance()->RestoreRenderTarget();
-		
-		//glBindTexture(GL_TEXTURE_2D, saveId);
 	}
 	return true;
 }

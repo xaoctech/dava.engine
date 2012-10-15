@@ -171,7 +171,7 @@ void ModificationsPanel::ChangeCollisionModeShow(SceneNode * node)
 
 void ModificationsPanel::OnReloadScene()
 {
-	bool val = modeCollision;
+	bool val = (modeCollision != 0);
 	modeCollision = 0;
 	ChangeCollisionModeShow(workingScene);
 	if (val)

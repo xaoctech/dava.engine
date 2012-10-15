@@ -23,6 +23,8 @@ public:
     KeyedArchive *GetSettings();
     void Save();
 
+	void ApplyOptions();
+
     void SetProjectPath(const String &projectPath);
     String GetProjectPath();
     

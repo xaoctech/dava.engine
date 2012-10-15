@@ -71,10 +71,6 @@ namespace DAVA
 */
 
 
-// Alexandresky style compile time assertion. 
-template <bool> struct CompileTimeError;
-template <> struct CompileTimeError<true> {};
-#define COMPILER_ASSERT(expr)  (CompileTimeError<(expr)!=0>());
 	
 // Runtime asserts	
 

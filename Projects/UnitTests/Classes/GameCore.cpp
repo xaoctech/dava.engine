@@ -40,6 +40,8 @@
 #include "HashMapTest.h"
 #include "SoundTest.h"
 #include "SplitTest.h"
+#include "PVRTest.h"
+
 
 using namespace DAVA;
 
@@ -65,12 +67,13 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new SampleTest();
-	new EntityTest(); 
-    new MemoryAllocatorsTest();
-    new HashMapTest();
-    new SoundTest();
-    new SplitTest();
+    new PVRTest();
+//	new SampleTest();
+	new EntityTest();	
+	new MemoryAllocatorsTest();
+	new HashMapTest();
+	new SoundTest();
+	new SplitTest();
     
     errors.reserve(TestCount());
 
@@ -177,7 +180,7 @@ void GameCore::RunTests()
     }
     else 
     {
-        logFile->WriteLine(String("There are no tests."));
+        LogMessage(String("There are no tests."));
         Core::Instance()->Quit();
     }
 }
@@ -252,10 +255,10 @@ void GameCore::FlushTestResults()
         return;
     }
 
-//    //TODO: test
-//    dbClient->DropCollection();
-//    dbClient->DropDatabase();
-//    //end of test
+    //TODO: test
+    dbClient->DropCollection();
+    dbClient->DropDatabase();
+    //end of test
     
     
     time_t logStartTime = time(0);
@@ -276,7 +279,7 @@ void GameCore::FlushTestResults()
         {
             if(oldPlatformObject)
             {
-                oldPlatformObject->Print();
+//                oldPlatformObject->Print();
                 
                 newPlatformObject->Copy(oldPlatformObject);
             }
@@ -300,7 +303,7 @@ void GameCore::FlushTestResults()
 }
 
 
-void GameCore::RegisterError(const String &command, const String &fileName, int32 line)
+void GameCore::RegisterError(const String &command, const String &fileName, int32 line, TestData *testData)
 {
     ErrorData *newError = new ErrorData();
         
@@ -309,6 +312,17 @@ void GameCore::RegisterError(const String &command, const String &fileName, int3
         newError->command = command;
         newError->filename = fileName;
         newError->line = line;
+        
+        if(testData)
+        {
+            newError->testName = testData->name;
+            newError->testMessage = testData->message;
+        }
+        else
+        {
+            newError->testName = String("");
+            newError->testMessage = String("");
+        }
         
         errors.push_back(newError);
     }
@@ -359,8 +373,19 @@ MongodbObject * GameCore::CreateLogObject(const String &logName, const String &r
             {
                 ErrorData *error = errors[i];
                 
-                String errorString = String(Format("command: %s at file: %s at line: %d", 
+                String errorString = String(Format("command: %s at file: %s at line: %d",
                                                    error->command.c_str(), error->filename.c_str(), error->line));
+                
+                if(!error->testName.empty())
+                {
+                    errorString += String(Format(", test: %s", error->testName.c_str()));
+                }
+                
+                if(!error->testMessage.empty())
+                {
+                    errorString += String(Format(", message: %s", error->testMessage.c_str()));
+                }
+                
                 
                 reportFile->WriteLine(String(Format("Error[%06d]: ", i+1)) + errorString);
                 if(logObject)

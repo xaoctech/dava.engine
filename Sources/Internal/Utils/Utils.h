@@ -38,22 +38,6 @@
 
 namespace DAVA 
 {
-//const char * FilepathRelativeToBundle(const char * relativePathname);
-//const char * FilepathRelativeToBundle(const String & relativePathname);
-
-//const char * FilepathInDocuments(const char * relativePathname);
-//const char * FilepathInDocuments(const String & relativePathname);
-
-#if defined(__DAVAENGINE_OPENGL__)
-int32 GetSavedTextureID();
-void BindTexture(int32 tId);
-
-int32 GetSavedFBO();
-void BindFBO(const int32 fbo);
-#elif defined(__DAVAENGINE_DIRECTX9__)
-void BindFBO(int32 fbo);
-#endif 
-
 int read_handler(void *ext, unsigned char *buffer, size_t size, size_t *length);
 
 WideString WcharToWString(const wchar_t *s);

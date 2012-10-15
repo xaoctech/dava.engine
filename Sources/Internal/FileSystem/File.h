@@ -177,6 +177,8 @@ public:
 	//! return true if end of file reached and false in another case
 	virtual bool IsEof();
 	
+    static const char8* GetModificationDate(const String & filePathname);
+    
 private:
 	FILE	*	file;
 	uint32		size;

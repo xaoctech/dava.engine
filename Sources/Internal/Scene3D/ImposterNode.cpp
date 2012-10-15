@@ -48,17 +48,20 @@ ImposterNode::ImposterNode()
 	distanceSquaredToCamera = 0;
 	isReady = false;
 	block = 0;
-	fbo = 0;
 	priority = 0;
 }
 
 ImposterNode::~ImposterNode()
 {
-	if(block && fbo)
+	if(manager)
 	{
-		fbo->ReleaseBlock(block);
-		block = 0;
+		SharedFBO * fbo = manager->GetFBO();
+		if(block && fbo)
+		{
+			fbo->ReleaseBlock(block);
+		}
 	}
+	block = 0;
 	SafeRelease(renderData);
 }
 
@@ -66,11 +69,6 @@ void ImposterNode::UpdateState()
 {
 	if(GetChildrenCount() > 0)
 	{
-		if((flags & NODE_DISABLE_IMPOSTER))
-		{
-			return;
-		}
-
 		DVASSERT(GetChildrenCount() == 1);
 		AABBox3 bbox = GetChild(0)->GetWTMaximumBoundingBoxSlow();
 		Vector3 bboxCenter = bbox.GetCenter();
@@ -160,11 +158,6 @@ void ImposterNode::Draw()
 
 void ImposterNode::GeneralDraw()
 {
-	if(flags & NODE_DISABLE_IMPOSTER)
-	{
-		return;
-	}
-
 	if(IsImposterReady())
 	{
 		DrawImposter();
@@ -402,6 +395,7 @@ void ImposterNode::DrawImposter()
 	eBlendMode dst = RenderManager::Instance()->GetDestBlend();
 	RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
 
+	SharedFBO * fbo = manager->GetFBO();
 	RenderManager::Instance()->SetTexture(fbo->GetTexture());
 
 	RenderManager::Instance()->SetRenderData(renderData);
@@ -456,6 +450,7 @@ void ImposterNode::CreateGeometry()
 	verts.push_back(imposterVertices[3].y);
 	verts.push_back(imposterVertices[3].z);
 
+	SharedFBO * fbo = manager->GetFBO();
 	float32 fboWidth = (float32)fbo->GetTexture()->GetWidth();
 	float32 fboHeight = (float32)fbo->GetTexture()->GetHeight();
 	float32 uMin, uMax, vMin, vMax;
@@ -500,6 +495,7 @@ bool ImposterNode::IsImposterReady()
 
 void ImposterNode::RecreateFbo(const Vector2 & size)
 {
+	SharedFBO * fbo = manager->GetFBO();
 	if(block)
 	{
 		fbo->ReleaseBlock(block);
@@ -517,11 +513,6 @@ void ImposterNode::SetManager(ImposterManager * _manager)
 	manager = _manager;
 }
 
-void ImposterNode::SetSharedFBO(SharedFBO * _fbo)
-{
-	fbo = _fbo;
-}
-
 void ImposterNode::UpdatePriority(float32 squaredDistance, float32 dotProduct)
 {
 	if(dotProduct)
@@ -537,6 +528,11 @@ void ImposterNode::UpdatePriority(float32 squaredDistance, float32 dotProduct)
 float32 ImposterNode::GetPriority()
 {
 	return priority;
+}
+
+void ImposterNode::ZeroOutBlock()
+{
+	block = 0;
 }
 
 
