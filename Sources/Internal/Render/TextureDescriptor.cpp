@@ -56,6 +56,7 @@ void TextureDescriptor::SetDefaultValues()
     wrapModeT = Texture::WRAP_REPEAT;
     
     generateMipMaps = OPTION_ENABLED;
+    baseMipMapLevel = 0;
     
     pvrCompression.format = FORMAT_PVR4;
     pvrCompression.flipVertically = OPTION_DISABLED;
@@ -127,10 +128,11 @@ void TextureDescriptor::SaveAsText(const String &filePathname)
     CrcToReadableFormat(readableCrc, MD5::DIGEST_SIZE*2 + 1);
     WriteChar8String(file, readableCrc);
 
-    WriteInt32(file, wrapModeS);
-    WriteInt32(file, wrapModeT);
+    WriteInt8(file, wrapModeS);
+    WriteInt8(file, wrapModeT);
 
-    WriteInt32(file, generateMipMaps);
+    WriteInt8(file, generateMipMaps);
+    WriteInt8(file, baseMipMapLevel);
 
     //Compression
     WriteCompressionAsText(file, pvrCompression);
@@ -150,15 +152,12 @@ void TextureDescriptor::SaveAsBinary(const String &filePathname)
 
     WriteSignature(file, BINARY_SIGNATURE);
     
-//    file->Write(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
-//    file->Write(crc, MD5::DIGEST_SIZE * sizeof(uint8));
-    file->Write(&wrapModeS, sizeof(int32));
-    file->Write(&wrapModeT, sizeof(int32));
-    file->Write(&generateMipMaps, sizeof(int32));
+    file->Write(&wrapModeS, sizeof(wrapModeS));
+    file->Write(&wrapModeT, sizeof(wrapModeT));
+    file->Write(&generateMipMaps, sizeof(generateMipMaps));
+    file->Write(&baseMipMapLevel, sizeof(baseMipMapLevel));
     
-    //TODO: we need to save image format
-//    WriteCompressionAsBinary(file, pvrCompression);
-//    WriteCompressionAsBinary(file, dxtCompression);
+    //TODO: Write used fileExtension/Format
     
     SafeRelease(file);
 }
@@ -190,9 +189,10 @@ void TextureDescriptor::LoadAsText(File *file)
     ReadChar8String(file, readableCrc, MD5::DIGEST_SIZE*2 + 1);
     CrcFromReadableFormat(readableCrc);
     
-    ReadInt32(file, wrapModeS);
-    ReadInt32(file, wrapModeT);
-    ReadInt32(file, generateMipMaps);
+    ReadInt8(file, wrapModeS);
+    ReadInt8(file, wrapModeT);
+    ReadInt8(file, generateMipMaps);
+    ReadInt8(file, baseMipMapLevel);
     
     ReadCompressionAsText(file, pvrCompression);
     ReadCompressionAsText(file, dxtCompression);
@@ -200,15 +200,12 @@ void TextureDescriptor::LoadAsText(File *file)
     
 void TextureDescriptor::LoadAsBinary(File *file)
 {
-//    file->Read(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
-//    file->Read(crc, MD5::DIGEST_SIZE * sizeof(uint8));
-    file->Read(&wrapModeS, sizeof(int32));
-    file->Read(&wrapModeT, sizeof(int32));
-    file->Read(&generateMipMaps, sizeof(int32));
+    file->Read(&wrapModeS, sizeof(wrapModeS));
+    file->Read(&wrapModeT, sizeof(wrapModeT));
+    file->Read(&generateMipMaps, sizeof(generateMipMaps));
+    file->Read(&baseMipMapLevel, sizeof(baseMipMapLevel));
     
-    //TODO: we need to load image format
-//    ReadCompressionAsBinary(file, pvrCompression);
-//    ReadCompressionAsBinary(file, dxtCompression);
+    //TODO: Read used fileExtension/Format
 }
 
 void TextureDescriptor::WriteSignature(File *file, int32 signature)
@@ -223,7 +220,7 @@ void TextureDescriptor::ReadCompressionAsText(File *file, Compression &compressi
     ReadChar8String(file, formatName, DATE_BUFFER_SIZE);
     compression.format = Texture::GetPixelFormatByName(String(formatName));
     
-    ReadInt32(file, compression.flipVertically);
+    ReadInt8(file, compression.flipVertically);
 }
 
 void TextureDescriptor::ReadCompressionAsBinary(File *file, Compression &compression)
@@ -238,7 +235,7 @@ void TextureDescriptor::ReadCompressionAsBinary(File *file, Compression &compres
 void TextureDescriptor::WriteCompressionAsText(File *file, const Compression &compression)
 {
     WriteChar8String(file, Texture::GetPixelFormatString(compression.format));
-    WriteInt32(file, compression.flipVertically);
+    WriteInt8(file, compression.flipVertically);
 }
 
 void TextureDescriptor::WriteCompressionAsBinary(File *file, const Compression &compression)
@@ -248,17 +245,19 @@ void TextureDescriptor::WriteCompressionAsBinary(File *file, const Compression &
     file->Write(&compression.flipVertically, sizeof(int32));
 }
     
-void TextureDescriptor::ReadInt32(DAVA::File *file, int32 &value)
+void TextureDescriptor::ReadInt8(DAVA::File *file, int8 &value)
 {
     char8 lineData[LINE_SIZE];
     uint32 lineSize = file->ReadLine(lineData, LINE_SIZE);
     if(lineSize)
     {
-        sscanf(lineData, "%d", &value);
+        int32 readValue = 0;
+        sscanf(lineData, "%d", &readValue);
+        value = readValue;
     }
 }
     
-void TextureDescriptor::WriteInt32(DAVA::File *file, const int32 value)
+void TextureDescriptor::WriteInt8(DAVA::File *file, const int8 value)
 {
     char8 lineData[LINE_SIZE];
     sprintf(lineData, "%d", value);

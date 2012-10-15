@@ -63,7 +63,7 @@ public:
     struct Compression
     {
         PixelFormat format;
-        int32 flipVertically;
+        int8 flipVertically;
     };
 
 
@@ -95,8 +95,8 @@ protected:
     uint8 GetNumberFromCharacter(char8 character);
     char8 GetCharacterFromNumber(uint8 number);
     
-    void ReadInt32(File *file, int32 &value);
-    void WriteInt32(File *file, const int32 value);
+    void ReadInt8(File *file, int8 &value);
+    void WriteInt8(File *file, const int8 value);
 
     void ReadChar8String(File *file, char8 *buffer, uint32 bufferSize);
     void WriteChar8String(File *file, const char8 *buffer);
@@ -117,10 +117,11 @@ public:
     char8 modificationDate[DATE_BUFFER_SIZE];
     uint8 crc[MD5::DIGEST_SIZE];
 
-    int32 wrapModeS;
-    int32 wrapModeT;
+    int8 wrapModeS;
+    int8 wrapModeT;
     
-    int32 generateMipMaps;
+    int8 generateMipMaps;
+    int8 baseMipMapLevel;
     
     Compression pvrCompression;
     Compression dxtCompression;
