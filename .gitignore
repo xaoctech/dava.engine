@@ -17,7 +17,7 @@ $process/
 Documentation/doxygen/*
 Debug*
 .Debug*
-.Generated*
+Generated*
 Release*
 *.vcxproj.user
 *.suo
