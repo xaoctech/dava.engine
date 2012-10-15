@@ -64,6 +64,7 @@ public:
     {
         PixelFormat format;
         int8 flipVertically;
+        int8 baseMipMapLevel;
     };
 
 
@@ -102,17 +103,13 @@ protected:
     void WriteChar8String(File *file, const char8 *buffer);
     
     void ReadCompressionAsText(File *file, Compression &compression);
-    void ReadCompressionAsBinary(File *file, Compression &compression);
     void WriteCompressionAsText(File *file, const Compression &compression);
-    void WriteCompressionAsBinary(File *file, const Compression &compression);
     
     void WriteSignature(File *file, int32 signature);
     
 public:
     
     eFileType fileType;
-    
-    
     
     char8 modificationDate[DATE_BUFFER_SIZE];
     uint8 crc[MD5::DIGEST_SIZE];
@@ -121,7 +118,6 @@ public:
     int8 wrapModeT;
     
     int8 generateMipMaps;
-    int8 baseMipMapLevel;
     
     Compression pvrCompression;
     Compression dxtCompression;
