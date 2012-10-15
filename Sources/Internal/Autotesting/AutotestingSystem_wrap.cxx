@@ -1820,6 +1820,37 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_FindControl(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::FindControl",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::FindControl",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::FindControl",2,"DAVA::String const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_FindControl",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_std__string,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_FindControl",2,SWIGTYPE_p_std__string);
+  }
+  
+  result = (bool)(arg1)->FindControl((DAVA::String const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static void swig_delete_AutotestingSystemLua(void *obj) {
 DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) obj;
 delete arg1;
@@ -1827,6 +1858,7 @@ delete arg1;
 static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"StopTest", _wrap_AutotestingSystemLua_StopTest}, 
     {"GetTimeElapsed", _wrap_AutotestingSystemLua_GetTimeElapsed}, 
+    {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
     {0,0}
 };
 static swig_lua_attribute swig_DAVA_AutotestingSystemLua_attributes[] = {

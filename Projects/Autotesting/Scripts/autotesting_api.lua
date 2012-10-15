@@ -18,17 +18,23 @@ function Wait(time)
     print("Wait done")
 end
 
-function WaitControl(time)
+function WaitControl(time, name)
     print("WaitControl "..time)
     local waitTime = 0.0
 
     while waitTime < time do
         waitTime = waitTime + autotestingSystem:GetTimeElapsed()
-        print("Waiting "..waitTime)
-        coroutine.yield()
+        print("Searching "..waitTime)
+        if autotestingSystem:FindControl(name) then
+            print("WaitControl found")
+            return true
+        else
+            coroutine.yield()
+        end
     end
     
     print("WaitControl done")
+    return false
 end
 
 function ResumeTest()

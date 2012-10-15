@@ -68,6 +68,7 @@ public:
     
     void StopTest();
     float32 GetTimeElapsed();
+    bool FindControl(const String &path);
     
 protected:
 #ifndef SWIG  
