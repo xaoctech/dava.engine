@@ -602,7 +602,6 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
         Logger::Warning("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s). File will be created with default settings.", descriptorPathname.c_str());
 
         String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-        descriptor->SetFileInfo(sourceTexturePathname);
         descriptor->SaveAsText(descriptorPathname);
     }
 #endif //#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)

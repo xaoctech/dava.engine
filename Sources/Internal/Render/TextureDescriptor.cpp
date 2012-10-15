@@ -65,7 +65,7 @@ void TextureDescriptor::SetDefaultValues()
     dxtCompression.flipVertically = OPTION_DISABLED;
 }
     
-void TextureDescriptor::SetFileInfo(const String &filePathname)
+void TextureDescriptor::SaveDateAndCrc(const String &filePathname)
 {
     const char8 *date = File::GetModificationDate(filePathname);
     if(date)
