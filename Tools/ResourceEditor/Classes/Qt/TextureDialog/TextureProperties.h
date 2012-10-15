@@ -5,6 +5,8 @@
 #include "QtPropertyBrowser/qttreepropertybrowser.h"
 #include "QtPropertyBrowser/qtgroupboxpropertybrowser.h"
 
+#include <QMap>
+
 class QtGroupPropertyManager;
 class QtIntPropertyManager;
 class QtBoolPropertyManager;
@@ -27,17 +29,37 @@ public:
 	void setTexture(DAVA::Texture *texture);
 
 signals:
-	void formatChangedPVR(bool emptyFormat);
-	void formatChangedDXT(bool emptyFormat);
+	void formatChangedPVR(DAVA::PixelFormat newFormat);
+	void formatChangedDXT(DAVA::PixelFormat newFormat);
 
 private slots:
-	void enumPropertyChanged(QtProperty * property);
-	void intPropertyChanged(QtProperty * property);
-	void boolPropertyChanged(QtProperty * property);
-	void stringPropertyChanged(QtProperty * property);
+	void propertyChanged(QtProperty * property);
 
 private:
+	struct enumPropertiesHelper
+	{
+		int value(const QString &key);
+		int indexK(const QString &key);
+		int indexV(const int &value);
+
+		void push_back(const QString &key, const int &value);
+		QStringList keyList();
+
+	private:
+		QVector<QString> keys;
+		QVector<int> values;
+	};
+
 	QWidget *oneForAllParent;
+
+	enumPropertiesHelper helperPVRFormats;
+	enumPropertiesHelper helperDXTFormats;
+	enumPropertiesHelper helperWrapModes;
+
+	DAVA::Texture *curTexture;
+	DAVA::TextureDescriptor *curTextureDescriptor;
+
+	bool reactOnPropertyChange;
 
 	QtGroupPropertyManager *propertiesGroup;
 	QtIntPropertyManager *propertiesInt;
@@ -54,7 +76,9 @@ private:
 	QtProperty *boolPVRFlipVertical;
 
 	QtProperty *enumDXTFormat;
+	QtProperty *boolDXTFlipVertical;
 
+	QtProperty *boolGenerateMipMaps;
 	QtProperty *enumWrapModeS;
 	QtProperty *enumWrapModeT;
 	QtProperty *intBaseMipmapLevel;

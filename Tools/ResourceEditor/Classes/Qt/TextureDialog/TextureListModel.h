@@ -20,7 +20,7 @@ public:
 		TexturePath = Qt::UserRole,
 		TextureName,
 		TextureDimension,
-		TextureDataSize
+		TextureDataSize,
 	};
 
 	TextureListModel(QObject *parent = 0);
@@ -32,6 +32,8 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+	DAVA::Texture* texture(const QModelIndex &index) const;
 
 private:
 	DAVA::Scene *scene;
