@@ -106,6 +106,7 @@ void GameCore::OnSuspend()
 void GameCore::OnResume()
 {
     ApplicationCore::OnResume();
+    SceneValidator::Instance()->FindTexturesForCompression();
 }
 
 void GameCore::OnBackground()

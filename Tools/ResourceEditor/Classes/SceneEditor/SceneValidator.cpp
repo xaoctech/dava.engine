@@ -373,41 +373,62 @@ void SceneValidator::CollectSceneStats(const RenderManager::Stats &newStats)
 
 void SceneValidator::ReloadTextures()
 {
-//    bool isAlphaPremultiplicationEnabled = Image::IsAlphaPremultiplicationEnabled();
-//    bool isMipmapsEnabled = Texture::IsMipmapGenerationEnabled();
-
     const Map<String, Texture*> textureMap = Texture::GetTextureMap();
 	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *texture = it->second;
         
-        if(!texture->isRenderTarget &&  IsTextureChanged(texture->relativePathname))
+        if(WasTextureChanged(texture))
         {
-//            Image::EnableAlphaPremultiplication(texture->isAlphaPremultiplied);
-            
-//            if(texture->isMimMapTexture) Texture::EnableMipmapGeneration();
-//            else Texture::DisableMipmapGeneration();
-            
+            //TODO: need correct code for different formates
             Image *image = Image::CreateFromFile(texture->relativePathname, false);
             if(image)
             {
                 texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
-//                if(texture->isMimMapTexture)
-//                {
-//                    texture->GenerateMipmaps();
-//                }
-//                texture->SetWrapMode(texture->wrapModeS, texture->wrapModeT);
-                
                 SafeRelease(image);
             }
         }
 	}
-    
-//    if(isMipmapsEnabled) Texture::EnableMipmapGeneration();
-//    else Texture::DisableMipmapGeneration();
-//    
-//    Image::EnableAlphaPremultiplication(isAlphaPremultiplicationEnabled);
 }
+
+
+void SceneValidator::FindTexturesForCompression()
+{
+    List<Texture *>texturesForCompression;
+    
+    const Map<String, Texture*> textureMap = Texture::GetTextureMap();
+	for(Map<String, Texture *>::const_iterator it = textureMap.begin(); it != textureMap.end(); ++it)
+	{
+		Texture *texture = it->second;
+        if(WasTextureChanged(texture))
+        {
+            texturesForCompression.push_back(SafeRetain(texture));
+        }
+	}
+
+    List<Texture *>::const_iterator endIt = texturesForCompression.end();
+	for(List<Texture *>::const_iterator it = texturesForCompression.begin(); it != endIt; ++it)
+	{
+		Texture *texture = *it;
+        //TODO: compress texture
+        
+        SafeRelease(texture);
+	}
+    texturesForCompression.clear();
+}
+
+bool SceneValidator::WasTextureChanged(Texture *texture)
+{
+    if(!texture->isRenderTarget)
+    {
+        String texturePathname = texture->GetPathname();
+        return (IsPathCorrectForProject(texturePathname) && IsTextureChanged(texturePathname));
+    }
+    
+    return false;
+}
+
+
 
 void SceneValidator::ValidateLodNodes(Scene *scene, Set<String> &errorsLog)
 {
@@ -463,18 +484,14 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     //Need to set path to DataSource/3d for path correction  
     //Use SetPathForChecking();
     
-    String normalizedPath = FileSystem::NormalizePath(pathForValidation);
-    
-    String::size_type fboFound = normalizedPath.find(String("FBO"));
-    String::size_type resFound = normalizedPath.find(String("~res:"));
+    String::size_type fboFound = pathForValidation.find(String("FBO"));
+    String::size_type resFound = pathForValidation.find(String("~res:"));
     if((String::npos != fboFound) || (String::npos != resFound))
     {
         return true;   
     }
     
-    
-    String::size_type foundPos = normalizedPath.find(pathForChecking);
-    bool pathIsCorrect = (String::npos != foundPos);
+    bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
     if(!pathIsCorrect)
     {
         UIScreen *screen = UIScreenManager::Instance()->GetScreen();
@@ -485,8 +502,15 @@ bool SceneValidator::ValidatePathname(const String &pathForValidation)
     }
     
     return pathIsCorrect;
-    
 }
+
+bool SceneValidator::IsPathCorrectForProject(const String pathname)
+{
+    String normalizedPath = FileSystem::NormalizePath(pathname);
+    String::size_type foundPos = normalizedPath.find(pathForChecking);
+    return (String::npos != foundPos);
+}
+
 
 void SceneValidator::EnumerateNodes(DAVA::Scene *scene)
 {
