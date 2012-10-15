@@ -557,13 +557,12 @@ Texture * Texture::PureCreate(const String & pathName)
 {
     Texture * texture = Texture::Get(pathName);
 	if (texture)return texture;
-
+    
     TextureDescriptor *descriptor = CreateDescriptorForTexture(pathName);
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
 	String extension = FileSystem::GetExtension(pathName);
-
 	if (extension == String(".png"))
     {
 		texture = CreateFromPNG(pathName, descriptor);
@@ -572,6 +571,10 @@ Texture * Texture::PureCreate(const String & pathName)
 	{
 		texture = CreateFromPVR(pathName, descriptor);
 	}
+    else if(TextureDescriptor::GetDefaultExtension() == extension)
+    {
+		texture = CreateFromDescriptor(descriptor);
+    }
     
     if(texture)
     {
@@ -584,6 +587,12 @@ Texture * Texture::PureCreate(const String & pathName)
     SafeRelease(descriptor);
 	return texture;
 }
+    
+Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
+{
+    return NULL;
+}
+
 	
 TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePathname)
 {

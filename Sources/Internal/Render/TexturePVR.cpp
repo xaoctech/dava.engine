@@ -58,7 +58,7 @@ Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *des
 		return 0;
 	}
 
-	Texture * newTexture = UnpackPVRData(bytes, fileSize, descriptor->baseMipMapLevel);
+	Texture * newTexture = UnpackPVRData(bytes, fileSize, 0);
 	if (!newTexture)
 	{
 		Logger::Error("Failed to parse PVR texture: %s", pathName.c_str());
