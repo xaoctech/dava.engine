@@ -164,7 +164,6 @@ void TextureDescriptor::SaveAsBinary(const String &filePathname)
 }
 
     
-    
 TextureDescriptor::eFileType TextureDescriptor::DetectFileType(DAVA::File *file)
 {
     char8 lineData[LINE_SIZE];

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1077</width>
+    <width>1050</width>
     <height>532</height>
    </rect>
   </property>
@@ -199,6 +199,39 @@
         </property>
         <item>
          <widget class="QToolBar" name="textureToolbar">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="sizeIncrement">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonIconOnly</enum>
+          </property>
+          <property name="floatable">
+           <bool>true</bool>
+          </property>
           <addaction name="actionColorR"/>
           <addaction name="actionColorG"/>
           <addaction name="actionColorB"/>
@@ -221,125 +254,151 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QTabWidget" name="tabWidget">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QFrame" name="frame_3">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
-             <property name="tabPosition">
-              <enum>QTabWidget::North</enum>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
              </property>
-             <property name="tabShape">
-              <enum>QTabWidget::Rounded</enum>
-             </property>
-             <property name="currentIndex">
-              <number>0</number>
-             </property>
-             <widget class="QWidget" name="tabOriginal">
-              <attribute name="title">
-               <string>Original</string>
-              </attribute>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <property name="margin">
-                <number>2</number>
-               </property>
-               <item>
-                <widget class="TextureScrollArea" name="textureAreaOriginal">
-                 <property name="cursor" stdset="0">
-                  <cursorShape>OpenHandCursor</cursorShape>
-                 </property>
-                 <property name="widgetResizable" stdset="0">
-                  <bool>true</bool>
-                 </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="TextureScrollArea" name="textureAreaOriginal">
+                <property name="cursor" stdset="0">
+                 <cursorShape>OpenHandCursor</cursorShape>
+                </property>
+                <property name="widgetResizable" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabWidget">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="tabPosition">
+                 <enum>QTabWidget::North</enum>
+                </property>
+                <property name="tabShape">
+                 <enum>QTabWidget::Rounded</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="tabOriginal">
+                 <attribute name="title">
+                  <string>Original</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_2">
+                  <property name="margin">
+                   <number>2</number>
+                  </property>
+                 </layout>
                 </widget>
-               </item>
-              </layout>
-             </widget>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
-            <widget class="QTabWidget" name="tabFormats">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+            <widget class="QFrame" name="frame_4">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
-             <property name="tabPosition">
-              <enum>QTabWidget::North</enum>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
              </property>
-             <property name="tabShape">
-              <enum>QTabWidget::Rounded</enum>
-             </property>
-             <property name="currentIndex">
-              <number>0</number>
-             </property>
-             <property name="elideMode">
-              <enum>Qt::ElideNone</enum>
-             </property>
-             <property name="usesScrollButtons">
-              <bool>true</bool>
-             </property>
-             <property name="tabsClosable">
-              <bool>false</bool>
-             </property>
-             <property name="movable">
-              <bool>false</bool>
-             </property>
-             <widget class="QWidget" name="tabPVR">
-              <attribute name="title">
-               <string>PVR</string>
-              </attribute>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <property name="margin">
-                <number>2</number>
-               </property>
-               <item>
-                <widget class="TextureScrollArea" name="textureAreaPVR">
-                 <property name="cursor" stdset="0">
-                  <cursorShape>OpenHandCursor</cursorShape>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Sunken</enum>
-                 </property>
-                 <property name="widgetResizable" stdset="0">
-                  <bool>true</bool>
-                 </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="TextureScrollArea" name="textureAreaPVR">
+                <property name="cursor" stdset="0">
+                 <cursorShape>OpenHandCursor</cursorShape>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+                <property name="widgetResizable" stdset="0">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTabWidget" name="tabFormats">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="tabPosition">
+                 <enum>QTabWidget::North</enum>
+                </property>
+                <property name="tabShape">
+                 <enum>QTabWidget::Rounded</enum>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <property name="elideMode">
+                 <enum>Qt::ElideNone</enum>
+                </property>
+                <property name="usesScrollButtons">
+                 <bool>true</bool>
+                </property>
+                <property name="tabsClosable">
+                 <bool>false</bool>
+                </property>
+                <property name="movable">
+                 <bool>false</bool>
+                </property>
+                <widget class="QWidget" name="tabPVR">
+                 <attribute name="title">
+                  <string>PVR</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <property name="margin">
+                   <number>2</number>
+                  </property>
+                 </layout>
                 </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tabDXT">
-              <attribute name="title">
-               <string>DXT</string>
-              </attribute>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <property name="margin">
-                <number>2</number>
-               </property>
-               <item>
-                <widget class="TextureScrollArea" name="textureAreaDXT">
-                 <property name="cursor" stdset="0">
-                  <cursorShape>OpenHandCursor</cursorShape>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Sunken</enum>
-                 </property>
-                 <property name="widgetResizable" stdset="0">
-                  <bool>true</bool>
-                 </property>
+                <widget class="QWidget" name="tabDXT">
+                 <attribute name="title">
+                  <string>DXT</string>
+                 </attribute>
+                 <layout class="QHBoxLayout" name="horizontalLayout_6">
+                  <property name="margin">
+                   <number>2</number>
+                  </property>
+                 </layout>
                 </widget>
-               </item>
-              </layout>
-             </widget>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>

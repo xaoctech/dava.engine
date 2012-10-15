@@ -142,6 +142,8 @@ void TextureDialog::texturePressed(const QModelIndex & index)
 	ui->textureAreaOriginal->setImage(image);
 	ui->textureAreaPVR->setImage(image);
 
+	ui->textureProperties->setTexture(textureListModel->texture(index));
+
 	ui->textureAreaOriginal->setColorChannel(TextureScrollArea::ChannelAll);
 	ui->textureAreaPVR->setColorChannel(TextureScrollArea::ChannelAll);
 }
