@@ -1785,7 +1785,7 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 
-bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture)
+bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, int32 baseMipMapLevel)
 {
     //Compression bools
     bool bIsCompressedFormatSupported=false;
@@ -1871,7 +1871,6 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     }
     
     
-    
     //Check for compressed formats
     if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
     {
@@ -1904,8 +1903,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             }
             
             //Get the dimensions for the current MIP level.
-            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width;
-            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height;
+            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
+            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
             
             //Setup temporary variables.
             uint8* pTempDecompData = (uint8*)pDecompressedData;
@@ -1913,10 +1912,30 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             
             if (bIsLegacyPVR)
             {
+                //find mipmap offset
+                for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
+                {
+                    for (uint32 uiMIPMap=0;uiMIPMap<baseMipMapLevel;++uiMIPMap)
+                    {
+                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
+                        pTempCompData+=compressedFaceOffset;
+                        
+                        //Work out the current MIP dimensions.
+                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
+                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
+                    }
+                    
+                    //Reset the dims.
+                    uiMIPWidth=sTextureHeader.u32Width;
+                    uiMIPHeight=sTextureHeader.u32Height;
+                }
+                
+                uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
+                uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
                 //Decompress all the MIP levels.
                 for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
                 {
-                    for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                    for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
                     {
                         //Get the face offset. Varies per MIP level.
                         uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
@@ -1945,8 +1964,24 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             }
             else
             {
-                //Decompress all the MIP levels.
-                for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                //find mipmap offset
+                for (uint32 uiMIPMap=0;uiMIPMap<baseMipMapLevel;++uiMIPMap)
+                {
+                    uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
+                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
+                    {
+                        pTempCompData+=compressedFaceOffset;
+                    }
+                    
+                    //Work out the current MIP dimensions.
+                    uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
+                    uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
+                }
+
+                //Restore all sizes
+                uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
+                uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
+                for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
                 {
                     //Get the face offset. Varies per MIP level.
                     uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
@@ -2002,8 +2037,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             }
             
             //Get the dimensions for the current MIP level.
-            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width;
-            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height;
+            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
+            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
             
             //Setup temporary variables.
             uint8* pTempDecompData = (uint8*)pDecompressedData;
@@ -2014,7 +2049,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
                 //Decompress all the MIP levels.
                 for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
                 {
-                    for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                    for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
                     {
                         //Get the face offset. Varies per MIP level.
                         uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
@@ -2040,7 +2075,7 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             else
             {
                 //Decompress all the MIP levels.
-                for (uint32 uiMIPMap=0;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
+                for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
                 {
                     //Get the face offset. Varies per MIP level.
                     uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
@@ -2066,8 +2101,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
 #endif //#if !defined(__DAVAENGINE_IPHONE__)
     
 
-    texture->width = sTextureHeader.u32Width;
-    texture->height = sTextureHeader.u32Height;
+    texture->width = sTextureHeader.u32Width >> baseMipMapLevel;
+    texture->height = sTextureHeader.u32Height >> baseMipMapLevel;
     texture->format = formatDescriptor.formatID;
 
     
@@ -2093,8 +2128,8 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
     }
     
     //Initialise the width/height
-    uint32 u32MIPWidth = sTextureHeader.u32Width;
-    uint32 u32MIPHeight = sTextureHeader.u32Height;
+    uint32 u32MIPWidth = sTextureHeader.u32Width >> baseMipMapLevel;
+    uint32 u32MIPHeight = sTextureHeader.u32Height >> baseMipMapLevel;
     
     //Temporary data to save on if statements within the load loops.
     uint8* pTempData=NULL;
@@ -2117,13 +2152,13 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
         for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
         {
             //Loop through all the mip levels.
-            for (uint32 uiMIPLevel=0; uiMIPLevel<psTempHeader->u32MIPMapCount; ++uiMIPLevel)
+            for (uint32 uiMIPLevel=baseMipMapLevel; uiMIPLevel<psTempHeader->u32MIPMapCount; ++uiMIPLevel)
             {
                 //Get the current MIP size.
                 uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
                 
                 //Upload the texture
-                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
+                texture->TexImage(uiMIPLevel - baseMipMapLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
                 pTempData+=uiCurrentMIPSize;
                 
                 //Reduce the MIP Size.
@@ -2133,20 +2168,20 @@ bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDa
             
             
             //Reset the current MIP dimensions.
-            u32MIPWidth=psTempHeader->u32Width;
-            u32MIPHeight=psTempHeader->u32Height;
+            u32MIPWidth=psTempHeader->u32Width >> baseMipMapLevel;
+            u32MIPHeight=psTempHeader->u32Height >> baseMipMapLevel;
         }
     }
     else
     {
-        for (uint32 uiMIPLevel=0; uiMIPLevel<psTempHeader->u32MIPMapCount; ++uiMIPLevel)
+        for (uint32 uiMIPLevel=baseMipMapLevel; uiMIPLevel<psTempHeader->u32MIPMapCount; ++uiMIPLevel)
         {
             //Get the current MIP size.
             uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
             for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
             {
                 //Upload the texture
-                texture->TexImage(uiMIPLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
+                texture->TexImage(uiMIPLevel - baseMipMapLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
                 pTempData+=uiCurrentMIPSize;
             }
             

@@ -58,7 +58,7 @@ Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *des
 		return 0;
 	}
 
-	Texture * newTexture = UnpackPVRData(bytes, fileSize);
+	Texture * newTexture = UnpackPVRData(bytes, fileSize, descriptor->baseMipMapLevel);
 	if (!newTexture)
 	{
 		Logger::Error("Failed to parse PVR texture: %s", pathName.c_str());
@@ -98,7 +98,7 @@ Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *des
 	return newTexture;
 }
     
-Texture * Texture::UnpackPVRData(uint8 * data, uint32 dataSize)
+Texture * Texture::UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel)
 {
     bool preloaded = LibPVRHelper::PreparePVRData((const char *)data, dataSize);
     if(!preloaded)
@@ -109,7 +109,7 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 dataSize)
     
     Texture * texture = new Texture();
     
-    bool filled = LibPVRHelper::FillTextureWithPVRData((const char *)data, dataSize, texture);
+    bool filled = LibPVRHelper::FillTextureWithPVRData((const char *)data, dataSize, texture, baseMipMapLevel);
     if(!filled)
     {
         SafeRelease(texture);

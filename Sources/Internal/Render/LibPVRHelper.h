@@ -105,7 +105,7 @@ class LibPVRHelper
 public:
 
     static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
-    static bool FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture);
+    static bool FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, int32 baseMipMapLevel);
     
     static PixelFormat GetPixelFormat(const String &filePathname);
     static uint32 GetDataLength(const String &filePathname);
