@@ -46,15 +46,6 @@
     <Filter Include="Sources\Qt">
       <UniqueIdentifier>{b7306c70-2f2b-4ffc-8fe2-acb1e3bb6717}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Qt\Scene Data">
-      <UniqueIdentifier>{2b0ff764-5b5d-43e7-a8cf-76ae700bff20}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\ScenePreviewDialog">
-      <UniqueIdentifier>{0513be28-848d-4ada-b8ce-5cbef00089d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Qt\Dock">
-      <UniqueIdentifier>{b9897e6b-7ed1-4a8d-b5c1-4eaf75bea340}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\LandscapeEditor">
       <UniqueIdentifier>{93b7e12d-cd91-46fd-944b-c75263b81dd9}</UniqueIdentifier>
     </Filter>
@@ -72,6 +63,12 @@
     </Filter>
     <Filter Include="Sources\Qt\QtPropertyBrowser">
       <UniqueIdentifier>{d1d39e29-1b06-4a84-a2fe-17cfb8b61690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Qt\TextureDialog">
+      <UniqueIdentifier>{c71502ec-ed83-4f61-8a62-e1ed6c4c0a69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="QtGenerated\TextureDialog">
+      <UniqueIdentifier>{e2acd78f-1160-45e1-b710-7797482c1747}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -483,15 +480,6 @@
     <ClInclude Include="Classes\Commands\ToolsCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\GUIState.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\GraphItem.h">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\GraphModel.h">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClInclude>
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp">
       <Filter>Sources\bullet</Filter>
     </ClCompile>
@@ -843,38 +831,11 @@
     <ClCompile Include="Classes\bullet\LinearMath\btSerializer.cpp">
       <Filter>Sources\bullet</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\SceneData.cpp">
-      <Filter>Sources\Qt\Scene Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\SceneDataManager.cpp">
-      <Filter>Sources\Qt\Scene Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\SceneGraphItem.cpp">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\SceneGraphModel.cpp">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtUtils.cpp">
-      <Filter>Sources\Qt</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\SceneGraphCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp">
-      <Filter>Sources\Qt\ScenePreviewDialog</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands\LibraryCommands.cpp">
       <Filter>Sources\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp">
-      <Filter>Sources\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\LibraryModel.cpp">
-      <Filter>Sources\Qt\Dock</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands\ViewCommands.cpp">
       <Filter>Sources\Commands</Filter>
@@ -884,9 +845,6 @@
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\PointerHolder.cpp">
-      <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SwitchNodePropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
@@ -927,10 +885,61 @@
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp">
       <Filter>Sources\RulerTool</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureListModel.cpp">
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp">
+      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureDialog.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureList.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListDelegate.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListModel.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureScrollArea.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\davaglwidget.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\ConvertTexturesDialog.cpp">
+    <ClCompile Include="Classes\Qt\FileSelectionModel.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GraphItem.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GraphModel.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\GUIState.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\LibraryModel.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\main.cpp">
@@ -939,20 +948,44 @@
     <ClCompile Include="Classes\Qt\mainwindow.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\davaglwidget.cpp">
+    <ClCompile Include="Classes\Qt\PointerHolder.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureListDelegate.cpp">
+    <ClCompile Include="Classes\Qt\QtMainWindowHandler.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureScrollArea.cpp">
+    <ClCompile Include="Classes\Qt\QtUtils.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\TextureList.cpp">
+    <ClCompile Include="Classes\Qt\SceneData.cpp">
       <Filter>Sources\Qt</Filter>
     </ClCompile>
-    <ClCompile Include=".GeneratedQt\ConvertTexturesDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
+    <ClCompile Include="Classes\Qt\SceneDataManager.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SceneGraphItem.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SceneGraphModel.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp">
+      <Filter>Sources\Qt</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureDialog_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureList_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureListModel_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
+    </ClCompile>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
     </ClCompile>
     <ClCompile Include=".GeneratedQt\davaglwidget_moc.cpp">
       <Filter>QtGenerated</Filter>
@@ -1002,41 +1035,11 @@
     <ClCompile Include=".GeneratedQt\ScenePreviewDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include=".GeneratedQt\TextureList_moc.cpp">
-      <Filter>QtGenerated</Filter>
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureProperties.cpp">
+      <Filter>Sources\Qt\TextureDialog</Filter>
     </ClCompile>
-    <ClCompile Include=".GeneratedQt\TextureListDelegate_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\TextureListModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include=".GeneratedQt\TextureScrollArea_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qteditorfactory.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtgroupboxpropertybrowser.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowser.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertybrowserutils.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtpropertymanager.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qttreepropertybrowser.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.cpp">
-      <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureProperties_moc.cpp">
+      <Filter>QtGenerated\TextureDialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1796,38 +1799,11 @@
     <ClInclude Include="Classes\bullet\Bullet-C-Api.h">
       <Filter>Sources\bullet</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\SceneData.h">
-      <Filter>Sources\Qt\Scene Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\SceneDataManager.h">
-      <Filter>Sources\Qt\Scene Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\SceneGraphModel.h">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\SceneGraphItem.h">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtUtils.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\SceneGraphCommands.h">
       <Filter>Sources\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\ScenePreviewDialog.h">
-      <Filter>Sources\Qt\ScenePreviewDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands\LibraryCommands.h">
       <Filter>Sources\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\FileSelectionModel.h">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\QtMainWindowHandler.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\LibraryModel.h">
-      <Filter>Sources\Qt\Dock</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands\ViewCommands.h">
       <Filter>Sources\Commands</Filter>
@@ -1837,9 +1813,6 @@
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\PointerHolder.h">
-      <Filter>Sources\Qt</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SwitchNodePropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
@@ -1880,36 +1853,6 @@
     <ClInclude Include="Classes\RulerTool\RulerTool.h">
       <Filter>Sources\RulerTool</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureListModel.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\ConvertTexturesDialog.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\mainwindow.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\davaglwidget.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureListDelegate.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureScrollArea.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\TextureList.h">
-      <Filter>Sources\Qt</Filter>
-    </ClInclude>
-    <ClInclude Include=".GeneratedQt\ui_converttexturesdialog.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include=".GeneratedQt\ui_davaglwidget.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
-    <ClInclude Include=".GeneratedQt\ui_mainwindow.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtbuttonpropertybrowser.h">
       <Filter>Sources\Qt\QtPropertyBrowser</Filter>
     </ClInclude>
@@ -1933,6 +1876,78 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\QtPropertyBrowser\qtvariantproperty.h">
       <Filter>Sources\Qt\QtPropertyBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureDialog.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureList.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListDelegate.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListModel.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureScrollArea.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\davaglwidget.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\FileSelectionModel.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GraphItem.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GraphModel.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\GUIState.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\LibraryModel.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\mainwindow.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\PointerHolder.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtMainWindowHandler.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QtUtils.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SceneData.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SceneDataManager.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SceneGraphItem.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SceneGraphModel.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\ScenePreviewDialog.h">
+      <Filter>Sources\Qt</Filter>
+    </ClInclude>
+    <ClInclude Include=".GeneratedQt\ui_davaglwidget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include=".GeneratedQt\ui_mainwindow.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include=".GeneratedQt\ui_texturedialog.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureProperties.h">
+      <Filter>Sources\Qt\TextureDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2158,24 +2173,15 @@
     <ClCompile Include="Classes\Commands\ToolsCommands.cpp">
       <Filter>Sources\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\GUIState.cpp">
-      <Filter>Sources\Qt</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\GraphItem.cpp">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\GraphModel.cpp">
-      <Filter>Sources\Qt\Dock</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MakefileQtVS2010">
       <Filter>Sources</Filter>
     </None>
-    <None Include="DataQt\converttexturesdialog.ui">
+    <None Include="DataQt\mainwindow.ui">
       <Filter>QtData</Filter>
     </None>
-    <None Include="DataQt\mainwindow.ui">
+    <None Include="DataQt\texturedialog.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

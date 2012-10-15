@@ -10,10 +10,23 @@ class TextureScrollArea : public QGraphicsView
 	Q_OBJECT
 
 public:
+	enum TextureColorChannels
+	{
+		ChannelNo = 0,
+
+		ChannelR = 0x1,
+		ChannelG = 0x2,
+		ChannelB = 0x4,
+		ChannelA = 0x8,
+
+		ChannelAll = 0xFFFFFFFF
+	};
+
 	TextureScrollArea(QWidget* parent=0);
 	~TextureScrollArea();
 
 	void setImage(const QImage &image);
+	void setColorChannel(int mask);
 
 	float getZoom();
 	int   getZoomPercent();
@@ -38,6 +51,8 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 
 private:
+	int textureColorMask;
+
 	bool mouseInMoveState;
 	QPoint mousePressPos;
 	QPoint mousePressScrollPos;

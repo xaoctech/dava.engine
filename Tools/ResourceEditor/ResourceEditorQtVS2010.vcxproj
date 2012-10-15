@@ -57,7 +57,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./.GeneratedQt;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include;$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default;c:\Program Files\OpenAL 1.1 SDK\include;c:\Program Files (x86)\OpenAL 1.1 SDK\include;$(DXSDK_DIR)/include;..\..\Sources\Internal;..\..\Sources\External;../../Libs/include;..\..\Libs\glew\include;./Classes/bullet;Classes/Qt;Classes;.;./../../Libs/ImageMagick-6.7.4-Windows;./../../Libs/ImageMagick-6.7.4-Windows/Magick++/lib;./../ColladaConverter/Collada15/FCollada;./../ColladaConverter/Collada15/FCollada/LibXML/include;./../ColladaConverter/Collada15/External/Cg/include;../../../dava.resourceeditor.beast/beast/include;../../../dava.resourceeditor.beast/wrapper;./.GeneratedQt;$Configuration;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -172,7 +172,6 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.cpp" />
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp" />
-    <ClCompile Include=".GeneratedQt\ConvertTexturesDialog_moc.cpp" />
     <ClCompile Include=".GeneratedQt\davaglwidget_moc.cpp" />
     <ClCompile Include=".GeneratedQt\FileSelectionModel_moc.cpp" />
     <ClCompile Include=".GeneratedQt\GraphItem_moc.cpp" />
@@ -189,10 +188,12 @@
     <ClCompile Include=".GeneratedQt\SceneGraphItem_moc.cpp" />
     <ClCompile Include=".GeneratedQt\SceneGraphModel_moc.cpp" />
     <ClCompile Include=".GeneratedQt\ScenePreviewDialog_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureListDelegate_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureListModel_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureList_moc.cpp" />
-    <ClCompile Include=".GeneratedQt\TextureScrollArea_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureDialog_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureListDelegate_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureListModel_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureList_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureProperties_moc.cpp" />
+    <ClCompile Include=".GeneratedQt\TextureDialog\TextureScrollArea_moc.cpp" />
     <ClCompile Include="Classes\BeastProxy.cpp" />
     <ClCompile Include="Classes\BulletObject.cpp" />
     <ClCompile Include="Classes\bullet\BulletCollision\BroadphaseCollision\btAxisSweep3.cpp" />
@@ -355,7 +356,6 @@
     <ClCompile Include="Classes\ParticlesEditor\ParticlesEditorControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PreviewControl.cpp" />
     <ClCompile Include="Classes\ParticlesEditor\PropertyLineEditControl.cpp" />
-    <ClCompile Include="Classes\Qt\ConvertTexturesDialog.cpp" />
     <ClCompile Include="Classes\Qt\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\FileSelectionModel.cpp" />
     <ClCompile Include="Classes\Qt\GraphItem.cpp" />
@@ -380,10 +380,12 @@
     <ClCompile Include="Classes\Qt\SceneGraphItem.cpp" />
     <ClCompile Include="Classes\Qt\SceneGraphModel.cpp" />
     <ClCompile Include="Classes\Qt\ScenePreviewDialog.cpp" />
-    <ClCompile Include="Classes\Qt\TextureList.cpp" />
-    <ClCompile Include="Classes\Qt\TextureListDelegate.cpp" />
-    <ClCompile Include="Classes\Qt\TextureListModel.cpp" />
-    <ClCompile Include="Classes\Qt\TextureScrollArea.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureDialog.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureList.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListDelegate.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureListModel.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureProperties.cpp" />
+    <ClCompile Include="Classes\Qt\TextureDialog\TextureScrollArea.cpp" />
     <ClCompile Include="Classes\ResourcePackerScreen.cpp" />
     <ClCompile Include="Classes\RulerTool\RulerTool.cpp" />
     <ClCompile Include="Classes\SceneEditor\BoxPropertyControl.cpp" />
@@ -490,9 +492,9 @@
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\LandscapeGeometry.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\SceneParser.h" />
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h" />
-    <ClInclude Include=".GeneratedQt\ui_converttexturesdialog.h" />
     <ClInclude Include=".GeneratedQt\ui_davaglwidget.h" />
     <ClInclude Include=".GeneratedQt\ui_mainwindow.h" />
+    <ClInclude Include=".GeneratedQt\ui_texturedialog.h" />
     <ClInclude Include="Classes\AppScreens.h" />
     <ClInclude Include="Classes\BeastProxy.h" />
     <ClInclude Include="Classes\BulletObject.h" />
@@ -733,7 +735,6 @@
     <ClInclude Include="Classes\ParticlesEditor\ParticlesEditorControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PreviewControl.h" />
     <ClInclude Include="Classes\ParticlesEditor\PropertyLineEditControl.h" />
-    <ClInclude Include="Classes\Qt\ConvertTexturesDialog.h" />
     <ClInclude Include="Classes\Qt\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\FileSelectionModel.h" />
     <ClInclude Include="Classes\Qt\GraphItem.h" />
@@ -757,10 +758,12 @@
     <ClInclude Include="Classes\Qt\SceneGraphItem.h" />
     <ClInclude Include="Classes\Qt\SceneGraphModel.h" />
     <ClInclude Include="Classes\Qt\ScenePreviewDialog.h" />
-    <ClInclude Include="Classes\Qt\TextureList.h" />
-    <ClInclude Include="Classes\Qt\TextureListDelegate.h" />
-    <ClInclude Include="Classes\Qt\TextureListModel.h" />
-    <ClInclude Include="Classes\Qt\TextureScrollArea.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureDialog.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureList.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListDelegate.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureListModel.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureProperties.h" />
+    <ClInclude Include="Classes\Qt\TextureDialog\TextureScrollArea.h" />
     <ClInclude Include="Classes\ResourcePackerScreen.h" />
     <ClInclude Include="Classes\RulerTool\RulerTool.h" />
     <ClInclude Include="Classes\SceneEditor\BoxPropertyControl.h" />
@@ -857,8 +860,8 @@
     <ClInclude Include="Classes\VertexOctTree.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataQt\converttexturesdialog.ui" />
     <None Include="DataQt\mainwindow.ui" />
+    <None Include="DataQt\texturedialog.ui" />
     <None Include="MakefileQtVS2010" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

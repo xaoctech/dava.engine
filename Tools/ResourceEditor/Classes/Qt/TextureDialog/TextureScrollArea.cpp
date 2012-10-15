@@ -11,6 +11,7 @@
 
 TextureScrollArea::TextureScrollArea(QWidget* parent/* =0 */)
 	: QGraphicsView(parent)
+	, textureColorMask((int) ChannelAll)
 	, mouseInMoveState(false)
 	, textureScene(NULL)
 	, zoomFactor(1.0)
@@ -36,6 +37,12 @@ void TextureScrollArea::setImage(const QImage &image)
 
 	currentTextureImage = image;
 
+	applyCurrentImageToScenePixmap();
+}
+
+void TextureScrollArea::setColorChannel(int mask)
+{
+	textureColorMask = mask;
 	applyCurrentImageToScenePixmap();
 }
 
@@ -136,7 +143,56 @@ void TextureScrollArea::mouseReleaseEvent(QMouseEvent *event)
 
 void TextureScrollArea::applyCurrentImageToScenePixmap()
 {
-	QPixmap pixmap = QPixmap::fromImage(currentTextureImage);
-	textureScene->setSceneRect(pixmap.rect());
-	texturePixmap->setPixmap(pixmap);
+	// TODO: optimize this code
+
+	if(~textureColorMask)
+	{
+		int mask = 0xFFFFFFFF;
+		int maskA = 0;
+
+		QImage tmpImage = currentTextureImage.convertToFormat(QImage::Format_ARGB32);
+
+		if(!(textureColorMask & ChannelR)) mask &= 0xFF00FFFF;
+		if(!(textureColorMask & ChannelG)) mask &= 0xFFFF00FF;
+		if(!(textureColorMask & ChannelB)) mask &= 0xFFFFFF00;
+		if(!(textureColorMask & ChannelA)) maskA |= 0xFF000000;
+
+		if(mask == 0xFF000000)
+		{
+			maskA ^= 0xFF000000;
+
+			// only alpha, so show it
+			for (int y = 0; y < tmpImage.height(); y++) 
+			{
+				QRgb *line = (QRgb *) tmpImage.scanLine(y);
+				for (int x = 0; x < tmpImage.width(); x++) 
+				{
+					int c = (line[x] & 0xFF000000) >> 24;
+					line[x] = (maskA | c << 16 | c << 8 | c);
+				}
+			}
+		}
+		else
+		{
+			for (int y = 0; y < tmpImage.height(); y++) 
+			{
+				QRgb *line = (QRgb *) tmpImage.scanLine(y);
+				for (int x = 0; x < tmpImage.width(); x++) 
+				{
+					line[x] &= mask;
+					line[x] |= maskA;
+				}
+			}
+		}
+
+		QPixmap pixmap = QPixmap::fromImage(tmpImage);
+		textureScene->setSceneRect(pixmap.rect());
+		texturePixmap->setPixmap(pixmap);
+	}
+	else
+	{
+		QPixmap pixmap = QPixmap::fromImage(currentTextureImage);
+		textureScene->setSceneRect(pixmap.rect());
+		texturePixmap->setPixmap(pixmap);
+	}
 }

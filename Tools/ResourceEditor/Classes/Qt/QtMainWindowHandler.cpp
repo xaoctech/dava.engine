@@ -18,7 +18,7 @@
 #include "SceneData.h"
 #include "QtUtils.h"
 #include "mainwindow.h"
-#include "converttexturesdialog.h"
+#include "TextureDialog/TextureDialog.h"
 
 #include <QPoint>
 #include <QMenu>
@@ -150,7 +150,7 @@ void QtMainWindowHandler::ConvertTextures()
 {
     //Execute(new CommandTextureConverter());
 
-	ConvertTexturesDialog ctd;
+	TextureDialog ctd;
 	ctd.exec();
 }
 

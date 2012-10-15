@@ -5,7 +5,7 @@
 TextureListModel::TextureListModel(QObject *parent /* = 0 */) 
 	: QAbstractListModel(parent)
 	, curSortMode(TextureListModel::SortByName)
-{ }
+{}
 
 int TextureListModel::rowCount(const QModelIndex & /* parent */) const
 {
@@ -22,7 +22,7 @@ QVariant TextureListModel::data(const QModelIndex &index, int role) const
 		{
 		case Qt::DisplayRole:
 		case TextureName:
-			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).completeBaseName());
+			return QVariant(QFileInfo(curTexture->GetPathname().c_str()).fileName());
 			break;
 
 		case TexturePath:
