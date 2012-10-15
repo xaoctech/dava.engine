@@ -6,6 +6,9 @@
 
 #include "Utils/Utils.h"
 
+//TODO: move all wrappers to separate class?
+#include "Action.h"
+
 extern "C"{
 #include "lua.h"
 #include "lualib.h"
@@ -78,6 +81,14 @@ void AutotestingSystemLua::StopTest()
 {
     Logger::Debug("AutotestingSystemLua::StopTest");
     AutotestingSystem::Instance()->OnTestsFinished();
+}
+    
+bool AutotestingSystemLua::FindControl(const String &path)
+{
+    //TODO: parse path
+    Vector<String> controlPath;
+    controlPath.push_back(path);
+    return (Action::FindControl(controlPath) != NULL);
 }
     
 void AutotestingSystemLua::LoadWrappedLuaObjects()
