@@ -541,6 +541,25 @@ Texture * Texture::CreateFromPNG(const String & pathName, TextureDescriptor *des
 	return texture;
 }		
 
+Texture * Texture::CreateFromPNG(File *file, TextureDescriptor *descriptor)
+{
+    Image * image = Image::CreateFromFile(file, false);
+    if (!image)
+    {
+        Logger::Error("[Texture::CreateFromPNG] Failed to load image from file");
+        return 0;
+    }
+    
+    RenderManager::Instance()->LockNonMain();
+    Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GenerateMipMaps());
+    RenderManager::Instance()->UnlockNonMain();
+    
+    SafeRelease(image);
+    
+    return texture;
+}		
+
+    
 
 Texture * Texture::CreateFromFile(const String & pathName)
 {
@@ -563,24 +582,30 @@ Texture * Texture::PureCreate(const String & pathName)
     
 	// TODO: add check that pathName
 	String extension = FileSystem::GetExtension(pathName);
-	if (extension == String(".png"))
+    if(TextureDescriptor::GetDefaultExtension() == extension)
     {
-		texture = CreateFromPNG(pathName, descriptor);
+		texture = CreateFromDescriptor(pathName, descriptor);
     }
-	else if (extension == String(".pvr"))
-	{
-		texture = CreateFromPVR(pathName, descriptor);
-	}
-    else if(TextureDescriptor::GetDefaultExtension() == extension)
+    else
     {
-		texture = CreateFromDescriptor(descriptor);
+        if (extension == String(".png"))
+        {
+            texture = CreateFromPNG(pathName, descriptor);
+        }
+        else if (extension == String(".pvr"))
+        {
+            texture = CreateFromPVR(pathName, descriptor);
+        }
+        
+        if(texture)
+        {
+            texture->relativePathname = pathName;
+        }
     }
-    
+
     if(texture)
     {
-        texture->relativePathname = pathName;
         textureMap[texture->relativePathname] = texture;
-
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -588,9 +613,66 @@ Texture * Texture::PureCreate(const String & pathName)
 	return texture;
 }
     
-Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
+Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescriptor *descriptor)
 {
-    return NULL;
+    Texture *texture = NULL;
+    if(TextureDescriptor::TYPE_TEXT == descriptor->fileType)
+    {
+        String imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
+        texture = CreateFromPNG(imagePathname, descriptor);
+        
+        if(texture)
+        {
+            texture->relativePathname = imagePathname;
+        }
+    }
+    else
+    {
+#if defined TEXTURE_SPLICING_ENABLED
+        switch (descriptor->textureFileFormat)
+        {
+            case TextureDescriptor::PNG_FILE:
+                texture = CreateFromPNG(descriptor->textureFile, descriptor);
+                break;
+            case TextureDescriptor::PVR_FILE:
+                texture = CreateFromPVR(descriptor->textureFile, descriptor);
+                break;
+                
+            case TextureDescriptor::DXT_FILE:
+                break;
+        }
+        
+        if(texture)
+        {
+            texture->relativePathname = pathName;
+        }
+#else //#if defined TEXTURE_SPLICING_ENABLED
+        String imagePathname;
+        switch (descriptor->textureFileFormat)
+        {
+            case TextureDescriptor::PNG_FILE:
+            {
+                imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
+                texture = CreateFromPNG(imagePathname, descriptor);
+                break;
+            }
+            case TextureDescriptor::PVR_FILE:
+                imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".pvr");
+                texture = CreateFromPVR(imagePathname, descriptor);
+                break;
+                
+            case TextureDescriptor::DXT_FILE:
+                break;
+        }
+        
+        if(texture)
+        {
+            texture->relativePathname = imagePathname;
+        }
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+    }
+    
+    return texture;
 }
 
 	

@@ -417,6 +417,8 @@ void SceneExporter::PrepareFolderForCopy(const String &filePathname, Set<String>
 
 String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &errorLog)
 {
+    //TODO: Create correct export
+    
     ExportTextureDescriptor(texturePathname, errorLog);
     CompressTextureIfNeed(texturePathname, errorLog);
     
@@ -489,7 +491,8 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
     String workingPathname = RemoveFolderFromPath(descriptorPathname, dataSourceFolder);
     PrepareFolderForCopy(workingPathname, errorLog);
     
-    descriptor->SaveAsBinary(dataFolder + workingPathname);
+    String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
+    descriptor->SaveAsBinary(dataFolder + workingPathname, exportedPathname);
     SafeRelease(descriptor);
 }
 
@@ -514,7 +517,6 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
         
         SafeRelease(descriptor);
     }
-
 }
 
 String SceneExporter::RemoveFolderFromPath(const String &pathname, const String &folderPathname)
