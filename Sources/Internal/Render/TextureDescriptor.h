@@ -35,31 +35,41 @@
 #include "Base/BaseObject.h"
 #include "Utils/MD5.h"
 
+//#define TEXTURE_SPLICING_ENABLED
+
 namespace DAVA
 {
 
 class File;
 class TextureDescriptor: public BaseObject
 {
-    enum eFileType
-    {
-        TYPE_TEXT = 0,
-        TYPE_BINARY
-    };
-        
     enum eConst
     {
         OPTION_DISABLED = 0,
         OPTION_ENABLED = 1,
         
-        TEXT_SIGNATURE = 0x006E6962,
-        BINARY_SIGNATURE = 0x00747874,
+        BINARY_SIGNATURE = 0x006E6962,
+        TEXT_SIGNATURE = 0x00747874,
         
         DATE_BUFFER_SIZE = 20,
         LINE_SIZE = 256
     };
     
 public:
+    
+    enum eFileType
+    {
+        TYPE_TEXT = 0,
+        TYPE_BINARY
+    };
+    
+    enum TextureFileFormat
+    {
+        PNG_FILE = 0,
+        PVR_FILE,
+        DXT_FILE
+    };
+
     struct Compression
     {
         PixelFormat format;
@@ -76,7 +86,7 @@ public:
 
     bool Load(const String &filePathname);
     void SaveAsText(const String &filePathname);
-    void SaveAsBinary(const String &filePathname);
+    void SaveAsBinary(const String &filePathname, const String &texturePathname);
 
     bool GenerateMipMaps();
 
@@ -121,6 +131,12 @@ public:
     
     Compression pvrCompression;
     Compression dxtCompression;
+    
+    //Binary only
+    int8 textureFileFormat;
+#if defined TEXTURE_SPLICING_ENABLED
+    File *textureFile;
+#endif //#if defined TEXTURE_SPLICING_ENABLED
 };
     
 };
