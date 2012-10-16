@@ -266,7 +266,7 @@ public:							// properties for fast access
 
 	static const Map<String, Texture*> & GetTextureMap();
     
-    int32 GetDataSize();
+    int32 GetDataSize() const;
     
     void ReleaseTextureData();
 
