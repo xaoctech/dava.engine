@@ -63,7 +63,8 @@ public:
     struct Compression
     {
         PixelFormat format;
-        int32 flipVertically;
+        int8 flipVertically;
+        int8 baseMipMapLevel;
     };
 
 
@@ -71,7 +72,7 @@ public:
     TextureDescriptor();
     virtual ~TextureDescriptor();
     
-    void SetFileInfo(const String &filePathname);
+    void SaveDateAndCrc(const String &filePathname);
 
     bool Load(const String &filePathname);
     void SaveAsText(const String &filePathname);
@@ -95,16 +96,14 @@ protected:
     uint8 GetNumberFromCharacter(char8 character);
     char8 GetCharacterFromNumber(uint8 number);
     
-    void ReadInt32(File *file, int32 &value);
-    void WriteInt32(File *file, const int32 value);
+    void ReadInt8(File *file, int8 &value);
+    void WriteInt8(File *file, const int8 value);
 
     void ReadChar8String(File *file, char8 *buffer, uint32 bufferSize);
     void WriteChar8String(File *file, const char8 *buffer);
     
     void ReadCompressionAsText(File *file, Compression &compression);
-    void ReadCompressionAsBinary(File *file, Compression &compression);
     void WriteCompressionAsText(File *file, const Compression &compression);
-    void WriteCompressionAsBinary(File *file, const Compression &compression);
     
     void WriteSignature(File *file, int32 signature);
     
@@ -112,15 +111,13 @@ public:
     
     eFileType fileType;
     
-    
-    
     char8 modificationDate[DATE_BUFFER_SIZE];
     uint8 crc[MD5::DIGEST_SIZE];
 
-    int32 wrapModeS;
-    int32 wrapModeT;
+    int8 wrapModeS;
+    int8 wrapModeT;
     
-    int32 generateMipMaps;
+    int8 generateMipMaps;
     
     Compression pvrCompression;
     Compression dxtCompression;

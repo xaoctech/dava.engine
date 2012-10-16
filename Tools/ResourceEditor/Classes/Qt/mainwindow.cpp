@@ -15,6 +15,9 @@
 #include "../SceneEditor/EditorBodyControl.h"
 #include "../SceneEditor/EditorConfig.h"
 
+
+#include <QApplication>
+
 QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
@@ -22,6 +25,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
+    qApp->installEventFilter(this);
+    
     new QtMainWindowHandler(this);
     QtMainWindowHandler::Instance()->SetDefaultFocusWidget(ui->centralWidget);
 
@@ -243,4 +248,33 @@ void QtMainWindow::ApplyReferenceNodeSuffix()
 	Scene * scene = screen->FindCurrentBody()->bodyControl->GetScene();
 	scene->SetReferenceNodeSuffix(str);
 }
+
+bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if(qApp == obj)
+    {
+        if(QEvent::ApplicationActivate == event->type())
+        {
+            Logger::Debug("QEvent::ApplicationActivate");
+            
+            if(QtLayer::Instance())
+            {
+                QtLayer::Instance()->OnResume();
+                Core::Instance()->GetApplicationCore()->OnResume();
+            }
+        }
+        else if(QEvent::ApplicationDeactivate == event->type())
+        {
+            Logger::Debug("QEvent::ApplicationDeactivate");
+            if(QtLayer::Instance())
+            {
+                QtLayer::Instance()->OnSuspend();
+                Core::Instance()->GetApplicationCore()->OnResume();
+            }
+        }
+    }
+    
+    return QMainWindow::eventFilter(obj, event);
+}
+
 
