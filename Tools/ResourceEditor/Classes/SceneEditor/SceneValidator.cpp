@@ -253,7 +253,7 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
 		// TODO:
 		// new texture path
 		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
-		if(!IsTextudeDescriptorPath(landTexName))
+		if(!IsTextureDescriptorPath(landTexName))
 		{
 			landTexName = ConvertTexturePathToDescriptorPath(landTexName);
 			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, landTexName);
@@ -324,23 +324,27 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
 {
     for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
     {
-        ValidateTexture(material->GetTexture((Material::eTextureLevel)iTex), errorsLog);
-
-		// TODO:
-		// new texture path
-		String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
-		if(!IsTextudeDescriptorPath(matTexName))
-		{
-			matTexName = ConvertTexturePathToDescriptorPath(matTexName);
-			material->SetTexture((Material::eTextureLevel)iTex, matTexName);
-		}
-
-        /*
-        if(material->GetTextureName((Material::eTextureLevel)iTex).find(".pvr.png") != String::npos)
+        Texture *texture = material->GetTexture((Material::eTextureLevel)iTex);
+        if(texture)
         {
-            errorsLog.insert(material->GetName() + ": wrong texture name " + material->GetTextureName((Material::eTextureLevel)iTex));
+            ValidateTexture(texture, errorsLog);
+            
+            // TODO:
+            // new texture path
+            String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
+            if(!IsTextureDescriptorPath(matTexName))
+            {
+                matTexName = ConvertTexturePathToDescriptorPath(matTexName);
+                material->SetTexture((Material::eTextureLevel)iTex, matTexName);
+            }
+            
+            /*
+             if(material->GetTextureName((Material::eTextureLevel)iTex).find(".pvr.png") != String::npos)
+             {
+             errorsLog.insert(material->GetName() + ": wrong texture name " + material->GetTextureName((Material::eTextureLevel)iTex));
+             }
+             */
         }
-		*/
     }
 }
 
@@ -584,7 +588,7 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname)
     return false;
 }
 
-bool SceneValidator::IsTextudeDescriptorPath(const String &path)
+bool SceneValidator::IsTextureDescriptorPath(const String &path)
 {
 	String ext = FileSystem::GetExtension(path);
 	return (ext == TextureDescriptor::GetDefaultExtension());
