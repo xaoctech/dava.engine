@@ -37,7 +37,7 @@
 namespace DAVA 
 {
 
-
+class File;
 class Image : public BaseObject
 {
 public:
@@ -62,6 +62,7 @@ public:
 	static Image * Create(int32 width, int32 height, PixelFormat format);
     // \todo Change function name to Image::Create for consistency
 	static Image * CreateFromFile(const String & pathName, bool isAlphaPremultiplied);
+	static Image * CreateFromFile(File *file, bool isAlphaPremultiplied);
 	static Vector2 GetImageSize(const String & pathName);
 	
 	inline int32 GetWidth();
@@ -97,6 +98,9 @@ public:
 	PixelFormat format;
 //	bool	isAlphaPremultiplied;
 private:
+    
+    void ProcessAlphaPremultiplication();
+    
 //    static bool    isAlphaPremultiplicationEnabled;
 };
 	
