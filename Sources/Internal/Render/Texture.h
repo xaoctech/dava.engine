@@ -47,6 +47,7 @@ namespace DAVA
  */
 class Image;
 class TextureDescriptor;
+class File;
 class Texture : public RenderResource
 {
 public:
@@ -211,6 +212,8 @@ public:
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
     static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
+    void ReloadAs(const String &formatExtension);
+
 
 public:							// properties for fast access
 
@@ -276,10 +279,12 @@ public:							// properties for fast access
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
-	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT, bool premultipliedAlpha = false);
-	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);// , PixelFormat format = SELECT_CLOSEST_FORMAT);
-
-	static Texture * CreateFromDescriptor(TextureDescriptor *descriptor);
+	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);
+	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);
+	static Texture * CreateFromPNG(File *file, TextureDescriptor *descriptor);
+	static Texture * CreateFromPVR(File *file, TextureDescriptor *descriptor);
+    
+	static Texture * CreateFromDescriptor(const String & pathName, TextureDescriptor *descriptor);
 	
 	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel);
 
@@ -298,6 +303,9 @@ private:
 #if defined(__DAVAENGINE_OPENGL__)
     static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
+    
+    void ReloadAsPng();
+    void ReloadAsPvr();
 };
     
 // Implementation of inline functions

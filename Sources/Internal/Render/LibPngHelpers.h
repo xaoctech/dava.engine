@@ -46,6 +46,7 @@ class LibPngWrapper
 {
 public:
 	static int ReadPngFile(const char *file, Image * image);
+	static int ReadPngFile(File *infile, Image * image);
 	static void WritePngFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
 
 };

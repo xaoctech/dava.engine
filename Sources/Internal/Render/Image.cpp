@@ -98,44 +98,63 @@ Image * Image::Create(int32 width, int32 height, PixelFormat format)
 
 Image * Image::CreateFromFile(const String & pathName, bool isAlphaPremultiplied)
 {
-	Image * davaImage = new Image();
-	if (1 != LibPngWrapper::ReadPngFile(pathName.c_str(), davaImage))
+	Image * image = new Image();
+	if (1 != LibPngWrapper::ReadPngFile(pathName.c_str(), image))
 	{
-		SafeRelease(davaImage);
+		SafeRelease(image);
 		return 0;
 	}
     if (isAlphaPremultiplied)
     {
-        if(davaImage->format == FORMAT_RGBA8888) 
-        {
-            unsigned int * inOutPixel32 = (unsigned int*)davaImage->data;
-            for(int i = 0; i < davaImage->width * davaImage->height; ++i)
-            {
-                unsigned int pixel = *inOutPixel32;
-
-                unsigned int a = (pixel >> 24) & 0xFF;
-                unsigned int r = (pixel >> 16) & 0xFF;
-                unsigned int g = (pixel >> 8) & 0xFF;
-                unsigned int b = pixel & 0xFF;
-
-                {
-                    r = r * a / 255;
-                    g = g * a / 255;
-                    b = b * a / 255;
-                }
-
-                *inOutPixel32 = ((a) << 24) | (r << 16) | (g << 8) | b;
-                inOutPixel32++;
-                //	*inOutPixel32 = ((*inAlphaData) << 24) | pixel;
-                //	unsigned int a = *inAlphaData;
-                //	inAlphaData++;
-            }
-//            davaImage->isAlphaPremultiplied = true;
-        }
+        image->ProcessAlphaPremultiplication();
     }
-	return davaImage;
+	return image;
 };
 
+    
+Image * Image::CreateFromFile(File *file, bool isAlphaPremultiplied)
+{
+    Image * image = new Image();
+    if (1 != LibPngWrapper::ReadPngFile(file, image))
+    {
+        SafeRelease(image);
+        return 0;
+    }
+    if (isAlphaPremultiplied)
+    {
+        image->ProcessAlphaPremultiplication();
+    }
+    return image;
+};
+
+void Image::ProcessAlphaPremultiplication()
+{
+    if(format == FORMAT_RGBA8888)
+    {
+        unsigned int * inOutPixel32 = (unsigned int*)data;
+        int32 size = width * height;
+        for(int32 i = 0; i < size; ++i)
+        {
+            uint32 pixel = *inOutPixel32;
+            
+            uint32 a = (pixel >> 24) & 0xFF;
+            uint32 r = (pixel >> 16) & 0xFF;
+            uint32 g = (pixel >> 8) & 0xFF;
+            uint32 b = pixel & 0xFF;
+            
+            {
+                r = r * a / 255;
+                g = g * a / 255;
+                b = b * a / 255;
+            }
+            
+            *inOutPixel32 = ((a) << 24) | (r << 16) | (g << 8) | b;
+            inOutPixel32++;
+        }
+    }
+}
+    
+    
 #else //other platforms
 
 #endif //PLATFORMS	

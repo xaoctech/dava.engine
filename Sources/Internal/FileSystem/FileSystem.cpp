@@ -200,7 +200,7 @@ FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const String & fi
 bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 {
 #ifdef __DAVAENGINE_WIN32__
-	BOOL ret = ::CopyFileA(existingFile.c_str(), newFile.c_str(), true);
+	BOOL ret = ::CopyFileA(SystemPathForFrameworkPath(existingFile).c_str(), SystemPathForFrameworkPath(newFile).c_str(), true);
 	return ret != 0;
 #elif defined(__DAVAENGINE_ANDROID__)
 
@@ -245,7 +245,8 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 	return ret==0;
 
 #else //iphone & macos
-    int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
+//    int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
+    int ret = copyfile(SystemPathForFrameworkPath(existingFile).c_str(), SystemPathForFrameworkPath(newFile).c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL);
     return ret==0;
 	//DVASSERT(0 && "FileSystem::CopyFile not implemented for current platform");
 #endif //PLATFORMS

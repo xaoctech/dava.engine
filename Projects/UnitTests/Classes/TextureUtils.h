@@ -28,47 +28,26 @@
         * Created by Vitaliy "Boroda" Borodovsky
 =====================================================================================*/
 
-#ifndef __PVR_TEST_H__
-#define __PVR_TEST_H__
+#ifndef __TEXTURE_UTILS_H__
+#define __TEXTURE_UTILS_H__
 
 #include "DAVAEngine.h"
 using namespace DAVA;
 
-#include "TestTemplate.h"
-
-class PVRTest : public TestTemplate<PVRTest>
+class TextureUtils
 {
-    enum eConst
+public:
+    
+    struct CompareResult
     {
-        FIRST_TEST = 0,
-        TESTS_COUNT = 10,
-        ACCETABLE_DELTA_IN_PERSENTS = 2
+        uint32 difference;
+        uint32 bytesCount;
     };
     
-public:
-	PVRTest();
-
-	virtual void LoadResources();
-	virtual void UnloadResources();
-
-    virtual void Draw(const UIGeometricData &geometricData);
-
-    
-    void TestFunction(PerfFuncData * data);
-    
-private:
-    
-    int32 currentTest;
-    
-    void ReloadSprites();
-    bool IsCurrentTestAccepted();
-    
-    UIStaticText *compareResultText;
-    
-    Sprite *pngSprite;
-    Sprite *pvrSprite;
-    Sprite *decompressedPNGSprite;
+    static Sprite *CreateSpriteFromTexture(const String &texturePathname);
+    static CompareResult CompareSprites(Sprite *first, Sprite *second, PixelFormat format);
+    static Image * CreateImageAsRGBA8888(Sprite *sprite);
 };
 
 
-#endif // __PVR_TEST_H__
+#endif // __TEXTURE_UTILS_H__
