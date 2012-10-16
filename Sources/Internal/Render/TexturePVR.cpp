@@ -109,7 +109,7 @@ Texture * Texture::UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMap
     
     Texture * texture = new Texture();
     
-    bool filled = LibPVRHelper::FillTextureWithPVRData((const char *)data, dataSize, texture, baseMipMapLevel);
+    bool filled = LibPVRHelper::FillTextureWithPVRData((const char *)data, dataSize, texture, (uint32)baseMipMapLevel);
     if(!filled)
     {
         SafeRelease(texture);

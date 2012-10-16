@@ -1785,7 +1785,7 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 
-bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, int32 baseMipMapLevel)
+bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, uint32 baseMipMapLevel)
 {
     //Compression bools
     bool bIsCompressedFormatSupported=false;
