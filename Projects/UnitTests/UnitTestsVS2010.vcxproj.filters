@@ -51,6 +51,12 @@
     <ClInclude Include="Classes\PVRTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\TextureDescriptorTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\TextureUtils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\FrameworkMain.cpp">
@@ -88,6 +94,12 @@
     </ClCompile>
     <ClCompile Include="Classes\PVRTest.cpp">
       <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TextureDescriptorTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\TextureUtils.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
