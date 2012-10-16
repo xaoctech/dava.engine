@@ -557,13 +557,12 @@ Texture * Texture::PureCreate(const String & pathName)
 {
     Texture * texture = Texture::Get(pathName);
 	if (texture)return texture;
-
+    
     TextureDescriptor *descriptor = CreateDescriptorForTexture(pathName);
     if(!descriptor) return NULL;
     
 	// TODO: add check that pathName
 	String extension = FileSystem::GetExtension(pathName);
-
 	if (extension == String(".png"))
     {
 		texture = CreateFromPNG(pathName, descriptor);
@@ -572,6 +571,10 @@ Texture * Texture::PureCreate(const String & pathName)
 	{
 		texture = CreateFromPVR(pathName, descriptor);
 	}
+    else if(TextureDescriptor::GetDefaultExtension() == extension)
+    {
+		texture = CreateFromDescriptor(descriptor);
+    }
     
     if(texture)
     {
@@ -584,6 +587,12 @@ Texture * Texture::PureCreate(const String & pathName)
     SafeRelease(descriptor);
 	return texture;
 }
+    
+Texture * Texture::CreateFromDescriptor(TextureDescriptor *descriptor)
+{
+    return NULL;
+}
+
 	
 TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePathname)
 {
@@ -602,7 +611,6 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
         Logger::Warning("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s). File will be created with default settings.", descriptorPathname.c_str());
 
         String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-        descriptor->SetFileInfo(sourceTexturePathname);
         descriptor->SaveAsText(descriptorPathname);
     }
 #endif //#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)

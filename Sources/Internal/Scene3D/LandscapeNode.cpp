@@ -632,7 +632,6 @@ void LandscapeNode::SetTexture(eTextureLevel level, Texture *texture)
     {
         textureNames[level] = String("");
     }
-    
 }
 
     

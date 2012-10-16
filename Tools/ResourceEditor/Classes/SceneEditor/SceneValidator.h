@@ -122,6 +122,7 @@ public:
     
     static bool IsTextureChanged(const String &texturePathname);
     
+    void FindTexturesForCompression();
     
 protected:
     
@@ -138,6 +139,11 @@ protected:
 
     bool NodeRemovingDisabled(SceneNode *node);
     
+    bool WasTextureChanged(Texture *texture);
+    bool IsPathCorrectForProject(const String pathname);
+
+	bool IsTextudeDescriptorPath(const String &path);
+	String ConvertTexturePathToDescriptorPath(const String &path);
     
     Set<SceneNode*> emptyNodesForDeletion;
     Set<String> errorMessages;

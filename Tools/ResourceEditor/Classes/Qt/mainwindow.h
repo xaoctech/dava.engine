@@ -15,6 +15,9 @@ public:
    explicit QtMainWindow(QWidget *parent = 0);
    ~QtMainWindow();
     
+    virtual bool eventFilter(QObject *, QEvent *);
+
+    
 private:
     void SetupMainMenu();
     
