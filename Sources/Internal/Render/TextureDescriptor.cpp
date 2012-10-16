@@ -30,6 +30,7 @@
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/Logger.h"
 #include "FileSystem/File.h"
+#include "FileSystem/DynamicMemoryFile.h"
 #include "Render/Texture.h"
 
 namespace DAVA
@@ -42,12 +43,15 @@ TextureDescriptor::TextureDescriptor()
 
 TextureDescriptor::~TextureDescriptor()
 {
+#if defined TEXTURE_SPLICING_ENABLED
+    SafeRelease(textureFile);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
 }
 
 void TextureDescriptor::SetDefaultValues()
 {
     fileType = TYPE_TEXT;
-    
     
     Memset(modificationDate, 0, DATE_BUFFER_SIZE * sizeof(char8));
     Memset(crc, 0, MD5::DIGEST_SIZE * sizeof(uint8));
@@ -64,6 +68,12 @@ void TextureDescriptor::SetDefaultValues()
     dxtCompression.format = FORMAT_INVALID;
     dxtCompression.flipVertically = OPTION_DISABLED;
     dxtCompression.baseMipMapLevel = 0;
+    
+#if defined TEXTURE_SPLICING_ENABLED
+    textureFile = NULL;
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
+    textureFileFormat = PNG_FILE;
 }
     
 void TextureDescriptor::SaveDateAndCrc(const String &filePathname)
@@ -123,7 +133,6 @@ void TextureDescriptor::SaveAsText(const String &filePathname)
     //date
     WriteChar8String(file, modificationDate);
     
-    
     //crc
     char8 readableCrc[MD5::DIGEST_SIZE*2 + 1];
     CrcToReadableFormat(readableCrc, MD5::DIGEST_SIZE*2 + 1);
@@ -141,7 +150,7 @@ void TextureDescriptor::SaveAsText(const String &filePathname)
     SafeRelease(file);
 }
     
-void TextureDescriptor::SaveAsBinary(const String &filePathname)
+void TextureDescriptor::SaveAsBinary(const String &filePathname, const String &texturePathname)
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
@@ -155,9 +164,27 @@ void TextureDescriptor::SaveAsBinary(const String &filePathname)
     file->Write(&wrapModeS, sizeof(wrapModeS));
     file->Write(&wrapModeT, sizeof(wrapModeT));
     file->Write(&generateMipMaps, sizeof(generateMipMaps));
-    
-    //TODO: Write used fileExtension/Format
-    
+    file->Write(&textureFileFormat, sizeof(textureFileFormat));
+
+#if defined TEXTURE_SPLICING_ENABLED
+    SafeRelease(textureFile);
+    textureFile = File::Create(texturePathname, File::OPEN | File::READ);
+    if(textureFile)
+    {
+        uint32 fileSize = textureFile->GetSize();
+        uint8 *fileData = new uint8[fileSize];
+        if(fileData)
+        {
+            textureFile->Read(fileData, fileSize);
+            file->Write(fileData, fileSize);
+            
+            SafeDeleteArray(fileData);
+        }
+        
+        SafeRelease(textureFile);
+    }
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
     SafeRelease(file);
 }
 
@@ -197,11 +224,27 @@ void TextureDescriptor::LoadAsText(File *file)
     
 void TextureDescriptor::LoadAsBinary(File *file)
 {
+#if defined TEXTURE_SPLICING_ENABLED
+    SafeRelease(textureFile);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
     file->Read(&wrapModeS, sizeof(wrapModeS));
     file->Read(&wrapModeT, sizeof(wrapModeT));
     file->Read(&generateMipMaps, sizeof(generateMipMaps));
-    
-    //TODO: Read used fileExtension/Format
+    file->Read(&textureFileFormat, sizeof(textureFileFormat));
+
+#if defined TEXTURE_SPLICING_ENABLED
+    uint32 textureSize = file->GetSize() - file->GetPos();
+    uint8 *textureData = new uint8[textureSize];
+    if(textureData)
+    {
+        file->Read(textureData, textureSize);
+
+        textureFile = DynamicMemoryFile::Create(textureData, textureSize, File::WRITE | File::READ);
+        SafeDeleteArray(textureData);
+    }
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
 }
 
 void TextureDescriptor::WriteSignature(File *file, int32 signature)
@@ -340,6 +383,6 @@ String TextureDescriptor::GetDefaultExtension()
 {
     return String(".tex");
 }
-
+    
     
 };

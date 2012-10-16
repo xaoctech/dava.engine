@@ -40,63 +40,73 @@ namespace DAVA
 
 Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *descriptor)
 {
-	uint64 timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
-    
 	File * fp = File::Create(pathName, File::OPEN|File::READ);
 	if (!fp)
 	{
 		Logger::Error("Failed to open PVR texture: %s", pathName.c_str());
 		return 0;
 	}
-	uint32 fileSize = fp->GetSize();
-	uint8 * bytes = new uint8[fileSize];
-	uint32 dataRead = fp->Read(bytes, fileSize);
     
-	if (dataRead != fileSize)
-	{
-		Logger::Error("Failed to read data from PVR texture file: %s", pathName.c_str());
-		return 0;
-	}
-
-	Texture * newTexture = UnpackPVRData(bytes, fileSize, 0);
-	if (!newTexture)
-	{
-		Logger::Error("Failed to parse PVR texture: %s", pathName.c_str());
+    Texture *texture = CreateFromPVR(fp, descriptor);
+    SafeRelease(fp);
+    return texture;
+}
+    
+    
+Texture * Texture::CreateFromPVR(File *file, TextureDescriptor *descriptor)
+{
+    uint64 timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
+    
+    uint32 fileSize = file->GetSize();
+    uint8 * bytes = new uint8[fileSize];
+    uint32 dataRead = file->Read(bytes, fileSize);
+    
+    if (dataRead != fileSize)
+    {
+        Logger::Error("Failed to read data from PVR texture file");
+        return 0;
     }
-
-	SafeDeleteArray(bytes);
-	SafeRelease(fp);
+    
+    Texture * newTexture = UnpackPVRData(bytes, fileSize, 0);
+    if (!newTexture)
+    {
+        Logger::Error("Failed to parse PVR texture");
+    }
+    
+    SafeDeleteArray(bytes);
     
     RenderManager::Instance()->LockNonMain();
 #if defined(__DAVAENGINE_OPENGL__)
-	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
-	RenderManager::Instance()->HWglBindTexture(newTexture->id);
+    int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
+    RenderManager::Instance()->HWglBindTexture(newTexture->id);
     
-	if (descriptor->GenerateMipMaps())
-	{
+    if (descriptor->GenerateMipMaps())
+    {
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	}
+    }
     else
-	{
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	}
-	
-	if (saveId != 0)
-	{
-		RenderManager::Instance()->HWglBindTexture(saveId);
-	}
-
+    {
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    }
+    
+    if (saveId != 0)
+    {
+        RenderManager::Instance()->HWglBindTexture(saveId);
+    }
+    
     
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     RenderManager::Instance()->UnlockNonMain();
-
-	timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS() - timeCreateFromPVR;
-	Logger::Debug("TexturePVR: creation time: %lld", timeCreateFromPVR);
     
-	return newTexture;
+    timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS() - timeCreateFromPVR;
+    Logger::Debug("TexturePVR: creation time: %lld", timeCreateFromPVR);
+    
+    return newTexture;
 }
+
+    
     
 Texture * Texture::UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel)
 {
