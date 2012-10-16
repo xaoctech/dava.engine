@@ -249,6 +249,15 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
         {
             continue;
         }
+
+		// TODO:
+		// new texture path
+		DAVA::String landTexName = landscape->GetTextureName((LandscapeNode::eTextureLevel)i);
+		if(!IsTextudeDescriptorPath(landTexName))
+		{
+			landTexName = ConvertTexturePathToDescriptorPath(landTexName);
+			landscape->SetTextureName((LandscapeNode::eTextureLevel)i, landTexName);
+		}
         
         ValidateTexture(landscape->GetTexture((LandscapeNode::eTextureLevel)i), errorsLog);
     }
@@ -316,11 +325,22 @@ void SceneValidator::ValidateMaterial(Material *material, Set<String> &errorsLog
     for(int32 iTex = 0; iTex < Material::TEXTURE_COUNT; ++iTex)
     {
         ValidateTexture(material->GetTexture((Material::eTextureLevel)iTex), errorsLog);
-        
+
+		// TODO:
+		// new texture path
+		String matTexName = material->GetTextureName((Material::eTextureLevel)iTex);
+		if(!IsTextudeDescriptorPath(matTexName))
+		{
+			matTexName = ConvertTexturePathToDescriptorPath(matTexName);
+			material->SetTexture((Material::eTextureLevel)iTex, matTexName);
+		}
+
+        /*
         if(material->GetTextureName((Material::eTextureLevel)iTex).find(".pvr.png") != String::npos)
         {
             errorsLog.insert(material->GetName() + ": wrong texture name " + material->GetTextureName((Material::eTextureLevel)iTex));
         }
+		*/
     }
 }
 
@@ -564,3 +584,13 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname)
     return false;
 }
 
+bool SceneValidator::IsTextudeDescriptorPath(const String &path)
+{
+	String ext = FileSystem::GetExtension(path);
+	return (ext == TextureDescriptor::GetDefaultExtension());
+}
+
+String SceneValidator::ConvertTexturePathToDescriptorPath(const String &path)
+{
+	return FileSystem::ReplaceExtension(path, TextureDescriptor::GetDefaultExtension());
+}
