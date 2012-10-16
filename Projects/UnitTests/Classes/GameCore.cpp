@@ -41,6 +41,7 @@
 #include "SoundTest.h"
 #include "SplitTest.h"
 #include "PVRTest.h"
+#include "TextureDescriptorTest.h"
 
 
 using namespace DAVA;
@@ -68,6 +69,7 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
     new PVRTest();
+    new TextureDescriptorTest();
 //	new SampleTest();
 	new EntityTest();	
 	new MemoryAllocatorsTest();

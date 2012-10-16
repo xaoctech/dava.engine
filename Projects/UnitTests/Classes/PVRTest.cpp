@@ -29,6 +29,7 @@
 =====================================================================================*/
 
 #include "PVRTest.h"
+#include "TextureUtils.h"
 
 static const PixelFormat formats[] =
 {
@@ -48,6 +49,10 @@ static const PixelFormat formats[] =
 PVRTest::PVRTest()
 : TestTemplate<PVRTest>("PVRTest")
 {
+    String testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + String("/PVRTest/");
+    FileSystem::Instance()->CreateDirectory(testFolder, true);
+
+    
     pngSprite = NULL;
     pvrSprite = NULL;
     decompressedPNGSprite = NULL;
@@ -78,22 +83,6 @@ void PVRTest::LoadResources()
 }
 
 
-Sprite * PVRTest::CreateSpriteFromTexture(const String &texturePathname)
-{
-    Sprite *createdSprite = NULL;
-    
-    
-    Texture *texture = Texture::CreateFromFile(texturePathname);
-    if(texture)
-    {
-        createdSprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->GetWidth(), (float32)texture->GetHeight());
-        texture->Release();
-    }
-    
-    return createdSprite;
-}
-
-
 void PVRTest::UnloadResources()
 {
     RemoveAllControls();
@@ -113,7 +102,7 @@ void PVRTest::TestFunction(PerfFuncData * data)
     {
         ReloadSprites();
         
-        CompareResult result = CompareSprites(decompressedPNGSprite, pvrSprite);
+        TextureUtils::CompareResult result = TextureUtils::CompareSprites(decompressedPNGSprite, pvrSprite, formats[currentTest]);
         float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
         
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
@@ -124,6 +113,15 @@ void PVRTest::TestFunction(PerfFuncData * data)
         Logger::Debug(data->testData.message.c_str());
         
         TEST_VERIFY(differencePersentage < (float32)ACCETABLE_DELTA_IN_PERSENTS);
+        
+        
+        //Save images for visual comparision
+        Image *firstComparer = TextureUtils::CreateImageAsRGBA8888(decompressedPNGSprite);
+        Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(pvrSprite);
+        
+        String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
+        firstComparer->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest));
+        secondComparer->Save(documentsPath + Format("PVRTest/dst_number_%d.png", currentTest));
     }
     
     ++currentTest;
@@ -153,13 +151,9 @@ void PVRTest::ReloadSprites()
     SafeRelease(pvrSprite);
     SafeRelease(decompressedPNGSprite);
     
-//    Image::EnableAlphaPremultiplication(false);
-    
-    pngSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PNG/number_%d.png", currentTest)));
-    pvrSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/PVR/number_%d.pvr", currentTest)));
-    decompressedPNGSprite = CreateSpriteFromTexture(String(Format("~res:/PVRTest/DecompressedPNG/number_%d.png", currentTest)));
-    
-//    Image::EnableAlphaPremultiplication(true);
+    pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/PVRTest/PNG/number_%d.png", currentTest)));
+    pvrSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/PVRTest/PVR/number_%d.pvr", currentTest)));
+    decompressedPNGSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/PVRTest/DecompressedPNG/number_%d.png", currentTest)));
 }
 
 void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
@@ -183,65 +177,6 @@ void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
     }
     
     TestTemplate<PVRTest>::Draw(geometricData);
-}
-
-PVRTest::CompareResult PVRTest::CompareSprites(Sprite *first, Sprite *second)
-{
-    DVASSERT(first->GetHeight() == second->GetHeight());
-    DVASSERT(first->GetWidth() == second->GetWidth());
-    
-    Image *firstComparer = CreateImageAsRGBA8888(first);
-    Image *secondComparer = CreateImageAsRGBA8888(second);
-
-    CompareResult compareResult = {0};
-
-    
-    int32 imageSizeInBytes = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(firstComparer->format));
-
-    int32 step = 1;
-    int32 startIndex = 0;
-    
-    if(FORMAT_A8 == formats[currentTest])
-    {
-        compareResult.bytesCount = (int32)(first->GetWidth() * first->GetHeight() * Texture::GetPixelFormatSizeInBytes(FORMAT_A8));
-        step = 4;
-        startIndex = 3;
-    }
-    else
-    {
-        compareResult.bytesCount = imageSizeInBytes;
-    }
-
-    for(int32 i = startIndex; i < imageSizeInBytes; i += step)
-    {
-        compareResult.difference += abs(firstComparer->GetData()[i] - secondComparer->GetData()[i]);
-    }
-    
-    String documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-    firstComparer->Save(documentsPath + Format("src_number_%d.png", currentTest));
-    secondComparer->Save(documentsPath + Format("dst_number_%d.png", currentTest));
-    
-    
-    SafeRelease(firstComparer);
-    SafeRelease(secondComparer);
-    return compareResult;
-}
-
-Image * PVRTest::CreateImageAsRGBA8888(Sprite *sprite)
-{
-    Sprite *renderTarget = Sprite::CreateAsRenderTarget(sprite->GetWidth(), sprite->GetHeight(), FORMAT_RGBA8888);
-    RenderManager::Instance()->SetRenderTarget(renderTarget);
-    
-    sprite->SetPosition(0, 0);
-    sprite->Draw();
-    
-    RenderManager::Instance()->RestoreRenderTarget();
-    
-    Texture *renderTargetTexture = renderTarget->GetTexture();
-    Image *resultImage = renderTargetTexture->CreateImageFromMemory();
-    
-    SafeRelease(renderTarget);
-    return resultImage;
 }
 
 
