@@ -107,7 +107,7 @@ void PVRTest::TestFunction(PerfFuncData * data)
         
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
         data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
-                                        result.difference, differencePersentage, 100.f - differencePersentage);
+                                        differencePersentage, 100.f - differencePersentage);
         
         compareResultText->SetText(StringToWString(data->testData.message));
         Logger::Debug(data->testData.message.c_str());

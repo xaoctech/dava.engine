@@ -93,7 +93,7 @@ void TextureDescriptorTest::LoadPngFromBinaryDescriptor(TestTemplate<TextureDesc
     
     //Create descriptor
     TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(sourcePathname);
-    descriptor->textureFileFormat = TextureDescriptor::PNG_FILE;
+    descriptor->textureFileFormat = Texture::PNG_FILE;
     
     //Safe as Binary
     descriptor->SaveAsBinary(descriptorPathname, sourcePathname);
@@ -114,7 +114,7 @@ void TextureDescriptorTest::LoadPvrFromBinaryDescriptor(TestTemplate<TextureDesc
     
     //Create descriptor
     TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(sourcePathname);
-    descriptor->textureFileFormat = TextureDescriptor::PVR_FILE;
+    descriptor->textureFileFormat = Texture::PVR_FILE;
     
     //Safe as Binary
     descriptor->SaveAsBinary(descriptorPathname, sourcePathname);
@@ -133,7 +133,7 @@ void TextureDescriptorTest::Compare(const String &sourcePathname, const String &
     float32 differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
     
     data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
-                                    result.difference, differencePersentage, 100.f - differencePersentage);
+                                        differencePersentage, 100.f - differencePersentage);
     
     Logger::Debug((data->testData.name + String(" ") + data->testData.message).c_str());
     
