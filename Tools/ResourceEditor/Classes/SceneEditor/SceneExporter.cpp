@@ -492,7 +492,7 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
     PrepareFolderForCopy(workingPathname, errorLog);
     
     String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
-    descriptor->SaveAsBinary(dataFolder + workingPathname, exportedPathname);
+    descriptor->Export(dataFolder + workingPathname, exportedPathname);
     SafeRelease(descriptor);
 }
 

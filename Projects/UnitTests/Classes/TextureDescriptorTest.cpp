@@ -75,7 +75,7 @@ void TextureDescriptorTest::LoadPngFromTextDescriptor(TestTemplate<TextureDescri
     
     //Create descriptor
     TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(sourcePathname);
-    descriptor->SaveAsText(descriptorPathname);
+    descriptor->Save(descriptorPathname);
     SafeRelease(descriptor);
     
     Compare(sourcePathname, descriptorPathname, data, FORMAT_RGBA8888);
@@ -96,7 +96,7 @@ void TextureDescriptorTest::LoadPngFromBinaryDescriptor(TestTemplate<TextureDesc
     descriptor->textureFileFormat = Texture::PNG_FILE;
     
     //Safe as Binary
-    descriptor->SaveAsBinary(descriptorPathname, sourcePathname);
+    descriptor->Export(descriptorPathname, sourcePathname);
     SafeRelease(descriptor);
 
     Compare(sourcePathname, descriptorPathname, data, FORMAT_RGBA8888);
@@ -117,7 +117,7 @@ void TextureDescriptorTest::LoadPvrFromBinaryDescriptor(TestTemplate<TextureDesc
     descriptor->textureFileFormat = Texture::PVR_FILE;
     
     //Safe as Binary
-    descriptor->SaveAsBinary(descriptorPathname, sourcePathname);
+    descriptor->Export(descriptorPathname, sourcePathname);
     SafeRelease(descriptor);
 
     Compare(sourcePathname, descriptorPathname, data, FORMAT_PVR2);
