@@ -216,18 +216,29 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
         errorsLog.insert("Wrong path of: " + path);
     }
+
     if(IsntPower2(texture->GetWidth()) || IsntPower2(texture->GetHeight()))
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
         errorsLog.insert("Wrong size of " + path);
     }
-    
+
+	// if there is no descriptor file for this texture - generate it
+	String descriptorPath = FileSystem::ReplaceExtension(texture->GetPathname(), TextureDescriptor::GetDefaultExtension());
+	if(pathIsCorrect && !FileSystem::Instance()->IsFile(descriptorPath))
+	{
+		TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texture->GetPathname());
+		descriptor->SaveAsText(descriptorPath);
+	}
+
+	/*
     String extension = FileSystem::Instance()->GetExtension(texture->GetPathname());
     if(4 < extension.length()) //".png", ".pvr"
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
         errorsLog.insert("Wrong extension of " + path);
     }
+	*/
 }
 
 void SceneValidator::ValidateLandscape(LandscapeNode *landscape)

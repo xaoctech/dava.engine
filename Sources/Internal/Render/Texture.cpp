@@ -687,6 +687,7 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
     }
 
     bool loaded = descriptor->Load(descriptorPathname);
+	/*
 #if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
     if(!loaded)
     {
@@ -696,6 +697,8 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
         descriptor->SaveAsText(descriptorPathname);
     }
 #endif //#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+	*/
+
     return descriptor;
 }
 
