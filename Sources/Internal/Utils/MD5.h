@@ -69,14 +69,16 @@ class MD5
 {
 public:
     
-    enum eConst
-    {
-        DIGEST_SIZE = 16
-    };
+    static const int32 DIGEST_SIZE = 16;
     
 	static void ForFile(const String & pathName, uint8 * buffer);
 	static void ForDirectory(const String & pathName, uint8 * buffer, bool isRecursive);
 
+    static void HashToChar(const uint8 * hash, char8 *buffer, uint32 bufferSize);
+	static void CharToHash(const char8 *buffer, uint8 * hash);
+
+    
+    
 	void Init ();
 	void Update (uint8 *inBuf, uint32 inLen);
 	void Final ();
@@ -84,6 +86,10 @@ public:
 	uint8 * GetDigest() { return digest; };
 private:
 	static void RecursiveDirectoryMD5(const String & pathName, MD5 & md5, bool isRecursive);
+    
+    static uint8 GetNumberFromCharacter(char8 character);
+    static char8 GetCharacterFromNumber(uint8 number);
+
 
 	uint32 i[2];                   /* number of _bits_ handled mod 2^64 */
 	uint32 buf[4];                                    /* scratch buffer */
