@@ -2336,8 +2336,33 @@ static int _wrap_UIControl_GetPosition(lua_State* L) {
 }
 
 
+static int _wrap_UIControl_GetGeometricData(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::UIControl *arg1 = (DAVA::UIControl *) 0 ;
+  DAVA::UIGeometricData *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::UIControl::GetGeometricData",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::UIControl::GetGeometricData",1,"DAVA::UIControl *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__UIControl,0))){
+    SWIG_fail_ptr("UIControl_GetGeometricData",1,SWIGTYPE_p_DAVA__UIControl);
+  }
+  
+  result = (DAVA::UIGeometricData *) &(arg1)->GetGeometricData();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__UIGeometricData,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static swig_lua_method swig_DAVA_UIControl_methods[] = {
     {"GetPosition", _wrap_UIControl_GetPosition}, 
+    {"GetGeometricData", _wrap_UIControl_GetGeometricData}, 
     {0,0}
 };
 static swig_lua_attribute swig_DAVA_UIControl_attributes[] = {

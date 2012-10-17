@@ -86,6 +86,12 @@ float32 AutotestingSystemLua::GetTimeElapsed()
     return SystemTimer::FrameDelta();
 }
     
+void AutotestingSystemLua::OnError(const String &errorMessage)
+{
+    Logger::Debug("AutotestingSystemLua::OnError %s", errorMessage.c_str());
+    AutotestingSystem::Instance()->OnError(errorMessage);
+}
+    
 void AutotestingSystemLua::StopTest()
 {
     Logger::Debug("AutotestingSystemLua::StopTest");
@@ -102,6 +108,18 @@ UIControl *AutotestingSystemLua::FindControl(const String &path)
     return Action::FindControl(controlPath);
 }
     
+bool AutotestingSystemLua::SetText(const String &path, const String &text)
+{
+    Logger::Debug("AutotestingSystemLua::SetText %s %s", path.c_str(), text.c_str());
+    UITextField *tf = dynamic_cast<UITextField*>(FindControl(path));
+    if(tf)
+    {
+        tf->SetText(StringToWString(text));
+        return true;
+    }
+    return false;
+}
+    
 void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
 {
     Logger::Debug("AutotestingSystemLua::TouchDown point=(%f,%f) touchId=%d", point.x, point.y, touchId);
@@ -111,7 +129,7 @@ void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
     touchDown.tid = touchId;
     touchDown.tapCount = 1;
     UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
-    UIControlSystem::Instance()->RecalculatePointToPhysical(touchDown.physPoint, touchDown.point);
+    UIControlSystem::Instance()->RecalculatePointToVirtual(touchDown.physPoint, touchDown.point);
     //touchDown.physPoint = TouchAction::GetPhysicalPoint(point);
     //touchDown.point = TouchAction::GetVirtualPoint(touchDown.physPoint);
         

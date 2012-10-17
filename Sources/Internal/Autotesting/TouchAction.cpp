@@ -28,7 +28,7 @@ void TouchAction::TouchDown(const Vector2 &point)
     touchDown.tid = id;
     touchDown.tapCount = 1;
     UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
-    UIControlSystem::Instance()->RecalculatePointToPhysical(touchDown.physPoint, touchDown.point);
+    UIControlSystem::Instance()->RecalculatePointToVirtual(touchDown.physPoint, touchDown.point);
     //touchDown.physPoint = GetPhysicalPoint(point);
     //touchDown.point = GetVirtualPoint(touchDown.physPoint);
 
@@ -60,7 +60,7 @@ void TouchAction::TouchMove(const Vector2 &point)
     touchMove.tid = id;
     touchMove.tapCount = 1;
     UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchMove.physPoint);
-    UIControlSystem::Instance()->RecalculatePointToPhysical(touchMove.physPoint, touchMove.point);
+    UIControlSystem::Instance()->RecalculatePointToVirtual(touchMove.physPoint, touchMove.point);
     //touchMove.physPoint = GetPhysicalPoint(point);
     //touchMove.point = GetVirtualPoint(touchMove.physPoint);
         
