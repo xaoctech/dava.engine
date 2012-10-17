@@ -49,8 +49,8 @@ private slots:
 	void textureListSortChanged(const QString &text);
 	void texturePressed(const QModelIndex & index);
 	void textureColorChannelPressed(bool checked);
-	void textureFormatPVRChanged(bool emptyFormat);
-	void textureFormatDXTChanged(bool emptyFormat);
+	void textureFormatPVRChanged(const DAVA::PixelFormat &newFormat);
+	void textureFormatDXTChanged(const DAVA::PixelFormat &newFormat);
 };
 
 #endif // __TEXTURE_DIALOG_H__

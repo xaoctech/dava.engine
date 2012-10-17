@@ -126,8 +126,8 @@ void TextureDialog::setupTextureListFilter()
 
 void TextureDialog::setupTextureProperties()
 {
-	QObject::connect(ui->textureProperties, SIGNAL(formatChangedPVR(bool)), this, SLOT(textureFormatPVRChanged(bool)));
-	QObject::connect(ui->textureProperties, SIGNAL(formatChangedDXT(bool)), this, SLOT(textureFormatDXTChanged(bool)));
+	QObject::connect(ui->textureProperties, SIGNAL(formatChangedPVR(const DAVA::PixelFormat &)), this, SLOT(textureFormatPVRChanged(const DAVA::PixelFormat &)));
+	QObject::connect(ui->textureProperties, SIGNAL(formatChangedDXT(const DAVA::PixelFormat &)), this, SLOT(textureFormatDXTChanged(const DAVA::PixelFormat &)));
 }
 
 void TextureDialog::texturePressed(const QModelIndex & index)
@@ -189,32 +189,12 @@ void TextureDialog::textureColorChannelPressed(bool checked)
 	ui->textureAreaPVR->setColorChannel(channelsMask);
 }
 
-void TextureDialog::textureFormatPVRChanged(bool emptyFormat)
+void TextureDialog::textureFormatPVRChanged(const DAVA::PixelFormat &newFormat)
 {
-	if(emptyFormat)
-	{
-		//ui->textureAreaPVR->hide();
-		ui->tabFormats->removeTab(0);
-	}
-	else
-	{
-		//ui->textureAreaPVR->show();
-		ui->tabFormats->insertTab(0, ui->tabPVR, "PVR");
-	}
+	ui->tabFormats->setTabEnabled(0, DAVA::FORMAT_INVALID != newFormat);
 }
 
-void TextureDialog::textureFormatDXTChanged(bool emptyFormat)
+void TextureDialog::textureFormatDXTChanged(const DAVA::PixelFormat &newFormat)
 {
-	if(emptyFormat)
-	{
-		ui->tabFormats->removeTab(1);
-		//ui->textureAreaDXT->hide();
-		//ui->tabFormats->setTabEnabled(1, false);
-	}
-	else
-	{
-		//ui->textureAreaDXT->show();
-		//ui->tabFormats->setTabEnabled(1, true);
-		ui->tabFormats->insertTab(1, ui->tabDXT, "DXT");
-	}
+	ui->tabFormats->setTabEnabled(1, DAVA::FORMAT_INVALID != newFormat);
 }

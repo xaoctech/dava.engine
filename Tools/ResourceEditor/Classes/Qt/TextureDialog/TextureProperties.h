@@ -29,8 +29,8 @@ public:
 	void setTexture(DAVA::Texture *texture);
 
 signals:
-	void formatChangedPVR(DAVA::PixelFormat newFormat);
-	void formatChangedDXT(DAVA::PixelFormat newFormat);
+	void formatChangedPVR(const DAVA::PixelFormat &newFormat);
+	void formatChangedDXT(const DAVA::PixelFormat &newFormat);
 
 private slots:
 	void propertyChanged(QtProperty * property);
@@ -74,14 +74,15 @@ private:
 
 	QtProperty *enumPVRFormat;
 	QtProperty *boolPVRFlipVertical;
+	QtProperty *intBasePVRMipmapLevel;
 
 	QtProperty *enumDXTFormat;
 	QtProperty *boolDXTFlipVertical;
+	QtProperty *intBaseDXTMipmapLevel;
 
 	QtProperty *boolGenerateMipMaps;
 	QtProperty *enumWrapModeS;
 	QtProperty *enumWrapModeT;
-	QtProperty *intBaseMipmapLevel;
 };
 
 #endif // __TEXTURE_PROPERTIES_H__
