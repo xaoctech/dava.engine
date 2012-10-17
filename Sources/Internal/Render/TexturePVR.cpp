@@ -40,6 +40,10 @@ namespace DAVA
 
 Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *descriptor)
 {
+    Texture * cachedTexture = Texture::Get(pathName);
+	if (cachedTexture)return cachedTexture;
+
+    
 	File * fp = File::Create(pathName, File::OPEN|File::READ);
 	if (!fp)
 	{
@@ -80,7 +84,7 @@ Texture * Texture::CreateFromPVR(File *file, TextureDescriptor *descriptor)
     int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
     RenderManager::Instance()->HWglBindTexture(newTexture->id);
     
-    if (descriptor->GenerateMipMaps())
+    if (descriptor->GetGenerateMipMaps())
     {
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
         RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));

@@ -118,6 +118,7 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 
 TextureProperties::~TextureProperties()
 {
+	Save();
 	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
@@ -128,32 +129,46 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 {
 	reactOnPropertyChange = false;
 
+	Save();
 	DAVA::SafeRelease(curTexture);
 	DAVA::SafeRelease(curTextureDescriptor);
 
 	curTexture = texture;
-	curTextureDescriptor = DAVA::Texture::CreateDescriptorForTexture(curTexture->GetPathname());
 
-	DAVA::SafeRetain(curTexture);
-
-	// set loaded descriptor to current properties
+	if(NULL != curTexture)
 	{
-		// pvr
-		propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
-		propertiesBool->setValue(boolPVRFlipVertical, curTextureDescriptor->pvrCompression.flipVertically);
-		propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
+		DAVA::SafeRetain(curTexture);
 
-		// dxt
-		propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
-		propertiesBool->setValue(boolDXTFlipVertical, curTextureDescriptor->dxtCompression.flipVertically);
-		propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
+		// enable this widget
+		setEnabled(true);
 
-		// mipmap
-		propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
+		// load texture properties
+		curTextureDescriptor = DAVA::Texture::CreateDescriptorForTexture(curTexture->GetPathname());
 
-		// wrap mode
-		propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->wrapModeS));
-		propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
+		// set loaded descriptor to current properties
+		{
+			// pvr
+			propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
+			propertiesBool->setValue(boolPVRFlipVertical, curTextureDescriptor->pvrCompression.flipVertically);
+			propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
+
+			// dxt
+			propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
+			propertiesBool->setValue(boolDXTFlipVertical, curTextureDescriptor->dxtCompression.flipVertically);
+			propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
+
+			// mipmap
+			propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
+
+			// wrap mode
+			propertiesEnum->setValue(enumWrapModeS, helperWrapModes.indexV(curTextureDescriptor->wrapModeS));
+			propertiesEnum->setValue(enumWrapModeT, helperWrapModes.indexV(curTextureDescriptor->wrapModeT));
+		}
+	}
+	else
+	{
+		// no texture - disable this widget
+		setEnabled(false);
 	}
 
 	reactOnPropertyChange = true;
@@ -237,4 +252,9 @@ QStringList TextureProperties::enumPropertiesHelper::keyList()
 	}
 
 	return ret;
+}
+
+void TextureProperties::Save()
+{
+
 }

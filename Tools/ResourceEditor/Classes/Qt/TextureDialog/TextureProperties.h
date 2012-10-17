@@ -83,6 +83,8 @@ private:
 	QtProperty *boolGenerateMipMaps;
 	QtProperty *enumWrapModeS;
 	QtProperty *enumWrapModeT;
+
+	void Save();
 };
 
 #endif // __TEXTURE_PROPERTIES_H__

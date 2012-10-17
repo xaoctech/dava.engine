@@ -7,13 +7,16 @@
 #include <QComboBox>
 #include <QAbstractItemModel>
 #include <QStatusBar>
+#include <QToolButton>
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
 
-TextureDialog::TextureDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::TextureDialog)
+TextureDialog::TextureDialog(QWidget *parent)
+    : QDialog(parent)
+	, ui(new Ui::TextureDialog)
+	, curTextureOriginal(NULL)
+	, curTextureView(ViewPVR)
 {
 	textureListModel = new TextureListModel();
 	textureListImagesDelegate = new TextureListDelegate();
@@ -31,9 +34,19 @@ TextureDialog::TextureDialog(QWidget *parent) :
 	setupTextureToolbar();
 	setupTextureListFilter();
 	setupTextureProperties();
+	setupTextureViewToolbar();
 
+	setTextureView(curTextureView);
+
+	// set textures list to show images
 	ui->actionViewImagesList->trigger();
 
+	// debug
+	/*
+	QImage image("d:\\Downloads\\test.png");
+	ui->textureAreaOriginal->setImage(image);
+	ui->textureAreaPVR->setImage(image);
+	*/
 }
 
 TextureDialog::~TextureDialog()
@@ -41,6 +54,59 @@ TextureDialog::~TextureDialog()
 	delete textureListImagesDelegate;
 	delete textureListModel;
     delete ui;
+}
+
+void TextureDialog::setTextureView(TextureView view)
+{
+	curTextureView = view;
+
+	// color channels to default value
+	ui->actionColorR->setChecked(true);
+	ui->actionColorG->setChecked(true);
+	ui->actionColorB->setChecked(true);
+	ui->actionColorA->setChecked(true);
+	ui->textureAreaOriginal->setColorChannel(TextureScrollArea::ChannelAll);
+	ui->textureAreaPVR->setColorChannel(TextureScrollArea::ChannelAll);
+	ui->textureToolbar->setEnabled(false);
+	ui->textureViewToolbar->setEnabled(false);
+
+	// texture view - 1. to default
+	ui->actionViewPVR->setChecked(false);
+	ui->actionViewDXT->setChecked(false);
+
+	// texture view - 2. to appropriate state
+	if(NULL != curTextureOriginal)
+	{
+		ui->textureToolbar->setEnabled(true);
+		ui->textureViewToolbar->setEnabled(true);
+
+		QImage image(curTextureOriginal->GetPathname().c_str());
+		ui->textureAreaOriginal->setImage(image);
+
+		switch(view)
+		{
+		case ViewPVR:
+			{
+				ui->actionViewPVR->setChecked(true);
+			}
+			break;
+		case ViewDXT:
+			{
+				ui->actionViewDXT->setChecked(true);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		// no texture - set empty images to original/PVR views
+		ui->textureAreaOriginal->setImage(QImage());
+		ui->textureAreaPVR->setImage(QImage());
+	}
+
+	ui->textureProperties->setTexture(curTextureOriginal);
 }
 
 void TextureDialog::setupStatusBar()
@@ -64,11 +130,6 @@ void TextureDialog::setupTexturesList()
 
 void TextureDialog::setupImagesScrollAreas()
 {
-	QImage image("d:\\Downloads\\test.png");
-
-	ui->textureAreaOriginal->setImage(image);
-	ui->textureAreaPVR->setImage(image);
-
 	QObject::connect(ui->textureAreaOriginal, SIGNAL(texturePosChanged(QPoint)), ui->textureAreaPVR, SLOT(texturePos(const QPoint &)));
 	QObject::connect(ui->textureAreaPVR, SIGNAL(texturePosChanged(QPoint)), ui->textureAreaOriginal, SLOT(texturePos(const QPoint &)));
 
@@ -77,6 +138,29 @@ void TextureDialog::setupImagesScrollAreas()
 }
 
 void TextureDialog::setupTextureToolbar()
+{
+	/*
+	QComboBox *textureZoomCombo = new QComboBox();
+	textureZoomCombo->addItem("10%");
+	textureZoomCombo->addItem("25%");
+	textureZoomCombo->addItem("50%");
+	textureZoomCombo->addItem("100%");
+	textureZoomCombo->addItem("150%");
+	textureZoomCombo->addItem("200%");
+	textureZoomCombo->addItem("400%");
+	textureZoomCombo->addItem("700%");
+	textureZoomCombo->addItem("1000%");
+
+	ui->textureToolbar->addWidget(textureZoomCombo);
+	*/
+
+	QObject::connect(ui->actionColorA, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
+	QObject::connect(ui->actionColorB, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
+	QObject::connect(ui->actionColorG, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
+	QObject::connect(ui->actionColorR, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
+}
+
+void TextureDialog::setupTextureListToolbar()
 {
 	QComboBox *texturesSortCombo = new QComboBox();
 	QLabel *texturesSortComboLabel = new QLabel();
@@ -94,27 +178,6 @@ void TextureDialog::setupTextureToolbar()
 	ui->textureListToolbar->addWidget(texturesSortCombo);
 
 	QObject::connect(texturesSortCombo, SIGNAL(activated(const QString &)), this, SLOT(textureListSortChanged(const QString &)));
-	QObject::connect(ui->actionColorA, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
-	QObject::connect(ui->actionColorB, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
-	QObject::connect(ui->actionColorG, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
-	QObject::connect(ui->actionColorR, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
-}
-
-void TextureDialog::setupTextureListToolbar()
-{
-	QComboBox *textureZoomCombo = new QComboBox();
-	textureZoomCombo->addItem("10%");
-	textureZoomCombo->addItem("25%");
-	textureZoomCombo->addItem("50%");
-	textureZoomCombo->addItem("100%");
-	textureZoomCombo->addItem("150%");
-	textureZoomCombo->addItem("200%");
-	textureZoomCombo->addItem("400%");
-	textureZoomCombo->addItem("700%");
-	textureZoomCombo->addItem("1000%");
-
-	ui->textureToolbar->addWidget(textureZoomCombo);
-
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
 	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
 }
@@ -130,22 +193,16 @@ void TextureDialog::setupTextureProperties()
 	QObject::connect(ui->textureProperties, SIGNAL(formatChangedDXT(const DAVA::PixelFormat &)), this, SLOT(textureFormatDXTChanged(const DAVA::PixelFormat &)));
 }
 
+void TextureDialog::setupTextureViewToolbar()
+{
+	QObject::connect(ui->actionViewPVR, SIGNAL(triggered(bool)), this, SLOT(textureViewPVR(bool)));
+	QObject::connect(ui->actionViewDXT, SIGNAL(triggered(bool)), this, SLOT(textureViewDXT(bool)));
+}
+
 void TextureDialog::texturePressed(const QModelIndex & index)
 {
-	QImage image(index.data(TextureListModel::TexturePath).toString());
-
-	ui->actionColorR->setChecked(true);
-	ui->actionColorG->setChecked(true);
-	ui->actionColorB->setChecked(true);
-	ui->actionColorA->setChecked(true);
-
-	ui->textureAreaOriginal->setImage(image);
-	ui->textureAreaPVR->setImage(image);
-
-	ui->textureProperties->setTexture(textureListModel->texture(index));
-
-	ui->textureAreaOriginal->setColorChannel(TextureScrollArea::ChannelAll);
-	ui->textureAreaPVR->setColorChannel(TextureScrollArea::ChannelAll);
+	curTextureOriginal = textureListModel->texture(index);
+	setTextureView(curTextureView);
 }
 
 void TextureDialog::textureListViewText(bool checked)
@@ -191,10 +248,20 @@ void TextureDialog::textureColorChannelPressed(bool checked)
 
 void TextureDialog::textureFormatPVRChanged(const DAVA::PixelFormat &newFormat)
 {
-	ui->tabFormats->setTabEnabled(0, DAVA::FORMAT_INVALID != newFormat);
+	//ui->tabFormats->setTabEnabled(0, DAVA::FORMAT_INVALID != newFormat);
 }
 
 void TextureDialog::textureFormatDXTChanged(const DAVA::PixelFormat &newFormat)
 {
-	ui->tabFormats->setTabEnabled(1, DAVA::FORMAT_INVALID != newFormat);
+	//ui->tabFormats->setTabEnabled(1, DAVA::FORMAT_INVALID != newFormat);
+}
+
+void TextureDialog::textureViewPVR(bool checked)
+{
+	setTextureView(ViewPVR);
+}
+
+void TextureDialog::textureViewDXT(bool checked)
+{
+	setTextureView(ViewDXT);
 }
