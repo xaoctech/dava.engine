@@ -43,6 +43,7 @@ namespace DAVA
 class Vector2
 {
 public:
+#ifndef SWIG
 	union{
 		struct
 		{
@@ -54,6 +55,9 @@ public:
 		};
 		float32 data[2];
 	};
+#else
+    float32 x, y;
+#endif
 	
 	//! Basic
 	inline Vector2();
@@ -116,7 +120,7 @@ inline Vector2 Normalize(const Vector2 & _v);
 inline float32 CrossProduct(const Vector2 & a, const Vector2 & b);
 inline Vector2 Reflect(const Vector2 & v, const Vector2 & n);
 
-
+#ifndef SWIG
 /**	
 	\ingroup math
 	\brief Vector with 3 coordinates
@@ -944,6 +948,7 @@ inline Vector4 Normalize(const Vector4 & v)
 	return res;
 }
 
+#endif //SWIG
 
 };
 

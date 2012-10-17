@@ -8,6 +8,7 @@
 
 //TODO: move all wrappers to separate class?
 #include "Action.h"
+#include "TouchAction.h"
 
 extern "C"{
 #include "lua.h"
@@ -16,8 +17,16 @@ extern "C"{
 };
 
 // directly include wrapped module here to compile only if __DAVAENGINE_AUTOTESTING__ is defined
-#include "AutotestingSystem_wrap.cxx"
-//extern "C" int luaopen_AutotestingSystem(lua_State *l); // declare the wrapped module
+//#include "AutotestingSystem_wrap.cxx"
+
+//#include "VectorSwig.cpp"
+//#include "UIControlSwig.cpp"
+//#include "AutotestingSystemSwig.cpp"
+
+extern "C" int luaopen_AutotestingSystem(lua_State *l);
+extern "C" int luaopen_UIControl(lua_State *l); 
+extern "C" int luaopen_Rect(lua_State *l);
+extern "C" int luaopen_Vector(lua_State *l);
 
 namespace DAVA
 {
@@ -83,12 +92,47 @@ void AutotestingSystemLua::StopTest()
     AutotestingSystem::Instance()->OnTestsFinished();
 }
     
-bool AutotestingSystemLua::FindControl(const String &path)
+UIControl *AutotestingSystemLua::FindControl(const String &path)
+{
+    Logger::Debug("AutotestingSystemLua::FindControl %s", path.c_str());
+    
+    Vector<String> controlPath;
+    ParsePath(path, controlPath);
+    
+    return Action::FindControl(controlPath);
+}
+    
+void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
+{
+    Logger::Debug("AutotestingSystemLua::TouchDown point=(%f,%f) touchId=%d", point.x, point.y, touchId);
+      
+    UIEvent touchDown;
+    touchDown.phase = UIEvent::PHASE_BEGAN;
+    touchDown.tid = touchId;
+    touchDown.tapCount = 1;
+    touchDown.physPoint = TouchAction::GetPhysicalPoint(point);
+    touchDown.point = TouchAction::GetVirtualPoint(touchDown.physPoint);
+        
+    Action::ProcessInput(touchDown);
+}
+    
+void AutotestingSystemLua::TouchUp(int32 touchId)
+{
+    UIEvent touchUp;
+    if(!AutotestingSystem::Instance()->FindTouch(touchId, touchUp))
+    {
+        Logger::Error("TouchAction::TouchUp touch down not found");
+    }
+    touchUp.phase = UIEvent::PHASE_ENDED;
+    touchUp.tid = touchId;
+    
+    Action::ProcessInput(touchUp);
+}
+
+void AutotestingSystemLua::ParsePath(const String &path, Vector<String> &parsedPath)
 {
     //TODO: parse path
-    Vector<String> controlPath;
-    controlPath.push_back(path);
-    return (Action::FindControl(controlPath) != NULL);
+    parsedPath.push_back(path);
 }
     
 void AutotestingSystemLua::LoadWrappedLuaObjects()
@@ -96,6 +140,10 @@ void AutotestingSystemLua::LoadWrappedLuaObjects()
     if(!luaState) return; //TODO: report error?
     
     luaopen_AutotestingSystem(luaState);	// load the wrappered module
+    luaopen_UIControl(luaState);	// load the wrappered module
+    luaopen_Rect(luaState);	// load the wrappered module
+    luaopen_Vector(luaState);	// load the wrappered module
+    
     if(delegate)
     {
         delegate->LoadWrappedLuaObjects();

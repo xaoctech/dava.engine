@@ -536,6 +536,8 @@ void AutotestingSystem::OnTestsFinished()
 
 void AutotestingSystem::OnInput(const UIEvent &input)
 {
+    Logger::Debug("AutotestingSystem::OnInput %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c",input.tid, input.phase, input.tapCount, input.point.x, input.point.y, input.physPoint.x, input.physPoint.y, input.keyChar);
+    
     int32 id = input.tid;
     switch(input.phase)
     {

@@ -1644,105 +1644,62 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_DAVA__AutotestingSystemLua swig_types[0]
-#define SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t swig_types[1]
-#define SWIGTYPE_p_DAVA__UIControl swig_types[2]
-#define SWIGTYPE_p_DAVA__Vector2 swig_types[3]
-#define SWIGTYPE_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result swig_types[4]
-#define SWIGTYPE_p_char swig_types[5]
-#define SWIGTYPE_p_double swig_types[6]
-#define SWIGTYPE_p_float swig_types[7]
-#define SWIGTYPE_p_int swig_types[8]
-#define SWIGTYPE_p_long_long swig_types[9]
-#define SWIGTYPE_p_short swig_types[10]
-#define SWIGTYPE_p_signed_char swig_types[11]
-#define SWIGTYPE_p_std__string swig_types[12]
-#define SWIGTYPE_p_std__wstring swig_types[13]
-#define SWIGTYPE_p_unsigned_char swig_types[14]
-#define SWIGTYPE_p_unsigned_int swig_types[15]
-#define SWIGTYPE_p_unsigned_long_long swig_types[16]
-#define SWIGTYPE_p_unsigned_short swig_types[17]
-#define SWIGTYPE_p_wchar_t swig_types[18]
-static swig_type_info *swig_types[20];
-static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
+#define SWIGTYPE_p_DAVA__Vector2 swig_types[0]
+#define SWIGTYPE_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result swig_types[1]
+#define SWIGTYPE_p_char swig_types[2]
+#define SWIGTYPE_p_double swig_types[3]
+#define SWIGTYPE_p_float swig_types[4]
+#define SWIGTYPE_p_int swig_types[5]
+#define SWIGTYPE_p_long_long swig_types[6]
+#define SWIGTYPE_p_short swig_types[7]
+#define SWIGTYPE_p_signed_char swig_types[8]
+#define SWIGTYPE_p_std__string swig_types[9]
+#define SWIGTYPE_p_std__wstring swig_types[10]
+#define SWIGTYPE_p_unsigned_char swig_types[11]
+#define SWIGTYPE_p_unsigned_int swig_types[12]
+#define SWIGTYPE_p_unsigned_long_long swig_types[13]
+#define SWIGTYPE_p_unsigned_short swig_types[14]
+#define SWIGTYPE_p_wchar_t swig_types[15]
+static swig_type_info *swig_types[17];
+static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_name      "AutotestingSystem"
-#define SWIG_init      luaopen_AutotestingSystem
-#define SWIG_init_user luaopen_AutotestingSystem_user
+#define SWIG_name      "Vector"
+#define SWIG_init      luaopen_Vector
+#define SWIG_init_user luaopen_Vector_user
 
-#define SWIG_LUACODE   luaopen_AutotestingSystem_luacode
+#define SWIG_LUACODE   luaopen_Vector_luacode
 
 namespace swig {
 typedef struct{} LANGUAGE_OBJ;
 }
 
 
-#include "AutotestingSystemLua.h"
-
-
-#include <string>
-
-
-SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
-  int ret = lua_isstring(L, idx);
-  if (!ret)
-   ret = lua_isnil(L, idx);
-  return ret;
-}
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Math/Vector.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-static int _wrap_new_Singleton_Autotesting(lua_State* L) {
+static int _wrap_Vector2_x_set(lua_State* L) {
   int SWIG_arg = 0;
-  DAVA::Singleton< DAVA::AutotestingSystemLua > *result = 0 ;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 arg2 ;
   
-  SWIG_check_num_args("DAVA::Singleton< DAVA::AutotestingSystemLua >::Singleton",0,0)
-  result = (DAVA::Singleton< DAVA::AutotestingSystemLua > *)new DAVA::Singleton< DAVA::AutotestingSystemLua >();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,1); SWIG_arg++; 
-  return SWIG_arg;
+  SWIG_check_num_args("DAVA::Vector2::x",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::x",1,"DAVA::Vector2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::Vector2::x",2,"DAVA::float32");
   
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_Singleton_Autotesting_Instance(lua_State* L) {
-  int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *result = 0 ;
-  
-  SWIG_check_num_args("DAVA::Singleton< DAVA::AutotestingSystemLua >::Instance",0,0)
-  result = (DAVA::AutotestingSystemLua *)DAVA::Singleton< DAVA::AutotestingSystemLua >::SWIGTEMPLATEDISAMBIGUATOR Instance();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__AutotestingSystemLua,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_Singleton_Autotesting_Release(lua_State* L) {
-  int SWIG_arg = 0;
-  DAVA::Singleton< DAVA::AutotestingSystemLua > *arg1 = (DAVA::Singleton< DAVA::AutotestingSystemLua > *) 0 ;
-  
-  SWIG_check_num_args("DAVA::Singleton< DAVA::AutotestingSystemLua >::Release",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Singleton< DAVA::AutotestingSystemLua >::Release",1,"DAVA::Singleton< DAVA::AutotestingSystemLua > *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,0))){
-    SWIG_fail_ptr("Singleton_Autotesting_Release",1,SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_x_set",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  (arg1)->Release();
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  if (arg1) (arg1)->x = arg2;
   
   return SWIG_arg;
   
@@ -1754,28 +1711,20 @@ fail:
 }
 
 
-static void swig_delete_Singleton_Autotesting(void *obj) {
-DAVA::Singleton< DAVA::AutotestingSystemLua > *arg1 = (DAVA::Singleton< DAVA::AutotestingSystemLua > *) obj;
-delete arg1;
-}
-static swig_lua_method swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__methods[] = {
-    {"Release", _wrap_Singleton_Autotesting_Release}, 
-    {0,0}
-};
-static swig_lua_attribute swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__attributes[] = {
-    {0,0,0}
-};
-static swig_lua_class *swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__bases[] = {0};
-static const char *swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__base_names[] = {0};
-static swig_lua_class _wrap_class_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg_ = { "Singleton_Autotesting", &SWIGTYPE_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,_wrap_new_Singleton_Autotesting, swig_delete_Singleton_Autotesting, swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__methods, swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__attributes, swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__bases, swig_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg__base_names };
-
-static int _wrap_new_string__SWIG_0(lua_State* L) {
+static int _wrap_Vector2_x_get(lua_State* L) {
   int SWIG_arg = 0;
-  std::string *result = 0 ;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 result;
   
-  SWIG_check_num_args("std::string::string",0,0)
-  result = (std::string *)new std::string();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_std__string,1); SWIG_arg++; 
+  SWIG_check_num_args("DAVA::Vector2::x",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::x",1,"DAVA::Vector2 *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_x_get",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32) ((arg1)->x);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -1786,16 +1735,22 @@ fail:
 }
 
 
-static int _wrap_new_string__SWIG_1(lua_State* L) {
+static int _wrap_Vector2_y_set(lua_State* L) {
   int SWIG_arg = 0;
-  char *arg1 = (char *) 0 ;
-  std::string *result = 0 ;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 arg2 ;
   
-  SWIG_check_num_args("std::string::string",1,1)
-  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("std::string::string",1,"char const *");
-  arg1 = (char *)lua_tostring(L, 1);
-  result = (std::string *)new std::string((char const *)arg1);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_std__string,1); SWIG_arg++; 
+  SWIG_check_num_args("DAVA::Vector2::y",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::y",1,"DAVA::Vector2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::Vector2::y",2,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_y_set",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  if (arg1) (arg1)->y = arg2;
+  
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -1806,47 +1761,224 @@ fail:
 }
 
 
-static int _wrap_new_string(lua_State* L) {
+static int _wrap_Vector2_y_get(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::Vector2::y",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::y",1,"DAVA::Vector2 *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_y_get",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32) ((arg1)->y);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_Vector2__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::Vector2::Vector2",0,0)
+  result = (DAVA::Vector2 *)new DAVA::Vector2();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_Vector2__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::float32 arg1 ;
+  DAVA::float32 arg2 ;
+  DAVA::Vector2 *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::Vector2::Vector2",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("DAVA::Vector2::Vector2",1,"DAVA::float32");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::Vector2::Vector2",2,"DAVA::float32");
+  arg1 = (DAVA::float32)lua_tonumber(L, 1);
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  result = (DAVA::Vector2 *)new DAVA::Vector2(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_Vector2__SWIG_2(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::float32 *arg1 = (DAVA::float32 *) 0 ;
+  DAVA::Vector2 *result = 0 ;
+  
+  SWIG_check_num_args("DAVA::Vector2::Vector2",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::Vector2",1,"DAVA::float32 *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("new_Vector2",1,SWIGTYPE_p_float);
+  }
+  
+  result = (DAVA::Vector2 *)new DAVA::Vector2(arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_Vector2(lua_State* L) {
   int argc;
-  int argv[2]={
-    1,2
+  int argv[3]={
+    1,2,3
   };
   
   argc = lua_gettop(L);
   if (argc == 0) {
-    return _wrap_new_string__SWIG_0(L);
+    return _wrap_new_Vector2__SWIG_0(L);
   }
   if (argc == 1) {
     int _v;
     {
-      _v = SWIG_lua_isnilstring(L,argv[0]);
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_float, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
     }
     if (_v) {
-      return _wrap_new_string__SWIG_1(L);
+      return _wrap_new_Vector2__SWIG_2(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      _v = lua_isnumber(L,argv[0]);
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_new_Vector2__SWIG_1(L);
+      }
     }
   }
   
-  lua_pushstring(L,"Wrong arguments for overloaded function 'new_string'\n"
+  lua_pushstring(L,"Wrong arguments for overloaded function 'new_Vector2'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    std::string::string()\n"
-    "    std::string::string(char const *)\n");
+    "    DAVA::Vector2::Vector2()\n"
+    "    DAVA::Vector2::Vector2(DAVA::float32,DAVA::float32)\n"
+    "    DAVA::Vector2::Vector2(DAVA::float32 *)\n");
   lua_error(L);return 0;
 }
 
 
-static int _wrap_string_size(lua_State* L) {
+static int _wrap_Vector2_Set(lua_State* L) {
   int SWIG_arg = 0;
-  std::string *arg1 = (std::string *) 0 ;
-  unsigned int result;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 arg2 ;
+  DAVA::float32 arg3 ;
   
-  SWIG_check_num_args("std::string::size",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("std::string::size",1,"std::string const *");
+  SWIG_check_num_args("DAVA::Vector2::Set",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::Set",1,"DAVA::Vector2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::Vector2::Set",2,"DAVA::float32");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::Vector2::Set",3,"DAVA::float32");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_std__string,0))){
-    SWIG_fail_ptr("string_size",1,SWIGTYPE_p_std__string);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Set",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  result = (unsigned int)((std::string const *)arg1)->size();
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  arg3 = (DAVA::float32)lua_tonumber(L, 3);
+  (arg1)->Set(arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2_Lerp(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 *arg3 = 0 ;
+  DAVA::float32 arg4 ;
+  
+  SWIG_check_num_args("DAVA::Vector2::Lerp",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::Lerp",1,"DAVA::Vector2 *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::Vector2::Lerp",2,"DAVA::Vector2 const &");
+  if(!lua_isuserdata(L,3)) SWIG_fail_arg("DAVA::Vector2::Lerp",3,"DAVA::Vector2 const &");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("DAVA::Vector2::Lerp",4,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Lerp",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Lerp",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Lerp",3,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg4 = (DAVA::float32)lua_tonumber(L, 4);
+  (arg1)->Lerp((DAVA::Vector2 const &)*arg2,(DAVA::Vector2 const &)*arg3,arg4);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2_SquareLength(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::Vector2::SquareLength",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::SquareLength",1,"DAVA::Vector2 const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_SquareLength",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32)((DAVA::Vector2 const *)arg1)->SquareLength();
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -1858,19 +1990,19 @@ fail:
 }
 
 
-static int _wrap_string_length(lua_State* L) {
+static int _wrap_Vector2_Length(lua_State* L) {
   int SWIG_arg = 0;
-  std::string *arg1 = (std::string *) 0 ;
-  unsigned int result;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 result;
   
-  SWIG_check_num_args("std::string::length",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("std::string::length",1,"std::string const *");
+  SWIG_check_num_args("DAVA::Vector2::Length",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::Length",1,"DAVA::Vector2 const *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_std__string,0))){
-    SWIG_fail_ptr("string_length",1,SWIGTYPE_p_std__string);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Length",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  result = (unsigned int)((std::string const *)arg1)->length();
+  result = (DAVA::float32)((DAVA::Vector2 const *)arg1)->Length();
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -1882,19 +2014,128 @@ fail:
 }
 
 
-static int _wrap_string_empty(lua_State* L) {
+static int _wrap_Vector2_Normalize(lua_State* L) {
   int SWIG_arg = 0;
-  std::string *arg1 = (std::string *) 0 ;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  
+  SWIG_check_num_args("DAVA::Vector2::Normalize",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::Normalize",1,"DAVA::Vector2 *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Normalize",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  (arg1)->Normalize();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2_DotProduct(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::Vector2::DotProduct",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::DotProduct",1,"DAVA::Vector2 const *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::Vector2::DotProduct",2,"DAVA::Vector2 const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_DotProduct",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_DotProduct",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32)((DAVA::Vector2 const *)arg1)->DotProduct((DAVA::Vector2 const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2_CrossProduct(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::Vector2::CrossProduct",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::CrossProduct",1,"DAVA::Vector2 const *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::Vector2::CrossProduct",2,"DAVA::Vector2 const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_CrossProduct",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_CrossProduct",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32)((DAVA::Vector2 const *)arg1)->CrossProduct((DAVA::Vector2 const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2_Angle(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::float32 result;
+  
+  SWIG_check_num_args("DAVA::Vector2::Angle",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::Angle",1,"DAVA::Vector2 const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_Angle",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32)((DAVA::Vector2 const *)arg1)->Angle();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2_IsZero(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
   bool result;
   
-  SWIG_check_num_args("std::string::empty",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("std::string::empty",1,"std::string const *");
+  SWIG_check_num_args("DAVA::Vector2::IsZero",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::IsZero",1,"DAVA::Vector2 const *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_std__string,0))){
-    SWIG_fail_ptr("string_empty",1,SWIGTYPE_p_std__string);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_IsZero",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  result = (bool)((std::string const *)arg1)->empty();
+  result = (bool)((DAVA::Vector2 const *)arg1)->IsZero();
   lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
   return SWIG_arg;
   
@@ -1906,69 +2147,18 @@ fail:
 }
 
 
-static int _wrap_string_c_str(lua_State* L) {
+static int _wrap_Vector2_SetZero(lua_State* L) {
   int SWIG_arg = 0;
-  std::string *arg1 = (std::string *) 0 ;
-  char *result = 0 ;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
   
-  SWIG_check_num_args("std::string::c_str",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("std::string::c_str",1,"std::string const *");
+  SWIG_check_num_args("DAVA::Vector2::SetZero",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::SetZero",1,"DAVA::Vector2 *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_std__string,0))){
-    SWIG_fail_ptr("string_c_str",1,SWIGTYPE_p_std__string);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2_SetZero",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  result = (char *)((std::string const *)arg1)->c_str();
-  lua_pushstring(L,(const char *)result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_string_data(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = (std::string *) 0 ;
-  char *result = 0 ;
-  
-  SWIG_check_num_args("std::string::data",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("std::string::data",1,"std::string const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_std__string,0))){
-    SWIG_fail_ptr("string_data",1,SWIGTYPE_p_std__string);
-  }
-  
-  result = (char *)((std::string const *)arg1)->data();
-  lua_pushstring(L,(const char *)result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_string_assign(lua_State* L) {
-  int SWIG_arg = 0;
-  std::string *arg1 = (std::string *) 0 ;
-  char *arg2 = (char *) 0 ;
-  
-  SWIG_check_num_args("std::string::assign",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("std::string::assign",1,"std::string *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("std::string::assign",2,"char const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_std__string,0))){
-    SWIG_fail_ptr("string_assign",1,SWIGTYPE_p_std__string);
-  }
-  
-  arg2 = (char *)lua_tostring(L, 2);
-  (arg1)->assign((char const *)arg2);
+  (arg1)->SetZero();
   
   return SWIG_arg;
   
@@ -1980,56 +2170,116 @@ fail:
 }
 
 
-static void swig_delete_string(void *obj) {
-std::string *arg1 = (std::string *) obj;
+static int _wrap_Vector2___unm(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::Vector2::operator -",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::operator -",1,"DAVA::Vector2 const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2___unm",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = ((DAVA::Vector2 const *)arg1)->operator -();
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Vector2___eq(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = (DAVA::Vector2 *) 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  bool result;
+  
+  SWIG_check_num_args("DAVA::Vector2::operator ==",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::Vector2::operator ==",1,"DAVA::Vector2 const *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::Vector2::operator ==",2,"DAVA::Vector2 const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2___eq",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Vector2___eq",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (bool)((DAVA::Vector2 const *)arg1)->operator ==((DAVA::Vector2 const &)*arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_Vector2(void *obj) {
+DAVA::Vector2 *arg1 = (DAVA::Vector2 *) obj;
 delete arg1;
 }
-static swig_lua_method swig_std_string_methods[] = {
-    {"size", _wrap_string_size}, 
-    {"length", _wrap_string_length}, 
-    {"empty", _wrap_string_empty}, 
-    {"c_str", _wrap_string_c_str}, 
-    {"data", _wrap_string_data}, 
-    {"assign", _wrap_string_assign}, 
+static swig_lua_method swig_DAVA_Vector2_methods[] = {
+    {"Set", _wrap_Vector2_Set}, 
+    {"Lerp", _wrap_Vector2_Lerp}, 
+    {"SquareLength", _wrap_Vector2_SquareLength}, 
+    {"Length", _wrap_Vector2_Length}, 
+    {"Normalize", _wrap_Vector2_Normalize}, 
+    {"DotProduct", _wrap_Vector2_DotProduct}, 
+    {"CrossProduct", _wrap_Vector2_CrossProduct}, 
+    {"Angle", _wrap_Vector2_Angle}, 
+    {"IsZero", _wrap_Vector2_IsZero}, 
+    {"SetZero", _wrap_Vector2_SetZero}, 
+    {"__unm", _wrap_Vector2___unm}, 
+    {"__eq", _wrap_Vector2___eq}, 
     {0,0}
 };
-static swig_lua_attribute swig_std_string_attributes[] = {
+static swig_lua_attribute swig_DAVA_Vector2_attributes[] = {
+    { "x", _wrap_Vector2_x_get, _wrap_Vector2_x_set},
+    { "y", _wrap_Vector2_y_get, _wrap_Vector2_y_set},
     {0,0,0}
 };
-static swig_lua_class *swig_std_string_bases[] = {0};
-static const char *swig_std_string_base_names[] = {0};
-static swig_lua_class _wrap_class_std_string = { "string", &SWIGTYPE_p_std__string,_wrap_new_string, swig_delete_string, swig_std_string_methods, swig_std_string_attributes, swig_std_string_bases, swig_std_string_base_names };
+static swig_lua_class *swig_DAVA_Vector2_bases[] = {0};
+static const char *swig_DAVA_Vector2_base_names[] = {0};
+static swig_lua_class _wrap_class_DAVA_Vector2 = { "Vector2", &SWIGTYPE_p_DAVA__Vector2,_wrap_new_Vector2, swig_delete_Vector2, swig_DAVA_Vector2_methods, swig_DAVA_Vector2_attributes, swig_DAVA_Vector2_bases, swig_DAVA_Vector2_base_names };
 
-static int _wrap_new_AutotestingSystemLua(lua_State* L) {
+static int _wrap___sub__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *result = 0 ;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::AutotestingSystemLua",0,0)
-  result = (DAVA::AutotestingSystemLua *)new DAVA::AutotestingSystemLua();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__AutotestingSystemLua,1); SWIG_arg++; 
-  return SWIG_arg;
+  SWIG_check_num_args("DAVA::operator -",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::operator -",1,"DAVA::Vector2 const &");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::operator -",2,"DAVA::Vector2 const &");
   
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_AutotestingSystemLua_StopTest(lua_State* L) {
-  int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
-  
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::StopTest",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::StopTest",1,"DAVA::AutotestingSystemLua *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_StopTest",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__sub",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  (arg1)->StopTest();
   
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__sub",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::operator -((DAVA::Vector2 const &)*arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2040,19 +2290,566 @@ fail:
 }
 
 
-static int _wrap_AutotestingSystemLua_GetTimeElapsed(lua_State* L) {
+static int _wrap___add__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator +",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::operator +",1,"DAVA::Vector2 const &");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::operator +",2,"DAVA::Vector2 const &");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__add",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__add",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::operator +((DAVA::Vector2 const &)*arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___add__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::float32 arg2 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator +",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::operator +",1,"DAVA::Vector2 const &");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::operator +",2,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__add",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  result = DAVA::operator +((DAVA::Vector2 const &)*arg1,arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___add__SWIG_2(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::float32 arg1 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator +",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("DAVA::operator +",1,"DAVA::float32");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::operator +",2,"DAVA::Vector2 const &");
+  arg1 = (DAVA::float32)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__add",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::operator +(arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___add(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap___add__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap___add__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      _v = lua_isnumber(L,argv[0]);
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap___add__SWIG_2(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function '__add'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::operator +(DAVA::Vector2 const &,DAVA::Vector2 const &)\n"
+    "    DAVA::operator +(DAVA::Vector2 const &,DAVA::float32)\n"
+    "    DAVA::operator +(DAVA::float32,DAVA::Vector2 const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap___sub__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::float32 arg2 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator -",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::operator -",1,"DAVA::Vector2 const &");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::operator -",2,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__sub",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  result = DAVA::operator -((DAVA::Vector2 const &)*arg1,arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___sub__SWIG_2(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::float32 arg1 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator -",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("DAVA::operator -",1,"DAVA::float32");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::operator -",2,"DAVA::Vector2 const &");
+  arg1 = (DAVA::float32)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__sub",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::operator -(arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___sub(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap___sub__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap___sub__SWIG_1(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      _v = lua_isnumber(L,argv[0]);
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap___sub__SWIG_2(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function '__sub'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::operator -(DAVA::Vector2 const &,DAVA::Vector2 const &)\n"
+    "    DAVA::operator -(DAVA::Vector2 const &,DAVA::float32)\n"
+    "    DAVA::operator -(DAVA::float32,DAVA::Vector2 const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap___mul__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::float32 arg2 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator *",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::operator *",1,"DAVA::Vector2 const &");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::operator *",2,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__mul",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  result = DAVA::operator *((DAVA::Vector2 const &)*arg1,arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___mul__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::float32 arg1 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator *",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("DAVA::operator *",1,"DAVA::float32");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::operator *",2,"DAVA::Vector2 const &");
+  arg1 = (DAVA::float32)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__mul",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::operator *(arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___mul(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap___mul__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      _v = lua_isnumber(L,argv[0]);
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap___mul__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function '__mul'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::operator *(DAVA::Vector2 const &,DAVA::float32)\n"
+    "    DAVA::operator *(DAVA::float32,DAVA::Vector2 const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap___div__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::float32 arg2 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator /",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::operator /",1,"DAVA::Vector2 const &");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::operator /",2,"DAVA::float32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__div",1,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg2 = (DAVA::float32)lua_tonumber(L, 2);
+  result = DAVA::operator /((DAVA::Vector2 const &)*arg1,arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___div__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::float32 arg1 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
+  
+  SWIG_check_num_args("DAVA::operator /",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("DAVA::operator /",1,"DAVA::float32");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::operator /",2,"DAVA::Vector2 const &");
+  arg1 = (DAVA::float32)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("__div",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::operator /(arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap___div(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (lua_isuserdata(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap___div__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      _v = lua_isnumber(L,argv[0]);
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (lua_isuserdata(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_DAVA__Vector2, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap___div__SWIG_1(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function '__div'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    DAVA::operator /(DAVA::Vector2 const &,DAVA::float32)\n"
+    "    DAVA::operator /(DAVA::float32,DAVA::Vector2 const &)\n");
+  lua_error(L);return 0;
+}
+
+
+static int _wrap_DotProduct(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
   DAVA::float32 result;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::GetTimeElapsed",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetTimeElapsed",1,"DAVA::AutotestingSystemLua *");
+  SWIG_check_num_args("DAVA::DotProduct",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::DotProduct",1,"DAVA::Vector2 const &");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::DotProduct",2,"DAVA::Vector2 const &");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_GetTimeElapsed",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("DotProduct",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  result = (DAVA::float32)(arg1)->GetTimeElapsed();
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("DotProduct",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = (DAVA::float32)DAVA::DotProduct((DAVA::Vector2 const &)*arg1,(DAVA::Vector2 const &)*arg2);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -2064,24 +2861,23 @@ fail:
 }
 
 
-static int _wrap_AutotestingSystemLua_FindControl(lua_State* L) {
+static int _wrap_Normalize(lua_State* L) {
   int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
-  DAVA::String *arg2 = 0 ;
-  DAVA::String temp2 ;
-  DAVA::UIControl *result = 0 ;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::Vector2 result;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::FindControl",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::FindControl",1,"DAVA::AutotestingSystemLua *");
-  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::FindControl",2,"DAVA::String const &");
+  SWIG_check_num_args("DAVA::Normalize",1,1)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::Normalize",1,"DAVA::Vector2 const &");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_FindControl",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Normalize",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
-  result = (DAVA::UIControl *)(arg1)->FindControl((DAVA::String const &)*arg2);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_DAVA__UIControl,0); SWIG_arg++; 
+  result = DAVA::Normalize((DAVA::Vector2 const &)*arg1);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2092,29 +2888,27 @@ fail:
 }
 
 
-static int _wrap_AutotestingSystemLua_TouchDown(lua_State* L) {
+static int _wrap_CrossProduct(lua_State* L) {
   int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::Vector2 *arg1 = 0 ;
   DAVA::Vector2 *arg2 = 0 ;
-  DAVA::int32 arg3 ;
+  DAVA::float32 result;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::TouchDown",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchDown",1,"DAVA::AutotestingSystemLua *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchDown",2,"DAVA::Vector2 const &");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchDown",3,"DAVA::int32");
+  SWIG_check_num_args("DAVA::CrossProduct",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::CrossProduct",1,"DAVA::Vector2 const &");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::CrossProduct",2,"DAVA::Vector2 const &");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_TouchDown",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("CrossProduct",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_TouchDown",2,SWIGTYPE_p_DAVA__Vector2);
+    SWIG_fail_ptr("CrossProduct",2,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  arg3 = (DAVA::int32)lua_tonumber(L, 3);
-  (arg1)->TouchDown((DAVA::Vector2 const &)*arg2,arg3);
-  
+  result = (DAVA::float32)DAVA::CrossProduct((DAVA::Vector2 const &)*arg1,(DAVA::Vector2 const &)*arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2125,22 +2919,30 @@ fail:
 }
 
 
-static int _wrap_AutotestingSystemLua_TouchUp(lua_State* L) {
+static int _wrap_Reflect(lua_State* L) {
   int SWIG_arg = 0;
-  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
-  DAVA::int32 arg2 ;
+  DAVA::Vector2 *arg1 = 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::Vector2 result;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::TouchUp",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchUp",1,"DAVA::AutotestingSystemLua *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchUp",2,"DAVA::int32");
+  SWIG_check_num_args("DAVA::Reflect",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("DAVA::Reflect",1,"DAVA::Vector2 const &");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::Reflect",2,"DAVA::Vector2 const &");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_TouchUp",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Reflect",1,SWIGTYPE_p_DAVA__Vector2);
   }
   
-  arg2 = (DAVA::int32)lua_tonumber(L, 2);
-  (arg1)->TouchUp(arg2);
   
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("Reflect",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  result = DAVA::Reflect((DAVA::Vector2 const &)*arg1,(DAVA::Vector2 const &)*arg2);
+  {
+    DAVA::Vector2 * resultptr = new DAVA::Vector2((const DAVA::Vector2 &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_DAVA__Vector2,1); SWIG_arg++;
+  }
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2150,32 +2952,20 @@ fail:
   return SWIG_arg;
 }
 
-
-static void swig_delete_AutotestingSystemLua(void *obj) {
-DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) obj;
-delete arg1;
-}
-static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
-    {"StopTest", _wrap_AutotestingSystemLua_StopTest}, 
-    {"GetTimeElapsed", _wrap_AutotestingSystemLua_GetTimeElapsed}, 
-    {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
-    {"TouchDown", _wrap_AutotestingSystemLua_TouchDown}, 
-    {"TouchUp", _wrap_AutotestingSystemLua_TouchUp}, 
-    {0,0}
-};
-static swig_lua_attribute swig_DAVA_AutotestingSystemLua_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_class *swig_DAVA_AutotestingSystemLua_bases[] = {0,0};
-static const char *swig_DAVA_AutotestingSystemLua_base_names[] = {"DAVA::Singleton< DAVA::AutotestingSystemLua > *",0};
-static swig_lua_class _wrap_class_DAVA_AutotestingSystemLua = { "AutotestingSystemLua", &SWIGTYPE_p_DAVA__AutotestingSystemLua,_wrap_new_AutotestingSystemLua, swig_delete_AutotestingSystemLua, swig_DAVA_AutotestingSystemLua_methods, swig_DAVA_AutotestingSystemLua_attributes, swig_DAVA_AutotestingSystemLua_bases, swig_DAVA_AutotestingSystemLua_base_names };
 
 #ifdef __cplusplus
 }
 #endif
 
 static const struct luaL_Reg swig_commands[] = {
-    { "Singleton_Autotesting_Instance", _wrap_Singleton_Autotesting_Instance},
+    { "__add",_wrap___add},
+    { "__sub",_wrap___sub},
+    { "__mul",_wrap___mul},
+    { "__div",_wrap___div},
+    { "DotProduct", _wrap_DotProduct},
+    { "Normalize", _wrap_Normalize},
+    { "CrossProduct", _wrap_CrossProduct},
+    { "Reflect", _wrap_Reflect},
     {0,0}
 };
 
@@ -2189,13 +2979,7 @@ static swig_lua_const_info swig_constants[] = {
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static void *_p_DAVA__AutotestingSystemLuaTo_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((DAVA::Singleton< DAVA::AutotestingSystemLua > *)  ((DAVA::AutotestingSystemLua *) x));
-}
-static swig_type_info _swigt__p_DAVA__AutotestingSystemLua = {"_p_DAVA__AutotestingSystemLua", "DAVA::AutotestingSystemLua *", 0, 0, (void*)&_wrap_class_DAVA_AutotestingSystemLua, 0};
-static swig_type_info _swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t = {"_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t", "DAVA::Singleton< DAVA::AutotestingSystemLua > *", 0, 0, (void*)&_wrap_class_DAVA_Singleton_Sl_DAVA_AutotestingSystemLua_Sg_, 0};
-static swig_type_info _swigt__p_DAVA__UIControl = {"_p_DAVA__UIControl", "DAVA::UIControl *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_DAVA__Vector2 = {"_p_DAVA__Vector2", "DAVA::Vector2 *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_DAVA__Vector2 = {"_p_DAVA__Vector2", "DAVA::Vector2 *", 0, 0, (void*)&_wrap_class_DAVA_Vector2, 0};
 static swig_type_info _swigt__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result = {"_p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result", "DAVA::pointer_size *|Select< sizeof(void *)==4,DAVA::uint32,DAVA::uint64 >::Result *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *|DAVA::char8 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "DAVA::float64 *|double *", 0, 0, (void*)0, 0};
@@ -2204,7 +2988,7 @@ static swig_type_info _swigt__p_int = {"_p_int", "int *|DAVA::int32 *", 0, 0, (v
 static swig_type_info _swigt__p_long_long = {"_p_long_long", "DAVA::int64 *|long long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_short = {"_p_short", "DAVA::int16 *|short *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "signed char *|DAVA::int8 *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_std__string = {"_p_std__string", "std::string *|DAVA::String *", 0, 0, (void*)&_wrap_class_std_string, 0};
+static swig_type_info _swigt__p_std__string = {"_p_std__string", "std::string *|DAVA::String *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_std__wstring = {"_p_std__wstring", "std::wstring *|DAVA::WideString *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *|DAVA::uint8 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "DAVA::uint32 *|unsigned int *", 0, 0, (void*)0, 0};
@@ -2213,9 +2997,6 @@ static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "DAVA::ui
 static swig_type_info _swigt__p_wchar_t = {"_p_wchar_t", "DAVA::char16 *|wchar_t *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_DAVA__AutotestingSystemLua,
-  &_swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,
-  &_swigt__p_DAVA__UIControl,
   &_swigt__p_DAVA__Vector2,
   &_swigt__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result,
   &_swigt__p_char,
@@ -2234,9 +3015,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_wchar_t,
 };
 
-static swig_cast_info _swigc__p_DAVA__AutotestingSystemLua[] = {  {&_swigt__p_DAVA__AutotestingSystemLua, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t[] = {  {&_swigt__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t, 0, 0, 0},  {&_swigt__p_DAVA__AutotestingSystemLua, _p_DAVA__AutotestingSystemLuaTo_p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_DAVA__UIControl[] = {  {&_swigt__p_DAVA__UIControl, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DAVA__Vector2[] = {  {&_swigt__p_DAVA__Vector2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result[] = {  {&_swigt__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -2255,9 +3033,6 @@ static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short
 static swig_cast_info _swigc__p_wchar_t[] = {  {&_swigt__p_wchar_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_DAVA__AutotestingSystemLua,
-  _swigc__p_DAVA__SingletonT_DAVA__AutotestingSystemLua_t,
-  _swigc__p_DAVA__UIControl,
   _swigc__p_DAVA__Vector2,
   _swigc__p_SelectT_sizeoffvoid_pF__4_DAVA__uint32_DAVA__uint64_t__Result,
   _swigc__p_char,
