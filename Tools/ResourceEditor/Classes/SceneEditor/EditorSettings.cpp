@@ -31,7 +31,10 @@ void EditorSettings::Save()
 
 void EditorSettings::ApplyOptions()
 {
-	RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+    if(RenderManager::Instance())
+    {
+        RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::IMPOSTERS_ENABLE, settings->GetBool("enableImposters", true));
+    }
 }
 
 
