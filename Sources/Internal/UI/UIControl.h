@@ -336,12 +336,13 @@ public:
 	 \param[in] newSize new control size.
 	 */
 	virtual void SetSize(const Vector2 &newSize);
-
+#endif //SWIG
 	/**
 	 \brief Returns actual control transformation and metrics.
 	 \returns control geometric data.
 	 */
 	virtual const UIGeometricData &GetGeometricData();
+#ifndef SWIG
 	/**
 	 \brief Sets the scaled control rect.
 		This method didn't apply any changes to the control size, but recalculate control scale.

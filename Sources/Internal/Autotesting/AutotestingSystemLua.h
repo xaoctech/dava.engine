@@ -70,11 +70,18 @@ public:
     void Update(float32 timeElapsed);
 #endif
     
+    // autotesting system api
+    void OnError(const String &errorMessage);
     void StopTest();
     float32 GetTimeElapsed();
+    
+    // autotesting api
     UIControl *FindControl(const String &path);
     void TouchDown(const Vector2 &point, int32 touchId);
     void TouchUp(int32 touchId);
+    
+    // helpers
+    bool SetText(const String &path, const String &text); // lua uses ansi strings
     
 protected:
 #ifndef SWIG
