@@ -45,9 +45,6 @@ class TouchAction : public Action
 public:
     TouchAction(int32 _id);
     virtual ~TouchAction();
-    
-    static Vector2 GetPhysicalPoint(const Vector2 &virtualPoint);
-    static Vector2 GetVirtualPoint(const Vector2 &physicalPoint);
 
 protected:
 	virtual String Dump();

@@ -27,8 +27,10 @@ void TouchAction::TouchDown(const Vector2 &point)
     touchDown.phase = UIEvent::PHASE_BEGAN;
     touchDown.tid = id;
     touchDown.tapCount = 1;
-    touchDown.physPoint = GetPhysicalPoint(point);
-    touchDown.point = GetVirtualPoint(touchDown.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(touchDown.physPoint, touchDown.point);
+    //touchDown.physPoint = GetPhysicalPoint(point);
+    //touchDown.point = GetVirtualPoint(touchDown.physPoint);
 
     ProcessInput(touchDown);
 }
@@ -57,8 +59,10 @@ void TouchAction::TouchMove(const Vector2 &point)
     UIEvent touchMove;
     touchMove.tid = id;
     touchMove.tapCount = 1;
-    touchMove.physPoint = GetPhysicalPoint(point);
-    touchMove.point = GetVirtualPoint(touchMove.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchMove.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(touchMove.physPoint, touchMove.point);
+    //touchMove.physPoint = GetPhysicalPoint(point);
+    //touchMove.point = GetVirtualPoint(touchMove.physPoint);
         
     if(AutotestingSystem::Instance()->IsTouchDown(id))
     {
@@ -76,116 +80,6 @@ void TouchAction::TouchMove(const Vector2 &point)
     }
 }
 
-Vector2 TouchAction::GetPhysicalPoint(const Vector2 &virtualPoint)
-{
-    Vector2 physicalPoint;
-    
-    float32 inputWidth;
-    float32 inputHeight;
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT || Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenWidth();
-		inputHeight = Core::Instance()->GetPhysicalScreenHeight();
-	}
-	else
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenHeight();
-		inputHeight = Core::Instance()->GetPhysicalScreenWidth();
-	}
-    
-    Vector2 inputOffset;
-    float32 w, h;
-	w = (float32)Core::Instance()->GetVirtualScreenWidth() / (float32)inputWidth;
-	h = (float32)Core::Instance()->GetVirtualScreenHeight() / (float32)inputHeight;
-	inputOffset.x = inputOffset.y = 0;
-	if(w > h)
-	{
-		inputOffset.y = 0.5f * ((float32)Core::Instance()->GetVirtualScreenHeight() - (float32)inputHeight * w);
-	}
-	else
-	{
-		inputOffset.x = 0.5f * ((float32)Core::Instance()->GetVirtualScreenWidth() - (float32)inputWidth * h);
-	}
-    
-    float32 virtualToPhysicalFactor = Core::Instance()->GetVirtualToPhysicalFactor();
-    
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-        physicalPoint.x = (virtualPoint.y - inputOffset.y)*virtualToPhysicalFactor;
-        physicalPoint.y = inputWidth - (virtualPoint.x - inputOffset.x)*virtualToPhysicalFactor;
-        
-//		virtualPoint.x = (inputWidth - physicalPoint.y);
-//		virtualPoint.y = (physicalPoint.x);
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-        physicalPoint.x = inputHeight - (virtualPoint.y - inputOffset.y)*virtualToPhysicalFactor;
-        physicalPoint.y = (virtualPoint.x - inputOffset.x)*virtualToPhysicalFactor;
-        
-//		virtualPoint.x = (physicalPoint.y);
-//		virtualPoint.y = (inputHeight - physicalPoint.x);
-	}
-	else
-	{
-        physicalPoint = (virtualPoint - inputOffset) * virtualToPhysicalFactor;
-//		virtualPoint = physicalPoint;
-	}
-	
-//	virtualPoint *= scaleFactor;
-//	virtualPoint += inputOffset;
-    
-    return physicalPoint;
-}
-    
-Vector2 TouchAction::GetVirtualPoint(const Vector2 &physicalPoint)
-{
-    Vector2 virtualPoint;
-    float32 inputWidth;
-    float32 inputHeight;
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT || Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenWidth();
-		inputHeight = Core::Instance()->GetPhysicalScreenHeight();
-	}
-	else
-	{
-		inputWidth = Core::Instance()->GetPhysicalScreenHeight();
-		inputHeight = Core::Instance()->GetPhysicalScreenWidth();
-	}
-    Vector2 inputOffset;
-    float32 w, h;
-	w = (float32)Core::Instance()->GetVirtualScreenWidth() / (float32)inputWidth;
-	h = (float32)Core::Instance()->GetVirtualScreenHeight() / (float32)inputHeight;
-	inputOffset.x = inputOffset.y = 0;
-	if(w > h)
-	{
-		inputOffset.y = 0.5f * ((float32)Core::Instance()->GetVirtualScreenHeight() - (float32)inputHeight * w);
-	}
-	else
-	{
-		inputOffset.x = 0.5f * ((float32)Core::Instance()->GetVirtualScreenWidth() - (float32)inputWidth * h);
-	}
-    float32 physicalToVirtualFactor = Core::Instance()->GetPhysicalToVirtualFactor();
-    
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-		virtualPoint.x = (inputWidth - physicalPoint.y);
-		virtualPoint.y = (physicalPoint.x);
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-		virtualPoint.x = (physicalPoint.y);
-		virtualPoint.y = (inputHeight - physicalPoint.x);
-	}
-	else
-	{
-		virtualPoint = physicalPoint;
-	}
-	
-	virtualPoint *= physicalToVirtualFactor;
-	virtualPoint += inputOffset;
-    return virtualPoint;
-}
 
 String TouchAction::Dump()
 {
