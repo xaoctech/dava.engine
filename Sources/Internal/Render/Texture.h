@@ -58,6 +58,13 @@ public:
 		WRAP_REPEAT,
 	};
 	
+    enum TextureFileFormat
+    {
+        PNG_FILE = 0,
+        PVR_FILE,
+        DXT_FILE
+    };
+
 	enum DepthFormat
 	{
 		DEPTH_NONE = 0,
@@ -212,7 +219,7 @@ public:
     static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
 
     static TextureDescriptor * CreateDescriptorForTexture(const String &texturePathname);
-    void ReloadAs(const String &formatExtension);
+    void ReloadAs(TextureFileFormat fileFormat);
 
 
 public:							// properties for fast access

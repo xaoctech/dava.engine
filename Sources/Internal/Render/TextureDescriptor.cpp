@@ -73,7 +73,7 @@ void TextureDescriptor::SetDefaultValues()
     textureFile = NULL;
 #endif //#if defined TEXTURE_SPLICING_ENABLED
 
-    textureFileFormat = PNG_FILE;
+    textureFileFormat = Texture::PNG_FILE;
 }
     
 void TextureDescriptor::SaveDateAndCrc(const String &filePathname)
@@ -374,7 +374,7 @@ char8 TextureDescriptor::GetCharacterFromNumber(uint8 number)
     return (number + 'A' - 10);
 }
     
-bool TextureDescriptor::GenerateMipMaps()
+bool TextureDescriptor::GetGenerateMipMaps()
 {
     return (OPTION_DISABLED != generateMipMaps);
 }
