@@ -525,6 +525,10 @@ void Texture::LoadMipMapFromFile(int32 level, const String & pathName)
 
 Texture * Texture::CreateFromPNG(const String & pathName, TextureDescriptor *descriptor)
 {
+    Texture * cachedTexture = Texture::Get(pathName);
+	if (cachedTexture)return cachedTexture;
+
+    
 	Image * image = Image::CreateFromFile(pathName, false);
 	if (!image)
 	{
@@ -533,7 +537,7 @@ Texture * Texture::CreateFromPNG(const String & pathName, TextureDescriptor *des
 	}
 	
 	RenderManager::Instance()->LockNonMain();
-	Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GenerateMipMaps());
+	Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GetGenerateMipMaps());
 	RenderManager::Instance()->UnlockNonMain();
 
     SafeRelease(image);
@@ -551,7 +555,7 @@ Texture * Texture::CreateFromPNG(File *file, TextureDescriptor *descriptor)
     }
     
     RenderManager::Instance()->LockNonMain();
-    Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GenerateMipMaps());
+    Texture *texture = Texture::CreateFromData((PixelFormat)image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), descriptor->GetGenerateMipMaps());
     RenderManager::Instance()->UnlockNonMain();
     
     SafeRelease(image);
@@ -629,6 +633,9 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
     else
     {
 #if defined TEXTURE_SPLICING_ENABLED
+        Texture * cachedTexture = Texture::Get(pathName);
+        if (cachedTexture)return cachedTexture;
+        
         switch (descriptor->textureFileFormat)
         {
             case TextureDescriptor::PNG_FILE:
@@ -650,18 +657,18 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
         String imagePathname;
         switch (descriptor->textureFileFormat)
         {
-            case TextureDescriptor::PNG_FILE:
+            case PNG_FILE:
             {
                 imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
                 texture = CreateFromPNG(imagePathname, descriptor);
                 break;
             }
-            case TextureDescriptor::PVR_FILE:
+            case PVR_FILE:
                 imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".pvr");
                 texture = CreateFromPVR(imagePathname, descriptor);
                 break;
                 
-            case TextureDescriptor::DXT_FILE:
+            case DXT_FILE:
                 break;
         }
         
@@ -700,6 +707,15 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
 	*/
 
     return descriptor;
+}
+    
+void Texture::ReloadAs(DAVA::Texture::TextureFileFormat fileFormat)
+{
+    TextureDescriptor *descriptor = CreateDescriptorForTexture(relativePathname);
+    
+    
+    
+    SafeRelease(descriptor);
 }
 
     

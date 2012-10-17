@@ -30,7 +30,7 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, PixelFormat f
     
     String command = "";
 #if defined (__DAVAENGINE_MACOS__)
-    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/PVRTexTool");
+    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/PVRTexToolCL");
     
     switch (format)
     {
