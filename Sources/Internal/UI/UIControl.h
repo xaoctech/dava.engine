@@ -74,7 +74,7 @@ public:
 	
 	float32 cosA;
 	float32 sinA;
-	
+#ifndef SWIG
 	void AddToGeometricData(const UIGeometricData &data)
 	{
 		position.x = data.position.x - data.pivotPoint.x * data.scale.x + position.x * data.scale.x;
@@ -109,15 +109,17 @@ public:
 		unrotatedRect.dx = size.x * scale.x;
 		unrotatedRect.dy = size.y * scale.y;
 	}
-
+#endif
 	const Rect &GetUnrotatedRect() const
 	{
 		return unrotatedRect;
 	}
 	
+#ifndef SWIG
 private:
 	Rect unrotatedRect;
 	float32 oldAngle;
+#endif
 
 };
 
@@ -170,9 +172,14 @@ private:
 		representation. UIControlBackground can be changed for the custom. Or you can 
 		just overload Draw() method for the custom drawing.
 	 */
-class UIControl : public AnimatedObject
+class UIControl
+#ifndef SWIG
+    : public AnimatedObject
+#endif
 {
+#ifndef SWIG
 	friend class UIControlSystem;
+#endif //SWIG
 public:
 	/**
 	 \enum Control state bits.
@@ -207,6 +214,7 @@ public:
 
 	
 public:
+
 	/**
 	 \brief Creates control with requested size and position.
 	 \param[in] rect Size and coordinates of control you want.
@@ -216,7 +224,7 @@ public:
 	 */
 	UIControl(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 	
-	
+#ifndef SWIG
 	/**
 	 \brief Returns Sprite used for draw in the current UIControlBackground object.
 		You can call this function directly for the controlBackgound.
@@ -297,7 +305,9 @@ public:
 	 */
 	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = false);
 
-	
+#endif
+    
+    
 	/**
 	 \brief Returns untransformed control position.
 		To get control metrics that applies all control transformation you need to use 
@@ -306,7 +316,9 @@ public:
 	 \returns control position.
 	 */
 	virtual const Vector2 &GetPosition(bool absoluteCoordinates = false);
-	/**
+	
+#ifndef SWIG
+    /**
 	 \brief Sets the untransformed control position.
 		Warning, rectInAbsoluteCoordinates isn't properly works for now!
 	 \param[in] position new control position.
@@ -976,8 +988,9 @@ public:
 	Vector2	scale;//!<control scale. Scale relative to pivot point.
 	float32	angle;//!<control rotation angle. Rotation around pivot point.
 	
-
+#endif //SWIG
 protected:
+#ifndef SWIG
 	
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
 
@@ -1009,8 +1022,11 @@ protected:
 	bool debugDrawEnabled;
 	
 	void SetParent(UIControl *newParent);
+#endif //SWIG
 	virtual ~UIControl();
-	
+
+#ifndef SWIG
+    
 #ifdef ENABLE_CONTROL_EDIT
 	Vector2	__touchStart;
 	Vector2		__oldPosition;
@@ -1021,7 +1037,7 @@ private:
 	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
-
+#endif //SWIG
 };
 };
 

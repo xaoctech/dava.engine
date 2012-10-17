@@ -59,6 +59,8 @@ public:
 
 	void DebugLog(const String &prefix, bool toAutotestingSystem);
 
+    static void ProcessInput(const UIEvent &input);
+    
     static Vector2 FindControlPosition(const Vector<String>& controlPath);
     
     static UIControl* FindControl(const Vector<String>& controlPath);
@@ -68,6 +70,9 @@ public:
     
     static bool IsInside(UIControl* parent, UIControl* child);
     
+    // helper for messages
+    static String PathToString(const Vector<String>& controlPath);
+    
 protected:
 	virtual String Dump();
 
@@ -76,11 +81,7 @@ protected:
     void SetText(const Vector<String> &controlPath, const WideString &text);
     WideString GetText(const Vector<String> &controlPath);
 
-    void ProcessInput(const UIEvent &input);
 
-
-// helper for messages
-    String PathToString(const Vector<String>& controlPath);
 
 	String name;
     bool isExecuted;

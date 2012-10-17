@@ -35,7 +35,11 @@
 #ifdef __DAVAENGINE_AUTOTESTING__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Math/Vector.h"
 #include "Base/Singleton.h"
+#include "UI/UIControl.h"
+
 
 struct lua_State;
 
@@ -68,10 +72,14 @@ public:
     
     void StopTest();
     float32 GetTimeElapsed();
-    bool FindControl(const String &path);
+    UIControl *FindControl(const String &path);
+    void TouchDown(const Vector2 &point, int32 touchId);
+    void TouchUp(int32 touchId);
     
 protected:
-#ifndef SWIG  
+#ifndef SWIG
+    void ParsePath(const String &path, Vector<String> &parsedPath);
+    
     bool LoadScript(const String &luaScript);
     bool LoadScriptFromFile(const String &luaFilePath);
     void RunScript();

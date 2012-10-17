@@ -132,7 +132,7 @@ WideString Action::GetText(const Vector<String> &controlPath)
 // helpers
 void Action::ProcessInput(const UIEvent &input)
 {
-    Logger::Debug("AutotestingSystem::ProcessInput %d phase=%d point=(%f, %f) key=%c",input.tid, input.phase, input.point.x, input.point.y, input.keyChar);
+    Logger::Debug("Action::ProcessInput %d phase=%d count=%d point=(%f, %f) physPoint=(%f,%f) key=%c",input.tid, input.phase, input.tapCount, input.point.x, input.point.y, input.physPoint.x, input.physPoint.y, input.keyChar);
 
     Vector<UIEvent> emptyTouches;
     Vector<UIEvent> touches;
@@ -404,7 +404,11 @@ bool WaitForScreenAction::TestCondition()
         AutotestingSystem::Instance()->OnError(Format("WaitForScreenAction %s timeout", screenName.c_str()));
         return true;
     }
-	return (UIControlSystem::Instance()->GetScreen()->GetName() == screenName);
+    if(UIControlSystem::Instance()->GetScreen())
+    {
+        return (UIControlSystem::Instance()->GetScreen()->GetName() == screenName);
+    }
+	return false;
 }
 
 String WaitForScreenAction::Dump()

@@ -1,39 +1,66 @@
 print("autotesting_api start")
 
+TIMEOUT = 10.0
+
 function Yield()
     print("Yield")
+    
     coroutine.yield()
 end
 
-function Wait(time)
-    print("Wait "..time)
-    local waitTime = 0.0
-
-    while waitTime < time do
-        waitTime = waitTime + autotestingSystem:GetTimeElapsed()
-        print("Waiting "..waitTime)
+function Wait(waitTime)
+    print("Wait "..waitTime)
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+        print("Waiting "..elapsedTime)
         coroutine.yield()
     end
     
     print("Wait done")
 end
 
-function WaitControl(time, name)
-    print("WaitControl "..time)
-    local waitTime = 0.0
-
-    while waitTime < time do
-        waitTime = waitTime + autotestingSystem:GetTimeElapsed()
-        print("Searching "..waitTime)
+function WaitControl(name, time)
+    local waitTime = time or TIMEOUT
+    print("WaitControl name="..name.." waitTime="..waitTime)
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+        print("Searching "..elapsedTime)
+        
         if autotestingSystem:FindControl(name) then
-            print("WaitControl found")
+            print("WaitControl found "..name)
             return true
         else
             coroutine.yield()
         end
     end
     
-    print("WaitControl done")
+    print("WaitControl not found "..name)
+    return false
+end
+
+function ClickControl(name, touchId, time)
+    local waitTime = time or TIMEOUT
+    local touchId = touchId or 1
+    print("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+        print("Searching "..elapsedTime)
+        
+        if autotestingSystem:ClickControl(name, touchId) then
+            print("ClickControl found "..name)
+            return true
+        else
+            coroutine.yield()
+        end
+    end
+    
+    print("ClickControl not found "..name)
     return false
 end
 
