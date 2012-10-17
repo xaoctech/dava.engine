@@ -52,8 +52,22 @@ function ClickControl(name, touchId, time)
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
         print("Searching "..elapsedTime)
         
-        if autotestingSystem:ClickControl(name, touchId) then
+        local control = autotestingSystem:FindControl(name)
+        if control then
             print("ClickControl found "..name)
+            print(control)
+            
+            local position = control:GetPosition()
+            print(position)
+            
+            autotestingSystem:TouchDown(position, touchId)
+            print("ClickControl TouchDown")
+            
+            Wait(0.5)
+            
+            autotestingSystem:TouchUp(touchId)
+            print("ClickControl TouchUp")
+            
             return true
         else
             coroutine.yield()
