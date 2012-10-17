@@ -163,10 +163,16 @@ public:
         virtual const String GetHomePath();
 #endif
     
-	/**
-		\brief Function to compute CRC32 
-	 */
-    virtual bool IsDirectory(const String & pathToCheck);
+		/**
+		\brief Function check if specified path is a regular file
+		*/
+		virtual bool IsFile(const String & pathToCheck);
+
+		
+		/**
+		\brief Function check if specified path is a directory
+		*/
+		virtual bool IsDirectory(const String & pathToCheck);
 		
 	/**
 		\brief Return canonical path name of \a path.

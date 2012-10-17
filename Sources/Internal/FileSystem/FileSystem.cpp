@@ -429,30 +429,31 @@ bool FileSystem::SetCurrentWorkingDirectory(const String & newWorkingDirectory)
 	return false; 
 }
     
-bool FileSystem::IsDirectory(const String & pathToCheck)
-{
-    struct stat s;
-    if( stat(pathToCheck.c_str(),&s) == 0 )
-    {
-        if( s.st_mode & S_IFDIR )
-        {
-            return true;
-        }
-        else if( s.st_mode & S_IFREG )
-        {
-            //it's a file
-        }
-        else
-        {
-            //something else
-        }
-    }
-    else
-    {
-        //error
-    }
-    return false;
-}
+	bool FileSystem::IsFile(const String & pathToCheck)
+	{
+		struct stat s;
+		if(stat(pathToCheck.c_str(),&s) == 0)
+		{
+			if( s.st_mode & S_IFREG )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool FileSystem::IsDirectory(const String & pathToCheck)
+	{
+		struct stat s;
+		if(stat(pathToCheck.c_str(),&s) == 0)
+		{
+			if( s.st_mode & S_IFDIR )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
     const String & FileSystem::GetCurrentDocumentsDirectory()
     {
