@@ -619,65 +619,52 @@ Texture * Texture::PureCreate(const String & pathName)
     
 Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescriptor *descriptor)
 {
-    Texture *texture = NULL;
-    if(TextureDescriptor::TYPE_TEXT == descriptor->fileType)
-    {
-        String imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
-        texture = CreateFromPNG(imagePathname, descriptor);
-        
-        if(texture)
-        {
-            texture->relativePathname = imagePathname;
-        }
-    }
-    else
-    {
 #if defined TEXTURE_SPLICING_ENABLED
-        Texture * cachedTexture = Texture::Get(pathName);
-        if (cachedTexture)return cachedTexture;
-        
-        switch (descriptor->textureFileFormat)
-        {
-            case TextureDescriptor::PNG_FILE:
-                texture = CreateFromPNG(descriptor->textureFile, descriptor);
-                break;
-            case TextureDescriptor::PVR_FILE:
-                texture = CreateFromPVR(descriptor->textureFile, descriptor);
-                break;
-                
-            case TextureDescriptor::DXT_FILE:
-                break;
-        }
-        
-        if(texture)
-        {
-            texture->relativePathname = pathName;
-        }
-#else //#if defined TEXTURE_SPLICING_ENABLED
-        String imagePathname;
-        switch (descriptor->textureFileFormat)
-        {
-            case PNG_FILE:
-            {
-                imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
-                texture = CreateFromPNG(imagePathname, descriptor);
-                break;
-            }
-            case PVR_FILE:
-                imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".pvr");
-                texture = CreateFromPVR(imagePathname, descriptor);
-                break;
-                
-            case DXT_FILE:
-                break;
-        }
-        
-        if(texture)
-        {
-            texture->relativePathname = imagePathname;
-        }
-#endif //#if defined TEXTURE_SPLICING_ENABLED
+    Texture * texture = Texture::Get(pathName);
+    if (texture)return texture;
+    
+    switch (descriptor->textureFileFormat)
+    {
+        case TextureDescriptor::PNG_FILE:
+            texture = CreateFromPNG(descriptor->textureFile, descriptor);
+            break;
+        case TextureDescriptor::PVR_FILE:
+            texture = CreateFromPVR(descriptor->textureFile, descriptor);
+            break;
+            
+        case TextureDescriptor::DXT_FILE:
+            break;
     }
+    
+    if(texture)
+    {
+        texture->relativePathname = pathName;
+    }
+#else //#if defined TEXTURE_SPLICING_ENABLED
+    Texture * texture = NULL;
+    String imagePathname;
+    switch (descriptor->textureFileFormat)
+    {
+        case PNG_FILE:
+        {
+            imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".png");
+            texture = CreateFromPNG(imagePathname, descriptor);
+            break;
+        }
+        case PVR_FILE:
+            imagePathname = FileSystem::Instance()->ReplaceExtension(pathName, ".pvr");
+            texture = CreateFromPVR(imagePathname, descriptor);
+            break;
+            
+        case DXT_FILE:
+            break;
+    }
+    
+    if(texture)
+    {
+        texture->relativePathname = imagePathname;
+    }
+#endif //#if defined TEXTURE_SPLICING_ENABLED
     
     return texture;
 }
@@ -700,7 +687,7 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
         Logger::Warning("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s). File will be created with default settings.", descriptorPathname.c_str());
 
         String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-        descriptor->SaveAsText(descriptorPathname);
+        descriptor->Save(descriptorPathname);
     }
 #endif //#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
     return descriptor;

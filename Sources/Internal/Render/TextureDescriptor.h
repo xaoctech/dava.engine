@@ -43,27 +43,23 @@ namespace DAVA
 class File;
 class TextureDescriptor: public BaseObject
 {
-    enum eConst
+    enum eOptionsState
     {
         OPTION_DISABLED = 0,
         OPTION_ENABLED = 1,
-        
-        BINARY_SIGNATURE = 0x006E6962,
-        TEXT_SIGNATURE = 0x00747874,
-        
-        DATE_BUFFER_SIZE = 20,
-        LINE_SIZE = 256
+    };
+
+    enum eSignatures
+    {
+        COMPRESSED_FILE = 0x00EEEE00,
+        NOTCOMPRESSED_FILE = 0x00EE00EE
     };
     
+    static const int32 DATE_BUFFER_SIZE = 20;
+    static const int32 LINE_SIZE = 256;
+
 public:
     
-    enum eFileType
-    {
-        TYPE_TEXT = 0,
-        TYPE_BINARY
-    };
-    
-
     struct Compression
     {
         PixelFormat format;
@@ -79,8 +75,11 @@ public:
     void SaveDateAndCrc(const String &filePathname);
 
     bool Load(const String &filePathname);
-    void SaveAsText(const String &filePathname);
-    void SaveAsBinary(const String &filePathname, const String &texturePathname);
+
+    void Save();
+    void Save(const String &filePathname);
+    
+    void Export(const String &filePathname, const String &texturePathname);
 
     bool GetGenerateMipMaps();
 
@@ -88,10 +87,8 @@ public:
     
 protected:
     
-    eFileType DetectFileType(File *file);
-    
-    void LoadAsText(File *file);
-    void LoadAsBinary(File *file);
+    void LoadNotCompressed(File *file);
+    void LoadCompressed(File *file);
     
     void SetDefaultValues();
     void CrcFromReadableFormat(const char8 *readCrc);
@@ -100,20 +97,13 @@ protected:
     uint8 GetNumberFromCharacter(char8 character);
     char8 GetCharacterFromNumber(uint8 number);
     
-    void ReadInt8(File *file, int8 &value);
-    void WriteInt8(File *file, const int8 value);
-
-    void ReadChar8String(File *file, char8 *buffer, uint32 bufferSize);
-    void WriteChar8String(File *file, const char8 *buffer);
+    void ReadGeneralSettings(File *file);
+    void WriteGeneralSettings(File *file);
     
-    void ReadCompressionAsText(File *file, Compression &compression);
-    void WriteCompressionAsText(File *file, const Compression &compression);
-    
-    void WriteSignature(File *file, int32 signature);
+    void ReadCompression(File *file, Compression &compression);
+    void WriteCompression(File *file, const Compression &compression);
     
 public:
-    
-    eFileType fileType;
     
     char8 modificationDate[DATE_BUFFER_SIZE];
     uint8 crc[MD5::DIGEST_SIZE];
@@ -131,6 +121,8 @@ public:
 #if defined TEXTURE_SPLICING_ENABLED
     File *textureFile;
 #endif //#if defined TEXTURE_SPLICING_ENABLED
+    
+    String pathname;
 };
     
 };
