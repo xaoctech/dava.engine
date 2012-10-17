@@ -512,7 +512,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
         TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
         if(0 == CompareStrings(String(".pvr"), format))
         {
-            PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, descriptor->pvrCompression.format, descriptor->GenerateMipMaps());
+            PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, descriptor->pvrCompression.format, descriptor->GetGenerateMipMaps());
         }
         
         SafeRelease(descriptor);

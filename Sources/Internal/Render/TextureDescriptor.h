@@ -63,12 +63,6 @@ public:
         TYPE_BINARY
     };
     
-    enum TextureFileFormat
-    {
-        PNG_FILE = 0,
-        PVR_FILE,
-        DXT_FILE
-    };
 
     struct Compression
     {
@@ -88,7 +82,7 @@ public:
     void SaveAsText(const String &filePathname);
     void SaveAsBinary(const String &filePathname, const String &texturePathname);
 
-    bool GenerateMipMaps();
+    bool GetGenerateMipMaps();
 
     static String GetDefaultExtension();
     
