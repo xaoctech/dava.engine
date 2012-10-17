@@ -72,8 +72,11 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 
 	boolPVRFlipVertical = propertiesBool->addProperty("Flip vertical");
 
+	intBasePVRMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
+
 	groupPVR->addSubProperty(enumPVRFormat);
 	groupPVR->addSubProperty(boolPVRFlipVertical);
+	groupPVR->addSubProperty(intBasePVRMipmapLevel);
 	addProperty(groupPVR);
 
 	// DXT group
@@ -82,8 +85,11 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 
 	boolDXTFlipVertical = propertiesBool->addProperty("Flip vertical");
 
+	intBaseDXTMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
+
 	groupDXT->addSubProperty(enumDXTFormat);
 	groupDXT->addSubProperty(boolDXTFlipVertical);
+	groupDXT->addSubProperty(intBaseDXTMipmapLevel);
 	addProperty(groupDXT);
 
 	// Common group
@@ -101,10 +107,6 @@ TextureProperties::TextureProperties(QWidget *parent /* = 0 */)
 	enumWrapModeT = propertiesEnum->addProperty("Wrap mode T");
 	propertiesEnum->setEnumNames(enumWrapModeT, helperWrapModes.keyList());
 	groupCommon->addSubProperty(enumWrapModeT);
-
-	// base mipmap
-	intBaseMipmapLevel = propertiesInt->addProperty("Base Mipmap level");
-	groupCommon->addSubProperty(intBaseMipmapLevel);
 
 	addProperty(groupCommon);
 
@@ -139,10 +141,12 @@ void TextureProperties::setTexture(DAVA::Texture *texture)
 		// pvr
 		propertiesEnum->setValue(enumPVRFormat, helperPVRFormats.indexV(curTextureDescriptor->pvrCompression.format));
 		propertiesBool->setValue(boolPVRFlipVertical, curTextureDescriptor->pvrCompression.flipVertically);
+		propertiesInt->setValue(intBasePVRMipmapLevel, curTextureDescriptor->pvrCompression.baseMipMapLevel);
 
 		// dxt
 		propertiesEnum->setValue(enumDXTFormat, helperDXTFormats.indexV(curTextureDescriptor->dxtCompression.format));
 		propertiesBool->setValue(boolDXTFlipVertical, curTextureDescriptor->dxtCompression.flipVertically);
+		propertiesInt->setValue(intBaseDXTMipmapLevel, curTextureDescriptor->dxtCompression.baseMipMapLevel);
 
 		// mipmap
 		propertiesBool->setValue(boolGenerateMipMaps, curTextureDescriptor->generateMipMaps);
