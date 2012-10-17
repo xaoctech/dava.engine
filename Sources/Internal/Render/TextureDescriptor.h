@@ -91,11 +91,6 @@ protected:
     void LoadCompressed(File *file);
     
     void SetDefaultValues();
-    void CrcFromReadableFormat(const char8 *readCrc);
-    void CrcToReadableFormat(char8 *readCrc, int32 crcSize);
-    
-    uint8 GetNumberFromCharacter(char8 character);
-    char8 GetCharacterFromNumber(uint8 number);
     
     void ReadGeneralSettings(File *file);
     void WriteGeneralSettings(File *file);

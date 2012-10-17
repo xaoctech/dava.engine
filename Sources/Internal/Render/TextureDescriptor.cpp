@@ -144,10 +144,9 @@ void TextureDescriptor::Save(const String &filePathname)
     file->Write(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
 
     //crc
-    char8 readableCrc[MD5::DIGEST_SIZE*2 + 1];
-    CrcToReadableFormat(readableCrc, MD5::DIGEST_SIZE*2 + 1);
-
-    file->Write(readableCrc, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
+    char8 crcString[MD5::DIGEST_SIZE*2 + 1];
+    MD5::HashToChar(crc, crcString, MD5::DIGEST_SIZE*2 + 1);
+    file->Write(crcString, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
 
     WriteGeneralSettings(file);
     
@@ -200,9 +199,9 @@ void TextureDescriptor::LoadNotCompressed(File *file)
 {
     file->Read(modificationDate, DATE_BUFFER_SIZE * sizeof(char8));
     
-    char8 readableCrc[MD5::DIGEST_SIZE*2 + 1];
-    file->Read(readableCrc, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
-    CrcFromReadableFormat(readableCrc);
+    char8 crcString[MD5::DIGEST_SIZE*2 + 1];
+    file->Read(crcString, (MD5::DIGEST_SIZE*2 + 1) * sizeof(char8));
+    MD5::CharToHash(crcString, crc);
     
     ReadGeneralSettings(file);
     
@@ -267,66 +266,6 @@ void TextureDescriptor::WriteCompression(File *file, const Compression &compress
 }
 
 
-void TextureDescriptor::CrcFromReadableFormat(const char8 *readCrc)
-{
-    int32 crcSize = strlen(readCrc);
-    if((MD5::DIGEST_SIZE * 2) != crcSize)
-    {
-        Logger::Error("[TextureDescriptor::CrcFromReadableFormat] crc has wrong size (%d). Must be 32 characters", crcSize);
-        return;
-    }
-    
-    for(int32 i = 0; i < MD5::DIGEST_SIZE; ++i)
-    {
-        uint8 low = GetNumberFromCharacter(readCrc[2*i]);
-        uint8 high = GetNumberFromCharacter(readCrc[2*i + 1]);
-
-        crc[i] = (high << 4) | (low);
-    }
-}
-
-void TextureDescriptor::CrcToReadableFormat(char8 *readCrc, int32 crcSize)
-{
-    DVASSERT(((MD5::DIGEST_SIZE*2 + 1) <= crcSize) && "To small buffer. Must be enought to put 32 characters of crc and \0");
-
-    for(int32 i = 0; i < MD5::DIGEST_SIZE; ++i)
-    {
-        readCrc[2*i] = GetCharacterFromNumber(crc[i] & 0x0F);
-        readCrc[2*i + 1] = GetCharacterFromNumber( (crc[i] & 0xF0) >> 4 );
-    }
-    
-    readCrc[2 * MD5::DIGEST_SIZE] = 0;
-}
-    
-uint8 TextureDescriptor::GetNumberFromCharacter(char8 character)
-{
-    if('0' <= character && character <= '9')
-    {
-        return (character - '0');
-    }
-    else if('a' <= character && character <= 'f')
-    {
-        return (character - 'a' + 10);
-    }
-    else if('A' <= character && character <= 'F')
-    {
-        return (character - 'A' + 10);
-    }
-    
-    Logger::Error("[TextureDescriptor::CrcFromReadableFormat] crc has wrong symbol (%c).", character);
-    return 0;
-}
-
-char8 TextureDescriptor::GetCharacterFromNumber(uint8 number)
-{
-    if(0 <= number && number <= 9)
-    {
-        return (number + '0');
-    }
-
-    return (number + 'A' - 10);
-}
-    
 bool TextureDescriptor::GetGenerateMipMaps()
 {
     return (OPTION_DISABLED != generateMipMaps);
