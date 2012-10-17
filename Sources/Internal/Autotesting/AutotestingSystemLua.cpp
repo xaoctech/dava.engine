@@ -110,8 +110,10 @@ void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
     touchDown.phase = UIEvent::PHASE_BEGAN;
     touchDown.tid = touchId;
     touchDown.tapCount = 1;
-    touchDown.physPoint = TouchAction::GetPhysicalPoint(point);
-    touchDown.point = TouchAction::GetVirtualPoint(touchDown.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToPhysical(touchDown.physPoint, touchDown.point);
+    //touchDown.physPoint = TouchAction::GetPhysicalPoint(point);
+    //touchDown.point = TouchAction::GetVirtualPoint(touchDown.physPoint);
         
     Action::ProcessInput(touchDown);
 }
