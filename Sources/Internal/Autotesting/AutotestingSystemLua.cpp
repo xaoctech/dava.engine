@@ -92,9 +92,15 @@ void AutotestingSystemLua::OnError(const String &errorMessage)
     AutotestingSystem::Instance()->OnError(errorMessage);
 }
     
-void AutotestingSystemLua::StopTest()
+void AutotestingSystemLua::OnTestAssert(const String &text, bool isPassed)
 {
-    Logger::Debug("AutotestingSystemLua::StopTest");
+    Logger::Debug("AutotestingSystemLua::OnTestAssert %s", text.c_str());
+    AutotestingSystem::Instance()->OnTestAssert(text, isPassed);
+}
+    
+void AutotestingSystemLua::OnTestFinished()
+{
+    Logger::Debug("AutotestingSystemLua::OnTestFinished");
     AutotestingSystem::Instance()->OnTestsFinished();
 }
     

@@ -95,6 +95,10 @@
 		C2F0A520161DEAEE003A2006 /* Observable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2F0A51D161DEAEE003A2006 /* Observable.cpp */; };
 		C2F0A521161DEAEE003A2006 /* Observable.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51E161DEAEE003A2006 /* Observable.h */; };
 		C2F0A522161DEAEE003A2006 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = C2F0A51F161DEAEE003A2006 /* Observer.h */; };
+		C73FA832162FFECE00057ECB /* AutotestingSystemSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C73FA82E162FFECE00057ECB /* AutotestingSystemSwig.cpp */; };
+		C73FA833162FFECE00057ECB /* RectSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C73FA82F162FFECE00057ECB /* RectSwig.cpp */; };
+		C73FA834162FFECE00057ECB /* UIControlSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C73FA830162FFECE00057ECB /* UIControlSwig.cpp */; };
+		C73FA835162FFECE00057ECB /* VectorSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C73FA831162FFECE00057ECB /* VectorSwig.cpp */; };
 		C750B1A5162706B200FCE6C8 /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750B19E162706B200FCE6C8 /* AutotestingSystemLua.cpp */; };
 		C750B1A6162706B200FCE6C8 /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C750B19F162706B200FCE6C8 /* AutotestingSystemLua.h */; };
 		C750B1A7162706B200FCE6C8 /* AutotestingSystemYaml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C750B1A0162706B200FCE6C8 /* AutotestingSystemYaml.cpp */; };
@@ -688,6 +692,10 @@
 		C2F0A51D161DEAEE003A2006 /* Observable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Observable.cpp; sourceTree = "<group>"; };
 		C2F0A51E161DEAEE003A2006 /* Observable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observable.h; sourceTree = "<group>"; };
 		C2F0A51F161DEAEE003A2006 /* Observer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observer.h; sourceTree = "<group>"; };
+		C73FA82E162FFECE00057ECB /* AutotestingSystemSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemSwig.cpp; sourceTree = "<group>"; };
+		C73FA82F162FFECE00057ECB /* RectSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RectSwig.cpp; sourceTree = "<group>"; };
+		C73FA830162FFECE00057ECB /* UIControlSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIControlSwig.cpp; sourceTree = "<group>"; };
+		C73FA831162FFECE00057ECB /* VectorSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorSwig.cpp; sourceTree = "<group>"; };
 		C750B19E162706B200FCE6C8 /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
 		C750B19F162706B200FCE6C8 /* AutotestingSystemLua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingSystemLua.h; sourceTree = "<group>"; };
 		C750B1A0162706B200FCE6C8 /* AutotestingSystemYaml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemYaml.cpp; sourceTree = "<group>"; };
@@ -1292,6 +1300,10 @@
 		C7DE596A157F8CA10045CA41 /* Autotesting */ = {
 			isa = PBXGroup;
 			children = (
+				C73FA82E162FFECE00057ECB /* AutotestingSystemSwig.cpp */,
+				C73FA82F162FFECE00057ECB /* RectSwig.cpp */,
+				C73FA830162FFECE00057ECB /* UIControlSwig.cpp */,
+				C73FA831162FFECE00057ECB /* VectorSwig.cpp */,
 				C750B19E162706B200FCE6C8 /* AutotestingSystemLua.cpp */,
 				C750B19F162706B200FCE6C8 /* AutotestingSystemLua.h */,
 				C750B1A0162706B200FCE6C8 /* AutotestingSystemYaml.cpp */,
@@ -2689,6 +2701,10 @@
 				E8F98C98161B418100B50BDA /* LibPVRHelper.cpp in Sources */,
 				C750B1A5162706B200FCE6C8 /* AutotestingSystemLua.cpp in Sources */,
 				C750B1A7162706B200FCE6C8 /* AutotestingSystemYaml.cpp in Sources */,
+				C73FA832162FFECE00057ECB /* AutotestingSystemSwig.cpp in Sources */,
+				C73FA833162FFECE00057ECB /* RectSwig.cpp in Sources */,
+				C73FA834162FFECE00057ECB /* UIControlSwig.cpp in Sources */,
+				C73FA835162FFECE00057ECB /* VectorSwig.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

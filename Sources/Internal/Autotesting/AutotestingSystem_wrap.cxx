@@ -2044,18 +2044,48 @@ fail:
 }
 
 
-static int _wrap_AutotestingSystemLua_StopTest(lua_State* L) {
+static int _wrap_AutotestingSystemLua_OnTestAssert(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::String *arg2 = 0 ;
+  bool arg3 ;
+  DAVA::String temp2 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::OnTestAssert",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestAssert",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestAssert",2,"DAVA::String const &");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestAssert",3,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_OnTestAssert",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  temp2.assign(lua_tostring(L,2),lua_rawlen(L,2)); arg2=&temp2;
+  arg3 = (lua_toboolean(L, 3)!=0);
+  (arg1)->OnTestAssert((DAVA::String const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_AutotestingSystemLua_OnTestFinished(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
   
-  SWIG_check_num_args("DAVA::AutotestingSystemLua::StopTest",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::StopTest",1,"DAVA::AutotestingSystemLua *");
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::OnTestFinished",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::OnTestFinished",1,"DAVA::AutotestingSystemLua *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
-    SWIG_fail_ptr("AutotestingSystemLua_StopTest",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+    SWIG_fail_ptr("AutotestingSystemLua_OnTestFinished",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
   }
   
-  (arg1)->StopTest();
+  (arg1)->OnTestFinished();
   
   return SWIG_arg;
   
@@ -2216,7 +2246,8 @@ delete arg1;
 }
 static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"OnError", _wrap_AutotestingSystemLua_OnError}, 
-    {"StopTest", _wrap_AutotestingSystemLua_StopTest}, 
+    {"OnTestAssert", _wrap_AutotestingSystemLua_OnTestAssert}, 
+    {"OnTestFinished", _wrap_AutotestingSystemLua_OnTestFinished}, 
     {"GetTimeElapsed", _wrap_AutotestingSystemLua_GetTimeElapsed}, 
     {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
     {"TouchDown", _wrap_AutotestingSystemLua_TouchDown}, 

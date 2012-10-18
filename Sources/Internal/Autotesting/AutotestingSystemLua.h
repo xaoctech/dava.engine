@@ -72,7 +72,9 @@ public:
     
     // autotesting system api
     void OnError(const String &errorMessage);
-    void StopTest();
+    void OnTestAssert(const String &text, bool isPassed);
+    void OnTestFinished();
+    
     float32 GetTimeElapsed();
     
     // autotesting api
