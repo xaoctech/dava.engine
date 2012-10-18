@@ -681,15 +681,12 @@ TextureDescriptor * Texture::CreateDescriptorForTexture(const String &texturePat
     }
 
     bool loaded = descriptor->Load(descriptorPathname);
-#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
     if(!loaded)
     {
-        Logger::Warning("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s). File will be created with default settings.", descriptorPathname.c_str());
-
-        String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
-        descriptor->Save(descriptorPathname);
+        Logger::Error("[Texture::CreateDescriptorForTexture]: there are no descriptor file (%s).", descriptorPathname.c_str());
+        SafeRelease(descriptor);
+        return NULL;
     }
-#endif //#if defined (__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
     return descriptor;
 }
     
@@ -1224,7 +1221,7 @@ const Map<String, Texture*> & Texture::GetTextureMap()
     return textureMap;
 }
 
-int32 Texture::GetDataSize()
+int32 Texture::GetDataSize() const
 {
     DVASSERT((0 <= format) && (format < FORMAT_COUNT));
     

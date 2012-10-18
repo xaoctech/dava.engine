@@ -487,6 +487,7 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
 {
     String descriptorPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, TextureDescriptor::GetDefaultExtension());
     TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
+    DVASSERT(descriptor && "Decriptors mast be created for all textures");
     
     String workingPathname = RemoveFolderFromPath(descriptorPathname, dataSourceFolder);
     PrepareFolderForCopy(workingPathname, errorLog);
@@ -510,6 +511,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
         //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
         
         TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
+        DVASSERT(descriptor && "Decriptors mast be created for all textures");
         if(0 == CompareStrings(String(".pvr"), format))
         {
             PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, descriptor->pvrCompression.format, descriptor->GetGenerateMipMaps());
