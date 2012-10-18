@@ -24,9 +24,12 @@ if len(arguments) < 2 or 3 < len(arguments):
 print "*** DAVA Initializing autotesting"
 platformName = arguments[0]
 projectName = arguments[1]
+testsGroupName = "default"
+
 testsSrcFolder = "/Tests"
 if 3 == len(arguments):
-    testsSrcFolder = testsSrcFolder + "/" + arguments[2]
+    testsGroupName = arguments[2]
+    testsSrcFolder = testsSrcFolder + "/" + testsGroupName
 
 print "platform.system: " + platform.system()
 
@@ -102,7 +105,7 @@ params = ["python", "./copy_tests.py", testsSrcFolder, autotestingDestFolder]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
-params = ["python", "./generate_id.py", projectName, autotestingDestFolder]
+params = ["python", "./generate_id.py", projectName, autotestingDestFolder, testsGroupName]
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
