@@ -428,100 +428,95 @@ bool FileSystem::SetCurrentWorkingDirectory(const String & newWorkingDirectory)
 #endif //PLATFORMS
 	return false; 
 }
-    
+  
+bool FileSystem::IsFile(const String & pathToCheck)
+{
+    struct stat s;
+    if(stat(pathToCheck.c_str(),&s) == 0)
+    {
+        return (s.st_mode & S_IFREG);
+    }
+    return false;
+}
+	  
 bool FileSystem::IsDirectory(const String & pathToCheck)
 {
     struct stat s;
     if( stat(pathToCheck.c_str(),&s) == 0 )
     {
-        if( s.st_mode & S_IFDIR )
-        {
-            return true;
-        }
-        else if( s.st_mode & S_IFREG )
-        {
-            //it's a file
-        }
-        else
-        {
-            //something else
-        }
-    }
-    else
-    {
-        //error
+        return (s.st_mode & S_IFDIR);
     }
     return false;
 }
 
-    const String & FileSystem::GetCurrentDocumentsDirectory()
-    {
-        return currentDocDirectory; 
-    }
-    
-    void FileSystem::SetCurrentDocumentsDirectory(const String & newDocDirectory)
-    {
-        currentDocDirectory = newDocDirectory;
-    }
-    
-    const String FileSystem::FilepathInDocuments(const char * relativePathname)
-    {
-        //return Format("./Documents/%s", relativePathname);
-        return currentDocDirectory + relativePathname;
-    }
-    
-    const String FileSystem::FilepathInDocuments(const String & relativePathname)
-    {
-        return FilepathInDocuments(relativePathname.c_str());
-    }
-    
-    void FileSystem::SetDefaultDocumentsDirectory()
-    {
+const String & FileSystem::GetCurrentDocumentsDirectory()
+{
+    return currentDocDirectory; 
+}
+
+void FileSystem::SetCurrentDocumentsDirectory(const String & newDocDirectory)
+{
+    currentDocDirectory = newDocDirectory;
+}
+
+const String FileSystem::FilepathInDocuments(const char * relativePathname)
+{
+    //return Format("./Documents/%s", relativePathname);
+    return currentDocDirectory + relativePathname;
+}
+
+const String FileSystem::FilepathInDocuments(const String & relativePathname)
+{
+    return FilepathInDocuments(relativePathname.c_str());
+}
+
+void FileSystem::SetDefaultDocumentsDirectory()
+{
 #if defined(__DAVAENGINE_WIN32__)
-        SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject\\");
+    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject\\");
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__) || defined (__DAVASOUND_ANDROID__)
-        SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
+    SetCurrentDocumentsDirectory(GetUserDocumentsPath() + "DAVAProject/");
 #endif //PLATFORMS
-    }
-    
-	
+}
+
+
 #if defined(__DAVAENGINE_WIN32__)
-    const String FileSystem::GetUserDocumentsPath()
-    {
-        char * szPath = new char[MAX_PATH];
-        SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, szPath);
-        int32 n = strlen(szPath);
-        szPath[n] = '\\';
-        szPath[n+1] = 0;
-        String str(szPath);
-        delete[] szPath;
-        return str;
-    }
-    
-    const String FileSystem::GetPublicDocumentsPath()
-    {
-        char * szPath = new char[MAX_PATH];
-        SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szPath);
-        int32 n = strlen(szPath);
-        szPath[n] = '\\';
-        szPath[n+1] = 0;
-        String str(szPath);
-        delete[] szPath;
-        return str;
-    }
+const String FileSystem::GetUserDocumentsPath()
+{
+    char * szPath = new char[MAX_PATH];
+    SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, szPath);
+    int32 n = strlen(szPath);
+    szPath[n] = '\\';
+    szPath[n+1] = 0;
+    String str(szPath);
+    delete[] szPath;
+    return str;
+}
+
+const String FileSystem::GetPublicDocumentsPath()
+{
+    char * szPath = new char[MAX_PATH];
+    SHGetFolderPathA(NULL, CSIDL_COMMON_DOCUMENTS, NULL, SHGFP_TYPE_CURRENT, szPath);
+    int32 n = strlen(szPath);
+    szPath[n] = '\\';
+    szPath[n+1] = 0;
+    String str(szPath);
+    delete[] szPath;
+    return str;
+}
 #endif //#if defined(__DAVAENGINE_WIN32__)
-    
+
 #if defined(__DAVAENGINE_ANDROID__)
-    const String FileSystem::GetUserDocumentsPath()
-    {
-        return documentsPath;
-    }
-    
-    const String FileSystem::GetPublicDocumentsPath()
-    {
-        //TODO: need to return real path;
-        return documentsPath;
-    }
+const String FileSystem::GetUserDocumentsPath()
+{
+    return documentsPath;
+}
+
+const String FileSystem::GetPublicDocumentsPath()
+{
+    //TODO: need to return real path;
+    return documentsPath;
+}
 #endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)	
     
 String FileSystem::RealPath(const String & _path)
