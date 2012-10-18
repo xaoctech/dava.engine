@@ -108,6 +108,7 @@ protected:
     float32 timeBeforeExit;
     
     String projectName;
+    String groupName;
     uint32 testsId;
     uint32 testsDate;
     int32 testIndex;

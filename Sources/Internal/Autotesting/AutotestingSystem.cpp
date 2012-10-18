@@ -27,6 +27,7 @@ AutotestingSystem::AutotestingSystem()
     , isDB(false)
     , needClearDB(false)
     , reportFile(NULL)
+    , groupName("default")
 {
 #ifdef AUTOTESTING_LUA
     new AutotestingSystemLua();
@@ -93,6 +94,18 @@ void AutotestingSystem::OnAppStarted()
                 sscanf(tempBuf, "%s", projectCharName);
                 SetProjectName(projectCharName);
             }
+            
+            if(!file->IsEof())
+            {
+                char groupCharName[128];
+                file->ReadLine(tempBuf, 1024);
+                sscanf(tempBuf, "%s", groupCharName);
+                String gName = groupCharName;
+                if(!gName.empty())
+                {
+                    groupName = gName;
+                }
+            }
             isDB = true;
         }
 		else
@@ -119,7 +132,6 @@ void AutotestingSystem::OnAppStarted()
         }
         
         int32 indexInFileList = testIndex;
-        int32 fileCount = fileList.GetFileCount();
         // skip directories
         for(int32 i = 0; (i <= indexInFileList) && (i < fileListSize); ++i)
         {
@@ -168,19 +180,6 @@ void AutotestingSystem::OnAppStarted()
             //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
             autotestingArchive->SetInt32("index", 0);
         }
-
-//        if((fileCount - 1) <= testIndex)
-//        {
-//            // last file - reset id and index
-//            //autotestingArchive->SetUInt32("id", 0); //don't reset id - allow cycled tests
-//            autotestingArchive->SetInt32("index", 0);
-//        }
-//        else
-//        {
-//            // save next index and autotesting id
-//            autotestingArchive->SetUInt32("id", testsId);
-//            autotestingArchive->SetInt32("index", (testIndex + 1));
-//        }
         autotestingArchive->Save("~doc:/autotesting/autotesting.archive");
     }
 }
@@ -243,6 +242,7 @@ void AutotestingSystem::AddTestResult(const String &text, bool isPassed)
     testResults.push_back(std::pair< String, bool >(text, isPassed));
 }
     
+#define AUTOTESTING_LOG_NAME "Tests"
 void AutotestingSystem::SaveTestToDB()
 {
     if(!isDB) return;
@@ -265,7 +265,7 @@ void AutotestingSystem::SaveTestToDB()
     
     KeyedArchive* platformArchive = NULL;
     
-    String logKey = "log";
+    KeyedArchive* groupArchive = NULL;
     KeyedArchive* logArchive = NULL;
     
     KeyedArchive* testArchive = NULL;
@@ -320,37 +320,50 @@ void AutotestingSystem::SaveTestToDB()
         if(platformArchive)
         {
             // found platform object
-            // find log object
-            logArchive = SafeRetain(platformArchive->GetArchive(logKey, NULL));
+            // find group object
+            groupArchive = SafeRetain(platformArchive->GetArchive(groupName, NULL));
             
-            if(logArchive)
+            if(groupArchive)
             {
-                // found log object
-                
-                //find all test objects to set platform test results (if all tests passed for current platform)
-                if(isTestSuitePassed)
+                if(testIndex == 0)
                 {
-                    const Map<String, VariantType*> &logArchiveData = logArchive->GetArchieveData();
-                    for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
+                    // remove prev results
+                    SafeRelease(groupArchive);
+                }
+                else
+                {
+                    // found group object
+                    // find log object
+                    logArchive = SafeRetain(groupArchive->GetArchive(AUTOTESTING_LOG_NAME, NULL));
+                
+                    if(logArchive)
                     {
-                        if((it->first != "_id") && it->second)
+                        //find all test objects to set platform test results (if all tests passed for current platform)
+                        if(isTestSuitePassed)
                         {
-                            KeyedArchive *tmpTestArchive = it->second->AsKeyedArchive();
-                            if(tmpTestArchive)
+                            const Map<String, VariantType*> &logArchiveData = logArchive->GetArchieveData();
+                            for(Map<String, VariantType*>::const_iterator it = logArchiveData.begin(); it != logArchiveData.end(); ++it)
                             {
-                                isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
+                                if((it->first != "_id") && it->second)
+                                {
+                                    KeyedArchive *tmpTestArchive = it->second->AsKeyedArchive();
+                                    if(tmpTestArchive)
+                                    {
+                                        isTestSuitePassed &= (tmpTestArchive->GetInt32("Success") == 1);
+                                    }
+                                }
                             }
                         }
+                        
+                        // find test object
+                        testArchive = SafeRetain(groupArchive->GetArchive(testAndFileName, NULL));
+                        if(testArchive)
+                        {
+                            // found test object
+                            // find test results
+                            testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
+                        }
                     }
-                }
-                
-                // find test object
-                testArchive = SafeRetain(logArchive->GetArchive(testAndFileName, NULL));
-                if(testArchive)
-                {
-                    // found test object
-                    // find test results
-                    testResultsArchive = SafeRetain(testArchive->GetArchive(testResultsKey));
                 }
             }
             isTestSuitePassed &= isTestPassed;
@@ -361,6 +374,11 @@ void AutotestingSystem::SaveTestToDB()
     if(!platformArchive)
     {
         platformArchive = new KeyedArchive();
+    }
+    
+    if(!groupArchive)
+    {
+        groupArchive = new KeyedArchive();
     }
     
     if(!logArchive)
@@ -382,7 +400,9 @@ void AutotestingSystem::SaveTestToDB()
     for(int32 i = 0; i < testResultsCount; ++i)
     {
         bool testResultSuccess = testResults[i].second;
-        testResultsArchive->SetInt32(testResults[i].first, (int32)testResultSuccess);
+        
+        String testResultKey = Format("%03d %s", i, testResults[i].first.c_str());
+        testResultsArchive->SetInt32(testResultKey, (int32)testResultSuccess);
     }
     
     //update test object
@@ -395,12 +415,14 @@ void AutotestingSystem::SaveTestToDB()
     //update log object
     logArchive->SetArchive(testAndFileName, testArchive);
     
+    //update group object
+    groupArchive->SetInt32("RunId", testsId);
+    groupArchive->SetInt32("TestsCount", (testIndex + 1));
+    groupArchive->SetInt32("Success", (int32)isTestSuitePassed);
+    groupArchive->SetArchive(AUTOTESTING_LOG_NAME, logArchive);
+
     //update platform object
-    platformArchive->SetInt32("RunId", testsId);
-    platformArchive->SetInt32("TestsCount", (testIndex + 1));
-    platformArchive->SetInt32("Success", (int32)isTestSuitePassed);
-    platformArchive->SetInt32(testAndFileName, (int32)isTestPassed);
-    platformArchive->SetArchive(logKey, logArchive);
+    platformArchive->SetArchive(groupName, groupArchive);
     
     //update DB object
     dbUpdateData->SetInt32("RunId", testsId);
@@ -410,7 +432,7 @@ void AutotestingSystem::SaveTestToDB()
     
     // delete created archives
     SafeRelease(platformArchive);
-    SafeRelease(logArchive);
+    SafeRelease(groupArchive);
     SafeRelease(testArchive);
     SafeRelease(testResultsArchive);
     
