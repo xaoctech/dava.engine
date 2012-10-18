@@ -13,6 +13,19 @@ function OnError(msg)
     autotestingSystem:OnError(msg)
 end
 
+function Assert(expression, msg)
+    local isPassed = (expression)
+    autotestingSystem:OnTestAssert(msg, isPassed)
+    if isPassed then
+        print("Assert "..msg.." PASSED")
+    else
+        print("Assert "..msg.." FAILED")
+        while true do
+            Yield()
+        end
+    end
+end
+
 function ResumeTest()
     print("ResumeTest")
     if coroutine.status(co) == "suspended" then
@@ -46,7 +59,7 @@ end
 
 function StopTest()
     print("StopTest")
-    autotestingSystem:StopTest()
+    autotestingSystem:OnTestFinished()
 end
 
 function Wait(waitTime)
@@ -56,7 +69,7 @@ function Wait(waitTime)
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
         print("Waiting "..elapsedTime)
-        coroutine.yield()
+        Yield()
     end
     
     print("Wait done")
@@ -75,7 +88,7 @@ function WaitControl(name, time)
             print("WaitControl found "..name)
             return true
         else
-            coroutine.yield()
+            Yield()
         end
     end
     
@@ -98,7 +111,8 @@ function ClickControl(name, touchId, time)
             print("ClickControl found "..name)
             print(control)
             
-            local position = control:GetPosition(true)
+            -- local position = control:GetPosition(true)
+            local position = Vector.Vector2()
             print(position)
             print("position.x="..position.x)
             print("position.y="..position.y)
@@ -128,7 +142,7 @@ function ClickControl(name, touchId, time)
             
             return true
         else
-            coroutine.yield()
+            Yield()
         end
     end
     
