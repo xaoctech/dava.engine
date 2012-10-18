@@ -10,6 +10,7 @@
 #include "Classes/Qt/PointerHolder.h"
 
 #include <QToolBar>
+#include <QSettings>
 
 #include "../SceneEditor/SceneEditorScreenMain.h"
 #include "../SceneEditor/EditorBodyControl.h"
@@ -19,6 +20,11 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     :   QMainWindow(parent)
     ,   ui(new Ui::MainWindow)
 {
+    QSettings settings;
+    restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
+    
+    
+
     ui->setupUi(this);
 	ui->centralWidget->setFocus();
  
@@ -53,6 +59,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	EditorConfig::Instance()->ParseConfig(EditorSettings::Instance()->GetProjectPath() + "EditorConfig.yaml");
     
     QtMainWindowHandler::Instance()->RestoreDefaultFocus();
+    
+    restoreState(settings.value("mainWindowState").toByteArray());
 }
 
 QtMainWindow::~QtMainWindow()
@@ -239,5 +247,12 @@ void QtMainWindow::ApplyReferenceNodeSuffix()
 	SceneEditorScreenMain * screen = dynamic_cast<SceneEditorScreenMain *>(UIScreenManager::Instance()->GetScreen());
 	Scene * scene = screen->FindCurrentBody()->bodyControl->GetScene();
 	scene->SetReferenceNodeSuffix(str);
+}
+
+void QtMainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings;
+    settings.setValue("mainWindowGeometry", saveGeometry());
+    settings.setValue("mainWindowState", saveState());
 }
 

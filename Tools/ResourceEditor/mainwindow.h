@@ -23,6 +23,9 @@ private:
 
     void SetupProjectPath();
     void SetupDockWidgets();
+    
+    void closeEvent(QCloseEvent *event);
+
         
 private slots:
 
