@@ -136,14 +136,40 @@ void AutotestingSystemLua::TouchDown(const Vector2 &point, int32 touchId)
     touchDown.tapCount = 1;
     UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchDown.physPoint);
     UIControlSystem::Instance()->RecalculatePointToVirtual(touchDown.physPoint, touchDown.point);
-    //touchDown.physPoint = TouchAction::GetPhysicalPoint(point);
-    //touchDown.point = TouchAction::GetVirtualPoint(touchDown.physPoint);
         
     Action::ProcessInput(touchDown);
 }
     
+void AutotestingSystemLua::TouchMove(const Vector2 &point, int32 touchId)
+{
+    Logger::Debug("AutotestingSystemLua::TouchMove point=(%f,%f) touchId=%d", point.x, point.y, touchId);
+    
+    //Logger::Debug("TouchAction::TouchMove point=(%f, %f)", point.x, point.y);
+    UIEvent touchMove;
+    touchMove.tid = touchId;
+    touchMove.tapCount = 1;
+    UIControlSystem::Instance()->RecalculatePointToPhysical(point, touchMove.physPoint);
+    UIControlSystem::Instance()->RecalculatePointToVirtual(touchMove.physPoint, touchMove.point);
+    
+    if(AutotestingSystem::Instance()->IsTouchDown(touchId))
+    {
+        touchMove.phase = UIEvent::PHASE_DRAG;
+        Action::ProcessInput(touchMove);
+    }
+    else
+    {
+#ifdef __DAVAENGINE_IPHONE__
+        Logger::Warning("AutotestingSystemLua::TouchMove point=(%f, %f) ignored no touch down found", point.x, point.y);
+#else
+        touchMove.phase = UIEvent::PHASE_MOVE;
+        Action::ProcessInput(touchMove);
+#endif
+    }
+}
+    
 void AutotestingSystemLua::TouchUp(int32 touchId)
 {
+    Logger::Debug("AutotestingSystemLua::TouchUp touchId=%d", touchId);
     UIEvent touchUp;
     if(!AutotestingSystem::Instance()->FindTouch(touchId, touchUp))
     {
@@ -157,8 +183,8 @@ void AutotestingSystemLua::TouchUp(int32 touchId)
 
 void AutotestingSystemLua::ParsePath(const String &path, Vector<String> &parsedPath)
 {
-    //TODO: parse path
-    parsedPath.push_back(path);
+    Logger::Debug("AutotestingSystemLua::ParsePath path=%s", path.c_str());
+    Split(path, "/", parsedPath);
 }
     
 void AutotestingSystemLua::LoadWrappedLuaObjects()

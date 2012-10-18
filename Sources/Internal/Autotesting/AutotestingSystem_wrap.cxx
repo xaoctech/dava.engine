@@ -2182,6 +2182,39 @@ fail:
 }
 
 
+static int _wrap_AutotestingSystemLua_TouchMove(lua_State* L) {
+  int SWIG_arg = 0;
+  DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
+  DAVA::Vector2 *arg2 = 0 ;
+  DAVA::int32 arg3 ;
+  
+  SWIG_check_num_args("DAVA::AutotestingSystemLua::TouchMove",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchMove",1,"DAVA::AutotestingSystemLua *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchMove",2,"DAVA::Vector2 const &");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("DAVA::AutotestingSystemLua::TouchMove",3,"DAVA::int32");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_DAVA__AutotestingSystemLua,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_TouchMove",1,SWIGTYPE_p_DAVA__AutotestingSystemLua);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_DAVA__Vector2,0))){
+    SWIG_fail_ptr("AutotestingSystemLua_TouchMove",2,SWIGTYPE_p_DAVA__Vector2);
+  }
+  
+  arg3 = (DAVA::int32)lua_tonumber(L, 3);
+  (arg1)->TouchMove((DAVA::Vector2 const &)*arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_AutotestingSystemLua_TouchUp(lua_State* L) {
   int SWIG_arg = 0;
   DAVA::AutotestingSystemLua *arg1 = (DAVA::AutotestingSystemLua *) 0 ;
@@ -2251,6 +2284,7 @@ static swig_lua_method swig_DAVA_AutotestingSystemLua_methods[] = {
     {"GetTimeElapsed", _wrap_AutotestingSystemLua_GetTimeElapsed}, 
     {"FindControl", _wrap_AutotestingSystemLua_FindControl}, 
     {"TouchDown", _wrap_AutotestingSystemLua_TouchDown}, 
+    {"TouchMove", _wrap_AutotestingSystemLua_TouchMove}, 
     {"TouchUp", _wrap_AutotestingSystemLua_TouchUp}, 
     {"SetText", _wrap_AutotestingSystemLua_SetText}, 
     {0,0}

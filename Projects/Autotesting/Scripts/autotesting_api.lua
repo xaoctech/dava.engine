@@ -1,6 +1,7 @@
 print("autotesting_api start")
 
 TIMEOUT = 10.0
+TIMECLICK = 0.2
 
 function Yield()
     print("Yield")
@@ -96,8 +97,56 @@ function WaitControl(name, time)
     return false
 end
 
+function TouchDownPosition(position, touchId)
+    local touchId = touchId or 1
+    print("TouchDownPosition position="..position.x..","..position.y.." touchId="..touchId)
+    autotestingSystem:TouchDown(position, touchId)
+end
+
+function TouchDown(x, y, touchId)
+    local touchId = touchId or 1
+    print("TouchDown x="..x.." y="..y.." touchId="..touchId)
+    autotestingSystem:TouchDown(position, touchId)
+end
+
+function TouchMovePosition(position, touchId)
+    local touchId = touchId or 1
+    print("TouchMovePosition position="..position.x..","..position.y.." touchId="..touchId)
+    autotestingSystem:TouchMove(position, touchId)
+end
+
+function TouchMove(x, y, touchId)
+    local touchId = touchId or 1
+    print("TouchMove x="..x.." y="..y.." touchId="..touchId)
+    autotestingSystem:TouchMove(position, touchId)
+end
+
+function TouchUp(touchId)
+    print("TouchUp "..touchId)
+    autotestingSystem:TouchUp(touchId)
+end
+
+function ClickPosition(position, touchId, time)
+    local waitTime = time or TIMECLICK
+    local touchId = touchId or 1
+    print("ClickPosition position="..position.x..","..position.y.." touchId="..touchId.." waitTime="..waitTime)
+    
+    TouchDownPosition(position, touchId)
+    Wait(waitTime)
+    TouchUp(touchId)
+end
+
+function Click(x, y, touchId)
+    local waitTime = time or TIMECLICK
+    local touchId = touchId or 1
+    print("Click x="..x.." y="..y.." touchId="..touchId)
+    
+    local position = Vector.Vector2(x, y)
+    ClickPosition(position, touchId, waitTime)
+end
+
 function ClickControl(name, touchId, time)
-    local waitTime = time or TIMEOUT
+    local waitTime = time or TIMECLICK
     local touchId = touchId or 1
     print("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
     
@@ -114,8 +163,7 @@ function ClickControl(name, touchId, time)
             -- local position = control:GetPosition(true)
             local position = Vector.Vector2()
             print(position)
-            print("position.x="..position.x)
-            print("position.y="..position.y)
+            print("position="..position.x..","..position.y)
             
             local geomData = control:GetGeometricData()
             print(geomData)
@@ -129,16 +177,9 @@ function ClickControl(name, touchId, time)
             
             position.x = rect.x + rect.dx/2
             position.y = rect.y +rect.dy/2
-            print("position.x="..position.x)
-            print("position.y="..position.y)
+            print("position="..position.x..","..position.y)
             
-            autotestingSystem:TouchDown(position, touchId)
-            print("ClickControl TouchDown")
-            
-            Wait(0.5)
-            
-            autotestingSystem:TouchUp(touchId)
-            print("ClickControl TouchUp")
+            ClickPosition(position, touchId, waitTime)
             
             return true
         else

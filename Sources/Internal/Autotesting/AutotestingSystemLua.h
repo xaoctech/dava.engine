@@ -80,6 +80,7 @@ public:
     // autotesting api
     UIControl *FindControl(const String &path);
     void TouchDown(const Vector2 &point, int32 touchId);
+    void TouchMove(const Vector2 &point, int32 touchId);
     void TouchUp(int32 touchId);
     
     // helpers
