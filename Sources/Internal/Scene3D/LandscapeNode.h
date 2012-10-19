@@ -382,10 +382,7 @@ protected:
     Heightmap *heightmap;
     String heightmapPath;
     
-    enum eConst
-    {
-        TEXTURE_TILE_FULL_SIZE = 2048
-    };
+    static const int32 TEXTURE_TILE_FULL_SIZE = 2048;
     
     Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
     Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;

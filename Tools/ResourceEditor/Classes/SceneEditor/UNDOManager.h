@@ -27,10 +27,7 @@ public:
 
 class UNDOManager: public Singleton<UNDOManager>
 {    
-    enum eConst
-    {
-        UNDO_HISTORY_SIZE = 20
-    };
+    static const int32 UNDO_HISTORY_SIZE = 20;
     
 public:
  

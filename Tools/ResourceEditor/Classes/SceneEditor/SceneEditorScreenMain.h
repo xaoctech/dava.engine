@@ -2,8 +2,6 @@
 #define __SCENE_EDITOR_SCREEN_MAIN_H__
 
 #include "DAVAEngine.h"
-#include "LibraryControl.h"
-#include "MenuPopupControl.h"
 
 #include "CreateNodesDialog.h"
 
@@ -29,14 +27,9 @@ class SceneEditorScreenMain:
     public SettingsDialogDelegate
 {
 
-    enum eConst
-    {        
-        LINE_HEIGHT = 1,
-
-        BODY_Y_OFFSET = 50,
-        
-        TAB_BUTTONS_OFFSET = 250,
-    };
+    static const int32 LINE_HEIGHT = 1;
+    static const int32 BODY_Y_OFFSET = 50;
+    static const int32 TAB_BUTTONS_OFFSET = 250;
 
     enum DIALOG_OPERATION
     {

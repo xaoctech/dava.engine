@@ -15,7 +15,6 @@
 #include "PVRConverter.h"
 #include "UISliderWithText.h"
 #include "HintManager.h"
-#include "UIFilePreviewDialog.h"
 
 #include "../Qt/QtUtils.h"
 
