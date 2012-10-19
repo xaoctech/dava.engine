@@ -18,6 +18,8 @@
 #include "SceneEditor/CommandLineTool.h"
 #include "SceneEditor/SceneExporter.h"
 
+#include "SceneEditor/PVRConverter.h"
+
 using namespace DAVA;
 
 #define VERSION     "0.0.35"
@@ -87,16 +89,29 @@ void ProcessRecourcePacker()
         return;
     }
     
+    new PVRConverter();
+
+    
+    if(commandLine.size() < 3)
+    {
+        printf("[FATAL ERROR: PVRTexTool path need to be second parameter]");
+        return;
+    }
+    PVRConverter::Instance()->SetPVRTexToolPathname(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2]);
+
+
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();
     printf("[Resource Packer Started]\n");
     printf("[INPUT DIR] - [%s]\n", resourcePackerScreen->inputGfxDirectory.c_str());
     printf("[OUTPUT DIR] - [%s]\n", resourcePackerScreen->outputGfxDirectory.c_str());
     printf("[EXCLUDE DIR] - [%s]\n", resourcePackerScreen->excludeDirectory.c_str());
     
-    
+    Texture::InitializePixelFormatDescriptors();
     resourcePackerScreen->PackResources();
     elapsedTime = SystemTimer::Instance()->AbsoluteMS() - elapsedTime;
     printf("[Resource Packer Compile Time: %0.3lf seconds]\n", (float64)elapsedTime / 1000.0);
+    
+    PVRConverter::Instance()->Release();
     
     SafeRelease(resourcePackerScreen);
 }
