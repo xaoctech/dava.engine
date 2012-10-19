@@ -1,7 +1,6 @@
 #include "SceneEditorScreenMain.h"
 
 #include "EditorBodyControl.h"
-#include "LibraryControl.h"
 
 #include "ControlsFactory.h"
 #include "../EditorScene.h"

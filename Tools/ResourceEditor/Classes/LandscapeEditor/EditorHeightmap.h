@@ -32,12 +32,9 @@
 
 class EditorHeightmap: public DAVA::Heightmap
 {
-    enum eConst
-    {
-        MAX_EDITOR_HEIGHTMAP_SIZE = 513,
-        VALUE_NOT_CHANGED = 0,
-        VALUE_WAS_CHANGED = 1,
-    };
+    static const DAVA::int32 MAX_EDITOR_HEIGHTMAP_SIZE = 513;
+    static const DAVA::int32 VALUE_NOT_CHANGED = 0;
+    static const DAVA::int32 VALUE_WAS_CHANGED = 1;
     
 public:
 

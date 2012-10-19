@@ -305,11 +305,8 @@ private:
     static const char * FilepathRelativeToBundle(const String & relativePathname);
 
 #if defined(__DAVAENGINE_ANDROID__)
-private:	
-	enum eConst
-	{
-		MAX_PATH = 260
-	};
+private:
+    static const int32 MAX_PATH = 256;
 	char8 assetsPath[MAX_PATH];
 	char8 documentsPath[MAX_PATH];
 	zip *APKArchive;
