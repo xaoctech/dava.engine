@@ -221,10 +221,12 @@ void EditorLandscapeNode::DrawFullTiledTexture(DAVA::Texture *renderTarget, cons
 {
     Texture *fullTiledTexture = nestedLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_FULL);
     Sprite *background = Sprite::CreateFromTexture(fullTiledTexture, 0, 0, (float32)fullTiledTexture->GetWidth(), (float32)fullTiledTexture->GetHeight());
+
     background->SetPosition(0.f, 0.f);
     background->SetScaleSize((float32)renderTarget->GetWidth(), (float32)renderTarget->GetHeight());
-    
     background->Draw();
+    
+    SafeRelease(background);
 }
 
 
