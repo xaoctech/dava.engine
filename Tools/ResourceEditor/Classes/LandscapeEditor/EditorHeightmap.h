@@ -71,8 +71,6 @@ protected:
     
     void InitializeTableOfChanges();
     
-    bool IsPowerOf2(DAVA::int32 num);
-
     DAVA::uint16 GetHeightValue(DAVA::int32 posX, DAVA::int32 posY, DAVA::int32 muliplier);
     DAVA::uint16 GetVerticalValue(DAVA::int32 posY, DAVA::int32 muliplier);
     DAVA::uint16 GetHorizontalValue(DAVA::int32 posX, DAVA::int32 muliplier);
