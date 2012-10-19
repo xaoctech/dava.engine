@@ -6,7 +6,6 @@
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
 
-
 SceneValidator::SceneValidator()
 {
     sceneTextureCount = 0;
@@ -216,7 +215,7 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
         errorsLog.insert("Wrong path of: " + path);
     }
-    if(IsntPower2(texture->GetWidth()) || IsntPower2(texture->GetHeight()))
+    if(!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
     {
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), texture->GetPathname());
         errorsLog.insert("Wrong size of " + path);
@@ -269,11 +268,6 @@ void SceneValidator::ValidateLandscape(LandscapeNode *landscape, Set<String> &er
         String path = FileSystem::AbsoluteToRelativePath(EditorSettings::Instance()->GetDataSourcePath(), landscape->GetHeightmapPathname());
         errorsLog.insert("Wrong path of Heightmap: " + path);
     }
-}
-
-bool SceneValidator::IsntPower2(int32 num)
-{
-    return ((num & (num - 1)) > 0);
 }
 
 void SceneValidator::ShowErrors()

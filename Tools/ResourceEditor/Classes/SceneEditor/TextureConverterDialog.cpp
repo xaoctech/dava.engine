@@ -352,7 +352,7 @@ void TextureConverterDialog::OnConvert(DAVA::BaseObject *owner, void *userData, 
         {
             ErrorNotifier::Instance()->ShowError("Wrong size. Texture must be square.");
         }
-        else if(SceneValidator::IsntPower2(t->width))
+        else if(!IsPowerOf2(t->width))
         {
             ErrorNotifier::Instance()->ShowError("Wrong size. Size must be power of 2.");
         }

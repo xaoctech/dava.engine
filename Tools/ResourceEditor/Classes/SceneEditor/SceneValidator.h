@@ -116,8 +116,6 @@ public:
     
     void SetInfoControl(SceneInfoControl *newInfoControl);
     
-    static bool IsntPower2(int32 num);
-
     void ReloadTextures();
     
     static bool IsTextureChanged(const String &texturePathname);
