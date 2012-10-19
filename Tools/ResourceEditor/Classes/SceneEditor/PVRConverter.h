@@ -12,9 +12,12 @@ public:
 
     DAVA::String ConvertPngToPvr(const DAVA::String & fileToConvert, DAVA::PixelFormat format, bool generateMimpaps);
 
+    void SetPVRTexToolPathname(const DAVA::String &pathname);
+    
 protected:
 
 	DAVA::String dataFolderPath;
+    DAVA::String pvrTexToolPathname;
 };
 
 

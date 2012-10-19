@@ -63,7 +63,6 @@ public:
     struct Compression
     {
         PixelFormat format;
-        int8 flipVertically;
         int8 baseMipMapLevel;
     };
 
@@ -79,7 +78,11 @@ public:
     void Save();
     void Save(const String &filePathname);
     
-    void Export(const String &filePathname, const String &texturePathname);
+#if defined TEXTURE_SPLICING_ENABLED
+    void ExportAndSplice(const String &filePathname, const String &texturePathname);
+#else //#if defined TEXTURE_SPLICING_ENABLED
+    void Export(const String &filePathname);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
 
     bool GetGenerateMipMaps();
 

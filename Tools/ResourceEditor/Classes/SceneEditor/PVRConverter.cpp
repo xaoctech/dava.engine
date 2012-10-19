@@ -30,7 +30,8 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, PixelFormat f
     
     String command = "";
 #if defined (__DAVAENGINE_MACOS__)
-    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/PVRTexToolCL");
+//    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath("~res:/PVRTexToolCL");
+    String converterPath = FileSystem::Instance()->SystemPathForFrameworkPath(pvrTexToolPathname + "PVRTexToolCL");
     
     switch (format)
     {
@@ -53,7 +54,8 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, PixelFormat f
     
 #elif defined (__DAVAENGINE_WIN32__)
 	String converterPath = FileSystem::Instance()->AbsoluteToRelativePath(filePath, dataFolderPath);
-	converterPath += "/Data/PVRTexTool.exe";
+//	converterPath += "/Data/PVRTexTool.exe";
+	converterPath += pvrTexToolPathname + "PVRTexTool.exe";
     
     switch (format)
     {
@@ -91,4 +93,9 @@ String PVRConverter::ConvertPngToPvr(const String & fileToConvert, PixelFormat f
     
     String retPvrName = filePath + pvrFileName;
     return retPvrName;
+}
+
+void PVRConverter::SetPVRTexToolPathname(const DAVA::String &pathname)
+{
+    pvrTexToolPathname = pathname;
 }

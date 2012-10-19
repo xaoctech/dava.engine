@@ -62,6 +62,13 @@ void GameCore::OnAppStarted()
 	
     new OutputManager();
 	new PVRConverter();
+#if defined (__DAVAENGINE_MACOS__)
+    PVRConverter::Instance()->SetPVRTexToolPathname(String("~res:/"));
+#elif defined (__DAVAENGINE_WIN32__)
+    PVRConverter::Instance()->SetPVRTexToolPathname(String("/Data/"));
+#endif
+
+    
     new SceneDataManager();
         
     

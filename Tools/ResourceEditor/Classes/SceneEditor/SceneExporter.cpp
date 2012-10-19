@@ -493,7 +493,13 @@ void SceneExporter::ExportTextureDescriptor(const String &texturePathname, Set<S
     PrepareFolderForCopy(workingPathname, errorLog);
     
     String exportedPathname = FileSystem::Instance()->ReplaceExtension(texturePathname, format);
-    descriptor->Export(dataFolder + workingPathname, exportedPathname);
+    
+#if defined TEXTURE_SPLICING_ENABLED
+    descriptor->ExportAndSlice(dataFolder + workingPathname, exportedPathname);
+#else //#if defined TEXTURE_SPLICING_ENABLED
+    descriptor->Export(dataFolder + workingPathname);
+#endif //#if defined TEXTURE_SPLICING_ENABLED
+
     SafeRelease(descriptor);
 }
 
