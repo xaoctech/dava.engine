@@ -550,9 +550,9 @@ bool TexturePacker::WriteDefinition(const char * excludeFolder, const char * out
 //	replace(textureName, std::string(excludeFolder), std::string(""));
 	
 	fprintf(fp, "%d\n", 1);
-
-    const char *textureExtension = TextureDescriptor::GetDefaultExtension().c_str();
-	fprintf(fp, "%s%s\n", textureName.c_str(), textureExtension);
+	
+	String textureExtension = TextureDescriptor::GetDefaultExtension();
+	fprintf(fp, "%s%s\n", textureName.c_str(), textureExtension.c_str());
 	
 	fprintf(fp, "%d %d\n", defFile->spriteWidth, defFile->spriteHeight);
 	fprintf(fp, "%d\n", defFile->frameCount); 
@@ -587,7 +587,7 @@ bool TexturePacker::WriteMultipleDefinition(const char * excludeFolder, const ch
 	std::string textureName = _textureName;
 //	replace(textureName, std::string(excludeFolder), std::string(""));
 	
-    const char *textureExtension = TextureDescriptor::GetDefaultExtension().c_str();
+	String textureExtension = TextureDescriptor::GetDefaultExtension();
 	
 	std::vector<int> packerIndexArray;
 	packerIndexArray.resize(defFile->frameCount);
@@ -621,7 +621,7 @@ bool TexturePacker::WriteMultipleDefinition(const char * excludeFolder, const ch
 		if (isUsed != packerIndexToFileIndex.end())
 		{
 			// here we write filename for i-th texture and write to map real index in file for this texture
-			fprintf(fp, "%s%d%s\n", textureName.c_str(), i, textureExtension);
+			fprintf(fp, "%s%d%s\n", textureName.c_str(), i, textureExtension.c_str());
 			packerIndexToFileIndex[i] = realIndex++;
 		}
 	}
@@ -676,7 +676,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const String &exportedPathna
     
     if (FORMAT_INVALID != descriptor->pvrCompression.format)
     {
-        PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, descriptor->pvrCompression.format, descriptor->generateMipMaps);
+        PVRConverter::Instance()->ConvertPngToPvr(exportedPathname, descriptor->pvrCompression.format, descriptor->GetGenerateMipMaps());
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
     

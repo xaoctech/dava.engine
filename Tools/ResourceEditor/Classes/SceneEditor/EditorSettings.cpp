@@ -59,19 +59,6 @@ String EditorSettings::GetProjectPath()
     return settings->GetString(String("ProjectPath"), String(""));
 }
 
-
-
-bool EditorSettings::IsValidPath(const String &path)
-{
-    if(path.length() == 0) //for texture resetting
-        return true;
-    
-    size_t posPng = path.find(".png");
-    size_t posPvr = path.find(".pvr");
-    size_t posHeightmap = path.find(Heightmap::FileExtension());
-    return ((String::npos != posPng) || (String::npos != posPvr) || (String::npos != posHeightmap));
-}
-
 float32 EditorSettings::GetCameraSpeed()
 {
     int32 index = settings->GetInt32("CameraSpeedIndex", 0);

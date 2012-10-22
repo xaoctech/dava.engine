@@ -6,6 +6,8 @@
 #include "Render/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
 
+#include "../Qt/QtUtils.h"
+
 SceneValidator::SceneValidator()
 {
     sceneTextureCount = 0;
@@ -222,11 +224,9 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
     }
     
 	// if there is no descriptor file for this texture - generate it
-	String descriptorPath = FileSystem::ReplaceExtension(texture->GetPathname(), TextureDescriptor::GetDefaultExtension());
-	if(pathIsCorrect && !FileSystem::Instance()->IsFile(descriptorPath))
+	if(pathIsCorrect)
 	{
-		TextureDescriptor *descriptor = new TextureDescriptor();
-		descriptor->Save(descriptorPath);
+		CreateDescriptorIfNeed(texture->GetPathname());
 	}
 }
 
@@ -493,6 +493,66 @@ String SceneValidator::SetPathForChecking(const String &pathname)
     String oldPath = pathForChecking;
     pathForChecking = pathname;
     return pathForChecking;
+}
+
+
+bool SceneValidator::ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog)
+{
+	DVASSERT(!pathForChecking.empty() && "Need to set pathname for DataSource folder");
+
+	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
+	if(pathIsCorrect)
+	{
+		String textureExtension = FileSystem::Instance()->GetExtension(pathForValidation);
+		String::size_type extPosition = GetTextureFileExtensions().find(textureExtension);
+		if(String::npos == extPosition)
+		{
+			errorsLog.insert(Format("Path %s has incorrect extension", pathForValidation.c_str()));
+			return false;
+		}
+
+		CreateDescriptorIfNeed(pathForValidation);
+	}
+	else
+	{
+		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.c_str(), pathForChecking.c_str()));
+	}
+
+	return pathIsCorrect;
+}
+
+bool SceneValidator::ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog)
+{
+	DVASSERT(!pathForChecking.empty() && "Need to set pathname for DataSource folder");
+
+	bool pathIsCorrect = IsPathCorrectForProject(pathForValidation);
+	if(pathIsCorrect)
+	{
+		String::size_type posPng = pathForValidation.find(".png");
+		String::size_type posHeightmap = pathForValidation.find(Heightmap::FileExtension());
+		return ((String::npos != posPng) || (String::npos != posHeightmap));
+	}
+	else
+	{
+		errorsLog.insert(Format("Path %s is incorrect for project %s", pathForValidation.c_str(), pathForChecking.c_str()));
+	}
+
+	return pathIsCorrect;
+}
+
+
+void SceneValidator::CreateDescriptorIfNeed(const String &forPathname)
+{
+	String descriptorPathname = FileSystem::Instance()->ReplaceExtension(forPathname, TextureDescriptor::GetDefaultExtension());
+	bool fileExists = FileSystem::Instance()->IsFile(descriptorPathname);
+	if(!fileExists)
+	{
+		Logger::Warning("[SceneValidator::CreateDescriptorIfNeed] Need descriptor for file %s", forPathname.c_str());
+	
+		TextureDescriptor *descriptor = new TextureDescriptor();
+		descriptor->textureFileFormat = Texture::PNG_FILE;
+		descriptor->Save(descriptorPathname);
+	}
 }
 
 

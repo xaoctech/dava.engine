@@ -97,7 +97,7 @@ void ProcessRecourcePacker()
         printf("[FATAL ERROR: PVRTexTool path need to be second parameter]");
         return;
     }
-    PVRConverter::Instance()->SetPVRTexToolPathname(resourcePackerScreen->excludeDirectory + String("/") + commandLine[2]);
+    PVRConverter::Instance()->SetPVRTexTool(String(""), resourcePackerScreen->excludeDirectory + String("/") + commandLine[2]);
 
 
     uint64 elapsedTime = SystemTimer::Instance()->AbsoluteMS();

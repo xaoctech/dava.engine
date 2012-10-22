@@ -122,6 +122,9 @@ public:
     
     void FindTexturesForCompression();
     
+	bool ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog);
+	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
+
 protected:
     
     int32 EnumerateSceneNodes(SceneNode *node);
@@ -130,6 +133,7 @@ protected:
     void ValidateLodNodes(Scene *scene, Set<String> &errorsLog);
 	void ValidateScalesInternal(SceneNode *sceneNode, Set<String> &errorsLog);
 
+	void CreateDescriptorIfNeed(const String &forPathname);
     
     void ShowErrors();
     

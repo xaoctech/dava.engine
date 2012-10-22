@@ -4,6 +4,9 @@
 
 #include "ControlsFactory.h"
 
+#include "../Qt//QtUtils.h"
+#include "ErrorNotifier.h"
+
 static const String textureNames[] = 
 {
     "Diffuse texture", 
@@ -54,20 +57,20 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     propertyList->SetComboPropertyIndex("property.material.type", materialType);
 
     
-    propertyList->AddFilepathProperty(textureNames[ETT_DIFFUSE], ".png;.pvr");
+    propertyList->AddFilepathProperty(textureNames[ETT_DIFFUSE], GetTextureFileExtensions());
     SetFilepathValue(material, ETT_DIFFUSE);
     
     if (    (Material::MATERIAL_UNLIT_TEXTURE_DECAL == materialType)
         ||  (Material::MATERIAL_VERTEX_LIT_DECAL == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_DECAL], ".png;.pvr");
+        propertyList->AddFilepathProperty(textureNames[ETT_DECAL], GetTextureFileExtensions());
         SetFilepathValue(material, ETT_DECAL);
     }
     
     if (    (Material::MATERIAL_UNLIT_TEXTURE_DETAIL == materialType)
         ||  (Material::MATERIAL_VERTEX_LIT_DETAIL == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_DETAIL], ".png;.pvr");
+        propertyList->AddFilepathProperty(textureNames[ETT_DETAIL], GetTextureFileExtensions());
         SetFilepathValue(material, ETT_DETAIL);
     }
     
@@ -75,7 +78,7 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == materialType)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType))
     {
-        propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], ".png;.pvr");
+        propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], GetTextureFileExtensions());
         SetFilepathValue(material, ETT_NORMAL_MAP);
     }
 
@@ -246,6 +249,14 @@ void MaterialPropertyControl::OnFloatPropertyChanged(PropertyList *forList, cons
 
 void MaterialPropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
+	Set<String> errorLog;
+	bool isCorrect = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorLog);
+	if(!isCorrect)
+	{
+		ErrorNotifier::Instance()->ShowError(errorLog);
+		return;
+	}
+
     for (int i = 0; i < ME_TEX_COUNT; i++) 
     {
         if (forKey == textureNames[i]) 

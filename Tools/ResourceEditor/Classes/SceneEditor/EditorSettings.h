@@ -31,8 +31,6 @@ public:
     void SetDataSourcePath(const String &datasourcePath);
     String GetDataSourcePath();
     
-    static bool IsValidPath(const String &path);
-
     float32 GetCameraSpeed();
     void SetCameraSpeedIndex(int32 camSpeedIndex);//0 - 4
     void SetCameraSpeed(int32 camSpeedIndex, float32 speed);
