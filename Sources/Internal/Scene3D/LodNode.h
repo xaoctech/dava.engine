@@ -47,10 +47,10 @@ class LodNode : public SceneNode
 public:
 
     static const int32 MAX_LOD_LAYERS = 4;
-    static const int32 INVALID_DISTANCE = -1;
     static const int32 INVALID_LOD_LAYER = -1;
-    static const int32 MIN_LOD_DISTANCE = 0;
-    static const int32 MAX_LOD_DISTANCE = 500;
+    static const float32 MIN_LOD_DISTANCE;
+    static const float32 MAX_LOD_DISTANCE;
+	static const float32 INVALID_DISTANCE;
 
     struct LodDistance
     {

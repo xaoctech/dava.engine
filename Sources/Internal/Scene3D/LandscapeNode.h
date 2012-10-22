@@ -382,7 +382,9 @@ protected:
     Heightmap *heightmap;
     String heightmapPath;
     
-    static const int32 TEXTURE_TILE_FULL_SIZE = 2048;
+//     static const float32 TEXTURE_TILE_FULL_SIZE = 2048;
+	static const uint32 TEXTURE_TILE_FULL_SIZE = 2048;
+// 	static const float32 TEXTURE_TILE_FULL_SIZE;
     
     Vector<LandQuadTreeNode<LandscapeQuad> *>lod0quads;
     Vector<LandQuadTreeNode<LandscapeQuad> *>lodNot0quads;
