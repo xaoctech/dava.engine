@@ -125,6 +125,8 @@ public:
 	bool ValidateTexturePathname(const String &pathForValidation, Set<String> &errorsLog);
 	bool ValidateHeightmapPathname(const String &pathForValidation, Set<String> &errorsLog);
 
+    void CreateDefaultDescriptors(const String &folderPathname);
+    
 protected:
     
     int32 EnumerateSceneNodes(SceneNode *node);

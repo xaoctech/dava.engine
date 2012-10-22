@@ -127,6 +127,8 @@ void FrameworkDidLaunched()
 	new EditorConfig();
     new SceneValidator();
     SceneValidator::Instance()->SetPathForChecking(EditorSettings::Instance()->GetProjectPath());
+    SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
+
     
 	if (Core::Instance()->IsConsoleMode())
 	{
