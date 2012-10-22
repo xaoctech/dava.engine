@@ -16,11 +16,13 @@ String PVRConverter::GetDAVAPathname(const String &pathname)
 {
 	String workingPathname = pathname;
 	std::replace(workingPathname.begin(), workingPathname.end(),'\\','/');
-	String::size_type pos = workingPathname.find_first_of(":");
-	if(String::npos != pos)
-	{
-		workingPathname = workingPathname.substr(pos+1);
-	}
+    
+    String::size_type posRes = workingPathname.find_first_of("~res:");
+    String::size_type pos = workingPathname.find_first_of(":");
+    if((String::npos == posRes) && (String::npos != pos))
+    {
+        workingPathname = workingPathname.substr(pos+1);
+    }
 	
 	return workingPathname;
 }
