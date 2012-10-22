@@ -22,7 +22,6 @@ protected:
 
 class HintManager: public Singleton<HintManager>
 {
-    static const int32 NOTIFICATION_TIME = 3;
     
 public:
     HintManager();

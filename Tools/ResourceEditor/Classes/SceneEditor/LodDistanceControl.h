@@ -41,8 +41,8 @@ private:
     UIControl **sliders;
     
     int32 count;
-    float32 distances[LodNode::MAX_LOD_DISTANCE];
-    int32 triangles[LodNode::MAX_LOD_DISTANCE];
+    float32 distances[LodNode::MAX_LOD_LAYERS];
+    int32 triangles[LodNode::MAX_LOD_LAYERS];
     
     float32 maxDistance;
 

@@ -23,9 +23,9 @@ class LandscapeToolsPanel:
 protected:
     
     static const int32 OFFSET = 1;
-    static const int32 SLIDER_WIDTH = 250;
-    static const int32 TEXTFIELD_WIDTH = 40;
-    static const int32 TEXT_WIDTH = 60;
+    static const float32 SLIDER_WIDTH;
+    static const float32 TEXTFIELD_WIDTH;
+    static const float32 TEXT_WIDTH;
     
 public:
     LandscapeToolsPanel(LandscapeToolsPanelDelegate *newDelegate, const Rect & rect);
