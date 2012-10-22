@@ -50,6 +50,7 @@ namespace DAVA
 REGISTER_CLASS(LandscapeNode);
 
 //#define DRAW_OLD_STYLE
+// const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 LandscapeNode::LandscapeNode()
 	: SceneNode()
@@ -1550,7 +1551,7 @@ Texture * LandscapeNode::CreateFullTiledTexture()
  
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, Matrix4::IDENTITY);
     Matrix4 projection;
-    projection.glOrtho(0, TEXTURE_TILE_FULL_SIZE, 0, TEXTURE_TILE_FULL_SIZE, 0, 1);
+    projection.glOrtho(0, (float32)TEXTURE_TILE_FULL_SIZE, 0, (float32)TEXTURE_TILE_FULL_SIZE, 0, 1);
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projection);
     RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE);
     

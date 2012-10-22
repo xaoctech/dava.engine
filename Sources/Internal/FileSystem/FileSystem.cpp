@@ -434,7 +434,7 @@ bool FileSystem::IsFile(const String & pathToCheck)
     struct stat s;
     if(stat(pathToCheck.c_str(),&s) == 0)
     {
-        return (s.st_mode & S_IFREG);
+        return (0 != (s.st_mode & S_IFREG));
     }
     return false;
 }
@@ -444,7 +444,7 @@ bool FileSystem::IsDirectory(const String & pathToCheck)
     struct stat s;
     if( stat(pathToCheck.c_str(),&s) == 0 )
     {
-        return (s.st_mode & S_IFDIR);
+        return (0 != (s.st_mode & S_IFDIR));
     }
     return false;
 }
