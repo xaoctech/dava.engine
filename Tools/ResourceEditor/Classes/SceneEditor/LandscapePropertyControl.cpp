@@ -4,6 +4,9 @@
 #include "ControlsFactory.h"
 #include "Scene3D/Heightmap.h"
 
+#include "../Qt/QtUtils.h"
+#include "SceneValidator.h"
+#include "ErrorNotifier.h"
 
 LandscapePropertyControl::LandscapePropertyControl(const Rect & rect, bool createNodeProperties)
 :	NodesPropertyControl(rect, createNodeProperties)
@@ -49,13 +52,13 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
     
     
     propertyList->AddSubsection("property.landscape.subsection.textures");
-    AddFilepathProperty(String("property.landscape.texture.color"), String(".png;.pvr"), LandscapeNode::TEXTURE_COLOR);
-    AddFilepathProperty(String("property.landscape.texture.tile0"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE0);
-    AddFilepathProperty(String("property.landscape.texture.tile1"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE1);
-    AddFilepathProperty(String("property.landscape.texture.tile2"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE2);
-    AddFilepathProperty(String("property.landscape.texture.tile3"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE3);
-    AddFilepathProperty(String("property.landscape.texture.tilemask"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE_MASK);
-    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), String(".png;.pvr"), LandscapeNode::TEXTURE_TILE_FULL);
+    AddFilepathProperty(String("property.landscape.texture.color"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_COLOR);
+    AddFilepathProperty(String("property.landscape.texture.tile0"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE0);
+    AddFilepathProperty(String("property.landscape.texture.tile1"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE1);
+    AddFilepathProperty(String("property.landscape.texture.tile2"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE2);
+    AddFilepathProperty(String("property.landscape.texture.tile3"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE3);
+    AddFilepathProperty(String("property.landscape.texture.tilemask"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE_MASK);
+    AddFilepathProperty(String("property.landscape.texture.tiledtexture"), GetTextureFileExtensions(), LandscapeNode::TEXTURE_TILE_FULL);
     propertyList->AddMessageProperty(String("property.landscape.generatefulltiled"), 
                                      Message(this, &LandscapePropertyControl::GenerateFullTiledTexture));
 
@@ -64,8 +67,8 @@ void LandscapePropertyControl::ReadFrom(SceneNode * sceneNode)
 
 
     propertyList->AddSubsection("property.landscape.subsection.build_mask");
-    propertyList->AddFilepathProperty("property.landscape.lightmap", String(".png;.pvr"), true, PropertyList::PROPERTY_IS_EDITABLE);
-    propertyList->AddFilepathProperty("property.landscape.alphamask", String(".png;.pvr"), true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("property.landscape.lightmap", GetTextureFileExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
+    propertyList->AddFilepathProperty("property.landscape.alphamask", GetTextureFileExtensions(), true, PropertyList::PROPERTY_IS_EDITABLE);
     propertyList->SetFilepathPropertyValue("property.landscape.lightmap", String(""));
     propertyList->SetFilepathPropertyValue("property.landscape.alphamask", String(""));
 
@@ -132,9 +135,9 @@ void LandscapePropertyControl::OnFloatPropertyChanged(PropertyList *forList, con
         bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
         bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
         
-        
+        Set<String> errorsLog;
         String heightMap = propertyList->GetFilepathPropertyValue("property.landscape.heightmap");
-        if(EditorSettings::IsValidPath(heightMap) && heightMap.length())
+        if(SceneValidator::Instance()->ValidateHeightmapPathname(heightMap, errorsLog) && heightMap.length())
         {
             landscape->BuildLandscapeFromHeightmapImage(heightMap, bbox);
         }
@@ -190,63 +193,79 @@ void LandscapePropertyControl::OnIntPropertyChanged(PropertyList *forList, const
 
 void LandscapePropertyControl::OnFilepathPropertyChanged(PropertyList *forList, const String &forKey, const String &newValue)
 {
-    if(EditorSettings::IsValidPath(newValue))
-    {
-        LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
-        if("property.landscape.heightmap" == forKey)
-        {
-            Vector3 size(
-                         propertyList->GetFloatPropertyValue("property.landscape.size"),
-                         propertyList->GetFloatPropertyValue("property.landscape.size"),
-                         propertyList->GetFloatPropertyValue("property.landscape.height"));
-            AABBox3 bbox;
-            bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
-            bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
-            
-            if(newValue.length())
-            {
-                landscape->BuildLandscapeFromHeightmapImage(newValue, bbox);
-            }
-        }
-        else if("property.landscape.texture.tile0" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE0, newValue);
-        }
-        else if("property.landscape.texture.tile1" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE1, newValue);
-        }
-        else if("property.landscape.texture.tile2" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE2, newValue);
-        }
-        else if("property.landscape.texture.tile3" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE3, newValue);
-        }
-        else if("property.landscape.texture.tilemask" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, newValue);
-        }        
-        else if("property.landscape.texture.color" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, newValue);
-        }
-        else if("property.landscape.texture.tiledtexture" == forKey)
-        {
-            SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_FULL, newValue);
-        }
-        else if(    "property.landscape.lightmap" == forKey 
-                ||  "property.landscape.alphamask" == forKey)
-        {
-            String lightMap = propertyList->GetFilepathPropertyValue("property.landscape.lightmap");
-            String alphaMask = propertyList->GetFilepathPropertyValue("property.landscape.alphamask");
-            
-            CreateMaskTexture(lightMap, alphaMask);
-        }
-    }
+	Set<String> errorsLog;
+	if("property.landscape.heightmap" == forKey)
+	{
+		bool isValid = SceneValidator::Instance()->ValidateHeightmapPathname(newValue, errorsLog);
+		if(isValid)
+		{
+			LandscapeNode *landscape = dynamic_cast<LandscapeNode*> (currentSceneNode);
+			Vector3 size(
+				propertyList->GetFloatPropertyValue("property.landscape.size"),
+				propertyList->GetFloatPropertyValue("property.landscape.size"),
+				propertyList->GetFloatPropertyValue("property.landscape.height"));
+			AABBox3 bbox;
+			bbox.AddPoint(Vector3(-size.x/2.f, -size.y/2.f, 0.f));
+			bbox.AddPoint(Vector3(size.x/2.f, size.y/2.f, size.z));
 
-    NodesPropertyControl::OnFilepathPropertyChanged(forList, forKey, newValue);
+			if(newValue.length())
+			{
+				landscape->BuildLandscapeFromHeightmapImage(newValue, bbox);
+			}
+		}
+	}
+	else
+	{
+		bool isValid = SceneValidator::Instance()->ValidateTexturePathname(newValue, errorsLog);
+		if(isValid)
+		{
+			if("property.landscape.texture.tile0" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE0, newValue);
+			}
+			else if("property.landscape.texture.tile1" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE1, newValue);
+			}
+			else if("property.landscape.texture.tile2" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE2, newValue);
+			}
+			else if("property.landscape.texture.tile3" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE3, newValue);
+			}
+			else if("property.landscape.texture.tilemask" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_MASK, newValue);
+			}        
+			else if("property.landscape.texture.color" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_COLOR, newValue);
+			}
+			else if("property.landscape.texture.tiledtexture" == forKey)
+			{
+				SetLandscapeTexture(LandscapeNode::TEXTURE_TILE_FULL, newValue);
+			}
+			else if(    "property.landscape.lightmap" == forKey 
+				||  "property.landscape.alphamask" == forKey)
+			{
+				String lightMap = propertyList->GetFilepathPropertyValue("property.landscape.lightmap");
+				String alphaMask = propertyList->GetFilepathPropertyValue("property.landscape.alphamask");
+
+				CreateMaskTexture(lightMap, alphaMask);
+			}
+		}
+	}
+
+	if(0 == errorsLog.size())
+	{
+		NodesPropertyControl::OnFilepathPropertyChanged(forList, forKey, newValue);
+	}
+	else
+	{
+		ErrorNotifier::Instance()->ShowError(errorsLog);
+	}
 }
 
 void LandscapePropertyControl::SetLandscapeTexture(LandscapeNode::eTextureLevel level, const String &texturePathname)

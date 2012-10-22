@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include "QtMainWindowHandler.h"
 
+#include "Render/TextureDescriptor.h"
+
 using namespace DAVA;
 
 
@@ -59,4 +61,11 @@ DAVA::String SizeInBytesToString(DAVA::float32 size)
 DAVA::WideString SizeInBytesToWideString(DAVA::float32 size)
 {
     return StringToWString(SizeInBytesToString(size));
+}
+
+DAVA::String GetTextureFileExtensions()
+{
+	String extensions = String(".png;.pvr;") + TextureDescriptor::GetDefaultExtension();
+	return extensions;
+
 }

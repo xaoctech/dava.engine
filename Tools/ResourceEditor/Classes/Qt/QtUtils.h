@@ -17,4 +17,7 @@ DAVA::WideString SizeInBytesToWideString(DAVA::float32 size);
 DAVA::String SizeInBytesToString(DAVA::float32 size);
 
 
+DAVA::String GetTextureFileExtensions();
+
+
 #endif // __QT_UTILS_H__
