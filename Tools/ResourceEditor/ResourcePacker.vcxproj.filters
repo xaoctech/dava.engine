@@ -595,9 +595,6 @@
     <ClCompile Include="Classes\SceneEditor\CameraController.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CameraPropertyControl.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
@@ -706,9 +703,6 @@
     <ClCompile Include="Classes\SceneEditor\LandscapeToolsSelection.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LightPropertyControl.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
@@ -724,9 +718,6 @@
     <ClCompile Include="Classes\SceneEditor\MaterialPropertyControl.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\MeshInstancePropertyControl.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
@@ -737,15 +728,6 @@
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\NodesPropertyControl.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputControl.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputManager.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ParticleEmitterPropertyControl.cpp">
@@ -806,9 +788,6 @@
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UIFilePreviewDialog.cpp">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp">
@@ -1656,9 +1635,6 @@
     <ClInclude Include="Classes\SceneEditor\CameraController.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CameraPropertyControl.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
@@ -1770,9 +1746,6 @@
     <ClInclude Include="Classes\SceneEditor\LandscapeToolsSelection.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LightPropertyControl.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
@@ -1788,9 +1761,6 @@
     <ClInclude Include="Classes\SceneEditor\MaterialPropertyControl.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\MeshInstancePropertyControl.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
@@ -1801,15 +1771,6 @@
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\NodesPropertyControl.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputControl.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputManager.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ParticleEmitterPropertyControl.h">
@@ -1870,9 +1831,6 @@
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
-      <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UIFilePreviewDialog.h">
       <Filter>Sources\SceneEditorSource\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h">

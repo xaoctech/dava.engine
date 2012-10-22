@@ -174,9 +174,6 @@
     <ClCompile Include="Classes\SceneEditor\MaterialEditor.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputManager.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\PVRConverter.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
@@ -193,9 +190,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\UICheckBox.cpp">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\UIFilePreviewDialog.cpp">
       <Filter>Sources\SceneEditor</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\UISliderWithText.cpp">
@@ -299,9 +293,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.h">
       <Filter>Sources\SceneEditor\Beast</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\CameraOutputControl.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\CreatePropertyControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
@@ -429,28 +420,16 @@
     <ClInclude Include="Classes\SceneEditor\SpherePropertyControl.h">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\LibraryControl.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\LodDistanceControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\FogControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\MenuPopupControl.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ModificationsPanel.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\ModificationPopUp.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputControl.h">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputPanelControl.h">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\SceneInfoControl.h">
@@ -1099,9 +1078,6 @@
     <ClInclude Include="Classes\SceneEditor\MaterialEditor.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\OutputManager.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\SceneEditor\PVRConverter.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
@@ -1121,9 +1097,6 @@
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UICheckBox.h">
-      <Filter>Sources\SceneEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\SceneEditor\UIFilePreviewDialog.h">
       <Filter>Sources\SceneEditor</Filter>
     </ClInclude>
     <ClInclude Include="Classes\SceneEditor\UISliderWithText.h">
@@ -1899,9 +1872,6 @@
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\TextureTarget.cpp">
       <Filter>Sources\SceneEditor\Beast</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\CameraOutputControl.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\CreatePropertyControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
@@ -2025,28 +1995,16 @@
     <ClCompile Include="Classes\SceneEditor\SpherePropertyControl.cpp">
       <Filter>Sources\SceneEditor\Properties</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\LibraryControl.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\LodDistanceControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\FogControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\MenuPopupControl.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ModificationPopUp.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\ModificationsPanel.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputControl.cpp">
-      <Filter>Sources\SceneEditor\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\SceneEditor\OutputPanelControl.cpp">
       <Filter>Sources\SceneEditor\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Classes\SceneEditor\SceneInfoControl.cpp">
