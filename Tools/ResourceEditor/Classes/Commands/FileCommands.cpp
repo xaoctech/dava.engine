@@ -37,8 +37,12 @@ void CommandOpenProject::Execute()
         }
         
         EditorSettings::Instance()->SetProjectPath(projectPath);
-        EditorSettings::Instance()->SetDataSourcePath(projectPath + String("DataSource/3d/"));
+        String dataSource3Dpathname = projectPath + String("DataSource/3d/");
+        EditorSettings::Instance()->SetDataSourcePath(dataSource3Dpathname);
 		EditorSettings::Instance()->Save();
+
+        SceneValidator::Instance()->CreateDefaultDescriptors(dataSource3Dpathname);
+		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 		EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 		
@@ -48,7 +52,6 @@ void CommandOpenProject::Execute()
             screen->UpdateModificationPanel();
 		}
 		
-		SceneValidator::Instance()->SetPathForChecking(projectPath);
 
 		SceneData *activeScene = SceneDataManager::Instance()->GetActiveScene();
         if(activeScene)

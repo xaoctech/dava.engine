@@ -492,7 +492,7 @@ String SceneValidator::SetPathForChecking(const String &pathname)
 {
     String oldPath = pathForChecking;
     pathForChecking = pathname;
-    return pathForChecking;
+    return oldPath;
 }
 
 
@@ -652,4 +652,32 @@ bool SceneValidator::IsTextureDescriptorPath(const String &path)
 String SceneValidator::ConvertTexturePathToDescriptorPath(const String &path)
 {
 	return FileSystem::ReplaceExtension(path, TextureDescriptor::GetDefaultExtension());
+}
+
+void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
+{
+	FileList * fileList = new FileList(folderPathname);
+	for (int32 fi = 0; fi < fileList->GetCount(); ++fi)
+	{
+		if (fileList->IsDirectory(fi))
+		{
+            if(0 != CompareStrings(String(".svn"), fileList->GetFilename(fi))
+               && 0 != CompareStrings(String("."), fileList->GetFilename(fi))
+                && 0 != CompareStrings(String(".."), fileList->GetFilename(fi)))
+            {
+                CreateDefaultDescriptors(fileList->GetPathname(fi));
+            }
+		}
+        else
+        {
+            const String pathname = fileList->GetPathname(fi);
+            const String extension = FileSystem::Instance()->GetExtension(pathname);
+            if(0 == CompareStrings(String(".png"), extension))
+            {
+                CreateDescriptorIfNeed(pathname);
+            }
+        }
+	}
+
+	SafeRelease(fileList);
 }

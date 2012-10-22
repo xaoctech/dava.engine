@@ -9,6 +9,8 @@
 
 #include "../Collada/ColladaConvert.h"
 
+#include "../SceneEditor/SceneValidator.h"
+#include "../SceneEditor/EditorSettings.h"
 
 #include "DAVAEngine.h"
 
@@ -110,7 +112,8 @@ CommandConvertScene::CommandConvertScene(const DAVA::String &pathname)
 void CommandConvertScene::Execute()
 {
     DVASSERT(CheckExtension(String(".dae")) && "Wrong extension");
-
+    SceneValidator::Instance()->CreateDefaultDescriptors(EditorSettings::Instance()->GetDataSourcePath());
+    
     ConvertDaeToSce(filePathname);
     
     // load sce to scene object
