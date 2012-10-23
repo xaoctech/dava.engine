@@ -210,7 +210,7 @@ Texture * Texture::CreateTextFromData(PixelFormat format, uint8 * data, uint32 w
 		tx->relativePathname = Format("Text texture %d info:%s", textureFboCounter, addInfo);
 
 	textureFboCounter++;
-	textureMap[tx->relativePathname] = tx;
+    textureMap[tx->relativePathname] = tx;
 	return tx;
 }
 	
@@ -541,7 +541,6 @@ Texture * Texture::CreateFromPNG(const String & pathName, TextureDescriptor *des
 	RenderManager::Instance()->UnlockNonMain();
 
     SafeRelease(image);
-	
 	return texture;
 }		
 
@@ -600,16 +599,12 @@ Texture * Texture::PureCreate(const String & pathName)
         {
             texture = CreateFromPVR(pathName, descriptor);
         }
-        
-        if(texture)
-        {
-            texture->relativePathname = pathName;
-        }
     }
 
     if(texture)
     {
-        textureMap[texture->relativePathname] = texture;
+        texture->relativePathname = descriptor->pathname;
+        textureMap[descriptor->pathname] = texture;
         texture->SetWrapMode((TextureWrap)descriptor->wrapModeS, (TextureWrap)descriptor->wrapModeT);
     }
     
@@ -636,10 +631,7 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
             break;
     }
     
-    if(texture)
-    {
-        texture->relativePathname = pathName;
-    }
+    AddTextureToMap(texture, pathName);
 #else //#if defined TEXTURE_SPLICING_ENABLED
     Texture * texture = NULL;
     String imagePathname;
@@ -658,11 +650,6 @@ Texture * Texture::CreateFromDescriptor(const String &pathName, TextureDescripto
             
         case DXT_FILE:
             break;
-    }
-    
-    if(texture)
-    {
-        texture->relativePathname = imagePathname;
     }
 #endif //#if defined TEXTURE_SPLICING_ENABLED
     
@@ -845,7 +832,7 @@ Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat
 
 	tx->isRenderTarget = true;
 	tx->relativePathname = Format("FBO texture %d", textureFboCounter);
-	textureMap[tx->relativePathname] = tx;
+    textureMap[tx->relativePathname] = tx;
 	
 	textureFboCounter++;
 	
@@ -1382,6 +1369,5 @@ GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 }
 #endif //#if defined (__DAVAENGINE_OPENGL__)
     
-
 
 };
