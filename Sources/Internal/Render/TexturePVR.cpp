@@ -53,6 +53,7 @@ Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *des
     
     Texture *texture = CreateFromPVR(fp, descriptor);
     SafeRelease(fp);
+
     return texture;
 }
     
