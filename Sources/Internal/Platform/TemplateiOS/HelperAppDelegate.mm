@@ -46,65 +46,22 @@ int DAVA::Core::Run(int argc, char * argv[], AppHandle handle)
 	FrameworkDidLaunched();
 	
 	{//detecting physical screen size and initing core system with this size
-		if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-		{
-			// The device is an iPad.
-			DAVA::UIControlSystem::Instance()->SetInputScreenAreaSize(768, 1024);
-            if (DAVA::Core::IsAutodetectContentScaleFactor()) 
-			{
-				if ([::UIScreen instancesRespondToSelector: @selector(scale) ]
-					&& [::UIView instancesRespondToSelector: @selector(contentScaleFactor) ]) 
-				{
-					unsigned int scv = (unsigned int)[[::UIScreen mainScreen] scale];
-					if (scv != 2) 
-					{
-						DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
-					}
-					else 
-					{
-						DAVA::Core::Instance()->SetPhysicalScreenSize(1536, 2048);
-					}
-				}
-				else 
-				{
-					DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
-				}
-			}
-			else 
-			{
-				DAVA::Core::Instance()->SetPhysicalScreenSize(768, 1024);
-			}
-		}
-		else
-		{
-			// The device is an iPhone or iPod touch.
-			DAVA::UIControlSystem::Instance()->SetInputScreenAreaSize(320, 480);
-			if (DAVA::Core::IsAutodetectContentScaleFactor()) 
-			{
-				if ([::UIScreen instancesRespondToSelector: @selector(scale) ]
-					&& [::UIView instancesRespondToSelector: @selector(contentScaleFactor) ]) 
-				{
-					unsigned int scv = (unsigned int)[[::UIScreen mainScreen] scale];
-					if (scv != 2) 
-					{
-						DAVA::Core::Instance()->SetPhysicalScreenSize(320.0f, 480.0f);
-					}
-					else 
-					{
-						DAVA::Core::Instance()->SetPhysicalScreenSize(640.0f, 960.0f);
-					}
-				}
-				else 
-				{
-					DAVA::Core::Instance()->SetPhysicalScreenSize(320, 480);
-				}
-			}
-			else 
-			{
-				DAVA::Core::Instance()->SetPhysicalScreenSize(320, 480);
-			}
-		}
 		
+		::UIScreen* mainScreen = [::UIScreen mainScreen];
+		unsigned int width = [mainScreen bounds].size.width;
+		unsigned int height = [mainScreen bounds].size.height;
+		unsigned int scale = 1;
+		
+		if (DAVA::Core::IsAutodetectContentScaleFactor())
+		{
+			if ([::UIScreen instancesRespondToSelector: @selector(scale) ]
+				&& [::UIView instancesRespondToSelector: @selector(contentScaleFactor) ]) 
+			{
+				scale = (unsigned int)[[::UIScreen mainScreen] scale];
+			}
+		}
+		DAVA::UIControlSystem::Instance()->SetInputScreenAreaSize(width, height);
+		DAVA::Core::Instance()->SetPhysicalScreenSize(width*scale, height*scale);
 	}
 		
 	int retVal = UIApplicationMain(argc, argv, nil, nil);
@@ -138,15 +95,8 @@ DAVA::Core::eDeviceFamily DAVA::Core::GetDeviceFamily()
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application 
 {
-	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-	{
-		UIWindow *wnd = application.keyWindow;
-		[wnd setFrame: CGRectMake(0, 0, 768, 1024)];
-	}
-	else
-	{
-		// The device is an iPhone or iPod touch.
-	}
+	UIWindow *wnd = application.keyWindow;
+	wnd.frame = [::UIScreen mainScreen].bounds;
 	
 	glController = [[EAGLViewController alloc] init];
 	DAVA::UIScreenManager::Instance()->RegisterController(CONTROLLER_GL, glController);
