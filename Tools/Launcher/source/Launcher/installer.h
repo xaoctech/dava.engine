@@ -67,6 +67,10 @@ private:
     void FormatFromSetting(AvailableSoftWare::SoftWareMap& softMap, const AppsConfig::AppMap& setting);
     void FormatFromUpdate(AvailableSoftWare::SoftWareMap& softMap, const AppsConfig::AppMap& update);
 
+#ifdef Q_OS_WIN
+    int RunAndWaitForFinish(const QString& fileName, const QString& params = "");
+#endif
+
     const AppsConfig::AppMap* GetAppMap(eAppType type) const;
     QString GetInstallPath(eAppType) const;
 

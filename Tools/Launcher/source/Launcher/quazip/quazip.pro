@@ -41,8 +41,7 @@ unix:!symbian {
 }
 
 win32 {
-    INCLUDEPATH += $$PWD/../zlib-1.2.7
-    DEPENDPATH += $$PWD/../zlib-1.2.7
+	INCLUDEPATH += $$PWD/../../../../../Libs/include/libpng/
 
     headers.path=$$PREFIX/include/quazip
     headers.files=$$HEADERS

@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 
-DEFINES += LAUNCER_VER=\\\"0.3\\\"
+DEFINES += LAUNCER_VER=\\\"0.4\\\"
 
 QT       += core gui network
 
@@ -38,8 +38,8 @@ FORMS    += mainwindow.ui
 
 macx: LIBS += -L$$PWD/yaml-cpp/libs/ -lyaml-cpp_osx
 macx: PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cpp_osx.a
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/yaml-cpp/libs/ -llibyaml-cppmd
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/yaml-cpp/libs/ -llibyaml-cppmdd
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/yaml-cpp/libs/ -llibyaml-cppmd -luser32 -lshell32
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/yaml-cpp/libs/ -llibyaml-cppmdd -luser32 -lshell32
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cppmd.lib
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/yaml-cpp/libs/libyaml-cppmdd.lib
 INCLUDEPATH += $$PWD/yaml-cpp/include
@@ -52,10 +52,9 @@ mac: INCLUDEPATH += /System/Library/Frameworks/ApplicationServices.framework/Fra
 mac: DEPENDPATH += /System/Library/Frameworks/ApplicationServices.framework/Frameworks/HIServices.framework/Headers/
 
 
-win32: INCLUDEPATH += $$PWD/zlib-1.2.7
-win32: DEPENDPATH += $$PWD/zlib-1.2.7
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/quazip-MSVC2010/release/ -lquazip1
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/quazip-MSVC2010/debug/ -lquazip1
+win32: INCLUDEPATH += $$PWD/../../../../Libs/include/libpng/
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/quazip/release/ -lquazip1
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/quazip/debug/ -lquazip1
 mac: LIBS += -lz
 mac: HEADERS += \
     quazip/JlCompress.h \
