@@ -1961,6 +1961,18 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControlSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\VectorSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp">
+      <Filter>Internal\Autotesting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Internal\Platform\Qt\MacOS\OpenGLView.mm">

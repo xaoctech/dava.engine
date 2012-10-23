@@ -596,9 +596,13 @@
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\Action.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingSystemYaml.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\RectSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Autotesting\TouchAction.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\UIControlSwig.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Autotesting\VectorSwig.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\BaseObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\Data.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp" />
