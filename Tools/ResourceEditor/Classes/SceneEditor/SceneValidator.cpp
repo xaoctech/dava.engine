@@ -224,7 +224,7 @@ void SceneValidator::ValidateTexture(Texture *texture, Set<String> &errorsLog)
     }
     
 	// if there is no descriptor file for this texture - generate it
-	if(pathIsCorrect)
+	if(pathIsCorrect && !texture->isRenderTarget)
 	{
 		CreateDescriptorIfNeed(texture->GetPathname());
 	}
