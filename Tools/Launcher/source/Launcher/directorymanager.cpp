@@ -1,5 +1,6 @@
 #include "directorymanager.h"
 #include <QtCore>
+#include <QList>
 
 DirectoryManager* DirectoryManager::m_spInstance = NULL;
 
@@ -149,6 +150,36 @@ bool DirectoryManager::CopyAllFromDir(const QString& srcPath, const QString& des
         }
         //if (!aDir.rmdir(aDir.absolutePath()))
         //    result = false;
+    }
+    return result;
+}
+
+bool DirectoryManager::IsFilePacked(const QString& fileName) {
+    bool result = false;
+    QFileInfo aFileInfo(fileName);
+    QString aFileExt = aFileInfo.suffix();
+
+    QList<QString> supportedArchives;
+    supportedArchives.push_back("zip");
+
+    if (supportedArchives.contains(aFileExt)) {
+        result = true;
+    }
+
+    return result;
+}
+
+bool DirectoryManager::MoveFileToDir(const QString& srcFileName, const QString& destPath, const QString& newFileName) {
+    bool result = true;
+    QFile aFile(srcFileName);
+    QFileInfo aFileInfo(aFile);
+    QDir aDir(destPath);
+    if (aFile.exists() && aDir.exists()) {
+        QString aNewFileName = newFileName;
+        if(newFileName == "") {
+            aNewFileName = aFileInfo.fileName();
+        }
+        result = aFile.rename(destPath + "/" + aNewFileName);
     }
     return result;
 }
