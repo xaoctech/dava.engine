@@ -25,8 +25,8 @@ public:
 	
 	ResultScreen(const Vector<float>* const fpsStatistics, const String& filename, int testCount, int testNumber);
 
-	ResultScreenState GetState() const {return state;};
-	bool IsFinished() const {return isFinished;};
+	ResultScreenState GetState() const {return m_State;};
+	bool IsFinished() const {return m_bIsFinished;};
 private:
 	ResultScreen();
 	ResultScreen& operator=(const ResultScreen&);
@@ -34,18 +34,18 @@ private:
 	void DrawStatImage(Vector<float> *v, DAVA::Rect rect);
 	Color PickColor(float fps) const;
 
-	String filename;
-	Vector<float> data[3];
-	ResultScreenState state;
-	bool isFinished;
+	String m_Filename;
+	Vector<float> m_Data[3];
+	ResultScreenState m_State;
+	bool m_bIsFinished;
 	
-	UIStaticText *fileNameText;
-	UIStaticText *statText[3];
-	UIStaticText *tapToContinue;
-	UIStaticText *screenshotText;
+	UIStaticText *m_pFileNameText;
+	UIStaticText *m_pStatText[3];
+	UIStaticText *m_pTapToContinue;
+	UIStaticText *m_pScreenshotText;
 	
-	int testCount;
-	int testNumber;
+	int m_nTestCount;
+	int m_nTestNumber;
 };
 
 #endif
