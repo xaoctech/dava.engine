@@ -14,6 +14,7 @@
 		187C01A5161ADD7B000A1E2C /* Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 187C01A4161ADD7B000A1E2C /* Test.cpp */; };
 		187C01AA161B3BA5000A1E2C /* FileManagerWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 187C01A9161B3BA4000A1E2C /* FileManagerWrapper.mm */; };
 		18B1F5121622FEC8007FBF1B /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18B1F5111622FEC8007FBF1B /* AssetsLibrary.framework */; };
+		18C16C011624596C008D47D4 /* SettingsManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 18C16C001624596C008D47D4 /* SettingsManager.mm */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -44,7 +45,6 @@
 /* Begin PBXFileReference section */
 		184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResultScreen.cpp; sourceTree = "<group>"; };
 		184BFAC7161C83FA00BFBD83 /* ResultScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResultScreen.h; sourceTree = "<group>"; };
-		184BFAC8161D70E900BFBD83 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		184BFADB161DB6EF00BFBD83 /* ScreenShotHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ScreenShotHelper.mm; sourceTree = "<group>"; };
 		184BFADD161DB70800BFBD83 /* ScreenShotHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScreenShotHelper.h; sourceTree = "<group>"; };
 		185A2697161190A600C2554E /* Framework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Framework.xcodeproj; path = ../iPhoneFramework/Framework.xcodeproj; sourceTree = "<group>"; };
@@ -54,6 +54,8 @@
 		187C01A9161B3BA4000A1E2C /* FileManagerWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FileManagerWrapper.mm; path = Classes/FileManagerWrapper.mm; sourceTree = "<group>"; };
 		187C01AC161B3BBB000A1E2C /* FileManagerWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FileManagerWrapper.h; path = Classes/FileManagerWrapper.h; sourceTree = "<group>"; };
 		18B1F5111622FEC8007FBF1B /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		18C16C001624596C008D47D4 /* SettingsManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SettingsManager.mm; path = Classes/SettingsManager.mm; sourceTree = "<group>"; };
+		18C16C0216245980008D47D4 /* SettingsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SettingsManager.h; path = Classes/SettingsManager.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* LevelPerformanceTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LevelPerformanceTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -113,7 +115,6 @@
 				187C01A8161ADDA2000A1E2C /* Test.h */,
 				184BFAC5161C83E700BFBD83 /* ResultScreen.cpp */,
 				184BFAC7161C83FA00BFBD83 /* ResultScreen.h */,
-				184BFAC8161D70E900BFBD83 /* Constants.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -159,6 +160,8 @@
 		29B97317FDCFA39411CA2CEA /* Platform Dependant */ = {
 			isa = PBXGroup;
 			children = (
+				18C16C001624596C008D47D4 /* SettingsManager.mm */,
+				18C16C0216245980008D47D4 /* SettingsManager.h */,
 				184BFADB161DB6EF00BFBD83 /* ScreenShotHelper.mm */,
 				184BFADD161DB70800BFBD83 /* ScreenShotHelper.h */,
 				187C01A9161B3BA4000A1E2C /* FileManagerWrapper.mm */,
@@ -292,6 +295,7 @@
 				187C01AA161B3BA5000A1E2C /* FileManagerWrapper.mm in Sources */,
 				184BFAC6161C83E700BFBD83 /* ResultScreen.cpp in Sources */,
 				184BFADC161DB6EF00BFBD83 /* ScreenShotHelper.mm in Sources */,
+				18C16C011624596C008D47D4 /* SettingsManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +307,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -316,6 +321,7 @@
 				INFOPLIST_FILE = "LevelPerformanceTest-Info.plist";
 				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				PRODUCT_NAME = LevelPerformanceTest;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7 i386";
 			};
@@ -326,6 +332,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = LevelPerformanceTest_Prefix.pch;
@@ -336,6 +343,7 @@
 				INFOPLIST_FILE = "LevelPerformanceTest-Info.plist";
 				LIBRARY_SEARCH_PATHS = ./../../Libs/libs;
 				PRODUCT_NAME = LevelPerformanceTest;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7 i386";
 			};

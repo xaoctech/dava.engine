@@ -54,14 +54,14 @@ public:
 	virtual void Draw();
 	
 private:
-	DAVA::Cursor * cursor;
+	DAVA::Cursor * m_pCursor;
 	
-	int testCount;
+	int m_nTestCount;
 	
-	List<Test*> tests;
-	ResultScreen *resultScreen;
+	List<Test*> m_Tests;
+	ResultScreen *m_pResultScreen;
 	
-	bool appFinished;
+	bool m_bAppFinished;
 };
 
 

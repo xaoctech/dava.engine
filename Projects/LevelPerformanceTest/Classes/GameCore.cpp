@@ -32,13 +32,13 @@
 #include "TestScreen.h"
 #include "FileManagerWrapper.h"
 #include "ScreenShotHelper.h"
-
+#include "SettingsManager.h"
 
 using namespace DAVA;
 
 GameCore::GameCore()
 {
-	resultScreen=NULL;
+	m_pResultScreen = NULL;
 }
 
 GameCore::~GameCore()
@@ -48,39 +48,41 @@ GameCore::~GameCore()
 
 void GameCore::OnAppStarted()
 {
-	cursor = 0;
+	SettingsManager::Instance()->Init();
+	
+	m_pCursor = 0;
 	RenderManager::Instance()->SetFPS(60);
 
-	String dirPath="~res:/Maps/";
-	Vector<String> v=FileManagerWrapper::GetFileListByExtension(dirPath, ".sc2");
+	String dirPath = "~res:/Maps/";
+	Vector<String> v = FileManagerWrapper::GetFileListByExtension(dirPath, ".sc2");
 	v.push_back("summer_level.sc2");
 
-	for(Vector<String>::const_iterator it=v.begin(); it!=v.end(); ++it) {
+	for(Vector<String>::const_iterator it = v.begin(); it != v.end(); ++it) {
 		Logger::Debug("%s", (*it).c_str());
 	}
 	
-	for(Vector<String>::const_iterator it=v.begin(); it!=v.end(); ++it) {
-		Test *test=new Test(dirPath+(*it));
+	for(Vector<String>::const_iterator it = v.begin(); it != v.end(); ++it) {
+		Test *test = new Test(dirPath + (*it));
 		if(test != NULL) {
 			UIScreenManager::Instance()->RegisterScreen(test->GetScreenId(), test);
-			tests.push_back(test);
+			m_Tests.push_back(test);
 		}
 	}
 
 	if(v.size() > 0) {
-		appFinished=false;
+		m_bAppFinished = false;
 		
-		testCount=tests.size();
-		Test *firstTest=tests.front();
+		m_nTestCount = m_Tests.size();
+		Test *firstTest = m_Tests.front();
 		UIScreenManager::Instance()->SetFirst(firstTest->GetScreenId());
 	} else {
-		appFinished=true;
+		m_bAppFinished = true;
 	}
 }
 
 void GameCore::OnAppFinished()
 {
-	SafeRelease(cursor);
+	SafeRelease(m_pCursor);
 }
 
 void GameCore::OnSuspend()
@@ -108,26 +110,26 @@ void GameCore::Update(float32 timeElapsed)
 {
 	ApplicationCore::Update(timeElapsed);
 	
-	if(!appFinished) {
-		Test *curTest=tests.front();
+	if(!m_bAppFinished) {
+		Test *curTest = m_Tests.front();
 		if(!curTest->IsFinished()) {
 			curTest->Update(timeElapsed);
 		} else {
-			if(resultScreen==NULL) {
-				int testNum=testCount-tests.size()+1;
-				resultScreen=new ResultScreen(curTest->GetStat(), curTest->GetFileName(), testCount, testNum);
-				UIScreenManager::Instance()->RegisterScreen(1, resultScreen);
+			if(m_pResultScreen == NULL) {
+				int testNum = m_nTestCount - m_Tests.size() + 1;
+				m_pResultScreen = new ResultScreen(curTest->GetStat(), curTest->GetFileName(), m_nTestCount, testNum);
+				UIScreenManager::Instance()->RegisterScreen(1, m_pResultScreen);
 				UIScreenManager::Instance()->SetFirst(1);
 			}
 			
-			if(resultScreen->IsFinished()) {
-				SafeRelease(resultScreen);
-				tests.pop_front();
+			if(m_pResultScreen->IsFinished()) {
+				SafeRelease(m_pResultScreen);
+				m_Tests.pop_front();
 
-				if(tests.size() == 0) {
-					appFinished=true;
+				if(m_Tests.size() == 0) {
+					m_bAppFinished = true;
 				} else {
-					Test *newCurTest=tests.front();
+					Test *newCurTest = m_Tests.front();
 					if(newCurTest != NULL) {
 						UIScreenManager::Instance()->SetFirst(newCurTest->GetScreenId());
 					}
