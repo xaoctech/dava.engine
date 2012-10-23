@@ -251,6 +251,19 @@ bool FileSystem::CopyFile(const String & existingFile, const String & newFile)
 #endif //PLATFORMS
 }
 
+bool FileSystem::MoveFile(const String & existingFile, const String & newFile)
+{
+#ifdef __DAVAENGINE_WIN32__
+	BOOL ret = ::MoveFileA(existingFile.c_str(), newFile.c_str());
+	return ret != 0;
+#elif defined(__DAVAENGINE_ANDROID__)
+	DVASSERT_MSG(0, "Not implemented");
+#else //iphone & macos
+	int ret = copyfile(existingFile.c_str(), newFile.c_str(), NULL, COPYFILE_ALL | COPYFILE_EXCL | COPYFILE_MOVE);
+	return ret==0;
+#endif //PLATFORMS
+}
+
 
 bool FileSystem::CopyDirectory(const String & sourceDirectory, const String & destinationDirectory)
 {
@@ -788,6 +801,8 @@ void FileSystem::SetPath(const char8 *docPath, const char8 *assets)
 		Logger::Error("[FileSystem::SetPath] can't open APK from path: %s", assetsPath);
 	}
 }
+
+
 
 
 #endif //#if defined(__DAVAENGINE_ANDROID__)
