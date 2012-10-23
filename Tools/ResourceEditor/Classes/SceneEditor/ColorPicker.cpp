@@ -64,6 +64,7 @@ ColorSelectorControl::ColorSelectorControl(const Rect &rect)
     SetInitialColors();
 
     float32 sectionHeight = rect.dy / 6.f;
+    DVASSERT((0 != sectionHeight) && "Wrong control size");
     
     float32 colorDelta = 1.0f / (sectionHeight);
     for(int32 dy = 0; dy < (int32)sectionHeight; ++dy)
@@ -104,6 +105,8 @@ void ColorSelectorControl::SetInitialColors()
 void ColorSelectorControl::ColorSelected(const Vector2 &point)
 {
     float32 sectionHeight = GetRect().dy / 6.f;
+    DVASSERT((0 != sectionHeight) && "Wrong control size");
+
     float32 colorDelta = 1.0f / (sectionHeight);
 
     int32 sectionId = (int32)(point.y / sectionHeight);
@@ -145,6 +148,8 @@ void ColorSelectorControl::SetColor(const DAVA::Color &color)
     float32 minLength = 100.f;
     
     float32 sectionHeight = GetRect().dy / 6.f;
+    DVASSERT((0 != sectionHeight) && "Wrong control size");
+    
     float32 colorDelta = 1.0f / (sectionHeight);
         
     
