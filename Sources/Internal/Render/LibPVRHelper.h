@@ -112,15 +112,13 @@ public:
     
     static bool ReadFile(File *file, Vector<Image *> imageSet);
     
-    
-    static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
-    static bool FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, uint32 baseMipMapLevel);
-    
     static PixelFormat GetPixelFormat(const String &filePathname);
     static uint32 GetDataLength(const String &filePathname);
-
     
 protected:
+
+    static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
+
     static uint32 GetBitsPerPixel(uint64 pixelFormat);
     static void GetFormatMinDims(uint64 pixelFormat, uint32 &minX, uint32 &minY, uint32 &minZ);
     static uint32 GetTextureDataSize(PVRHeaderV3 textureHeader, int32 mipLevel = PVRTEX_ALLMIPLEVELS, bool allSurfaces = true, bool allFaces = true);
@@ -142,6 +140,14 @@ protected:
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
     
     static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
+    
+    static bool CopyToImage(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header, const uint8 *pvrData);
+    
+    static PVRHeaderV3 CreateDecompressedHeader(const PVRHeaderV3 &compressedHeader);
+    static bool AllocateImageData(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header);
+    
+    static int32 GetMipMapLayerOffset(uint32 mipMapLevel, const PVRHeaderV3 &header);
+    
 };
     
 };
