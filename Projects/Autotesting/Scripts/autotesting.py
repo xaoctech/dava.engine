@@ -16,21 +16,28 @@ import shutil;
 import random;
 import subprocess;
 
+arguments = sys.argv[1:]
+
+if len(arguments) != 4:
+    print 'Usage: ./autotesting.py [PlatformName] [ProjectName] [TargetName] [ConfigurationName]'
+    exit(1)
+
+
 print "*** DAVA Starting autotesting"
+
+return
 
 print "platform.system: " + platform.system()
 print sys.argv
 
-index_OS = 1;
-index_Project = 2;
-index_Target = 3;
-index_Configuration = 4;
-index_Certificate = 5;
-#index_Device = 6;
+platformName = arguments[0]
+projectName = arguments[1]
+targetName = arguments[2]
+configurationName = arguments[3]
 
 currentDir = os.getcwd(); 
 frameworkDir =  os.path.realpath(currentDir + "/../../../")
-projectDir = os.path.realpath(currentDir + "/../../../../" + sys.argv[index_Project])
+projectDir = os.path.realpath(currentDir + "/../../../../" + projectName)
 print "Framework directory:" + frameworkDir
 print "Project directory:" + projectDir
 
@@ -41,14 +48,14 @@ executableName = ""
 executableBuildPath = ""
 executableRunPath = ""
 if (platform.system() == "Windows"):
-    executableName = sys.argv[index_Target] + ".exe"
+    executableName = targetName + ".exe"
     print "executableName: " +executableName
     
-    if(sys.argv[index_OS] == "Windows"):
+    if(platformName == "Windows"):
         #TODO: Windows
         print "prepare to run " + executableName + " on Windows"
         
-        executableBuildPath = os.path.realpath(projectDir + "/" + sys.argv[index_Configuration] + "/" + executableName)
+        executableBuildPath = os.path.realpath(projectDir + "/" + configurationName + "/" + executableName)
         executableRunPath = os.path.realpath(projectDir + "/" + executableName)
         
         if os.path.exists(executableRunPath):    
@@ -58,17 +65,17 @@ if (platform.system() == "Windows"):
         shutil.copy(executableBuildPath, executableRunPath)
     
     else:
-        print "Error: wrong OS " + sys.argv[index_OS]
+        print "Error: wrong OS " + platformName
 
 elif (platform.system() == "Darwin"):
-    executableName = sys.argv[index_Target] + ".app"
+    executableName = targetName + ".app"
     print "executableName: " +executableName
     
-    if (sys.argv[index_OS] == "iOS"):
+    if (platformName == "iOS"):
         #TODO: iOS
         print "prepare to run " + executableName + " on iOS"
         #TODO: copy executable to Autotesting
-        executableBuildPath = os.path.realpath(projectDir + "/build/" + sys.argv[index_Configuration] + "-iphoneos/" + executableName)
+        executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "-iphoneos/" + executableName)
         executableRunPath = os.path.realpath(autotestingSrcFolder + "/" + executableName)
         if os.path.exists(executableRunPath):    
             print "delete " + executableRunPath
@@ -81,9 +88,7 @@ elif (platform.system() == "Darwin"):
         os.chdir(autotestingSrcFolder)
         
         #sh floatsign.sh $2.app $3 $2.ipa
-        ipaName = sys.argv[index_Target] + ".ipa"
-        #params = ["sh", "./floatsign.sh", executableName, sys.argv[index_Certificate], ipaName]
-        #print "sign with " + sys.argv[index_Certificate] + " and create " + ipaName
+        ipaName = targetName + ".ipa"
         
         params = ["sh", "./packipa.sh", executableName, ipaName]
         print "create " + ipaName
@@ -97,13 +102,13 @@ elif (platform.system() == "Darwin"):
         print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
         subprocess.call(params)
 
-    elif (sys.argv[index_OS] == "MacOS"):
+    elif (platformName == "MacOS"):
         #TODO: MacOS
         print "prepare to run " + executableName + " on MacOS"
-        executableBuildPath = os.path.realpath(projectDir + "/build/" + sys.argv[index_Configuration] + "/" + executableName)
+        executableBuildPath = os.path.realpath(projectDir + "/build/" + configurationName + "/" + executableName)
         executableRunPath = executableBuildPath
     else:
-        print "Error: wrong OS " + sys.argv[index_OS]
+        print "Error: wrong OS " + platformName
 
 else:
     print "Error: unsupported platform.system: " + platform.system()    
@@ -117,31 +122,31 @@ for testFile in testFiles:
     print "current test file is: " + testFile
     
     if (platform.system() == "Windows"):
-        if(sys.argv[index_OS] == "Windows"):
+        if(platformName == "Windows"):
             #TODO: Windows
             print "run " + executableName + " on Windows"
             os.system("start /WAIT " + executableName)
         else:
-            print "Error: wrong OS " + sys.argv[index_OS]
+            print "Error: wrong OS " + platformName
     elif (platform.system() == "Darwin"):
-        if (sys.argv[index_OS] == "iOS"):
+        if (platformName == "iOS"):
             #TODO: iOS
             print "run " + executableName + " on iOS"
             
             os.chdir(autotestingSrcFolder)
             
             #instruments -w $4 -t /Developer/Platforms/iPhoneOS.platform/Developer/Library/Instruments/PlugIns/AutomationInstrument.bundle/Contents/Resources/Automation.tracetemplate "$2" -e UIASCRIPT testRun.js
-            params = ["sh", "./runOnDevice.sh", sys.argv[index_Target]]
+            params = ["sh", "./runOnDevice.sh", targetName]
             print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
             subprocess.call(params)
         
-        elif (sys.argv[index_OS] == "MacOS"):
+        elif (platformName == "MacOS"):
             #TODO: MacOS
             print "run " + executableRunPath + " on MacOS"
             os.system("open -W " + executableRunPath)
         
         else:
-            print "Error: wrong OS " + sys.argv[index_OS]
+            print "Error: wrong OS " + platformName
     else:
         print "Error: unsupported platform.system: " + platform.system()
 
@@ -152,11 +157,11 @@ if os.path.exists(autotestingDestFolder):
     print "Delete " + autotestingDestFolder
 #shutil.rmtree(autotestingDestFolder)
 
-if (sys.argv[index_OS] == "iOS"):
+if (platformName == "iOS"):
     if os.path.exists(executableRunPath):    
         print "delete " + executableRunPath
 #shutil.rmtree(executableRunPath)
-elif (sys.argv[index_OS] == "Windows"):
+elif (platformName == "Windows"):
     if os.path.exists(executableRunPath):    
         print "delete " + executableRunPath
         os.remove(executableRunPath)
