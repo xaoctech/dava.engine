@@ -12,6 +12,7 @@
 #include "../LandscapeEditor/EditorHeightmap.h"
 #include "../LandscapeEditor/EditorLandscapeNode.h"
 
+
 LandscapeEditorColor::LandscapeEditorColor(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
     :   LandscapeEditorBase(newDelegate, parentControl)
@@ -355,7 +356,7 @@ void LandscapeEditorColor::SaveTextureAction(const String &pathToFile)
         Image *img = maskSprite->GetTexture()->CreateImageFromMemory();   
         if(img)
         {
-            img->Save(pathToFile);
+            ImageLoader::Save(img, pathToFile);
             SafeRelease(img);
             
             SafeRelease(savedTexture);

@@ -400,7 +400,7 @@ void SceneValidator::ReloadTextures()
         if(WasTextureChanged(texture))
         {
             //TODO: need correct code for different formates
-            Image *image = Image::CreateFromFile(texture->relativePathname, false);
+            Image *image = CreateTopLevelImage(texture->relativePathname);
             if(image)
             {
                 texture->TexImage(0, image->GetWidth(), image->GetHeight(), image->GetData(), 0);
@@ -628,7 +628,7 @@ bool SceneValidator::IsTextureChanged(const String &texturePathname)
         String sourceTexturePathname = FileSystem::Instance()->ReplaceExtension(texturePathname, ".png");
         const char8 *modificationDate = File::GetModificationDate(sourceTexturePathname);
         
-        if(modificationDate && (0 != CompareStrings(String(modificationDate), String(descriptor->modificationDate))))
+        if(modificationDate && (0 != CompareCaseInsensitive(String(modificationDate), String(descriptor->modificationDate))))
         {
             uint8 crc[MD5::DIGEST_SIZE];
             MD5::ForFile(sourceTexturePathname, crc);
@@ -661,9 +661,9 @@ void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
 	{
 		if (fileList->IsDirectory(fi))
 		{
-            if(0 != CompareStrings(String(".svn"), fileList->GetFilename(fi))
-               && 0 != CompareStrings(String("."), fileList->GetFilename(fi))
-                && 0 != CompareStrings(String(".."), fileList->GetFilename(fi)))
+            if(0 != CompareCaseInsensitive(String(".svn"), fileList->GetFilename(fi))
+               && 0 != CompareCaseInsensitive(String("."), fileList->GetFilename(fi))
+                && 0 != CompareCaseInsensitive(String(".."), fileList->GetFilename(fi)))
             {
                 CreateDefaultDescriptors(fileList->GetPathname(fi));
             }
@@ -672,7 +672,7 @@ void SceneValidator::CreateDefaultDescriptors(const String &folderPathname)
         {
             const String pathname = fileList->GetPathname(fi);
             const String extension = FileSystem::Instance()->GetExtension(pathname);
-            if(0 == CompareStrings(String(".png"), extension))
+            if(0 == CompareCaseInsensitive(String(".png"), extension))
             {
                 CreateDescriptorIfNeed(pathname);
             }

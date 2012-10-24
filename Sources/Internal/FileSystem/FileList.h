@@ -112,7 +112,7 @@ private:
                 return true;
             }
             
-            return (CompareStrings(name, other.name) < 0);
+            return (CompareCaseInsensitive(name, other.name) < 0);
         }
 	};
 	String					path;

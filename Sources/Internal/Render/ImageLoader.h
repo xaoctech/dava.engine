@@ -27,57 +27,35 @@
     Revision History:
         * Created by Vitaliy Borodovsky 
 =====================================================================================*/
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
+#ifndef __DAVAENGINE_IMAGELOADER_H__
+#define __DAVAENGINE_IMAGELOADER_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
-#include "Render/Image.h"
 
 namespace DAVA 
 {
 
-class Texture;
-class Sprite;
+class File;
 class Image;
-
-class LibPngWrapper
+class ImageLoader
 {
 public:
+
+	static Vector<Image *> CreateFromFile(const String & pathname);
+	static Vector<Image *> CreateFromFile(File *file);
     
-    static bool IsPngFile(File *file);
+    static void Save(Image *image, const String & pathname);
     
-	static int ReadPngFile(const char *file, Image * image);
-	static int ReadPngFile(File *infile, Image * image);
-	static void WritePngFile(const char* fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+private:
 
+	static Vector<Image *> CreateFromPNG(File *file);
+	static Vector<Image *> CreateFromPVR(File *file);
+    
+    static bool IsPVRFile(File *file);
+    static bool IsPNGFile(File *file);
+};
+	
 };
 
-class PngImage : public BaseObject
-{
-public:
-	PngImage();
-	~PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-	
-	bool Load(const char * filename);
-	bool Save(const char * filename);
-	
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
-
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
-};
-
-#endif // __PNG_IMAGE_H__
+#endif // __DAVAENGINE_IMAGELOADER_H__

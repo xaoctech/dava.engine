@@ -65,7 +65,7 @@ struct PVRHeaderV3{
     
 	//Constructor for the header - used to make sure that the header is initialised usefully. The initial pixel format is an invalid one and must be set.
 	PVRHeaderV3() :
-    u32Version(PVRTEX3_IDENT),u32Flags(0),
+    u32Version(0),u32Flags(0),
     u64PixelFormat(ePVRTPF_NumCompressedPFs),
     u32ColourSpace(0),u32ChannelType(0),
     u32Height(1),u32Width(1),u32Depth(1),
@@ -100,10 +100,19 @@ struct PVRHeaderV2
     
     
 class Texture;
+class Image;
+class ImageSet;
+class File;
 class LibPVRHelper
 {
 public:
 
+    static bool IsPvrFile(File *file);
+    static uint32 GetMipMapLevelsCount(File *file);
+    
+    static bool ReadFile(File *file, Vector<Image *> imageSet);
+    
+    
     static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
     static bool FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, uint32 baseMipMapLevel);
     
@@ -126,10 +135,13 @@ protected:
     
     static const PixelFormat GetTextureFormat(const PVRHeaderV3& textureHeader);
     
-    static PVRHeaderV3 GetHeaderForFile(const String &filePathname);
-    static PVRHeaderV3 GetHeaderForData(const uint8* pvrData, const int32 pvrDataSize);
+    static PVRHeaderV3 GetHeader(const String &filePathname);
+    static PVRHeaderV3 GetHeader(File *file);
+    static PVRHeaderV3 GetHeader(const uint8* pvrData, const int32 pvrDataSize);
     
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
+    
+    static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
 };
     
 };

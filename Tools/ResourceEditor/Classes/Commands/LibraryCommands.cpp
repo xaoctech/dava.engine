@@ -25,7 +25,7 @@ LibraryCommand::LibraryCommand(const DAVA::String &pathname, eCommandType _type)
 bool LibraryCommand::CheckExtension(const DAVA::String &extenstionToChecking)
 {
     String extension = FileSystem::Instance()->GetExtension(filePathname);
-    return (0 == CompareStrings(extension, extenstionToChecking));
+    return (0 == CompareCaseInsensitive(extension, extenstionToChecking));
 }
 
 

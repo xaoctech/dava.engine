@@ -16,6 +16,7 @@
 #include "../Qt/SceneData.h"
 #include "../Qt/SceneDataManager.h"
 #include "../LandscapeEditor/LandscapesController.h"
+#include "../Qt/QtUtils.h"
 
 LandscapeEditorHeightmap::LandscapeEditorHeightmap(LandscapeEditorDelegate *newDelegate, 
                                            EditorBodyControl *parentControl, const Rect &toolsRect)
@@ -375,7 +376,7 @@ void LandscapeEditorHeightmap::HideAction()
     if(tilemaskImage && tilemaskWasChanged)
     {
         tilemaskWasChanged = false;
-        tilemaskImage->Save(tilemaskPathname);
+        ImageLoader::Save(tilemaskImage, tilemaskPathname);
     }
 
     SafeRelease(tilemaskImage);
@@ -425,14 +426,9 @@ void LandscapeEditorHeightmap::CreateTilemaskImage()
     Texture *mask = workingLandscape->GetTexture(LandscapeNode::TEXTURE_TILE_MASK);
     if(mask)
     {
-//        Image::EnableAlphaPremultiplication(false);
-        
         tilemaskPathname = mask->GetPathname();
-        tilemaskImage = Image::CreateFromFile(tilemaskPathname, false);
-        
+        tilemaskImage = CreateTopLevelImage(tilemaskPathname);
         tilemaskTexture = Texture::CreateFromData(tilemaskImage->format, tilemaskImage->GetData(), tilemaskImage->GetWidth(), tilemaskImage->GetHeight(), false);
-        
-//        Image::EnableAlphaPremultiplication(true);
     }
     
     LandscapeNode *landscape = landscapesController->GetCurrentLandscape();
@@ -508,7 +504,7 @@ void LandscapeEditorHeightmap::TextureWillChanged(const String &forKey)
         if(tilemaskImage && tilemaskWasChanged)
         {
             tilemaskWasChanged = false;
-            tilemaskImage->Save(tilemaskPathname);
+            ImageLoader::Save(tilemaskImage, tilemaskPathname);
         }
     }
 }

@@ -7,6 +7,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/Utils.h"
 #include "../SceneEditor/PVRConverter.h"
+#include "../Qt/QtUtils.h"
 
 ///*
 // INCLUDE DevIL
@@ -71,7 +72,7 @@ ColladaTexture::ColladaTexture(FCDImage * _image)
 	texturePathName =  nstring;
     
     String fileName = nstring;
-    Image * image = Image::CreateFromFile(fileName, false);
+    Image * image = CreateTopLevelImage(fileName);
     if (image)
     {
         bool opacityFound = false;

@@ -298,8 +298,8 @@ void LandscapePropertyControl::OnComboIndexChanged(
 
 void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, const String &alphamaskPath)
 {
-    Image *lightMap = Image::CreateFromFile(lightmapPath, false);
-    Image *alphaMask = Image::CreateFromFile(alphamaskPath, false);
+    Image *lightMap = CreateTopLevelImage(lightmapPath);
+    Image *alphaMask = CreateTopLevelImage(alphamaskPath);
     
     if(lightMap && alphaMask)
     {
@@ -324,7 +324,7 @@ void LandscapePropertyControl::CreateMaskTexture(const String &lightmapPath, con
                 
                 String resultPath = path + "EditorMaskTexture" + extension;
                 FileSystem::Instance()->DeleteFile(resultPath);
-                lightMap->Save(resultPath);
+                ImageLoader::Save(lightMap, resultPath);
                 
                 propertyList->SetFilepathPropertyValue("property.landscape.lightmap", "");
                 propertyList->SetFilepathPropertyValue("property.landscape.alphamask", "");
