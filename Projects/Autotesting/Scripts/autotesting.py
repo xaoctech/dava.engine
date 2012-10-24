@@ -25,8 +25,6 @@ if len(arguments) != 4:
 
 print "*** DAVA Starting autotesting"
 
-return
-
 print "platform.system: " + platform.system()
 print sys.argv
 
