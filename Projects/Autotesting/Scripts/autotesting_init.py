@@ -18,8 +18,8 @@ import subprocess;
 arguments = sys.argv[1:]
 
 if len(arguments) < 2 or 3 < len(arguments):
-	print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName] [TestsGroupName]'
-	exit(1)
+    print 'Usage: ./autotesting_init.py [PlatformName] [ProjectName] [TestsGroupName]'
+    exit(1)
 
 print "*** DAVA Initializing autotesting"
 platformName = arguments[0]
