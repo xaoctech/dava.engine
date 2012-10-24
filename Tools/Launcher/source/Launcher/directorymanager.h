@@ -13,7 +13,9 @@ public:
     static DirectoryManager* GetInstance();
     static bool DeleteDir(const QString& path);
     static bool CopyAllFromDir(const QString& srcPath, const QString& destPath);
+    static bool MoveFileToDir(const QString& srcFileName, const QString& destPath, const QString& newFileName = "");
     static QStringList GetDirectoryStructure(const QString& path);
+    static bool IsFilePacked(const QString& fileName);
 
     void Init();
 
