@@ -7,6 +7,11 @@
 #include "processhelper.h"
 #include <QMessageBox>
 
+#ifdef Q_OS_WIN
+#include "Windows.h"
+#include "ShellAPI.h"
+#endif
+
 #define APP_DOWNLOAD "AppDownloaded"
 #define APP_TEMP_DIR "AppTempDir"
 
@@ -215,9 +220,21 @@ void Installer::OnAppDownloaded() {
         return;
     }
 
-    if (!zipHelper::unZipFile(tempFilePath, tempDir)) {
-        Logger::GetInstance()->AddLog(tr("Error unpack archive"));
-        return;
+    //if file is a zip-archive - unpack, otherwise - just move to the tempDir
+    //check is performed by server's file extension
+    QFileInfo serverFileInfo(updateConfig.m_Url.toString());
+    QString serverFileName = serverFileInfo.fileName();
+
+    if (DirectoryManager::IsFilePacked(serverFileName)) {
+        if (!zipHelper::unZipFile(tempFilePath, tempDir)) {
+            Logger::GetInstance()->AddLog(tr("Error unpack archive"));
+            return;
+        }
+    } else {
+        if (!DirectoryManager::MoveFileToDir(tempFilePath, tempDir, serverFileName)) {
+            Logger::GetInstance()->AddLog(tr("Error move file to the temp directory"));
+            return;
+        }
     }
 
     //copy to destination
@@ -259,11 +276,16 @@ void Installer::OnAppDownloaded() {
                 break;
             }
             QString installer = InstallerPath + "/" + updateConfig.m_InstallCmd;
-            QProcess process;
-            process.setWorkingDirectory(InstallerPath);
-            process.start(installer);
-            process.waitForFinished(-1);
-            int nExitCode = process.exitCode();
+
+            QFile aFile(installer);
+            if (!aFile.exists()) {
+                Logger::GetInstance()->AddLog(tr("Error running installer - file not found"));
+                break;
+            }
+
+            QString params = updateConfig.m_InstallParams;
+            int nExitCode = RunAndWaitForFinish(installer, params);
+
             if (updateConfig.m_nSuccessInstallCode == nExitCode)
                 bInstalled = true;
         } while(false);
@@ -288,6 +310,8 @@ void Installer::OnAppDownloaded() {
         config.m_Version = updateConfig.m_Version;
         config.m_InstallCmd = updateConfig.m_InstallCmd;
         config.m_UninstallCmd = updateConfig.m_UninstallCmd;
+        config.m_InstallParams = updateConfig.m_InstallParams;
+        config.m_UninstallParams = updateConfig.m_UninstallParams;
 
         AppsConfig setting = Settings::GetInstance()->GetCurrentConfig();
         AppsConfig::AppMap* pSettingMap = setting.GetAppMap(type);
@@ -339,10 +363,10 @@ bool Installer::Delete(const QString& appName, eAppType type) {
             path += config.m_UninstallCmd;
         else
             path += config.m_InstallCmd;
-        QProcess pr;
-        pr.start(path);
-        pr.waitForFinished(-1);
-        int nExitCode = pr.exitCode();
+
+        QString params = config.m_UninstallParams;
+
+        int nExitCode = RunAndWaitForFinish(path, params);
         if (nExitCode == config.m_nSuccessInstallCode)
             result = true;
     } else {
@@ -412,3 +436,38 @@ bool Installer::Update(AvailableSoftWare::SoftWareMap softMap, eAppType type) {
     }
     return true;
 }
+
+#ifdef Q_OS_WIN
+int Installer::RunAndWaitForFinish(const QString& fileName, const QString &params) {
+    wchar_t *fileNameW = new wchar_t[fileName.length() + 1];
+    fileNameW[fileName.toWCharArray(fileNameW)] = 0;
+
+    QFileInfo aFileInfo(fileName);
+    QString filePath = aFileInfo.absolutePath();
+    wchar_t *filePathW = new wchar_t[filePath.length() + 1];
+    filePathW[filePath.toWCharArray(filePathW)] = 0;
+
+    wchar_t *fileParamsW = new wchar_t[params.length() + 1];
+    fileParamsW[params.toWCharArray(fileParamsW)] = 0;
+
+    SHELLEXECUTEINFO executeInfo;
+    ZeroMemory(&executeInfo, sizeof(SHELLEXECUTEINFO));
+    executeInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    executeInfo.lpFile = fileNameW;
+    executeInfo.lpParameters = fileParamsW;
+    executeInfo.lpDirectory = filePathW;
+    executeInfo.lpVerb = L"open";
+    executeInfo.nShow = SW_SHOWNORMAL;
+    executeInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    ShellExecuteEx(&executeInfo);
+    WaitForSingleObject(executeInfo.hProcess, INFINITE);
+
+    DWORD exitCode = 1;
+    GetExitCodeProcess(executeInfo.hProcess, &exitCode);
+
+    delete fileNameW;
+    delete filePathW;
+    delete fileParamsW;
+    return exitCode;
+}
+#endif

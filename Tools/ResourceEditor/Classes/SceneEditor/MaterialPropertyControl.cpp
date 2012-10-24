@@ -73,7 +73,8 @@ void MaterialPropertyControl::ReadFrom(DataNode * dataNode)
     
     if (    (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == materialType)
         ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == materialType)
-        ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType))
+        ||  (Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == materialType)
+		||  (Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP == materialType))
     {
         propertyList->AddFilepathProperty(textureNames[ETT_NORMAL_MAP], ".png;.pvr");
         SetFilepathValue(material, ETT_NORMAL_MAP);

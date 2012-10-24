@@ -140,6 +140,8 @@ void ConfigDownloader::ParseAppData(AppsConfig::AppMap &appMap, const YAML::Node
         const YAML::Node* pRunPath = value.FindValue("runPath");
         const YAML::Node* pInstallCmd = value.FindValue("install");
         const YAML::Node* pUninstallCmd = value.FindValue("uninstall");
+        const YAML::Node* pInstallParams = value.FindValue("installParams");
+        const YAML::Node* pUninstallParams = value.FindValue("uninstallParams");
 
         AppConfig config;
         if (name) setString(config.m_Name, name);
@@ -148,6 +150,8 @@ void ConfigDownloader::ParseAppData(AppsConfig::AppMap &appMap, const YAML::Node
         if (pRunPath) setString(config.m_RunPath, pRunPath);
         if (pInstallCmd) setString(config.m_InstallCmd, pInstallCmd);
         if (pUninstallCmd) setString(config.m_UninstallCmd, pUninstallCmd);
+        if (pInstallParams) setString(config.m_InstallParams, pInstallParams);
+        if (pUninstallParams) setString(config.m_UninstallParams, pUninstallParams);
 
         appMap[config.m_Name] = config;
     }
