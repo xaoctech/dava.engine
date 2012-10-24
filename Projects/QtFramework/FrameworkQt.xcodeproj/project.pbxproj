@@ -262,7 +262,6 @@
 		E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86DF3A1161F10AE00A5400A /* Observable.cpp */; };
 		E879FCE6161DD6F00038D271 /* libPVRTexLib.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = E879FCE5161DD6F00038D271 /* libPVRTexLib.a */; };
 		E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */; };
-		E89E9629161C49A500F156A2 /* TexturePVR.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E89E9627161C49A500F156A2 /* TexturePVR.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -817,7 +816,6 @@
 		E89E9624161C49A500F156A2 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
 		E89E9625161C49A500F156A2 /* LibPVRHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPVRHelper.h; sourceTree = "<group>"; };
 		E89E9626161C49A500F156A2 /* PVRDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PVRDefines.h; sourceTree = "<group>"; };
-		E89E9627161C49A500F156A2 /* TexturePVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturePVR.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1330,7 +1328,6 @@
 				5C5D98C515B0230D0058B43A /* StaticVertexBuffer.h */,
 				E856CEFE162420180065E32B /* TextureDescriptor.cpp */,
 				E856CEFF162420180065E32B /* TextureDescriptor.h */,
-				E89E9627161C49A500F156A2 /* TexturePVR.cpp */,
 				5C5D98C615B0230D0058B43A /* Texture.cpp */,
 				5C5D98C715B0230D0058B43A /* Texture.h */,
 				5C5D98C815B0230D0058B43A /* TextureDX9.cpp */,
@@ -1944,7 +1941,6 @@
 				5C44DB3D15F4BC9900A42B52 /* SwitchNode.cpp in Build Sources */,
 				CC27F75616089C37004EF267 /* ParticleLayerLong.cpp in Build Sources */,
 				E89E9628161C49A500F156A2 /* LibPVRHelper.cpp in Build Sources */,
-				E89E9629161C49A500F156A2 /* TexturePVR.cpp in Build Sources */,
 				E86DF3A4161F10AF00A5400A /* Observable.cpp in Build Sources */,
 				E856CF00162420180065E32B /* TextureDescriptor.cpp in Build Sources */,
 				E8674D031637311700748959 /* ImageLoader.cpp in Build Sources */,
