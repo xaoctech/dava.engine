@@ -286,12 +286,10 @@ public:							// properties for fast access
 private:
 	static Map<String, Texture*> textureMap;	
 	static Texture * Get(const String & name);
-	static Texture * CreateFromPNG(const String & pathName, TextureDescriptor *descriptor);
-	static Texture * CreateFromPVR(const String & pathName, TextureDescriptor *descriptor);
-	static Texture * CreateFromPNG(File *file, TextureDescriptor *descriptor);
-	static Texture * CreateFromPVR(File *file, TextureDescriptor *descriptor);
     
-	static Texture * CreateFromDescriptor(const String & pathName, TextureDescriptor *descriptor);
+	static Texture * CreateFromDescriptor(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(const String & pathname, TextureDescriptor *descriptor);
+	static Texture * CreateFromImage(File *file, TextureDescriptor *descriptor);
 	
 	static Texture * UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel);
 

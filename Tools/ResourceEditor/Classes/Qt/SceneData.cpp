@@ -424,14 +424,14 @@ void SceneData::ShowLibraryMenu(const QModelIndex &index, const QPoint &point)
         QMenu menu;
 
         String extension = FileSystem::Instance()->GetExtension(filePathname);
-        if(0 == CompareStrings(String(".sc2"), extension))
+        if(0 == CompareCaseInsensitive(String(".sc2"), extension))
         {
             AddActionToMenu(&menu, QString("Add"), new CommandAddScene(filePathname));
             AddActionToMenu(&menu, QString("Edit"), new CommandEditScene(filePathname));
             AddActionToMenu(&menu, QString("Add reference"), new CommandAddReferenceScene(filePathname));
             AddActionToMenu(&menu, QString("Reload"), new CommandReloadScene(filePathname));
         }
-        else if(0 == CompareStrings(String(".dae"), extension))
+        else if(0 == CompareCaseInsensitive(String(".dae"), extension))
         {
             AddActionToMenu(&menu, QString("Convert"), new CommandConvertScene(filePathname));
         }
@@ -609,7 +609,7 @@ void SceneData::FileSelected(const QString &filePathname, bool isFile)
     if(screen && !skipLibraryPreview)
     {
         String extension = FileSystem::Instance()->GetExtension(QSTRING_TO_DAVASTRING(filePathname));
-        if(0 == CompareStrings(extension, String(".sc2")) && isFile)
+        if(0 == CompareCaseInsensitive(extension, String(".sc2")) && isFile)
         {
             screen->ShowScenePreview(PathnameToDAVAStyle(filePathname));
         }

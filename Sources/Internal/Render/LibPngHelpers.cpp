@@ -262,6 +262,14 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image)
 	return 1;
 }
 
+bool LibPngWrapper::IsPngFile(File *file)
+{
+    char sig[8];
+    file->Read(sig, 8);
+	
+    return (0 != png_check_sig((unsigned char *) sig, 8));
+}
+
 
 
 void LibPngWrapper::WritePngFile(const char* file_name, int32 width, int32 height, uint8 * data, PixelFormat format)

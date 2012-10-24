@@ -41,6 +41,7 @@
 #include "Scene3D/Heightmap.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/TextureDescriptor.h"
+#include "Render/ImageLoader.h"
 
 #include "Debug/Stats.h"
 
@@ -262,20 +263,24 @@ bool LandscapeNode::BuildHeightmap()
     String extension = FileSystem::Instance()->GetExtension(heightmapPath);
     if(".png" == extension)
     {
-        Image *image = Image::CreateFromFile(heightmapPath, false);
-        if(image)
+        Vector<Image *> imageSet = ImageLoader::CreateFromFile(heightmapPath);
+        if(0 != imageSet.size())
         {
-            if ((image->GetPixelFormat() != FORMAT_A8) && (image->GetPixelFormat() != FORMAT_A16))
+            if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
             {
                 Logger::Error("Image for landscape should be grayscale");
             }
-            else 
+            else
             {
-                DVASSERT(image->GetWidth() == image->GetHeight());
-                heightmap->BuildFromImage(image);
+                DVASSERT(imageSet[0]->GetWidth() == imageSet[0]->GetHeight());
+                heightmap->BuildFromImage(imageSet[0]);
                 retValue = true;
             }
-            SafeRelease(image);
+            
+            for(int32 i = 0; i < (int32)imageSet.size(); ++i)
+            {
+                SafeRelease(imageSet[i]);
+            }
         }
     }
     else if(Heightmap::FileExtension() == extension)
@@ -1590,7 +1595,7 @@ String LandscapeNode::SaveFullTiledTexture()
             Image *image = textures[TEXTURE_TILE_FULL]->CreateImageFromMemory();
             if(image)
             {
-                image->Save(pathToSave);
+                ImageLoader::Save(image, pathToSave);
                 SafeRelease(image);
             }
         }

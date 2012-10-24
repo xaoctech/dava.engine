@@ -5,6 +5,7 @@
 
 #include "Render/TextureDescriptor.h"
 
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -345,7 +346,7 @@ void SceneExporter::ExportLandscapeFullTiledTexture(LandscapeNode *landscape, Se
         Image *image = fullTiledTexture->CreateImageFromMemory();
         if(image)
         {
-            image->Save(dataFolder + workingPathname);
+            ImageLoader::Save(image, dataFolder + workingPathname);
             SafeRelease(image);
         }
         else
@@ -454,7 +455,7 @@ String SceneExporter::ExportTexture(const String &texturePathname, Set<String> &
                 Image *image = fbo->GetTexture()->CreateImageFromMemory();
                 if(image)
                 {
-                    image->Save(exportedPathname);
+                    ImageLoader::Save(image, exportedPathname);
                 }
                 else 
                 {
@@ -518,7 +519,7 @@ void SceneExporter::CompressTextureIfNeed(const String &texturePathname, Set<Str
         
         TextureDescriptor *descriptor = Texture::CreateDescriptorForTexture(texturePathname);
         DVASSERT(descriptor && "Decriptors mast be created for all textures");
-        if(0 == CompareStrings(String(".pvr"), format))
+        if(0 == CompareCaseInsensitive(String(".pvr"), format))
         {
             PVRConverter::Instance()->ConvertPngToPvr(sourceTexturePathname, descriptor->pvrCompression.format, descriptor->GetGenerateMipMaps());
         }

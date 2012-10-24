@@ -38,27 +38,28 @@
 namespace DAVA
 {
 
-Texture * Texture::CreateFromPVR(const String & pathName, TextureDescriptor *descriptor)
+    
+Texture * UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel)
 {
-    Texture * cachedTexture = Texture::Get(pathName);
-	if (cachedTexture)return cachedTexture;
-
+    bool preloaded = LibPVRHelper::PreparePVRData((const char *)data, dataSize);
+    if(!preloaded)
+    {
+        Logger::Error("[Texture::UnpackPVRData]: can't preload pvr texture");
+        return NULL;
+    }
     
-	File * fp = File::Create(pathName, File::OPEN|File::READ);
-	if (!fp)
-	{
-		Logger::Error("Failed to open PVR texture: %s", pathName.c_str());
-		return 0;
-	}
+    Texture * texture = NULL;
     
-    Texture *texture = CreateFromPVR(fp, descriptor);
-    SafeRelease(fp);
-
+    bool filled = LibPVRHelper::FillTextureWithPVRData((const char *)data, dataSize, texture, (uint32)baseMipMapLevel);
+    if(!filled)
+    {
+        SafeRelease(texture);
+    }
     return texture;
 }
+
     
-    
-Texture * Texture::CreateFromPVR(File *file, TextureDescriptor *descriptor)
+Texture * CreateFromPVR(File *file, TextureDescriptor *descriptor)
 {
     uint64 timeCreateFromPVR = SystemTimer::Instance()->AbsoluteMS();
     
@@ -113,24 +114,6 @@ Texture * Texture::CreateFromPVR(File *file, TextureDescriptor *descriptor)
 
     
     
-Texture * Texture::UnpackPVRData(uint8 * data, uint32 dataSize, int32 baseMipMapLevel)
-{
-    bool preloaded = LibPVRHelper::PreparePVRData((const char *)data, dataSize);
-    if(!preloaded)
-    {
-        Logger::Error("[Texture::UnpackPVRData]: can't preload pvr texture");
-        return NULL;
-    }
-    
-    Texture * texture = new Texture();
-    
-    bool filled = LibPVRHelper::FillTextureWithPVRData((const char *)data, dataSize, texture, (uint32)baseMipMapLevel);
-    if(!filled)
-    {
-        SafeRelease(texture);
-    }
-    return texture;
-}
 
 
 };
