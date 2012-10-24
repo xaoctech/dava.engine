@@ -53,7 +53,24 @@ protected:
     virtual void SetDisplayedTexture();
 
     DAVA::Sprite *notPassableMapSprite;
-    DAVA::float32 notPassableAngleTan;
+    
+    void LoadColorsArray();
+    bool PickColor(DAVA::float32 tan, DAVA::Color& color) const;
+
+private:
+    struct terrainColor
+    {
+        DAVA::Color color;
+        DAVA::Vector2 angleRange;
+        
+        terrainColor(const DAVA::Vector2& angle, const DAVA::Color& color)
+        {
+            this->color = color;
+            this->angleRange = angle;
+        }
+    };
+    
+    DAVA::Vector<terrainColor> angleColor;
 };
 
 
