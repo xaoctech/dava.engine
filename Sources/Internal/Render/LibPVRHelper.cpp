@@ -1798,9 +1798,6 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
     PVRHeaderV3 compressedHeader;
     uint8* pTextureData=NULL;
     
-    //Just in case header and pointer for decompression.
-    PVRHeaderV3 decompressedHeader;
-    
     //Check if it's an old header format
     if((*(uint32*)pvrData)!=PVRTEX3_IDENT)
     {
@@ -1825,116 +1822,51 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
     PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
     if(!IsFormatSupported(formatDescriptor))
     {
-        Logger::Error("[LibPVRHelper::FillTextureWithPVRData] Unsupported format");
+        Logger::Error("[LibPVRHelper::ReadMipMapLevel] Unsupported format");
         return false;
     }
     
-    
     image->width = compressedHeader.u32Width >> mipMapLevel;
     image->height = compressedHeader.u32Height >> mipMapLevel;
+    image->format = formatDescriptor.formatID;
 
-    
     //Check for compressed formats
     if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
     {
         //Check for PVRTCI support.
         if(deviceCaps.isPVRTCSupported)
         {
-            image->dataSize = GetTextureDataSize(compressedHeader, mipMapLevel, false, true);
-            image->data = new uint8[image->dataSize];
-            if(!image->data)
+            bool copied = CopyToImage(image, mipMapLevel, compressedHeader, pTextureData);
+            if(!copied)
             {
-                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to compressed texture.\n");
                 return false;
             }
-            
-            //Setup temporary variables.
-            uint8* pTempCompData = (uint8*)pTextureData;
-            
-            //find mipmap offset
-            for (uint32 uiMIPMap=0;uiMIPMap<mipMapLevel;++uiMIPMap)
-            {
-                uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, uiMIPMap, false, true);
-                pTempCompData+=compressedFaceOffset;
-            }
-            
-            Memcpy(image->data, pTempCompData, image->dataSize * sizeof(uint8));
         }
         else
         {
-            //Output a warning.
-            Logger::Warning("PVRTTextureLoadFromPointer warning: PVRTC not supported. Converting to RGBA8888 instead.\n");
-            
-            //Check if it's 2bpp.
-            bool bIs2bppPVRTC = (FORMAT_PVR2 == formatDescriptor.formatID);
-            
             //Create a near-identical texture header for the decompressed header.
-            decompressedHeader = compressedHeader;
-            decompressedHeader.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
-            decompressedHeader.u32ColourSpace=ePVRTCSpacelRGB;
-            decompressedHeader.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
-            
-            //Allocate enough memory for the decompressed data. OGLES2, so only decompress one surface/face.
-            image->dataSize = GetTextureDataSize(decompressedHeader, mipMapLevel, false, true);
-            image->data = new uint8[image->dataSize];
-            if(!image->data)
+            PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
+            if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
             {
-                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
                 return false;
             }
             
             //Setup temporary variables.
             uint8* pTempDecompData = image->data;
-            uint8* pTempCompData = (uint8*)pTextureData;
+            uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, compressedHeader);
 
-            //find mipmap offset
-            for (uint32 uiMIPMap=0;uiMIPMap<mipMapLevel;++uiMIPMap)
+            //Get the face offset. Varies per MIP level.
+            uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
+            uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
+            for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
             {
-                uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, uiMIPMap, false, true);
+                PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
+                
+                //Move forward through the pointers.
+                pTempDecompData+=decompressedFaceOffset;
                 pTempCompData+=compressedFaceOffset;
             }
-
-            if (bIsLegacyPVR)
-            {
-                //Decompress all the MIP levels.
-                for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-                {
-                    //Get the face offset. Varies per MIP level.
-                    uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-                    uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-                    
-#if defined (__DAVAENGINE_IPHONE__)
-                    DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                    //Decompress the texture data.
-                    PVRTDecompressPVRTC(pTempCompData, bIs2bppPVRTC ? 1 : 0, image->width, image->height, pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                    
-                    //Move forward through the pointers.
-                    pTempDecompData += decompressedFaceOffset;
-                    pTempCompData += compressedFaceOffset;
-                }
-            }
-            else
-            {
-                //Get the face offset. Varies per MIP level.
-                uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-                uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-                for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-                {
-#if defined (__DAVAENGINE_IPHONE__)
-                    DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                    //Decompress the texture data.
-                    PVRTDecompressPVRTC(pTempCompData, bIs2bppPVRTC ? 1 : 0, image->width, image->height, pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                    
-                    //Move forward through the pointers.
-                    pTempDecompData+=decompressedFaceOffset;
-                    pTempCompData+=compressedFaceOffset;
-                }
-            }
-            formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+            image->format = FORMAT_RGBA8888;
         }
     }
 #if !defined(__DAVAENGINE_IPHONE__)
@@ -1942,544 +1874,100 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
     {
         if(deviceCaps.isETCSupported)
         {
-            image->dataSize = GetTextureDataSize(compressedHeader, mipMapLevel, false, true);
-            image->data = new uint8[image->dataSize];
-            if(!image->data)
+            bool copied = CopyToImage(image, mipMapLevel, compressedHeader, pTextureData);
+            if(!copied)
             {
-                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to compressed texture.\n");
                 return false;
             }
-            
-            //Setup temporary variables.
-            uint8* pTempCompData = (uint8*)pTextureData;
-            
-            //find mipmap offset
-            for (uint32 uiMIPMap=0;uiMIPMap<mipMapLevel;++uiMIPMap)
-            {
-                uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, uiMIPMap, false, true);
-                pTempCompData+=compressedFaceOffset;
-            }
-            
-            Memcpy(image->data, pTempCompData, image->dataSize * sizeof(uint8));
         }
         else
         {
-            //Output a warning.
-            Logger::Warning("PVRTTextureLoadFromPointer warning: ETC not supported. Converting to RGBA8888 instead.\n");
-            
             //Create a near-identical texture header for the decompressed header.
-            decompressedHeader = compressedHeader;
-            decompressedHeader.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
-            decompressedHeader.u32ColourSpace=ePVRTCSpacelRGB;
-            decompressedHeader.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
-            
-            //Allocate enough memory for the decompressed data. OGLES1, so only decompress one surface/face.
-            image->dataSize = GetTextureDataSize(decompressedHeader, mipMapLevel, false, true);
-            image->data = new uint8[image->dataSize];
-            if(!image->data)
+            PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
+            if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
             {
-                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
                 return false;
             }
 
             //Setup temporary variables.
             uint8* pTempDecompData = (uint8*)image->data;
-            uint8* pTempCompData = (uint8*)pTextureData;
-            
-            //find mipmap offset
-            for (uint32 uiMIPMap=0;uiMIPMap<mipMapLevel;++uiMIPMap)
-            {
-                uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, uiMIPMap, false, true);
-                pTempCompData+=compressedFaceOffset;
-            }
-            
+            uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, compressedHeader);
 
-            if (bIsLegacyPVR)
+            //Get the face offset. Varies per MIP level.
+            uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
+            uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
+            for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
             {
-                //Decompress all the MIP levels.
-                for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-                {
-                    //Get the face offset. Varies per MIP level.
-                    uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-                    uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-                    
-#if defined (__DAVAENGINE_IPHONE__)
-                    DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                    //Decompress the texture data.
-                    PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                    
-                    //Move forward through the pointers.
-                    pTempDecompData += decompressedFaceOffset;
-                    pTempCompData += compressedFaceOffset;
-                }
+                PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
+                
+                //Move forward through the pointers.
+                pTempDecompData += decompressedFaceOffset;
+                pTempCompData += compressedFaceOffset;
             }
-            else
-            {
-                //Get the face offset. Varies per MIP level.
-                uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-                uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-                for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-                {
-#if defined (__DAVAENGINE_IPHONE__)
-                    DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                    //Decompress the texture data.
-                    PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                    
-                    //Move forward through the pointers.
-                    pTempDecompData+=decompressedFaceOffset;
-                    pTempCompData+=compressedFaceOffset;
-                }
-            }
-            formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+            image->format = FORMAT_RGBA8888;
         }
     }
 #endif //#if !defined(__DAVAENGINE_IPHONE__)
     else
     {
-        image->dataSize = GetTextureDataSize(compressedHeader, mipMapLevel, false, true);
-        image->data = new uint8[image->dataSize];
-        if(!image->data)
+        bool copied = CopyToImage(image, mipMapLevel, compressedHeader, pTextureData);
+        if(!copied)
         {
-            Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to compressed texture.\n");
             return false;
         }
-        
-        //Setup temporary variables.
-        uint8* pTempCompData = (uint8*)pTextureData;
-        
-        //find mipmap offset
-        for (uint32 uiMIPMap=0;uiMIPMap<mipMapLevel;++uiMIPMap)
-        {
-            uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, uiMIPMap, false, true);
-            pTempCompData+=compressedFaceOffset;
-        }
-        
-        Memcpy(image->data, pTempCompData, image->dataSize * sizeof(uint8));
     }
-    
-    image->format = formatDescriptor.formatID;
     return true;
 }
 
-    
-bool LibPVRHelper::FillTextureWithPVRData(const char* pvrData, const int32 pvrDataSize, Texture *texture, uint32 baseMipMapLevel)
+bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header, const uint8 *pvrData)
 {
-    //Compression bools
-    bool bIsCompressedFormatSupported=false;
-    bool bIsCompressedFormat=false;
-    bool bIsLegacyPVR=false;
-    
-    //Texture setup
-    PVRHeaderV3 sTextureHeader;
-    uint8* pTextureData=NULL;
-    
-    //Just in case header and pointer for decompression.
-    PVRHeaderV3 sTextureHeaderDecomp;
-    void* pDecompressedData=NULL;
-    
-    //Check if it's an old header format
-    if((*(uint32*)pvrData)!=PVRTEX3_IDENT)
+    if(AllocateImageData(image, mipMapLevel, header))
     {
-        ConvertOldTextureHeaderToV3((PVRHeaderV2 *)pvrData,sTextureHeader);
-        
-        //Get the texture data.
-        pTextureData = (uint8*)pvrData + *(uint32*)pvrData;
-        
-        bIsLegacyPVR=true;
-    }
-    else
-    {
-        //Get the header from the main pointer.
-        sTextureHeader=*(PVRHeaderV3*)pvrData;
-        
-        //Get the texture data.
-        pTextureData = (uint8*)pvrData+PVRTEX3_HEADERSIZE+sTextureHeader.u32MetaDataSize;
-        
-//        CPVRTMap<unsigned int, CPVRTMap<unsigned int, struct MetaDataBlock> > *pMetaData=NULL;
-//        if (pMetaData)
-//        {
-//            //Read in all the meta data.
-//            PVRTuint32 metaDataSize=0;
-//            while (metaDataSize<sTextureHeader.u32MetaDataSize)
-//            {
-//                //Read the DevFourCC and advance the pointer offset.
-//                PVRTuint32 DevFourCC=*(PVRTuint32*)((PVRTuint8*)pvrFileData+PVRTEX3_HEADERSIZE+metaDataSize);
-//                metaDataSize+=sizeof(DevFourCC);
-//                
-//                //Read the Key and advance the pointer offset.
-//                PVRTuint32 u32Key=*(PVRTuint32*)((PVRTuint8*)pvrFileData+PVRTEX3_HEADERSIZE+metaDataSize);
-//                metaDataSize+=sizeof(u32Key);
-//                
-//                //Read the DataSize and advance the pointer offset.
-//                PVRTuint32 u32DataSize = *(PVRTuint32*)((PVRTuint8*)pvrFileData+PVRTEX3_HEADERSIZE+metaDataSize);
-//                metaDataSize+=sizeof(u32DataSize);
-//                
-//                //Get the current meta data.
-//                MetaDataBlock& currentMetaData = (*pMetaData)[DevFourCC][u32Key];
-//                
-//                //Assign the values to the meta data.
-//                currentMetaData.DevFOURCC=DevFourCC;
-//                currentMetaData.u32Key=u32Key;
-//                currentMetaData.u32DataSize=u32DataSize;
-//                
-//                //Check for data, if there is any, read it into the meta data.
-//                if(u32DataSize > 0)
-//                {
-//                    //Allocate memory.
-//                    currentMetaData.Data = new PVRTuint8[u32DataSize];
-//                    
-//                    //Copy the data.
-//                    memcpy(currentMetaData.Data, ((PVRTuint8*)pvrFileData+PVRTEX3_HEADERSIZE+metaDataSize), u32DataSize);
-//                    
-//                    //Advance the meta data size.
-//                    metaDataSize+=u32DataSize;
-//                }
-//            }
-//        }
+        //Setup temporary variables.
+        uint8* data = (uint8*)pvrData + GetMipMapLayerOffset(mipMapLevel, header);
+        Memcpy(image->data, data, image->dataSize * sizeof(uint8));
+
+        return true;
     }
     
-    //Get the OGLES format values.
-    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(sTextureHeader));
-    if(!IsFormatSupported(formatDescriptor))
+    return false;
+}
+    
+bool LibPVRHelper::AllocateImageData(DAVA::Image *image, uint32 mipMapLevel, const DAVA::PVRHeaderV3 &header)
+{
+    image->dataSize = GetTextureDataSize(header, mipMapLevel, false, true);
+    image->data = new uint8[image->dataSize];
+    if(!image->data)
     {
-        Logger::Error("[LibPVRHelper::FillTextureWithPVRData] Unsupported format");
+        Logger::Error("[LibPVRHelper::AllocateImageData] Unable to allocate memory to compressed texture.\n");
         return false;
     }
-    
-    
-    //Check for compressed formats
-    if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
-    {
-        bIsCompressedFormat = true;
-        bIsCompressedFormatSupported = deviceCaps.isPVRTCSupported;
-        
-        //Check for PVRTCI support.
-        if(!deviceCaps.isPVRTCSupported)
-        {
-            //Output a warning.
-            Logger::Warning("PVRTTextureLoadFromPointer warning: PVRTC not supported. Converting to RGBA8888 instead.\n");
-            
-            //Check if it's 2bpp.
-            bool bIs2bppPVRTC = (FORMAT_PVR2 == formatDescriptor.formatID);
-            
-            //Create a near-identical texture header for the decompressed header.
-            sTextureHeaderDecomp = sTextureHeader;
-            sTextureHeaderDecomp.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
-            sTextureHeaderDecomp.u32ColourSpace=ePVRTCSpacelRGB;
-            sTextureHeaderDecomp.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
-            
-            //Allocate enough memory for the decompressed data. OGLES2, so only decompress one surface/face.
-            pDecompressedData = malloc(GetTextureDataSize(sTextureHeaderDecomp, PVRTEX_ALLMIPLEVELS, false, true) );
-            
-            //Check the malloc.
-            if (!pDecompressedData)
-            {
-                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
-                return false;
-            }
-            
-            //Get the dimensions for the current MIP level.
-            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
-            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
-            
-            //Setup temporary variables.
-            uint8* pTempDecompData = (uint8*)pDecompressedData;
-            uint8* pTempCompData = (uint8*)pTextureData;
-            
-            if (bIsLegacyPVR)
-            {
-                //find mipmap offset
-                for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                {
-                    for (uint32 uiMIPMap=0;uiMIPMap<baseMipMapLevel;++uiMIPMap)
-                    {
-                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-                        pTempCompData+=compressedFaceOffset;
-                        
-                        //Work out the current MIP dimensions.
-                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                    }
-                    
-                    //Reset the dims.
-                    uiMIPWidth=sTextureHeader.u32Width;
-                    uiMIPHeight=sTextureHeader.u32Height;
-                }
-                
-                uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
-                uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
-                //Decompress all the MIP levels.
-                for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                {
-                    for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                    {
-                        //Get the face offset. Varies per MIP level.
-                        uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-
-#if defined (__DAVAENGINE_IPHONE__)
-                        DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                        //Decompress the texture data.
-                        PVRTDecompressPVRTC(pTempCompData,bIs2bppPVRTC?1:0,uiMIPWidth,uiMIPHeight,pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                        
-                        //Move forward through the pointers.
-                        pTempDecompData+=decompressedFaceOffset;
-                        pTempCompData+=compressedFaceOffset;
-                        
-                        //Work out the current MIP dimensions.
-                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                    }
-                    
-                    //Reset the dims.
-                    uiMIPWidth=sTextureHeader.u32Width;
-                    uiMIPHeight=sTextureHeader.u32Height;
-                }
-            }
-            else
-            {
-                //find mipmap offset
-                for (uint32 uiMIPMap=0;uiMIPMap<baseMipMapLevel;++uiMIPMap)
-                {
-                    uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                    {
-                        pTempCompData+=compressedFaceOffset;
-                    }
-                    
-                    //Work out the current MIP dimensions.
-                    uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                    uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                }
-
-                //Restore all sizes
-                uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
-                uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
-                for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                {
-                    //Get the face offset. Varies per MIP level.
-                    uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                    uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-                    
-                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                    {
-#if defined (__DAVAENGINE_IPHONE__)
-                        DVASSERT(false && "Can be hardware supported");
-#else //#if defined (__DAVAENGINE_IPHONE__)
-                        //Decompress the texture data.
-                        PVRTDecompressPVRTC(pTempCompData,bIs2bppPVRTC?1:0,uiMIPWidth,uiMIPHeight,pTempDecompData);
-#endif //#if defined (__DAVAENGINE_IPHONE__)
-                        
-                        //Move forward through the pointers.
-                        pTempDecompData+=decompressedFaceOffset;
-                        pTempCompData+=compressedFaceOffset;
-                    }
-                    
-                    //Work out the current MIP dimensions.
-                    uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                    uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                }
-            }
-            formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
-        }
-    }
-#if !defined(__DAVAENGINE_IPHONE__)
-    else if (FORMAT_ETC_WILL_BE_ENABLED_LATER == formatDescriptor.formatID)
-    {
-        bIsCompressedFormat = true;
-        bIsCompressedFormatSupported = deviceCaps.isETCSupported;
-
-        if(!deviceCaps.isETCSupported)
-        {
-            //Output a warning.
-            Logger::Warning("PVRTTextureLoadFromPointer warning: ETC not supported. Converting to RGBA8888 instead.\n");
-            
-            //Create a near-identical texture header for the decompressed header.
-            sTextureHeaderDecomp = sTextureHeader;
-            sTextureHeaderDecomp.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
-            sTextureHeaderDecomp.u32ColourSpace=ePVRTCSpacelRGB;
-            sTextureHeaderDecomp.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
-
-            //Allocate enough memory for the decompressed data. OGLES1, so only decompress one surface/face.
-            pDecompressedData = malloc(GetTextureDataSize(sTextureHeaderDecomp, PVRTEX_ALLMIPLEVELS, false, true) );
-            
-            //Check the malloc.
-            if (!pDecompressedData)
-            {
-                Logger::Error("PVRTTextureLoadFromPointer error: Unable to allocate memory to decompress texture.\n");
-                return false;
-            }
-            
-            //Get the dimensions for the current MIP level.
-            uint32 uiMIPWidth = sTextureHeaderDecomp.u32Width >> baseMipMapLevel;
-            uint32 uiMIPHeight = sTextureHeaderDecomp.u32Height >> baseMipMapLevel;
-            
-            //Setup temporary variables.
-            uint8* pTempDecompData = (uint8*)pDecompressedData;
-            uint8* pTempCompData = (uint8*)pTextureData;
-            
-            if (bIsLegacyPVR)
-            {
-                //Decompress all the MIP levels.
-                for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                {
-                    for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                    {
-                        //Get the face offset. Varies per MIP level.
-                        uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                        uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-
-                        //Decompress the texture data.
-                        PVRTDecompressETC(pTempCompData,uiMIPWidth,uiMIPHeight,pTempDecompData,0);
-                        
-                        //Move forward through the pointers.
-                        pTempDecompData+=decompressedFaceOffset;
-                        pTempCompData+=compressedFaceOffset;
-                        
-                        //Work out the current MIP dimensions.
-                        uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                        uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                    }
-                    
-                    //Reset the dims.
-                    uiMIPWidth=sTextureHeader.u32Width;
-                    uiMIPHeight=sTextureHeader.u32Height;
-                }
-            }
-            else
-            {
-                //Decompress all the MIP levels.
-                for (uint32 uiMIPMap=baseMipMapLevel;uiMIPMap<sTextureHeader.u32MIPMapCount;++uiMIPMap)
-                {
-                    //Get the face offset. Varies per MIP level.
-                    uint32 decompressedFaceOffset = GetTextureDataSize(sTextureHeaderDecomp, uiMIPMap, false, false);
-                    uint32 compressedFaceOffset = GetTextureDataSize(sTextureHeader, uiMIPMap, false, false);
-
-                    for (uint32 uiFace=0;uiFace<sTextureHeader.u32NumFaces;++uiFace)
-                    {
-                        //Decompress the texture data.
-                        PVRTDecompressETC(pTempCompData,uiMIPWidth,uiMIPHeight,pTempDecompData,0);
-                        
-                        //Move forward through the pointers.
-                        pTempDecompData+=decompressedFaceOffset;
-                        pTempCompData+=compressedFaceOffset;
-                    }
-                    
-                    //Work out the current MIP dimensions.
-                    uiMIPWidth=PVRT_MAX(1,uiMIPWidth>>1);
-                    uiMIPHeight=PVRT_MAX(1,uiMIPHeight>>1);
-                }
-            }
-        }
-    }
-#endif //#if !defined(__DAVAENGINE_IPHONE__)
-    
-
-    texture->width = sTextureHeader.u32Width >> baseMipMapLevel;
-    texture->height = sTextureHeader.u32Height >> baseMipMapLevel;
-    texture->format = formatDescriptor.formatID;
-
-    
-#if defined (__DAVAENGINE_OPENGL__)
-
-    texture->GenerateID();
-    
-    //Check if this is a texture array.
-    if(sTextureHeader.u32NumSurfaces>1)
-    {
-        //Not supported in OpenGLES 2.0
-        Logger::Error("PVRTTextureLoadFromPointer failed: Texture arrays are not available in OGLES2.0.\n");
-        return false;
-    }
-    
-    //Initialise the current MIP size.
-    uint32 uiCurrentMIPSize=0;
-    
-    //Check if this is a cube map.
-    if(sTextureHeader.u32NumFaces>1)
-    {
-        Logger::Warning("PVRTTextureLoadFromPointer warning: GL_TEXTURE_CUBE_MAP_POSITIVE_X");
-    }
-    
-    //Initialise the width/height
-    uint32 u32MIPWidth = sTextureHeader.u32Width >> baseMipMapLevel;
-    uint32 u32MIPHeight = sTextureHeader.u32Height >> baseMipMapLevel;
-    
-    //Temporary data to save on if statements within the load loops.
-    uint8* pTempData=NULL;
-    PVRHeaderV3 *psTempHeader=NULL;
-    if (bIsCompressedFormat && !bIsCompressedFormatSupported)
-    {
-        pTempData=(uint8*)pDecompressedData;
-        psTempHeader=&sTextureHeaderDecomp;
-    }
-    else
-    {
-        pTempData=pTextureData;
-        psTempHeader=&sTextureHeader;
-    }
-    
-    //Loop through all MIP levels.
-    if (bIsLegacyPVR)
-    {
-        //Loop through all the faces.
-        for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
-        {
-            //Loop through all the mip levels.
-            for (uint32 uiMIPLevel=baseMipMapLevel; uiMIPLevel<psTempHeader->u32MIPMapCount; ++uiMIPLevel)
-            {
-                //Get the current MIP size.
-                uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
-                
-                //Upload the texture
-                texture->TexImage(uiMIPLevel - baseMipMapLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
-                pTempData+=uiCurrentMIPSize;
-                
-                //Reduce the MIP Size.
-                u32MIPWidth=PVRT_MAX(1,u32MIPWidth>>1);
-                u32MIPHeight=PVRT_MAX(1,u32MIPHeight>>1);
-            }
-            
-            
-            //Reset the current MIP dimensions.
-            u32MIPWidth=psTempHeader->u32Width >> baseMipMapLevel;
-            u32MIPHeight=psTempHeader->u32Height >> baseMipMapLevel;
-        }
-    }
-    else
-    {
-        for (uint32 uiMIPLevel=baseMipMapLevel; uiMIPLevel<psTempHeader->u32MIPMapCount; ++uiMIPLevel)
-        {
-            //Get the current MIP size.
-            uiCurrentMIPSize=GetTextureDataSize(*psTempHeader,uiMIPLevel,false,false);
-            for (uint32 uiFace=0; uiFace<psTempHeader->u32NumFaces; ++uiFace)
-            {
-                //Upload the texture
-                texture->TexImage(uiMIPLevel - baseMipMapLevel, u32MIPWidth, u32MIPHeight, pTempData, uiCurrentMIPSize);
-                pTempData+=uiCurrentMIPSize;
-            }
-            
-            //Reduce the MIP Size.
-            u32MIPWidth=PVRT_MAX(1,u32MIPWidth>>1);
-            u32MIPHeight=PVRT_MAX(1,u32MIPHeight>>1);
-        }
-    }
-    
-    FREE(pDecompressedData);
-    
-#endif //#if defined (__DAVAENGINE_OPENGL__)
     
     return true;
 }
+    
+int32 LibPVRHelper::GetMipMapLayerOffset(uint32 mipMapLevel, const PVRHeaderV3 &header)
+{
+    int32 offset = 0;
+    for (uint32 uiMIPMap=0;uiMIPMap<mipMapLevel;++uiMIPMap)
+    {
+        offset += GetTextureDataSize(header, uiMIPMap, false, true);
+    }
+    return offset;
+}
 
 
+PVRHeaderV3 LibPVRHelper::CreateDecompressedHeader(const PVRHeaderV3 &compressedHeader)
+{
+    PVRHeaderV3 decompressedHeader = compressedHeader;
+    decompressedHeader.u32ChannelType=ePVRTVarTypeUnsignedByteNorm;
+    decompressedHeader.u32ColourSpace=ePVRTCSpacelRGB;
+    decompressedHeader.u64PixelFormat=PVRTGENPIXELID4('r','g','b','a',8,8,8,8);
+
+    return decompressedHeader;
+}
+   
+    
 bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
 {
     PVRHeaderV3 textureHeader;
