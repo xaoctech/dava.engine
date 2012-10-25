@@ -1860,7 +1860,11 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
             uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
             for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
             {
+#if defined (__DAVAENGINE_IPHONE__)
+                DVASSERT(false && "Must be hardware supported");
+#else //#if defined (__DAVAENGINE_IPHONE__)
                 PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
+#endif //#if defined (__DAVAENGINE_IPHONE__)
                 
                 //Move forward through the pointers.
                 pTempDecompData+=decompressedFaceOffset;
