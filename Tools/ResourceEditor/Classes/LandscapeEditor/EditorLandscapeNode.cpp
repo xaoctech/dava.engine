@@ -55,11 +55,11 @@ void EditorLandscapeNode::SetNestedLandscape(DAVA::LandscapeNode *landscapeNode)
     SafeRelease(nestedLandscape);
     nestedLandscape = SafeRetain(landscapeNode);
     
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
-    if(editorLandscape)
+    if(IsPointerToExactClass<EditorLandscapeNode>(nestedLandscape))
     {
-        editorLandscape->SetParentLandscape(this);
+        ((EditorLandscapeNode *)nestedLandscape)->SetParentLandscape(this);
     }
+    
     
     SetDebugFlags(nestedLandscape->GetDebugFlags());
     
@@ -80,9 +80,9 @@ void EditorLandscapeNode::SetHeightmap(DAVA::Heightmap *height)
     SafeRelease(heightmap);
     heightmap = SafeRetain(height);
     
-    EditorHeightmap *editorHeightmap = dynamic_cast<EditorHeightmap *>(height);
-    if(editorHeightmap)
+    if(IsPointerToExactClass<EditorHeightmap>(height))
     {
+        EditorHeightmap *editorHeightmap = (EditorHeightmap *)height;
         HeihghtmapUpdated(Rect(0, 0, (float32)editorHeightmap->Size() - 1.f, (float32)editorHeightmap->Size() - 1.f));
     }
 }
@@ -143,10 +143,9 @@ void EditorLandscapeNode::Draw()
 
 void EditorLandscapeNode::HeihghtmapUpdated(const DAVA::Rect &forRect)
 {
-    EditorLandscapeNode *editorLandscape = dynamic_cast<EditorLandscapeNode *>(nestedLandscape);
-    if(editorLandscape)
+    if(IsPointerToExactClass<EditorLandscapeNode>(nestedLandscape))
     {
-        editorLandscape->HeihghtmapUpdated(forRect);
+        ((EditorLandscapeNode *)nestedLandscape)->HeihghtmapUpdated(forRect);
     }
 }
 
