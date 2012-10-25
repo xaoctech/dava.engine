@@ -110,9 +110,15 @@ bool TextureDescriptor::Load(const String &filePathname)
     {
         LoadCompressed(file);
     }
-    else
+    else if(NOTCOMPRESSED_FILE == signature)
     {
         LoadNotCompressed(file);
+    }
+    else
+    {
+        Logger::Error("[TextureDescriptor::Load] Wrong descriptor file: %s", filePathname.c_str());
+        SafeRelease(file);
+        return false;
     }
     
     SafeRelease(file);
