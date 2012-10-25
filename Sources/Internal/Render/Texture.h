@@ -317,7 +317,7 @@ private:
     static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     
 #if defined(__DAVAENGINE_OPENGL__)
-    static GLfloat HWglConvertWrapMode(TextureWrap wrap);
+    static GLint HWglConvertWrapMode(TextureWrap wrap);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     static TextureFileFormat defaultFileFormat;

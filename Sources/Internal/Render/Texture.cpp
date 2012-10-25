@@ -327,8 +327,8 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
 	RenderManager::Instance()->HWglBindTexture(texture->id);
 
-	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	if (generateMipMaps)
 	{
         RENDER_VERIFY(glGenerateMipmap(GL_TEXTURE_2D));
@@ -575,8 +575,8 @@ bool Texture::LoadFromImage(File *file, TextureDescriptor *descriptor)
         int32 saveId = RenderManager::Instance()->HWglGetLastTextureID();
         RenderManager::Instance()->HWglBindTexture(id);
         
-        RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
-        RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
+        RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, HWglConvertWrapMode((TextureWrap)descriptor->wrapModeS)));
         
         if(needGenerateMipMaps)
         {
@@ -1128,10 +1128,10 @@ void Texture::Invalidate()
 		// Now setup a texture to render to
 		RenderManager::Instance()->HWglBindTexture(id);
 
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		RENDER_VERIFY(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		RENDER_VERIFY(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 
 #if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)        
 		// Setup our FBO
@@ -1452,9 +1452,9 @@ void Texture::GenerateID()
 }
 
 #if defined (__DAVAENGINE_OPENGL__)
-GLfloat Texture::HWglConvertWrapMode(TextureWrap wrap)
+GLint Texture::HWglConvertWrapMode(TextureWrap wrap)
 {
-    GLfloat glWrap = 0;
+    GLint glWrap = 0;
     switch(wrap)
     {
         case WRAP_CLAMP_TO_EDGE:
